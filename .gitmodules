@@ -1,0 +1,3 @@
+[submodule ".vimperator/vimperator-plugins"]
+	path = .vimperator/vimperator-plugins
+	url = https://github.com/vimpr/vimperator-plugins.git

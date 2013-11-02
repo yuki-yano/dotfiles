@@ -1,0 +1,15 @@
+set main-view = id date author commit-title:graph=yes,refs=yes
+bind main C !@bash -c "echo -n %(commit) | pbcopy"
+
+color cursor white black
+color status white default
+color title-focus white black
+color date yellow default
+color author green default
+color main-head magenta default
+color main-tag magenta default
+color stat-staged green default
+color stat-unstaged red default
+color stat-untracked yellow default
+color tree.header white default
+color tree.directory cyan default

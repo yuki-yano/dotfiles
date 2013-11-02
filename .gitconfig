@@ -1,0 +1,62 @@
+[color]
+  ui = auto
+[core]
+  autocrlf = input
+  editor = vim
+	excludesfile = ~/.gitignore_global
+  attributesfile = ~/.gitattributes
+[pager]
+  log  = (diff-highlight 2>/dev/null || cat) | ${PAGER:-less}
+  show = (diff-highlight 2>/dev/null || cat) | ${PAGER:-less}
+  diff = (diff-highlight 2>/dev/null || cat) | ${PAGER:-less}
+[alias]
+  r    = reset HEAD
+  r1   = reset HEAD~
+  r2   = reset HEAD~~
+  r3   = reset HEAD~~~
+  r4   = reset HEAD~~~~
+  r5   = reset HEAD~~~~~
+  rsh  = reset --soft HEAD
+  rsh1 = reset --soft HEAD~
+  rsh2 = reset --soft HEAD~~
+  rsh3 = reset --soft HEAD~~~
+  rsh4 = reset --soft HEAD~~~~
+  rsh5 = reset --soft HEAD~~~~~
+  rhh  = reset --hard HEAD
+  rhh1 = reset --hard HEAD~
+  rhh2 = reset --hard HEAD~~
+  rhh3 = reset --hard HEAD~~~
+  rhh4 = reset --hard HEAD~~~~
+  rhh5 = reset --hard HEAD~~~~~
+  # git reset --hard HEAD を安全にした - 永遠に未完成 http://d.hatena.ne.jp/thinca/20120924/1348491052
+  cancel = !git commit -a -m 'Temporary commit for cancel' && git reset --hard HEAD~
+  # modified or untrackedなファイルを編集する
+  edit = "!f() { git status -s | cut -b 4- | grep -v '\\/$' | uniq ; }; vim `f`"
+  # mergeの際にconflictが起きたファイルを編集
+  edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
+  # submoduleのupdate
+  smupdate = submodule foreach "git checkout master; git pull origin master"
+[include]
+  path = ~/.gitconfig.local
+[push]
+  default = current
+[ghq]
+  root = ~/repos
+[diff]
+  indentHeuristic = true
+  compactionHeuristic = true
+  tool = Kaleidoscope
+[url "git@github.com:"]
+  pushInsteadOf = git://github.com/
+  pushInsteadOf = https://github.com/
+[url "git://github.com/"]
+  insteadOf = https://github.com/
+[rerere]
+  enabled = true
+[difftool "Kaleidoscope"]
+  cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
+[mergetool "Kaleidoscope"]
+  cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
+  trustexitcode = true
+[merge]
+  tool = Kaleidoscope

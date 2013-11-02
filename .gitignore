@@ -1,0 +1,78 @@
+# zsh
+/.fzf.zsh
+/.zsh/cache/
+
+# fish
+/.config/fish/*
+/.config/fish/functions/fzf_key_bindings.fish
+!/.config/fish/config.fish
+!/.config/fish/functions
+
+/.tmux/plugins/*
+/.tmux/resurrect/*
+
+# Vim
+/.vim/.netrwhist
+/.vim/plugged/*
+/.vim/undodir/*
+/.vim/viminfo
+/.vim/autoload/plug.vim.old
+/.vim/sessions/*
+
+# Emacs
+/.emacs.d/ac-comphist.dat
+/.emacs.d/auto-save-list/
+/.emacs.d/undohist/
+/.emacs.d/shellenv.el
+*.elc
+*~
+*.org-id-locations
+*_archive
+*.session
+/.emacs.d/elpa
+/.emacs.d/url
+/.emacs.d/recentf
+
+# Atom
+/.atom/*
+!/.atom/config.cson
+!/.atom/init.coffee
+!/.atom/keymap.cson
+!/.atom/snippets.cson
+!/.atom/styles.less
+
+# Vimperator
+/.vimperator/info/
+/.vimperator/plugin/*
+
+# Config
+/.config/asciinema
+/.config/direnv
+/.config/filezilla
+/.config/hub
+/.config/karabiner
+/.config/memo
+/.config/nicovideo-dump.zsh
+/.config/nvim
+/.config/peco
+/.config/vim
+
+# Application
+/osx/alfred/Alfred.alfredpreferences/clipboard
+
+# Ruby
+/Gemfile.lock
+
+# Node
+/.config/configstore
+/node_modules
+/yarn.lock
+
+# Go
+/.config/gocode/config.json
+/.vim/autoload/gocomplete.vim
+/.vim/ftplugin/go/gocomplete.vim
+
+# Scala
+/.config/ensime-vim
+/target

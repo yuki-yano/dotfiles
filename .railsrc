@@ -1,0 +1,1 @@
+--skip-test-unit --skip-bundle --database=mysql

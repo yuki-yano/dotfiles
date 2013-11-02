@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# usage:
+# git back でひとつ前に居たbranchに戻る
+# git back N でN個前に戻る
+# git back --listで履歴だす
+
+CNT=1
+
+if [ $# -ne 0 ]; then
+  if [ $1 = "--list" ]; then
+    git reflog | grep checkout | head -10 | cut -d' ' -f6 | awk '{print FNR,  $0}'
+    exit
+  else
+    CNT=$1
+  fi
+fi
+
+
+PREVIOUS_BRANCH=`git reflog | grep checkout | head -${CNT} | tail -1 | cut -d' ' -f6`
+git checkout ${PREVIOUS_BRANCH}

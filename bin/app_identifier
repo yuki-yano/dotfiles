@@ -1,0 +1,3 @@
+#! /bin/bash
+mdls -name kMDItemCFBundleIdentifier -r "$1"
+echo ''

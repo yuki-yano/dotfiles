@@ -1,0 +1,24 @@
+#! /bin/bash
+
+if [ $# -eq 0 ]; then
+    TARGET=$(cat -)
+else
+    TARGET=$1
+fi
+
+if [ -z "$TARGET" ]; then
+    exit 1
+fi
+
+SAVEDIR=/tmp
+COOKIE=/tmp/nico_cookie
+FILENAME=`echo $TARGET | ruby -e "print $<.read.chomp.split('/').pop"`
+
+curl -s -c $COOKIE -d "mail=$NICOVIDEO_DUMP_EMAIL" -d "password=$NICOVIDEO_DUMP_PASSWORD" "https://secure.nicovideo.jp/secure/login?site=niconico" --ssl -i > /dev/null
+curl -s -b $COOKIE -c $COOKIE $TARGET -i > /dev/null
+FLAPI_RES=`curl -s -b $COOKIE "http://flapi.nicovideo.jp/api/getflv/$FILENAME"`
+VIDEO_URL=`echo $FLAPI_RES | ruby -r cgi -e 'print CGI.unescape(Hash[*($<.read.chomp.split("&").map{|e| e.split("=")}.flatten)]["url"])'`
+curl -s -b $COOKIE $VIDEO_URL
+curl -s -b $COOKIE "https://secure.nicovideo.jp/secure/logout" --ssl -i > /dev/null
+
+exit 0

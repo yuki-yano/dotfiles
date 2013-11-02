@@ -1,0 +1,11 @@
+{
+  "Keymap": {
+    "C-g": "peco.Cancel"
+  },
+  "Style": {
+    "Basic": ["on_default", "default"],
+    "Selected": ["undefline", "on_cyan", "black"],
+    "Query": ["yellow", "bold"],
+    "Matched": ["cyan", "magenta"]
+  }
+}

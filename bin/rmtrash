@@ -1,0 +1,56 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use File::Spec;
+
+our $VERSION = sprintf "%d.%02d", q$Revision: 0.2 $ =~ /(\d+)/g;
+sub usage { exec 'pod2usage', $0 or die "pod2usage: $!" }
+my $cmd = '/usr/bin/osascript';
+die "$0 : $cmd nonexistent" unless -x $cmd;
+my @paths =  grep { -e $_ } map { File::Spec->rel2abs($_) } @ARGV;
+usage unless @paths;
+
+my $script = q{
+on run argv
+  set args to {}
+  repeat with arg in argv
+    set args to args & (arg as POSIX file)
+  end repeat
+  tell application "Finder"
+    move args to trash
+  end tell
+end run
+};
+
+open my $pipe, '-|', $cmd, '-e', $script, @paths or die "$!";
+my @out = <$pipe>;
+close $pipe;
+1;
+__END__
+=head1 NAME
+
+mv2trash - move (file|folder)s? to trash on OS X
+
+=head1 VERSION
+
+$Id: mv2trash,v 0.2 2013/04/15 00:29:54 dankogai Exp dankogai $
+
+=head1 SYNOPSIS
+
+  mv2trash files...
+
+=head1 DESCRIPTION
+
+C<mv2trash> moves files and folders to trash.  That's it.  No big deal.
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2013 Dan Kogai.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the the Artistic License (2.0). You may obtain a
+copy of the full license at:
+
+L<http://www.perlfoundation.org/artistic_license_2_0>
+
+=cut

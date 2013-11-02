@@ -1,0 +1,257 @@
+"*":
+  "advanced-open-file":
+    fuzzyMatch: true
+  "atom-beautify":
+    css:
+      beautify_on_save: true
+      disabled: true
+      end_with_newline: true
+      predefinedConfig: "zen"
+      selector_separator_newline: true
+    erb:
+      default_beautifier: "HTML Beautifier"
+    html: {}
+    js:
+      default_beautifier: "ESLint Fixer"
+    ruby:
+      beautify_on_save: true
+    vue: {}
+  "autocomplete-plus":
+    autoActivationDelay: 50
+    confirmCompletion: "enter"
+    defaultProvider: "Fuzzy"
+    fileBlacklist: [
+      ".map"
+    ]
+    minimumWordLength: 2
+    useCoreMovementCommands: false
+  "clip-history":
+    max: 100
+  core:
+    customFileTypes:
+      "source.ini": [
+        ".buckconfig"
+        ".hgrc"
+        ".flowconfig"
+      ]
+      "source.json": [
+        "BUCK.autodeps"
+      ]
+      "source.python": [
+        "BUCK"
+      ]
+    disabledPackages: [
+      "symbols-view"
+      "nuclide"
+      "smart-tab-name"
+    ]
+    packagesWithKeymapsDisabled: [
+      "emmet"
+    ]
+    telemetryConsent: "no"
+    themes: [
+      "atom-material-ui"
+      "iceberg-syntax"
+    ]
+  "custom-title":
+    template: "<%= relativeFilePath %><% if (projectPath) { %> - <%= projectPath %><% } %><%=  %><% if (projectPath) { %> - <%= projectPath %><% } %> "
+  editor:
+    fontFamily: "Monaco Nerd Font"
+    invisibles: {}
+    scrollPastEnd: true
+  "exception-reporting":
+    userId: "05ef3208-1cda-8a95-7587-f7ce79ab20d2"
+  "highlight-line": {}
+  "highlight-selected":
+    highlightInPanes: false
+  linter: {}
+  "linter-eslint": {}
+  "linter-flow":
+    enableAll: false
+    executablePath: "./node_modules/.bin/flow"
+  "linter-scalac": {}
+  "linter-ui-default":
+    showPanel: true
+  "markdown-preview":
+    useGitHubStyle: true
+  metrics:
+    userId: "0094ac662eca3e2e69c2465da6e67afd381397b9"
+  minimap:
+    plugins:
+      "git-diff": true
+      "minimap-autohide": true
+      "minimap-autohideDecorationsZIndex": 0
+  nuclide:
+    "nuclide-buck":
+      compileErrorDiagnostics: false
+      suggestTaskRunner: false
+    "nuclide-clang":
+      enableDefaultFlags: false
+    "nuclide-ctags":
+      disableWithHack: false
+    "nuclide-debugger-native":
+      clientLogLevel: "OFF"
+      serverLogLevel: "OFF"
+    "nuclide-debugger-node":
+      clientLogLevel: "OFF"
+      serverLogLevel: "OFF"
+    "nuclide-debugger-php":
+      logLevel: "OFF"
+      stopOneStopAll: false
+    "nuclide-diagnostics-store":
+      consumeLegacyLinters: false
+      legacyLintOnTheFly: false
+    "nuclide-file-tree":
+      allowKeyboardPrefixNavigation: false
+      hideIgnoredNames: false
+      showOpenFiles: false
+      showUncommittedChanges: false
+    "nuclide-flow":
+      canUseFlowBin: true
+      enableTypeHints: false
+    "nuclide-health":
+      toolbarJewel: "None"
+    "nuclide-home":
+      showChangelogs: false
+      showHome: false
+    "nuclide-notifications":
+      onlyNativeFriendly: false
+    "nuclide-objc":
+      enableAutomaticSquareBracketInsertion: false
+    "nuclide-ocaml":
+      enableDiagnostics: false
+    "nuclide-python":
+      autocompleteArguments: false
+      enableLinting: false
+      showGlobalVariables: false
+    "nuclide-quick-open":
+      useSelection: false
+    "nuclide-related-files":
+      openInNextPane: false
+    "nuclide-remote-atom":
+      shouldNotifyWhenCommandLineIsWaitingOnFile: false
+    "nuclide-remote-projects":
+      confirmServerActionOnLastProject: false
+      shutdownServerAfterDisconnection: false
+    "nuclide-type-coverage":
+      colorizeStatusBar: false
+    "nuclide-vcs-log":
+      showDifferentialRevision: false
+    use:
+      "nuclide-adb-logcat": false
+      "nuclide-arcanist": false
+      "nuclide-atom-notifications": false
+      "nuclide-blame": false
+      "nuclide-blame-provider-hg": false
+      "nuclide-bookshelf": false
+      "nuclide-buck": false
+      "nuclide-buck-ios": false
+      "nuclide-busy-signal": false
+      "nuclide-clang": false
+      "nuclide-clipboard-path": false
+      "nuclide-code-format": false
+      "nuclide-code-highlight": false
+      "nuclide-console": false
+      "nuclide-context-view": false
+      "nuclide-ctags": false
+      "nuclide-current-working-directory": false
+      "nuclide-datatip": false
+      "nuclide-debugger": false
+      "nuclide-debugger-iwdp": false
+      "nuclide-debugger-native": false
+      "nuclide-debugger-node": false
+      "nuclide-debugger-php": false
+      "nuclide-deep-link": false
+      "nuclide-definition-hyperclick": false
+      "nuclide-definition-preview": false
+      "nuclide-definition-service": false
+      "nuclide-devices": false
+      "nuclide-diagnostics-datatip-provider": false
+      "nuclide-diagnostics-extras": false
+      "nuclide-diagnostics-store": false
+      "nuclide-diagnostics-ui": false
+      "nuclide-distraction-free-mode": false
+      "nuclide-file-tree": false
+      "nuclide-file-watcher": false
+      "nuclide-find-references": false
+      "nuclide-fuzzy-filename-provider": false
+      "nuclide-graphql": false
+      "nuclide-hack": false
+      "nuclide-health": false
+      "nuclide-hg-conflict-resolver": false
+      "nuclide-hg-repository": false
+      "nuclide-hhvm": false
+      "nuclide-home": false
+      "nuclide-http-request-sender": false
+      "nuclide-ios-simulator-logs": false
+      "nuclide-json": false
+      "nuclide-language-hack": false
+      "nuclide-language-reason": false
+      "nuclide-loaded-shell-hook": false
+      "nuclide-move-item-to-available-pane": false
+      "nuclide-navigation-stack": false
+      "nuclide-notifications": false
+      "nuclide-nux": false
+      "nuclide-objc": false
+      "nuclide-ocaml": false
+      "nuclide-open-filenames-provider": false
+      "nuclide-outline-view": false
+      "nuclide-outline-view-extras": false
+      "nuclide-patch-editor": false
+      "nuclide-project": false
+      "nuclide-python": false
+      "nuclide-quick-open": false
+      "nuclide-react-inspector": false
+      "nuclide-react-native": false
+      "nuclide-recent-files-provider": false
+      "nuclide-recent-files-service": false
+      "nuclide-refactorizer": false
+      "nuclide-related-files": false
+      "nuclide-remote-atom": false
+      "nuclide-remote-projects": false
+      "nuclide-settings": false
+      "nuclide-swift": false
+      "nuclide-task-runner": false
+      "nuclide-test-runner": false
+      "nuclide-type-coverage": false
+      "nuclide-type-hint": false
+      "nuclide-ui": false
+      "nuclide-unicode-datatip": false
+      "nuclide-url-hyperclick": false
+      "nuclide-vcs-log": false
+      "nuclide-working-sets": false
+      "nuclide-workspace-view-locations": false
+      "nuclide-workspace-views": false
+  "prettier-atom":
+    formatOnSaveOptions:
+      enabled: true
+    prettierOptions:
+      semi: false
+      singleQuote: true
+    useEslint: true
+  "rubocop-auto-correct":
+    autoRun: true
+  stylefmt:
+    formatOnSave: true
+  "vim-mode":
+    useClipboardAsDefaultRegister: true
+  "vim-mode-plus":
+    flashOnMoveToOccurrence: true
+    ignoreCaseForSearch: true
+    ignoreCaseForSearchCurrentWord: true
+    incrementalSearch: true
+    keymapBackslashToInnerCommentOrParagraphWhenToggleLineCommentsIsPending: true
+    keymapPToPutWithAutoIndent: true
+    keymapUnderscoreToReplaceWithRegister: true
+    useClipboardAsDefaultRegister: true
+    useSmartcaseForSearch: true
+    useSmartcaseForSearchCurrentWord: true
+  "vue-stylefmt":
+    formatOnSave: true
+  welcome:
+    showOnStartup: false
+  whitespace:
+    ignoreWhitespaceOnCurrentLine: false
+  zentabs:
+    maximumOpenedTabs: 20
+    neverCloseUnsaved: true

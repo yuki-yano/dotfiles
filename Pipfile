@@ -1,0 +1,12 @@
+Pygments
+ansible-lint
+autopep8
+awscli
+flake8
+jedi
+mypy-lang
+neovim
+psutil
+pygments-style-solarized
+sexpdata
+websocket-client

@@ -1,0 +1,67 @@
+# Make sure using latest Homebrew
+update
+
+# Update already-installed formula
+upgrade
+
+# Add Repository
+tap caskroom/cask
+
+## Casks
+cask install 1password
+cask install a-better-finder-attributes
+cask install a-better-finder-rename
+cask install adobe-creative-cloud
+cask install alfred
+cask install appcleaner
+cask install atom
+cask install avidemux
+cask install bartender
+cask install bettertouchtool
+cask install blisk
+cask install default-folder-x
+cask install discord
+cask install docker
+cask install dropbox
+cask install duet
+cask install firefox
+cask install google-chrome
+cask install google-photos-backup
+cask install imageoptim
+cask install insomnia
+cask install istat-menus
+cask install iterm2
+cask install jasper
+cask install jetbrains-toolbox
+cask install kaleidoscope
+cask install keepingyouawake
+cask install keyboard-cleaner
+cask install kitematic
+cask install macvim-kaoriya
+cask install marp
+cask install mediainfo
+cask install mplayerx
+cask install path-finder
+cask install paw
+cask install scroll-reverser
+cask install sequel-pro
+cask install shupapan
+cask install simplecap
+cask install sketch
+cask install skitch
+cask install skype
+cask install sourcetree
+cask install tower
+cask install vagrant
+cask install virtualbox
+cask install visual-studio-code
+cask install vivaldi
+cask install vlc
+cask install xquartz
+
+# Quick Look
+cask install qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package provisionql
+
+# Remove outdated versions
+cleanup
+cask cleanup

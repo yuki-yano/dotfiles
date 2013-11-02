@@ -1,0 +1,44 @@
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+
+# Ruby
+/Gemfile.lock
+/.bundle
+/vendor/*
+
+# Python
+**/*.pyc
+
+# Node
+/.config/configstore/
+node_modules
+.tern-port
+yarn-error.log
+
+# scala
+.ensime
+.ensime_cache
+
+# vagrant
+.vagrant
+
+# tags
+tags
+tags.lock
+GPATH
+GRTAGS
+GTAGS
+
+# keep
+!.keep
+!.gitkeep
