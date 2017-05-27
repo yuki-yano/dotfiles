@@ -65,6 +65,16 @@ function display() {
         echo -e "#[fg=blue]${display}#[default]"
       fi
     fi
+  elif [ $mode == "plain" ]; then
+    if is_charging; then
+      echo -e "${display}"
+    else
+      if [ $percentage -lt 20 ]; then
+        echo -e "${display}"
+      else
+        echo -e "${display}"
+      fi
+    fi
   fi
 }
 
@@ -82,6 +92,9 @@ do
       ;;
     "-t")
       MODE="tmux"
+      ;;
+    "-p")
+      MODE="plain"
       ;;
     "-m")
       DISPLAY="${DISPLAY} $(get_meter $PERCENTAGE)"
