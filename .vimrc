@@ -116,6 +116,7 @@ Plug 'godlygeek/tabular'
 Plug 'haya14busa/incsearch-fuzzy.vim'
 Plug 'haya14busa/incsearch.vim'
 Plug 'haya14busa/vim-asterisk'
+Plug 'haya14busa/vim-metarepeat'
 Plug 'houtsnip/vim-emacscommandline'
 Plug 'itmammoth/doorboy.vim'
 Plug 'junegunn/vim-easy-align'
@@ -171,6 +172,7 @@ Plug 'itchyny/vim-winfix'
 Plug 'jez/vim-superman'
 Plug 'kana/vim-niceblock'
 Plug 'kana/vim-operator-user'
+Plug 'kana/vim-submode'
 Plug 'kana/vim-textobj-function'
 Plug 'kana/vim-textobj-line'
 Plug 'kana/vim-textobj-user'
@@ -1267,6 +1269,16 @@ let g:startify_list_order = [
       \ 'commands',
       \ ]
 let g:startify_change_to_vcs_root = 1
+" }}}
+
+" submode {{{
+function! s:my_x()
+    undojoin
+    normal! "_x
+endfunction
+nnoremap <silent> <Plug>(my-x) :<C-u>call <SID>my_x()<CR>
+call submode#enter_with('my_x', 'n', '', 'x', '"_x')
+call submode#map('my_x', 'n', 'r', 'x', '<Plug>(my-x)')
 " }}}
 
 " undotree {{{
