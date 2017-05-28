@@ -124,7 +124,6 @@ Plug 'kana/vim-operator-replace'
 Plug 'osyo-manga/vim-anzu'
 Plug 'osyo-manga/vim-jplus'
 Plug 'osyo-manga/vim-over'
-Plug 'rhysd/clever-f.vim'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'thinca/vim-qfreplace'
 Plug 'thinca/vim-visualstar'
@@ -833,13 +832,27 @@ nnoremap <silent> <Leader>cd :<C-u>Rooter<CR>
 " incsearch & easymotion & anzu & asterisk & search-pulse {{{
 let g:vim_search_pulse_disable_auto_mappings = 1
 let g:vim_search_pulse_mode = 'pattern'
+let g:EasyMotion_smartcase = 1
+let g:EasyMotion_startofline = 0
+let g:EasyMotion_keys = 'HJKLASDFGYUIOPQWERTNMZXCVB'
+let g:EasyMotion_use_upper = 1
+let g:EasyMotion_enter_jump_first = 1
+let g:EasyMotion_space_jump_first = 1
+let g:anzu_status_format = "(%i/%l)"
+hi link EasyMotionIncSearch Search
+hi link EasyMotionMoveHL Search
 autocmd  User PrePulse  set cursorcolumn
 autocmd  User PostPulse set nocursorcolumn
 
+map  f  <Plug>(easymotion-bd-fl)
+map  t  <Plug>(easymotion-bd-tl)
 map  /  <Plug>(incsearch-forward)
 map  ?  <Plug>(incsearch-backward)
 map  z/ <Plug>(incsearch-fuzzy-/)
 map  z? <Plug>(incsearch-fuzzy-?)
+nmap g/ <Plug>(easymotion-sn)
+xmap g/ <Plug>(easymotion-sn)
+omap g/ <Plug>(easymotion-tn)
 map  n  <Plug>(easymotion-next)<Plug>(anzu-n)zzzv<Plug>Pulse
 map  N  <Plug>(easymotion-prev)<Plug>(anzu-N)zzzv<Plug>Pulse
 nmap *  <Plug>(asterisk-z*)<Plug>(anzu-update-search-status-with-echo)<Plug>Pulse
@@ -852,14 +865,6 @@ nmap s <Plug>(easymotion-overwin-f2)
 vmap s <Plug>(easymotion-bd-f2)
 map  <Leader>j <Plug>(easymotion-j)
 map  <Leader>k <Plug>(easymotion-k)
-
-let g:EasyMotion_keys = 'HJKLASDFGYUIOPQWERTNMZXCVB'
-let g:EasyMotion_use_upper = 1
-let g:EasyMotion_enter_jump_first = 1
-let g:EasyMotion_space_jump_first = 1
-let g:anzu_status_format = "(%i/%l)"
-hi link EasyMotionIncSearch Search
-hi link EasyMotionMoveHL Search
 " }}}
 
 " CamelCaseMotion {{{
