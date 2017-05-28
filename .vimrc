@@ -1240,8 +1240,9 @@ endfunction
 
 " signature {{{
 let g:SignatureMap = {
-      \ 'GotoNextLineAlpha'  :  "]",
-      \ 'GotoPrevLineAlpha'  :  "[",
+      \ 'ToggleMarkAtLine'   : "mm",
+      \ 'GotoNextLineAlpha'  :  "mn",
+      \ 'GotoPrevLineAlpha'  :  "mp",
       \ }
 " }}}
 
