@@ -163,7 +163,6 @@ endif
 Plug 'benizi/vim-automkdir'
 Plug 'bogado/file-line'
 Plug 'itchyny/calendar.vim'
-Plug 'itchyny/vim-closebuffer'
 Plug 'itchyny/vim-external'
 Plug 'itchyny/vim-extracmd'
 Plug 'itchyny/vim-tmpbuffer'
