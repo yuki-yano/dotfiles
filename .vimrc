@@ -118,7 +118,6 @@ Plug 'ujihisa/neco-look'
 " Edit & Move & Search {{{
 Plug 'AndrewRadev/switch.vim'
 Plug 'LeafCage/yankround.vim'
-Plug 'bkad/CamelCaseMotion'
 Plug 'chrisbra/NrrwRgn'
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'dietsche/vim-lastplace'
@@ -885,12 +884,6 @@ nmap s <Plug>(easymotion-overwin-f2)
 vmap s <Plug>(easymotion-bd-f2)
 map  <Leader>j <Plug>(easymotion-j)
 map  <Leader>k <Plug>(easymotion-k)
-" }}}
-
-" CamelCaseMotion {{{
-nmap <silent> W <Plug>CamelCaseMotion_w
-nmap <silent> B <Plug>CamelCaseMotion_b
-nmap <silent> E <Plug>CamelCaseMotion_e
 " }}}
 
 " doorboy {{{
