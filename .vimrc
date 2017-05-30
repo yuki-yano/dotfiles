@@ -17,15 +17,20 @@ Plug 'Vimjas/vim-python-pep8-indent', { 'for': ['python'] }
 Plug 'cakebaker/scss-syntax.vim', { 'for': ['sass', 'scss'] }
 Plug 'cespare/vim-toml', { 'for': ['toml'] }
 Plug 'csscomb/vim-csscomb', { 'for': ['css', 'sass', 'scss'] }
+Plug 'davidhalter/jedi-vim', { 'for': 'python' }
+Plug 'derekwyatt/vim-sbt', { 'for': ['sbt'] }
 Plug 'derekwyatt/vim-scala', { 'for': ['scala'] }
 Plug 'ecomba/vim-ruby-refactoring', { 'for': ['ruby'] }
 Plug 'ekalinin/Dockerfile.vim', { 'for': ['dockerfile'] }
 Plug 'elzr/vim-json', { 'for': ['json'] }
 Plug 'fatih/vim-go', { 'for': ['go'] }
 Plug 'fleischie/vim-styled-components', { 'for': ['javascript'] }
+Plug 'gre/play2vim', { 'for': ['scala'] }
 Plug 'hail2u/vim-css3-syntax', { 'for': ['css'] }
 Plug 'hashivim/vim-terraform', { 'for': ['terraform'] }
+Plug 'heavenshell/vim-pydocstring', { 'for': 'python' }
 Plug 'jsfaint/gen_tags.vim'
+Plug 'kchmck/vim-coffee-script', { 'for': ['coffee'] }
 Plug 'kchmck/vim-coffee-script', { 'for': ['coffee'] }
 Plug 'keith/rspec.vim', { 'for': ['ruby'] }
 Plug 'kewah/vim-stylefmt', { 'for': ['css'] }
@@ -33,6 +38,8 @@ Plug 'leafgarland/typescript-vim', { 'for': ['typescript'] }
 Plug 'majutsushi/tagbar'
 Plug 'mattn/emmet-vim', { 'for': ['html', 'eruby.html', 'javascript', 'vue', 'vue.html.javascript.css'] }
 Plug 'maxmellon/vim-jsx-pretty', { 'for': ['javascript'] }
+Plug 'mdreves/vim-scaladoc', { 'for': ['scala'] }
+Plug 'mkomitee/vim-gf-python', { 'for': 'python' }
 Plug 'moll/vim-node', { 'for': ['javascript'] }
 Plug 'nsf/gocode', { 'for': ['go'], 'rtp': 'nvim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
 Plug 'othree/csscomplete.vim', { 'for': ['css', 'sass', 'scss'] }
@@ -47,12 +54,15 @@ Plug 'raimon49/requirements.txt.vim', { 'for': 'requirements' }
 Plug 'rhysd/vim-gfm-syntax', { 'for': ['markdown'] }
 Plug 'rhysd/vim-textobj-ruby', { 'for': ['ruby'] }
 Plug 'slim-template/vim-slim', { 'for': ['slim'] }
-Plug 'tmhedberg/SimpylFold',    { 'for': 'python' }
+Plug 'tell-k/vim-autopep8', { 'for': ['python'] }
+Plug 'thinca/vim-ft-help_fold', { 'for': ['help'] }
+Plug 'tmhedberg/SimpylFold', { 'for': 'python' }
 Plug 'tmux-plugins/vim-tmux', { 'for': ['tmux'] }
 Plug 'tpope/vim-bundler', { 'for': ['ruby'] }
 Plug 'tpope/vim-endwise', { 'for': ['ruby'] }
 Plug 'tpope/vim-markdown', { 'for': ['markdown'] }
 Plug 'tpope/vim-rails', { 'for': ['ruby', 'eruby'] }
+Plug 'vim-jp/syntax-vim-ex', { 'for': ['vim'] }
 Plug 'vim-python/python-syntax', { 'for': ['python'] }
 Plug 'vim-ruby/vim-ruby', { 'for': ['ruby', 'eruby'] }
 Plug 'vim-scripts/python_match.vim', { 'for': ['python'] }
@@ -91,11 +101,13 @@ Plug 'Shougo/neosnippet'
 Plug 'Shougo/neoyank.vim'
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/vimfiler'
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'hewes/unite-gtags'
 Plug 'honza/vim-snippets'
-Plug 'ctrlpvim/ctrlp.vim'
+Plug 'kmnk/vim-unite-giti'
 Plug 'mattn/googlesuggest-complete-vim'
 Plug 'mopp/googlesuggest-source.vim'
+Plug 'osyo-manga/unite-highlight'
 Plug 'osyo-manga/unite-quickfix'
 Plug 'rafi/vim-denite-session'
 Plug 'rking/ag.vim'
@@ -160,11 +172,14 @@ Plug 'vimtaku/hl_matchit.vim'
 if has('nvim')
   Plug 'kassio/neoterm'
 endif
+Plug 'Shougo/junkfile.vim'
 Plug 'benizi/vim-automkdir'
 Plug 'bogado/file-line'
+Plug 'chrisbra/Recover.vim'
 Plug 'itchyny/calendar.vim'
 Plug 'itchyny/vim-external'
 Plug 'itchyny/vim-extracmd'
+Plug 'itchyny/vim-qfedit'
 Plug 'itchyny/vim-tmpbuffer'
 Plug 'itchyny/vim-winfix'
 Plug 'jez/vim-superman'
@@ -183,11 +198,13 @@ Plug 'mtth/scratch.vim'
 Plug 'qpkorr/vim-bufkill'
 Plug 'roxma/vim-paste-easy'
 Plug 'simeji/winresizer'
+Plug 'szw/vim-maximizer'
 Plug 'terryma/vim-expand-region'
 Plug 'thinca/vim-ref'
 Plug 'tpope/vim-sleuth'
 Plug 'tweekmonster/startuptime.vim'
-Plug 'vim-scripts/ZoomWin'
+Plug 'tyru/capture.vim'
+Plug 'wellle/targets.vim'
 " }}}
 
 " Library {{{
@@ -378,6 +395,7 @@ autocmd BufNewFile,BufRead         *.js  set filetype=javascript
 autocmd BufNewFile,BufRead         *.md  set filetype=markdown
 autocmd BufNewFile,BufRead        *.vue  set filetype=vue.html.javascript.css
 autocmd BufNewFile,BufRead        *.ssp  set filetype=html
+autocmd BufNewFile,BufRead       *.cson  set filetype=coffee
 autocmd BufNewFile,BufRead     .babelrc  set filetype=json
 autocmd BufNewFile,BufRead    .eslintrc  set filetype=yaml
 autocmd BufNewFile,BufRead .stylelintrc  set filetype=yaml
@@ -678,6 +696,9 @@ try
 
   " snippets
   nnoremap <silent> <Leader>sn :<C-u>Unite neosnippet -direction=botright -start-insert<CR>
+
+  " giti
+  nnoremap <silent> <Leader>gg :<C-u>Unite giti/status -direction=botright -winheight=10 -no-start-insert -no-quit<CR>
 
   " agit
   let s:agit_file = { 'description' : 'open the file''s history in agit.vim' }
@@ -1227,6 +1248,10 @@ catch /E117.*/
 endtry
 " }}}
 
+" maximizer {{{
+nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
+" }}}
+
 " neoterm {{{
 nnoremap <silent> <Leader>tn :<C-u>:Tnew<CR>
 nnoremap <silent> <Leader>tt :<C-u>:Ttoggle<CR>
@@ -1287,10 +1312,6 @@ call submode#map('my_x', 'n', 'r', 'x', '<Plug>(my-x)')
 
 " undotree {{{
 nnoremap <silent> <Leader>u :<C-u>UndotreeToggle<CR>
-" }}}
-
-" ZoomWin {{{
-nnoremap <silent> <Leader>z :<C-u>ZoomWin<CR>
 " }}}
 
 " }}}
