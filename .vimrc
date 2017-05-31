@@ -21,6 +21,7 @@ Plug 'davidhalter/jedi-vim', { 'for': 'python' }
 Plug 'derekwyatt/vim-sbt', { 'for': ['sbt'] }
 Plug 'derekwyatt/vim-scala', { 'for': ['scala'] }
 Plug 'ecomba/vim-ruby-refactoring', { 'for': ['ruby'] }
+Plug 'editorconfig/editorconfig-vim'
 Plug 'ekalinin/Dockerfile.vim', { 'for': ['dockerfile'] }
 Plug 'elzr/vim-json', { 'for': ['json'] }
 Plug 'fatih/vim-go', { 'for': ['go'] }
