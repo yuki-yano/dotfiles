@@ -3,7 +3,7 @@
 [core]
   autocrlf = input
   editor = vim
-	excludesfile = ~/.gitignore_global
+  excludesfile = ~/.gitignore_global
   attributesfile = ~/.gitattributes
 [pager]
   log  = (diff-highlight 2>/dev/null || cat) | ${PAGER:-less}
