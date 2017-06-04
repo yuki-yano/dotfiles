@@ -1254,6 +1254,7 @@ try
   call extracmd#set('gita', 'Gita')
   call extracmd#set('gina', 'Gina')
   call extracmd#set('blame', 'Gita blame')
+  call extracmd#set('agit', 'Agit')
   call extracmd#set('log', 'Agit')
   call extracmd#set('branch', 'Merginal')
   call extracmd#set('di', 'Ref webdict alc <C-R><C-W><CR>')
