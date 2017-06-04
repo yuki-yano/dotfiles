@@ -87,6 +87,7 @@ Plug 'cohama/agit.vim'
 Plug 'idanarye/vim-merginal', { 'branch': 'develop' }
 Plug 'lambdalisue/gina.vim'
 Plug 'lambdalisue/vim-gita'
+Plug 'lambdalisue/vim-unified-diff'
 Plug 'rhysd/committia.vim'
 Plug 'tpope/vim-fugitive'
 " }}}
@@ -844,6 +845,10 @@ nnoremap <silent> <Leader>gd :<C-u>Gina diff<CR>
 
 " rooter {{{
 nnoremap <silent> <Leader>cd :<C-u>Rooter<CR>
+" }}}
+
+" unified-diff{{{
+set diffexpr=unified_diff#diffexpr()
 " }}}
 
 " }}}
