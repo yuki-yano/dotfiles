@@ -537,6 +537,7 @@ let g:vim_jsx_pretty_colorful_config = 1
 " ctrlp
 hi CtrlPMatch ctermfg=74
 let g:ctrlp_map = '<Leader>p'
+let g:ctrlp_max_height = 20
 let g:ctrlp_user_command='ag %s -i --nocolor --nogroup -g ""'
 let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
 let g:ctrlp_prompt_mappings = {
