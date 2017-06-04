@@ -13,6 +13,7 @@ Plug 'vim-jp/vimdoc-ja'
 " Plug 'ensime/ensime-vim', { 'for': ['scala'], 'do': ':UpdateRemotePlugins' }
 Plug 'Chiel92/vim-autoformat'
 Plug 'Shougo/context_filetype.vim'
+Plug 'Valloric/MatchTagAlways', { 'for': ['html', 'xml', 'erb'] }
 Plug 'Vimjas/vim-python-pep8-indent', { 'for': ['python'] }
 Plug 'cakebaker/scss-syntax.vim', { 'for': ['sass', 'scss'] }
 Plug 'cespare/vim-toml', { 'for': ['toml'] }
@@ -68,6 +69,7 @@ Plug 'vim-python/python-syntax', { 'for': ['python'] }
 Plug 'vim-ruby/vim-ruby', { 'for': ['ruby', 'eruby'] }
 Plug 'vim-scripts/python_match.vim', { 'for': ['python'] }
 Plug 'vimperator/vimperator.vim', { 'for': ['vimperator'] }
+Plug 'vimtaku/hl_matchit.vim', { 'for': ['ruby'] }
 Plug 'w0rp/ale', { 'branch': 'v1.3.x' }
 " }}}
 
@@ -136,10 +138,10 @@ Plug 'kana/vim-operator-replace'
 Plug 'osyo-manga/vim-anzu'
 Plug 'osyo-manga/vim-jplus'
 Plug 'osyo-manga/vim-over'
+Plug 'scrooloose/nerdcommenter'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'thinca/vim-qfreplace'
 Plug 'thinca/vim-visualstar'
-Plug 'tomtom/tcomment_vim'
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-speeddating'
@@ -190,11 +192,13 @@ Plug 'kana/vim-textobj-function'
 Plug 'kana/vim-textobj-line'
 Plug 'kana/vim-textobj-user'
 Plug 'konfekt/fastfold'
-Plug 'kshenoy/vim-signature'
+Plug 'mattesgroeger/vim-bookmarks'
 Plug 'mattn/webapi-vim'
 Plug 'mbbill/undotree'
 Plug 'mhinz/vim-startify'
 Plug 'mtth/scratch.vim'
+Plug 'nelstrom/vim-textobj-rubyblock'
+Plug 'osyo-manga/vim-textobj-multiblock'
 Plug 'qpkorr/vim-bufkill'
 Plug 'roxma/vim-paste-easy'
 Plug 'simeji/winresizer'
@@ -475,11 +479,6 @@ let g:formatdef_scalafmt = "'cat | scalafmt --stdin'"
 let g:formatters_scala = ['scalafmt']
 " }}}
 
-" tcomment {{{
-nnoremap <silent> <Leader>cc :<C-u>TComment<CR>
-vnoremap <silent> <Leader>cc :TComment<CR>
-" }}}
-
 " emmet {{{
 let g:user_emmet_leader_key=','
 let g:user_emmet_mode='in'
@@ -523,10 +522,6 @@ let g:vim_json_syntax_conceal = 0
 
 " jsx-pretty {{{
 let g:vim_jsx_pretty_colorful_config = 1
-" }}}
-
-" tagbar {{{
-nnoremap <silent> <Leader>tag :<C-u>TagbarOpen j<CR>
 " }}}
 
 " }}}
@@ -1176,6 +1171,17 @@ function! s:ale_string(mode)
   return l:error_count == 0 && l:warning_count == 0 ? l:no_errors : ''
 endfunction
 " }}}
+"
+
+" MatchTagAlways {{{
+let g:mta_filetypes = {
+      \ 'html' : 1,
+      \ 'xhtml' : 1,
+      \ 'xml' : 1,
+      \ 'erb' : 1,
+      \ 'jinja' : 1
+      \}
+" }}}
 
 " operator-flashy {{{
 map y <Plug>(operator-flashy)
@@ -1234,6 +1240,7 @@ try
   call extracmd#set('di', 'Ref webdict alc <C-R><C-W><CR>')
   call extracmd#set('alc', 'Ref webdict alc')
   call extracmd#set('tag', 'TagbarOpen j<CR>')
+  call extracmd#set('num', 'NumbersToggle<CR>')
   call extracmd#set('j', 'Unite jump change -auto-preview<CR>')
   call extracmd#set('tab', 'Unite tab<CR>')
   call extracmd#set('sf', 'CtrlSF')
@@ -1296,8 +1303,8 @@ let g:startify_change_to_vcs_root = 1
 
 " submode {{{
 function! s:my_x()
-    undojoin
-    normal! "_x
+  undojoin
+  normal! "_x
 endfunction
 nnoremap <silent> <Plug>(my-x) :<C-u>call <SID>my_x()<CR>
 call submode#enter_with('my_x', 'n', '', 'x', '"_x')
