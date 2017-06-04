@@ -20,6 +20,7 @@ Plug 'Valloric/MatchTagAlways', { 'for': ['html', 'xml', 'erb'] }
 Plug 'Vimjas/vim-python-pep8-indent', { 'for': ['python'] }
 Plug 'cakebaker/scss-syntax.vim', { 'for': ['sass', 'scss'] }
 Plug 'cespare/vim-toml', { 'for': ['toml'] }
+Plug 'cohama/agit.vim'
 Plug 'csscomb/vim-csscomb', { 'for': ['css', 'sass', 'scss'] }
 Plug 'davidhalter/jedi-vim', { 'for': 'python' }
 Plug 'derekwyatt/vim-sbt', { 'for': ['sbt'] }
@@ -34,6 +35,7 @@ Plug 'gre/play2vim', { 'for': ['scala'] }
 Plug 'hail2u/vim-css3-syntax', { 'for': ['css'] }
 Plug 'hashivim/vim-terraform', { 'for': ['terraform'] }
 Plug 'heavenshell/vim-pydocstring', { 'for': 'python' }
+Plug 'idanarye/vim-merginal', { 'branch': 'develop' }
 Plug 'jsfaint/gen_tags.vim'
 Plug 'kchmck/vim-coffee-script', { 'for': ['coffee'] }
 Plug 'kchmck/vim-coffee-script', { 'for': ['coffee'] }
@@ -73,9 +75,8 @@ Plug 'vim-ruby/vim-ruby', { 'for': ['ruby', 'eruby'] }
 Plug 'vim-scripts/python_match.vim', { 'for': ['python'] }
 Plug 'vimperator/vimperator.vim', { 'for': ['vimperator'] }
 Plug 'vimtaku/hl_matchit.vim', { 'for': ['ruby'] }
-Plug 'cohama/agit.vim'
-Plug 'idanarye/vim-merginal', { 'branch': 'develop' }
 Plug 'w0rp/ale', { 'branch': 'v1.3.x' }
+Plug 'ywatase/mdt.vim', { 'for': ['markdown'] }
 " }}}
 "
 " Git {{{
