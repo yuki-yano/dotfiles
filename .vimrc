@@ -70,17 +70,20 @@ Plug 'vim-ruby/vim-ruby', { 'for': ['ruby', 'eruby'] }
 Plug 'vim-scripts/python_match.vim', { 'for': ['python'] }
 Plug 'vimperator/vimperator.vim', { 'for': ['vimperator'] }
 Plug 'vimtaku/hl_matchit.vim', { 'for': ['ruby'] }
+Plug 'cohama/agit.vim'
+Plug 'idanarye/vim-merginal', { 'branch': 'develop' }
 Plug 'w0rp/ale', { 'branch': 'v1.3.x' }
 " }}}
-
 " Git {{{
 Plug 'airblade/vim-gitgutter'
 Plug 'airblade/vim-rooter'
+Plug 'chrisbra/vim-diff-enhanced'
 Plug 'cohama/agit.vim'
 Plug 'idanarye/vim-merginal', { 'branch': 'develop' }
 Plug 'jreybert/vimagit'
 Plug 'lambdalisue/gina.vim'
 Plug 'lambdalisue/vim-gita'
+Plug 'lambdalisue/vim-improve-diff'
 Plug 'rhysd/committia.vim'
 Plug 'tpope/vim-fugitive'
 " }}}
@@ -196,11 +199,14 @@ Plug 'konfekt/fastfold'
 Plug 'mattesgroeger/vim-bookmarks'
 Plug 'mattn/webapi-vim'
 Plug 'mbbill/undotree'
+Plug 'myusuf3/numbers.vim'
 Plug 'mhinz/vim-startify'
 Plug 'mtth/scratch.vim'
 Plug 'nelstrom/vim-textobj-rubyblock'
 Plug 'osyo-manga/vim-textobj-multiblock'
+Plug 'rhysd/conflict-marker.vim'
 Plug 'qpkorr/vim-bufkill'
+Plug 'rhysd/clever-split.vim'
 Plug 'roxma/vim-paste-easy'
 Plug 'simeji/winresizer'
 Plug 'szw/vim-maximizer'
@@ -285,7 +291,7 @@ autocmd SwapExists * let v:swapchoice = 'o'
 "" Map
 nnoremap <silent> <Leader>w :w<CR>
 nnoremap <silent> <Leader>q :q<CR>
-nnoremap <C-f> :b<Space>
+nnoremap B :b<Space>
 if has('nvim')
   nmap <BS> <C-W>h
 endif
@@ -837,6 +843,11 @@ nmap <silent> gn <Plug>GitGutterNextHunk
 let g:gita#suppress_warning = 1
 " }}}
 
+" gina {{{
+nnoremap <silent> <Leader>gs :<C-u>Gina status<CR>
+nnoremap <silent> <Leader>gd :<C-u>Gina diff<CR>
+" }}}
+
 " rooter {{{
 nnoremap <silent> <Leader>cd :<C-u>Rooter<CR>
 " }}}
@@ -1205,7 +1216,7 @@ let g:workspace_powerline_separators = 1
 let g:workspace_tab_icon = "\uf00a"
 let g:workspace_left_trunc_icon = "\uf0a8"
 let g:workspace_right_trunc_icon = "\uf0a9"
-noremap <Leader>d :WSClose<CR>
+noremap <Leader>d :BD<CR>
 " }}}
 
 " zenspace {{{
