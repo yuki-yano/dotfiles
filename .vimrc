@@ -836,11 +836,16 @@ nmap <silent> gn <Plug>GitGutterNextHunk
 
 " gita {{{
 let g:gita#suppress_warning = 1
+nnoremap <silent> <Leader>gs  :<C-u>Gita status<CR>
 " }}}
 
 " gina {{{
-nnoremap <silent> <Leader>gs :<C-u>Gina status<CR>
-nnoremap <silent> <Leader>gd :<C-u>Gina diff<CR>
+nnoremap <silent> <Leader>gd  :<C-u>Gina diff<CR>
+nnoremap <silent> <Leader>gci :<C-u>Gina commit<CR>
+" }}}
+
+" merginal {{{
+nnoremap <silent> <Leader>gco :<C-u>Merginal<CR>
 " }}}
 
 " rooter {{{
@@ -1255,8 +1260,6 @@ try
   call extracmd#set('gina', 'Gina')
   call extracmd#set('blame', 'Gita blame')
   call extracmd#set('agit', 'Agit')
-  call extracmd#set('log', 'Agit')
-  call extracmd#set('branch', 'Merginal')
   call extracmd#set('di', 'Ref webdict alc <C-R><C-W><CR>')
   call extracmd#set('alc', 'Ref webdict alc')
   call extracmd#set('tag', 'TagbarOpen j<CR>')
