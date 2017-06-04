@@ -175,6 +175,7 @@ if has('nvim')
   Plug 'kassio/neoterm'
 endif
 Plug 'Shougo/junkfile.vim'
+Plug 'bagrat/vim-workspace'
 Plug 'benizi/vim-automkdir'
 Plug 'bogado/file-line'
 Plug 'chrisbra/Recover.vim'
@@ -938,8 +939,8 @@ nnoremap <silent> <C-s> :<C-u>Switch<CR>
 let g:neoyank#limit = 10000
 nmap p <Plug>(yankround-p)
 xmap p <Plug>(yankround-p)
-nmap <silent><expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : ":bp<CR>"
-nmap <silent><expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : ":bn<CR>"
+nmap <silent><expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "WSPrev<CR>"
+nmap <silent><expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : "WSNext<CR>"
 " }}}
 
 " }}}
@@ -988,9 +989,6 @@ nnoremap <silent> <Leader>i :<C-u>:IndentLinesToggle<CR>
 let g:lightline = {
       \ 'colorscheme': 'iceberg_tigberd',
       \ 'mode_map': {'c': 'NORMAL'},
-      \ 'tabline': {
-      \ 'left': [ [ 'bufferinfo' ], [ 'bufferbefore', 'buffercurrent', 'bufferafter' ] ],
-      \ },
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ], [ 'fugitive' ], ['readonly', 'filepath', 'filename', 'anzu' ] ],
       \   'right': [
@@ -1018,22 +1016,17 @@ let g:lightline = {
       \   'fileformat':   'LightlineFileformat',
       \   'fileencoding': 'LightlineFileencoding',
       \   'mode':         'LightlineMode',
-      \   'bufferbefore': 'lightline#buffer#bufferbefore',
-      \   'bufferafter':  'lightline#buffer#bufferafter',
-      \   'bufferinfo':   'lightline#buffer#bufferinfo',
       \   'anzu':         'anzu#search_status'
       \ },
       \ 'component_expand': {
       \   'ale_error':     'LightlineAleError',
       \   'ale_warning':   'LightlineAleWarning',
       \   'ale_ok':        'LightlineAleOk',
-      \   'buffercurrent': 'lightline#buffer#buffercurrent2'
       \ },
       \ 'component_type': {
       \   'ale_error':   'error',
       \   'ale_warning': 'warning',
       \   'ale_ok':      'ok',
-      \   'buffercurrent': 'tabsel'
       \ },
       \ 'component_function_visible_condition': {
       \   'modified': '&modified||!&modifiable',
@@ -1041,7 +1034,11 @@ let g:lightline = {
       \   'paste': '&paste',
       \ },
       \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2 " },
-      \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3 " }
+      \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3 " },
+      \ 'enable': {
+      \ 'statusline': 1,
+      \ 'tabline': 0
+      \ }
       \ }
 
 autocmd User ALELint call lightline#update()
@@ -1171,7 +1168,6 @@ function! s:ale_string(mode)
   return l:error_count == 0 && l:warning_count == 0 ? l:no_errors : ''
 endfunction
 " }}}
-"
 
 " MatchTagAlways {{{
 let g:mta_filetypes = {
@@ -1196,6 +1192,22 @@ let g:loaded_matchparen = 1
 map <silent> <Leader>th <Plug>(thumbnail)
 " }}}
 
+" workspace {{{
+function g:WorkspaceSetCustomColors()
+  hi WorkspaceFill           ctermfg=0 ctermbg=0   guibg=#000000
+  hi WorkspaceBufferCurrent  ctermfg=0 ctermbg=67  guibg=#000000
+  hi WorkspaceBufferActive   ctermfg=0 ctermbg=243 guibg=#000000
+  hi WorkspaceBufferHidden   ctermfg=0 ctermbg=241 guibg=#000000
+endfunction
+
+let g:workspace_use_devicons = 1
+let g:workspace_powerline_separators = 1
+let g:workspace_tab_icon = "\uf00a"
+let g:workspace_left_trunc_icon = "\uf0a8"
+let g:workspace_right_trunc_icon = "\uf0a9"
+noremap <Leader>d :WSClose<CR>
+" }}}
+
 " zenspace {{{
 let g:zenspace#default_mode = 'on'
 " }}}
@@ -1204,10 +1216,6 @@ let g:zenspace#default_mode = 'on'
 
 " Util {{{
 
-" bufkill {{{
-nnoremap <silent> <Leader>d :<C-u>BD<CR>
-" }}}
-"
 " calendar {{{
 nnoremap <silent> <Leader>ca :<C-u>Calendar<CR>
 " }}}

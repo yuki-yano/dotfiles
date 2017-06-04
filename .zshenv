@@ -147,28 +147,6 @@ function e (){
     emacsclient -n $* &
 }
 
-# tmux
-function s (){
-    if [ $# -eq 0 ]; then
-        cat > /tmp/tmux.tmp && tmux split-window "less /tmp/tmux.tmp"
-    else
-        REATTACH_TO_USER_NAMESPACE=`whence reattach-to-user-namespace`
-        tmux split-window "$REATTACH_TO_USER_NAMESPACE -l zsh -c $*"
-    fi
-}
-function v (){
-    if [ $# -eq 0 ]; then
-        cat > /tmp/tmux.tmp && tmux split-window -h "less /tmp/tmux.tmp"
-    else
-        REATTACH_TO_USER_NAMESPACE=`whence reattach-to-user-namespace`
-        tmux split-window -h "$REATTACH_TO_USER_NAMESPACE -l zsh -c $*"
-    fi
-}
-
-function t (){
-    tmux new-window "$*"
-}
-
 # git-foresta
 function gifo() {
     git-foresta --style=10 "$@" | less -RSX
