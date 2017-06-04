@@ -5,6 +5,9 @@ filetype off
 call plug#begin('~/.vim/plugged')
 Plug 'junegunn/vim-plug', {'dir': '~/.vim/plugged/vim-plug/autoload'}
 
+" 他のプラグインとの都合上最初に読み込む
+Plug 'ryanoasis/vim-devicons'
+
 " Doc {{{
 Plug 'vim-jp/vimdoc-ja'
 " }}}
@@ -74,6 +77,7 @@ Plug 'cohama/agit.vim'
 Plug 'idanarye/vim-merginal', { 'branch': 'develop' }
 Plug 'w0rp/ale', { 'branch': 'v1.3.x' }
 " }}}
+"
 " Git {{{
 Plug 'airblade/vim-gitgutter'
 Plug 'airblade/vim-rooter'
@@ -163,7 +167,6 @@ Plug 'itchyny/vim-cursorword'
 Plug 'itchyny/vim-highlighturl'
 Plug 'itchyny/vim-parenmatch'
 Plug 'ntpeters/vim-better-whitespace'
-Plug 'ryanoasis/vim-devicons'
 Plug 't9md/vim-quickhl'
 Plug 'taohex/lightline-buffer'
 Plug 'thinca/vim-zenspace'
