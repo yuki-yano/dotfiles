@@ -83,7 +83,6 @@ Plug 'idanarye/vim-merginal', { 'branch': 'develop' }
 Plug 'jreybert/vimagit'
 Plug 'lambdalisue/gina.vim'
 Plug 'lambdalisue/vim-gita'
-Plug 'lambdalisue/vim-improve-diff'
 Plug 'rhysd/committia.vim'
 Plug 'tpope/vim-fugitive'
 " }}}
