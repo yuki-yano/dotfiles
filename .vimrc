@@ -174,15 +174,11 @@ Plug 'vimtaku/hl_matchit.vim'
 " }}}
 
 " Util {{{
-if has('nvim')
-  Plug 'kassio/neoterm'
-endif
 Plug 'Shougo/junkfile.vim'
 Plug 'bagrat/vim-workspace'
 Plug 'benizi/vim-automkdir'
 Plug 'bogado/file-line'
 Plug 'chrisbra/Recover.vim'
-Plug 'itchyny/calendar.vim'
 Plug 'itchyny/vim-external'
 Plug 'itchyny/vim-extracmd'
 Plug 'itchyny/vim-qfedit'
@@ -947,8 +943,8 @@ nnoremap <silent> <C-s> :<C-u>Switch<CR>
 let g:neoyank#limit = 10000
 nmap p <Plug>(yankround-p)
 xmap p <Plug>(yankround-p)
-nmap <silent><expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "WSPrev<CR>"
-nmap <silent><expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : "WSNext<CR>"
+nmap <silent><expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : ":WSPrev<CR>"
+nmap <silent><expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : ":WSNext<CR>"
 " }}}
 
 " }}}
@@ -960,7 +956,7 @@ let g:better_whitespace_filetypes_blacklist = ['vimfiler', 'unite']
 " }}}
 
 " cursorword {{{
-autocmd FileType unite,denite,qf,vimfiler,thumbnail,calendar let b:cursorword=0
+autocmd FileType unite,denite,qf,vimfiler,thumbnail let b:cursorword=0
 " }}}
 
 " devicons {{{
@@ -1213,7 +1209,13 @@ let g:workspace_powerline_separators = 1
 let g:workspace_tab_icon = "\uf00a"
 let g:workspace_left_trunc_icon = "\uf0a8"
 let g:workspace_right_trunc_icon = "\uf0a9"
-noremap <Leader>d :BD<CR>
+noremap <silent> <Leader>d  :BD<CR>
+noremap <silent> <Leader>tc :tabe<CR>
+noremap <silent> <Leader>tn :tabnext<CR>
+noremap <silent> <Leader>tp :tabprevious<CR>
+noremap <silent> <Leader>td :tabclose<CR>
+noremap <silent> <Leader>ts :tabs<CR>
+
 " }}}
 
 " zenspace {{{
@@ -1223,10 +1225,6 @@ let g:zenspace#default_mode = 'on'
 " }}}
 
 " Util {{{
-
-" calendar {{{
-nnoremap <silent> <Leader>ca :<C-u>Calendar<CR>
-" }}}
 
 " expand-region {{{
 vmap v <Plug>(expand_region_expand)
@@ -1266,12 +1264,6 @@ endtry
 
 " maximizer {{{
 nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
-" }}}
-
-" neoterm {{{
-nnoremap <silent> <Leader>tn :<C-u>:Tnew<CR>
-nnoremap <silent> <Leader>tt :<C-u>:Ttoggle<CR>
-nnoremap <silent> <Leader>tc :<C-u>:TcloseAll<CR>
 " }}}
 
 " ref {{{
