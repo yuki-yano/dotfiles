@@ -45,7 +45,17 @@
 [diff]
   indentHeuristic = true
   compactionHeuristic = true
-  tool = Kaleidoscope
+  tool = nvimdiff
+[difftool "nvimdiff"]
+  cmd = "nvim -d -u ~/.vimrc \"$LOCAL\" \"$REMOTE\""
+[merge]
+  tool = vimdiff
+[mergetool]
+  prompt = true
+[mergetool "vimdiff"]
+  cmd = nvim -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+[difftool]
+  prompt = false
 [url "git@github.com:"]
   pushInsteadOf = git://github.com/
   pushInsteadOf = https://github.com/
@@ -53,8 +63,6 @@
   insteadOf = https://github.com/
 [rerere]
   enabled = true
-[difftool "Kaleidoscope"]
-  cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
 [mergetool "Kaleidoscope"]
   cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
   trustexitcode = true

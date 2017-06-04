@@ -84,7 +84,6 @@ Plug 'airblade/vim-rooter'
 Plug 'chrisbra/vim-diff-enhanced'
 Plug 'cohama/agit.vim'
 Plug 'idanarye/vim-merginal', { 'branch': 'develop' }
-Plug 'jreybert/vimagit'
 Plug 'lambdalisue/gina.vim'
 Plug 'lambdalisue/vim-gita'
 Plug 'rhysd/committia.vim'
@@ -113,7 +112,6 @@ Plug 'Shougo/vimfiler'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'hewes/unite-gtags'
 Plug 'honza/vim-snippets'
-Plug 'kmnk/vim-unite-giti'
 Plug 'mattn/googlesuggest-complete-vim'
 Plug 'mopp/googlesuggest-source.vim'
 Plug 'osyo-manga/unite-highlight'
@@ -701,9 +699,6 @@ try
   " snippets
   nnoremap <silent> <Leader>sn :<C-u>Unite neosnippet -direction=botright -start-insert<CR>
 
-  " giti
-  nnoremap <silent> <Leader>gg :<C-u>Unite giti/status -direction=botright -winheight=10 -no-start-insert -no-quit<CR>
-
   " agit
   let s:agit_file = { 'description' : 'open the file''s history in agit.vim' }
   function! s:agit_file.func(candidate)
@@ -1207,10 +1202,10 @@ map <silent> <Leader>th <Plug>(thumbnail)
 
 " workspace {{{
 function g:WorkspaceSetCustomColors()
-  hi WorkspaceFill           ctermfg=0 ctermbg=0   guibg=#000000
-  hi WorkspaceBufferCurrent  ctermfg=0 ctermbg=67  guibg=#000000
-  hi WorkspaceBufferActive   ctermfg=0 ctermbg=243 guibg=#000000
-  hi WorkspaceBufferHidden   ctermfg=0 ctermbg=241 guibg=#000000
+  hi WorkspaceFill           ctermfg=0 ctermbg=0   guibg=#999999 guifg=#999999
+  hi WorkspaceBufferCurrent  ctermfg=0 ctermbg=67  guibg=#00FF00 guifg=#000000
+  hi WorkspaceBufferActive   ctermfg=0 ctermbg=243 guibg=#999999 guifg=#00FF00
+  hi WorkspaceBufferHidden   ctermfg=0 ctermbg=241 guibg=#999999 guifg=#000000
 endfunction
 
 let g:workspace_use_devicons = 1
@@ -1252,7 +1247,6 @@ try
   call extracmd#set('<silent>', 'w!!', 'w !sudo tee > /dev/null %')
   call extracmd#set('<silent>', 'gd', 'Tmpbuffer git diff <bar> set filetype=diff')
   call extracmd#set('<silent>', 'gdc', 'Tmpbuffer git diff --cached <bar> set filetype=diff')
-  call extracmd#set('git', 'Magit')
   call extracmd#set('gita', 'Gita')
   call extracmd#set('gina', 'Gina')
   call extracmd#set('blame', 'Gita blame')
