@@ -840,6 +840,7 @@ let g:gita#suppress_warning = 1
 autocmd FileType gita-blame-navi call s:blame_settings()
 function! s:blame_settings()
   nmap <buffer> <C-l> <C-w>l
+  nmap <buffer> <C-r> <Plug>(gita-common-redraw)
 endfunction
 " }}}
 
