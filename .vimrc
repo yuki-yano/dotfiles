@@ -84,12 +84,10 @@ Plug 'airblade/vim-gitgutter'
 Plug 'airblade/vim-rooter'
 Plug 'chrisbra/vim-diff-enhanced'
 Plug 'cohama/agit.vim'
-Plug 'idanarye/vim-merginal', { 'branch': 'develop' }
 Plug 'lambdalisue/gina.vim'
 Plug 'lambdalisue/vim-diffa'
 Plug 'lambdalisue/vim-gita'
 Plug 'rhysd/committia.vim'
-Plug 'tpope/vim-fugitive'
 " }}}
 
 " Completion & Fuzzy Match & vimfiler {{{
@@ -283,6 +281,7 @@ set tags+=tags
 set showtabline=2
 set display=lastline
 set pumheight=15
+set diffopt=filler,icase,vertical
 
 set swapfile directory=/var/tmp,/tmp
 autocmd SwapExists * let v:swapchoice = 'o'
@@ -842,17 +841,12 @@ autocmd FileType gita-blame-navi call s:blame_settings()
 function! s:blame_settings()
   nmap <buffer> <C-l> <C-w>l
 endfunction
-map <C-l> <Plug>(gita-common-redraw)
 " }}}
 
 " gina {{{
 nnoremap <silent> <Leader>gs  :<C-u>Gina status<CR>
 nnoremap <silent> <Leader>gd  :<C-u>Gina diff<CR>
 nnoremap <silent> <Leader>gci :<C-u>Gina commit<CR>
-" }}}
-
-" merginal {{{
-nnoremap <silent> <Leader>gco :<C-u>Merginal<CR>
 " }}}
 
 " rooter {{{
@@ -970,7 +964,7 @@ nmap <silent><expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : ":
 " Appearance {{{
 
 " better-whitespace {{{
-let g:better_whitespace_filetypes_blacklist = ['vimfiler', 'unite', 'gita-blame-navi']
+let g:better_whitespace_filetypes_blacklist = ['help', 'vimfiler', 'unite', 'gita-blame-navi']
 " }}}
 
 " cursorword {{{
@@ -1012,7 +1006,7 @@ let g:lightline = {
       \ 'colorscheme': 'iceberg_tigberd',
       \ 'mode_map': {'c': 'NORMAL'},
       \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ], [ 'fugitive' ], ['readonly', 'filepath', 'filename', 'anzu' ] ],
+      \   'left': [ [ 'mode', 'paste' ], [ 'gina' ], ['readonly', 'filepath', 'filename', 'anzu' ] ],
       \   'right': [
       \     [ 'lineinfo' ],
       \     [ 'fileformat', 'fileencoding', 'filetype' ],
@@ -1020,7 +1014,7 @@ let g:lightline = {
       \   ]
       \ },
       \ 'inactive': {
-      \   'left': [ [], [ 'fugitive' ], [ 'filepath' ], [ 'filename' ] ],
+      \   'left': [ [], [ 'gina' ], [ 'filepath' ], [ 'filename' ] ],
       \   'right': [
       \     [ 'lineinfo' ],
       \     [ 'fileformat', 'fileencoding', 'filetype' ]
@@ -1031,7 +1025,7 @@ let g:lightline = {
       \ },
       \ 'component_function': {
       \   'readonly':     'LightlineReadonly',
-      \   'fugitive':     'LightlineFugitive',
+      \   'gina':         'LightlineGina',
       \   'filepath':     'LightlineFilepath',
       \   'filename':     'LightlineFilename',
       \   'filetype':     'LightlineFiletype',
@@ -1069,9 +1063,9 @@ function! LightlineReadonly()
   return &readonly ? "\ue0a2" : ''
 endfunction
 
-function! LightlineFugitive()
-  if exists('*fugitive#head')
-    let branch = fugitive#head()
+function! LightlineGina()
+  if exists('*gina#component#repo#branch()')
+    let branch = gina#component#repo#branch()
     return branch !=# "\ue0a0" ? "\ue0a0 " . branch : ''
   endif
   return ''
