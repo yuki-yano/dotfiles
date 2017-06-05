@@ -837,6 +837,11 @@ nmap <silent> gn <Plug>GitGutterNextHunk
 
 " gita {{{
 let g:gita#suppress_warning = 1
+autocmd FileType gita-blame-navi call s:blame_settings()
+function! s:blame_settings()
+  nmap <buffer> <C-l> <C-w>l
+endfunction
+map <C-l> <Plug>(gita-common-redraw)
 " }}}
 
 " gina {{{
@@ -964,7 +969,7 @@ nmap <silent><expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : ":
 " Appearance {{{
 
 " better-whitespace {{{
-let g:better_whitespace_filetypes_blacklist = ['vimfiler', 'unite']
+let g:better_whitespace_filetypes_blacklist = ['vimfiler', 'unite', 'gita-blame-navi']
 " }}}
 
 " cursorword {{{
