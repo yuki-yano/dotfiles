@@ -176,6 +176,7 @@ Plug 'wesQ3/vim-windowswap'
 
 " Util {{{
 Plug 'Shougo/junkfile.vim'
+Plug 'ToruIwashita/git-switcher.vim'
 Plug 'bagrat/vim-workspace'
 Plug 'benizi/vim-automkdir'
 Plug 'bogado/file-line'
@@ -196,14 +197,14 @@ Plug 'konfekt/fastfold'
 Plug 'mattesgroeger/vim-bookmarks'
 Plug 'mattn/webapi-vim'
 Plug 'mbbill/undotree'
-Plug 'myusuf3/numbers.vim'
 Plug 'mhinz/vim-startify'
 Plug 'mtth/scratch.vim'
+Plug 'myusuf3/numbers.vim'
 Plug 'nelstrom/vim-textobj-rubyblock'
 Plug 'osyo-manga/vim-textobj-multiblock'
-Plug 'rhysd/conflict-marker.vim'
 Plug 'qpkorr/vim-bufkill'
 Plug 'rhysd/clever-split.vim'
+Plug 'rhysd/conflict-marker.vim'
 Plug 'roxma/vim-paste-easy'
 Plug 'simeji/winresizer'
 Plug 'szw/vim-maximizer'
@@ -1274,6 +1275,11 @@ try
 catch /E117.*/
   echo "extracmd is not installed. Please :PlugInstall"
 endtry
+" }}}
+
+" git-switcher {{{
+nnoremap <Leader><Leader>s :<C-u>GswSave<CR>
+nnoremap <Leader><Leader>r :<C-u>GswLoad<CR>
 " }}}
 
 " maximizer {{{
