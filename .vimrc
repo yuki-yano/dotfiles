@@ -80,6 +80,7 @@ Plug 'ywatase/mdt.vim', { 'for': ['markdown'] }
 " }}}
 
 " Git {{{
+Plug 'ToruIwashita/git-switcher.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'airblade/vim-rooter'
 Plug 'chrisbra/vim-diff-enhanced'
@@ -112,6 +113,7 @@ Plug 'Shougo/vimfiler'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'hewes/unite-gtags'
 Plug 'honza/vim-snippets'
+Plug 'kmnk/vim-unite-giti'
 Plug 'mattn/googlesuggest-complete-vim'
 Plug 'mopp/googlesuggest-source.vim'
 Plug 'osyo-manga/unite-highlight'
@@ -176,7 +178,6 @@ Plug 'wesQ3/vim-windowswap'
 
 " Util {{{
 Plug 'Shougo/junkfile.vim'
-Plug 'ToruIwashita/git-switcher.vim'
 Plug 'bagrat/vim-workspace'
 Plug 'benizi/vim-automkdir'
 Plug 'bogado/file-line'
@@ -699,6 +700,9 @@ try
   " snippets
   nnoremap <silent> <Leader>sn :<C-u>Unite neosnippet -direction=botright -start-insert<CR>
 
+  " giti
+  nnoremap <silent> <Leader>gco :<C-u>Unite giti/branch<CR>
+
   " agit
   let s:agit_file = { 'description' : 'open the file''s history in agit.vim' }
   function! s:agit_file.func(candidate)
@@ -834,6 +838,11 @@ endtry
 " git-gutter {{{
 nmap <silent> gp <Plug>GitGutterPrevHunk
 nmap <silent> gn <Plug>GitGutterNextHunk
+" }}}
+
+" git-switcher {{{
+nnoremap <Leader><Leader>s :<C-u>GswSave<CR>
+nnoremap <Leader><Leader>r :<C-u>GswLoad<CR>
 " }}}
 
 " gita {{{
@@ -1275,11 +1284,6 @@ try
 catch /E117.*/
   echo "extracmd is not installed. Please :PlugInstall"
 endtry
-" }}}
-
-" git-switcher {{{
-nnoremap <Leader><Leader>s :<C-u>GswSave<CR>
-nnoremap <Leader><Leader>r :<C-u>GswLoad<CR>
 " }}}
 
 " maximizer {{{
