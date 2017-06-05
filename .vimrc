@@ -173,6 +173,7 @@ Plug 'thinca/vim-zenspace'
 Plug 'vim-scripts/AnsiEsc.vim'
 Plug 'vim-scripts/CursorLineCurrentWindow'
 Plug 'vimtaku/hl_matchit.vim'
+Plug 'wesQ3/vim-windowswap'
 " }}}
 
 " Util {{{
