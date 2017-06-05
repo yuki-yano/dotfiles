@@ -870,10 +870,6 @@ nnoremap <silent> <Leader>gci :<C-u>Gina commit<CR>
 nnoremap <silent> <Leader>cd :<C-u>Rooter<CR>
 " }}}
 
-" unified-diff{{{
-set diffexpr=unified_diff#diffexpr()
-" }}}
-
 " }}}
 
 " Edit & Move & Search {{{
