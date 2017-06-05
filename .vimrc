@@ -20,7 +20,6 @@ Plug 'Valloric/MatchTagAlways', { 'for': ['html', 'xml', 'erb'] }
 Plug 'Vimjas/vim-python-pep8-indent', { 'for': ['python'] }
 Plug 'cakebaker/scss-syntax.vim', { 'for': ['sass', 'scss'] }
 Plug 'cespare/vim-toml', { 'for': ['toml'] }
-Plug 'cohama/agit.vim'
 Plug 'csscomb/vim-csscomb', { 'for': ['css', 'sass', 'scss'] }
 Plug 'davidhalter/jedi-vim', { 'for': 'python' }
 Plug 'derekwyatt/vim-sbt', { 'for': ['sbt'] }
