@@ -78,7 +78,7 @@ Plug 'vimtaku/hl_matchit.vim', { 'for': ['ruby'] }
 Plug 'w0rp/ale'
 Plug 'ywatase/mdt.vim', { 'for': ['markdown'] }
 " }}}
-"
+
 " Git {{{
 Plug 'airblade/vim-gitgutter'
 Plug 'airblade/vim-rooter'
@@ -86,8 +86,8 @@ Plug 'chrisbra/vim-diff-enhanced'
 Plug 'cohama/agit.vim'
 Plug 'idanarye/vim-merginal', { 'branch': 'develop' }
 Plug 'lambdalisue/gina.vim'
+Plug 'lambdalisue/vim-diffa'
 Plug 'lambdalisue/vim-gita'
-Plug 'lambdalisue/vim-unified-diff'
 Plug 'rhysd/committia.vim'
 Plug 'tpope/vim-fugitive'
 " }}}
