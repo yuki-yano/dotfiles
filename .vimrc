@@ -699,9 +699,6 @@ try
   " snippets
   nnoremap <silent> <Leader>sn :<C-u>Unite neosnippet -direction=botright -start-insert<CR>
 
-  " giti
-  nnoremap <silent> <Leader>gco :<C-u>Unite giti/branch<CR>
-
   " agit
   let s:agit_file = { 'description' : 'open the file''s history in agit.vim' }
   function! s:agit_file.func(candidate)
@@ -1275,6 +1272,7 @@ try
   call extracmd#set('gita', 'Gita')
   call extracmd#set('gina', 'Gina')
   call extracmd#set('blame', 'Gita blame')
+  call extracmd#set('branch', 'Unite giti/branch<CR>')
   call extracmd#set('agit', 'Agit')
   call extracmd#set('di', 'Ref webdict alc <C-R><C-W><CR>')
   call extracmd#set('alc', 'Ref webdict alc')
