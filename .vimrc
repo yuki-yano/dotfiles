@@ -75,7 +75,7 @@ Plug 'vim-ruby/vim-ruby', { 'for': ['ruby', 'eruby'] }
 Plug 'vim-scripts/python_match.vim', { 'for': ['python'] }
 Plug 'vimperator/vimperator.vim', { 'for': ['vimperator'] }
 Plug 'vimtaku/hl_matchit.vim', { 'for': ['ruby'] }
-Plug 'w0rp/ale', { 'branch': 'v1.3.x' }
+Plug 'w0rp/ale'
 Plug 'ywatase/mdt.vim', { 'for': ['markdown'] }
 " }}}
 "
@@ -837,10 +837,10 @@ nmap <silent> gn <Plug>GitGutterNextHunk
 
 " gita {{{
 let g:gita#suppress_warning = 1
-nnoremap <silent> <Leader>gs  :<C-u>Gita status<CR>
 " }}}
 
 " gina {{{
+nnoremap <silent> <Leader>gs  :<C-u>Gina status<CR>
 nnoremap <silent> <Leader>gd  :<C-u>Gina diff<CR>
 nnoremap <silent> <Leader>gci :<C-u>Gina commit<CR>
 " }}}
@@ -1154,15 +1154,15 @@ function! LightlineMode()
   endif
 endfunction
 
-function! LightlineAleError()
+function! LightlineAleError() abort
   return s:ale_string(0)
 endfunction
 
-function! LightlineAleWarning()
+function! LightlineAleWarning() abort
   return s:ale_string(1)
 endfunction
 
-function! LightlineAleOk()
+function! LightlineAleOk() abort
   return s:ale_string(2)
 endfunction
 
@@ -1172,16 +1172,18 @@ function! s:ale_string(mode)
   endif
 
   let l:buffer = bufnr('%')
-  let [l:error_count, l:warning_count] = ale#statusline#Count(l:buffer)
+  let l:counts = ale#statusline#Count(l:buffer)
   let [l:error_format, l:warning_format, l:no_errors] = g:ale_statusline_format
 
-  if a:mode == 0
-    return l:error_count ? printf(l:error_format, l:error_count) : ''
-  elseif a:mode == 1
-    return l:warning_count ? printf(l:warning_format, l:warning_count) : ''
+  if a:mode == 0 " Error
+    let l:errors = l:counts.error + l:counts.style_error
+    return l:errors ? printf(l:error_format, l:errors) : ''
+  elseif a:mode == 1 " Warning
+    let l:warnings = l:counts.warning + l:counts.style_warning
+    return l:warnings ? printf(l:warning_format, l:warnings) : ''
   endif
 
-  return l:error_count == 0 && l:warning_count == 0 ? l:no_errors : ''
+  return l:no_errors
 endfunction
 " }}}
 
