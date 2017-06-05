@@ -283,7 +283,7 @@ set tags+=tags
 set showtabline=2
 set display=lastline
 set pumheight=15
-set diffopt=filler,icase,vertical
+set diffopt=vertical,filler,icase
 
 set swapfile directory=/var/tmp,/tmp
 autocmd SwapExists * let v:swapchoice = 'o'
@@ -851,6 +851,13 @@ autocmd FileType gita-blame-navi call s:blame_settings()
 function! s:blame_settings()
   nmap <buffer> <C-l> <C-w>l
   nmap <buffer> <C-r> <Plug>(gita-common-redraw)
+endfunction
+autocmd FileType vim call s:vim_settings()
+function! s:vim_settings()
+  nmap <buffer> <C-l> <C-w>l
+  nmap <buffer> <C-h> <C-w>h
+  nmap <buffer> <C-j> <C-w>j
+  nmap <buffer> <C-k> <C-w>k
 endfunction
 " }}}
 
