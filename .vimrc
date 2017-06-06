@@ -37,7 +37,6 @@ Plug 'heavenshell/vim-pydocstring', { 'for': 'python' }
 Plug 'idanarye/vim-merginal', { 'branch': 'develop' }
 Plug 'jsfaint/gen_tags.vim'
 Plug 'kchmck/vim-coffee-script', { 'for': ['coffee'] }
-Plug 'kchmck/vim-coffee-script', { 'for': ['coffee'] }
 Plug 'keith/rspec.vim', { 'for': ['ruby'] }
 Plug 'kewah/vim-stylefmt', { 'for': ['css'] }
 Plug 'leafgarland/typescript-vim', { 'for': ['typescript'] }
@@ -139,6 +138,7 @@ Plug 'haya14busa/vim-metarepeat'
 Plug 'houtsnip/vim-emacscommandline'
 Plug 'itmammoth/doorboy.vim'
 Plug 'junegunn/vim-easy-align'
+Plug 'jwhitley/vim-matchit'
 Plug 'kana/vim-operator-replace'
 Plug 'osyo-manga/vim-anzu'
 Plug 'osyo-manga/vim-jplus'
@@ -177,10 +177,13 @@ Plug 'wesQ3/vim-windowswap'
 
 " Util {{{
 Plug 'Shougo/junkfile.vim'
+Plug 'aiya000/aho-bakaup.vim'
 Plug 'bagrat/vim-workspace'
 Plug 'benizi/vim-automkdir'
 Plug 'bogado/file-line'
 Plug 'chrisbra/Recover.vim'
+Plug 'glidenote/memolist.vim'
+Plug 'h1mesuke/textobj-wiw'
 Plug 'itchyny/vim-external'
 Plug 'itchyny/vim-extracmd'
 Plug 'itchyny/vim-qfedit'
@@ -194,6 +197,7 @@ Plug 'kana/vim-textobj-function'
 Plug 'kana/vim-textobj-line'
 Plug 'kana/vim-textobj-user'
 Plug 'konfekt/fastfold'
+Plug 'lucapette/vim-textobj-underscore'
 Plug 'mattesgroeger/vim-bookmarks'
 Plug 'mattn/webapi-vim'
 Plug 'mbbill/undotree'
@@ -209,10 +213,12 @@ Plug 'roxma/vim-paste-easy'
 Plug 'simeji/winresizer'
 Plug 'szw/vim-maximizer'
 Plug 'terryma/vim-expand-region'
+Plug 'thinca/vim-ambicmd'
 Plug 'thinca/vim-ref'
 Plug 'tpope/vim-sleuth'
 Plug 'tweekmonster/startuptime.vim'
 Plug 'tyru/capture.vim'
+Plug 'tyru/operator-camelize.vim'
 Plug 'wellle/targets.vim'
 " }}}
 
@@ -303,8 +309,6 @@ nnoremap <C-l> <C-w>l
 nnoremap <C-h> <C-w>h
 inoremap <C-d> <Del>
 imap <C-h> <BS>
-nnoremap x "_x
-nnoremap ,p "0p<CR>
 nnoremap <C-o> <C-o>zz
 nnoremap <C-i> <C-i>zz
 nnoremap g; g;zz
@@ -566,6 +570,14 @@ let g:vim_json_syntax_conceal = 0
 let g:vim_jsx_pretty_colorful_config = 1
 " }}}
 
+" ruby {{{
+let g:rubycomplete_rails                = 1
+let g:rubycomplete_buffer_loading       = 1
+let g:rubycomplete_classes_in_global    = 1
+let g:rubycomplete_include_object       = 1
+let g:rubycomplete_include_object_space = 1
+" }}}
+
 " }}}
 
 " Completion & Fuzzy Match & vimfiler {{{
@@ -735,12 +747,6 @@ try
   " snippets
   nnoremap <silent> <Leader>sn :<C-u>Unite neosnippet -direction=botright -start-insert<CR>
 
-  " agit
-  let s:agit_file = { 'description' : 'open the file''s history in agit.vim' }
-  function! s:agit_file.func(candidate)
-    execute 'AgitFile' '--file='.a:candidate.action__path
-  endfunction
-  call unite#custom#action('file', 'agit-file', s:agit_file)
 catch /E117.*/
   echo "Denite & Unite is not installed. Please :PlugInstall"
 endtry
@@ -867,13 +873,31 @@ endtry
 
 " Git {{{
 
+" agit {{{
+let g:agit_preset_views = {
+      \ 'default': [
+      \   {'name': 'log'},
+      \   {'name': 'stat',
+      \    'layout': 'botright vnew'},
+      \   {'name': 'diff',
+      \    'layout': 'belowright {winheight(".") * 3 / 4}new'}
+      \ ],
+      \ 'file': [
+      \   {'name': 'filelog'},
+      \   {'name': 'stat',
+      \    'layout': 'botright vnew'},
+      \   {'name': 'diff',
+      \    'layout': 'belowright {winheight(".") * 3 / 4}new'}
+      \ ]}
+" }}}
+
 " committia {{{
 let g:committia_open_only_vim_starting = 0
 let g:committia_hooks = {}
 function! g:committia_hooks.edit_open(info)
-    setlocal spell
-    imap <buffer><C-n> <Plug>(committia-scroll-diff-down-half)
-    imap <buffer><C-p> <Plug>(committia-scroll-diff-up-half)
+  setlocal spell
+  imap <buffer><C-n> <Plug>(committia-scroll-diff-down-half)
+  imap <buffer><C-p> <Plug>(committia-scroll-diff-up-half)
 endfunction
 " }}}
 "
@@ -1020,7 +1044,7 @@ nmap <silent><expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : ":
 " Appearance {{{
 
 " better-whitespace {{{
-let g:better_whitespace_filetypes_blacklist = ['help', 'vimfiler', 'unite', 'gita-blame-navi']
+let g:better_whitespace_filetypes_blacklist = ['tag', 'help', 'vimfiler', 'unite', 'gita-blame-navi']
 " }}}
 
 " cursorword {{{
@@ -1296,6 +1320,14 @@ let g:zenspace#default_mode = 'on'
 
 " Util {{{
 
+" aho-bakaup {{{
+let g:bakaup_auto_backup = 1
+" }}}
+
+" vim-ambicmd {{{
+cnoremap <expr> <Space> ambicmd#expand("\<Space>")
+" }}}
+
 " expand-region {{{
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
@@ -1320,6 +1352,7 @@ try
   call extracmd#set('blame', 'Gita blame')
   call extracmd#set('branch', 'Unite giti/branch<CR>')
   call extracmd#set('agit', 'Agit')
+  call extracmd#set('af', 'AgitFile')
   call extracmd#set('di', 'Ref webdict alc <C-R><C-W><CR>')
   call extracmd#set('alc', 'Ref webdict alc')
   call extracmd#set('tag', 'TagbarOpen j<CR>')
@@ -1327,6 +1360,8 @@ try
   call extracmd#set('j', 'Unite jump change -auto-preview<CR>')
   call extracmd#set('tab', 'Unite tab<CR>')
   call extracmd#set('sf', 'CtrlSF')
+  call extracmd#set('mn', 'MemoNew')
+  call extracmd#set('ml', 'MemoList')
 catch /E117.*/
   echo "extracmd is not installed. Please :PlugInstall"
 endtry
@@ -1334,6 +1369,11 @@ endtry
 
 " maximizer {{{
 nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
+" }}}
+
+" memolist {{{
+let g:memolist_unite = 1
+let g:memolist_unite_option = "-auto-preview -start-insert"
 " }}}
 
 " ref {{{
