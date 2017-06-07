@@ -5,10 +5,16 @@ filetype off
 call plug#begin('~/.vim/plugged')
 Plug 'junegunn/vim-plug', {'dir': '~/.vim/plugged/vim-plug/autoload'}
 
+function! Cond(cond, ...)
+  let opts = get(a:000, 0, {})
+  return a:cond ? opts : extend(opts, { 'on': [], 'for': [] })
+endfunction
+
 " 他のプラグインとの都合上最初に読み込む
 Plug 'ryanoasis/vim-devicons'
 
 " Doc {{{
+Plug 'mattn/learn-vimscript'
 Plug 'vim-jp/vimdoc-ja'
 " }}}
 
@@ -16,72 +22,72 @@ Plug 'vim-jp/vimdoc-ja'
 " Plug 'ensime/ensime-vim', { 'for': ['scala'], 'do': ':UpdateRemotePlugins' }
 Plug 'Chiel92/vim-autoformat'
 Plug 'Shougo/context_filetype.vim'
+Plug 'Shougo/vinarise.vim'
 Plug 'Valloric/MatchTagAlways', { 'for': ['html', 'xml', 'erb'] }
-Plug 'Vimjas/vim-python-pep8-indent', { 'for': ['python'] }
+Plug 'Vimjas/vim-python-pep8-indent', { 'for': 'python' }
 Plug 'cakebaker/scss-syntax.vim', { 'for': ['sass', 'scss'] }
-Plug 'cespare/vim-toml', { 'for': ['toml'] }
+Plug 'cespare/vim-toml', { 'for': 'toml' }
 Plug 'csscomb/vim-csscomb', { 'for': ['css', 'sass', 'scss'] }
 Plug 'davidhalter/jedi-vim', { 'for': 'python' }
-Plug 'derekwyatt/vim-sbt', { 'for': ['sbt'] }
-Plug 'derekwyatt/vim-scala', { 'for': ['scala'] }
-Plug 'ecomba/vim-ruby-refactoring', { 'for': ['ruby'] }
-Plug 'editorconfig/editorconfig-vim'
-Plug 'ekalinin/Dockerfile.vim', { 'for': ['dockerfile'] }
-Plug 'elzr/vim-json', { 'for': ['json'] }
-Plug 'fatih/vim-go', { 'for': ['go'] }
-Plug 'fleischie/vim-styled-components', { 'for': ['javascript'] }
-Plug 'gre/play2vim', { 'for': ['scala'] }
-Plug 'hail2u/vim-css3-syntax', { 'for': ['css'] }
-Plug 'hashivim/vim-terraform', { 'for': ['terraform'] }
+Plug 'derekwyatt/vim-sbt', { 'for': 'sbt' }
+Plug 'derekwyatt/vim-scala', { 'for': 'scala' }
+Plug 'ecomba/vim-ruby-refactoring', { 'for': 'ruby' }
+Plug 'ekalinin/Dockerfile.vim', { 'for': 'dockerfile' }
+Plug 'elzr/vim-json', { 'for': 'json' }
+Plug 'fatih/vim-go', { 'for': 'go' }
+Plug 'fleischie/vim-styled-components', { 'for': 'javascript' }
+Plug 'gre/play2vim', { 'for': 'scala' }
+Plug 'hail2u/vim-css3-syntax', { 'for': 'css' }
+Plug 'hashivim/vim-terraform', { 'for': 'terraform' }
 Plug 'heavenshell/vim-pydocstring', { 'for': 'python' }
 Plug 'idanarye/vim-merginal', { 'branch': 'develop' }
 Plug 'jsfaint/gen_tags.vim'
-Plug 'kchmck/vim-coffee-script', { 'for': ['coffee'] }
-Plug 'keith/rspec.vim', { 'for': ['ruby'] }
-Plug 'kewah/vim-stylefmt', { 'for': ['css'] }
-Plug 'leafgarland/typescript-vim', { 'for': ['typescript'] }
+Plug 'kchmck/vim-coffee-script', { 'for': 'coffee' }
+Plug 'keith/rspec.vim', { 'for': 'ruby' }
+Plug 'kewah/vim-stylefmt', { 'for': 'css' }
+Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
 Plug 'majutsushi/tagbar'
 Plug 'mattn/emmet-vim', { 'for': ['html', 'eruby.html', 'javascript', 'vue', 'vue.html.javascript.css'] }
-Plug 'maxmellon/vim-jsx-pretty', { 'for': ['javascript'] }
-Plug 'mdreves/vim-scaladoc', { 'for': ['scala'] }
+Plug 'maxmellon/vim-jsx-pretty', { 'for': 'javascript' }
+Plug 'mdreves/vim-scaladoc', { 'for': 'scala' }
 Plug 'mkomitee/vim-gf-python', { 'for': 'python' }
-Plug 'moll/vim-node', { 'for': ['javascript'] }
-Plug 'nsf/gocode', { 'for': ['go'], 'rtp': 'nvim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
+Plug 'moll/vim-node', { 'for': 'javascript' }
+Plug 'nsf/gocode', { 'for': 'go', 'rtp': 'nvim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
 Plug 'othree/csscomplete.vim', { 'for': ['css', 'sass', 'scss'] }
-Plug 'othree/es.next.syntax.vim', { 'for': ['javascript'] }
+Plug 'othree/es.next.syntax.vim', { 'for': 'javascript' }
 Plug 'othree/html5.vim', { 'for': ['html', 'eruby'] }
-Plug 'othree/javascript-libraries-syntax.vim', { 'for': ['javascript'] }
-Plug 'othree/jspc.vim', { 'for': ['javascript'] }
-Plug 'pangloss/vim-javascript', { 'for': ['javascript'] }
-Plug 'pearofducks/ansible-vim', { 'for': ['ansible'] }
-Plug 'posva/vim-vue', { 'for': ['vue'] }
+Plug 'othree/javascript-libraries-syntax.vim', { 'for': 'javascript' }
+Plug 'othree/jspc.vim', { 'for': 'javascript' }
+Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
+Plug 'pearofducks/ansible-vim', { 'for': 'ansible' }
+Plug 'posva/vim-vue', { 'for': 'vue' }
 Plug 'raimon49/requirements.txt.vim', { 'for': 'requirements' }
-Plug 'rhysd/vim-gfm-syntax', { 'for': ['markdown'] }
-Plug 'rhysd/vim-textobj-ruby', { 'for': ['ruby'] }
-Plug 'slim-template/vim-slim', { 'for': ['slim'] }
-Plug 'tell-k/vim-autopep8', { 'for': ['python'] }
-Plug 'thinca/vim-ft-help_fold', { 'for': ['help'] }
+Plug 'rhysd/vim-gfm-syntax', { 'for': 'markdown' }
+Plug 'rhysd/vim-textobj-ruby', { 'for': 'ruby' }
+Plug 'slim-template/vim-slim', { 'for': 'slim' }
+Plug 'tell-k/vim-autopep8', { 'for': 'python' }
+Plug 'thinca/vim-ft-help_fold', { 'for': 'help' }
 Plug 'tmhedberg/SimpylFold', { 'for': 'python' }
-Plug 'tmux-plugins/vim-tmux', { 'for': ['tmux'] }
-Plug 'tpope/vim-bundler', { 'for': ['ruby'] }
-Plug 'tpope/vim-endwise', { 'for': ['ruby'] }
-Plug 'tpope/vim-markdown', { 'for': ['markdown'] }
+Plug 'tmux-plugins/vim-tmux', { 'for': 'tmux' }
+Plug 'tpope/vim-bundler', { 'for': 'ruby' }
+Plug 'tpope/vim-endwise', { 'for': 'ruby' }
+Plug 'tpope/vim-markdown', { 'for': 'markdown' }
 Plug 'tpope/vim-rails', { 'for': ['ruby', 'eruby'] }
-Plug 'vim-jp/syntax-vim-ex', { 'for': ['vim'] }
-Plug 'vim-python/python-syntax', { 'for': ['python'] }
+Plug 'vim-jp/syntax-vim-ex', { 'for': 'vim' }
+Plug 'osyo-manga/vim-precious'
+Plug 'vim-python/python-syntax', { 'for': 'python' }
 Plug 'vim-ruby/vim-ruby', { 'for': ['ruby', 'eruby'] }
-Plug 'vim-scripts/python_match.vim', { 'for': ['python'] }
-Plug 'vimperator/vimperator.vim', { 'for': ['vimperator'] }
-Plug 'vimtaku/hl_matchit.vim', { 'for': ['ruby'] }
+Plug 'vim-scripts/python_match.vim', { 'for': 'python' }
+Plug 'vimperator/vimperator.vim', { 'for': 'vimperator' }
+Plug 'vimtaku/hl_matchit.vim', { 'for': 'ruby' }
 Plug 'w0rp/ale'
-Plug 'ywatase/mdt.vim', { 'for': ['markdown'] }
+Plug 'ywatase/mdt.vim', { 'for': 'markdown' }
 " }}}
 
 " Git {{{
-Plug 'ToruIwashita/git-switcher.vim'
+Plug 'ToruIwashita/git-switcher.vim', { 'on':  ['GswSave', 'GswLoad'] }
 Plug 'airblade/vim-gitgutter'
-Plug 'airblade/vim-rooter'
-Plug 'chrisbra/vim-diff-enhanced'
+Plug 'airblade/vim-rooter', { 'on': 'Rooter' }
 Plug 'cohama/agit.vim'
 Plug 'lambdalisue/gina.vim'
 Plug 'lambdalisue/vim-diffa'
@@ -90,17 +96,9 @@ Plug 'rhysd/committia.vim'
 " }}}
 
 " Completion & Fuzzy Match & vimfiler {{{
-if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-  Plug 'Shougo/echodoc.vim'
-  Plug 'carlitux/deoplete-ternjs', { 'for': ['javascript'] }
-  Plug 'wokalski/autocomplete-flow', { 'for': ['javascript'] }
-  Plug 'zchee/deoplete-go', { 'for': ['go'], 'do': 'make' }
-  Plug 'zchee/deoplete-jedi', { 'for': ['python'] }
-else
-  Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
-endif
 Plug 'Shougo/denite.nvim'
+Plug 'Shougo/deoplete.nvim', Cond(has('nvim'),{ 'do': ':UpdateRemotePlugins' })
+Plug 'Shougo/echodoc.vim', Cond(has('nvim'))
 Plug 'Shougo/neco-syntax'
 Plug 'Shougo/neco-vim'
 Plug 'Shougo/neomru.vim'
@@ -108,7 +106,9 @@ Plug 'Shougo/neosnippet'
 Plug 'Shougo/neoyank.vim'
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/vimfiler'
-Plug 'ctrlpvim/ctrlp.vim'
+Plug 'Valloric/YouCompleteMe', Cond(!has('nvim'), { 'do': './install.py' })
+Plug 'carlitux/deoplete-ternjs', Cond(has('nvim'), { 'for': ['javascript'] })
+Plug 'ctrlpvim/ctrlp.vim', { 'on': 'CtrlP' }
 Plug 'hewes/unite-gtags'
 Plug 'honza/vim-snippets'
 Plug 'kmnk/vim-unite-giti'
@@ -117,46 +117,52 @@ Plug 'mopp/googlesuggest-source.vim'
 Plug 'osyo-manga/unite-highlight'
 Plug 'osyo-manga/unite-quickfix'
 Plug 'rafi/vim-denite-session'
-Plug 'rking/ag.vim'
+Plug 'rking/ag.vim', { 'on': 'Ag' }
 Plug 'tsukkee/unite-tag'
 Plug 'ujihisa/neco-look'
+Plug 'wokalski/autocomplete-flow', Cond(has('nvim'), { 'for': ['javascript'] })
+Plug 'zchee/deoplete-go', Cond(has('nvim'), { 'for': ['go'], 'do': 'make' })
+Plug 'zchee/deoplete-jedi', Cond(has('nvim'), { 'for': ['python'] })
 " }}}
 
 " Edit & Move & Search {{{
-Plug 'AndrewRadev/switch.vim'
+Plug 'AndrewRadev/switch.vim', { 'on': 'Switch' }
 Plug 'LeafCage/yankround.vim'
-Plug 'chrisbra/NrrwRgn'
-Plug 'dhruvasagar/vim-table-mode'
+Plug 'chrisbra/NrrwRgn', { 'on': 'NR' }
+Plug 'dhruvasagar/vim-table-mode', { 'on': 'TableModeToggle' }
 Plug 'dietsche/vim-lastplace'
-Plug 'dyng/ctrlsf.vim'
+Plug 'dyng/ctrlsf.vim', { 'on': 'CtrlSF' }
 Plug 'easymotion/vim-easymotion'
-Plug 'godlygeek/tabular'
+Plug 'godlygeek/tabular', { 'on': 'Tabularize' }
 Plug 'haya14busa/incsearch-fuzzy.vim'
 Plug 'haya14busa/incsearch.vim'
 Plug 'haya14busa/vim-asterisk'
 Plug 'haya14busa/vim-metarepeat'
 Plug 'houtsnip/vim-emacscommandline'
-Plug 'itmammoth/doorboy.vim'
+Plug 'jiangmiao/auto-pairs'
 Plug 'junegunn/vim-easy-align'
 Plug 'jwhitley/vim-matchit'
 Plug 'kana/vim-operator-replace'
 Plug 'osyo-manga/vim-anzu'
 Plug 'osyo-manga/vim-jplus'
 Plug 'osyo-manga/vim-over'
+Plug 'rhysd/accelerated-jk'
 Plug 'scrooloose/nerdcommenter'
 Plug 'terryma/vim-multiple-cursors'
-Plug 'thinca/vim-qfreplace'
+Plug 'thinca/vim-qfreplace', { 'on': 'Qfreplace' }
 Plug 'thinca/vim-visualstar'
-Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-speeddating'
 Plug 'tpope/vim-surround'
+Plug 'tyru/operator-camelize.vim'
+Plug 'yuttie/comfortable-motion.vim'
 " }}}
 
 " Appearance {{{
 Plug 'LeafCage/foldCC.vim'
-Plug 'Yggdroot/indentLine'
+Plug 'Yggdroot/indentLine', { 'on': 'IndentLinesToggle' }
 Plug 'cocopon/iceberg.vim'
+Plug 'edkolev/tmuxline.vim'
 Plug 'gregsexton/MatchTag'
 Plug 'haya14busa/vim-operator-flashy'
 Plug 'inside/vim-search-pulse'
@@ -165,30 +171,28 @@ Plug 'itchyny/thumbnail.vim'
 Plug 'itchyny/vim-cursorword'
 Plug 'itchyny/vim-highlighturl'
 Plug 'itchyny/vim-parenmatch'
+Plug 'luochen1990/rainbow'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 't9md/vim-quickhl'
-Plug 'taohex/lightline-buffer'
 Plug 'thinca/vim-zenspace'
 Plug 'vim-scripts/AnsiEsc.vim'
 Plug 'vim-scripts/CursorLineCurrentWindow'
 Plug 'vimtaku/hl_matchit.vim'
-Plug 'wesQ3/vim-windowswap'
 " }}}
 
 " Util {{{
-Plug 'Shougo/junkfile.vim'
 Plug 'aiya000/aho-bakaup.vim'
 Plug 'bagrat/vim-workspace'
 Plug 'benizi/vim-automkdir'
 Plug 'bogado/file-line'
 Plug 'chrisbra/Recover.vim'
-Plug 'glidenote/memolist.vim'
+Plug 'daisuzu/translategoogle.vim'
+Plug 'glidenote/memolist.vim', { 'on': ['MemoNew', 'MemoList', 'MemoGrep'] }
 Plug 'h1mesuke/textobj-wiw'
 Plug 'itchyny/vim-external'
 Plug 'itchyny/vim-extracmd'
 Plug 'itchyny/vim-qfedit'
-Plug 'itchyny/vim-tmpbuffer'
-Plug 'itchyny/vim-winfix'
+Plug 'itchyny/vim-tmpbuffer', { 'on': 'Tmpbuffer' }
 Plug 'jez/vim-superman'
 Plug 'kana/vim-niceblock'
 Plug 'kana/vim-operator-user'
@@ -199,27 +203,33 @@ Plug 'kana/vim-textobj-user'
 Plug 'konfekt/fastfold'
 Plug 'lucapette/vim-textobj-underscore'
 Plug 'mattesgroeger/vim-bookmarks'
+Plug 'mattn/benchvimrc-vim', { 'on': 'BenchVimrc' }
+Plug 'mattn/gist-vim', { 'on': 'Gist' }
 Plug 'mattn/webapi-vim'
-Plug 'mbbill/undotree'
+Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 Plug 'mhinz/vim-startify'
-Plug 'mtth/scratch.vim'
+Plug 'mopp/autodirmake.vim'
+Plug 'mtth/scratch.vim', { 'on': 'Scratch' }
 Plug 'myusuf3/numbers.vim'
 Plug 'nelstrom/vim-textobj-rubyblock'
 Plug 'osyo-manga/vim-textobj-multiblock'
 Plug 'qpkorr/vim-bufkill'
-Plug 'rhysd/clever-split.vim'
-Plug 'rhysd/conflict-marker.vim'
+Plug 'rickhowe/diffchar.vim'
+Plug 'rizzatti/dash.vim'
 Plug 'roxma/vim-paste-easy'
 Plug 'simeji/winresizer'
-Plug 'szw/vim-maximizer'
+Plug 'szw/vim-maximizer', { 'on': 'MaximizerToggle' }
 Plug 'terryma/vim-expand-region'
 Plug 'thinca/vim-ambicmd'
+Plug 'thinca/vim-prettyprint'
 Plug 'thinca/vim-ref'
 Plug 'tpope/vim-sleuth'
-Plug 'tweekmonster/startuptime.vim'
-Plug 'tyru/capture.vim'
+Plug 'tweekmonster/startuptime.vim', { 'on': 'StartupTime' }
+Plug 'tyru/capture.vim', { 'on': 'Capture' }
+Plug 'tyru/open-browser.vim'
 Plug 'tyru/operator-camelize.vim'
-Plug 'wellle/targets.vim'
+Plug 'tyru/vim-altercmd'
+Plug 'wellle/targets.vim', { 'on': 'Tagbar' }
 " }}}
 
 " Library {{{
@@ -233,6 +243,13 @@ Plug 'vim-scripts/cecutil'
 " My Plugin {{{
 set runtimepath+=~/.vim/plugins/lightline-iceberg-tigberd
 " }}}
+
+let s:plug = {
+      \ "plugs": get(g:, 'plugs', {})
+      \ }
+function! s:plug.is_installed(name)
+  return has_key(self.plugs, a:name) ? isdirectory(self.plugs[a:name].dir) : 0
+endfunction
 
 call plug#end()
 
@@ -291,6 +308,9 @@ set pumheight=15
 set diffopt=filler,icase,vertical
 set timeoutlen=750
 set ttimeoutlen=250
+set suffixesadd=.js,.rb,.ts,.json,.md
+set cmdheight=2
+set foldmethod=manual
 
 set swapfile directory=/var/tmp,/tmp
 autocmd SwapExists * let v:swapchoice = 'o'
@@ -309,9 +329,6 @@ nnoremap <C-l> <C-w>l
 nnoremap <C-h> <C-w>h
 inoremap <C-d> <Del>
 imap <C-h> <BS>
-nnoremap <C-o> <C-o>zz
-nnoremap <C-i> <C-i>zz
-nnoremap g; g;zz
 
 "" Move CommandLine
 cnoremap <C-a> <Home>
@@ -324,7 +341,7 @@ cnoremap <C-p> <Up>
 
 "" Completion
 set wildmenu
-set wildmode=longest,full
+set wildmode=longest:list,list
 set history=1000
 set complete+=k
 set completeopt=longest,menuone,preview
@@ -348,7 +365,7 @@ function! s:ToggleHiglight()
   endif
 endfunction
 
-function TrimEndLines()
+function! TrimEndLines()
   let save_cursor = getpos(".")
   :silent! %s#\($\n\s*\)\+\%$##
   call setpos('.', save_cursor)
@@ -457,6 +474,25 @@ inoremap ～ ~
 inoremap ？ ?
 " }}}
 
+" Settings {{{
+
+" GoogleTranslation {{{
+function! TransRange() range
+  let texts = []
+  for n in range(a:firstline, a:lastline)
+    let line = getline(n)
+    call substitute(line, '\n\+$', ' ', '')
+    call add(texts, line)
+  endfor
+  15new | put!=translategoogle#command(join(texts))
+endfunction
+
+command! -range Trans <line1>,<line2>call TransRange()
+vnoremap <Leader>tr :Trans<CR>
+" }}}
+
+" }}}
+
 " Plugin Settings {{{
 
 " Language {{{
@@ -521,7 +557,7 @@ let g:formatdef_vuefmt = '"cat > vuefmt-temp.vue; ruby -e ''File.read(\"vuefmt-t
 let g:formatters_vue = ['vuefmt']
 
 " scala
-let g:formatdef_scalafmt = "'cat | scalafmt --stdin'"
+let g:formatdef_scalafmt = '"scalafmt"'
 let g:formatters_scala = ['scalafmt']
 " }}}
 
@@ -580,7 +616,7 @@ let g:rubycomplete_include_object_space = 1
 
 " }}}
 
-" Completion & Fuzzy Match & vimfiler {{{
+" Completion & Fuzzy Match & vimfiler & (CtrlP + lightline)) {{{
 
 " Denite & Unite & ctrlp {{{
 " ctrlp
@@ -625,7 +661,7 @@ function! CtrlPStatusFunc_2(str)
   return lightline#statusline(0)
 endfunction
 
-try
+if s:plug.is_installed("denite.nvim")
   " Denite
 
   " highlight
@@ -687,7 +723,9 @@ try
 
   " session
   " nnoremap <silent> <Leader>sl :<C-u>Denite session<CR>
+endif
 
+if s:plug.is_installed("unite.vim")
   " Unite
 
   "" keymap
@@ -746,10 +784,7 @@ try
 
   " snippets
   nnoremap <silent> <Leader>sn :<C-u>Unite neosnippet -direction=botright -start-insert<CR>
-
-catch /E117.*/
-  echo "Denite & Unite is not installed. Please :PlugInstall"
-endtry
+endif
 " }}}
 
 " YouCompleteMe && deoplete.nvim && neosnippet.vim {{{
@@ -757,71 +792,73 @@ if !has('nvim')
   let g:ycm_seed_identifiers_with_syntax = 0
   autocmd InsertEnter * call plug#load('YouCompleteMe')
 else
-  let g:deoplete#enable_at_startup = 1
-  let g:deoplete#enable_smart_case = 1
-  let g:deoplete#enable_camel_case = 1
-  let g:deoplete#auto_complete_delay = 0
-  let g:deoplete#auto_complete_start_length = 1
-  let g:deoplete#file#enable_buffer_path = 1
-  let g:deoplete#tag#cache_limit_size = 10000
-  let g:deoplete#sources = {}
-  let g:deoplete#sources._ = ['buffer', 'omni', 'look']
-  let g:deoplete#sources.javascript = ['ternjs', 'flow', 'omni', 'buffer', 'syntax', 'neosnippet', 'dictionary', 'look']
-  let g:deoplete#sources.ruby = ['buffer', 'omni', 'syntax', 'neosnippet', 'dictionary', 'look']
-  let g:deoplete#sources.python = ['jedi', 'buffer', 'omni', 'syntax', 'neosnippet', 'look']
-  let g:deoplete#sources.scala = ['buffer', 'omni', 'syntax', 'neosnippet', 'look']
-  let g:deoplete#sources.go = ['go', 'buffer', 'syntax', 'neosnippet', 'look']
-  let g:deoplete#sources.vim = ['vim', 'buffer', 'syntax', 'look']
+  if s:plug.is_installed("deoplete.nvim")
+    let g:deoplete#enable_at_startup = 1
+    let g:deoplete#enable_smart_case = 1
+    let g:deoplete#enable_camel_case = 1
+    let g:deoplete#auto_complete_delay = 0
+    let g:deoplete#auto_complete_start_length = 1
+    let g:deoplete#file#enable_buffer_path = 1
+    let g:deoplete#tag#cache_limit_size = 10000
+    let g:deoplete#sources = {}
+    let g:deoplete#sources._ = ['buffer', 'omni', 'look']
+    let g:deoplete#sources.javascript = ['ternjs', 'flow', 'omni', 'buffer', 'syntax', 'neosnippet', 'dictionary', 'look']
+    let g:deoplete#sources.ruby = ['buffer', 'omni', 'syntax', 'neosnippet', 'dictionary', 'look']
+    let g:deoplete#sources.python = ['jedi', 'buffer', 'omni', 'syntax', 'neosnippet', 'look']
+    let g:deoplete#sources.scala = ['buffer', 'omni', 'syntax', 'neosnippet', 'look']
+    let g:deoplete#sources.go = ['go', 'buffer', 'syntax', 'neosnippet', 'look']
+    let g:deoplete#sources.vim = ['vim', 'buffer', 'syntax', 'look']
 
-  let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
-  let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
-  let g:deoplete#sources#go#use_cache = 1
+    let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
+    let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+    let g:deoplete#sources#go#use_cache = 1
 
-  let g:deoplete#omni#input_patterns = {}
-  let g:deoplete#omni#input_patterns._ = ''
-  let g:deoplete#omni#input_patterns.ruby = ['[^. *\t]\.\w*', '[a-zA-Z_]\w*::']
-  let g:deoplete#omni#input_patterns.javascript = ''
-  let g:deoplete#omni#input_patterns.python = ''
-  let g:deoplete#omni#input_patterns.go = ''
-  let g:deoplete#omni#input_patterns.scala = ['[^. *\t]\.\w*', '[:\[,] ?\w*', '^import .*']
-  let g:deoplete#omni#input_patterns.css  = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
-  let g:deoplete#omni#input_patterns.scss = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
-  let g:deoplete#omni#input_patterns.html = '<[^>]*'
-  let g:deoplete#omni#input_patterns.md = '<[^>]*'
+    let g:deoplete#omni#input_patterns = {}
+    let g:deoplete#omni#input_patterns._ = ''
+    let g:deoplete#omni#input_patterns.ruby = ['[^. *\t]\.\w*', '[a-zA-Z_]\w*::']
+    let g:deoplete#omni#input_patterns.javascript = ''
+    let g:deoplete#omni#input_patterns.python = ''
+    let g:deoplete#omni#input_patterns.go = ''
+    let g:deoplete#omni#input_patterns.scala = ['[^. *\t]\.\w*', '[:\[,] ?\w*', '^import .*']
+    let g:deoplete#omni#input_patterns.css  = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
+    let g:deoplete#omni#input_patterns.scss = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
+    let g:deoplete#omni#input_patterns.html = '<[^>]*'
+    let g:deoplete#omni#input_patterns.md = '<[^>]*'
 
-  let g:deoplete#omni#functions = {}
-  let g:deoplete#omni#functions._ = ['googlesuggest#Complete']
-  let g:deoplete#omni#functions.javascript = ['jspc#omni', 'javascriptcomplete#CompleteJS']
-  let g:deoplete#omni#functions.ruby = ['rubycomplete#Complete']
-  let g:deoplete#omni#functions.python = ['pythoncomplete#Complete']
-  let g:deoplete#omni#functions.html = ['htmlcomplete#CompleteTags']
-  let g:deoplete#omni#functions.markdown = ['htmlcomplete#CompleteTags']
-  let g:deoplete#omni#functions.css = ['csscomplete#CompleteCSS']
-  let g:deoplete#omni#functions.scala = ['EnCompleteFunc']
+    let g:deoplete#omni#functions = {}
+    let g:deoplete#omni#functions._ = ['googlesuggest#Complete']
+    let g:deoplete#omni#functions.javascript = ['jspc#omni', 'javascriptcomplete#CompleteJS']
+    let g:deoplete#omni#functions.ruby = ['rubycomplete#Complete']
+    let g:deoplete#omni#functions.python = ['pythoncomplete#Complete']
+    let g:deoplete#omni#functions.html = ['htmlcomplete#CompleteTags']
+    let g:deoplete#omni#functions.markdown = ['htmlcomplete#CompleteTags']
+    let g:deoplete#omni#functions.css = ['csscomplete#CompleteCSS']
+    let g:deoplete#omni#functions.scala = ['EnCompleteFunc']
 
-  " tern
-  let g:tern_request_timeout = 1
-  let g:tern_show_signature_in_pum = 0
-  let g:tern#filetypes = [
-        \ 'javascript',
-        \ 'vue'
-        \ ]
+    " tern
+    let g:tern_request_timeout = 1
+    let g:tern_show_signature_in_pum = 0
+    let g:tern#filetypes = [
+          \ 'javascript',
+          \ 'vue'
+          \ ]
 
-  inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-  function! s:my_cr_function()
-    if !pumvisible()
-      return "\<CR>"
-    endif
+    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+    function! s:my_cr_function()
+      if !pumvisible()
+        return "\<CR>"
+      endif
 
-    if neosnippet#jumpable()
-      return neosnippet#mappings#expand_or_jump_impl()
-    elseif neosnippet#expandable()
-      return neosnippet#mappings#expand_impl()
-    else
-      return "\<C-y>" . deoplete#smart_close_popup()
-    endif
-  endfunction
-  inoremap <silent><expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
+      if neosnippet#jumpable()
+        return neosnippet#mappings#expand_or_jump_impl()
+      elseif neosnippet#expandable()
+        return neosnippet#mappings#expand_impl()
+      else
+        return "\<C-y>" . deoplete#smart_close_popup()
+      endif
+    endfunction
+    inoremap <silent><expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
+  endif
 end
 
 let g:neosnippet#disable_runtime_snippets = { '_' : 1 }
@@ -840,7 +877,7 @@ set completefunc=googlesuggest#Complete
 " }}}
 
 " vimfiler {{{
-try
+if s:plug.is_installed("vimfiler")
   let g:vimfiler_as_default_explorer = 1
   let g:vimfiler_safe_mode_by_default = 0
   let g:vimfiler_tree_opened_icon = '▾'
@@ -864,9 +901,7 @@ try
     nmap <buffer> <C-l> <C-w>l
     nmap <buffer> <C-j> <C-w>j
   endfunction
-catch /E117.*/
-  echo "vimfiler is not installed. Please :PlugInstall"
-endtry
+endif
 " }}}
 
 " }}}
@@ -902,8 +937,14 @@ endfunction
 " }}}
 "
 " git-gutter {{{
-nmap <silent> gp <Plug>GitGutterPrevHunk
-nmap <silent> gn <Plug>GitGutterNextHunk
+if s:plug.is_installed("vim-gitgutter")
+let g:gitgutter_map_keys = 0
+  nmap <silent> gp <Plug>GitGutterPrevHunk
+  nmap <silent> gn <Plug>GitGutterNextHunk
+  nmap <silent> <Leader>gs <Plug>GitGutterStageHunk
+  nmap <silent> <Leader>gu <Plug>GitGutterUndoHunk
+  nmap <silent> <Leader>gv <Plug>GitGutterPreviewHunk
+endif
 " }}}
 
 " git-switcher {{{
@@ -942,41 +983,54 @@ nnoremap <silent> <Leader>cd :<C-u>Rooter<CR>
 " Edit & Move & Search {{{
 
 " incsearch & easymotion & anzu & asterisk & search-pulse {{{
-let g:vim_search_pulse_disable_auto_mappings = 1
-let g:vim_search_pulse_mode = 'pattern'
-let g:EasyMotion_smartcase = 1
-let g:EasyMotion_startofline = 0
-let g:EasyMotion_keys = 'HJKLASDFGYUIOPQWERTNMZXCVB'
-let g:EasyMotion_use_upper = 1
-let g:EasyMotion_enter_jump_first = 1
-let g:EasyMotion_space_jump_first = 1
-let g:anzu_status_format = "(%i/%l)"
-hi link EasyMotionIncSearch Search
-hi link EasyMotionMoveHL Search
-autocmd  User PrePulse  set cursorcolumn
-autocmd  User PostPulse set nocursorcolumn
+if s:plug.is_installed("incsearch.vim")
+  let g:vim_search_pulse_disable_auto_mappings = 1
+  let g:vim_search_pulse_mode = 'pattern'
+  let g:EasyMotion_smartcase = 1
+  let g:EasyMotion_startofline = 0
+  let g:EasyMotion_keys = 'HJKLASDFGYUIOPQWERTNMZXCVB'
+  let g:EasyMotion_use_upper = 1
+  let g:EasyMotion_enter_jump_first = 1
+  let g:EasyMotion_space_jump_first = 1
+  let g:anzu_status_format = "(%i/%l)"
+  hi link EasyMotionIncSearch Search
+  hi link EasyMotionMoveHL Search
+  autocmd  User PrePulse  set cursorcolumn
+  autocmd  User PostPulse set nocursorcolumn
 
-map  f  <Plug>(easymotion-bd-fl)
-map  t  <Plug>(easymotion-bd-tl)
-map  /  <Plug>(incsearch-forward)
-map  ?  <Plug>(incsearch-backward)
-map  z/ <Plug>(incsearch-fuzzy-/)
-map  z? <Plug>(incsearch-fuzzy-?)
-nmap g/ <Plug>(easymotion-sn)
-xmap g/ <Plug>(easymotion-sn)
-omap g/ <Plug>(easymotion-tn)
-map  n  <Plug>(easymotion-next)<Plug>(anzu-n)zzzv<Plug>Pulse
-map  N  <Plug>(easymotion-prev)<Plug>(anzu-N)zzzv<Plug>Pulse
-nmap *  <Plug>(asterisk-z*)<Plug>(anzu-update-search-status-with-echo)<Plug>Pulse
-nmap #  <Plug>(asterisk-z#)<Plug>(anzu-update-search-status-with-echo)<Plug>Pulse
-nmap g* <Plug>(asterisk-gz*)<Plug>(anzu-update-search-status-with-echo)<Plug>Pulse
-nmap g# <Plug>(asterisk-gz#)<Plug>(anzu-update-search-status-with-echo)<Plug>Pulse
-nmap <silent> <Esc><Esc> <Plug>(anzu-clear-search-status)<Plug>(anzu-clear-sign-matchline):nohlsearch<CR>
+  map  f  <Plug>(easymotion-bd-fl)
+  map  t  <Plug>(easymotion-bd-tl)
+  map  /  <Plug>(incsearch-forward)
+  map  ?  <Plug>(incsearch-backward)
+  map  z/ <Plug>(incsearch-fuzzy-/)
+  map  z? <Plug>(incsearch-fuzzy-?)
+  nmap g/ <Plug>(easymotion-sn)
+  xmap g/ <Plug>(easymotion-sn)
+  omap g/ <Plug>(easymotion-tn)
+  map  n  <Plug>(easymotion-next)<Plug>(anzu-n)zzzv<Plug>Pulse
+  map  N  <Plug>(easymotion-prev)<Plug>(anzu-N)zzzv<Plug>Pulse
+  nmap *  <Plug>(asterisk-z*)<Plug>(anzu-update-search-status-with-echo)<Plug>Pulse
+  nmap #  <Plug>(asterisk-z#)<Plug>(anzu-update-search-status-with-echo)<Plug>Pulse
+  nmap g* <Plug>(asterisk-gz*)<Plug>(anzu-update-search-status-with-echo)<Plug>Pulse
+  nmap g# <Plug>(asterisk-gz#)<Plug>(anzu-update-search-status-with-echo)<Plug>Pulse
+  nmap <silent> <Esc><Esc> <Plug>(anzu-clear-search-status)<Plug>(anzu-clear-sign-matchline):nohlsearch<CR>
 
-nmap s <Plug>(easymotion-overwin-f2)
-vmap s <Plug>(easymotion-bd-f2)
-map  <Leader>j <Plug>(easymotion-j)
-map  <Leader>k <Plug>(easymotion-k)
+  nmap s <Plug>(easymotion-overwin-f2)
+  vmap s <Plug>(easymotion-bd-f2)
+  map  <Leader>j <Plug>(easymotion-j)
+  map  <Leader>k <Plug>(easymotion-k)
+endif
+" }}}
+
+" accelerated-jk {{{
+nmap j <Plug>(accelerated_jk_j)
+nmap k <Plug>(accelerated_jk_k)
+" }}}
+
+" comfortable-motion {{{
+let g:comfortable_motion_interval = 1000 / 45.0
+let g:comfortable_motion_friction = 60.0
+let g:comfortable_motion_air_drag = 1.5
 " }}}
 
 " doorboy {{{
@@ -988,10 +1042,12 @@ vmap <Enter> <Plug>(EasyAlign)
 " }}}
 
 " jplus {{{
-nmap J <Plug>(jplus)
-vmap J <Plug>(jplus)
-nmap <Leader>J <Plug>(jplus-input)
-vmap <Leader>J <Plug>(jplus-input)
+if s:plug.is_installed("vim-jplus")
+  nmap J <Plug>(jplus)
+  vmap J <Plug>(jplus)
+  nmap <Leader>J <Plug>(jplus-input)
+  vmap <Leader>J <Plug>(jplus-input)
+endif
 " }}}
 
 " multiple-cursors {{{
@@ -1009,6 +1065,10 @@ function! Multiple_cursors_after()
 endfunction
 " }}}
 
+" operator-camelize {{{
+map <Leader>ca <Plug>(operator-camelize-toggle)
+" }}}
+"
 " operator-replace {{{
 map _ <Plug>(operator-replace)
 " }}}
@@ -1032,11 +1092,13 @@ nnoremap <silent> <C-s> :<C-u>Switch<CR>
 " }}}
 
 " yankround {{{
-let g:neoyank#limit = 10000
-nmap p <Plug>(yankround-p)
-xmap p <Plug>(yankround-p)
-nmap <silent><expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : ":WSPrev<CR>"
-nmap <silent><expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : ":WSNext<CR>"
+if s:plug.is_installed("yankround.vim")
+  let g:neoyank#limit = 10000
+  nmap p <Plug>(yankround-p)
+  xmap p <Plug>(yankround-p)
+  nmap <silent><expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : ":WSPrev<CR>"
+  nmap <silent><expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : ":WSNext<CR>"
+endif
 " }}}
 
 " }}}
@@ -1061,6 +1123,10 @@ let g:WebDevIconsUnicodeDecorateFileNodes = 1
 let g:ctrlp_mruf_map_string = 1
 " }}}
 
+" devicons {{{
+let g:echodoc#enable_at_startup = 1
+" }}}
+
 " fastfold {{{
 let g:fastfold_savehook = 1
 let g:fastfold_fold_command_suffixes =  ['x','X','a','A','o','O','c','C']
@@ -1068,7 +1134,9 @@ let g:fastfold_fold_movement_commands = [']z', '[z', 'zj', 'zk']
 " }}}
 
 " foldCC {{{
-set foldtext=FoldCCtext()
+if s:plug.is_installed("foldCC.vim")
+  set foldtext=FoldCCtext()
+endif
 " }}}
 
 " hl_matchit {{{
@@ -1082,189 +1150,189 @@ nnoremap <silent> <Leader>i :<C-u>:IndentLinesToggle<CR>
 " }}}
 
 " lightline {{{
-let g:lightline = {
-      \ 'colorscheme': 'iceberg_tigberd',
-      \ 'mode_map': {'c': 'NORMAL'},
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ], [ 'gina' ], ['readonly', 'filepath', 'filename', 'anzu' ] ],
-      \   'right': [
-      \     [ 'lineinfo' ],
-      \     [ 'fileformat', 'fileencoding', 'filetype' ],
-      \     [ 'ale_error', 'ale_warning', 'ale_ok' ]
-      \   ]
-      \ },
-      \ 'inactive': {
-      \   'left': [ [], [ 'gina' ], [ 'filepath' ], [ 'filename' ] ],
-      \   'right': [
-      \     [ 'lineinfo' ],
-      \     [ 'fileformat', 'fileencoding', 'filetype' ]
-      \   ]
-      \ },
-      \ 'component': {
-      \   'lineinfo': "\ue0a1 %3l:%-2v",
-      \ },
-      \ 'component_function': {
-      \   'readonly':     'LightlineReadonly',
-      \   'gina':         'LightlineGina',
-      \   'filepath':     'LightlineFilepath',
-      \   'filename':     'LightlineFilename',
-      \   'filetype':     'LightlineFiletype',
-      \   'fileformat':   'LightlineFileformat',
-      \   'fileencoding': 'LightlineFileencoding',
-      \   'mode':         'LightlineMode',
-      \   'anzu':         'anzu#search_status'
-      \ },
-      \ 'component_expand': {
-      \   'ale_error':     'LightlineAleError',
-      \   'ale_warning':   'LightlineAleWarning',
-      \   'ale_ok':        'LightlineAleOk',
-      \ },
-      \ 'component_type': {
-      \   'ale_error':   'error',
-      \   'ale_warning': 'warning',
-      \   'ale_ok':      'ok',
-      \ },
-      \ 'component_function_visible_condition': {
-      \   'modified': '&modified||!&modifiable',
-      \   'readonly': '&readonly',
-      \   'paste': '&paste',
-      \ },
-      \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2 " },
-      \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3 " },
-      \ 'enable': {
-      \ 'statusline': 1,
-      \ 'tabline': 0
-      \ }
-      \ }
+if s:plug.is_installed("lightline.vim")
+  let g:lightline = {
+        \ 'colorscheme': 'iceberg_tigberd',
+        \ 'mode_map': {'c': 'NORMAL'},
+        \ 'active': {
+        \   'left': [ [ 'mode', 'paste' ], [ 'gina' ], ['readonly', 'filepath', 'filename', 'anzu' ] ],
+        \   'right': [
+        \     [ 'lineinfo' ],
+        \     [ 'fileformat', 'fileencoding', 'filetype' ],
+        \     [ 'ale_error', 'ale_warning', 'ale_ok' ]
+        \   ]
+        \ },
+        \ 'inactive': {
+        \   'left': [ [], [ 'gina' ], [ 'filepath' ], [ 'filename' ] ],
+        \   'right': [
+        \     [ 'lineinfo' ],
+        \     [ 'fileformat', 'fileencoding', 'filetype' ]
+        \   ]
+        \ },
+        \ 'component': {
+        \   'lineinfo': "\ue0a1 %3l:%-2v",
+        \ },
+        \ 'component_function': {
+        \   'readonly':     'LightlineReadonly',
+        \   'gina':         'LightlineGina',
+        \   'filepath':     'LightlineFilepath',
+        \   'filename':     'LightlineFilename',
+        \   'filetype':     'LightlineFiletype',
+        \   'fileformat':   'LightlineFileformat',
+        \   'fileencoding': 'LightlineFileencoding',
+        \   'mode':         'LightlineMode',
+        \   'anzu':         'anzu#search_status'
+        \ },
+        \ 'component_expand': {
+        \   'ale_error':     'LightlineAleError',
+        \   'ale_warning':   'LightlineAleWarning',
+        \   'ale_ok':        'LightlineAleOk',
+        \ },
+        \ 'component_type': {
+        \   'ale_error':   'error',
+        \   'ale_warning': 'warning',
+        \   'ale_ok':      'ok',
+        \ },
+        \ 'component_function_visible_condition': {
+        \   'modified': '&modified||!&modifiable',
+        \   'readonly': '&readonly',
+        \   'paste': '&paste',
+        \ },
+        \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2 " },
+        \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3 " },
+        \ 'enable': {
+        \ 'statusline': 1,
+        \ 'tabline': 0
+        \ }
+        \ }
 
-autocmd User ALELint call lightline#update()
+  autocmd User ALELint call lightline#update()
 
-function! LightlineReadonly()
-  return &readonly ? "\ue0a2" : ''
-endfunction
+  function! LightlineReadonly()
+    return &readonly ? "\ue0a2" : ''
+  endfunction
 
-function! LightlineGina()
-  if exists('*gina#component#repo#branch()')
+  function! LightlineGina()
     let branch = gina#component#repo#branch()
     return branch !=# "\ue0a0" ? "\ue0a0 " . branch : ''
-  endif
-  return ''
-endfunction
-
-function! LightlineFilepath()
-  if &filetype ==# 'vimfilter' || &filetype ==# 'unite' || winwidth(0) < 70
-    let l:path_string = ''
-  else
-    let l:path_string = substitute(expand('%:h'), $HOME, '~', '')
-  endif
-
-  let l:dirs = split(l:path_string, '/')
-  if len(l:dirs) ==# 0
     return ''
-  endif
+  endfunction
 
-  let l:last_dir = remove(l:dirs, -1)
-  call map(l:dirs, 'v:val[0]')
+  function! LightlineFilepath()
+    if &filetype ==# 'vimfilter' || &filetype ==# 'unite' || winwidth(0) < 70
+      let l:path_string = ''
+    else
+      let l:path_string = substitute(expand('%:h'), $HOME, '~', '')
+    endif
 
-  if len(l:dirs) ==# 0
-    return l:last_dir
-  else
-    return join(l:dirs, '/') . '/' . l:last_dir
-  endif
-endfunction
+    let l:dirs = split(l:path_string, '/')
+    if len(l:dirs) ==# 0
+      return ''
+    endif
 
-function! LightlineModified()
-  if &filetype =~# 'help\|vimfiler'
-    return ''
-  elseif &modified
-    return " \uf040"
-  else
-    return ''
-  endif
-endfunction
+    let l:last_dir = remove(l:dirs, -1)
+    call map(l:dirs, 'v:val[0]')
 
-function! LightlineFilename()
-  if expand('%:t') == 'ControlP'
-    return g:lightline.ctrlp_prev . ' ' . g:lightline.subseparator.left . ' ' .
-          \ g:lightline.ctrlp_item . ' ' . g:lightline.subseparator.left . ' ' .
-          \ g:lightline.ctrlp_next
-  endif
-  if &filetype ==# 'vimfiler'
-    return vimfiler#get_status_string()
-  elseif &filetype ==# 'unite'
-    return unite#get_status_string()
-  elseif '' !=# expand('%:t')
-    return expand('%:t') . LightlineModified()
-  else
-    return '[No Name]'
-  endif
-endfunction
+    if len(l:dirs) ==# 0
+      return l:last_dir
+    else
+      return join(l:dirs, '/') . '/' . l:last_dir
+    endif
+  endfunction
 
-function! LightlineFileformat()
-  if winwidth(0) < 120
-    return ''
-  else
-    return &fileformat . ' ' . WebDevIconsGetFileFormatSymbol()
-  endif
-endfunction
+  function! LightlineModified()
+    if &filetype =~# 'help\|vimfiler'
+      return ''
+    elseif &modified
+      return " \uf040"
+    else
+      return ''
+    endif
+  endfunction
 
-function! LightlineFiletype()
-  if strlen(&filetype)
-    return &filetype . ' ' . WebDevIconsGetFileTypeSymbol()
-  else
-    return 'no ft'
-  endif
-endfunction
+  function! LightlineFilename()
+    if expand('%:t') == 'ControlP'
+      return g:lightline.ctrlp_prev . ' ' . g:lightline.subseparator.left . ' ' .
+            \ g:lightline.ctrlp_item . ' ' . g:lightline.subseparator.left . ' ' .
+            \ g:lightline.ctrlp_next
+    endif
+    if &filetype ==# 'vimfiler'
+      return vimfiler#get_status_string()
+    elseif &filetype ==# 'unite'
+      return unite#get_status_string()
+    elseif '' !=# expand('%:t')
+      return expand('%:t') . LightlineModified()
+    else
+      return '[No Name]'
+    endif
+  endfunction
 
-function! LightlineFileencoding()
-  if winwidth(0) < 120
-    return ''
-  endif
-  return (strlen(&fileencoding) ? &fileencoding : &encoding)
-endfunction
+  function! LightlineFileformat()
+    if winwidth(0) < 120
+      return ''
+    else
+      return &fileformat . ' ' . WebDevIconsGetFileFormatSymbol()
+    endif
+  endfunction
 
-function! LightlineMode()
-  let l:fname = expand('%:t')
-  if l:fname =~# 'unite'
-    return 'Unite'
-  elseif l:fname =~# 'vimfiler'
-    return 'Vimfiler'
-  else
-    return lightline#mode()
-  endif
-endfunction
+  function! LightlineFiletype()
+    if strlen(&filetype)
+      return &filetype . ' ' . WebDevIconsGetFileTypeSymbol()
+    else
+      return 'no ft'
+    endif
+  endfunction
 
-function! LightlineAleError() abort
-  return s:ale_string(0)
-endfunction
+  function! LightlineFileencoding()
+    if winwidth(0) < 120
+      return ''
+    endif
+    return (strlen(&fileencoding) ? &fileencoding : &encoding)
+  endfunction
 
-function! LightlineAleWarning() abort
-  return s:ale_string(1)
-endfunction
+  function! LightlineMode()
+    let l:fname = expand('%:t')
+    if l:fname =~# 'unite'
+      return 'Unite'
+    elseif l:fname =~# 'vimfiler'
+      return 'Vimfiler'
+    else
+      return lightline#mode()
+    endif
+  endfunction
 
-function! LightlineAleOk() abort
-  return s:ale_string(2)
-endfunction
+  function! LightlineAleError() abort
+    return s:ale_string(0)
+  endfunction
 
-function! s:ale_string(mode)
-  if !exists('g:ale_buffer_info')
-    return ''
-  endif
+  function! LightlineAleWarning() abort
+    return s:ale_string(1)
+  endfunction
 
-  let l:buffer = bufnr('%')
-  let l:counts = ale#statusline#Count(l:buffer)
-  let [l:error_format, l:warning_format, l:no_errors] = g:ale_statusline_format
+  function! LightlineAleOk() abort
+    return s:ale_string(2)
+  endfunction
 
-  if a:mode == 0 " Error
-    let l:errors = l:counts.error + l:counts.style_error
-    return l:errors ? printf(l:error_format, l:errors) : ''
-  elseif a:mode == 1 " Warning
-    let l:warnings = l:counts.warning + l:counts.style_warning
-    return l:warnings ? printf(l:warning_format, l:warnings) : ''
-  endif
+  function! s:ale_string(mode)
+    if !exists('g:ale_buffer_info')
+      return ''
+    endif
 
-  return l:no_errors
-endfunction
+    let l:buffer = bufnr('%')
+    let l:counts = ale#statusline#Count(l:buffer)
+    let [l:error_format, l:warning_format, l:no_errors] = g:ale_statusline_format
+
+    if a:mode == 0 " Error
+      let l:errors = l:counts.error + l:counts.style_error
+      return l:errors ? printf(l:error_format, l:errors) : ''
+    elseif a:mode == 1 " Warning
+      let l:warnings = l:counts.warning + l:counts.style_warning
+      return l:warnings ? printf(l:warning_format, l:warnings) : ''
+    endif
+
+    return l:no_errors
+  endfunction
+endif
 " }}}
 
 " MatchTagAlways {{{
@@ -1278,38 +1346,54 @@ let g:mta_filetypes = {
 " }}}
 
 " operator-flashy {{{
-map y <Plug>(operator-flashy)
-nmap Y <Plug>(operator-flashy)$
+if s:plug.is_installed("vim-operator-flashy")
+  map y <Plug>(operator-flashy)
+  nmap Y <Plug>(operator-flashy)$
+endif
 " }}}
 
 " parenmatch {{{
 let g:loaded_matchparen = 1
 " }}}
 
+" rainbow {{{
+let g:rainbow_active = 1
+let g:rainbow_conf = {
+            \   'guifgs' : [ '#666666', '#0087ff', '#ff005f', '#875fd7', '#d78700', '#00af87' ],
+            \   'ctermfgs': [ '242', '33', '197', '98', '172', '36' ],
+            \   'separately' : {
+            \       '*':   {},
+            \       'vim': {},
+            \       'css': 0,
+            \   }
+\ }
+" }}}
+
 " thumbnail {{{
 map <silent> <Leader>th <Plug>(thumbnail)
 " }}}
 
-" workspace {{{
-function g:WorkspaceSetCustomColors()
-  hi WorkspaceFill           ctermfg=0 ctermbg=0   guibg=#999999 guifg=#999999
-  hi WorkspaceBufferCurrent  ctermfg=0 ctermbg=67  guibg=#00FF00 guifg=#000000
-  hi WorkspaceBufferActive   ctermfg=0 ctermbg=243 guibg=#999999 guifg=#00FF00
-  hi WorkspaceBufferHidden   ctermfg=0 ctermbg=241 guibg=#999999 guifg=#000000
-endfunction
+" workspace & bufkill {{{
+if s:plug.is_installed("vim-workspace")
+  function! g:WorkspaceSetCustomColors()
+    hi WorkspaceFill           ctermfg=0 ctermbg=0   guibg=#999999 guifg=#999999
+    hi WorkspaceBufferCurrent  ctermfg=0 ctermbg=67  guibg=#00FF00 guifg=#000000
+    hi WorkspaceBufferActive   ctermfg=0 ctermbg=243 guibg=#999999 guifg=#00FF00
+    hi WorkspaceBufferHidden   ctermfg=0 ctermbg=241 guibg=#999999 guifg=#000000
+  endfunction
 
-let g:workspace_use_devicons = 1
-let g:workspace_powerline_separators = 1
-let g:workspace_tab_icon = "\uf00a"
-let g:workspace_left_trunc_icon = "\uf0a8"
-let g:workspace_right_trunc_icon = "\uf0a9"
-noremap <silent> <Leader>d  :BD<CR>
-noremap <silent> <Leader>tc :tabe<CR>
-noremap <silent> <Leader>tn :tabnext<CR>
-noremap <silent> <Leader>tp :tabprevious<CR>
-noremap <silent> <Leader>td :tabclose<CR>
-noremap <silent> <Leader>ts :tabs<CR>
-
+  let g:workspace_use_devicons = 1
+  let g:workspace_powerline_separators = 1
+  let g:workspace_tab_icon = "\uf00a"
+  let g:workspace_left_trunc_icon = "\uf0a8"
+  let g:workspace_right_trunc_icon = "\uf0a9"
+  noremap <silent> <Leader>d  :BD<CR>
+  noremap <silent> <Leader>tc :tabe<CR>
+  noremap <silent> <Leader>tn :tabnext<CR>
+  noremap <silent> <Leader>tp :tabprevious<CR>
+  noremap <silent> <Leader>td :tabclose<CR>
+  noremap <silent> <Leader>ts :tabs<CR>
+endif
 " }}}
 
 " zenspace {{{
@@ -1324,8 +1408,10 @@ let g:zenspace#default_mode = 'on'
 let g:bakaup_auto_backup = 1
 " }}}
 
-" vim-ambicmd {{{
-cnoremap <expr> <Space> ambicmd#expand("\<Space>")
+" ambicmd {{{
+if s:plug.is_installed("vim-ambicmd")
+  cnoremap <expr> <Space> ambicmd#expand("\<Space>")
+endif
 " }}}
 
 " expand-region {{{
@@ -1343,28 +1429,33 @@ map <Leader>B <Plug>(external-browser)
 " }}}
 
 " extracmd {{{
-try
-  call extracmd#set('<silent>', 'w!!', 'w !sudo tee > /dev/null %')
-  call extracmd#set('<silent>', 'gd', 'Tmpbuffer git diff <bar> set filetype=diff')
-  call extracmd#set('<silent>', 'gdc', 'Tmpbuffer git diff --cached <bar> set filetype=diff')
-  call extracmd#set('gita', 'Gita')
-  call extracmd#set('gina', 'Gina')
-  call extracmd#set('blame', 'Gita blame')
-  call extracmd#set('branch', 'Unite giti/branch<CR>')
-  call extracmd#set('agit', 'Agit')
-  call extracmd#set('af', 'AgitFile')
-  call extracmd#set('di', 'Ref webdict alc <C-R><C-W><CR>')
-  call extracmd#set('alc', 'Ref webdict alc')
-  call extracmd#set('tag', 'TagbarOpen j<CR>')
-  call extracmd#set('num', 'NumbersToggle<CR>')
-  call extracmd#set('j', 'Unite jump change -auto-preview<CR>')
-  call extracmd#set('tab', 'Unite tab<CR>')
-  call extracmd#set('sf', 'CtrlSF')
-  call extracmd#set('mn', 'MemoNew')
-  call extracmd#set('ml', 'MemoList')
-catch /E117.*/
-  echo "extracmd is not installed. Please :PlugInstall"
-endtry
+if s:plug.is_installed("vim-extracmd")
+  call extracmd#set('w!!',          'w !sudo tee > /dev/null %')
+  call extracmd#set('gd',           'Tmpbuffer git diff <bar> set filetype=diff')
+  call extracmd#set('gdc',          'Tmpbuffer git diff --cached <bar> set filetype=diff')
+  call extracmd#set('gita',         'Gita')
+  call extracmd#set('gina',         'Gina')
+  call extracmd#set('blame',        'Gita blame')
+  call extracmd#set('branch',       'Unite giti/branch<CR>')
+  call extracmd#set('agit',         'Agit')
+  call extracmd#set('af',           'AgitFile')
+  call extracmd#set('di',           'Ref webdict alc <C-R><C-W><CR>')
+  call extracmd#set('alc',          'Ref webdict alc')
+  call extracmd#set('tag',          'TagbarOpen j<CR>')
+  call extracmd#set('num',          'NumbersToggle<CR>')
+  call extracmd#set('j',            'Unite jump change -auto-preview<CR>')
+  call extracmd#set('tab',          'Unite tab<CR>')
+  call extracmd#set('sf',           'CtrlSF')
+  call extracmd#set('mn',           'MemoNew<CR>')
+  call extracmd#set('ml',           'MemoList<CR>')
+  call extracmd#set('nr',           'NR<CR>')
+  call extracmd#set('nr',           'Scratch<CR>')
+endif
+" }}}
+
+" gist {{{
+let g:gist_detect_filetype = 1
+let g:gist_open_browser_after_post = 1
 " }}}
 
 " maximizer {{{
@@ -1385,14 +1476,6 @@ let g:ref_source_webdict_sites = {
 function! g:ref_source_webdict_sites.alc.filter(output)
   return join(split(a:output, "\n")[42 :], "\n")
 endfunction
-" }}}
-
-" signature {{{
-let g:SignatureMap = {
-      \ 'ToggleMarkAtLine'   : "mm",
-      \ 'GotoNextLineAlpha'  :  "mn",
-      \ 'GotoPrevLineAlpha'  :  "mp",
-      \ }
 " }}}
 
 " startify {{{
@@ -1419,13 +1502,15 @@ let g:startify_change_to_vcs_root = 1
 " }}}
 
 " submode {{{
-function! s:my_x()
-  undojoin
-  normal! "_x
-endfunction
-nnoremap <silent> <Plug>(my-x) :<C-u>call <SID>my_x()<CR>
-call submode#enter_with('my_x', 'n', '', 'x', '"_x')
-call submode#map('my_x', 'n', 'r', 'x', '<Plug>(my-x)')
+if s:plug.is_installed("vim-submode")
+  function! s:my_x()
+    undojoin
+    normal! "_x
+  endfunction
+  nnoremap <silent> <Plug>(my-x) :<C-u>call <SID>my_x()<CR>
+  call submode#enter_with('my_x', 'n', '', 'x', '"_x')
+  call submode#map('my_x', 'n', 'r', 'x', '<Plug>(my-x)')
+endif
 " }}}
 
 " undotree {{{
