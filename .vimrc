@@ -41,6 +41,7 @@ Plug 'hail2u/vim-css3-syntax', { 'for': 'css' }
 Plug 'hashivim/vim-terraform', { 'for': 'terraform' }
 Plug 'heavenshell/vim-pydocstring', { 'for': 'python' }
 Plug 'idanarye/vim-merginal', { 'branch': 'develop' }
+Plug 'jparise/vim-graphql', { 'for': 'graphql' }
 Plug 'jsfaint/gen_tags.vim'
 Plug 'kchmck/vim-coffee-script', { 'for': 'coffee' }
 Plug 'keith/rspec.vim', { 'for': 'ruby' }
@@ -53,6 +54,7 @@ Plug 'mdreves/vim-scaladoc', { 'for': 'scala' }
 Plug 'mkomitee/vim-gf-python', { 'for': 'python' }
 Plug 'moll/vim-node', { 'for': 'javascript' }
 Plug 'nsf/gocode', { 'for': 'go', 'rtp': 'nvim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
+Plug 'osyo-manga/vim-precious'
 Plug 'othree/csscomplete.vim', { 'for': ['css', 'sass', 'scss'] }
 Plug 'othree/es.next.syntax.vim', { 'for': 'javascript' }
 Plug 'othree/html5.vim', { 'for': ['html', 'eruby'] }
@@ -74,7 +76,6 @@ Plug 'tpope/vim-endwise', { 'for': 'ruby' }
 Plug 'tpope/vim-markdown', { 'for': 'markdown' }
 Plug 'tpope/vim-rails', { 'for': ['ruby', 'eruby'] }
 Plug 'vim-jp/syntax-vim-ex', { 'for': 'vim' }
-Plug 'osyo-manga/vim-precious'
 Plug 'vim-python/python-syntax', { 'for': 'python' }
 Plug 'vim-ruby/vim-ruby', { 'for': ['ruby', 'eruby'] }
 Plug 'vim-scripts/python_match.vim', { 'for': 'python' }
@@ -621,7 +622,7 @@ let g:rubycomplete_include_object_space = 1
 " Denite & Unite & ctrlp {{{
 " ctrlp
 hi CtrlPMatch ctermfg=74
-let g:ctrlp_map = '<Leader>p'
+nnoremap <silent> <Leader>p :<C-u>CtrlP<CR>
 let g:ctrlp_max_height = 20
 let g:ctrlp_user_command='ag %s -i --nocolor --nogroup -g ""'
 let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
@@ -954,8 +955,8 @@ nnoremap <Leader><Leader>r :<C-u>GswLoad<CR>
 
 " gita {{{
 let g:gita#suppress_warning = 1
-autocmd FileType gita-blame-navi call s:blame_settings()
-function! s:blame_settings()
+autocmd FileType gita-blame-navi call s:gita_blame_settings()
+function! s:gita_blame_settings()
   nmap <buffer> <C-l> <C-w>l
   nmap <buffer> <C-r> <Plug>(gita-common-redraw)
 endfunction
@@ -972,6 +973,11 @@ endfunction
 nnoremap <silent> <Leader>gs  :<C-u>Gina status<CR>
 nnoremap <silent> <Leader>gd  :<C-u>Gina diff<CR>
 nnoremap <silent> <Leader>gci :<C-u>Gina commit<CR>
+autocmd FileType gina-blame call s:gina_blame_settings()
+function! s:gina_blame_settings()
+  nmap <buffer> <C-l> <C-w>l
+  nmap <buffer> <C-r> <Plug>(gina-blame-redraw)
+endfunction
 " }}}
 
 " rooter {{{
@@ -1360,7 +1366,7 @@ let g:loaded_matchparen = 1
 let g:rainbow_active = 1
 let g:rainbow_conf = {
             \   'guifgs' : [ '#666666', '#0087ff', '#ff005f', '#875fd7', '#d78700', '#00af87' ],
-            \   'ctermfgs': [ '242', '33', '197', '98', '172', '36' ],
+            \   'ctermfgs': [ '110', '150', '109', '216', '140', '203' ],
             \   'separately' : {
             \       '*':   {},
             \       'vim': {},
@@ -1435,7 +1441,7 @@ if s:plug.is_installed("vim-extracmd")
   call extracmd#set('gdc',          'Tmpbuffer git diff --cached <bar> set filetype=diff')
   call extracmd#set('gita',         'Gita')
   call extracmd#set('gina',         'Gina')
-  call extracmd#set('blame',        'Gita blame')
+  call extracmd#set('blame',        'Gina blame :%')
   call extracmd#set('branch',       'Unite giti/branch<CR>')
   call extracmd#set('agit',         'Agit')
   call extracmd#set('af',           'AgitFile')
