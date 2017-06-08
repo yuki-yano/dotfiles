@@ -81,6 +81,7 @@ install homebrew/dupes/libiconv
 install htop-osx
 install httpie
 install jq
+install jvgrep
 install libxml2
 install libxslt
 install lynx
