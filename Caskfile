@@ -41,6 +41,7 @@ cask install macvim-kaoriya
 cask install marp
 cask install mediainfo
 cask install mplayerx
+cask install opera
 cask install path-finder
 cask install paw
 cask install scroll-reverser
