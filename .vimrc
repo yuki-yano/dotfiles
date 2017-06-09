@@ -40,7 +40,6 @@ Plug 'gre/play2vim', { 'for': 'scala' }
 Plug 'hail2u/vim-css3-syntax', { 'for': 'css' }
 Plug 'hashivim/vim-terraform', { 'for': 'terraform' }
 Plug 'heavenshell/vim-pydocstring', { 'for': 'python' }
-Plug 'idanarye/vim-merginal', { 'branch': 'develop' }
 Plug 'jparise/vim-graphql', { 'for': 'graphql' }
 Plug 'jsfaint/gen_tags.vim'
 Plug 'kchmck/vim-coffee-script', { 'for': 'coffee' }
@@ -1037,10 +1036,6 @@ nmap k <Plug>(accelerated_jk_k)
 let g:comfortable_motion_interval = 1000 / 45.0
 let g:comfortable_motion_friction = 60.0
 let g:comfortable_motion_air_drag = 1.5
-" }}}
-
-" doorboy {{{
-let g:doorboy_nomap_quotations = { 'javascript': ['/'] }
 " }}}
 
 " easy-align {{{
