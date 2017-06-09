@@ -938,7 +938,7 @@ endfunction
 "
 " git-gutter {{{
 if s:plug.is_installed("vim-gitgutter")
-let g:gitgutter_map_keys = 0
+  let g:gitgutter_map_keys = 0
   nmap <silent> gp <Plug>GitGutterPrevHunk
   nmap <silent> gn <Plug>GitGutterNextHunk
   nmap <silent> <Leader>gs <Plug>GitGutterStageHunk
@@ -1360,14 +1360,14 @@ let g:loaded_matchparen = 1
 " rainbow {{{
 let g:rainbow_active = 1
 let g:rainbow_conf = {
-            \   'guifgs' : [ '#666666', '#0087ff', '#ff005f', '#875fd7', '#d78700', '#00af87' ],
-            \   'ctermfgs': [ '110', '150', '109', '216', '140', '203' ],
-            \   'separately' : {
-            \       '*':   {},
-            \       'vim': {},
-            \       'css': 0,
-            \   }
-\ }
+      \   'guifgs' : [ '#666666', '#0087ff', '#ff005f', '#875fd7', '#d78700', '#00af87' ],
+      \   'ctermfgs': [ '110', '150', '109', '216', '140', '203' ],
+      \   'separately' : {
+      \       '*':   {},
+      \       'vim': {},
+      \       'css': 0,
+      \   }
+      \ }
 " }}}
 
 " thumbnail {{{
@@ -1431,26 +1431,26 @@ map <Leader>B <Plug>(external-browser)
 
 " extracmd {{{
 if s:plug.is_installed("vim-extracmd")
-  call extracmd#set('w!!',          'w !sudo tee > /dev/null %')
-  call extracmd#set('gd',           'Tmpbuffer git diff <bar> set filetype=diff')
-  call extracmd#set('gdc',          'Tmpbuffer git diff --cached <bar> set filetype=diff')
-  call extracmd#set('gita',         'Gita')
-  call extracmd#set('gina',         'Gina')
-  call extracmd#set('blame',        'Gina blame :%')
-  call extracmd#set('branch',       'Unite giti/branch<CR>')
-  call extracmd#set('agit',         'Agit')
-  call extracmd#set('af',           'AgitFile')
-  call extracmd#set('di',           'Ref webdict alc <C-R><C-W><CR>')
-  call extracmd#set('alc',          'Ref webdict alc')
-  call extracmd#set('tag',          'TagbarOpen j<CR>')
-  call extracmd#set('num',          'NumbersToggle<CR>')
-  call extracmd#set('j',            'Unite jump change -auto-preview<CR>')
-  call extracmd#set('tab',          'Unite tab<CR>')
-  call extracmd#set('sf',           'CtrlSF')
-  call extracmd#set('mn',           'MemoNew<CR>')
-  call extracmd#set('ml',           'MemoList<CR>')
-  call extracmd#set('nr',           'NR<CR>')
-  call extracmd#set('nr',           'Scratch<CR>')
+  call extracmd#set('w!!',    'w !sudo tee > /dev/null %')
+  call extracmd#set('gd',     'Tmpbuffer git diff <bar> set filetype=diff')
+  call extracmd#set('gdc',    'Tmpbuffer git diff --cached <bar> set filetype=diff')
+  call extracmd#set('gita',   'Gita')
+  call extracmd#set('gina',   'Gina')
+  call extracmd#set('blame',  'Gina blame :%')
+  call extracmd#set('branch', 'Unite giti/branch<CR>')
+  call extracmd#set('agit',   'Agit')
+  call extracmd#set('af',     'AgitFile')
+  call extracmd#set('di',     'Ref webdict alc <C-R><C-W><CR>')
+  call extracmd#set('alc',    'Ref webdict alc')
+  call extracmd#set('tag',    'TagbarOpen j<CR>')
+  call extracmd#set('num',    'NumbersToggle<CR>')
+  call extracmd#set('j',      'Unite jump change -auto-preview<CR>')
+  call extracmd#set('tab',    'Unite tab<CR>')
+  call extracmd#set('sf',     'CtrlSF')
+  call extracmd#set('mn',     'MemoNew<CR>')
+  call extracmd#set('ml',     'MemoList<CR>')
+  call extracmd#set('nr',     'NR<CR>')
+  call extracmd#set('nr',     'Scratch<CR>')
 endif
 " }}}
 
