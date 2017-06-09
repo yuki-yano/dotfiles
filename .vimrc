@@ -229,7 +229,7 @@ Plug 'tyru/capture.vim', { 'on': 'Capture' }
 Plug 'tyru/open-browser.vim'
 Plug 'tyru/operator-camelize.vim'
 Plug 'tyru/vim-altercmd'
-Plug 'wellle/targets.vim', { 'on': 'Tagbar' }
+Plug 'wellle/targets.vim'
 " }}}
 
 " Library {{{
@@ -484,7 +484,7 @@ inoremap ？ ?
 
 " }}}
 
-" Settings {{{
+" Command {{{
 
 " GoogleTranslation {{{
 function! TransRange() range
@@ -1154,7 +1154,7 @@ let g:WebDevIconsUnicodeDecorateFileNodes = 1
 let g:ctrlp_mruf_map_string = 1
 " }}}
 
-" devicons {{{
+" echodoc {{{
 let g:echodoc#enable_at_startup = 1
 " }}}
 
