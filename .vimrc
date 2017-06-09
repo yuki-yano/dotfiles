@@ -1359,9 +1359,11 @@ if s:plug.is_installed("lightline.vim")
     elseif a:mode == 1 " Warning
       let l:warnings = l:counts.warning + l:counts.style_warning
       return l:warnings ? printf(l:warning_format, l:warnings) : ''
+    elseif a:mode == 2
+      let l:errors = l:counts.error + l:counts.style_error
+      let l:warnings = l:counts.warning + l:counts.style_warning
+      return l:errors == 0 && l:warnings == 0 ? l:no_errors : ''
     endif
-
-    return l:no_errors
   endfunction
 endif
 " }}}
@@ -1468,6 +1470,7 @@ if s:plug.is_installed("vim-extracmd")
   call extracmd#set('gdc',    'Tmpbuffer git diff --cached <bar> set filetype=diff')
   call extracmd#set('gita',   'Gita')
   call extracmd#set('gina',   'Gina')
+  call extracmd#set('gs',     'Gina staus')
   call extracmd#set('blame',  'Gina blame :%')
   call extracmd#set('branch', 'Unite giti/branch<CR>')
   call extracmd#set('agit',   'Agit')
