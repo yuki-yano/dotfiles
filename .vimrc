@@ -181,7 +181,7 @@ Plug 'vimtaku/hl_matchit.vim'
 " }}}
 
 " Util {{{
-Plug 'aiya000/aho-bakaup.vim'
+Plug 'TheZoq2/neovim-auto-autoread', Cond(has('nvim'),{ 'do': ':UpdateRemotePlugins' })
 Plug 'bagrat/vim-workspace'
 Plug 'benizi/vim-automkdir'
 Plug 'bogado/file-line'
@@ -257,7 +257,7 @@ filetype plugin indent on
 
 " }}}
 
-" Basic {{{
+" Settings {{{
 
 "" Python3 support
 let g:python_host_prog = '/usr/local/bin/python2'
@@ -269,66 +269,123 @@ let g:ruby_host_prog = expand('$HOME') . '/.pyenv/shims/ruby'
 "" Leader
 let mapleader = " "
 
-"" Set Option
-set nobackup
-set autoread
-set hidden
-set formatoptions=lmoq
-set vb t_vb=
-set browsedir=buffer
-set showcmd
-set showmode
-set backspace=2
-set clipboard+=unnamed
-set mouse=a
-set guioptions+=a
-if !has('nvim')
-  set ttymouse=xterm2
+"" Encoding.
+if has('vim_starting')
+  set encoding=utf-8
+  set fileencodings=utf-8,sjis,cp932,euc-jp
+  set fileformats=unix,mac,dos
 endif
-set laststatus=2
-set ruler
-set showmatch
-set matchtime=1
-set number
-set virtualedit=block
-set lazyredraw
-set ttyfast
-set wrapscan
-set ignorecase
-set incsearch
-set hlsearch
-set undodir=$HOME/.vim/undodir
-set undofile
-set shell=/bin/bash
-set previewheight=18
-set tags+=tags
-set showtabline=2
-set display=lastline
-set pumheight=15
+
+"" Appearance
+set cmdheight=2
+set cursorline
 set diffopt=filler,icase,vertical
+set display=lastline
+set helplang=ja
+set laststatus=2
+set listchars=tab:>\ ,trail:\ ,extends:<,precedes:<
+set matchtime=1
+set previewheight=18
+set pumheight=15
+set showcmd
+set showmatch
+set showtabline=2
+
+"" Color
+if $TERM == 'screen'
+  set t_Co=256
+endif
+
+set background=dark
+silent! colorscheme iceberg
+autocmd ColorScheme * hi LineNr ctermfg=241
+autocmd ColorScheme * hi CursorLineNr ctermbg=237 ctermfg=253
+autocmd ColorScheme * hi CursorLine ctermbg=235
+autocmd ColorScheme * hi Search  ctermfg=none ctermbg=237
+autocmd ColorScheme * hi PmenuSel cterm=reverse ctermfg=33 ctermbg=222
+autocmd VimEnter    * hi Visual ctermfg=159 ctermbg=23
+syntax enable
+
+"" Folding
+set foldcolumn=1
+set foldenable
+set foldmethod=indent
+
+"" Safety
+set directory=~/.vim/swap
+set swapfile directory=/var/tmp,/tmp
+set writebackup
+
+"" History
+set history=2048
+set undodir=~/.vim_undo
+set undofile
+set viewoptions=cursor,folds
+
+" Search
+set hlsearch
+set ignorecase
+set smartcase
+
+"" Indent
+set autoindent
+set expandtab
+set smartindent
+set cindent
+set backspace=2
+set tabstop=2 shiftwidth=2 softtabstop=0
+
+filetype plugin on
+filetype indent on
+
+autocmd FileType apache     setlocal sw=4 sts=4 ts=4 et
+autocmd FileType java       setlocal sw=4 sts=4 ts=4 et
+autocmd FileType javascript setlocal sw=2 sts=2 ts=2 et
+autocmd FileType markdown   setlocal sw=4 sts=4 ts=4 et
+autocmd FileType perl       setlocal sw=4 sts=4 ts=4 et
+autocmd FileType php        setlocal sw=4 sts=4 ts=4 et
+autocmd FileType ruby       setlocal sw=2 sts=2 ts=2 et
+autocmd FileType sh         setlocal sw=4 sts=4 ts=4 et
+autocmd FileType sql        setlocal sw=4 sts=4 ts=4 et
+autocmd FileType vim        setlocal sw=2 sts=2 ts=2 et
+autocmd FileType zsh        setlocal sw=4 sts=4 ts=4 et
+
+"" Others.
+set autoread
+set belloff=all
+set clipboard+=unnamed
+set completeopt=longest,menuone,preview
+set ignorecase
+set langnoremap
+set lazyredraw
+set matchpairs+=<:>
+set regexpengine=2
+set shell=/bin/bash
+set suffixesadd=.js,.rb,.ts,.json,.md
 set timeoutlen=750
 set ttimeoutlen=250
-set suffixesadd=.js,.rb,.ts,.json,.md
-set cmdheight=2
-set foldmethod=manual
-
-set swapfile directory=/var/tmp,/tmp
-autocmd SwapExists * let v:swapchoice = 'o'
+set updatetime=500
+set virtualedit=block
+set whichwrap=b,s,h,l,<,>,[,]
+set wildignorecase
+set wildmenu
+set wildmode=longest:list,list
+set wrapscan
 
 "" Map
-nnoremap <silent> <Leader>w :<C-u>w<CR>
-nnoremap <silent> <Leader>W :<C-u>wall<CR>
-nnoremap <silent> <Leader>q :<C-u>q<CR>
-nnoremap B :b<Space>
 if has('nvim')
   nmap <BS> <C-W>h
 endif
+inoremap <C-h> <BS>
+inoremap <C-d> <Del>
+nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
-nnoremap <C-h> <C-w>h
-inoremap <C-d> <Del>
-imap <C-h> <BS>
+nnoremap <silent> <Leader>W :<C-u>wall<CR>
+nnoremap <silent> <Leader>q :<C-u>q<CR>
+nnoremap <silent> <Leader>w :<C-u>w<CR>
+nnoremap B :b<Space>
 
 "" Move CommandLine
 cnoremap <C-a> <Home>
@@ -339,10 +396,7 @@ cnoremap <C-f> <Right>
 cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
 
-"" Completion
-set wildmenu
-set wildmode=longest:list,list
-set history=1000
+"" Language
 set complete+=k
 set completeopt=longest,menuone,preview
 
@@ -352,77 +406,8 @@ autocmd FileType python        setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType css           setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType scala         setlocal omnifunc=EnCompleteFunc
-
 autocmd FileType javascript    setlocal dict=~/dotfiles/.vim/dict/javascript.dict
 autocmd FileType ruby,eruby    setlocal dict=~/dotfiles/.vim/dict/rails.dict
-
-noremap <silent><Leader>h :<C-u>call <SID>ToggleHiglight()<CR>
-function! s:ToggleHiglight()
-  if exists("g:syntax_on")
-    syntax off
-  else
-    syntax enable
-  endif
-endfunction
-
-function! TrimEndLines()
-  let save_cursor = getpos(".")
-  :silent! %s#\($\n\s*\)\+\%$##
-  call setpos('.', save_cursor)
-endfunction
-
-au BufWritePre * call TrimEndLines()
-
-" }}}
-
-" Indent {{{
-
-set autoindent
-set expandtab
-set smartindent
-set cindent
-
-set tabstop=2 shiftwidth=2 softtabstop=0
-
-if has("autocmd")
-  filetype plugin on
-  filetype indent on
-
-  autocmd FileType apache     setlocal sw=4 sts=4 ts=4 et
-  autocmd FileType java       setlocal sw=4 sts=4 ts=4 et
-  autocmd FileType javascript setlocal sw=2 sts=2 ts=2 et
-  autocmd FileType markdown   setlocal sw=4 sts=4 ts=4 et
-  autocmd FileType perl       setlocal sw=4 sts=4 ts=4 et
-  autocmd FileType php        setlocal sw=4 sts=4 ts=4 et
-  autocmd FileType ruby       setlocal sw=2 sts=2 ts=2 et
-  autocmd FileType sh         setlocal sw=4 sts=4 ts=4 et
-  autocmd FileType sql        setlocal sw=4 sts=4 ts=4 et
-  autocmd FileType vim        setlocal sw=2 sts=2 ts=2 et
-  autocmd FileType zsh        setlocal sw=4 sts=4 ts=4 et
-endif
-
-" }}}
-
-" Color {{{
-if $TERM == 'screen'
-  set t_Co=256
-endif
-
-set background=dark
-set cursorline
-silent! colorscheme iceberg
-autocmd ColorScheme * hi LineNr ctermfg=241
-autocmd ColorScheme * hi CursorLineNr ctermbg=237 ctermfg=253
-autocmd ColorScheme * hi CursorLine ctermbg=235
-autocmd ColorScheme * hi Search  ctermfg=none ctermbg=237
-autocmd ColorScheme * hi PmenuSel cterm=reverse ctermfg=33 ctermbg=222
-autocmd VimEnter    * hi Visual ctermfg=159 ctermbg=23
-
-syntax enable
-
-" }}}
-
-" Mode {{{
 
 autocmd BufNewFile,BufRead        *.erb  set filetype=eruby.html
 autocmd BufNewFile,BufRead         *.js  set filetype=javascript
@@ -439,9 +424,32 @@ autocmd BufNewFile,BufRead      Gemfile  set filetype=ruby
 autocmd BufNewFile,BufRead  Vagrantfile  set filetype=ruby
 autocmd BufNewFile,BufRead   Schemafile  set filetype=ruby
 
-" }}}
+" Turn off default plugins.
+let g:loaded_2html_plugin  = 1
+let g:loaded_gzip          = 1
+let g:loaded_rrhelper      = 1
+let g:loaded_tar           = 1
+let g:loaded_tarPlugin     = 1
+let g:loaded_vimballPlugin = 1
+let g:loaded_zip           = 1
+let g:loaded_zipPlugin     = 1
+let g:loaded_matchparen    = 1
 
-" hankaku {{{
+"" Color
+if $TERM == 'screen'
+  set t_Co=256
+endif
+
+set background=dark
+silent! colorscheme iceberg
+autocmd ColorScheme * hi LineNr ctermfg=241
+autocmd ColorScheme * hi CursorLineNr ctermbg=237 ctermfg=253
+autocmd ColorScheme * hi CursorLine ctermbg=235
+autocmd ColorScheme * hi Search  ctermfg=none ctermbg=237
+autocmd ColorScheme * hi PmenuSel cterm=reverse ctermfg=33 ctermbg=222
+autocmd VimEnter    * hi Visual ctermfg=159 ctermbg=23
+
+"" hankaku
 inoremap 　 <Space>
 inoremap （ (
 inoremap ） )
@@ -472,6 +480,7 @@ inoremap ８ 8
 inoremap ９ 9
 inoremap ～ ~
 inoremap ？ ?
+
 " }}}
 
 " Settings {{{
@@ -489,6 +498,26 @@ endfunction
 
 command! -range Trans <line1>,<line2>call TransRange()
 vnoremap <Leader>tr :Trans<CR>
+" }}}
+
+" ToggleHiglight {{{
+noremap <silent><Leader>h :<C-u>call <SID>ToggleHiglight()<CR>
+function! s:ToggleHiglight()
+  if exists("g:syntax_on")
+    syntax off
+  else
+    syntax enable
+  endif
+endfunction
+" }}}
+
+" TrimEndLines {{{
+function! TrimEndLines()
+  let save_cursor = getpos(".")
+  :silent! %s#\($\n\s*\)\+\%$##
+  call setpos('.', save_cursor)
+endfunction
+au BufWritePre * call TrimEndLines()
 " }}}
 
 " }}}
@@ -1405,13 +1434,15 @@ let g:zenspace#default_mode = 'on'
 
 " Util {{{
 
-" aho-bakaup {{{
-let g:bakaup_auto_backup = 1
-" }}}
-
 " ambicmd {{{
 if s:plug.is_installed("vim-ambicmd")
   cnoremap <expr> <Space> ambicmd#expand("\<Space>")
+endif
+" }}}
+
+" neovim-auto-autoread {{{
+if has('nvim')
+  autocmd VimEnter * AutoreadLoop
 endif
 " }}}
 
