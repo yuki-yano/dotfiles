@@ -367,7 +367,6 @@ set ttimeoutlen=250
 set updatetime=500
 set virtualedit=all
 set virtualedit=block
-set whichwrap=b,s,h,l,<,>,[,]
 set wildignorecase
 set wildmenu
 set wildmode=longest:full,full
