@@ -1,6 +1,9 @@
 set main-view = id date author commit-title:graph=yes,refs=yes
 bind main C !@bash -c "echo -n %(commit) | pbcopy"
 
+bind main R !git rebase -i %(commit)
+bind diff R !git rebase -i %(commit)
+
 color cursor white black
 color status white default
 color title-focus white black
