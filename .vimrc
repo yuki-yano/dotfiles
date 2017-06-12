@@ -587,7 +587,7 @@ let g:formatdef_vuefmt = '"cat > vuefmt-temp.vue; ruby -e ''File.read(\"vuefmt-t
 let g:formatters_vue = ['vuefmt']
 
 " scala
-let g:formatdef_scalafmt = "'cat | scalafmt --stdin'"
+let g:formatdef_scalafmt = "'scalafmt --stdin'"
 let g:formatters_scala = ['scalafmt']
 " }}}
 
