@@ -181,7 +181,6 @@ Plug 'vimtaku/hl_matchit.vim'
 " }}}
 
 " Util {{{
-Plug 'TheZoq2/neovim-auto-autoread', Cond(has('nvim'),{ 'do': ':UpdateRemotePlugins' })
 Plug 'bagrat/vim-workspace'
 Plug 'benizi/vim-automkdir'
 Plug 'bogado/file-line'
@@ -1441,12 +1440,6 @@ let g:zenspace#default_mode = 'on'
 "if s:plug.is_installed("vim-ambicmd")
 "  cnoremap <expr> <Space> ambicmd#expand("\<Space>")
 "endif
-" }}}
-
-" neovim-auto-autoread {{{
-if has('nvim')
-  autocmd VimEnter * AutoreadLoop
-endif
 " }}}
 
 " expand-region {{{
