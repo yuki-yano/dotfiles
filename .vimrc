@@ -1051,6 +1051,7 @@ if s:plug.is_installed("incsearch.vim")
 
   nmap s <Plug>(easymotion-overwin-f2)
   vmap s <Plug>(easymotion-bd-f2)
+  let g:EasyMotion_startofline = 1
   map  <Leader>j <Plug>(easymotion-j)
   map  <Leader>k <Plug>(easymotion-k)
 endif
