@@ -71,9 +71,6 @@ alias uuuu='cd ../../../..'
 # popd
 alias p='popd'
 
-# rm
-alias rm='rmtrash'
-
 # yes
 alias y='yes'
 
