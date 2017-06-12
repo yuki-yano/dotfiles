@@ -370,7 +370,7 @@ set virtualedit=block
 set whichwrap=b,s,h,l,<,>,[,]
 set wildignorecase
 set wildmenu
-set wildmode=longest:list,list
+set wildmode=longest:full,full
 set wrapscan
 
 "" Map
