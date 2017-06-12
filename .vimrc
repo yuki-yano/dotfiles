@@ -386,6 +386,7 @@ nnoremap <silent> <Leader>W :<C-u>wall<CR>
 nnoremap <silent> <Leader>q :<C-u>q<CR>
 nnoremap <silent> <Leader>w :<C-u>w<CR>
 nnoremap B :b<Space>
+nnoremap x "_x
 
 "" Move CommandLine
 cnoremap <C-a> <Home>
@@ -1534,18 +1535,6 @@ let g:startify_list_order = [
       \ 'commands',
       \ ]
 let g:startify_change_to_vcs_root = 1
-" }}}
-
-" submode {{{
-if s:plug.is_installed("vim-submode")
-  function! s:my_x()
-    undojoin
-    normal! "_x
-  endfunction
-  nnoremap <silent> <Plug>(my-x) :<C-u>call <SID>my_x()<CR>
-  call submode#enter_with('my_x', 'n', '', 'x', '"_x')
-  call submode#map('my_x', 'n', 'r', 'x', '<Plug>(my-x)')
-endif
 " }}}
 
 " undotree {{{
