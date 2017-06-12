@@ -284,6 +284,7 @@ set helplang=ja
 set laststatus=2
 set listchars=tab:>\ ,trail:\ ,extends:<,precedes:<
 set matchtime=1
+set number
 set previewheight=18
 set pumheight=15
 set showcmd
