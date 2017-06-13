@@ -25,6 +25,7 @@ Plug 'Shougo/context_filetype.vim'
 Plug 'Shougo/vinarise.vim'
 Plug 'Valloric/MatchTagAlways', { 'for': ['html', 'xml', 'erb'] }
 Plug 'Vimjas/vim-python-pep8-indent', { 'for': 'python' }
+Plug 'ap/vim-css-color', { 'for': ['css', 'sass', 'scss'] }
 Plug 'cakebaker/scss-syntax.vim', { 'for': ['sass', 'scss'] }
 Plug 'cespare/vim-toml', { 'for': 'toml' }
 Plug 'csscomb/vim-csscomb', { 'for': ['css', 'sass', 'scss'] }
@@ -65,6 +66,7 @@ Plug 'posva/vim-vue', { 'for': 'vue' }
 Plug 'raimon49/requirements.txt.vim', { 'for': 'requirements' }
 Plug 'rhysd/vim-gfm-syntax', { 'for': 'markdown' }
 Plug 'rhysd/vim-textobj-ruby', { 'for': 'ruby' }
+Plug 'shmargum/vim-sass-colors', { 'for': ['sass', 'scss'] }
 Plug 'slim-template/vim-slim', { 'for': 'slim' }
 Plug 'tell-k/vim-autopep8', { 'for': 'python' }
 Plug 'thinca/vim-ft-help_fold', { 'for': 'help' }
