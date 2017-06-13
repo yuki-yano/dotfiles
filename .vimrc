@@ -201,6 +201,7 @@ Plug 'kana/vim-submode'
 Plug 'kana/vim-textobj-function'
 Plug 'kana/vim-textobj-line'
 Plug 'kana/vim-textobj-user'
+Plug 'kassio/neoterm'
 Plug 'konfekt/fastfold'
 Plug 'lucapette/vim-textobj-underscore'
 Plug 'mattesgroeger/vim-bookmarks'
@@ -397,6 +398,9 @@ cnoremap <C-e> <End>
 cnoremap <C-f> <Right>
 cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
+
+"" terminal
+tnoremap <silent> <ESC> <C-\><C-n>
 
 "" Language
 set complete+=k
@@ -1466,7 +1470,7 @@ if s:plug.is_installed("vim-extracmd")
   call extracmd#set('gdc',    'Tmpbuffer git diff --cached <bar> set filetype=diff')
   call extracmd#set('gita',   'Gita')
   call extracmd#set('gina',   'Gina')
-  call extracmd#set('gs',     'Gina staus')
+  call extracmd#set('gs',     'Gina status')
   call extracmd#set('blame',  'Gina blame :%')
   call extracmd#set('branch', 'Unite giti/branch<CR>')
   call extracmd#set('agit',   'Agit')
