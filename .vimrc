@@ -279,7 +279,7 @@ if has('vim_starting')
 endif
 
 "" Appearance
-set cmdheight=2
+set cmdheight=1
 set cursorline
 set diffopt=filler,icase,vertical
 set display=lastline
