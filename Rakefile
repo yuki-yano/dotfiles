@@ -4,6 +4,7 @@ DOTFILES_SRCS = %w[
   .agignore
   .amethyst
   .atom
+  .bashrc
   .config
   .ctags
   .dircolors
@@ -15,7 +16,6 @@ DOTFILES_SRCS = %w[
   .gitignore_global
   .globalrc
   .gvimrc
-  .hammerspoon
   .ideavimrc
   .pryrc
   .railsrc
