@@ -133,6 +133,7 @@ Plug 'zchee/deoplete-jedi', Cond(has('nvim'), { 'for': ['python'] })
 Plug 'AndrewRadev/switch.vim', { 'on': 'Switch' }
 Plug 'LeafCage/yankround.vim'
 Plug 'chrisbra/NrrwRgn', { 'on': 'NR' }
+Plug 'cohama/lexima.vim'
 Plug 'dhruvasagar/vim-table-mode', { 'on': 'TableModeToggle' }
 Plug 'dietsche/vim-lastplace'
 Plug 'dyng/ctrlsf.vim', { 'on': 'CtrlSF' }
@@ -143,17 +144,16 @@ Plug 'haya14busa/incsearch.vim'
 Plug 'haya14busa/vim-asterisk'
 Plug 'haya14busa/vim-metarepeat'
 Plug 'houtsnip/vim-emacscommandline'
-Plug 'jiangmiao/auto-pairs'
 Plug 'junegunn/vim-easy-align'
 Plug 'jwhitley/vim-matchit'
 Plug 'kana/vim-operator-replace'
 Plug 'osyo-manga/vim-anzu'
 Plug 'osyo-manga/vim-jplus'
 Plug 'osyo-manga/vim-over'
-Plug 'scrooloose/nerdcommenter'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'thinca/vim-qfreplace', { 'on': 'Qfreplace' }
 Plug 'thinca/vim-visualstar'
+Plug 'tomtom/tcomment_vim'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-speeddating'
 Plug 'tpope/vim-surround'
@@ -1130,6 +1130,10 @@ xmap <Leader><Leader>m <Plug>(quickhl-manual-reset)
 " switch {{{
 " 便利だけど挙動が怪しい
 nnoremap <silent> <C-s> :<C-u>Switch<CR>
+" }}}
+
+" tcomment {{{
+vnoremap <silent> <Leader>cc :TComment<CR>
 " }}}
 
 " yankround {{{
