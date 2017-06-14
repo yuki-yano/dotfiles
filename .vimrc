@@ -10,9 +10,6 @@ function! Cond(cond, ...)
   return a:cond ? opts : extend(opts, { 'on': [], 'for': [] })
 endfunction
 
-" 他のプラグインとの都合上最初に読み込む
-Plug 'ryanoasis/vim-devicons'
-
 " Doc {{{
 Plug 'mattn/learn-vimscript'
 Plug 'vim-jp/vimdoc-ja'
@@ -110,7 +107,7 @@ Plug 'Shougo/unite.vim'
 Plug 'Shougo/vimfiler'
 Plug 'Valloric/YouCompleteMe', Cond(!has('nvim'), { 'do': './install.py' })
 Plug 'carlitux/deoplete-ternjs', Cond(has('nvim'), { 'for': ['javascript'] })
-Plug 'ctrlpvim/ctrlp.vim', { 'on': 'CtrlP' }
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'hewes/unite-gtags'
 Plug 'honza/vim-snippets'
 Plug 'kmnk/vim-unite-giti'
@@ -183,7 +180,6 @@ Plug 'vimtaku/hl_matchit.vim'
 " }}}
 
 " Util {{{
-Plug 'bagrat/vim-workspace'
 Plug 'benizi/vim-automkdir'
 Plug 'bogado/file-line'
 Plug 'chrisbra/Recover.vim'
@@ -239,6 +235,10 @@ Plug 'JazzCore/ctrlp-cmatcher', {'do' : './install.sh'}
 Plug 'vim-scripts/L9'
 Plug 'vim-scripts/cecutil'
 " }}}
+
+" 他のプラグインとの都合上最後に読み込む
+Plug 'ryanoasis/vim-devicons'
+Plug 'bagrat/vim-workspace'
 
 " My Plugin {{{
 set runtimepath+=~/.vim/plugins/lightline-iceberg-tigberd
@@ -1161,6 +1161,7 @@ autocmd FileType unite,denite,qf,vimfiler,thumbnail let b:cursorword=0
 let g:webdevicons_enable = 1
 let g:webdevicons_enable_unite = 1
 let g:webdevicons_enable_vimfiler = 1
+let g:webdevicons_enable_ctrlp = 1
 let g:WebDevIconsUnicodeDecorateFileNodes = 1
 
 " アップデートでctrlpがフォーク先だと判定されないので仮対応
