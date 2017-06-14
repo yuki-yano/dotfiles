@@ -188,7 +188,6 @@ Plug 'benizi/vim-automkdir'
 Plug 'bogado/file-line'
 Plug 'chrisbra/Recover.vim'
 Plug 'daisuzu/translategoogle.vim'
-Plug 'glidenote/memolist.vim', { 'on': ['MemoNew', 'MemoList', 'MemoGrep'] }
 Plug 'h1mesuke/textobj-wiw'
 Plug 'itchyny/vim-external'
 Plug 'itchyny/vim-extracmd'
@@ -1492,8 +1491,6 @@ if s:plug.is_installed("vim-extracmd")
   call extracmd#set('j',      'Unite jump change -auto-preview<CR>')
   call extracmd#set('tab',    'Unite tab<CR>')
   call extracmd#set('sf',     'CtrlSF')
-  call extracmd#set('mn',     'MemoNew<CR>')
-  call extracmd#set('ml',     'MemoList<CR>')
   call extracmd#set('nr',     'NR<CR>')
   call extracmd#set('nr',     'Scratch<CR>')
 endif
@@ -1506,11 +1503,6 @@ let g:gist_open_browser_after_post = 1
 
 " maximizer {{{
 nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
-" }}}
-
-" memolist {{{
-let g:memolist_unite = 1
-let g:memolist_unite_option = "-auto-preview -start-insert"
 " }}}
 
 " ref {{{
