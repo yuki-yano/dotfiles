@@ -392,6 +392,7 @@ nnoremap <silent> <Leader>q :<C-u>q<CR>
 nnoremap <silent> <Leader>w :<C-u>w<CR>
 nnoremap B :b<Space>
 nnoremap x "_x
+nnoremap <silent> <Leader>tr :<C-u>terminal<CR>
 
 "" Move CommandLine
 cnoremap <C-a> <Home>
@@ -506,7 +507,6 @@ function! TransRange() range
 endfunction
 
 command! -range Trans <line1>,<line2>call TransRange()
-vnoremap <Leader>tr :Trans<CR>
 " }}}
 
 " ToggleHiglight {{{
