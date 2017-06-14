@@ -128,6 +128,8 @@ Plug 'zchee/deoplete-jedi', Cond(has('nvim'), { 'for': ['python'] })
 " }}}
 
 " Edit & Move & Search {{{
+" Plug 'rhysd/accelerated-jk'
+" Plug 'yuttie/comfortable-motion.vim'
 Plug 'AndrewRadev/switch.vim', { 'on': 'Switch' }
 Plug 'LeafCage/yankround.vim'
 Plug 'chrisbra/NrrwRgn', { 'on': 'NR' }
@@ -148,7 +150,6 @@ Plug 'kana/vim-operator-replace'
 Plug 'osyo-manga/vim-anzu'
 Plug 'osyo-manga/vim-jplus'
 Plug 'osyo-manga/vim-over'
-Plug 'rhysd/accelerated-jk'
 Plug 'scrooloose/nerdcommenter'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'thinca/vim-qfreplace', { 'on': 'Qfreplace' }
@@ -157,7 +158,6 @@ Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-speeddating'
 Plug 'tpope/vim-surround'
 Plug 'tyru/operator-camelize.vim'
-Plug 'yuttie/comfortable-motion.vim'
 " }}}
 
 " Appearance {{{
@@ -1064,14 +1064,14 @@ endif
 " }}}
 
 " accelerated-jk {{{
-nmap j <Plug>(accelerated_jk_j)
-nmap k <Plug>(accelerated_jk_k)
+" nmap j <Plug>(accelerated_jk_j)
+" nmap k <Plug>(accelerated_jk_k)
 " }}}
 
 " comfortable-motion {{{
-let g:comfortable_motion_interval = 1000 / 45.0
-let g:comfortable_motion_friction = 60.0
-let g:comfortable_motion_air_drag = 1.5
+" let g:comfortable_motion_interval = 1000 / 45.0
+" let g:comfortable_motion_friction = 60.0
+" let g:comfortable_motion_air_drag = 1.5
 " }}}
 
 " easy-align {{{
