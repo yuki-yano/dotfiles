@@ -212,7 +212,6 @@ Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 Plug 'mhinz/vim-startify'
 Plug 'mopp/autodirmake.vim'
 Plug 'mtth/scratch.vim', { 'on': 'Scratch' }
-Plug 'myusuf3/numbers.vim'
 Plug 'nelstrom/vim-textobj-rubyblock'
 Plug 'osyo-manga/vim-textobj-multiblock'
 Plug 'qpkorr/vim-bufkill'
@@ -288,11 +287,15 @@ set laststatus=2
 set listchars=tab:>\ ,trail:\ ,extends:<,precedes:<
 set matchtime=1
 set number
+set relativenumber
 set previewheight=18
 set pumheight=15
 set showcmd
 set showmatch
 set showtabline=2
+
+autocmd TermOpen * set nonumber | set norelativenumber
+autocmd BufNewFile,BufRead,FileType * set number | set relativenumber
 
 "" Color
 if $TERM == 'screen'
@@ -1467,10 +1470,10 @@ map <Leader>B <Plug>(external-browser)
 " extracmd {{{
 if s:plug.is_installed("vim-extracmd")
   call extracmd#set('w!!',    'w !sudo tee > /dev/null %')
-  call extracmd#set('gd',     'Tmpbuffer git diff <bar> set filetype=diff')
-  call extracmd#set('gdc',    'Tmpbuffer git diff --cached <bar> set filetype=diff')
   call extracmd#set('gita',   'Gita')
   call extracmd#set('gina',   'Gina')
+  call extracmd#set('gd',     'Gina diff')
+  call extracmd#set('gdc',    'Gina diff --cached')
   call extracmd#set('gs',     'Gina status')
   call extracmd#set('gci',    'Gina commit')
   call extracmd#set('blame',  'Gina blame :%')

@@ -46,6 +46,7 @@ export PATH=$PATH:/usr/local/heroku/bin
 
 # vim
 alias vi='nvim'
+alias vr='nvr'
 alias s='nvim +terminal'
 export PATH=$PATH:$HOME/.vim/plugged/vim-superman/bin
 

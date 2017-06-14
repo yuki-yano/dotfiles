@@ -6,6 +6,7 @@ flake8
 jedi
 mypy-lang
 neovim
+neovim-remote
 psutil
 pygments-style-solarized
 sexpdata
