@@ -1517,6 +1517,10 @@ function! g:ref_source_webdict_sites.alc.filter(output)
 endfunction
 " }}}
 
+" scratch {{{
+let g:scratch_no_mappings = 1
+" }}}
+
 " startify {{{
 let g:startify_custom_header = [
       \'          ______                                       _',
