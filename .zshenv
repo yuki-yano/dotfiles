@@ -5,7 +5,7 @@
 export LANG=ja_JP.UTF-8
 
 # エディタ
-export EDITOR=vim
+export EDITOR=nvim
 alias c=ccat
 alias ri="richpager -s solarizeddark"
 export LESS='-R'
