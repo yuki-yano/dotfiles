@@ -1263,7 +1263,7 @@ if s:plug.is_installed("lightline.vim")
   endfunction
 
   function! LightlineFilepath()
-    if &filetype ==# 'vimfilter' || &filetype ==# 'unite' || winwidth(0) < 70
+    if &filetype ==# 'vimfilter' || &filetype ==# 'unite' || &buftype ==# 'terminal' || winwidth(0) < 70
       let l:path_string = ''
     else
       let l:path_string = substitute(expand('%:h'), $HOME, '~', '')
