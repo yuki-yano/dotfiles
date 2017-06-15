@@ -59,6 +59,7 @@ Plug 'othree/javascript-libraries-syntax.vim', { 'for': 'javascript' }
 Plug 'othree/jspc.vim', { 'for': 'javascript' }
 Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
 Plug 'pearofducks/ansible-vim', { 'for': 'ansible' }
+Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
 Plug 'posva/vim-vue', { 'for': 'vue' }
 Plug 'raimon49/requirements.txt.vim', { 'for': 'requirements' }
 Plug 'rhysd/vim-gfm-syntax', { 'for': 'markdown' }
@@ -71,7 +72,6 @@ Plug 'tmhedberg/SimpylFold', { 'for': 'python' }
 Plug 'tmux-plugins/vim-tmux', { 'for': 'tmux' }
 Plug 'tpope/vim-bundler', { 'for': 'ruby' }
 Plug 'tpope/vim-endwise', { 'for': 'ruby' }
-Plug 'tpope/vim-markdown', { 'for': 'markdown' }
 Plug 'tpope/vim-rails', { 'for': ['ruby', 'eruby'] }
 Plug 'vim-jp/syntax-vim-ex', { 'for': 'vim' }
 Plug 'vim-python/python-syntax', { 'for': 'python' }
@@ -103,6 +103,7 @@ Plug 'Shougo/neco-vim'
 Plug 'Shougo/neomru.vim'
 Plug 'Shougo/neosnippet'
 Plug 'Shougo/neoyank.vim'
+Plug 'Shougo/unite-session'
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/vimfiler'
 Plug 'Valloric/YouCompleteMe', Cond(!has('nvim'), { 'do': './install.py' })
@@ -136,6 +137,7 @@ Plug 'dietsche/vim-lastplace'
 Plug 'dyng/ctrlsf.vim', { 'on': 'CtrlSF' }
 Plug 'easymotion/vim-easymotion'
 Plug 'godlygeek/tabular', { 'on': 'Tabularize' }
+Plug 'h1mesuke/vim-alignta'
 Plug 'haya14busa/incsearch-fuzzy.vim'
 Plug 'haya14busa/incsearch.vim'
 Plug 'haya14busa/vim-asterisk'
@@ -144,6 +146,7 @@ Plug 'houtsnip/vim-emacscommandline'
 Plug 'junegunn/vim-easy-align'
 Plug 'jwhitley/vim-matchit'
 Plug 'kana/vim-operator-replace'
+Plug 'octref/rootignore'
 Plug 'osyo-manga/vim-anzu'
 Plug 'osyo-manga/vim-jplus'
 Plug 'osyo-manga/vim-over'
@@ -189,6 +192,7 @@ Plug 'itchyny/vim-external'
 Plug 'itchyny/vim-extracmd'
 Plug 'itchyny/vim-qfedit'
 Plug 'itchyny/vim-tmpbuffer', { 'on': 'Tmpbuffer' }
+Plug 'janko-m/vim-test'
 Plug 'jez/vim-superman'
 Plug 'kana/vim-niceblock'
 Plug 'kana/vim-operator-user'
