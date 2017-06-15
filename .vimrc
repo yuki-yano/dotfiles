@@ -658,7 +658,7 @@ let g:rubycomplete_include_object_space = 1
 " Denite & Unite & ctrlp {{{
 " ctrlp
 hi CtrlPMatch ctermfg=74
-nnoremap <silent> <Leader>p :<C-u>CtrlP<CR>
+let g:ctrlp_map = '<Leader>p'
 let g:ctrlp_max_height = 20
 let g:ctrlp_user_command='ag %s -i --nocolor --nogroup -g ""'
 let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
