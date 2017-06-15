@@ -289,7 +289,6 @@ set number
 set relativenumber
 set previewheight=18
 set pumheight=15
-set showcmd
 set showmatch
 set showtabline=2
 
@@ -736,8 +735,8 @@ if s:plug.is_installed("denite.nvim")
   call denite#custom#var('grep', 'default_opts', ['--follow', '--no-group', '--no-color'])
 
   " file & buffer
-  " nnoremap <silent> <Leader>f  :<C-u>Denite buffer file_rec -direction=topleft -mode=insert<CR>
-  " nnoremap <silent> <Leader>b  :<C-u>Denite buffer -direction=topleft<CR>
+  nnoremap <silent> <Leader>f  :<C-u>Denite buffer file_rec -direction=topleft -mode=insert<CR>
+  nnoremap <silent> <Leader>b  :<C-u>Denite buffer -direction=topleft<CR>
 
   " grep
   " nnoremap <silent> <Leader>/ :<C-u>Denite line -auto-preview<CR>
@@ -783,8 +782,8 @@ if s:plug.is_installed("unite.vim")
 
   let g:unite_source_rec_max_cache_files = 10000
   let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '-p', '~/.agignore', '-g', '']
-  nnoremap <silent> <Leader>f :<C-u>Unite buffer file_mru file_rec/async:! -start-insert<CR>
-  nnoremap <silent> <Leader>b :<C-u>Unite buffer -start-insert<CR>
+  " nnoremap <silent> <Leader>f :<C-u>Unite buffer file_mru file_rec/async:! -start-insert<CR>
+  " nnoremap <silent> <Leader>b :<C-u>Unite buffer -start-insert<CR>
 
   "" jump
   " nnoremap <silent> <Leader>j :<C-u>Unite jump -auto-preview -direction=botright<CR>
