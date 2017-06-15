@@ -1493,7 +1493,7 @@ if s:plug.is_installed("vim-extracmd")
   call extracmd#set('tab',    'Unite tab<CR>')
   call extracmd#set('sf',     'CtrlSF')
   call extracmd#set('nr',     'NR<CR>')
-  call extracmd#set('nr',     'Scratch<CR>')
+  call extracmd#set('scr',    'Scratch<CR>')
 endif
 " }}}
 
