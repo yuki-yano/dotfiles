@@ -87,9 +87,9 @@ Plug 'ywatase/mdt.vim', { 'for': 'markdown' }
 Plug 'ToruIwashita/git-switcher.vim', { 'on':  ['GswSave', 'GswLoad'] }
 Plug 'airblade/vim-gitgutter'
 Plug 'airblade/vim-rooter', { 'on': 'Rooter' }
+Plug 'chrisbra/vim-diff-enhanced', { 'on':  ['PatienceDiff', 'EnhancedDiff'] }
 Plug 'cohama/agit.vim'
 Plug 'lambdalisue/gina.vim'
-Plug 'lambdalisue/vim-diffa'
 Plug 'lambdalisue/vim-gita'
 Plug 'rhysd/committia.vim'
 " }}}
@@ -975,7 +975,13 @@ function! g:committia_hooks.edit_open(info)
   imap <buffer><C-p> <Plug>(committia-scroll-diff-up-half)
 endfunction
 " }}}
-"
+
+" diff-enhanced {{{
+if &diff
+  let &diffexpr='EnhancedDiff#Diff("git diff", "--diff-algorithm=patience")'
+endif
+" }}}
+
 " git-gutter {{{
 if s:plug.is_installed("vim-gitgutter")
   let g:gitgutter_map_keys = 0
