@@ -1503,6 +1503,7 @@ if s:plug.is_installed("vim-extracmd")
   call extracmd#set('sf',     'CtrlSF')
   call extracmd#set('nr',     'NR<CR>')
   call extracmd#set('scr',    'Scratch<CR>')
+  call extracmd#set('json',   '%!python -m json.tool<CR>')
 endif
 " }}}
 
