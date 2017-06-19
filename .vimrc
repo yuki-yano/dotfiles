@@ -656,7 +656,7 @@ let g:rubycomplete_include_object_space = 1
 
 " }}}
 
-" Completion & Fuzzy Match & vimfiler & (CtrlP + lightline)) {{{
+" Completion & Fuzzy Match & vimfiler & (CtrlP + lightline) {{{
 
 " Denite & Unite & ctrlp {{{
 " ctrlp
