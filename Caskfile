@@ -27,6 +27,7 @@ cask install duet
 cask install firefox
 cask install google-chrome
 cask install google-photos-backup
+cask install imagealpha
 cask install imageoptim
 cask install insomnia
 cask install istat-menus
