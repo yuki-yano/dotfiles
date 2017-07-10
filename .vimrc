@@ -97,7 +97,6 @@ Plug 'rhysd/committia.vim'
 " Completion & Fuzzy Match & vimfiler {{{
 Plug 'Shougo/denite.nvim'
 Plug 'Shougo/deoplete.nvim', Cond(has('nvim'),{ 'do': ':UpdateRemotePlugins' })
-Plug 'Shougo/echodoc.vim', Cond(has('nvim'))
 Plug 'Shougo/neco-syntax'
 Plug 'Shougo/neco-vim'
 Plug 'Shougo/neomru.vim'
@@ -1179,10 +1178,6 @@ let g:WebDevIconsUnicodeDecorateFileNodes = 1
 
 " アップデートでctrlpがフォーク先だと判定されないので仮対応
 let g:ctrlp_mruf_map_string = 1
-" }}}
-
-" echodoc {{{
-let g:echodoc#enable_at_startup = 1
 " }}}
 
 " fastfold {{{
