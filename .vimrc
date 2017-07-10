@@ -1459,6 +1459,9 @@ let g:zenspace#default_mode = 'on'
 " }}}
 
 " Util {{{
+" aho-bakaup.vim {{{
+let g:bakaup_auto_backup = 1
+" }}}
 
 " ambicmd {{{
 "if s:plug.is_installed("vim-ambicmd")
