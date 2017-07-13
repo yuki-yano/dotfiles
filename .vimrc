@@ -328,7 +328,7 @@ set swapfile directory=/var/tmp,/tmp
 set writebackup
 
 "" History
-set history=2048
+set history=10000
 set undodir=~/.vim_undo
 set undofile
 set viewoptions=cursor,folds
