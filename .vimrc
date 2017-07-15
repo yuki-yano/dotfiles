@@ -299,7 +299,11 @@ set pumheight=15
 set showmatch
 set showtabline=2
 
-autocmd TermOpen * set nonumber | set norelativenumber
+
+if has('nvim')
+  autocmd TermOpen * set nonumber | set norelativenumber
+endif
+
 autocmd BufNewFile,BufRead,FileType * set number | set relativenumber
 
 "" Color
@@ -409,7 +413,9 @@ cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
 
 "" terminal
-tnoremap <silent> <ESC> <C-\><C-n>
+if has('nvim')
+  tnoremap <silent> <ESC> <C-\><C-n>
+endif
 
 "" Language
 set complete+=k
