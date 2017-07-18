@@ -2,7 +2,7 @@
   ui = auto
 [core]
   autocrlf = input
-  editor = vim
+  editor = nvim
   excludesfile = ~/.gitignore_global
   attributesfile = ~/.gitattributes
 [pager]
