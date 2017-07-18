@@ -188,7 +188,6 @@ Plug 'Shougo/junkfile.vim'
 Plug 'aiya000/aho-bakaup.vim'
 Plug 'benizi/vim-automkdir'
 Plug 'bogado/file-line'
-Plug 'chrisbra/Recover.vim'
 Plug 'daisuzu/translategoogle.vim'
 Plug 'h1mesuke/textobj-wiw'
 Plug 'itchyny/vim-external'
@@ -422,7 +421,7 @@ set complete+=k
 set completeopt=longest,menuone,preview
 
 autocmd FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType ruby          setlocal omnifunc=rubycomplete#Complete
+" autocmd FileType ruby          setlocal omnifunc=rubycomplete#Complete
 autocmd FileType python        setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType css           setlocal omnifunc=csscomplete#CompleteCSS
@@ -852,7 +851,8 @@ else
     let g:deoplete#sources = {}
     let g:deoplete#sources._ = ['buffer', 'omni', 'look']
     let g:deoplete#sources.javascript = ['ternjs', 'flow', 'omni', 'buffer', 'syntax', 'neosnippet', 'dictionary', 'look']
-    let g:deoplete#sources.ruby = ['buffer', 'omni', 'syntax', 'neosnippet', 'dictionary', 'look']
+    let g:deoplete#sources.ruby = ['buffer', 'syntax', 'neosnippet', 'dictionary', 'look']
+    " let g:deoplete#sources.ruby = ['buffer', 'omni', 'syntax', 'neosnippet', 'dictionary', 'look']
     let g:deoplete#sources.python = ['jedi', 'buffer', 'omni', 'syntax', 'neosnippet', 'look']
     let g:deoplete#sources.scala = ['buffer', 'omni', 'syntax', 'neosnippet', 'look']
     let g:deoplete#sources.go = ['go', 'buffer', 'syntax', 'neosnippet', 'look']
@@ -875,7 +875,6 @@ else
     let g:deoplete#omni#input_patterns.md = '<[^>]*'
 
     let g:deoplete#omni#functions = {}
-    let g:deoplete#omni#functions._ = ['googlesuggest#Complete']
     let g:deoplete#omni#functions.javascript = ['jspc#omni', 'javascriptcomplete#CompleteJS']
     let g:deoplete#omni#functions.ruby = ['rubycomplete#Complete']
     let g:deoplete#omni#functions.python = ['pythoncomplete#Complete']
