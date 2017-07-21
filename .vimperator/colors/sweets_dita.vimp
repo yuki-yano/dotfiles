@@ -1,21 +1,21 @@
-hi Hint font-family: monospace; font-size: 15px; font-weight: normal; color: lightyellow; background-color: black; border-color: ButtonShadow; border-width: 0px; border-style: solid; padding: 0px 5px 0px 5px; text-transform: uppercase;
+hi Hint font-family: Ricty; font-size: 15px; font-weight: normal; color: lightyellow; background-color: black; border-color: ButtonShadow; border-width: 0px; border-style: solid; padding: 0px 5px 0px 5px; text-transform: uppercase;
 hi HintElem background-color: pink; color: black;
 hi HintActive background-color: hotpink; color: white;
 hi -append Hint         background-color: rgba(28, 28, 28, 0.7); border: 1px solid #1c1c1c; -moz-border-radius: 4px; -moz-box-shadow: 0px 0px 1px black; text-shadow: 1px 1px 2px black;
 hi -append HintElem     text-decoration: none; -moz-border-radius: 4px; -moz-box-shadow: 0 0 2px #0c0c0c;
 hi -append HintActive   text-decoration: none; -moz-border-radius: 4px; -moz-box-shadow: 0 0 2px #0c0c0c;
 
-hi StatusLine font-family:   "RictyDiminished Nerd Font"; color: CornflowerBlue; background: #000; font-weight: normal; font-size: 12pt;
+hi StatusLine font-family: Ricty; color: CornflowerBlue; background: #000; font-weight: normal; font-size: 12pt;
 
-hi Normal     font-family: "RictyDiminished Nerd Font"; color: LightYellow; background: Black; font-size: 12pt; opacity: 0.8;
-hi CmdLine>*  font-family: "RictyDiminished Nerd Font"; color: LightYellow; background: Black; font-size: 14pt;
-hi InfoMsg    font-family: "RictyDiminished Nerd Font"; color: LightYellow; background: Black; font-size: 12pt;
-hi ModeMsg    font-family: "RictyDiminished Nerd Font"; color: LightYellow; background: Black; font-size: 12pt;
-hi MoreMsg    font-family: "RictyDiminished Nerd Font"; color: LimeGreen  ; background: Black;
-hi LineNr     font-family: "RictyDiminished Nerd Font"; color: DeepPink   ; background: Black; font-size: 12pt;
-hi Question   font-family: "RictyDiminished Nerd Font"; color: Yellow     ; background: Black; font-size: 12pt;
-hi WarningMsg font-family: "RictyDiminished Nerd Font"; color: DeepPink   ; background: Black; font-size: 12pt;
-hi ErrorMsg   font-family: "RictyDiminished Nerd Font"; color: white      ; background: red  ; font-size: 12pt;
+hi Normal     font-family: Ricty; color: LightYellow; background: Black; font-size: 12pt; opacity: 0.8;
+hi CmdLine>*  font-family: Ricty; color: LightYellow; background: Black; font-size: 14pt;
+hi InfoMsg    font-family: Ricty; color: LightYellow; background: Black; font-size: 12pt;
+hi ModeMsg    font-family: Ricty; color: LightYellow; background: Black; font-size: 12pt;
+hi MoreMsg    font-family: Ricty; color: LimeGreen  ; background: Black;
+hi LineNr     font-family: Ricty; color: DeepPink   ; background: Black; font-size: 12pt;
+hi Question   font-family: Ricty; color: Yellow     ; background: Black; font-size: 12pt;
+hi WarningMsg font-family: Ricty; color: DeepPink   ; background: Black; font-size: 12pt;
+hi ErrorMsg   font-family: Ricty; color: white      ; background: red  ; font-size: 12pt;
 hi NonText    background:    #000;
 hi Null   color : CornflowerBlue;
 hi Tag    color : CornflowerBlue;
