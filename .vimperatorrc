@@ -30,6 +30,13 @@ style -name commandline-ime chrome://* #liberator-commandline-command input {ime
 " リンクのURIをコマンドラインに表示
 set showstatuslinks=2
 
+" 検索を強制的に設定
+set! accessibility.typeaheadfind=false
+set! accessibility.typeaheadfind.casesensitive=2
+set! findbar.highlightAll=false
+set! findbar.entireword=false
+set! findbar.modalHighlight=false
+
 " To Enable map <Space>
 js <<EOM
   window.addEventListener('keypress',function (event) {
