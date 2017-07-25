@@ -421,7 +421,7 @@ set complete+=k
 set completeopt=longest,menuone,preview
 
 autocmd FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType ruby          setlocal omnifunc=
+autocmd FileType ruby,eruby    setlocal omnifunc=
 autocmd FileType python        setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType css           setlocal omnifunc=csscomplete#CompleteCSS
