@@ -420,15 +420,6 @@ endif
 set complete+=k
 set completeopt=longest,menuone,preview
 
-autocmd FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType ruby,eruby    setlocal omnifunc=
-autocmd FileType python        setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType css           setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType scala         setlocal omnifunc=EnCompleteFunc
-autocmd FileType javascript    setlocal dict=~/dotfiles/.vim/dict/javascript.dict
-autocmd FileType ruby,eruby    setlocal dict=~/dotfiles/.vim/dict/rails.dict
-
 autocmd BufNewFile,BufRead        *.erb  set filetype=eruby.html
 autocmd BufNewFile,BufRead         *.js  set filetype=javascript
 autocmd BufNewFile,BufRead         *.md  set filetype=markdown
@@ -443,6 +434,16 @@ autocmd BufNewFile,BufRead       .pryrc  set filetype=ruby
 autocmd BufNewFile,BufRead      Gemfile  set filetype=ruby
 autocmd BufNewFile,BufRead  Vagrantfile  set filetype=ruby
 autocmd BufNewFile,BufRead   Schemafile  set filetype=ruby
+
+autocmd FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType ruby          setlocal omnifunc=
+autocmd FileType eruby.html    setlocal omnifunc=
+autocmd FileType python        setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType css           setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType scala         setlocal omnifunc=EnCompleteFunc
+autocmd FileType javascript    setlocal dict=~/dotfiles/.vim/dict/javascript.dict
+autocmd FileType ruby,eruby    setlocal dict=~/dotfiles/.vim/dict/rails.dict
 
 " Turn off default plugins.
 let g:loaded_2html_plugin  = 1
