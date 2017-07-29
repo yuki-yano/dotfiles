@@ -205,7 +205,6 @@ Plug 'kana/vim-textobj-user'
 Plug 'kassio/neoterm'
 Plug 'konfekt/fastfold'
 Plug 'lucapette/vim-textobj-underscore'
-Plug 'mattesgroeger/vim-bookmarks'
 Plug 'mattn/benchvimrc-vim', { 'on': 'BenchVimrc' }
 Plug 'mattn/gist-vim', { 'on': 'Gist' }
 Plug 'mattn/webapi-vim'
