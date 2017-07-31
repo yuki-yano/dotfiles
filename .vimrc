@@ -565,6 +565,8 @@ let g:ale_emit_conflict_warnings = 0
 
 hi ALEWarningSign ctermfg=229
 hi ALEErrorSign ctermfg=203
+hi ALEWarning ctermfg=0 ctermbg=229
+hi ALEError ctermfg=0 ctermbg=203
 " }}}
 
 " autoformat {{{
