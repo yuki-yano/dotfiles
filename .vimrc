@@ -59,7 +59,6 @@ Plug 'othree/javascript-libraries-syntax.vim', { 'for': 'javascript' }
 Plug 'othree/jspc.vim', { 'for': 'javascript' }
 Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
 Plug 'pearofducks/ansible-vim', { 'for': 'ansible' }
-Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
 Plug 'posva/vim-vue', { 'for': 'vue' }
 Plug 'raimon49/requirements.txt.vim', { 'for': 'requirements' }
 Plug 'rhysd/vim-gfm-syntax', { 'for': 'markdown' }
