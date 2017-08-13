@@ -749,7 +749,7 @@ if s:plug.is_installed("denite.nvim")
 
   " file & buffer
   nnoremap <silent> <Leader>f  :<C-u>Denite buffer file_rec -direction=topleft -mode=insert<CR>
-  nnoremap <silent> <Leader>b  :<C-u>Denite buffer -direction=topleft<CR>
+  nnoremap <silent> <Leader>b  :<C-u>Denite buffer -direction=topleft -mode=insert<CR>
 
   " grep
   " nnoremap <silent> <Leader>/ :<C-u>Denite line -auto-preview<CR>
