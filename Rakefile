@@ -145,9 +145,9 @@ namespace :osx do
     # sh "ln -sfn #{src} #{dest}"
 
     # Witch
-    src = File.join(ENV['HOME'], 'Dropbox', 'settings', 'Witch')
-    dest = File.join(ENV['HOME'], 'Library', 'Application\ Support', 'Witch')
-    sh "ln -sfn #{src} #{dest}"
+    # src = File.join(ENV['HOME'], 'Dropbox', 'settings', 'Witch')
+    # dest = File.join(ENV['HOME'], 'Library', 'Application\ Support', 'Witch')
+    # sh "ln -sfn #{src} #{dest}"
   end
 end
 
