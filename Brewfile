@@ -94,6 +94,7 @@ install pup
 install reattach-to-user-namespace
 install ripgrep
 install rmtrash
+install rsync
 install the_silver_searcher
 install tree
 install w3m
