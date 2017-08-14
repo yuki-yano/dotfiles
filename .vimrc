@@ -29,7 +29,6 @@ Plug 'csscomb/vim-csscomb', { 'for': ['css', 'sass', 'scss'] }
 Plug 'davidhalter/jedi-vim', { 'for': 'python' }
 Plug 'derekwyatt/vim-sbt', { 'for': 'sbt' }
 Plug 'derekwyatt/vim-scala', { 'for': 'scala' }
-Plug 'ecomba/vim-ruby-refactoring', { 'for': 'ruby' }
 Plug 'ekalinin/Dockerfile.vim', { 'for': 'dockerfile' }
 Plug 'elzr/vim-json', { 'for': 'json' }
 Plug 'fatih/vim-go', { 'for': 'go' }
@@ -41,7 +40,6 @@ Plug 'heavenshell/vim-pydocstring', { 'for': 'python' }
 Plug 'jparise/vim-graphql', { 'for': 'graphql' }
 Plug 'jsfaint/gen_tags.vim'
 Plug 'kchmck/vim-coffee-script', { 'for': 'coffee' }
-Plug 'keith/rspec.vim', { 'for': 'ruby' }
 Plug 'kewah/vim-stylefmt', { 'for': 'css' }
 Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
 Plug 'majutsushi/tagbar'
@@ -62,16 +60,13 @@ Plug 'pearofducks/ansible-vim', { 'for': 'ansible' }
 Plug 'posva/vim-vue', { 'for': 'vue' }
 Plug 'raimon49/requirements.txt.vim', { 'for': 'requirements' }
 Plug 'rhysd/vim-gfm-syntax', { 'for': 'markdown' }
-Plug 'rhysd/vim-textobj-ruby', { 'for': 'ruby' }
 Plug 'shmargum/vim-sass-colors', { 'for': ['sass', 'scss'] }
 Plug 'slim-template/vim-slim', { 'for': 'slim' }
 Plug 'tell-k/vim-autopep8', { 'for': 'python' }
 Plug 'thinca/vim-ft-help_fold', { 'for': 'help' }
 Plug 'tmhedberg/SimpylFold', { 'for': 'python' }
 Plug 'tmux-plugins/vim-tmux', { 'for': 'tmux' }
-Plug 'tpope/vim-bundler', { 'for': 'ruby' }
 Plug 'tpope/vim-endwise', { 'for': 'ruby' }
-Plug 'tpope/vim-rails', { 'for': ['ruby', 'eruby'] }
 Plug 'vim-jp/syntax-vim-ex', { 'for': 'vim' }
 Plug 'vim-python/python-syntax', { 'for': 'python' }
 Plug 'vim-ruby/vim-ruby', { 'for': ['ruby', 'eruby'] }
@@ -95,7 +90,7 @@ Plug 'rhysd/committia.vim'
 
 " Completion & Fuzzy Match & vimfiler {{{
 Plug 'Shougo/denite.nvim'
-Plug 'Shougo/deoplete.nvim', Cond(has('nvim'),{ 'do': ':UpdateRemotePlugins' })
+Plug 'Shougo/deoplete.nvim', Cond(has('nvim'),{ 'do': ':UpdateRemotePlugins', 'on': [] })
 Plug 'Shougo/neco-syntax'
 Plug 'Shougo/neco-vim'
 Plug 'Shougo/neomru.vim'
@@ -212,7 +207,6 @@ Plug 'mhinz/vim-startify'
 Plug 'moll/vim-bbye'
 Plug 'mopp/autodirmake.vim'
 Plug 'mtth/scratch.vim', { 'on': 'Scratch' }
-Plug 'nelstrom/vim-textobj-rubyblock'
 Plug 'osyo-manga/vim-textobj-multiblock'
 Plug 'rickhowe/diffchar.vim'
 Plug 'rizzatti/dash.vim'
@@ -838,10 +832,14 @@ endif
 
 " YouCompleteMe && deoplete.nvim && neosnippet.vim {{{
 if !has('nvim')
-  let g:ycm_seed_identifiers_with_syntax = 0
-  autocmd InsertEnter * call plug#load('YouCompleteMe')
+  if s:plug.is_installed("YouCompleteMe")
+    let g:ycm_seed_identifiers_with_syntax = 0
+    autocmd InsertEnter * call plug#load('YouCompleteMe')
+  endif
 else
   if s:plug.is_installed("deoplete.nvim")
+    autocmd InsertEnter * call plug#load('deoplete.nvim')
+
     let g:deoplete#enable_at_startup = 1
     let g:deoplete#enable_smart_case = 1
     let g:deoplete#enable_camel_case = 1
