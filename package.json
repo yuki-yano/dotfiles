@@ -12,6 +12,7 @@
     "firebase-tools": "^3.9.1",
     "flow-bin": "^0.51.1",
     "flow-typed": "^2.1.5",
+    "gtop": "^0.1.5",
     "gulp": "^3.9.1",
     "js-beautify": "^1.6.14",
     "nativefier": "^7.4.0",
