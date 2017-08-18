@@ -121,9 +121,6 @@ Plug 'zchee/deoplete-jedi', Cond(has('nvim'), { 'for': ['python'] })
 " }}}
 
 " Edit & Move & Search {{{
-" Plug 'cohama/lexima.vim'
-" Plug 'rhysd/accelerated-jk'
-" Plug 'yuttie/comfortable-motion.vim'
 Plug 'AndrewRadev/switch.vim', { 'on': 'Switch' }
 Plug 'LeafCage/yankround.vim'
 Plug 'chrisbra/NrrwRgn', { 'on': 'NR' }
