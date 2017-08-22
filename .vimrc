@@ -177,7 +177,6 @@ Plug 'vimtaku/hl_matchit.vim'
 " Util {{{
 Plug 'Shougo/junkfile.vim'
 Plug 'aiya000/aho-bakaup.vim'
-Plug 'benizi/vim-automkdir'
 Plug 'bogado/file-line'
 Plug 'daisuzu/translategoogle.vim'
 Plug 'h1mesuke/textobj-wiw'
