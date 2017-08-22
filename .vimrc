@@ -1548,11 +1548,7 @@ let g:startify_list_order = [
       \ ['   Recent Files:'],
       \ 'files',
       \ ['   Project:'],
-      \ 'dir',
-      \ ['   Sessions:'],
-      \ 'sessions',
-      \ ['   Commands:'],
-      \ 'commands',
+      \ 'dir'
       \ ]
 let g:startify_change_to_vcs_root = 1
 " }}}
