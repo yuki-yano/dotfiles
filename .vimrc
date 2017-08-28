@@ -1506,7 +1506,7 @@ if s:plug.is_installed("vim-extracmd")
   call extracmd#set('nr',     'NR<CR>')
   call extracmd#set('scr',    'Scratch<CR>')
   call extracmd#set('json',   '%!python -m json.tool<CR>')
-  call extracmd#set('cpc',    'CtrlPClearAllCaches<CR>')
+  call extracmd#set('cpd',    'CtrlPClearAllCaches<CR>')
 endif
 " }}}
 
