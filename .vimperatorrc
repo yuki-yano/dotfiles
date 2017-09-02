@@ -119,6 +119,10 @@ noremap J :tabmove! +1<CR>
 " nnoremap <ESC> :nohlsearch<CR><ESC>
 set nohlsearch
 
+" はてブコメント
+command hatebu javascript liberator.open('http://b.hatena.ne.jp/entry/' + buffer.URL, liberator.NEW_TAB)
+noremap <leader>b :hatebu<CR>
+
 "}}}
 
 " Patch {{{
@@ -163,7 +167,7 @@ noremap <leader>ch :chrome<CR>
 "============================
 " open-blisk
 "============================
-noremap <leader>bl :blisk<CR>
+" noremap <leader>bl :blisk<CR>
 
 "============================
 " appendAnchor
