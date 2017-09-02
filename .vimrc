@@ -32,7 +32,7 @@ Plug 'derekwyatt/vim-scala', { 'for': 'scala' }
 Plug 'ekalinin/Dockerfile.vim', { 'for': 'dockerfile' }
 Plug 'elzr/vim-json', { 'for': 'json' }
 Plug 'fatih/vim-go', { 'for': 'go' }
-Plug 'fleischie/vim-styled-components', { 'for': 'javascript' }
+Plug 'styled-components/vim-styled-components', { 'for': 'javascript' }
 Plug 'gre/play2vim', { 'for': 'scala' }
 Plug 'hail2u/vim-css3-syntax', { 'for': 'css' }
 Plug 'hashivim/vim-terraform', { 'for': 'terraform' }
