@@ -16,7 +16,6 @@ Plug 'vim-jp/vimdoc-ja'
 " }}}
 
 " Language {{{
-" Plug 'ensime/ensime-vim', { 'for': ['scala'], 'do': ':UpdateRemotePlugins' }
 Plug 'Chiel92/vim-autoformat'
 Plug 'Shougo/context_filetype.vim'
 Plug 'Shougo/vinarise.vim'
@@ -213,7 +212,6 @@ Plug 'terryma/vim-expand-region'
 Plug 'thinca/vim-ambicmd'
 Plug 'thinca/vim-prettyprint'
 Plug 'thinca/vim-ref'
-Plug 'tpope/vim-sleuth'
 Plug 'tweekmonster/startuptime.vim', { 'on': 'StartupTime' }
 Plug 'tyru/capture.vim', { 'on': 'Capture' }
 Plug 'tyru/open-browser.vim'
@@ -313,10 +311,8 @@ set foldcolumn=1
 set foldenable
 set foldmethod=manual
 
-"" Safety
-set directory=~/.vim/swap
-set swapfile directory=/var/tmp,/tmp
-set writebackup
+"" Swap
+set noswapfile
 
 "" History
 set history=10000
