@@ -1,0 +1,22 @@
+ {
+  "title": "iTermでESCあるいは^[で日本語入力を英数に",
+  "rules": [
+    {
+      "description": "iTermでESCあるいは^[を押したときに日本語入力を英数に切り替える",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": { "key_code": "escape", "modifiers": { "optional": [ "any" ] } },
+          "to": [ { "key_code": "japanese_eisuu" }, { "key_code": "escape" } ],
+          "conditions": [ { "type": "frontmost_application_if", "bundle_identifiers": [ "^com\\.googlecode\\.iterm2$"] } ]
+        },
+        {
+          "type": "basic",
+          "from": { "key_code": "open_bracket", "modifiers": { "mandatory": ["left_control"] } },
+          "to": [ { "key_code": "japanese_eisuu" }, { "key_code": "escape" } ],
+          "conditions": [ { "type": "frontmost_application_if", "bundle_identifiers": [ "^com\\.googlecode\\.iterm2$" ] } ]
+        }
+      ]
+    }
+  ]
+}

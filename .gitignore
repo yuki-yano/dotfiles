@@ -8,6 +8,7 @@
 !/.config/fish/config.fish
 !/.config/fish/functions
 
+# tmux
 /.tmux/plugins/*
 /.tmux/resurrect/*
 
