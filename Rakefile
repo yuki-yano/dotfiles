@@ -206,7 +206,7 @@ namespace :apm do
       package.split('@')[0]
     end
 
-    installed_packages = `apm list --installed --bare`.split("\n").map { |package| package.split('@')[0] }
+    installed_packages = `apm list --installed --bare`.split("\n")
 
     install_packages = packages - installed_packages
     install_packages.map do |package|
@@ -216,7 +216,7 @@ namespace :apm do
 
   desc 'Update Apmfile'
   task update: 'Apmfile' do
-    sh 'apm list --installed --bare > Apmfile'
+    File.write('Apmfile', `apm list --installed --bare`.split("\n").map { |package| package.split('@')[0] }.join("\n"))
   end
 
   desc 'Uninstall atom packages'
