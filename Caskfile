@@ -35,6 +35,7 @@ cask install iterm2
 cask install jasper
 cask install jetbrains-toolbox
 cask install kaleidoscope
+cask install karabiner-elements
 cask install keepingyouawake
 cask install keyboard-cleaner
 cask install kitematic
