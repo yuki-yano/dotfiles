@@ -425,7 +425,6 @@ autocmd FileType eruby.html    setlocal omnifunc=
 autocmd FileType python        setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType css           setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType scala         setlocal omnifunc=EnCompleteFunc
 autocmd FileType javascript    setlocal dict=~/dotfiles/.vim/dict/javascript.dict
 autocmd FileType ruby,eruby    setlocal dict=~/dotfiles/.vim/dict/rails.dict
 
@@ -872,7 +871,6 @@ else
     let g:deoplete#omni#functions.html = ['htmlcomplete#CompleteTags']
     let g:deoplete#omni#functions.markdown = ['htmlcomplete#CompleteTags']
     let g:deoplete#omni#functions.css = ['csscomplete#CompleteCSS']
-    let g:deoplete#omni#functions.scala = ['EnCompleteFunc']
 
     " tern
     let g:tern_request_timeout = 1
