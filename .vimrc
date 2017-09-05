@@ -855,7 +855,7 @@ else
 
     let g:deoplete#omni#input_patterns = {}
     let g:deoplete#omni#input_patterns._ = ''
-    let g:deoplete#omni#input_patterns.ruby = ['[^. *\t]\.\w*', '[a-zA-Z_]\w*::']
+    let g:deoplete#omni#input_patterns.ruby = ''
     let g:deoplete#omni#input_patterns.javascript = ''
     let g:deoplete#omni#input_patterns.python = ''
     let g:deoplete#omni#input_patterns.go = ''
