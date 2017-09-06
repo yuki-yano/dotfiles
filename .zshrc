@@ -284,6 +284,16 @@ neovim_autocd() {
 }
 chpwd_functions+=( neovim_autocd )
 
+up-line-or-history-ignoring() {
+zle up-line-or-history
+case "$BUFFER" in
+  fg|bg)
+    zle up-line-or-history
+    ;;
+esac
+}
+zle -N up-line-or-history-ignoring
+
 # }}}
 
 # loading fzf {{{
@@ -307,6 +317,7 @@ bindkey '^xk'  anyframe-widget-kill
 bindkey '^xs'  emoji::cli
 bindkey '^xt'  fzf-file-widget
 bindkey '^z'   fancy-ctrl-z
+bindkey '^p'   up-line-or-history-ignoring
 
 # }}}
 
