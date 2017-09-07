@@ -141,6 +141,7 @@ Plug 'octref/rootignore'
 Plug 'osyo-manga/vim-anzu'
 Plug 'osyo-manga/vim-jplus'
 Plug 'osyo-manga/vim-over'
+Plug 'rhysd/clever-f.vim'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'thinca/vim-qfreplace', { 'on': 'Qfreplace' }
 Plug 'thinca/vim-visualstar'
@@ -1047,8 +1048,6 @@ if s:plug.is_installed("incsearch.vim")
   autocmd  User PrePulse  set cursorcolumn
   autocmd  User PostPulse set nocursorcolumn
 
-  map  f  <Plug>(easymotion-bd-fl)
-  map  t  <Plug>(easymotion-bd-tl)
   map  /  <Plug>(incsearch-forward)
   map  ?  <Plug>(incsearch-backward)
   map  z/ <Plug>(incsearch-fuzzy-/)
@@ -1070,11 +1069,6 @@ if s:plug.is_installed("incsearch.vim")
   map  <Leader>j <Plug>(easymotion-j)
   map  <Leader>k <Plug>(easymotion-k)
 endif
-" }}}
-
-" accelerated-jk {{{
-" nmap j <Plug>(accelerated_jk_j)
-" nmap k <Plug>(accelerated_jk_k)
 " }}}
 
 " comfortable-motion {{{
