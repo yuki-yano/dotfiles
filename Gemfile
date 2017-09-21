@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'awesome_print'
+gem 'docker-sync'
 gem 'fastri'
 gem 'get-twitter-oauth-token'
 gem 'html2slim'

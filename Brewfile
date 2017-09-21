@@ -72,6 +72,7 @@ install docker-clean
 install docker-completion
 install docker-compose-completion
 install dos2unix
+install eugenmayer/dockersync/unox
 install gist
 install global --with-pygments --with-ctags
 install gnu-sed
@@ -98,6 +99,7 @@ install rmtrash
 install rsync
 install the_silver_searcher
 install tree
+install unison
 install w3m
 install watch
 install wget
