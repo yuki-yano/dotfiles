@@ -1,40 +1,19 @@
-# zplug {{{
+# zgen {{{
 
-export ZPLUG_HOME=/usr/local/opt/zplug
-source $ZPLUG_HOME/init.zsh
+source ~/dotfiles/.zsh/zgen/zgen.zsh
 
-zplug Tarrasch/zsh-autoenv
-zplug b4b4r07/cli-finder, as:command, use:bin/finder
-zplug b4b4r07/emoji-cli
-zplug b4b4r07/enhancd, use:enhancd.sh
-zplug b4b4r07/git-br, as:command, use:'git-br'
-zplug b4b4r07/git-conflict, as:command
-zplug b4b4r07/git-open, as:command
-zplug b4b4r07/http_code, as:command, use:bin/http_code
-zplug b4b4r07/zsh-gomi, as:command, use:bin/gomi
-zplug hchbaw/opp.zsh
-zplug hlissner/zsh-autopair
-zplug jhawthorn/fzy, as:command, hook-build:'make'
-zplug knu/zsh-git-escape-magic
-zplug mafredri/zsh-async
-zplug mollifier/anyframe
-zplug plugins/fancy-ctrl-z, from:oh-my-zsh
-zplug sindresorhus/pure, use:pure.zsh, as:theme
-zplug supercrabtree/k
-zplug tarruda/zsh-autosuggestions
-zplug zsh-users/zsh-completions
-zplug zsh-users/zsh-history-substring-search
-zplug zsh-users/zsh-syntax-highlighting
-zplug zuxfoucault/colored-man-pages_mod
-
-if ! zplug check --verbose; then
-  printf "Install? [y/N]: "
-  if read -q; then
-    echo; zplug install
-  fi
-fi
-
-zplug load
+zgen load Tarrasch/zsh-autoenv
+zgen load knu/zsh-git-escape-magic
+zgen load mafredri/zsh-async
+zgen load mollifier/anyframe
+zgen load sindresorhus/pure
+zgen load supercrabtree/k
+zgen load tarruda/zsh-autosuggestions
+zgen load zsh-users/zsh-completions
+zgen load zsh-users/zsh-history-substring-search
+zgen load zsh-users/zsh-syntax-highlighting
+zgen load zuxfoucault/colored-man-pages_mod
+zgen oh-my-zsh plugins/fancy-ctrl-z
 
 ZSH_HIGHLIGHT_STYLES[alias]=fg=blue
 ZSH_HIGHLIGHT_STYLES[builtin]=fg=blue
