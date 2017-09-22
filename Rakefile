@@ -65,7 +65,7 @@ end
 namespace :gem do
   desc 'Uninstall gem'
   task :uninstall do
-    default_gem = 'test-unit|rdoc|bigdecimal|io-console|json|minitest|psych|rake|bundler|neovim'
+    default_gem = 'bigdecimal|bundler|io-console|json|minitest|openssl|psych|rake|rdoc|test-unit|neovim'
     sh "gem uninstall -axI $(gem list --no-versions | egrep -v '#{default_gem}')"
   end
 end
