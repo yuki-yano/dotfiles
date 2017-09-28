@@ -204,7 +204,6 @@ Plug 'moll/vim-bbye'
 Plug 'mopp/autodirmake.vim'
 Plug 'mtth/scratch.vim', { 'on': 'Scratch' }
 Plug 'osyo-manga/vim-textobj-multiblock'
-Plug 'rickhowe/diffchar.vim'
 Plug 'rizzatti/dash.vim'
 Plug 'roxma/vim-paste-easy'
 Plug 'simeji/winresizer'
