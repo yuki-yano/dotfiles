@@ -188,7 +188,7 @@ let g:textarea_ime_mode="auto"
 "============================
 javascript <<EOM
 liberator.globalVariables.copy_templates = [
-   { label: 'url', value: '"%URL%' },
+   { label: 'url', value: '%URL%' },
    { label: 'twitter', value: '"%TITLE%" - %URL%' },
    { label: 'markdown', value: '[%TITLE%](%URL%)' },
    { label: 'titleAndURL',    value: '%TITLE%\n%URL%' },
