@@ -80,7 +80,7 @@ install gpg2
 install graphviz
 install gron
 install homebrew/dupes/libiconv
-install htop-osx
+install htop
 install httpie
 install jq
 install jvgrep
