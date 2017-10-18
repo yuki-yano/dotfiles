@@ -66,7 +66,6 @@ export LESS_TERMCAP_se=$(tput sgr0)                # end standout-mode
 export LESS_TERMCAP_so=$(tput setaf 3; tput rev)   # begin standout-mode (yellow)
 export LESS_TERMCAP_ue=$(tput rmul; tput sgr0)     # end underline
 export LESS_TERMCAP_us=$(tput smul; tput setaf 2)  # begin underline (green)
-alias l=less
 
 # sed
 alias sed=gsed

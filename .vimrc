@@ -230,7 +230,10 @@ Plug 'vim-scripts/cecutil'
 
 " 他のプラグインとの都合上最後に読み込む
 Plug 'ryanoasis/vim-devicons'
-Plug 'bagrat/vim-workspace'
+" lessの場合は使用しない
+if !exists("loaded_less")
+  Plug 'bagrat/vim-workspace'
+endif
 
 " My Plugin {{{
 set runtimepath+=~/.vim/plugins/lightline-iceberg-tigberd
@@ -277,8 +280,6 @@ set helplang=ja
 set laststatus=2
 set listchars=tab:>\ ,trail:\ ,extends:<,precedes:<
 set matchtime=1
-set number
-set relativenumber
 set previewheight=18
 set pumheight=15
 set showmatch
@@ -289,7 +290,12 @@ if has('nvim')
   autocmd TermOpen * set nonumber | set norelativenumber
 endif
 
-autocmd BufNewFile,BufRead,FileType * set number | set relativenumber
+" lessの場合はnumberのみ設定
+if !exists("loaded_less")
+  autocmd BufNewFile,BufRead,FileType * set number | set relativenumber
+else
+  set number
+endif
 
 "" Color
 if $TERM == 'screen'
