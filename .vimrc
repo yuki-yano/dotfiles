@@ -447,38 +447,6 @@ autocmd ColorScheme * hi PmenuSel cterm=reverse ctermfg=33 ctermbg=222
 autocmd VimEnter    * hi Visual ctermfg=159 ctermbg=23
 syntax enable
 
-"" hankaku
-inoremap 　 <Space>
-inoremap （ (
-inoremap ） )
-inoremap ｛ {
-inoremap ｝ }
-inoremap ； ;
-inoremap ： :
-inoremap ｜ <Bar>
-inoremap ＜ <
-inoremap ＞ >
-inoremap ＊ *
-inoremap ＠ @
-inoremap － -
-inoremap ％ %
-inoremap ＃ #
-inoremap ” "
-inoremap ’ '
-inoremap ＋ +
-inoremap ０ 0
-inoremap １ 1
-inoremap ２ 2
-inoremap ３ 3
-inoremap ４ 4
-inoremap ５ 5
-inoremap ６ 6
-inoremap ７ 7
-inoremap ８ 8
-inoremap ９ 9
-inoremap ～ ~
-inoremap ？ ?
-
 " }}}
 
 " Command {{{
