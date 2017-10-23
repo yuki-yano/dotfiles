@@ -297,20 +297,6 @@ else
   set number
 endif
 
-"" Color
-if $TERM == 'screen'
-  set t_Co=256
-endif
-
-set background=dark
-silent! colorscheme iceberg
-autocmd ColorScheme * hi LineNr ctermfg=241
-autocmd ColorScheme * hi CursorLineNr ctermbg=237 ctermfg=253
-autocmd ColorScheme * hi CursorLine ctermbg=235
-autocmd ColorScheme * hi Search  ctermfg=none ctermbg=237
-autocmd ColorScheme * hi PmenuSel cterm=reverse ctermfg=33 ctermbg=222
-autocmd VimEnter    * hi Visual ctermfg=159 ctermbg=23
-syntax enable
 
 "" Folding
 set foldcolumn=1
@@ -374,6 +360,7 @@ set wildignorecase
 set wildmenu
 set wildmode=longest:full,full
 set wrapscan
+set synmaxcol=300
 
 "" Map
 if has('nvim')
@@ -458,6 +445,7 @@ autocmd ColorScheme * hi CursorLine ctermbg=235
 autocmd ColorScheme * hi Search  ctermfg=none ctermbg=237
 autocmd ColorScheme * hi PmenuSel cterm=reverse ctermfg=33 ctermbg=222
 autocmd VimEnter    * hi Visual ctermfg=159 ctermbg=23
+syntax enable
 
 "" hankaku
 inoremap 　 <Space>
