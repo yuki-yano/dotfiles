@@ -1,0 +1,369 @@
+@namespace liberator url("http://vimperator.org/namespaces/liberator");
+
+[liberator|highlight~=HintImage],
+[liberator|highlight~=Hint] {
+    z-index: 2147483647;
+    position: absolute !important;
+}
+
+[liberator|highlight~=HintActive] {
+    background-color: hotpink;
+    color: white;
+}
+[liberator|highlight~=HintElem] {
+    background: #B2D7FF!important;
+    text-decoration: none;
+    -moz-border-radius: 4px;
+    -moz-box-shadow: 0 0 2px #0c0c0c;
+}
+[liberator|highlight~=HintImage] {
+    opacity: .5!important;
+}
+[liberator|highlight~=Hint] {
+    font-family: Ricty;
+    font-size: 15px;
+    font-weight: normal;
+    color: lightyellow;
+    background-color: black;
+    border-color: ButtonShadow;
+    border-width: 0px;
+    border-style: solid;
+    padding: 0px 5px 0px 5px;
+    text-transform: uppercase;
+}
+
+[liberator|highlight~=Hint]::after {
+    content: attr(number)!important;
+}
+
+[liberator|highlight~=Search] {
+    display: inline !important;
+}
+
+/* Applied only to completion buffer and MOW */
+@-moz-document url-prefix(chrome://liberator/) {
+
+*:-moz-loading, *:-moz-broken { display: none !important; }
+
+[liberator|highlight~=Completions] {
+    width: 100%;
+    display: table;
+}
+[liberator|highlight~=CompItem],
+[liberator|highlight~=CompTitle] {
+    display: table-row;
+}
+[liberator|highlight~=Completions] > ul {
+    display: table-row;
+}
+[liberator|highlight~=CompItem] > *,
+[liberator|highlight~=CompTitle] > * {
+    /* disabled for now, since it throws SecurityErrors to the console */
+    /* -moz-binding: url(chrome://liberator/content/bindings.xml#compitem-td); */
+    display: table-cell;
+    vertical-align: middle;
+}
+
+[liberator|highlight~=CompMsg] {
+    height: 1.5em;
+    line-height: 1.5em !important;
+}
+
+.td-span {
+    display: inline-block;
+    overflow: visible;
+    width: 0;
+    height: 1.5em;
+    line-height: 1.5em !important;
+}
+.td-strut {
+    display: inline-block;
+    vertical-align: middle;
+    height: 16px;
+    width: 0;
+}
+
+.extra-info { color: gray; }
+
+.times-executed, .time-average { color: green; }
+.time-total { color: red; }
+
+}
+
+/* Applied to completion buffer, MOW, browser window */
+@-moz-document url-prefix(chrome://) {
+
+    .liberator-container > * {
+        font-family: inherit;
+    }
+
+    .liberator-floatbox {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+    }
+
+    .liberator-container.animation[collapsed='true'] {
+        opacity: 0;
+        pointer-events: none;
+        max-height: 10px !important;
+        min-height: 10px;
+    }
+
+    .liberator-floatbox > iframe {
+        height: 100%;
+        width: 100%;
+    }
+
+    .liberator-container.animation {
+        transition: all 0.2s;
+    }
+
+    #liberator-completions {
+        -moz-user-focus: ignore;
+        overflow: -moz-scrollbars-none !important;
+        border-width: 0 !important;
+    }
+
+    #liberator-bottombar:-moz-lwtheme {
+        text-shadow: none;
+    }
+
+    /* all elements in the statusline and commandline need some padding to look good */
+    #liberator-statusline {
+        font-family: monospace;
+        margin: 0;
+        -moz-appearance: none;
+        border: none !important;
+        min-height: 16px !important;
+    }
+    #liberator-statusline:not([customizing="true"]) :-moz-any(toolbarbutton) {
+        border: none !important;
+        padding: 0 0 !important;
+        background: transparent !important;
+        height: 16px !important;
+    }
+    #liberator-statusline > *,
+    #liberator-commandline > * {
+        padding: 0 2px;
+        font-family: monospace;
+    }
+
+    #liberator-commandline.hidden {
+        opacity: 0;
+        pointer-events: none; /* so we can click through when the command line is hidden */
+    }
+
+    #liberator-statusline,
+    #liberator-message-toolbar {
+        -moz-box-align: center;
+    }
+    #liberator-statusline[customizing="true"] :-moz-any(#liberator-mode-toolbar, #liberator-message-toolbar, #liberator-status) {
+        border: 1px dotted gray;
+        min-width: 1em;
+        min-height: 1em;
+    }
+    #liberator-status > * {
+        padding: 0 1px;
+        margin: 0;
+    }
+    #liberator-status-ssl {
+        -moz-appearance: none;
+        width: 16px;
+        height: 16px;
+        visibility: collapse;
+        -moz-image-region: rect(0, 16px, 16px, 0);
+    }
+    #liberator-status-ssl.verifiedIdentity {
+        visibility: visible;
+        list-style-image: url(chrome://browser/skin/identity-secure.svg);
+    }
+    #liberator-status-ssl.verifiedDomain {
+        visibility: visible;
+        list-style-image: url(chrome://browser/skin/identity-secure.svg);
+    }
+    #liberator-status-ssl.mixedActiveContent {
+        visibility: visible;
+        list-style-image: url(chrome://browser/skin/identity-mixed-active-loaded.svg);
+    }
+    #liberator-status-ssl.mixedDisplayContent {
+        visibility: visible;
+        list-style-image: url(chrome://browser/skin/identity-mixed-passive-loaded.svg);
+    }
+    #liberator-status-ssl.mixedActiveBlocked {
+        visibility: visible;
+        list-style-image: url(chrome://browser/skin/identity-mixed-active-blocked.svg);
+    }
+    #liberator-status-ssl.notSecure {
+        visibility: visible;
+        list-style-image: url(chrome://browser/skin/identity-not-secure.svg);
+    }
+
+    #liberator-commandline-prompt {
+        background-color: inherit;
+        margin: 0;
+    }
+    #liberator-commandline-command {
+        background-color: inherit;
+        color: inherit;
+        margin: 0;
+    }
+    #liberator-message {
+        margin: 0;
+    }
+    .liberator-hiding {
+        opacity: 0;
+        visibility: collapse;
+        transition-property: opacity, visibility;
+        transition-duration: .5s;
+    }
+
+    #sidebar {
+        max-width: 90% !important;
+        min-width: 10% !important;
+    }
+
+    /* MOW */
+
+    #liberator-completions,
+    #liberator-multiline-output,
+    #liberator-multiline-input {
+        overflow: hidden;
+        color: black;
+    }
+
+    #liberator-completions-content,
+    #liberator-multiline-output-content,
+    #liberator-multiline-input {
+        white-space: pre;
+        font-family: -moz-fixed;
+        margin: 0;
+    }
+
+    #liberator-completions-content *,
+    #liberator-multiline-output-content *,
+    #liberator-commandline-prompt *,
+    #liberator-commandline-command {
+        font: inherit;
+    }
+
+    #liberator-commandline-prompt-text {
+        max-width: 0;
+        transition-property: max-width;
+        transition-duration: 0.25s;
+    }
+
+    #liberator-completions-content table,
+    #liberator-multiline-output-content table {
+        white-space: inherit;
+        border-spacing: 0;
+    }
+
+    #liberator-completions-content td,
+    #liberator-multiline-output-content td,
+    #liberator-completions-content th,
+    #liberator-multiline-output-content th {
+        padding: 0 2px;
+    }
+
+    /* for muttator's composer */
+    #content-frame, #appcontent {
+        border: 0;
+    }
+
+    #liberator-commandline-command .textbox-search-icons {
+        display: none !important;
+    }
+
+    .tabbrowser-strip {
+        background: #808080 !important;
+    }
+
+    .tab-close-button {
+        /* display: none !important; */
+    }
+    .tabs-newtab-button {
+        display: none !important;
+    }
+    /* splitter */
+    .treestyletab-splitter {
+        width: 0 !important;
+    }
+    .treestyletab-splitter grippy {
+        display: none !important;
+    }
+
+    .tabbrowser-tab {
+        -moz-apperance: none !important;
+        background: #444 !important;
+        color: #eee !important;
+        text-shadow: none !important;
+
+        padding: 4px 0 4px 5px !important;
+        margin-bottom:1px !important;
+
+        border-radius: 8px 0 0 8px !important;
+        font-size: 14px !important;
+
+        border: none !important;
+        background-image:none !important;
+    }
+
+    .tabbrowser-tab[selected="true"] {
+        background: #222 !important;
+        color: #6899c6 !important;
+    }
+
+    .tab-icon-image {
+        margin-right: 2px;
+    }
+
+    .statuspanel-label {display: none;}
+}
+
+/* -- customize -- */
+
+@-moz-document url-prefix(chrome://liberator/){
+    [liberator|highlight~=CompDesc] { color: Pink !important; }
+    [liberator|highlight~=CompItem][selected] { color: cyan !important; background: #333 !important; }
+    [liberator|highlight~=CompTitle] { background: DarkOrchid !important; }
+    [liberator|highlight~=CompTitle]>* { color: white !important; border-bottom: 1px solid #3c3c3f !important; padding: 1px 0.5ex !important; text-shadow: 1px 1px 0px #0c0c0c !important; }
+    [liberator|highlight~=ErrorMsg] { font-family: Ricty !important; color: white !important; background: red !important; font-size: 12pt !important; }
+    [liberator|highlight~=Indicator] { color: DodgerBlue !important; }
+    [liberator|highlight~=InfoMsg] { font-family: Ricty !important; color: LightYellow !important; background: Black !important; font-size: 12pt !important; }
+    [liberator|highlight~=LineNr] { font-family: Ricty !important; color: DeepPink !important; background: Black !important; font-size: 12pt !important; }
+    [liberator|highlight~=NonText] { background: black !important; }
+    [liberator|highlight~=Null] { color: CornflowerBlue !important; }
+    [liberator|highlight~=Number] { color: CornflowerBlue !important; }
+    [liberator|highlight~=Object] { color: Khaki !important; }
+    [liberator|highlight~=Question] { font-family: Ricty !important; color: Yellow !important; background: Black !important; font-size: 12pt !important; }
+    [liberator|highlight~=String] { color: Orchid !important; }
+    [liberator|highlight~=TabNumber] { color: white !important; font-weight: bold !important; font-size:10pt !important; }
+    [liberator|highlight~=Tag] { color: CornflowerBlue !important; }
+    [liberator|highlight~=Title] { color: white !important; }
+    [liberator|highlight~=URL] { color: LightGreen !important; }
+    [liberator|highlight~=WarningMsg] { font-family: Ricty !important; color: DeepPink !important; background: Black !important; font-size: 12pt !important; }
+}
+
+/* highlight defined by common/content/liberator.xul */
+@-moz-document url-prefix(chrome://){
+    [liberator|highlight~=ModeMsg] { font-family: Ricty !important; color: LightYellow !important; background: Black !important; font-size: 12pt !important; }
+    /* css of message */
+    [liberator|highlight~=Normal] { font-family: Ricty !important; color: LightYellow !important; background: Black !important; font-size: 12pt !important; opacity: 0.8 !important; }
+    /* css when : is typed */
+    [liberator|highlight~=CmdLine]>* { font-family: Ricty !important; color: LightYellow !important; background: Black !important; font-size: 14pt !important; }
+    /* css of statusline */
+    [liberator|highlight~=StatusLine] { font-family: Ricty !important; color: CornflowerBlue !important; background: Black !important; font-weight: normal !important; font-size: 12pt !important; }
+}
+
+[liberator|highlight~=HintActive] { background-color: hotpink !important; color: white !important; text-decoration: none !important; -moz-border-radius: 4px !important; -moz-box-shadow: 0 0 2px #0c0c0c !important; }
+[liberator|highlight~=HintElem] { background-color: pink !important; color: black !important; text-decoration: none !important; -moz-border-radius: 4px !important; -moz-box-shadow: 0 0 2px #0c0c0c !important; }
+[liberator|highlight~=Hint] { font-family: Ricty !important; font-size: 15px !important; font-weight: normal !important; color: lightyellow !important; background-color: black !important; border-color: ButtonShadow !important; border-width: 0px !important; border-style: solid !important; padding: 0px 5px 0px 5px !important; text-transform: uppercase !important; background-color: rgba(28, 28, 28, 0.7) !important; border: 1px solid #1c1c1c !important; -moz-border-radius: 4px !important; -moz-box-shadow: 0px 0px 1px black !important; text-shadow: 1px 1px 2px black !important; }
+
+@-moz-document url-prefix(chrome://) {
+    /* IME off */
+    #liberator-commandline-command input {
+        ime-mode: inactive;
+    }
+}
+/* vim: set fdm=marker sw=4 ts=4 et: */

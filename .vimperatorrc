@@ -1,6 +1,4 @@
 " Basic {{{
-" テーマ設定
-colorscheme sweets_dita
 
 " GUIの設定
 set gui=nonavigation
@@ -406,6 +404,9 @@ EOM
 " }}}
 
 " After {{{
+" テーマ設定
+source ~/.vimperator/colors/sweets_dita.css
+
 "============================
 " buftabs
 "============================
