@@ -1400,11 +1400,11 @@ if s:plug.is_installed("vim-workspace")
   let g:workspace_right_trunc_icon = "\uf0a9"
 
   nnoremap <silent> <Leader>d :<C-u>Bdelete<CR>
-  noremap <silent> <Leader>tc :tabe<CR>
-  noremap <silent> <Leader>tn :tabnext<CR>
-  noremap <silent> <Leader>tp :tabprevious<CR>
-  noremap <silent> <Leader>td :tabclose<CR>
-  noremap <silent> <Leader>ts :tabs<CR>
+  nnoremap <silent> <Leader>tc :tabe<CR>
+  nnoremap <silent> <Leader>tn :tabnext<CR>
+  nnoremap <silent> <Leader>tp :tabprevious<CR>
+  nnoremap <silent> <Leader>td :tabclose<CR>
+  nnoremap <silent> <Leader>ts :tabs<CR>
 endif
 " }}}
 
