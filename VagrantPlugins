@@ -1,3 +1,5 @@
+vagrant-cachier
+vagrant-disksize
 vagrant-docker-compose
 vagrant-hostsupdater
 vagrant-vbguest
