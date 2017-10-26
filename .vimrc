@@ -218,6 +218,7 @@ Plug 'tyru/open-browser.vim'
 Plug 'tyru/operator-camelize.vim'
 Plug 'tyru/vim-altercmd'
 Plug 'wellle/targets.vim'
+Plug 'zhamlin/tiler.vim'
 " }}}
 
 " Library {{{
@@ -1509,6 +1510,18 @@ let g:startify_list_order = [
       \ 'dir'
       \ ]
 let g:startify_change_to_vcs_root = 1
+" }}}
+
+" tiler {{{
+noremap [tiler] <Nop>
+nmap <A-t> [tiler]
+
+nnoremap <silent> [tiler]f       :<C-u>TilerFocus<CR>
+nnoremap <silent> [tiler]<Enter> :<C-u>TilerReorder<CR>
+nnoremap <silent> [tiler]n       :<C-u>TilerNew<CR>
+nmap     <silent> [tiler]l       <Plug>TilerRotateLayoutR<CR>
+nmap     <silent> [tiler]r       <Plug>TilerRotateForwards<CR>
+nmap     <silent> [tiler]z       <Plug>TilerZoom<CR>
 " }}}
 
 " undotree {{{
