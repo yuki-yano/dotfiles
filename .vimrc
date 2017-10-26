@@ -200,10 +200,10 @@ Plug 'mattn/gist-vim', { 'on': 'Gist' }
 Plug 'mattn/webapi-vim'
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 Plug 'mhinz/vim-startify'
-Plug 'moll/vim-bbye'
 Plug 'mopp/autodirmake.vim'
 Plug 'mtth/scratch.vim', { 'on': 'Scratch' }
 Plug 'osyo-manga/vim-textobj-multiblock'
+Plug 'qpkorr/vim-bufkill'
 Plug 'rizzatti/dash.vim'
 Plug 'roxma/vim-paste-easy'
 Plug 'simeji/winresizer'
@@ -1399,7 +1399,9 @@ if s:plug.is_installed("vim-workspace")
   let g:workspace_left_trunc_icon = "\uf0a8"
   let g:workspace_right_trunc_icon = "\uf0a9"
 
-  nnoremap <silent> <Leader>d :<C-u>Bdelete<CR>
+  autocmd FileType *    nnoremap <silent> <Leader>d :BD<CR>
+  autocmd FileType diff nnoremap <silent> <Leader>d :BW<CR>
+
   nnoremap <silent> <Leader>tc :tabe<CR>
   nnoremap <silent> <Leader>tn :tabnext<CR>
   nnoremap <silent> <Leader>tp :tabprevious<CR>
