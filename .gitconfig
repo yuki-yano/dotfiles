@@ -26,6 +26,8 @@
   indentHeuristic = true
   compactionHeuristic = true
   tool = nvimdiff
+  renames = copies
+  mnemonicprefix = true
 [difftool "nvimdiff"]
   cmd = "nvim -d -u ~/.vimrc \"$LOCAL\" \"$REMOTE\""
 [merge]
