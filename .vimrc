@@ -65,7 +65,6 @@ Plug 'tell-k/vim-autopep8', { 'for': 'python' }
 Plug 'thinca/vim-ft-help_fold', { 'for': 'help' }
 Plug 'tmhedberg/SimpylFold', { 'for': 'python' }
 Plug 'tmux-plugins/vim-tmux', { 'for': 'tmux' }
-Plug 'tpope/vim-endwise', { 'for': 'ruby' }
 Plug 'vim-jp/syntax-vim-ex', { 'for': 'vim' }
 Plug 'vim-python/python-syntax', { 'for': 'python' }
 Plug 'vim-ruby/vim-ruby', { 'for': ['ruby', 'eruby'] }
