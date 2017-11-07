@@ -1513,6 +1513,10 @@ let g:startify_list_order = [
 let g:startify_change_to_vcs_root = 1
 " }}}
 
+" test {{{
+let test#strategy = 'neoterm'
+" }}}
+
 " tiler {{{
 noremap [tiler] <Nop>
 nmap <A-t> [tiler]
