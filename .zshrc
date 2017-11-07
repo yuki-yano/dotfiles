@@ -2,18 +2,21 @@
 
 source ~/dotfiles/.zsh/zgen/zgen.zsh
 
-zgen load Tarrasch/zsh-autoenv
-zgen load knu/zsh-git-escape-magic
-zgen load mafredri/zsh-async
-zgen load mollifier/anyframe
-zgen load sindresorhus/pure
-zgen load supercrabtree/k
-zgen load tarruda/zsh-autosuggestions
-zgen load zsh-users/zsh-completions
-zgen load zsh-users/zsh-history-substring-search
-zgen load zsh-users/zsh-syntax-highlighting
-zgen load zuxfoucault/colored-man-pages_mod
-zgen oh-my-zsh plugins/fancy-ctrl-z
+if ! zgen saved; then
+  zgen load Tarrasch/zsh-autoenv
+  zgen load knu/zsh-git-escape-magic
+  zgen load mafredri/zsh-async
+  zgen load mollifier/anyframe
+  zgen load sindresorhus/pure
+  zgen load tarruda/zsh-autosuggestions
+  zgen load zsh-users/zsh-completions src
+  zgen load zsh-users/zsh-history-substring-search
+  zgen load zsh-users/zsh-syntax-highlighting
+  zgen load zuxfoucault/colored-man-pages_mod
+  zgen oh-my-zsh plugins/fancy-ctrl-z
+
+  zgen save
+fi
 
 ZSH_HIGHLIGHT_STYLES[alias]=fg=blue
 ZSH_HIGHLIGHT_STYLES[builtin]=fg=blue
@@ -92,13 +95,13 @@ zle -N insert-last-word smart-insert-last-word
 # Completion {{{
 
 # 補完
-autoload -Uz compinit; compinit -u
+autoload -Uz compinit; compinit -uC
 zstyle ':completion:*' verbose true
 zstyle ':completion:*' remote-access false
 zstyle ':completion:*' use-compctl false
 zstyle ':completion:*' group-name ''
 zstyle -e ':completion:*' special-dirs '[[ $PREFIX = (../)#(|.|..) ]] && reply=(..)'
-zstyle ':completion:*' menu select=2 # menu true select=2
+zstyle ':completion:*' menu select=2
 zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
 zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' '+r:|[._-]=* r:|=* l:|=*'
 zstyle ':completion:*' completer _oldlist _complete _match _ignored
@@ -118,7 +121,6 @@ zstyle ':completion:*:descriptions' format $'%{\e[38;5;147m%}%B[%d%B]%b%{\e[m%}'
 zstyle ':completion:*:corrections' format $'%{\e[38;5;147m%}%B[%d%B]%b%{\e[m%}'
 zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
 zstyle ':completion:*:(vim|mv|rm|diff|ln):*' ignore-line true
-zstyle ':completion:*:cd:*' ignore-parents parent pwd # TODO: 効いてない
 zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
 
 # }}}
@@ -217,7 +219,7 @@ show_buffer_stack() {
 zle -N show_buffer_stack
 
 # cdd
-source ~/dotfiles/.zsh/cdd
+source ~/dotfiles/.zsh/cdd.zsh
 chpwd_functions+=_cdd_chpwd
 
 # abbrev
@@ -310,6 +312,14 @@ bindkey '^p'   up-line-or-history-ignoring
 
 if (which zprof > /dev/null) ;then
   zprof | less
+fi
+
+# }}}
+
+# zcompile {{{
+
+if [ ~/dotfiles/.zshrc -nt ~/.zshrc.zwc ]; then
+  zcompile ~/.zshrc
 fi
 
 # }}}
