@@ -398,20 +398,21 @@ endif
 set complete+=k
 set completeopt=longest,menuone,preview
 
-autocmd BufNewFile,BufRead        *.erb  set filetype=eruby.html
-autocmd BufNewFile,BufRead         *.js  set filetype=javascript
-autocmd BufNewFile,BufRead         *.md  set filetype=markdown
-autocmd BufNewFile,BufRead        *.vue  set filetype=vue.html.javascript.css
-autocmd BufNewFile,BufRead        *.ssp  set filetype=html
-autocmd BufNewFile,BufRead       *.cson  set filetype=coffee
-autocmd BufNewFile,BufRead     .babelrc  set filetype=json
-autocmd BufNewFile,BufRead    .eslintrc  set filetype=yaml
-autocmd BufNewFile,BufRead .stylelintrc  set filetype=yaml
+autocmd BufNewFile,BufRead         *.erb set filetype=eruby.html
+autocmd BufNewFile,BufRead          *.js set filetype=javascript
+autocmd BufNewFile,BufRead          *.md set filetype=markdown
+autocmd BufNewFile,BufRead         *.vue set filetype=vue.html.javascript.css
+autocmd BufNewFile,BufRead         *.ssp set filetype=html
+autocmd BufNewFile,BufRead        *.cson set filetype=coffee
+autocmd BufNewFile,BufRead  *.{yml,yaml} set filetype=yaml
+autocmd BufNewFile,BufRead      .babelrc set filetype=json
+autocmd BufNewFile,BufRead     .eslintrc set filetype=yaml
+autocmd BufNewFile,BufRead  .stylelintrc set filetype=yaml
 autocmd BufNewFile,BufRead .tern-project set filetype=json
-autocmd BufNewFile,BufRead       .pryrc  set filetype=ruby
-autocmd BufNewFile,BufRead      Gemfile  set filetype=ruby
-autocmd BufNewFile,BufRead  Vagrantfile  set filetype=ruby
-autocmd BufNewFile,BufRead   Schemafile  set filetype=ruby
+autocmd BufNewFile,BufRead        .pryrc set filetype=ruby
+autocmd BufNewFile,BufRead       Gemfile set filetype=ruby
+autocmd BufNewFile,BufRead   Vagrantfile set filetype=ruby
+autocmd BufNewFile,BufRead    Schemafile set filetype=ruby
 
 autocmd FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType ruby          setlocal omnifunc=
