@@ -16,9 +16,19 @@ Plug 'vim-jp/vimdoc-ja'
 " }}}
 
 " Language {{{
+" Plug 'Shougo/context_filetype.vim'
+" Plug 'Shougo/vinarise.vim'
+" Plug 'derekwyatt/vim-sbt', { 'for': 'sbt' }
+" Plug 'derekwyatt/vim-scala', { 'for': 'scala' }
+" Plug 'gre/play2vim', { 'for': 'scala' }
+" Plug 'jparise/vim-graphql', { 'for': 'graphql' }
+" Plug 'kchmck/vim-coffee-script', { 'for': 'coffee' }
+" Plug 'mdreves/vim-scaladoc', { 'for': 'scala' }
+" Plug 'osyo-manga/vim-precious'
+" Plug 'slim-template/vim-slim', { 'for': 'slim' }
 Plug 'Chiel92/vim-autoformat'
-Plug 'Shougo/context_filetype.vim'
-Plug 'Shougo/vinarise.vim'
+Plug 'Chiel92/vim-autoformat'
+Plug 'Valloric/MatchTagAlways', { 'for': ['html', 'xml', 'erb'] }
 Plug 'Valloric/MatchTagAlways', { 'for': ['html', 'xml', 'erb'] }
 Plug 'Vimjas/vim-python-pep8-indent', { 'for': 'python' }
 Plug 'ap/vim-css-color', { 'for': ['css', 'sass', 'scss'] }
@@ -26,29 +36,20 @@ Plug 'cakebaker/scss-syntax.vim', { 'for': ['sass', 'scss'] }
 Plug 'cespare/vim-toml', { 'for': 'toml' }
 Plug 'csscomb/vim-csscomb', { 'for': ['css', 'sass', 'scss'] }
 Plug 'davidhalter/jedi-vim', { 'for': 'python' }
-Plug 'derekwyatt/vim-sbt', { 'for': 'sbt' }
-Plug 'derekwyatt/vim-scala', { 'for': 'scala' }
 Plug 'ekalinin/Dockerfile.vim', { 'for': 'dockerfile' }
 Plug 'elzr/vim-json', { 'for': 'json' }
 Plug 'fatih/vim-go', { 'for': 'go' }
-Plug 'styled-components/vim-styled-components', { 'for': 'javascript' }
-Plug 'gre/play2vim', { 'for': 'scala' }
 Plug 'hail2u/vim-css3-syntax', { 'for': 'css' }
 Plug 'hashivim/vim-terraform', { 'for': 'terraform' }
 Plug 'heavenshell/vim-pydocstring', { 'for': 'python' }
-Plug 'jparise/vim-graphql', { 'for': 'graphql' }
 Plug 'jsfaint/gen_tags.vim'
-Plug 'kchmck/vim-coffee-script', { 'for': 'coffee' }
 Plug 'kewah/vim-stylefmt', { 'for': 'css' }
 Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
-Plug 'majutsushi/tagbar'
 Plug 'mattn/emmet-vim', { 'for': ['html', 'eruby.html', 'javascript', 'vue', 'vue.html.javascript.css'] }
 Plug 'maxmellon/vim-jsx-pretty', { 'for': 'javascript' }
-Plug 'mdreves/vim-scaladoc', { 'for': 'scala' }
 Plug 'mkomitee/vim-gf-python', { 'for': 'python' }
 Plug 'moll/vim-node', { 'for': 'javascript' }
 Plug 'nsf/gocode', { 'for': 'go', 'rtp': 'nvim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
-Plug 'osyo-manga/vim-precious'
 Plug 'othree/csscomplete.vim', { 'for': ['css', 'sass', 'scss'] }
 Plug 'othree/es.next.syntax.vim', { 'for': 'javascript' }
 Plug 'othree/html5.vim', { 'for': ['html', 'eruby'] }
@@ -59,8 +60,7 @@ Plug 'pearofducks/ansible-vim', { 'for': 'ansible' }
 Plug 'posva/vim-vue', { 'for': 'vue' }
 Plug 'raimon49/requirements.txt.vim', { 'for': 'requirements' }
 Plug 'rhysd/vim-gfm-syntax', { 'for': 'markdown' }
-Plug 'shmargum/vim-sass-colors', { 'for': ['sass', 'scss'] }
-Plug 'slim-template/vim-slim', { 'for': 'slim' }
+Plug 'styled-components/vim-styled-components', { 'for': 'javascript' }
 Plug 'tell-k/vim-autopep8', { 'for': 'python' }
 Plug 'thinca/vim-ft-help_fold', { 'for': 'help' }
 Plug 'tmhedberg/SimpylFold', { 'for': 'python' }
@@ -76,19 +76,20 @@ Plug 'ywatase/mdt.vim', { 'for': 'markdown' }
 " }}}
 
 " Git {{{
-Plug 'ToruIwashita/git-switcher.vim', { 'on':  ['GswSave', 'GswLoad'] }
+Plug 'ToruIwashita/git-switcher.vim', { 'on': ['GswSave', 'GswLoad'] }
 Plug 'airblade/vim-gitgutter'
 Plug 'airblade/vim-rooter', { 'on': 'Rooter' }
-Plug 'chrisbra/vim-diff-enhanced', { 'on':  ['PatienceDiff', 'EnhancedDiff'] }
 Plug 'cohama/agit.vim'
+Plug 'kana/vim-gf-diff'
 Plug 'lambdalisue/gina.vim'
 Plug 'lambdalisue/vim-gita'
+Plug 'lambdalisue/vim-unified-diff'
 Plug 'rhysd/committia.vim'
 " }}}
 
 " Completion & Fuzzy Match & vimfiler {{{
 Plug 'Shougo/denite.nvim'
-Plug 'Shougo/deoplete.nvim', Cond(has('nvim'),{ 'do': ':UpdateRemotePlugins', 'on': [] })
+Plug 'Shougo/deoplete.nvim', Cond(has('nvim'), { 'do': ':UpdateRemotePlugins', 'on': [] })
 Plug 'Shougo/neco-syntax'
 Plug 'Shougo/neco-vim'
 Plug 'Shougo/neomru.vim'
@@ -113,15 +114,18 @@ Plug 'rafi/vim-denite-session'
 Plug 'rking/ag.vim', { 'on': 'Ag' }
 Plug 'tsukkee/unite-tag'
 Plug 'ujihisa/neco-look'
-Plug 'wokalski/autocomplete-flow', Cond(has('nvim'), { 'for': ['javascript'] })
-Plug 'zchee/deoplete-go', Cond(has('nvim'), { 'for': ['go'], 'do': 'make' })
-Plug 'zchee/deoplete-jedi', Cond(has('nvim'), { 'for': ['python'] })
+Plug 'wokalski/autocomplete-flow', Cond(has('nvim'), { 'for': 'javascript' })
+Plug 'zchee/deoplete-go', Cond(has('nvim'), { 'for': 'go', 'do': 'make' })
+Plug 'zchee/deoplete-jedi', Cond(has('nvim'), { 'for': 'python' })
 " }}}
 
 " Edit & Move & Search {{{
+" Plug 'jiangmiao/auto-pairs'
+" Plug 'octref/rootignore'
 Plug 'AndrewRadev/switch.vim', { 'on': 'Switch' }
 Plug 'LeafCage/yankround.vim'
 Plug 'chrisbra/NrrwRgn', { 'on': 'NR' }
+Plug 'cohama/lexima.vim'
 Plug 'dhruvasagar/vim-table-mode', { 'on': 'TableModeToggle' }
 Plug 'dietsche/vim-lastplace'
 Plug 'dyng/ctrlsf.vim', { 'on': 'CtrlSF' }
@@ -133,11 +137,9 @@ Plug 'haya14busa/incsearch.vim'
 Plug 'haya14busa/vim-asterisk'
 Plug 'haya14busa/vim-metarepeat'
 Plug 'houtsnip/vim-emacscommandline'
-Plug 'jiangmiao/auto-pairs'
 Plug 'junegunn/vim-easy-align'
 Plug 'jwhitley/vim-matchit'
 Plug 'kana/vim-operator-replace'
-Plug 'octref/rootignore'
 Plug 'osyo-manga/vim-anzu'
 Plug 'osyo-manga/vim-jplus'
 Plug 'osyo-manga/vim-over'
@@ -145,7 +147,7 @@ Plug 'rhysd/clever-f.vim'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'thinca/vim-qfreplace', { 'on': 'Qfreplace' }
 Plug 'thinca/vim-visualstar'
-Plug 'tomtom/tcomment_vim'
+Plug 'tomtom/tcomment_vim', { 'on': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs'] }
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-speeddating'
 Plug 'tpope/vim-surround'
@@ -175,26 +177,31 @@ Plug 'vimtaku/hl_matchit.vim'
 " }}}
 
 " Util {{{
+" Plug 'h1mesuke/textobj-wiw'
+" Plug 'itchyny/vim-qfedit'
+" Plug 'itchyny/vim-tmpbuffer', { 'on': 'Tmpbuffer' }
+" Plug 'kana/vim-textobj-function'
+" Plug 'kana/vim-textobj-line'
+" Plug 'lucapette/vim-textobj-underscore'
+" Plug 'osyo-manga/vim-textobj-multiblock'
+" Plug 'roxma/vim-paste-easy'
+" Plug 'wellle/targets.vim'
+" Plug 'kana/vim-submode'
 Plug 'Shougo/junkfile.vim'
 Plug 'aiya000/aho-bakaup.vim'
 Plug 'bogado/file-line'
 Plug 'daisuzu/translategoogle.vim'
-Plug 'h1mesuke/textobj-wiw'
 Plug 'itchyny/vim-external'
 Plug 'itchyny/vim-extracmd'
-Plug 'itchyny/vim-qfedit'
-Plug 'itchyny/vim-tmpbuffer', { 'on': 'Tmpbuffer' }
 Plug 'janko-m/vim-test'
 Plug 'jez/vim-superman'
+Plug 'kana/vim-gf-user'
 Plug 'kana/vim-niceblock'
 Plug 'kana/vim-operator-user'
-Plug 'kana/vim-submode'
-Plug 'kana/vim-textobj-function'
-Plug 'kana/vim-textobj-line'
 Plug 'kana/vim-textobj-user'
 Plug 'kassio/neoterm'
 Plug 'konfekt/fastfold'
-Plug 'lucapette/vim-textobj-underscore'
+Plug 'majutsushi/tagbar'
 Plug 'mattn/benchvimrc-vim', { 'on': 'BenchVimrc' }
 Plug 'mattn/gist-vim', { 'on': 'Gist' }
 Plug 'mattn/webapi-vim'
@@ -202,10 +209,8 @@ Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 Plug 'mhinz/vim-startify'
 Plug 'mopp/autodirmake.vim'
 Plug 'mtth/scratch.vim', { 'on': 'Scratch' }
-Plug 'osyo-manga/vim-textobj-multiblock'
 Plug 'qpkorr/vim-bufkill'
-Plug 'rizzatti/dash.vim'
-Plug 'roxma/vim-paste-easy'
+Plug 'rizzatti/dash.vim', { 'on': 'Dash' }
 Plug 'simeji/winresizer'
 Plug 'szw/vim-maximizer', { 'on': 'MaximizerToggle' }
 Plug 'terryma/vim-expand-region'
@@ -217,7 +222,6 @@ Plug 'tyru/capture.vim', { 'on': 'Capture' }
 Plug 'tyru/open-browser.vim'
 Plug 'tyru/operator-camelize.vim'
 Plug 'tyru/vim-altercmd'
-Plug 'wellle/targets.vim'
 Plug 'zhamlin/tiler.vim'
 " }}}
 
@@ -290,13 +294,7 @@ set showtabline=2
 if has('nvim')
   autocmd TermOpen * set nonumber | set norelativenumber
 endif
-
-" lessの場合はnumberのみ設定
-if !exists("loaded_less")
-  autocmd BufNewFile,BufRead,FileType * set number | set relativenumber
-else
-  set number
-endif
+autocmd BufNewFile,BufRead,FileType * set number
 
 
 "" Folding
@@ -484,7 +482,7 @@ function! TrimEndLines()
   :silent! %s#\($\n\s*\)\+\%$##
   call setpos('.', save_cursor)
 endfunction
-au BufWritePre * call TrimEndLines()
+autocmd BufWritePre * call TrimEndLines()
 " }}}
 
 " }}}
@@ -720,7 +718,6 @@ if s:plug.is_installed("denite.nvim")
   " nnoremap <silent> <Leader>P :<C-u>Denite neoyank -direction=topleft<CR>
 
   " quickfix
-  " nnoremap <silent> <Leader>q :Unite quickfix -direction=botright -no-quit<CR>
   " nnoremap <silent> <Leader>l :Denite location_list -no-quit -auto-resize<CR>
 
   " session
@@ -781,7 +778,7 @@ if s:plug.is_installed("unite.vim")
   " quickfix
   " call unite#custom_source('quickfix', 'sorters', 'sorter_reverse')
   " call unite#custom_source('location_list', 'sorters', 'sorter_reverse')
-  " nnoremap <silent> <Leader>q :Unite quickfix -direction=botright -no-quit<CR>
+  nnoremap <silent> <Leader>q :<C-u>Unite quickfix -direction=botright -no-quit<CR>
   nnoremap <silent> <Leader>l :<C-u>Unite location_list -direction=botright -no-quit<CR>
 
   " mark
@@ -944,12 +941,6 @@ function! g:committia_hooks.edit_open(info)
 endfunction
 " }}}
 
-" diff-enhanced {{{
-if &diff
-  let &diffexpr='EnhancedDiff#Diff("git diff", "--diff-algorithm=patience")'
-endif
-" }}}
-
 " git-gutter {{{
 if s:plug.is_installed("vim-gitgutter")
   let g:gitgutter_map_keys = 0
@@ -1025,8 +1016,8 @@ if s:plug.is_installed("incsearch.vim")
   nmap g/ <Plug>(easymotion-sn)
   xmap g/ <Plug>(easymotion-sn)
   omap g/ <Plug>(easymotion-tn)
-  map  n  <Plug>(easymotion-next)<Plug>(anzu-n)zzzv<Plug>Pulse
-  map  N  <Plug>(easymotion-prev)<Plug>(anzu-N)zzzv<Plug>Pulse
+  map  n  <Plug>(anzu-n)zzzv<Plug>Pulse
+  map  N  <Plug>(anzu-N)zzzv<Plug>Pulse
   nmap *  <Plug>(asterisk-z*)<Plug>(anzu-update-search-status-with-echo)<Plug>Pulse
   nmap #  <Plug>(asterisk-z#)<Plug>(anzu-update-search-status-with-echo)<Plug>Pulse
   nmap g* <Plug>(asterisk-gz*)<Plug>(anzu-update-search-status-with-echo)<Plug>Pulse
@@ -1102,7 +1093,7 @@ nnoremap <silent> <C-s> :<C-u>Switch<CR>
 " }}}
 
 " tcomment {{{
-vnoremap <silent> <Leader>cc :TComment<CR>
+noremap <silent> <Leader>c :TComment<CR>
 " }}}
 
 " yankround {{{
@@ -1402,7 +1393,9 @@ if s:plug.is_installed("vim-workspace")
   let g:workspace_right_trunc_icon = "\uf0a9"
 
   autocmd FileType *    nnoremap <silent> <Leader>d :BD<CR>
+  autocmd FileType help nnoremap <silent> <Leader>d :BW<CR>
   autocmd FileType diff nnoremap <silent> <Leader>d :BW<CR>
+  autocmd FileType git  nnoremap <silent> <Leader>d :BW<CR>
 
   nnoremap <silent> <Leader>tc :tabe<CR>
   nnoremap <silent> <Leader>tn :tabnext<CR>
@@ -1459,7 +1452,6 @@ if s:plug.is_installed("vim-extracmd")
   call extracmd#set('di',     'Ref webdict alc <C-R><C-W><CR>')
   call extracmd#set('alc',    'Ref webdict alc')
   call extracmd#set('tag',    'TagbarOpen j<CR>')
-  call extracmd#set('num',    'set number <bar> set relativenumber')
   call extracmd#set('j',      'Unite jump change -auto-preview<CR>')
   call extracmd#set('tab',    'Unite tab<CR>')
   call extracmd#set('sf',     'CtrlSF')
