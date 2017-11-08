@@ -1,14 +1,9 @@
 Pygments
-ansible-lint
 autopep8
 awscli
 flake8
 jedi
-mypy-lang
+mypy
 neovim
 neovim-remote
-pipenv
-psutil
 pygments-style-solarized
-sexpdata
-websocket-client

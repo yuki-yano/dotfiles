@@ -9,23 +9,14 @@ if ! zgen saved; then
   zgen load mollifier/anyframe
   zgen load sindresorhus/pure
   zgen load tarruda/zsh-autosuggestions
+  zgen load zdharma/fast-syntax-highlighting
   zgen load zsh-users/zsh-completions src
   zgen load zsh-users/zsh-history-substring-search
-  zgen load zsh-users/zsh-syntax-highlighting
   zgen load zuxfoucault/colored-man-pages_mod
   zgen oh-my-zsh plugins/fancy-ctrl-z
 
   zgen save
 fi
-
-ZSH_HIGHLIGHT_STYLES[alias]=fg=blue
-ZSH_HIGHLIGHT_STYLES[builtin]=fg=blue
-ZSH_HIGHLIGHT_STYLES[function]=fg=blue
-ZSH_HIGHLIGHT_STYLES[command]=fg=blue
-ZSH_HIGHLIGHT_STYLES[hashed-command]=fg=blue
-ZSH_HIGHLIGHT_STYLES[precommand]=fg=blue,underline
-ZSH_HIGHLIGHT_STYLES[single-hyphen-option]=fg=cyan
-ZSH_HIGHLIGHT_STYLES[double-hyphen-option]=fg=cyan
 
 # }}}
 
@@ -94,8 +85,9 @@ zle -N insert-last-word smart-insert-last-word
 
 # Completion {{{
 
-# 補完
-autoload -Uz compinit; compinit -uC
+# autoload -Uz compinit
+# compinit -C
+
 zstyle ':completion:*' verbose true
 zstyle ':completion:*' remote-access false
 zstyle ':completion:*' use-compctl false

@@ -90,13 +90,13 @@ end
 namespace :pip do
   desc 'Install pip'
   task install: 'Pipfile' do
-    sh 'pip install pip --upgrade'
     sh 'pip2 install pip --upgrade'
-    sh 'pip list --outdated --format=legacy | cut -d" " -f1 | xargs pip install --upgrade'
+    sh 'pip3 install pip --upgrade'
     sh 'pip2 list --outdated --format=legacy | cut -d" " -f1 | xargs pip2 install --upgrade'
+    sh 'pip3 list --outdated --format=legacy | cut -d" " -f1 | xargs pip3 install --upgrade'
     File.readlines('Pipfile').map(&:chomp).each do |package|
-      system "pip install #{package} --upgrade"
       system "pip2 install #{package} --upgrade"
+      system "pip3 install #{package} --upgrade"
     end
   end
 end

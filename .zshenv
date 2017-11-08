@@ -24,14 +24,46 @@ export PATH=$PATH:$HOME/dotfiles/node_modules/.bin
 # powerline
 export PATH=$PATH:~/.local/bin
 
-# rbenv
-eval "$(rbenv init -)"
+# Lazy Load
+# show: https://github.com/xcv58/prezto/tree/master/modules/lazy-load
+#       https://gist.github.com/QinMing/364774610afc0e06cc223b467abe83c0
+lazy_load() {
+  local load_func=${1}
+  local lazy_func="lazy_${load_func}"
+  shift 1
 
-# pyenv
-export PATH=$HOME/.pyenv/bin:$PATH
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-export PYTHON_CONFIGURE_OPTS="--enable-framework"
+  local -a names
+  names=("${(@s: :)${1}}")
+
+  for i in $names; do
+    alias ${i}="${lazy_func} ${i}"
+  done
+
+  eval "
+  function ${lazy_func}() {
+  unset -f ${lazy_func}
+  lazy_load_clean $@
+  eval ${load_func}
+  unset -f ${load_func}
+  eval \$@
+}
+"
+}
+
+lazy_load_clean() {
+  for i in ${@}; do
+    # alias vi='nvim' だけは有効にしておく
+    if [ ${i} != 'vi' ]; then
+      unalias ${i}
+    fi
+  done
+}
+
+# rbenv
+lazy_load rbenv "ruby vi vim nvim $(ls ~/dotfiles/vendor/bin/ | tr '\n' ' ')"
+rbenv() {
+  eval "$(command rbenv init -)"
+}
 
 # nodebrew
 export PATH=$HOME/.nodebrew/current/bin:$PATH
@@ -90,7 +122,7 @@ alias be='bundle exec'
 
 # git alias
 if whence hub > /dev/null; then
-    alias git='nocorrect hub'
+  alias git='nocorrect hub'
 fi
 alias g='git'
 alias ga='git add'
@@ -107,7 +139,7 @@ alias gitt='gittower .'
 
 function current_branch() {
   ref=$(git symbolic-ref HEAD 2> /dev/null) || \
-  ref=$(git rev-parse --short HEAD 2> /dev/null) || return
+    ref=$(git rev-parse --short HEAD 2> /dev/null) || return
   echo ${ref#refs/heads/}
 }
 
@@ -118,9 +150,6 @@ alias gist='gist -c -o -p'
 # alias bundle="nocorrect bundle"
 alias be='bundle exec'
 
-# homebrew
-alias brew="env PATH=${PATH/${HOME}\/\.pyenv\/shims:/} brew"
-
 # diff
 alias diff='diff -u'
 export VIM_TMP=/tmp/vim.tmp
@@ -128,13 +157,13 @@ alias -g V="> $VIM_TMP$$; vim $VIM_TMP$$"
 
 # direnv
 if whence direnv > /dev/null; then
-    _direnv_hook() {
-        eval "$(direnv export zsh)";
-    }
-    typeset -ag precmd_functions;
-    if [[ -z ${precmd_functions[(r)_direnv_hook]} ]]; then
-        precmd_functions+=_direnv_hook;
-    fi
+  _direnv_hook() {
+    eval "$(direnv export zsh)";
+  }
+  typeset -ag precmd_functions;
+  if [[ -z ${precmd_functions[(r)_direnv_hook]} ]]; then
+    precmd_functions+=_direnv_hook;
+  fi
 fi
 
 # grep
@@ -144,17 +173,19 @@ alias -g G='| grep'
 alias -g C='| pbcopy'
 
 # emacsclient
-function e (){
-    emacsclient -n $* &
+function e() {
+  emacsclient -n $* &
 }
 
 # git-foresta
 function gifo() {
-    git-foresta --style=10 "$@" | less -RSX
+  git-foresta --style=10 "$@" | less -RSX
 }
 function gifa() {
-    git-foresta --all --style=10 "$@" | less -RSX
+  git-foresta --all --style=10 "$@" | less -RSX
 }
 
 # config
 [ -f ~/.config/nicovideo-dump.zsh ] && source ~/.config/nicovideo-dump.zsh
+
+# vim:set et ts=2 sts=2 sw=2 fen fdm=marker:

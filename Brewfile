@@ -23,8 +23,6 @@ install node
 install nodebrew
 install olafurpg/scalafmt/scalafmt --HEAD
 install openssl
-install pyenv
-install pyenv-virtualenv
 install python
 install python3
 install rbenv
