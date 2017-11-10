@@ -100,6 +100,7 @@ Plug 'Shougo/unite.vim'
 Plug 'Shougo/vimfiler'
 Plug 'Valloric/YouCompleteMe', Cond(!has('nvim'), { 'do': './install.py' })
 Plug 'carlitux/deoplete-ternjs', Cond(has('nvim'), { 'for': ['javascript'] })
+Plug 'chemzqm/denite-extra'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'hewes/unite-gtags'
 Plug 'honza/vim-snippets'
@@ -717,6 +718,7 @@ if s:plug.is_installed("denite.nvim")
 
   " quickfix
   " nnoremap <silent> <Leader>l :Denite location_list -no-quit -auto-resize<CR>
+  " nnoremap <silent> <Leader>q :Denite quickfix -no-quit -auto-resize<CR>
 
   " session
   " nnoremap <silent> <Leader>sl :<C-u>Denite session<CR>
