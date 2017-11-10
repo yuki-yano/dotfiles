@@ -534,10 +534,13 @@ hi ALEError ctermfg=0 ctermbg=203
 
 nnoremap <Leader>a :<C-u>Autoformat<CR>
 
+" ruby
+let g:formatters_ruby = ['rubocop']
+
 " erb
 let g:formatdef_htmlbeautifier = '"SRC=/tmp/erb-temp-${RANDOM}.erb; cat > $SRC; htmlbeautifier $SRC; cat $SRC; rm -f $SRC"'
-let g:formatters_eruby      = ['htmlbeautifier']
-let g:formatters_eruby_html = ['htmlbeautifier']
+let g:formatters_eruby         = ['htmlbeautifier']
+let g:formatters_eruby_html    = ['htmlbeautifier']
 
 " eslint
 let g:formatdef_prettier_eslint = '"cat | prettier-eslint --stdin"'
@@ -551,10 +554,6 @@ let g:formatters_css = ['stylefmt']
 let g:formatters_vue_html_javascript_css = []
 let g:formatdef_vuefmt = '"cat > vuefmt-temp.vue; ruby -e ''File.read(\"vuefmt-temp.vue\").gsub(%r{<template(.*?)>(.*)</template>}m) { |_| File.write(\"vuefmt-temp-template.xml\", \"<template#{$1}>#{$2}</template>\"); `touch \"vuefmt-temp-template.xml\"` unless File.exist?(\"vuefmt-temp-template.xml\")}''; cat vuefmt-temp-template.xml | htmlbeautifier; echo \"\"; touch vuefmt-temp-js.js; ruby -e ''File.read(\"vuefmt-temp.vue\").gsub(%r{<script>\n(.*)</script>}m) { |_| File.write(\"vuefmt-temp-js.js\", \"#{$1}\"); }''; eslint --fix vuefmt-temp-js.js >/dev/null 2>&1; echo \"<script>\"; cat vuefmt-temp-js.js; echo \"</script>\"; echo \"\"; ruby -e ''style = File.read(\"vuefmt-temp.vue\").gsub(%r{<style(.*?)>(.*?)</style>}m).each { |tag| css = $2; puts \"<style#{$1}>\"; print `echo \"#{css}\" | stylefmt --stdin-filename tmp`.chomp; puts \"</style>\"; puts\"\" }''; rm -f vuefmt-temp-js.js; rm -f vuefmt-temp-template.xml; rm -f vuefmt-temp.vue;"'
 let g:formatters_vue = ['vuefmt']
-
-" scala
-let g:formatdef_scalafmt = "'scalafmt --stdin'"
-let g:formatters_scala = ['scalafmt']
 " }}}
 
 " emmet {{{
