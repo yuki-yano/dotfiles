@@ -13,6 +13,7 @@ if ! zgen saved; then
   zgen load zsh-users/zsh-completions src
   zgen load zsh-users/zsh-history-substring-search
   zgen load zuxfoucault/colored-man-pages_mod
+  zgen load sei40kr/zsh-tmux-rename
   zgen oh-my-zsh plugins/fancy-ctrl-z
 
   zgen save
