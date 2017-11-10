@@ -110,7 +110,6 @@ Plug 'mopp/googlesuggest-source.vim'
 Plug 'osyo-manga/unite-highlight'
 Plug 'osyo-manga/unite-quickfix'
 Plug 'ozelentok/denite-gtags'
-Plug 'rafi/vim-denite-session'
 Plug 'rking/ag.vim', { 'on': 'Ag' }
 Plug 'tsukkee/unite-tag'
 Plug 'ujihisa/neco-look'
@@ -779,6 +778,10 @@ if s:plug.is_installed("unite.vim")
   " call unite#custom_source('location_list', 'sorters', 'sorter_reverse')
   nnoremap <silent> <Leader>q :<C-u>Unite quickfix -direction=botright -no-quit<CR>
   nnoremap <silent> <Leader>l :<C-u>Unite location_list -direction=botright -no-quit<CR>
+
+  " session
+  nnoremap <Leader>ss :<C-u>UniteSessionSave<CR>
+  nnoremap <Leader>sl :<C-u>UniteSessionLoad<CR>
 
   " mark
   " nnoremap <silent> <Leader>m :Unite mark -auto-preview -direction=botright<CR>
