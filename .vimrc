@@ -978,10 +978,10 @@ endfunction
 " }}}
 
 " gina {{{
-nnoremap <silent> gs  :<C-u>Gina status<CR>
-nnoremap <silent> gd  :<C-u>Gina diff<CR>
-nnoremap <silent> gdc :<C-u>Gina diff --cached<CR>
-nnoremap <silent> gci :<C-u>Gina commit<CR>
+nnoremap <silent> <Leader>gs  :<C-u>Gina status<CR>
+nnoremap <silent> <Leader>gd  :<C-u>Gina diff<CR>
+nnoremap <silent> <Leader>gdc :<C-u>Gina diff --cached<CR>
+nnoremap <silent> <Leader>gci :<C-u>Gina commit<CR>
 autocmd FileType gina-blame call s:gina_blame_settings()
 function! s:gina_blame_settings()
   nmap <buffer> <C-l> <C-w>l
