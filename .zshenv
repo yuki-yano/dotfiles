@@ -65,6 +65,9 @@ rbenv() {
   eval "$(command rbenv init -)"
 }
 
+# python
+export PATH=/usr/local/opt/python/libexec/bin:$PATH
+
 # nodebrew
 export PATH=$HOME/.nodebrew/current/bin:$PATH
 
