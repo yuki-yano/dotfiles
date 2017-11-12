@@ -328,6 +328,7 @@
     [liberator|highlight~=CompItem][selected] { color: cyan !important; background: #333 !important; }
     [liberator|highlight~=CompTitle] { background: DarkOrchid !important; }
     [liberator|highlight~=CompTitle]>* { color: white !important; border-bottom: 1px solid #3c3c3f !important; padding: 1px 0.5ex !important; text-shadow: 1px 1px 0px #0c0c0c !important; }
+    [liberator|highlight~=CompIcon]>* { width: 12pt !important; height: 12pt !important; }
     [liberator|highlight~=ErrorMsg] { font-family: Ricty !important; color: white !important; background: red !important; font-size: 12pt !important; }
     [liberator|highlight~=Indicator] { color: DodgerBlue !important; }
     [liberator|highlight~=InfoMsg] { font-family: Ricty !important; color: LightYellow !important; background: Black !important; font-size: 12pt !important; }
