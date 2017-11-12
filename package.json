@@ -16,6 +16,7 @@
     "gulp": "^3.9.1",
     "js-beautify": "^1.6.14",
     "nativefier": "^7.4.1",
+    "neovim": "^3.5.0",
     "npm-check-updates": "^2.12.1",
     "placehold-cli": "^1.0.1",
     "prettier": "^1.6.1",
