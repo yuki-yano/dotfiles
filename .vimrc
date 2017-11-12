@@ -259,13 +259,6 @@ filetype plugin indent on
 
 " Settings {{{
 
-"" Python3 support
-let g:python_host_prog = '/usr/local/bin/python2'
-let g:python3_host_prog = expand('$HOME') . '/.pyenv/shims/python'
-
-"" Ruby support
-let g:ruby_host_prog = expand('$HOME') . '/.pyenv/shims/ruby'
-
 "" Leader
 let mapleader = " "
 
