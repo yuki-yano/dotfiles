@@ -345,7 +345,7 @@ set regexpengine=2
 set shell=/bin/bash
 set suffixesadd=.js,.rb,.ts,.json,.md
 set timeoutlen=750
-set ttimeoutlen=250
+set ttimeoutlen=10
 set updatetime=500
 set virtualedit=all
 set wildignorecase
