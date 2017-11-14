@@ -19,6 +19,17 @@ if ! zgen saved; then
   zgen save
 fi
 
+FAST_HIGHLIGHT_STYLES[alias]=fg=blue
+FAST_HIGHLIGHT_STYLES[suffix-alias]=fg=blue
+FAST_HIGHLIGHT_STYLES[builtin]=fg=blue
+FAST_HIGHLIGHT_STYLES[function]=fg=blue
+FAST_HIGHLIGHT_STYLES[command]=fg=blue
+FAST_HIGHLIGHT_STYLES[precommand]=fg=blue,underline
+FAST_HIGHLIGHT_STYLES[hashed-command]=fg=blue
+FAST_HIGHLIGHT_STYLES[path]=fg=green
+FAST_HIGHLIGHT_STYLES[globbing]=fg=green,bold
+FAST_HIGHLIGHT_STYLES[history-expansion]=fg=green,bold
+
 # }}}
 
 # Basic {{{
