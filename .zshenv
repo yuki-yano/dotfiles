@@ -140,14 +140,10 @@ alias gn='git now --all --stat'
 alias agit='vim +Agit'
 alias gitt='gittower .'
 
-function current_branch() {
-  ref=$(git symbolic-ref HEAD 2> /dev/null) || \
-    ref=$(git rev-parse --short HEAD 2> /dev/null) || return
-  echo ${ref#refs/heads/}
+function gwt() {
+  GIT_CDUP_DIR=`git rev-parse --show-cdup`
+  git worktree add ${GIT_CDUP_DIR}git-worktrees/$1 -b $1
 }
-
-# gist
-alias gist='gist -c -o -p'
 
 # bundle
 # alias bundle="nocorrect bundle"

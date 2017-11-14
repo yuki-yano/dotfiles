@@ -42,3 +42,4 @@ GTAGS
 # keep
 !.keep
 !.gitkeep
+git-worktrees/*
