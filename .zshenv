@@ -136,7 +136,6 @@ alias gd='git diff'
 alias gdc='git diff --cached'
 alias gco='git checkout'
 alias gci='git commit'
-alias gn='git now --all --stat'
 alias agit='vim +Agit'
 alias gitt='gittower .'
 

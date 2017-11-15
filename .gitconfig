@@ -13,12 +13,8 @@
   show = (diff-highlight 2>/dev/null || cat) | ${PAGER:-less}
   diff = (diff-highlight 2>/dev/null || cat) | ${PAGER:-less}
 [alias]
-  # git reset --hard HEAD を安全にした - 永遠に未完成 http://d.hatena.ne.jp/thinca/20120924/1348491052
-  cancel = !git commit -a -m 'Temporary commit for cancel' && git reset --hard HEAD~
-  # modified or untrackedなファイルを編集する
-  edit = "!f() { git status -s | cut -b 4- | grep -v '\\/$' | uniq ; }; vim `f`"
-  # mergeの際にconflictが起きたファイルを編集
-  edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
+  edit = "!f() { git status -s | cut -b 4- | grep -v '\\/$' | uniq | fzf --multi --prompt 'Changed File>'; }; nvim `f`"
+  edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u | fzf --multi --prompt 'Unmerged File>'; }; vim `f`"
 [include]
   path = ~/.gitconfig.local
 [push]
@@ -33,14 +29,13 @@
   mnemonicprefix = true
 [difftool "nvimdiff"]
   cmd = "nvim -d -u ~/.vimrc \"$LOCAL\" \"$REMOTE\""
-[merge]
-  tool = vimdiff
-[mergetool]
-  prompt = true
-[mergetool "vimdiff"]
-  cmd = nvim -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [difftool]
   prompt = false
+[mergetool "Kaleidoscope"]
+  cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
+  trustexitcode = true
+[merge]
+  tool = Kaleidoscope
 [url "git@github.com:"]
   pushInsteadOf = git://github.com/
   pushInsteadOf = https://github.com/
@@ -48,8 +43,3 @@
   insteadOf = https://github.com/
 [rerere]
   enabled = true
-[mergetool "Kaleidoscope"]
-  cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
-  trustexitcode = true
-[merge]
-  tool = Kaleidoscope
