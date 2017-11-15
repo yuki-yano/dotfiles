@@ -7,9 +7,6 @@ export LANG=ja_JP.UTF-8
 # エディタ
 export EDITOR=nvim
 alias c=ccat
-alias ri="richpager -s solarizeddark"
-export LESS='-R'
-export LESSOPEN='|pygmentize %s'
 
 # path_helperを実行しないようにする
 # show: http://qiita.com/t-takaai/items/8574ff312f2caa5177c2
@@ -91,16 +88,6 @@ export EFF_NO_GRAY=true
 # ls
 alias ll='ls -l'
 alias la='ls -al'
-
-# less
-export LESS='-iMRj.5'
-export LESS_TERMCAP_mb=$(tput bold)                # begin blinking
-export LESS_TERMCAP_md=$(tput bold; tput setaf 4)  # begin bold (blue)
-export LESS_TERMCAP_me=$(tput sgr0)                # end mode
-export LESS_TERMCAP_se=$(tput sgr0)                # end standout-mode
-export LESS_TERMCAP_so=$(tput setaf 3; tput rev)   # begin standout-mode (yellow)
-export LESS_TERMCAP_ue=$(tput rmul; tput sgr0)     # end underline
-export LESS_TERMCAP_us=$(tput smul; tput setaf 2)  # begin underline (green)
 
 # sed
 alias sed=gsed
