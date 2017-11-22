@@ -12,9 +12,6 @@
   log  = (diff-highlight 2>/dev/null || cat) | ${PAGER:-less}
   show = (diff-highlight 2>/dev/null || cat) | ${PAGER:-less}
   diff = (diff-highlight 2>/dev/null || cat) | ${PAGER:-less}
-[alias]
-  edit = "!f() { git status -s | cut -b 4- | grep -v '\\/$' | uniq | fzf --multi --prompt 'Changed File>'; }; nvim `f`"
-  edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u | fzf --multi --prompt 'Unmerged File>'; }; vim `f`"
 [include]
   path = ~/.gitconfig.local
 [push]
