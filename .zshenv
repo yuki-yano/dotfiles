@@ -21,45 +21,22 @@ export PATH=$PATH:$HOME/dotfiles/node_modules/.bin
 # powerline
 export PATH=$PATH:~/.local/bin
 
-# Lazy Load
-# show: https://github.com/xcv58/prezto/tree/master/modules/lazy-load
-#       https://gist.github.com/QinMing/364774610afc0e06cc223b467abe83c0
-lazy_load() {
-  local load_func=${1}
-  local lazy_func="lazy_${load_func}"
-  shift 1
-
-  local -a names
-  names=("${(@s: :)${1}}")
-
-  for i in $names; do
-    alias ${i}="${lazy_func} ${i}"
-  done
-
-  eval "
-  function ${lazy_func}() {
-  unset -f ${lazy_func}
-  lazy_load_clean $@
-  eval ${load_func}
-  unset -f ${load_func}
-  eval \$@
-}
-"
-}
-
-lazy_load_clean() {
-  for i in ${@}; do
-    # alias vi='nvim' だけは有効にしておく
-    if [ ${i} != 'vi' ]; then
-      unalias ${i}
-    fi
-  done
-}
-
 # rbenv
-lazy_load rbenv "ruby vi vim nvim $(ls ~/dotfiles/vendor/bin/ | tr '\n' ' ')"
-rbenv() {
-  eval "$(command rbenv init -)"
+export PATH=$HOME/.rbenv/shims:$PATH
+export RBENV_SHELL=zsh
+function rbenv() {
+  local command
+  command="$1"
+  if [ "$#" -gt 0 ]; then
+    shift
+  fi
+
+  case "$command" in
+    rehash|shell)
+      eval "$(rbenv "sh-$command" "$@")";;
+    *)
+      command rbenv "$command" "$@";;
+  esac
 }
 
 # python
