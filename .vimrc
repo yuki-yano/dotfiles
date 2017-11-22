@@ -27,8 +27,6 @@ Plug 'vim-jp/vimdoc-ja'
 " Plug 'osyo-manga/vim-precious'
 " Plug 'slim-template/vim-slim', { 'for': 'slim' }
 Plug 'Chiel92/vim-autoformat'
-Plug 'Chiel92/vim-autoformat'
-Plug 'Valloric/MatchTagAlways', { 'for': ['html', 'xml', 'erb'] }
 Plug 'Valloric/MatchTagAlways', { 'for': ['html', 'xml', 'erb'] }
 Plug 'Vimjas/vim-python-pep8-indent', { 'for': 'python' }
 Plug 'ap/vim-css-color', { 'for': ['css', 'sass', 'scss'] }
@@ -220,7 +218,6 @@ Plug 'thinca/vim-ref'
 Plug 'tweekmonster/startuptime.vim', { 'on': 'StartupTime' }
 Plug 'tyru/capture.vim', { 'on': 'Capture' }
 Plug 'tyru/open-browser.vim'
-Plug 'tyru/operator-camelize.vim'
 Plug 'tyru/vim-altercmd'
 Plug 'zhamlin/tiler.vim'
 " }}}
