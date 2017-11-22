@@ -390,7 +390,6 @@ autocmd BufNewFile,BufRead         *.erb set filetype=eruby.html
 autocmd BufNewFile,BufRead          *.js set filetype=javascript
 autocmd BufNewFile,BufRead          *.md set filetype=markdown
 autocmd BufNewFile,BufRead         *.vue set filetype=vue.html.javascript.css
-autocmd BufNewFile,BufRead         *.ssp set filetype=html
 autocmd BufNewFile,BufRead        *.cson set filetype=coffee
 autocmd BufNewFile,BufRead  *.{yml,yaml} set filetype=yaml
 autocmd BufNewFile,BufRead      .babelrc set filetype=json
@@ -406,7 +405,6 @@ autocmd FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType ruby          setlocal omnifunc=
 autocmd FileType eruby.html    setlocal omnifunc=
 autocmd FileType python        setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType css           setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType javascript    setlocal dict=~/dotfiles/.vim/dict/javascript.dict
 autocmd FileType ruby,eruby    setlocal dict=~/dotfiles/.vim/dict/rails.dict
@@ -823,15 +821,11 @@ else
     let g:deoplete#omni#input_patterns.scala = ['[^. *\t]\.\w*', '[:\[,] ?\w*', '^import .*']
     let g:deoplete#omni#input_patterns.css  = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
     let g:deoplete#omni#input_patterns.scss = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
-    let g:deoplete#omni#input_patterns.html = '<[^>]*'
-    let g:deoplete#omni#input_patterns.md = '<[^>]*'
 
     let g:deoplete#omni#functions = {}
     let g:deoplete#omni#functions.javascript = ['jspc#omni', 'javascriptcomplete#CompleteJS']
     let g:deoplete#omni#functions.ruby = ['rubycomplete#Complete']
     let g:deoplete#omni#functions.python = ['pythoncomplete#Complete']
-    let g:deoplete#omni#functions.html = ['htmlcomplete#CompleteTags']
-    let g:deoplete#omni#functions.markdown = ['htmlcomplete#CompleteTags']
     let g:deoplete#omni#functions.css = ['csscomplete#CompleteCSS']
 
     " tern
