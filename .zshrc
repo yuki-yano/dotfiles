@@ -174,9 +174,12 @@ f() {
   dir=$(ghq list > /dev/null | fzf --reverse) && cd $(ghq root)/$dir
 }
 
-alias -g  B='`git branch -a  | fzf --multi --prompt "All Branches>"    | sed -e "s/^\*\s*//g"`'
-alias -g RB='`git branch -r  | fzf --multi --prompt "Remote Branches>" | sed -e "s/^\*\s*//g"`'
-alias -g LB='`git branch     | fzf --multi --prompt "Local Branches>"  | sed -e "s/^\*\s*//g"`'
+alias -g  B='$(git branch -a | fzf --multi --prompt "All Branches>"    | sed -e "s/^\*\s*//g")'
+alias -g RB='$(git branch -r | fzf --multi --prompt "Remote Branches>" | sed -e "s/^\*\s*//g")'
+alias -g LB='$(git branch    | fzf --multi --prompt "Local Branches>"  | sed -e "s/^\*\s*//g")'
+
+alias -g S='$(git status -s           | cut -b 4- | fzf --multi --prompt "Changed File>")'
+alias -g U='$(git ls-files --unmerged | cut -f2   | fzf --multi --prompt "Unmerged File>")'
 
 function agvim () {
   vi $(ag $@ | peco --query "$LBUFFER" | awk -F : '{print $1 ":" $2}')
