@@ -1048,24 +1048,8 @@ endif
 " lexima {{{
 function! Hook_on_post_source_lexima() abort
   let rules = []
-  for char in ['+', '-', '*', '/', '%', '<', '>', '&', '=', '<Bar>']
-    let rules += [{'char': char, 'at': '\S\+\%#', 'except': '''.*\%#.*''', 'input': ' ' . char . ' '}]
-  endfor
-  let rules += [{'char': '<C-h>', 'at': '\w\+\s\(+\|-\|\*\|%\|<\|>\|&\|=\||\)\s\%#', 'input': '<C-h><C-h><C-h>'}]
-
-  for char in ['*', '<', '>', '&', '=', '<Bar>']
-    let rules += [{'char': char, 'at': char . '\s\%#', 'input': '<C-h>' . char . ' '}]
-  endfor
 
   let rules += [
-        \ {'char': '<C-h>', 'at': '\s\(\*\*\|<<\|>>\|&&\|||\)\s\%#', 'input': '<C-h><C-h><C-h><C-h>'},
-        \ {'char': '=',     'at': '\(+\|-\|*\|%\|<\|>\) \%#',        'input': '<C-h>= '},
-        \ {'char': '+',     'at': '\s+\s\%#',                        'input': '<C-h><C-h><C-h>++'},
-        \ {'char': '-',     'at': '\s-\s\%#',                        'input': '<C-h><C-h><C-h>--'},
-        \ {'char': '<Bar>', 'at': '.*\s\%#',                         'input': '| '},
-        \ {'char': '<Bar>', 'at': '\s|\s\%#',                        'input': '<C-h>| '},
-        \ {'char': ',',     'at': '\S\%#.\+$',                       'input': ', '},
-        \ {'char': ',',     'at': ',\s\%#',                          'input': '<C-h>'},
         \ {'char': '(',     'at': '(\%#)',                           'input': '<Del>'},
         \ {'char': '{',     'at': '{\%#}',                           'input': '<Del>'},
         \ {'char': '[',     'at': '\[\%#\]',                         'input': '<Del>'},
