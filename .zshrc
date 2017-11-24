@@ -13,7 +13,6 @@ if ! zgen saved; then
   zgen load zsh-users/zsh-completions src
   zgen load zsh-users/zsh-history-substring-search
   zgen load zuxfoucault/colored-man-pages_mod
-  zgen load sei40kr/zsh-tmux-rename
   zgen oh-my-zsh plugins/fancy-ctrl-z
 
   zgen save
@@ -281,6 +280,18 @@ case "$BUFFER" in
 esac
 }
 zle -N up-line-or-history-ignoring
+
+# tmuxにカレントディレクトリ名を設定
+autoload -Uz add-zsh-hook
+function rename_tmux_window() {
+  if [[ -n "$TMUX" ]] then
+    local current_path=$(pwd | sed -e s/\ /_/g)
+    local current_dir=$(basename $current_path)
+    tmux rename-window $current_dir
+  fi
+}
+
+add-zsh-hook precmd rename_tmux_window
 
 # }}}
 
