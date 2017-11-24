@@ -690,10 +690,10 @@ if s:plug.is_installed("denite.nvim")
   nnoremap <silent> <Leader>b  :<C-u>Denite buffer -direction=topleft -mode=insert<CR>
 
   " grep
-  nnoremap <silent> <Leader>/ :<C-u>Denite line -auto-preview<CR>
-  nnoremap <silent> <Leader>* :<C-u>DeniteCursorWord line -auto-preview<CR>
-  nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep -auto-preview<CR>
-  nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep -auto-preview<CR>
+  " nnoremap <silent> <Leader>/ :<C-u>Denite line -auto-preview<CR>
+  " nnoremap <silent> <Leader>* :<C-u>DeniteCursorWord line -auto-preview<CR>
+  " nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep -auto-preview<CR>
+  " nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep -auto-preview<CR>
 
   " tag
   " nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord tag -auto-preview<CR>
@@ -749,15 +749,15 @@ if s:plug.is_installed("unite.vim")
   " nnoremap <silent> <Leader>o :<C-u>Unite outline -auto-preview -direction=botright<CR>
 
   "" grep
-  " let g:unite_source_grep_command = 'ag'
-  " let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
-  " let g:unite_source_grep_recursive_opt = ''
+  let g:unite_source_grep_command = 'ag'
+  let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
+  let g:unite_source_grep_recursive_opt = ''
 
-  " call unite#custom_source('line', 'sorters', 'sorter_reverse')
-  " nnoremap <silent> <Leader>/         :<C-u>Unite line -auto-preview -direction=botright -buffer-name=search-buffer -no-quit -start-insert<CR>
-  " nnoremap <silent> <Leader>*         :<C-u>UniteWithCursorWord line -auto-preview -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  " nnoremap <silent> <Leader><Leader>/ :<C-u>Unite grep:. -auto-preview -direction=botright -buffer-name=search-buffer -no-quit -start-insert<CR>
-  " nnoremap <silent> <Leader><Leader>* :<C-u>UniteWithCursorWord grep:. -auto-preview -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  call unite#custom_source('line', 'sorters', 'sorter_reverse')
+  nnoremap <silent> <Leader>/         :<C-u>Unite line -auto-preview -direction=botright -buffer-name=search-buffer -no-quit -start-insert<CR>
+  nnoremap <silent> <Leader>*         :<C-u>UniteWithCursorWord line -auto-preview -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  nnoremap <silent> <Leader><Leader>/ :<C-u>Unite grep -auto-preview -direction=botright -buffer-name=search-buffer -no-quit -start-insert<CR>
+  nnoremap <silent> <Leader><Leader>* :<C-u>UniteWithCursorWord grep -auto-preview -direction=botright -buffer-name=search-buffer -no-quit<CR>
 
   " yank & buffer
   let g:unite_source_history_yank_enable = 1
