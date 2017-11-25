@@ -393,7 +393,7 @@ autocmd BufNewFile,BufRead         *.vue set filetype=vue.html.javascript.css
 autocmd BufNewFile,BufRead        *.cson set filetype=coffee
 autocmd BufNewFile,BufRead  *.{yml,yaml} set filetype=yaml
 autocmd BufNewFile,BufRead      .babelrc set filetype=json
-autocmd BufNewFile,BufRead     .eslintrc set filetype=yaml
+autocmd BufNewFile,BufRead     .eslintrc set filetype=json
 autocmd BufNewFile,BufRead  .stylelintrc set filetype=yaml
 autocmd BufNewFile,BufRead .tern-project set filetype=json
 autocmd BufNewFile,BufRead        .pryrc set filetype=ruby
@@ -531,8 +531,8 @@ let g:formatters_eruby         = ['htmlbeautifier']
 let g:formatters_eruby_html    = ['htmlbeautifier']
 
 " eslint
-let g:formatdef_prettier_eslint = '"cat | prettier-eslint --stdin"'
-let g:formatters_javascript = ['prettier_eslint']
+let g:formatdef_prettier = '"cat | prettier --stdin"'
+let g:formatters_javascript = ['prettier']
 
 " stylefmt
 let g:formatdef_stylefmt = '"cat | stylefmt -f -"'

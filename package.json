@@ -20,8 +20,6 @@
     "npm-check-updates": "^2.12.1",
     "placehold-cli": "^1.0.1",
     "prettier": "^1.6.1",
-    "prettier-eslint": "^7.1.0",
-    "prettier-eslint-cli": "^4.3.0",
     "react": "^15.6.1",
     "speed-test": "^1.8.0",
     "styled-components": "^2.1.2",
