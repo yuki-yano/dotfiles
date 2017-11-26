@@ -11,28 +11,16 @@ function! Cond(cond, ...)
 endfunction
 
 " Doc {{{
-Plug 'mattn/learn-vimscript'
 Plug 'vim-jp/vimdoc-ja'
 " }}}
 
 " Language {{{
-" Plug 'Shougo/context_filetype.vim'
-" Plug 'Shougo/vinarise.vim'
-" Plug 'derekwyatt/vim-sbt', { 'for': 'sbt' }
-" Plug 'derekwyatt/vim-scala', { 'for': 'scala' }
-" Plug 'gre/play2vim', { 'for': 'scala' }
-" Plug 'jparise/vim-graphql', { 'for': 'graphql' }
-" Plug 'kchmck/vim-coffee-script', { 'for': 'coffee' }
-" Plug 'mdreves/vim-scaladoc', { 'for': 'scala' }
-" Plug 'osyo-manga/vim-precious'
-" Plug 'slim-template/vim-slim', { 'for': 'slim' }
 Plug 'Chiel92/vim-autoformat'
 Plug 'Valloric/MatchTagAlways', { 'for': ['html', 'xml', 'erb'] }
 Plug 'Vimjas/vim-python-pep8-indent', { 'for': 'python' }
 Plug 'ap/vim-css-color', { 'for': ['css', 'sass', 'scss'] }
 Plug 'cakebaker/scss-syntax.vim', { 'for': ['sass', 'scss'] }
 Plug 'cespare/vim-toml', { 'for': 'toml' }
-Plug 'csscomb/vim-csscomb', { 'for': ['css', 'sass', 'scss'] }
 Plug 'davidhalter/jedi-vim', { 'for': 'python' }
 Plug 'ekalinin/Dockerfile.vim', { 'for': 'dockerfile' }
 Plug 'elzr/vim-json', { 'for': 'json' }
@@ -42,7 +30,6 @@ Plug 'hashivim/vim-terraform', { 'for': 'terraform' }
 Plug 'heavenshell/vim-pydocstring', { 'for': 'python' }
 Plug 'jsfaint/gen_tags.vim'
 Plug 'kewah/vim-stylefmt', { 'for': 'css' }
-Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
 Plug 'mattn/emmet-vim', { 'for': ['html', 'eruby.html', 'javascript', 'vue', 'vue.html.javascript.css'] }
 Plug 'maxmellon/vim-jsx-pretty', { 'for': 'javascript' }
 Plug 'mkomitee/vim-gf-python', { 'for': 'python' }
@@ -54,9 +41,7 @@ Plug 'othree/html5.vim', { 'for': ['html', 'eruby'] }
 Plug 'othree/javascript-libraries-syntax.vim', { 'for': 'javascript' }
 Plug 'othree/jspc.vim', { 'for': 'javascript' }
 Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
-Plug 'pearofducks/ansible-vim', { 'for': 'ansible' }
 Plug 'posva/vim-vue', { 'for': 'vue' }
-Plug 'raimon49/requirements.txt.vim', { 'for': 'requirements' }
 Plug 'rhysd/vim-gfm-syntax', { 'for': 'markdown' }
 Plug 'styled-components/vim-styled-components', { 'for': 'javascript' }
 Plug 'tell-k/vim-autopep8', { 'for': 'python' }
@@ -74,13 +59,9 @@ Plug 'ywatase/mdt.vim', { 'for': 'markdown' }
 " }}}
 
 " Git {{{
-Plug 'ToruIwashita/git-switcher.vim', { 'on': ['GswSave', 'GswLoad'] }
 Plug 'airblade/vim-gitgutter'
-Plug 'airblade/vim-rooter', { 'on': 'Rooter' }
 Plug 'cohama/agit.vim'
-Plug 'kana/vim-gf-diff'
 Plug 'lambdalisue/gina.vim'
-Plug 'lambdalisue/vim-gita'
 Plug 'lambdalisue/vim-unified-diff'
 Plug 'rhysd/committia.vim'
 " }}}
@@ -102,10 +83,7 @@ Plug 'chemzqm/denite-extra'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'hewes/unite-gtags'
 Plug 'honza/vim-snippets'
-Plug 'kmnk/vim-unite-giti'
 Plug 'lighttiger2505/gtags.vim'
-Plug 'mattn/googlesuggest-complete-vim'
-Plug 'mopp/googlesuggest-source.vim'
 Plug 'osyo-manga/unite-highlight'
 Plug 'osyo-manga/unite-quickfix'
 Plug 'ozelentok/denite-gtags'
@@ -118,19 +96,14 @@ Plug 'zchee/deoplete-jedi', Cond(has('nvim'), { 'for': 'python' })
 " }}}
 
 " Edit & Move & Search {{{
-" Plug 'jiangmiao/auto-pairs'
-" Plug 'octref/rootignore'
-Plug 'AndrewRadev/switch.vim', { 'on': 'Switch' }
 Plug 'LeafCage/yankround.vim'
 Plug 'chrisbra/NrrwRgn', { 'on': 'NR' }
 Plug 'cohama/lexima.vim'
 Plug 'dhruvasagar/vim-table-mode', { 'on': 'TableModeToggle' }
 Plug 'dietsche/vim-lastplace'
-Plug 'dyng/ctrlsf.vim', { 'on': 'CtrlSF' }
 Plug 'easymotion/vim-easymotion'
 Plug 'godlygeek/tabular', { 'on': 'Tabularize' }
 Plug 'h1mesuke/vim-alignta'
-Plug 'haya14busa/incsearch-fuzzy.vim'
 Plug 'haya14busa/incsearch.vim'
 Plug 'haya14busa/vim-asterisk'
 Plug 'haya14busa/vim-metarepeat'
@@ -142,14 +115,12 @@ Plug 'osyo-manga/vim-anzu'
 Plug 'osyo-manga/vim-jplus'
 Plug 'osyo-manga/vim-over'
 Plug 'rhysd/clever-f.vim'
-Plug 'terryma/vim-multiple-cursors'
 Plug 'thinca/vim-qfreplace', { 'on': 'Qfreplace' }
 Plug 'thinca/vim-visualstar'
 Plug 'tomtom/tcomment_vim', { 'on': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs'] }
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-speeddating'
 Plug 'tpope/vim-surround'
-Plug 'tyru/operator-camelize.vim'
 " }}}
 
 " Appearance {{{
@@ -161,13 +132,11 @@ Plug 'gregsexton/MatchTag'
 Plug 'haya14busa/vim-operator-flashy'
 Plug 'inside/vim-search-pulse'
 Plug 'itchyny/lightline.vim'
-Plug 'itchyny/thumbnail.vim'
 Plug 'itchyny/vim-cursorword'
 Plug 'itchyny/vim-highlighturl'
 Plug 'itchyny/vim-parenmatch'
 Plug 'luochen1990/rainbow'
 Plug 'ntpeters/vim-better-whitespace'
-Plug 't9md/vim-quickhl'
 Plug 'thinca/vim-zenspace'
 Plug 'vim-scripts/AnsiEsc.vim'
 Plug 'vim-scripts/CursorLineCurrentWindow'
@@ -175,51 +144,34 @@ Plug 'vimtaku/hl_matchit.vim'
 " }}}
 
 " Util {{{
-" Plug 'h1mesuke/textobj-wiw'
-" Plug 'itchyny/vim-qfedit'
-" Plug 'itchyny/vim-tmpbuffer', { 'on': 'Tmpbuffer' }
-" Plug 'kana/vim-textobj-function'
-" Plug 'kana/vim-textobj-line'
-" Plug 'lucapette/vim-textobj-underscore'
-" Plug 'osyo-manga/vim-textobj-multiblock'
-" Plug 'roxma/vim-paste-easy'
-" Plug 'wellle/targets.vim'
-" Plug 'kana/vim-submode'
 Plug 'Shougo/junkfile.vim'
 Plug 'aiya000/aho-bakaup.vim'
 Plug 'bogado/file-line'
 Plug 'daisuzu/translategoogle.vim'
-Plug 'itchyny/vim-external'
 Plug 'itchyny/vim-extracmd'
 Plug 'janko-m/vim-test'
 Plug 'jez/vim-superman'
 Plug 'kana/vim-gf-user'
 Plug 'kana/vim-niceblock'
 Plug 'kana/vim-operator-user'
+Plug 'kana/vim-submode'
 Plug 'kana/vim-textobj-user'
 Plug 'kassio/neoterm'
 Plug 'konfekt/fastfold'
 Plug 'majutsushi/tagbar'
 Plug 'mattn/benchvimrc-vim', { 'on': 'BenchVimrc' }
-Plug 'mattn/gist-vim', { 'on': 'Gist' }
-Plug 'mattn/webapi-vim'
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 Plug 'mhinz/vim-startify'
-Plug 'mopp/autodirmake.vim'
 Plug 'mtth/scratch.vim', { 'on': 'Scratch' }
 Plug 'qpkorr/vim-bufkill'
-Plug 'rizzatti/dash.vim', { 'on': 'Dash' }
 Plug 'simeji/winresizer'
 Plug 'szw/vim-maximizer', { 'on': 'MaximizerToggle' }
 Plug 'terryma/vim-expand-region'
 Plug 'thinca/vim-ambicmd'
-Plug 'thinca/vim-prettyprint'
 Plug 'thinca/vim-ref'
 Plug 'tweekmonster/startuptime.vim', { 'on': 'StartupTime' }
 Plug 'tyru/capture.vim', { 'on': 'Capture' }
-Plug 'tyru/open-browser.vim'
 Plug 'tyru/vim-altercmd'
-Plug 'zhamlin/tiler.vim'
 " }}}
 
 " Library {{{
@@ -504,22 +456,6 @@ hi ALEError ctermfg=0 ctermbg=203
 " }}}
 
 " autoformat {{{
-" autocmd BufWrite *.rb       Autoformat
-" autocmd BufWrite *.js       Autoformat
-" autocmd BufWrite *.json     Autoformat
-" autocmd BufWrite *.html     Autoformat
-" autocmd BufWrite *.html.erb Autoformat
-" autocmd BufWrite *.css      Autoformat
-" autocmd BufWrite *.sass     Autoformat
-" autocmd BufWrite *.scss     Autoformat
-" autocmd BufWrite *.vue      Autoformat
-" autocmd BufWrite *.scala    Autoformat
-
-" autocmd BufWrite Rakefile Autoformat
-" autocmd BufWrite Gemfile  Autoformat
-" autocmd BufWrite .vimrc   Autoformat
-" autocmd BufWrite .zshrc   Autoformat
-
 nnoremap <Leader>a :<C-u>Autoformat<CR>
 
 " ruby
@@ -547,11 +483,6 @@ let g:formatters_vue = ['vuefmt']
 " emmet {{{
 let g:user_emmet_leader_key=','
 let g:user_emmet_mode='in'
-" }}}
-
-" ensime {{{
-" autocmd BufWritePost *.scala silent :EnTypeCheck
-" let ensime_server_v2=1
 " }}}
 
 " gen_tags {{{
@@ -773,9 +704,6 @@ if s:plug.is_installed("unite.vim")
   nnoremap <Leader>ss :<C-u>UniteSessionSave<CR>
   nnoremap <Leader>sl :<C-u>UniteSessionLoad<CR>
 
-  " mark
-  " nnoremap <silent> <Leader>m :Unite mark -auto-preview -direction=botright<CR>
-
   " snippets
   nnoremap <silent> <Leader>sn :<C-u>Unite neosnippet -direction=botright -start-insert<CR>
 endif
@@ -865,10 +793,6 @@ if has('conceal')
 endif
 " }}}
 
-" googlesuggest-complete-vim {{{
-set completefunc=googlesuggest#Complete
-" }}}
-
 " vimfiler {{{
 if s:plug.is_installed("vimfiler")
   let g:vimfiler_as_default_explorer = 1
@@ -940,27 +864,6 @@ if s:plug.is_installed("vim-gitgutter")
 endif
 " }}}
 
-" git-switcher {{{
-nnoremap <Leader><Leader>s :<C-u>GswSave<CR>
-nnoremap <Leader><Leader>r :<C-u>GswLoad<CR>
-" }}}
-
-" gita {{{
-let g:gita#suppress_warning = 1
-autocmd FileType gita-blame-navi call s:gita_blame_settings()
-function! s:gita_blame_settings()
-  nmap <buffer> <C-l> <C-w>l
-  nmap <buffer> <C-r> <Plug>(gita-common-redraw)
-endfunction
-autocmd FileType vim call s:vim_settings()
-function! s:vim_settings()
-  nmap <buffer> <C-l> <C-w>l
-  nmap <buffer> <C-h> <C-w>h
-  nmap <buffer> <C-j> <C-w>j
-  nmap <buffer> <C-k> <C-w>k
-endfunction
-" }}}
-
 " gina {{{
 nnoremap <silent> <Leader>gs  :<C-u>Gina status<CR>
 nnoremap <silent> <Leader>gd  :<C-u>Gina diff<CR>
@@ -973,37 +876,20 @@ function! s:gina_blame_settings()
 endfunction
 " }}}
 
-" rooter {{{
-nnoremap <silent> <Leader>cd :<C-u>Rooter<CR>
-" }}}
-
 " }}}
 
 " Edit & Move & Search {{{
 
-" incsearch & easymotion & anzu & asterisk & search-pulse {{{
+" incsearch & anzu & asterisk & search-pulse {{{
 if s:plug.is_installed("incsearch.vim")
   let g:vim_search_pulse_disable_auto_mappings = 1
   let g:vim_search_pulse_mode = 'pattern'
-  let g:EasyMotion_smartcase = 1
-  let g:EasyMotion_startofline = 0
-  let g:EasyMotion_keys = 'HJKLASDFGYUIOPQWERTNMZXCVB'
-  let g:EasyMotion_use_upper = 1
-  let g:EasyMotion_enter_jump_first = 1
-  let g:EasyMotion_space_jump_first = 1
   let g:anzu_status_format = "(%i/%l)"
-  hi link EasyMotionIncSearch Search
-  hi link EasyMotionMoveHL Search
   autocmd  User PrePulse  set cursorcolumn
   autocmd  User PostPulse set nocursorcolumn
 
   map  /  <Plug>(incsearch-forward)
   map  ?  <Plug>(incsearch-backward)
-  map  z/ <Plug>(incsearch-fuzzy-/)
-  map  z? <Plug>(incsearch-fuzzy-?)
-  nmap g/ <Plug>(easymotion-sn)
-  xmap g/ <Plug>(easymotion-sn)
-  omap g/ <Plug>(easymotion-tn)
   map  n  <Plug>(anzu-n)zzzv<Plug>Pulse
   map  N  <Plug>(anzu-N)zzzv<Plug>Pulse
   nmap *  <Plug>(asterisk-z*)<Plug>(anzu-update-search-status-with-echo)<Plug>Pulse
@@ -1011,23 +897,24 @@ if s:plug.is_installed("incsearch.vim")
   nmap g* <Plug>(asterisk-gz*)<Plug>(anzu-update-search-status-with-echo)<Plug>Pulse
   nmap g# <Plug>(asterisk-gz#)<Plug>(anzu-update-search-status-with-echo)<Plug>Pulse
   nmap <silent> <Esc><Esc> <Plug>(anzu-clear-search-status)<Plug>(anzu-clear-sign-matchline):nohlsearch<CR>
-
-  nmap s <Plug>(easymotion-overwin-f2)
-  vmap s <Plug>(easymotion-bd-f2)
-  let g:EasyMotion_startofline = 1
-  map  <Leader>j <Plug>(easymotion-j)
-  map  <Leader>k <Plug>(easymotion-k)
 endif
-" }}}
-
-" comfortable-motion {{{
-" let g:comfortable_motion_interval = 1000 / 45.0
-" let g:comfortable_motion_friction = 60.0
-" let g:comfortable_motion_air_drag = 1.5
 " }}}
 
 " easy-align {{{
 vmap <Enter> <Plug>(EasyAlign)
+" }}}
+
+" easymotion {{{
+let g:EasyMotion_smartcase = 1
+let g:EasyMotion_startofline = 0
+let g:EasyMotion_keys = 'HJKLASDFGYUIOPQWERTNMZXCVB'
+let g:EasyMotion_use_upper = 1
+let g:EasyMotion_enter_jump_first = 1
+let g:EasyMotion_space_jump_first = 1
+hi link EasyMotionIncSearch Search
+hi link EasyMotionMoveHL Search
+nmap s <Plug>(easymotion-overwin-f2)
+vmap s <Plug>(easymotion-bd-f2)
 " }}}
 
 " jplus {{{
@@ -1044,11 +931,11 @@ function! Hook_on_post_source_lexima() abort
   let rules = []
 
   let rules += [
-        \ {'char': '(',     'at': '(\%#)',                           'input': '<Del>'},
-        \ {'char': '{',     'at': '{\%#}',                           'input': '<Del>'},
-        \ {'char': '[',     'at': '\[\%#\]',                         'input': '<Del>'},
-        \ {'char': "'",     'at': "'\%#'",                           'input': '<Del>'},
-        \ {'char': '"',     'at': '"\%#"',                           'input': '<Del>'},
+        \ {'char': '(', 'at': '(\%#)',   'input': '<Del>'},
+        \ {'char': '{', 'at': '{\%#}',   'input': '<Del>'},
+        \ {'char': '[', 'at': '\[\%#\]', 'input': '<Del>'},
+        \ {'char': "'", 'at': "'\%#'",   'input': '<Del>'},
+        \ {'char': '"', 'at': '"\%#"',   'input': '<Del>'},
         \ ]
 
   for rule in rules
@@ -1059,25 +946,6 @@ endfunction
 call Hook_on_post_source_lexima()
 " }}}
 
-" multiple-cursors {{{
-let g:multi_cursor_use_default_mapping=0
-let g:multi_cursor_next_key='<C-c>'
-let g:multi_cursor_prev_key='<C-p>'
-let g:multi_cursor_skip_key='<C-x>'
-let g:multi_cursor_quit_key='<Esc>'
-
-function! Multiple_cursors_before()
-  let b:deoplete_disable_auto_complete = 1
-endfunction
-function! Multiple_cursors_after()
-  let b:deoplete_disable_auto_complete = 0
-endfunction
-" }}}
-
-" operator-camelize {{{
-map <Leader>ca <Plug>(operator-camelize-toggle)
-" }}}
-"
 " operator-replace {{{
 map _ <Plug>(operator-replace)
 " }}}
@@ -1086,18 +954,6 @@ map _ <Plug>(operator-replace)
 nnoremap <silent> <Leader>R :<C-u>OverCommandLine<CR>%s/<C-r><C-w>//g<Left><Left>
 nnoremap <silent> <Leader>r :<C-u>OverCommandLine<CR>%s//g<Left><Left>
 vnoremap <silent> <Leader>r y:<C-u>OverCommandLine<CR>%s/<C-r>=substitute(@0, '/', '\\/', 'g')<CR>//g<Left><Left>
-" }}}
-
-" quickhl {{{
-nmap <Leader>m         <Plug>(quickhl-manual-this)
-xmap <Leader>m         <Plug>(quickhl-manual-this)
-nmap <Leader><Leader>m <Plug>(quickhl-manual-reset)
-xmap <Leader><Leader>m <Plug>(quickhl-manual-reset)
-" }}}
-
-" switch {{{
-" 便利だけど挙動が怪しい
-nnoremap <silent> <C-s> :<C-u>Switch<CR>
 " }}}
 
 " tcomment {{{
@@ -1119,11 +975,11 @@ endif
 " Appearance {{{
 
 " better-whitespace {{{
-let g:better_whitespace_filetypes_blacklist = ['tag', 'help', 'vimfiler', 'unite', 'gita-blame-navi']
+let g:better_whitespace_filetypes_blacklist = ['tag', 'help', 'vimfiler', 'unite']
 " }}}
 
 " cursorword {{{
-autocmd FileType unite,denite,qf,vimfiler,thumbnail let b:cursorword=0
+autocmd FileType unite,denite,qf,vimfiler let b:cursorword=0
 " }}}
 
 " devicons {{{
@@ -1132,9 +988,6 @@ let g:webdevicons_enable_unite = 1
 let g:webdevicons_enable_vimfiler = 1
 let g:webdevicons_enable_ctrlp = 1
 let g:WebDevIconsUnicodeDecorateFileNodes = 1
-
-" アップデートでctrlpがフォーク先だと判定されないので仮対応
-let g:ctrlp_mruf_map_string = 1
 " }}}
 
 " fastfold {{{
@@ -1352,8 +1205,7 @@ let g:mta_filetypes = {
       \ 'html' : 1,
       \ 'xhtml' : 1,
       \ 'xml' : 1,
-      \ 'erb' : 1,
-      \ 'jinja' : 1
+      \ 'erb' : 1
       \}
 " }}}
 
@@ -1379,10 +1231,6 @@ let g:rainbow_conf = {
       \       'css': 0,
       \   }
       \ }
-" }}}
-
-" thumbnail {{{
-map <silent> <Leader>th <Plug>(thumbnail)
 " }}}
 
 " workspace & bufkill {{{
@@ -1420,14 +1268,9 @@ let g:zenspace#default_mode = 'on'
 " }}}
 
 " Util {{{
+
 " aho-bakaup.vim {{{
 let g:bakaup_auto_backup = 1
-" }}}
-
-" ambicmd {{{
-"if s:plug.is_installed("vim-ambicmd")
-"  cnoremap <expr> <Space> ambicmd#expand("\<Space>")
-"endif
 " }}}
 
 " expand-region {{{
@@ -1439,40 +1282,21 @@ let g:expand_region_text_objects_ruby = {
       \ }
 " }}}
 
-" external {{{
-map <Leader>O <Plug>(external-explorer)
-map <Leader>B <Plug>(external-browser)
-" }}}
-
 " extracmd {{{
 if s:plug.is_installed("vim-extracmd")
-  call extracmd#set('w!!',    'w !sudo tee > /dev/null %')
-  call extracmd#set('gita',   'Gita')
-  call extracmd#set('gina',   'Gina')
-  call extracmd#set('gd',     'Gina diff')
-  call extracmd#set('gdc',    'Gina diff --cached')
-  call extracmd#set('gs',     'Gina status')
-  call extracmd#set('gci',    'Gina commit')
-  call extracmd#set('blame',  'Gina blame :%')
-  call extracmd#set('branch', 'Unite giti/branch<CR>')
-  call extracmd#set('agit',   'Agit')
-  call extracmd#set('af',     'AgitFile')
-  call extracmd#set('di',     'Ref webdict alc <C-R><C-W><CR>')
-  call extracmd#set('alc',    'Ref webdict alc')
-  call extracmd#set('tag',    'TagbarOpen j<CR>')
-  call extracmd#set('j',      'Unite jump change -auto-preview<CR>')
-  call extracmd#set('tab',    'Unite tab<CR>')
-  call extracmd#set('sf',     'CtrlSF')
-  call extracmd#set('nr',     'NR<CR>')
-  call extracmd#set('scr',    'Scratch<CR>')
-  call extracmd#set('json',   '%!python -m json.tool<CR>')
-  call extracmd#set('cpd',    'CtrlPClearAllCaches<CR>')
+  call extracmd#set('w!!',      'w !sudo tee > /dev/null %')
+  call extracmd#set('gina',     'Gina')
+  call extracmd#set('gci',      'Gina commit')
+  call extracmd#set('blame',    'Gina blame :%')
+  call extracmd#set('agit',     'Agit')
+  call extracmd#set('alc',      'Ref webdict alc')
+  call extracmd#set('tag',      'TagbarOpen j<CR>')
+  call extracmd#set('j',        'Unite jump change -auto-preview<CR>')
+  call extracmd#set('tab',      'Unite tab<CR>')
+  call extracmd#set('nr',       'NR<CR>')
+  call extracmd#set('sctartch', 'Scratch<CR>')
+  call extracmd#set('json',     '%!python -m json.tool<CR>')
 endif
-" }}}
-
-" gist {{{
-let g:gist_detect_filetype = 1
-let g:gist_open_browser_after_post = 1
 " }}}
 
 " maximizer {{{
@@ -1515,18 +1339,6 @@ let g:startify_change_to_vcs_root = 1
 
 " test {{{
 let test#strategy = 'neoterm'
-" }}}
-
-" tiler {{{
-noremap [tiler] <Nop>
-nmap <A-t> [tiler]
-
-nnoremap <silent> [tiler]f       :<C-u>TilerFocus<CR>
-nnoremap <silent> [tiler]<Enter> :<C-u>TilerReorder<CR>
-nnoremap <silent> [tiler]n       :<C-u>TilerNew<CR>
-nmap     <silent> [tiler]l       <Plug>TilerRotateLayoutR<CR>
-nmap     <silent> [tiler]r       <Plug>TilerRotateForwards<CR>
-nmap     <silent> [tiler]z       <Plug>TilerZoom<CR>
 " }}}
 
 " undotree {{{
