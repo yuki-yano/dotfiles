@@ -80,7 +80,6 @@ Plug 'Shougo/vimfiler'
 Plug 'Valloric/YouCompleteMe', Cond(!has('nvim'), { 'do': './install.py' })
 Plug 'carlitux/deoplete-ternjs', Cond(has('nvim'), { 'for': ['javascript'] })
 Plug 'chemzqm/denite-extra'
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'hewes/unite-gtags'
 Plug 'honza/vim-snippets'
 Plug 'lighttiger2505/gtags.vim'
@@ -176,8 +175,6 @@ Plug 'tyru/vim-altercmd'
 
 " Library {{{
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
-Plug 'nixprime/cpsm', { 'do': 'env PY3=ON ./install.sh'}
-Plug 'JazzCore/ctrlp-cmatcher', {'do' : './install.sh'}
 Plug 'vim-scripts/L9'
 Plug 'vim-scripts/cecutil'
 " }}}
@@ -530,51 +527,9 @@ let g:rubycomplete_include_object_space = 1
 
 " }}}
 
-" Completion & Fuzzy Match & vimfiler & (CtrlP + lightline) {{{
+" Completion & Fuzzy Match & vimfiler {{{
 
-" Denite & Unite & ctrlp {{{
-" ctrlp
-hi CtrlPMatch ctermfg=74
-let g:ctrlp_map = '<Leader>p'
-let g:ctrlp_max_height = 20
-let g:ctrlp_user_command='ag %s -i --nocolor --nogroup -g ""'
-let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
-let g:ctrlp_prompt_mappings = {
-      \ 'PrtBS()':              ['<BS>', '<C-h>'],
-      \ 'PrtSelectMove("j")':   ['<C-n>', '<DOWN>'],
-      \ 'PrtSelectMove("k")':   ['<C-p>', '<UP>'],
-      \ 'PrtHistory(-1)':       ['<C-j>'],
-      \ 'PrtHistory(1)':        ['<C-k>'],
-      \ 'ToggleRegex()':        ['<C-r>'],
-      \ 'ToggleType(1)':        ['<C-up>'],
-      \ 'ToggleType(-1)':       ['<C-down>'],
-      \ 'PrtCurLeft()':         ['<C-b>', '<LEFT>', '<C-^>'],
-      \ 'PrtCurRight()':        ['<C-f>', '<RIGHT>'],
-      \ 'MarkToOpen()':         ['<C-space>'],
-      \ 'PrtExit()':            ['<esc>', '<C-c>', '<C-g>', '<C-]>']
-      \ }
-
-let g:ctrlp_custom_ignore = {
-      \ 'dir':  '\v([\/]\.(git|hg|svn)$|[\/]bundle$|[\/]node_modules$)',
-      \ 'file': '\v\.(exe|so|dll|gif|png|jpeg|jpg|pdf|mp3|cache)$'
-      \ }
-
-let g:ctrlp_status_func = {
-      \ 'main': 'CtrlPStatusFunc_1',
-      \ 'prog': 'CtrlPStatusFunc_2',
-      \ }
-
-function! CtrlPStatusFunc_1(focus, byfname, regex, prev, item, next, marked)
-  let g:lightline.ctrlp_prev = a:prev
-  let g:lightline.ctrlp_item = a:item
-  let g:lightline.ctrlp_next = a:next
-  let g:lightline.ctrlp_marked = a:marked
-  return lightline#statusline(0)
-endfunction
-function! CtrlPStatusFunc_2(str)
-  return lightline#statusline(0)
-endfunction
-
+" Denite & Unite {{{
 if s:plug.is_installed("denite.nvim")
   " Denite
 
@@ -600,15 +555,13 @@ if s:plug.is_installed("denite.nvim")
   call denite#custom#map('insert', '<C-p>', '<denite:move_to_previous_line>', 'noremap')
 
   " option
-  call denite#custom#source(
-        \ 'buffer,file_mru,file_rec,grep,line',
-        \ 'matchers', ['matcher_cpsm'])
   call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
         \[
         \ '*~', '*.o', '*.exe', '*.bak',
         \ '.DS_Store', '*.pyc', '*.sw[po]', '*.class',
         \ '.hg/', '.git/', '.bzr/', '.svn/', 'node_modules',
-        \ 'tags', 'tags-*', '.png', 'jp[e]g', '.gif'
+        \ 'tags', 'tags-*', '.png', 'jp[e]g', '.gif',
+        \ '*.min.*'
         \])
   call denite#custom#var('file_rec', 'command', ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
   call denite#custom#var('grep', 'command', ['ag'])
@@ -617,6 +570,7 @@ if s:plug.is_installed("denite.nvim")
   call denite#custom#var('grep', 'default_opts', ['--follow', '--no-group', '--no-color'])
 
   " file & buffer
+  nnoremap <silent> <Leader>p  :<C-u>Denite file_rec -direction=botright -mode=insert<CR>
   nnoremap <silent> <Leader>f  :<C-u>Denite buffer file_rec -direction=topleft -mode=insert<CR>
   nnoremap <silent> <Leader>b  :<C-u>Denite buffer -direction=topleft -mode=insert<CR>
 
@@ -662,8 +616,6 @@ if s:plug.is_installed("unite.vim")
   "" file & buffer
   call unite#filters#matcher_default#use(['matcher_fuzzy'])
   call unite#custom#source('buffer,file, file_rec/async', 'sorters', 'sorter_rank')
-  call unite#custom#source('file_rec/async', 'ignore_pattern', '\(png\|gif\|jpeg\|jpg\)$')
-  call unite#custom#source('file_rec/async', 'matcher', ['matcher_cpsm'])
 
   let g:unite_source_rec_max_cache_files = 10000
   let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '-p', '~/.agignore', '-g', '']
@@ -685,18 +637,20 @@ if s:plug.is_installed("unite.vim")
   let g:unite_source_grep_recursive_opt = ''
 
   call unite#custom_source('line', 'sorters', 'sorter_reverse')
-  nnoremap <silent> <Leader>/         :<C-u>Unite line -auto-preview -direction=botright -buffer-name=search-buffer -no-quit -start-insert<CR>
-  nnoremap <silent> <Leader>*         :<C-u>UniteWithCursorWord line -auto-preview -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  nnoremap <silent> <Leader><Leader>/ :<C-u>Unite grep -auto-preview -direction=botright -buffer-name=search-buffer -no-quit -start-insert<CR>
-  nnoremap <silent> <Leader><Leader>* :<C-u>UniteWithCursorWord grep -auto-preview -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  nnoremap <silent> <Leader>/          :<C-u>Unite line -direction=botright -buffer-name=search-buffer -start-insert -no-quit<CR>
+  nnoremap <silent> <Leader>//         :<C-u>Unite line -direction=botright -buffer-name=search-buffer -start-insert -no-quit -auto-preview<CR>
+  nnoremap <silent> <Leader>*          :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  nnoremap <silent> <Leader>**         :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
+  nnoremap <silent> <Leader><Leader>/  :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -start-insert -no-quit<CR>
+  nnoremap <silent> <Leader><Leader>// :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -start-insert -no-quit -auto-preview<CR>
+  nnoremap <silent> <Leader><Leader>*  :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  nnoremap <silent> <Leader><Leader>** :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
 
   " yank & buffer
   let g:unite_source_history_yank_enable = 1
   nnoremap <silent> <Leader>P :<C-u>Unite yankround<CR>
 
   " quickfix
-  " call unite#custom_source('quickfix', 'sorters', 'sorter_reverse')
-  " call unite#custom_source('location_list', 'sorters', 'sorter_reverse')
   nnoremap <silent> <Leader>q :<C-u>Unite quickfix -direction=botright -no-quit<CR>
   nnoremap <silent> <Leader>l :<C-u>Unite location_list -direction=botright -no-quit<CR>
 
@@ -986,7 +940,6 @@ autocmd FileType unite,denite,qf,vimfiler let b:cursorword=0
 let g:webdevicons_enable = 1
 let g:webdevicons_enable_unite = 1
 let g:webdevicons_enable_vimfiler = 1
-let g:webdevicons_enable_ctrlp = 1
 let g:WebDevIconsUnicodeDecorateFileNodes = 1
 " }}}
 
@@ -1114,11 +1067,6 @@ if s:plug.is_installed("lightline.vim")
   endfunction
 
   function! LightlineFilename()
-    if expand('%:t') == 'ControlP'
-      return g:lightline.ctrlp_prev . ' ' . g:lightline.subseparator.left . ' ' .
-            \ g:lightline.ctrlp_item . ' ' . g:lightline.subseparator.left . ' ' .
-            \ g:lightline.ctrlp_next
-    endif
     if &filetype ==# 'vimfiler'
       return vimfiler#get_status_string()
     elseif &filetype ==# 'unite'
