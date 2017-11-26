@@ -77,7 +77,6 @@ Plug 'Shougo/neoyank.vim'
 Plug 'Shougo/unite-session'
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/vimfiler'
-Plug 'Valloric/YouCompleteMe', Cond(!has('nvim'), { 'do': './install.py' })
 Plug 'carlitux/deoplete-ternjs', Cond(has('nvim'), { 'for': ['javascript'] })
 Plug 'chemzqm/denite-extra'
 Plug 'hewes/unite-gtags'
@@ -663,13 +662,8 @@ if s:plug.is_installed("unite.vim")
 endif
 " }}}
 
-" YouCompleteMe && deoplete.nvim && neosnippet.vim {{{
-if !has('nvim')
-  if s:plug.is_installed("YouCompleteMe")
-    let g:ycm_seed_identifiers_with_syntax = 0
-    autocmd InsertEnter * call plug#load('YouCompleteMe')
-  endif
-else
+" deoplete.nvim && neosnippet.vim {{{
+if has('nvim')
   if s:plug.is_installed("deoplete.nvim")
     autocmd InsertEnter * call plug#load('deoplete.nvim')
 
