@@ -166,6 +166,13 @@ esac
 
 # }}}
 
+# alias {{{
+
+alias -g CB='$(git symbolic-ref --short HEAD)'
+alias -g RCB='origin/$(git symbolic-ref --short HEAD)'
+
+# }}}
+
 # interactive finder {{{
 
 f() {
@@ -177,8 +184,8 @@ alias -g  B='$(git branch -a | fzf --multi --prompt "All Branches>"    | sed -e 
 alias -g RB='$(git branch -r | fzf --multi --prompt "Remote Branches>" | sed -e "s/^\*\s*//g")'
 alias -g LB='$(git branch    | fzf --multi --prompt "Local Branches>"  | sed -e "s/^\*\s*//g")'
 
-alias -g S='$(git status -s           | cut -b 4- | fzf --multi --prompt "Changed File>")'
-alias -g U='$(git ls-files --unmerged | cut -f2   | fzf --multi --prompt "Unmerged File>")'
+alias -g S='$(git status -s           | cut -b 4- | uniq | fzf --multi --prompt "Changed File>")'
+alias -g U='$(git ls-files --unmerged | cut -f2   | uniq | fzf --multi --prompt "Unmerged File>")'
 
 function agvim () {
   vi $(ag $@ | peco --query "$LBUFFER" | awk -F : '{print $1 ":" $2}')
