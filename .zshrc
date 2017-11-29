@@ -9,6 +9,7 @@ if ! zgen saved; then
   zgen load mollifier/anyframe
   zgen load sindresorhus/pure
   zgen load tarruda/zsh-autosuggestions
+  zgen load yuki-ycino/cdd
   zgen load zdharma/fast-syntax-highlighting
   zgen load zsh-users/zsh-completions src
   zgen load zsh-users/zsh-history-substring-search
@@ -28,6 +29,8 @@ FAST_HIGHLIGHT_STYLES[hashed-command]=fg=blue
 FAST_HIGHLIGHT_STYLES[path]=fg=green
 FAST_HIGHLIGHT_STYLES[globbing]=fg=green,bold
 FAST_HIGHLIGHT_STYLES[history-expansion]=fg=green,bold
+
+chpwd_functions+=_cdd_chpwd
 
 # }}}
 
@@ -230,10 +233,6 @@ show_buffer_stack() {
   zle push-line
 }
 zle -N show_buffer_stack
-
-# cdd
-source ~/dotfiles/.zsh/cdd.zsh
-chpwd_functions+=_cdd_chpwd
 
 # abbrev
 # http://d.hatena.ne.jp/keno_ss/20140214/1392330322
