@@ -1,24 +1,13 @@
 Pry.config.editor = 'vim'
 
-alias r require
+require 'active_support'
+require 'active_support/core_ext'
 
-def safe_require_gem(gem)
-  return unless Gem::Specification.any? { |g| g.name == gem }
-  require gem
-  yield if block_given?
-end
-
-%w[pp].each do |lib|
-  require lib
-end
-
-safe_require_gem 'tapp'
-
-safe_require_gem('awesome_print') do
+require('awesome_print') do
   AwesomePrint.pry!
 end
 
-safe_require_gem('hirb') do
+require('hirb') do
   Hirb::View.instance_eval do
     def enable_output_method
       @output_method = true
