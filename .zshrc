@@ -11,12 +11,11 @@ if ! zgen saved; then
   zgen load sindresorhus/pure
   zgen load tarruda/zsh-autosuggestions
   zgen load yuki-ycino/cdd
+  zgen load yuki-ycino/fancy-ctrl-z
   zgen load zdharma/fast-syntax-highlighting
   zgen load zsh-users/zsh-completions src
   zgen load zsh-users/zsh-history-substring-search
   zgen load zuxfoucault/colored-man-pages_mod
-
-  zgen oh-my-zsh plugins/fancy-ctrl-z
 
   zgen save
 fi
