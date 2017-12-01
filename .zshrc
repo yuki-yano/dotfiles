@@ -18,6 +18,9 @@ if ! zgen saved; then
   zgen load zuxfoucault/colored-man-pages_mod
 
   zgen save
+
+  # compile
+  for f in $(find ~/.zgen/ -name "*.zsh"); do zcompile $f; done
 fi
 
 FAST_HIGHLIGHT_STYLES[alias]=fg=blue
@@ -346,7 +349,7 @@ fi
 
 # zcompile {{{
 
-if [ ~/dotfiles/.zshrc -nt ~/.zshrc.zwc ]; then
+if [ ! -f ~/.zshrc.zwc -o ~/.zshrc -nt ~/.zshrc.zwc ]; then
   zcompile ~/.zshrc
 fi
 

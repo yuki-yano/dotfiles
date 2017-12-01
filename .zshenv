@@ -98,6 +98,7 @@ alias gd='git diff'
 alias gdc='git diff --cached'
 alias gco='git checkout'
 alias gci='git commit'
+alias gcb='git rev-parse --abbrev-ref HEAD'
 alias agit='vim +Agit'
 alias gitt='gittower .'
 
@@ -106,14 +107,8 @@ function gwt() {
   git worktree add ${GIT_CDUP_DIR}git-worktrees/$1 -b $1
 }
 
-# bundle
-# alias bundle="nocorrect bundle"
-alias be='bundle exec'
-
 # diff
 alias diff='diff -u'
-export VIM_TMP=/tmp/vim.tmp
-alias -g V="> $VIM_TMP$$; vim $VIM_TMP$$"
 
 # direnv
 if whence direnv > /dev/null; then
@@ -126,16 +121,8 @@ if whence direnv > /dev/null; then
   fi
 fi
 
-# grep
-alias -g G='| grep'
-
 # pbcopy
 alias -g C='| pbcopy'
-
-# emacsclient
-function e() {
-  emacsclient -n $* &
-}
 
 # git-foresta
 function gifo() {
