@@ -50,6 +50,9 @@ export GOPATH=$HOME/.go
 export PATH=$PATH:$GOPATH/bin
 export PATH=$PATH:$HOME/.ghg/bin
 
+# llvm
+export PATH=/usr/local/opt/llvm/bin:$PATH
+
 # heroku
 export PATH=$PATH:/usr/local/heroku/bin
 

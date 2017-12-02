@@ -54,13 +54,6 @@ namespace :zgen do
   end
 end
 
-namespace :vimplug do
-  desc 'Update vim-plug'
-  task :update do
-    sh 'curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-  end
-end
-
 namespace :gem do
   desc 'Uninstall gem'
   task :uninstall do

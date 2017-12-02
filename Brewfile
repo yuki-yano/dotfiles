@@ -18,6 +18,7 @@ install boost
 install flow
 install gcc
 install go
+install llvm
 install lua
 install node
 install nodebrew

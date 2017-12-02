@@ -14,11 +14,11 @@
 
 # Vim
 /.vim/.netrwhist
-/.vim/plugged/*
-/.vim/undodir/*
+/.vim/bundle
+/.vim/undodir
 /.vim/viminfo
-/.vim/autoload/plug.vim.old
-/.vim/sessions/*
+/.vim/sessions
+/.vim/view
 
 # Emacs
 /.emacs.d/ac-comphist.dat
