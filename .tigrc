@@ -1,6 +1,7 @@
 set main-view = id date author commit-title:graph=yes,refs=yes
 bind main C !@bash -c "echo -n %(commit) | pbcopy"
 
+bind generic G none
 bind main R !git rebase -i %(commit)
 bind diff R !git rebase -i %(commit)
 
