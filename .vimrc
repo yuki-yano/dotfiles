@@ -78,7 +78,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('cohama/agit.vim', {'lazy': 1, 'on_cmd': ['Agit', 'AgitFile']})
   call dein#add('lambdalisue/gina.vim', {'lazy': 1, 'on_cmd': 'Gina', 'on_map': '<Plug>', 'on_event': 'BufWritePost', 'hook_post_source': 'call Hook_on_post_source_gina()'})
   call dein#add('lambdalisue/vim-unified-diff')
-  call dein#add('rhysd/committia.vim', {'lazy': 1, 'on_ft': 'gitcommit'})
+  call dein#add('rhysd/committia.vim')
   " }}}3
 
   " Completion {{{3
