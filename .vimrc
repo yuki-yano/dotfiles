@@ -1505,6 +1505,10 @@ nnoremap <silent> <leader>pw :call WindowSwap#DoWindowSwap()<CR>
 nnoremap <silent> <leader>ww :call WindowSwap#EasyWindowSwap()<CR>
 " }}}
 
+" winresizer {{{
+nnoremap <silent> <C-e> :WinResizerStartResize<CR>
+" }}}
+
 " }}}2
 
 " }}}1
