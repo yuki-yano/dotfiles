@@ -216,17 +216,17 @@ endif
 filetype plugin indent on
 " }}}2
 
-" Install Plugin {{{
+" Install Plugin {{{2
 if dein#check_install() && (confirm('Would you like to download some plugins ?', "&Yes\n&No", 1) == 1)
   call dein#install()
 endif
-" }}}
+" }}}2
 
-" My Plugin {{{
+" My Plugin {{{2
 if has('vim_starting')
   set runtimepath+=~/.vim/plugins/lightline-iceberg-yano
 endif
-" }}}
+" }}}2
 
 " }}}1
 
@@ -429,7 +429,7 @@ function! s:TrimEndLines()
 endfunction
 " }}}2
 
-" MoveToNewTab {{{
+" MoveToNewTab {{{2
 nnoremap <Leader>tm :<C-u>tablast <Bar> call <SID>MoveToNewTab()<CR>
 function! s:MoveToNewTab()
   tab split
@@ -443,9 +443,9 @@ function! s:MoveToNewTab()
 
   tabnext
 endfunction
-" }}}
+" }}}2
 
-" AutoCursorline {{{
+" AutoCursorline {{{2
 let s:cursorline_lock = 0
 function! s:AutoCursorline(event)
   if a:event ==# 'WinEnter'
@@ -467,7 +467,7 @@ function! s:AutoCursorline(event)
     let s:cursorline_lock = 1
   endif
 endfunction
-" }}}
+" }}}2
 
 " }}}1
 
@@ -1002,14 +1002,14 @@ endif
 nnoremap <Leader>ag :<C-u>Ag!<space>
 " }}}3
 
-" clever-f {{{
+" clever-f {{{3
 let g:clever_f_not_overwrites_standard_mappings = 0
 
 nmap f <Plug>(clever-f-f)
 nmap F <Plug>(clever-f-F)
 nmap t <Plug>(clever-f-t)
 nmap T <Plug>(clever-f-T)
-" }}}
+" }}}3
 
 " easy-align {{{3
 vmap <Enter> <Plug>(EasyAlign)
@@ -1072,7 +1072,6 @@ if dein#tap("lexima.vim")
           \ {'char': '<C-h>', 'at': '(\%#)',   'input': '<BS><Del>'},
           \ {'char': '<C-h>', 'at': '{\%#}',   'input': '<BS><Del>'},
           \ {'char': '<C-h>', 'at': '\[\%#\]', 'input': '<BS><Del>'},
-          \ {'char': '<C-h>', 'at': '{\%#$',   'input': '{{<CR>}}}'},
           \ {'char': "'",     'at': "'\\%#'",  'input': '<Del>'},
           \ {'char': '"',     'at': '"\%#"',   'input': '<Del>'},
           \ {'char': '<C-h>', 'at': "'\\%#'",  'input': '<Del>'},
@@ -1397,7 +1396,7 @@ let g:zenspace#default_mode = 'on'
 let g:bakaup_auto_backup = 1
 " }}}3
 
-" bufkill {{{
+" bufkill {{{3
 augroup bufkill
   autocmd!
   autocmd FileType *    nnoremap <silent> <Leader>d :BD<CR>
@@ -1405,7 +1404,7 @@ augroup bufkill
   autocmd FileType diff nnoremap <silent> <Leader>d :BW<CR>
   autocmd FileType git  nnoremap <silent> <Leader>d :BW<CR>
 augroup END
-" }}}
+" }}}3
 
 " expand-region {{{3
 vmap v <Plug>(expand_region_expand)
@@ -1442,10 +1441,10 @@ endif
 nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
 " }}}3
 
-" neoterm {{{
+" neoterm {{{3
 let g:neoterm_position = 'vertical'
 nnoremap <silent> <Leader>tig :<C-u>T tig<CR>
-" }}}
+" }}}3
 
 " ref {{{3
 let g:ref_source_webdict_sites = {
@@ -1462,7 +1461,7 @@ endfunction
 let g:scratch_no_mappings = 1
 " }}}3
 
-" submode {{{
+" submode {{{3
 let g:submode_keep_leaving_key = 1
 
 "" edit
@@ -1480,7 +1479,7 @@ call submode#enter_with('changetab', 'n', '', 'gt', 'gt')
 call submode#enter_with('changetab', 'n', '', 'gT', 'gT')
 call submode#map('changetab', 'n', '', 't', 'gt')
 call submode#map('changetab', 'n', '', 'T', 'gT')
-" }}}
+" }}}3
 
 " tagbar {{{3
 function! Tagbar_status_func(current, sort, fname, ...) abort
@@ -1498,16 +1497,16 @@ let test#strategy = 'neoterm'
 nnoremap <silent> <Leader>u :<C-u>UndotreeToggle<CR>
 " }}}3
 
-" windowswap {{{
+" windowswap {{{3
 let g:windowswap_map_keys = 0 "prevent default bindings
 nnoremap <silent> <leader>yw :call WindowSwap#MarkWindowSwap()<CR>
 nnoremap <silent> <leader>pw :call WindowSwap#DoWindowSwap()<CR>
 nnoremap <silent> <leader>ww :call WindowSwap#EasyWindowSwap()<CR>
-" }}}
+" }}}3
 
-" winresizer {{{
+" winresizer {{{3
 nnoremap <silent> <C-e> :WinResizerStartResize<CR>
-" }}}
+" }}}3
 
 " }}}2
 
