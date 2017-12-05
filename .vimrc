@@ -284,6 +284,9 @@ let mapleader = " "
 
 "" Setting for Neovim
 if has('nvim')
+  let g:python_host_prog = expand('~/.pyenv/shims/python2')
+  let g:python3_host_prog = expand('~/.pyenv/shims/python3')
+
   nmap <BS> <C-W>h
 endif
 

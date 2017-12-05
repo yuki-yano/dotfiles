@@ -1,10 +1,10 @@
 # profile
 # zmodload zsh/zprof && zprof
 
-# 言語
+# language
 export LANG=ja_JP.UTF-8
 
-# エディタ
+# editor
 export EDITOR=nvim
 alias c=ccat
 
@@ -13,13 +13,10 @@ alias c=ccat
 setopt no_global_rcs
 
 # default path
-export PATH=$HOME/dotfiles/bin:$HOME/dotfiles/vendor/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin
-# Play
-export PATH=$PATH:$HOME/.play
-# node.js
-export PATH=$PATH:$HOME/dotfiles/node_modules/.bin
-# powerline
-export PATH=$PATH:~/.local/bin
+export PATH=$HOME/dotfiles/bin:$HOME/dotfiles/vendor/bin:$HOME/dotfiles/node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin
+
+# homebrew
+alias brew="env PATH=${PATH/${HOME}\/\.pyenv\/shims:/} brew"
 
 # rbenv
 export PATH=$HOME/.rbenv/shims:$PATH
@@ -39,11 +36,43 @@ function rbenv() {
   esac
 }
 
-# python
-export PATH=/usr/local/opt/python/libexec/bin:$PATH
+# pyenv
+export PYENV_ROOT=~/.pyenv
+export PATH=~/.pyenv/shims:$PATH
+export PYENV_SHELL=zsh
+export PYTHON_CONFIGURE_OPTS='--enable-framework'
+pyenv() {
+  local command
+  command="$1"
+  if [ "$#" -gt 0 ]; then
+    shift
+  fi
 
-# nodebrew
-export PATH=$HOME/.nodebrew/current/bin:$PATH
+  case "$command" in
+    rehash|shell)
+      eval "$(pyenv "sh-$command" "$@")";;
+    *)
+      command pyenv "$command" "$@";;
+  esac
+}
+
+# nodenv
+export PATH=~/.nodenv/shims:$PATH
+export NODENV_SHELL=zsh
+nodenv() {
+  local command
+  command="$1"
+  if [ "$#" -gt 0 ]; then
+    shift
+  fi
+
+  case "$command" in
+    rehash|shell)
+      eval "$(nodenv "sh-$command" "$@")";;
+    *)
+      command nodenv "$command" "$@";;
+  esac
+}
 
 # go
 export GOPATH=$HOME/.go
@@ -81,9 +110,6 @@ alias p='popd'
 
 # yes
 alias y='yes'
-
-# updatedb
-alias updatedb=/usr/libexec/locate.updatedb
 
 # ruby
 alias be='bundle exec'
