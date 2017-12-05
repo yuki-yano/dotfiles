@@ -112,6 +112,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('osyo-manga/unite-highlight')
   call dein#add('osyo-manga/unite-quickfix')
   call dein#add('ozelentok/denite-gtags')
+  call dein#add('tsukkee/unite-tag')
 
   call dein#add('lighttiger2505/gtags.vim')
 
