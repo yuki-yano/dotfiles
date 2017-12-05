@@ -192,7 +192,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('qpkorr/vim-bufkill')
   call dein#add('simeji/winresizer',            {'lazy': 1, 'on_cmd': 'WinResizerStartResize'})
   call dein#add('szw/vim-maximizer',            {'lazy': 1, 'on_cmd': 'MaximizerToggle'})
-  call dein#add('t9md/vim-fthook')
   call dein#add('terryma/vim-expand-region',    {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-ref',               {'lazy': 1, 'on_cmd': 'Ref'})
   call dein#add('tweekmonster/startuptime.vim', {'lazy': 1, 'on_cmd': 'StartupTime'})
@@ -291,6 +290,12 @@ if has('nvim')
 
   nmap <BS> <C-W>h
 endif
+
+"" Window
+nnoremap <silent> <C-h> :wincmd h<CR>
+nnoremap <silent> <C-l> :wincmd l<CR>
+nnoremap <silent> <C-k> :wincmd k<CR>
+nnoremap <silent> <C-j> :wincmd j<CR>
 
 "" Insert Mode
 inoremap <C-h> <BS>
@@ -1432,16 +1437,6 @@ if dein#tap("vim-extracmd")
   call extracmd#set('json',         '%!python -m json.tool<CR>')
 endif
 " }}}3
-
-" fthook {{{
-let g:fthook = {}
-function! g:fthook._(_)
-  nnoremap <buffer> <silent> <C-h> :wincmd h<CR>
-  nnoremap <buffer> <silent> <C-l> :wincmd l<CR>
-  nnoremap <buffer> <silent> <C-k> :wincmd k<CR>
-  nnoremap <buffer> <silent> <C-j> :wincmd j<CR>
-endfunction
-" }}}
 
 " maximizer {{{3
 nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
