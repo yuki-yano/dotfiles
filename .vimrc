@@ -1160,7 +1160,7 @@ if dein#tap("lightline.vim")
         \   'right': [
         \     [ 'lineinfo', 'percent' ],
         \     [ 'fileformat', 'fileencoding', 'filetype' ],
-        \     [ 'ale_error', 'ale_warning', 'ale_ok' ]
+        \     [ 'ale_error', 'ale_warning', 'ale_ok', 'ale_not_loaded' ]
         \   ]
         \ },
         \ 'inactive': {
@@ -1186,14 +1186,16 @@ if dein#tap("lightline.vim")
         \   'denite':       'LightlineDenite',
         \ },
         \ 'component_expand': {
-        \   'ale_error':     'LightlineAleError',
-        \   'ale_warning':   'LightlineAleWarning',
-        \   'ale_ok':        'LightlineAleOk',
+        \   'ale_error':      'LightlineAleError',
+        \   'ale_warning':    'LightlineAleWarning',
+        \   'ale_ok':         'LightlineAleOk',
+        \   'ale_not_loaded': 'LightlineAleNotLoaded',
         \ },
         \ 'component_type': {
-        \   'ale_error':   'error',
-        \   'ale_warning': 'warning',
-        \   'ale_ok':      'ok',
+        \   'ale_error':      'error',
+        \   'ale_warning':    'warning',
+        \   'ale_ok':         'ok',
+        \   'ale_not_loaded': 'ok',
         \ },
         \ 'component_function_visible_condition': {
         \   'modified': '&modified||!&modifiable',
@@ -1314,6 +1316,14 @@ if dein#tap("lightline.vim")
 
   function! LightlineAleOk() abort
     return s:ale_string(2)
+  endfunction
+
+  function! LightlineAleNotLoaded() abort
+    if !exists('g:ale_buffer_info')
+      return "\uf204"
+    else
+      return ''
+    endif
   endfunction
 
   function! s:ale_string(mode)
