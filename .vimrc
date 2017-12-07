@@ -137,7 +137,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('junegunn/vim-easy-align',        {'lazy': 1, 'on_map': {'v': '<Plug>'}})
   call dein#add('jwhitley/vim-matchit')
   call dein#add('kana/vim-operator-replace',      {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('mopp/vim-operator-convert-case', {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('mopp/vim-operator-convert-case')
   call dein#add('osyo-manga/vim-anzu',            {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('osyo-manga/vim-jplus',           {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('osyo-manga/vim-over',            {'lazy': 1, 'on_cmd': 'OverCommandLine'})
@@ -1086,8 +1086,7 @@ endif
 " }}}3
 
 " operator-convert-case.vim {{{3
-map <Leader>oc <Plug>(operator-convert-case-lower-camel)
-map <Leader>os <Plug>(operator-convert-case-lower-snake)
+nmap <Leader>cl :<C-u>ConvertCaseLoop<CR>
 " }}}3
 
 " operator-replace {{{3
@@ -1101,7 +1100,7 @@ vnoremap <silent> <Leader>r y:<C-u>OverCommandLine<CR>%s/<C-r>=substitute(@0, '/
 " }}}3
 
 " tcomment {{{3
-noremap <silent> <Leader>c :TComment<CR>
+noremap <silent> <Leader>cc :TComment<CR>
 " }}}3
 
 " yankround {{{3
