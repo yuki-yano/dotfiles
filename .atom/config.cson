@@ -16,6 +16,9 @@
     ruby:
       beautify_on_save: true
     vue: {}
+  "atom-ide-ui":
+    use:
+      "atom-ide-diagnostics-ui": false
   "autocomplete-plus":
     autoActivationDelay: 50
     confirmCompletion: "enter"
@@ -79,6 +82,8 @@
       "git-diff": true
       "minimap-autohide": true
       "minimap-autohideDecorationsZIndex": 0
+  narrow:
+    notifiedVimModePlusSpecificDefaultKeymap: true
   "prettier-atom":
     formatOnSaveOptions:
       enabled: true
