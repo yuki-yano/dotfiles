@@ -1,6 +1,7 @@
 # zsh
 /.fzf.zsh
 /.zsh/cache/
+*.zwc
 
 # fish
 /.config/fish/*

@@ -353,6 +353,10 @@ if [ ! -f ~/.zshrc.zwc -o ~/.zshrc -nt ~/.zshrc.zwc ]; then
   zcompile ~/.zshrc
 fi
 
+if [ ! -f ~/.zsh/zgen/zgen.zsh.zwc -o ~/.zsh/zgen/zgen.zsh -nt ~/.zsh/zgen/zgen.zsh.zwc ]; then
+  zcompile  ~/.zsh/zgen/zgen.zsh
+fi
+
 # }}}
 
 # vim:set et ts=2 sts=2 sw=2 fen fdm=marker:
