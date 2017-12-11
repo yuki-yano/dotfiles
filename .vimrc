@@ -1115,14 +1115,17 @@ if dein#tap("lexima.vim")
           \ {'char': '(',     'at': '(\%#)',   'input': '<Del>'},
           \ {'char': '{',     'at': '{\%#}',   'input': '<Del>'},
           \ {'char': '[',     'at': '\[\%#\]', 'input': '<Del>'},
-          \ {'char': '{',     'at': '{\%#$',   'input': '{{<CR>}}}'},
+          \ {'char': '{',     'at': '{\%#$',   'input': '{{<CR>}}}', 'filetype': 'vim'},
           \ {'char': '<C-h>', 'at': '(\%#)',   'input': '<BS><Del>'},
           \ {'char': '<C-h>', 'at': '{\%#}',   'input': '<BS><Del>'},
           \ {'char': '<C-h>', 'at': '\[\%#\]', 'input': '<BS><Del>'},
-          \ {'char': "'",     'at': "'\\%#'",  'input': '<Del>'},
-          \ {'char': '"',     'at': '"\%#"',   'input': '<Del>'},
           \ {'char': '<C-h>', 'at': "'\\%#'",  'input': '<Del>'},
           \ {'char': '<C-h>', 'at': '"\%#"',   'input': '<Del>'},
+          \ {'char': "'",     'at': "'\\%#'",  'input': '<Del>'},
+          \ {'char': '"',     'at': '"\%#"',   'input': '<Del>'},
+          \ {'char': '(',     'at': '(\%#',    'input': ''},
+          \ {'char': '{',     'at': '{\%#',    'input': ''},
+          \ {'char': '[',     'at': '[\%#',    'input': ''},
           \ ]
 
     for rule in rules
