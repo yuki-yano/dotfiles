@@ -99,9 +99,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('ujihisa/neco-look',          s:lazy_deoplete )
   " }}}3
 
-  " Unite & Denite & vimfiler {{{3
+  " Fuzzy Finder {{{3
   call dein#add('Shougo/unite.vim')
   call dein#add('Shougo/denite.nvim')
+  call dein#add('ctrlpvim/ctrlp.vim')
 
   call dein#add('Shougo/neomru.vim')
   call dein#add('Shougo/neoyank.vim')
@@ -120,6 +121,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('honza/vim-snippets')
 
   call dein#add('nixprime/cpsm', {'build': 'env PY3=ON ./install.sh'})
+  call dein#add('JazzCore/ctrlp-cmatcher', {'build': './install.sh'})
   " }}}3
 
   " Edit & Move & Search {{{3
@@ -686,10 +688,10 @@ if dein#tap("denite.nvim")
   call denite#custom#var('grep',     'default_opts', ['--follow', '--no-group', '--no-color'])
 
   " file & buffer
-  nnoremap <silent> <Leader>p  :<C-u>Denite file_rec -direction=botright -mode=insert<CR>
+  " nnoremap <silent> <Leader>p  :<C-u>Denite file_rec -direction=botright -mode=insert<CR>
   nnoremap <silent> <Leader>m  :<C-u>Denite file_old -direction=botright -mode=insert<CR>
   nnoremap <silent> <Leader>f  :<C-u>Denite buffer file_rec -direction=topleft -mode=insert<CR>
-  nnoremap <silent> <Leader>b  :<C-u>Denite buffer -direction=topleft -mode=insert<CR>
+  " nnoremap <silent> <Leader>b  :<C-u>Denite buffer -direction=topleft -mode=insert<CR>
 
   " grep
   " nnoremap <silent> <Leader>/ :<C-u>Denite line -auto-preview<CR>
@@ -794,6 +796,50 @@ if dein#tap("unite.vim")
   " Dein
   nnoremap <silent> <Leader>dein :<C-u>Unite dein -start-insert<CR>
 endif
+" }}}3
+
+" ctrlp {{{3
+hi CtrlPMatch ctermfg=74
+nnoremap <silent> <Leader>p  :<C-u>CtrlP<CR>
+nnoremap <silent> <Leader>b  :<C-u>CtrlPBuffer<CR>
+let g:ctrlp_max_height = 20
+let g:ctrlp_user_command='ag %s -i --nocolor --nogroup -g ""'
+let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
+let g:ctrlp_prompt_mappings = {
+      \ 'PrtBS()':              ['<BS>', '<C-h>'],
+      \ 'PrtSelectMove("j")':   ['<C-n>', '<DOWN>'],
+      \ 'PrtSelectMove("k")':   ['<C-p>', '<UP>'],
+      \ 'PrtHistory(-1)':       ['<C-j>'],
+      \ 'PrtHistory(1)':        ['<C-k>'],
+      \ 'ToggleRegex()':        ['<C-r>'],
+      \ 'ToggleType(1)':        ['<C-up>'],
+      \ 'ToggleType(-1)':       ['<C-down>'],
+      \ 'PrtCurLeft()':         ['<C-b>', '<LEFT>', '<C-^>'],
+      \ 'PrtCurRight()':        ['<C-f>', '<RIGHT>'],
+      \ 'MarkToOpen()':         ['<C-space>'],
+      \ 'PrtExit()':            ['<esc>', '<C-c>', '<C-g>', '<C-]>']
+      \ }
+
+let g:ctrlp_custom_ignore = {
+      \ 'dir':  '\v([\/]\.(git|hg|svn)$|[\/]bundle$|[\/]node_modules$)',
+      \ 'file': '\v\.(exe|so|dll|gif|png|jpeg|jpg|pdf|mp3|cache)$'
+      \ }
+
+let g:ctrlp_status_func = {
+      \ 'main': 'CtrlPStatusFunc_1',
+      \ 'prog': 'CtrlPStatusFunc_2',
+      \ }
+
+function! CtrlPStatusFunc_1(focus, byfname, regex, prev, item, next, marked)
+  let g:lightline.ctrlp_prev = a:prev
+  let g:lightline.ctrlp_item = a:item
+  let g:lightline.ctrlp_next = a:next
+  let g:lightline.ctrlp_marked = a:marked
+  return lightline#statusline(0)
+endfunction
+function! CtrlPStatusFunc_2(str)
+  return lightline#statusline(0)
+endfunction
 " }}}3
 
 " deoplete.nvim && neosnippet.vim {{{3
@@ -1124,6 +1170,7 @@ let g:better_whitespace_filetypes_blacklist = ['tag', 'help', 'vimfiler', 'unite
 let g:webdevicons_enable = 1
 let g:webdevicons_enable_unite = 1
 let g:webdevicons_enable_vimfiler = 1
+let g:webdevicons_enable_ctrlp = 1
 let g:WebDevIconsUnicodeDecorateFileNodes = 1
 " }}}3
 
@@ -1252,6 +1299,11 @@ if dein#tap("lightline.vim")
   endfunction
 
   function! LightlineFilename()
+    if expand('%:t') == 'ControlP'
+      return g:lightline.ctrlp_prev . ' ' . g:lightline.subseparator.left . ' ' .
+            \ g:lightline.ctrlp_item . ' ' . g:lightline.subseparator.left . ' ' .
+            \ g:lightline.ctrlp_next
+    endif
     if &filetype ==# 'vimfiler'
       return vimfiler#get_status_string()
     elseif &filetype ==# 'unite'
@@ -1430,6 +1482,7 @@ if dein#tap("vim-extracmd")
   call extracmd#set('dein',         'Dein')
   call extracmd#set('u[nite]',      'Unite')
   call extracmd#set('d[enite]',     'Denite')
+  call extracmd#set('cpc',          'CtrlPClearAllCaches')
   call extracmd#set('ag',           'Ag!')
   call extracmd#set('gina',         'Gina')
   call extracmd#set('gci',          'Gina commit')
