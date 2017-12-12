@@ -803,7 +803,7 @@ endif
 hi CtrlPMatch ctermfg=74
 nnoremap <silent> <Leader>p  :<C-u>CtrlP<CR>
 nnoremap <silent> <Leader>b  :<C-u>CtrlPBuffer<CR>
-let g:ctrlp_max_height = 20
+let g:ctrlp_match_window = 'top,min:10,max:20'
 let g:ctrlp_user_command='ag %s -i --nocolor --nogroup -g ""'
 let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
 let g:ctrlp_prompt_mappings = {
