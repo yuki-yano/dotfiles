@@ -1136,7 +1136,7 @@ endif
 " }}}3
 
 " operator-convert-case.vim {{{3
-nmap <Leader>cl :<C-u>ConvertCaseLoop<CR>
+nmap <Leader>cl :<C-u>ConvertCaseLoop<CR>b
 " }}}3
 
 " operator-replace {{{3
