@@ -1123,6 +1123,8 @@ if dein#tap("lexima.vim")
           \ {'char': '<C-h>', 'at': '"\%#"',   'input': '<Del>'},
           \ {'char': "'",     'at': "'\\%#'",  'input': '<Del>'},
           \ {'char': '"',     'at': '"\%#"',   'input': '<Del>'},
+          \ {'char': "'",     'at': "'\\%#",   'input': ''},
+          \ {'char': '"',     'at': '"\%#',    'input': ''},
           \ {'char': '(',     'at': '(\%#',    'input': ''},
           \ {'char': '{',     'at': '{\%#',    'input': ''},
           \ {'char': '[',     'at': '[\%#',    'input': ''},
