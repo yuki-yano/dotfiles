@@ -690,7 +690,7 @@ if dein#tap("denite.nvim")
 
   " file & buffer
   " nnoremap <silent> <Leader>p  :<C-u>Denite file_rec -direction=botright -mode=insert<CR>
-  nnoremap <silent> <Leader>m         :<C-u>Denite file_old -direction=botright -mode=insert<CR>
+  nnoremap <silent> <Leader>m         :<C-u>Denite file_mru -direction=botright -mode=insert<CR>
   nnoremap <silent> <Leader>f         :<C-u>Denite buffer file_rec -direction=topleft -mode=insert<CR>
   nnoremap <silent> <Leader><Leader>b :<C-u>Denite buffer -direction=topleft -mode=insert<CR>
 
