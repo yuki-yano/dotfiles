@@ -1051,8 +1051,8 @@ omap T <Plug>(easymotion-Tl)
 " }}}3
 
 " edgemotion {{{3
-map <Leader>j <Plug>(edgemotion-j)
-map <Leader>k <Plug>(edgemotion-k)
+map <M-j> <Plug>(edgemotion-j)
+map <M-k> <Plug>(edgemotion-k)
 " }}}3
 
 " jplus {{{3
