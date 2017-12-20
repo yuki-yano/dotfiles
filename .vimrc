@@ -1052,10 +1052,10 @@ nnoremap <Leader>ag :<C-u>Ag!<space>
 " clever-f {{{3
 let g:clever_f_not_overwrites_standard_mappings = 0
 
-nmap f <Plug>(clever-f-f)
-nmap F <Plug>(clever-f-F)
-nmap t <Plug>(clever-f-t)
-nmap T <Plug>(clever-f-T)
+map f <Plug>(clever-f-f)
+map F <Plug>(clever-f-F)
+map t <Plug>(clever-f-t)
+map T <Plug>(clever-f-T)
 " }}}3
 
 " easy-align {{{3
