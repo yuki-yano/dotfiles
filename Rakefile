@@ -8,7 +8,6 @@ DOTFILES_SRCS = %w[
   .config
   .ctags
   .dircolors
-  .fzf.zsh
   .gemrc
   .gitattributes
   .gitconfig

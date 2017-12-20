@@ -307,14 +307,6 @@ add-zsh-hook precmd rename_tmux_window
 
 # }}}
 
-# loading fzf {{{
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export FZF_DEFAULT_COMMAND='ag -g ""'
-export FZF_DEFAULT_OPTS='--reverse'
-
-# }}}
-
 # bindkey {{{
 
 bindkey -e
@@ -336,6 +328,14 @@ bindkey " "   __abbrev_alias::magic_abbrev_expand
 # local file {{{
 
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
+
+# }}}
+
+# loading fzf {{{
+
+[ -f /usr/local/opt/fzf/shell/completion.zsh ] && source /usr/local/opt/fzf/shell/completion.zsh
+export FZF_DEFAULT_COMMAND='ag -g ""'
+export FZF_DEFAULT_OPTS='--reverse'
 
 # }}}
 
