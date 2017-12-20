@@ -102,7 +102,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Fuzzy Finder {{{3
   call dein#add('Shougo/unite.vim')
   call dein#add('Shougo/denite.nvim')
-  call dein#add('ctrlpvim/ctrlp.vim')
 
   call dein#add('Shougo/neomru.vim')
   call dein#add('Shougo/neoyank.vim')
@@ -121,7 +120,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('honza/vim-snippets')
 
   call dein#add('nixprime/cpsm', {'build': 'env PY3=ON ./install.sh'})
-  call dein#add('JazzCore/ctrlp-cmatcher', {'build': './install.sh'})
   " }}}3
 
   " Edit & Move & Search {{{3
@@ -690,9 +688,9 @@ if dein#tap("denite.nvim")
 
   " file & buffer
   " nnoremap <silent> <Leader>p  :<C-u>Denite file_rec -direction=botright -mode=insert<CR>
-  nnoremap <silent> <Leader>m         :<C-u>Denite file_mru -direction=botright -mode=insert<CR>
-  nnoremap <silent> <Leader>f         :<C-u>Denite buffer file_rec -direction=topleft -mode=insert<CR>
-  nnoremap <silent> <Leader><Leader>b :<C-u>Denite buffer -direction=topleft -mode=insert<CR>
+  nnoremap <silent> <Leader>m :<C-u>Denite file_mru -direction=botright -mode=insert<CR>
+  nnoremap <silent> <Leader>f :<C-u>Denite buffer file_rec -direction=topleft -mode=insert<CR>
+  " nnoremap <silent> <Leader>b :<C-u>Denite buffer -direction=topleft -mode=insert<CR>
 
   " grep
   " nnoremap <silent> <Leader>/ :<C-u>Denite line -auto-preview<CR>
@@ -707,7 +705,7 @@ if dein#tap("denite.nvim")
   nnoremap <silent> <Leader>o :<C-u>Denite outline<CR>
 
   " yank
-  " nnoremap <silent> <Leader>P :<C-u>Denite neoyank -direction=topleft<CR>
+  " nnoremap <silent> <Leader>p :<C-u>Denite neoyank -direction=topleft<CR>
 
   " quickfix
   " nnoremap <silent> <Leader>l :Denite location_list -no-quit -auto-resize<CR>
@@ -746,8 +744,9 @@ if dein#tap("unite.vim")
 
   let g:unite_source_rec_max_cache_files = 10000
   let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '-p', '~/.agignore', '-g', '']
+  " nnoremap <silent> <Leader>p :<C-u>Unite file_rec/async:! -start-insert<CR>
   " nnoremap <silent> <Leader>f :<C-u>Unite buffer file_mru file_rec/async:! -start-insert<CR>
-  " nnoremap <silent> <Leader>b :<C-u>Unite buffer -start-insert<CR>
+  nnoremap <silent> <Leader>b :<C-u>Unite buffer -start-insert<CR>
 
   "" jump
   nnoremap <silent> <Leader>uj :<C-u>Unite jump change -auto-preview -direction=botright<CR>
@@ -775,7 +774,7 @@ if dein#tap("unite.vim")
 
   " yank & buffer
   let g:unite_source_history_yank_enable = 1
-  nnoremap <silent> <Leader>P :<C-u>Unite yankround<CR>
+  nnoremap <silent> <Leader>p :<C-u>Unite yankround<CR>
 
   " quickfix
   nnoremap <silent> <Leader>q :<C-u>Unite quickfix -direction=botright -no-quit<CR>
@@ -797,50 +796,6 @@ if dein#tap("unite.vim")
   " Dein
   nnoremap <silent> <Leader>dein :<C-u>Unite dein -start-insert<CR>
 endif
-" }}}3
-
-" ctrlp {{{3
-hi CtrlPMatch ctermfg=74
-let g:ctrlp_map = '<Leader>p'
-nnoremap <silent> <Leader>b  :<C-u>CtrlPBuffer<CR>
-let g:ctrlp_match_window = 'top,min:15,max:20'
-let g:ctrlp_user_command='ag %s -i --nocolor --nogroup -g ""'
-let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
-let g:ctrlp_prompt_mappings = {
-      \ 'PrtBS()':              ['<BS>', '<C-h>'],
-      \ 'PrtSelectMove("j")':   ['<C-n>', '<DOWN>'],
-      \ 'PrtSelectMove("k")':   ['<C-p>', '<UP>'],
-      \ 'PrtHistory(-1)':       ['<C-j>'],
-      \ 'PrtHistory(1)':        ['<C-k>'],
-      \ 'ToggleRegex()':        ['<C-r>'],
-      \ 'ToggleType(1)':        ['<C-up>'],
-      \ 'ToggleType(-1)':       ['<C-down>'],
-      \ 'PrtCurLeft()':         ['<C-b>', '<LEFT>', '<C-^>'],
-      \ 'PrtCurRight()':        ['<C-f>', '<RIGHT>'],
-      \ 'MarkToOpen()':         ['<C-space>'],
-      \ 'PrtExit()':            ['<esc>', '<C-c>', '<C-g>', '<C-]>']
-      \ }
-
-let g:ctrlp_custom_ignore = {
-      \ 'dir':  '\v([\/]\.(git|hg|svn)$|[\/]bundle$|[\/]node_modules$)',
-      \ 'file': '\v\.(exe|so|dll|gif|png|jpeg|jpg|pdf|mp3|cache)$'
-      \ }
-
-let g:ctrlp_status_func = {
-      \ 'main': 'CtrlPStatusFunc_1',
-      \ 'prog': 'CtrlPStatusFunc_2',
-      \ }
-
-function! CtrlPStatusFunc_1(focus, byfname, regex, prev, item, next, marked)
-  let g:lightline.ctrlp_prev = a:prev
-  let g:lightline.ctrlp_item = a:item
-  let g:lightline.ctrlp_next = a:next
-  let g:lightline.ctrlp_marked = a:marked
-  return lightline#statusline(0)
-endfunction
-function! CtrlPStatusFunc_2(str)
-  return lightline#statusline(0)
-endfunction
 " }}}3
 
 " deoplete.nvim && neosnippet.vim {{{3
@@ -1155,12 +1110,12 @@ vnoremap <silent> <Leader>r y:<C-u>OverCommandLine<CR>%s/<C-r>=substitute(@0, '/
 noremap <silent> <Leader>cc :TComment<CR>
 " }}}3
 
-" yankround {{{3
+" yankround & Unite {{{3
 if dein#tap("yankround.vim")
   let g:neoyank#limit = 10000
   nmap p <Plug>(yankround-p)
-  nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : '"0p'
-  nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : '"0p'
+  nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : ':<C-u>Unite file_rec/async:! -start-insert<CR>'
+  nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : ''
 endif
 " }}}3
 
@@ -1176,7 +1131,6 @@ let g:better_whitespace_filetypes_blacklist = ['tag', 'help', 'vimfiler', 'unite
 let g:webdevicons_enable = 1
 let g:webdevicons_enable_unite = 1
 let g:webdevicons_enable_vimfiler = 1
-let g:webdevicons_enable_ctrlp = 1
 let g:WebDevIconsUnicodeDecorateFileNodes = 1
 " }}}3
 
@@ -1305,11 +1259,6 @@ if dein#tap("lightline.vim")
   endfunction
 
   function! LightlineFilename()
-    if expand('%:t') == 'ControlP'
-      return g:lightline.ctrlp_prev . ' ' . g:lightline.subseparator.left . ' ' .
-            \ g:lightline.ctrlp_item . ' ' . g:lightline.subseparator.left . ' ' .
-            \ g:lightline.ctrlp_next
-    endif
     if &filetype ==# 'vimfiler'
       return vimfiler#get_status_string()
     elseif &filetype ==# 'unite'
@@ -1488,7 +1437,6 @@ if dein#tap("vim-extracmd")
   call extracmd#set('dein',         'Dein')
   call extracmd#set('u[nite]',      'Unite')
   call extracmd#set('d[enite]',     'Denite')
-  call extracmd#set('cpc',          'CtrlPClearAllCaches')
   call extracmd#set('ag',           'Ag!')
   call extracmd#set('gina',         'Gina')
   call extracmd#set('git',          'Gina')
