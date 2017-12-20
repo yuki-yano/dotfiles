@@ -1,6 +1,7 @@
 {
   "Keymap": {
-    "C-g": "peco.Cancel"
+    "C-g": "peco.Cancel",
+    "Tab": "peco.ToggleSelectionAndSelectNext"
   },
   "Style": {
     "Basic": ["on_default", "default"],
