@@ -704,6 +704,9 @@ if dein#tap("denite.nvim")
   " outline
   nnoremap <silent> <Leader>o :<C-u>Denite outline<CR>
 
+  " ctags & gtags
+  nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context -direction=botright<CR>
+
   " yank
   " nnoremap <silent> <Leader>p :<C-u>Denite neoyank -direction=topleft<CR>
 
@@ -749,10 +752,10 @@ if dein#tap("unite.vim")
   nnoremap <silent> <Leader>b :<C-u>Unite buffer -start-insert<CR>
 
   "" jump
-  nnoremap <silent> <Leader>uj :<C-u>Unite jump change -auto-preview -direction=botright<CR>
+  nnoremap <silent> <Leader><C-o> :<C-u>Unite jump change -auto-preview -direction=botright<CR>
 
   " ctags & gtags
-  nnoremap <silent> <Leader><C-]> :<C-u>UniteWithCursorWord gtags/context tag -auto-preview -direction=botright<CR>
+  " nnoremap <silent> <Leader><C-]> :<C-u>UniteWithCursorWord gtags/context tag -direction=botright<CR>
 
   "" outline
   " nnoremap <silent> <Leader>o :<C-u>Unite outline -auto-preview -direction=botright<CR>
