@@ -44,6 +44,7 @@ project-manager
 regex-railroad-diagram
 ruby-block
 stylefmt
+teletype
 vim-mode-plus
 vim-mode-plus-ex-mode
 vim-mode-plus-keymaps-for-surround
