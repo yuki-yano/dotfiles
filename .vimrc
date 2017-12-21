@@ -28,6 +28,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Language {{{3
   call dein#add('Chiel92/vim-autoformat',                  {'lazy': 1, 'on_cmd': 'Autoformat'})
+  call dein#add('Shougo/context_filetype.vim')
   call dein#add('Shougo/echodoc.vim',                      {'lazy': 1, 'on_event': 'InsertEnter'})
   call dein#add('Valloric/MatchTagAlways',                 {'lazy': 1, 'on_ft': ['html', 'xml', 'erb']})
   call dein#add('Vimjas/vim-python-pep8-indent',           {'lazy': 1, 'on_ft': 'python'})
@@ -42,7 +43,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': 'css'})
   call dein#add('hashivim/vim-terraform',                  {'lazy': 1, 'on_ft': 'terraform'})
   call dein#add('heavenshell/vim-pydocstring',             {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('jsfaint/gen_tags.vim')
   call dein#add('kchmck/vim-coffee-script',                {'lazy': 1, 'on_ft': 'coffee'})
   call dein#add('kewah/vim-stylefmt',                      {'lazy': 1, 'on_ft': 'css'})
   call dein#add('mattn/emmet-vim',                         {'lazy': 1, 'on_ft': ['html', 'eruby.html', 'javascript', 'vue', 'vue.html.javascript.css']})
@@ -59,6 +59,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
   call dein#add('rhysd/vim-gfm-syntax',                    {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('slim-template/vim-slim',                  {'lazy': 1, 'on_ft': 'slim'})
+  call dein#add('soramugi/auto-ctags.vim')
   call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('tell-k/vim-autopep8',                     {'lazy': 1, 'on_ft': 'python'})
   call dein#add('thinca/vim-ft-help_fold',                 {'lazy': 1, 'on_ft': 'help'})
@@ -72,6 +73,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('vimtaku/hl_matchit.vim',                  {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('w0rp/ale',                                {'lazy': 1, 'on_ft': ['javascript', 'ruby', 'vue', 'css']})
   call dein#add('ywatase/mdt.vim',                         {'lazy': 1, 'on_ft': 'markdown'})
+  call dein#add('zebult/auto-gtags.vim')
   " }}}3
 
   " Git {{{3
@@ -83,20 +85,19 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Completion {{{3
-  call dein#add('Shougo/deoplete.nvim', {'lazy': 1, 'on_event': 'InsertEnter'})
+  call dein#add('Shougo/deoplete.nvim', {'lazy': 1, 'on_event': 'InsertEnter', 'hook_post_source': 'call Hook_on_post_source_deoplete()'})
   if !has('nvim')
     call dein#add('roxma/nvim-yarp',          {'lazy': 1, 'on_event': 'InsertEnter'})
     call dein#add('roxma/vim-hug-neovim-rpc', {'lazy': 1, 'on_event': 'InsertEnter'})
   endif
 
   let s:lazy_deoplete = {'lazy': 1, 'on_source': 'deoplete.nvim'}
-  call dein#add('Shougo/neco-syntax',         s:lazy_deoplete )
-  call dein#add('Shougo/neco-vim',            s:lazy_deoplete )
-  call dein#add('carlitux/deoplete-ternjs',   s:lazy_deoplete )
-  call dein#add('wokalski/autocomplete-flow', s:lazy_deoplete )
-  call dein#add('zchee/deoplete-go',          s:lazy_deoplete )
-  call dein#add('zchee/deoplete-jedi',        s:lazy_deoplete )
-  call dein#add('ujihisa/neco-look',          s:lazy_deoplete )
+  call dein#add('Shougo/neco-vim',            s:lazy_deoplete)
+  call dein#add('carlitux/deoplete-ternjs',   s:lazy_deoplete)
+  call dein#add('ozelentok/deoplete-gtags',   s:lazy_deoplete)
+  call dein#add('ujihisa/neco-look',          s:lazy_deoplete)
+  call dein#add('wokalski/autocomplete-flow', s:lazy_deoplete)
+  call dein#add('zchee/deoplete-jedi',        s:lazy_deoplete)
   " }}}3
 
   " Fuzzy Finder {{{3
@@ -588,6 +589,14 @@ let g:formatdef_vuefmt = '"cat > vuefmt-temp.vue; ruby -e ''File.read(\"vuefmt-t
 let g:formatters_vue = ['vuefmt']
 " }}}3
 
+" auto-ctags {{{3
+let g:auto_ctags = 1
+" }}}3
+
+" auto-gtags {{{3
+let g:auto_update_gtags = 1
+" }}}3
+
 " echodoc {{{3
 let g:echodoc_enable_at_startup = 1
 " }}}3
@@ -595,11 +604,6 @@ let g:echodoc_enable_at_startup = 1
 " emmet {{{3
 let g:user_emmet_leader_key=','
 let g:user_emmet_mode='in'
-" }}}3
-
-" gen_tags {{{3
-let g:gen_tags#ctags_auto_gen = 1
-let g:gen_tags#gtags_auto_gen = 1
 " }}}3
 
 " go {{{3
@@ -810,28 +814,20 @@ if has('nvim')
     let g:deoplete#auto_complete_delay = 0
     let g:deoplete#auto_complete_start_length = 1
     let g:deoplete#file#enable_buffer_path = 1
-    let g:deoplete#tag#cache_limit_size = 10000
-    let g:deoplete#sources = {}
-    let g:deoplete#sources._ = ['buffer', 'omni', 'look']
-    let g:deoplete#sources.javascript = ['ternjs', 'flow', 'omni', 'buffer', 'syntax', 'neosnippet', 'dictionary', 'look']
-    let g:deoplete#sources.ruby = ['buffer', 'syntax', 'neosnippet', 'dictionary', 'look']
-    " let g:deoplete#sources.ruby = ['buffer', 'omni', 'syntax', 'neosnippet', 'dictionary', 'look']
-    let g:deoplete#sources.python = ['jedi', 'buffer', 'omni', 'syntax', 'neosnippet', 'look']
-    let g:deoplete#sources.scala = ['buffer', 'omni', 'syntax', 'neosnippet', 'look']
-    let g:deoplete#sources.go = ['go', 'buffer', 'syntax', 'neosnippet', 'look']
-    let g:deoplete#sources.vim = ['vim', 'buffer', 'syntax', 'look']
+    let g:deoplete#tag#cache_limit_size = 5000000
 
-    let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
-    let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
-    let g:deoplete#sources#go#use_cache = 1
+    let g:deoplete#sources = {}
+    let g:deoplete#sources._          = ['buffer', 'omni', 'look']
+    let g:deoplete#sources.javascript = ['ternjs', 'flow', 'gtags', 'tag', 'omni', 'buffer', 'neosnippet', 'dictionary', 'look']
+    let g:deoplete#sources.ruby       = ['gtags', 'tag', 'buffer', 'neosnippet', 'dictionary', 'look']
+    let g:deoplete#sources.python     = ['jedi', 'buffer', 'gtags', 'tag', 'omni', 'neosnippet', 'look']
+    let g:deoplete#sources.vim        = ['vim', 'buffer', 'gtags', 'tag', 'look']
 
     let g:deoplete#omni#input_patterns = {}
     let g:deoplete#omni#input_patterns._ = ''
     let g:deoplete#omni#input_patterns.ruby = ''
     let g:deoplete#omni#input_patterns.javascript = ''
     let g:deoplete#omni#input_patterns.python = ''
-    let g:deoplete#omni#input_patterns.go = ''
-    let g:deoplete#omni#input_patterns.scala = ['[^. *\t]\.\w*', '[:\[,] ?\w*', '^import .*']
     let g:deoplete#omni#input_patterns.css  = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
     let g:deoplete#omni#input_patterns.scss = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
 
@@ -850,6 +846,7 @@ if has('nvim')
           \ ]
 
     inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+
     function! s:my_cr_function()
       if !pumvisible()
         return "\<CR>"
@@ -863,7 +860,27 @@ if has('nvim')
         return "\<C-y>" . deoplete#smart_close_popup()
       endif
     endfunction
+
     inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
+
+    function! Hook_on_post_source_deoplete() abort
+      call deoplete#custom#source('neosnippet', 'rank', 1100)
+      call deoplete#custom#source('ternjs',     'rank', 1000)
+      call deoplete#custom#source('flow',       'rank', 900)
+      call deoplete#custom#source('jedi',       'rank', 800)
+      call deoplete#custom#source('vim',        'rank', 700)
+      call deoplete#custom#source('buffer',     'rank', 600)
+      call deoplete#custom#source('gtags',      'rank', 500)
+      call deoplete#custom#source('tag',        'rank', 400)
+      call deoplete#custom#source('omni',       'rank', 300)
+      call deoplete#custom#source('dictionary', 'rank', 200)
+      call deoplete#custom#source('look',       'rank', 100)
+
+      call deoplete#custom#source('buffer',     'mark', '[buffer]')
+      call deoplete#custom#source('tag',        'mark', '[tag]')
+      call deoplete#custom#source('dictionary', 'mark', '[dict]')
+      call deoplete#custom#source('omni',       'mark', '[omni]')
+    endfunction
   endif
 end
 
