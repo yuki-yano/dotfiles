@@ -1,0 +1,20 @@
+{
+  "title": "ESCか^[で日本語入力を英数に",
+  "rules": [
+    {
+      "description": "ESCか^[を押したときに日本語入力を英数に切り替える。",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": { "key_code": "escape", "modifiers": { "optional": [ "any" ] } },
+          "to": [ { "key_code": "japanese_eisuu" }, { "key_code": "escape" } ]
+        },
+        {
+          "type": "basic",
+          "from": { "key_code": "open_bracket", "modifiers": { "mandatory": ["left_control"] } },
+          "to": [ { "key_code": "japanese_eisuu" }, { "key_code": "escape" } ]
+        }
+      ]
+    }
+  ]
+}
