@@ -742,7 +742,6 @@ if dein#tap("unite.vim")
   augroup unite
     autocmd!
     autocmd FileType unite call s:unite_settings()
-    autocmd QuickfixCmdPost grep,grepadd,vimgrep cclose <bar> Unite quickfix -direction=botright -no-quit
   augroup END
 
   "" file & buffer
@@ -1021,7 +1020,8 @@ endif
 " }}}3
 
 " ag {{{3
-nnoremap <Leader>ag :<C-u>Ag!<space>
+let g:ag_qhandler = ''
+nnoremap <Leader>ag :<C-u>Ag!<space><space><bar><space>Unite quickfix -direction=botright -no-quit<Home><Right><Right><Right><Right>
 " }}}3
 
 " clever-f {{{3
