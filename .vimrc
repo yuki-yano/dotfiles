@@ -79,6 +79,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Git {{{3
   call dein#add('airblade/vim-gitgutter')
+  call dein#add('airblade/vim-rooter')
   call dein#add('cohama/agit.vim', {'lazy': 1, 'on_cmd': ['Agit', 'AgitFile']})
   call dein#add('lambdalisue/gina.vim', {'lazy': 1, 'on_cmd': 'Gina', 'on_map': '<Plug>', 'on_event': 'BufWritePost', 'hook_post_source': 'call Hook_on_post_source_gina()'})
   call dein#add('lambdalisue/vim-unified-diff')
@@ -138,6 +139,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('junegunn/vim-easy-align')
   call dein#add('jwhitley/vim-matchit')
   call dein#add('kana/vim-operator-replace',      {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('kshenoy/vim-signature')
   call dein#add('mopp/vim-operator-convert-case')
   call dein#add('osyo-manga/vim-anzu',            {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('osyo-manga/vim-jplus',           {'lazy': 1, 'on_map': '<Plug>'})
@@ -165,6 +167,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('luochen1990/rainbow')
   call dein#add('mopp/smartnumber.vim',           {'lazy': 1, 'on_cmd': 'SNumbersToggleRelative'})
   call dein#add('ntpeters/vim-better-whitespace')
+  call dein#add('t9md/vim-quickhl')
   call dein#add('thinca/vim-zenspace')
   call dein#add('vim-scripts/AnsiEsc.vim')
   call dein#add('vimtaku/hl_matchit.vim')
@@ -190,6 +193,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mbbill/undotree',              {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
   call dein#add('mtth/scratch.vim',             {'lazy': 1, 'on_cmd': 'Scratch'})
   call dein#add('qpkorr/vim-bufkill')
+  call dein#add('rhysd/vim-textobj-ruby')
   call dein#add('simeji/winresizer',            {'lazy': 1, 'on_cmd': 'WinResizerStartResize'})
   call dein#add('szw/vim-maximizer',            {'lazy': 1, 'on_cmd': 'MaximizerToggle'})
   call dein#add('terryma/vim-expand-region',    {'lazy': 1, 'on_map': '<Plug>'})
@@ -1420,6 +1424,13 @@ endif
 
 " parenmatch {{{3
 let g:loaded_matchparen = 1
+" }}}3
+
+" quickhl {{{3
+nmap <Leader>h <Plug>(quickhl-manual-this)
+xmap <Leader>h <Plug>(quickhl-manual-this)
+nmap <Leader>H <Plug>(quickhl-manual-reset)
+xmap <Leader>H <Plug>(quickhl-manual-reset)
 " }}}3
 
 " rainbow {{{3
