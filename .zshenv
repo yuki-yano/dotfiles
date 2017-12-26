@@ -131,7 +131,7 @@ alias gco='git checkout'
 alias gci='git commit'
 alias gst='git stash'
 alias gcb='git rev-parse --abbrev-ref HEAD'
-alias agit='vim +Agit'
+alias agit='nvim +Agit'
 alias gitt='gittower .'
 
 function gwt() {
