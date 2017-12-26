@@ -100,7 +100,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('ujihisa/neco-look')
   call dein#add('wokalski/autocomplete-flow')
   call dein#add('zchee/deoplete-jedi')
-  call dein#add('zchee/deoplete-zsh')
   " }}}3
 
   " Fuzzy Finder {{{3
@@ -835,7 +834,6 @@ if has('nvim')
     call deoplete#custom#source('rct',        'rank', 700)
     call deoplete#custom#source('jedi',       'rank', 700)
     call deoplete#custom#source('vim',        'rank', 700)
-    call deoplete#custom#source('zsh',        'rank', 700)
     call deoplete#custom#source('gtags',      'rank', 600)
     call deoplete#custom#source('tag',        'rank', 500)
     call deoplete#custom#source('buffer',     'rank', 400)
