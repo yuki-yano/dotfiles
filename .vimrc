@@ -223,12 +223,6 @@ if dein#check_install() && (confirm('Would you like to download some plugins ?',
 endif
 " }}}2
 
-" My Plugin {{{2
-if has('vim_starting')
-  set runtimepath+=~/.vim/plugins/lightline-iceberg-yano
-endif
-" }}}2
-
 " }}}1
 
 " Settings {{{1
@@ -1177,9 +1171,9 @@ nnoremap <silent> <Leader>i :<C-u>:IndentLinesToggle<CR>
 " }}}3
 
 " lightline {{{3
-if dein#tap("lightline.vim")
+if dein#tap('lightline.vim')
   let g:lightline = {
-        \ 'colorscheme': 'iceberg_tigberd',
+        \ 'colorscheme': 'iceberg_yano',
         \ 'mode_map': {'c': 'NORMAL'},
         \ 'active': {
         \   'left': [ [ 'mode', 'denite', 'paste' ], [ 'branch' ], ['readonly', 'filepath', 'filename', 'anzu' ] ],
@@ -1241,7 +1235,7 @@ if dein#tap("lightline.vim")
   endfunction
 
   function! LightlineBranch()
-    let branch = systemlist("git rev-parse --abbrev-ref HEAD")[0]
+    let branch = gina#component#repo#branch()
     return branch !=# "\ue0a0" ? "\ue0a0 " . branch : ''
     return ''
   endfunction
@@ -1298,13 +1292,21 @@ if dein#tap("lightline.vim")
     if winwidth(0) < 120
       return ''
     else
-      return &fileformat . ' ' . WebDevIconsGetFileFormatSymbol()
+      if dein#tap('vim-devicons')
+        return &fileformat . ' ' . WebDevIconsGetFileFormatSymbol()
+      else
+        return &fileformat
+      endif
     endif
   endfunction
 
   function! LightlineFiletype()
     if strlen(&filetype)
-      return &filetype . ' ' . WebDevIconsGetFileTypeSymbol()
+      if dein#tap('vim-devicons')
+        return &filetype . ' ' . WebDevIconsGetFileTypeSymbol()
+      else
+        return &filetype
+      endif
     else
       return 'no ft'
     endif

@@ -1,5 +1,5 @@
 " =============================================================================
-" Filename: autoload/lightline/colorscheme/iceberg_tigberd.vim
+" Filename: autoload/lightline/colorscheme/iceberg_yano.vim
 " Author: tibberd
 " License: MIT License
 " Last Change: 2017-05-09T18:04:32+0900.
@@ -99,4 +99,4 @@ let s:p.insert.ok       = s:normal[6:6]
 let s:p.replace.ok      = s:normal[6:6]
 let s:p.visual.ok       = s:normal[6:6]
 
-let g:lightline#colorscheme#iceberg_tigberd#palette = lightline#colorscheme#flatten(s:p)
+let g:lightline#colorscheme#iceberg_yano#palette = lightline#colorscheme#flatten(s:p)
