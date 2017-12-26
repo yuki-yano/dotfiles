@@ -653,20 +653,20 @@ let g:vim_indent_cont = 0
 
 " }}}2
 
-" Completion & Fuzzy Match & vimfiler {{{2
+" Completion & Fuzzy Finder & vimfiler {{{2
 
 " Denite & Unite {{{3
 if dein#tap('denite.nvim')
   " Denite
 
-  " highlight
+  "" highlight
   call denite#custom#option('default', 'prompt', '>')
   call denite#custom#option('default', 'mode', 'normal')
   call denite#custom#option('default', 'highlight_matched', 'Search')
   call denite#custom#option('default', 'highlight_mode_normal', 'CursorLineNr')
   call denite#custom#option('default', 'highlight_mode_insert', 'CursorLineNr')
 
-  " keymap
+  "" keymap
   call denite#custom#map('normal', '<Esc>', '<denite:quit>', 'noremap')
   call denite#custom#map('normal', '<C-g>', '<denite:quit>', 'noremap')
   call denite#custom#map('normal', '<C-n>', '<denite:move_to_next_line>', 'noremap')
@@ -723,7 +723,7 @@ if dein#tap('denite.nvim')
   nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context -direction=botright<CR>
 
   "" yank
-  nnoremap <silent> <Leader>p :<C-u>Denite unite:yankround -direction=topleft<CR>
+  nnoremap <silent> <Leader>p :<C-u>Denite register -direction=topleft<CR>
 
   "" quickfix
   " nnoremap <silent> <Leader>l :Denite location_list -no-quit -auto-resize<CR>
@@ -756,19 +756,21 @@ if dein#tap('unite.vim')
   augroup END
 
   "" file & buffer
-  call unite#filters#matcher_default#use(['matcher_fuzzy'])
-  call unite#custom#source('buffer,file, file_rec/async', 'sorters', 'sorter_rank')
+  call unite#custom#source('buffer,file_rec,file_rec/async,file_rec/git', 'matchers', ['converter_relative_word', 'matcher_fuzzy'])
+  call unite#custom#source('file_mru', 'matchers', ['converter_relative_word', 'matcher_project_files', 'matcher_fuzzy'])
 
   let g:unite_source_rec_max_cache_files = 10000
+  let g:unite_enable_auto_select = 0
   let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '-p', '~/.agignore', '-g', '']
   " nnoremap <silent> <Leader>p :<C-u>Unite file_rec/async:! -start-insert<CR>
+  nnoremap <silent> <Leader>m :<C-u>Unite file_mru -start-insert<CR>
   " nnoremap <silent> <Leader>f :<C-u>Unite buffer file_mru file_rec/async:! -start-insert<CR>
-  nnoremap <silent> <Leader>b :<C-u>Unite buffer -start-insert<CR>
+  " nnoremap <silent> <Leader>b :<C-u>Unite buffer -start-insert<CR>
 
   "" jump
   nnoremap <silent> <Leader><C-o> :<C-u>Unite jump change -auto-preview -direction=botright<CR>
 
-  " ctags & gtags
+  "" ctags & gtags
   " nnoremap <silent> <Leader><C-]> :<C-u>UniteWithCursorWord gtags/context tag -direction=botright<CR>
 
   "" outline
@@ -780,6 +782,7 @@ if dein#tap('unite.vim')
   let g:unite_source_grep_recursive_opt = ''
 
   call unite#custom_source('line', 'sorters', 'sorter_reverse')
+  call unite#custom_source('grep', 'sorters', 'sorter_reverse')
   nnoremap <silent> <Leader>/          :<C-u>Unite line -direction=botright -buffer-name=search-buffer -start-insert -no-quit<CR>
   nnoremap <silent> <Leader>//         :<C-u>Unite line -direction=botright -buffer-name=search-buffer -start-insert -no-quit -auto-preview<CR>
   nnoremap <silent> <Leader>*          :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit<CR>
@@ -789,26 +792,23 @@ if dein#tap('unite.vim')
   nnoremap <silent> <Leader><Leader>*  :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
   nnoremap <silent> <Leader><Leader>** :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
 
-  " yank & buffer
-  let g:unite_source_history_yank_enable = 1
-  nnoremap <silent> <Leader>p :<C-u>Unite yankround<CR>
+  "" yank
+  " let g:unite_source_history_yank_enable = 1
+  " nnoremap <silent> <Leader>p :<C-u>Unite yankround<CR>
 
-  " quickfix
+  "" quickfix
   nnoremap <silent> <Leader>q :<C-u>Unite quickfix -direction=botright -no-quit<CR>
   nnoremap <silent> <Leader>l :<C-u>Unite location_list -direction=botright -no-quit<CR>
 
-  " session
+  "" session
   nnoremap <Leader>ss :<C-u>UniteSessionSave<CR>
   nnoremap <Leader>sl :<C-u>UniteSessionLoad<CR>
 
-  " snippets
-  nnoremap <silent> <Leader>sn :<C-u>Unite neosnippet -direction=botright -start-insert<CR>
-
-  " tab
+  "" tab
   nnoremap <silent> <Leader>ut :<C-u>Unite tab<CR>
 
-  " resume
-  nnoremap <silent> <Leader>ure :<C-u>Unite -resume<CR>
+  "" resume
+  " nnoremap <silent> <Leader>re :<C-u>Unite -resume<CR>
 
   " Dein
   nnoremap <silent> <Leader>dein :<C-u>Unite dein -start-insert<CR>
