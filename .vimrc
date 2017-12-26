@@ -137,6 +137,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('haya14busa/vim-edgemotion',      {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-metarepeat',      {'lazy': 1, 'on_map': ['go', 'g.']})
   call dein#add('junegunn/vim-easy-align')
+  call dein#add('justinmk/vim-sneak')
   call dein#add('jwhitley/vim-matchit')
   call dein#add('kana/vim-operator-replace',      {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('kshenoy/vim-signature')
@@ -1034,33 +1035,27 @@ vmap <Enter> <Plug>(EasyAlign)
 " }}}3
 
 " easymotion {{{3
-let g:EasyMotion_do_mapping = 0
-let g:EasyMotion_smartcase = 1
-let g:EasyMotion_startofline = 0
-let g:EasyMotion_keys = 'HJKLASDFGYUIOPQWERTNMZXCVB'
-let g:EasyMotion_use_upper = 1
-let g:EasyMotion_enter_jump_first = 1
-let g:EasyMotion_space_jump_first = 1
-highlight link EasyMotionIncSearch Search
-highlight link EasyMotionMoveHL Search
-
-map [EasyMotion] <Nop>
-map ; [EasyMotion]
-
-nmap [EasyMotion]f <Plug>(easymotion-overwin-f2)
-vmap [EasyMotion]f <Plug>(easymotion-bd-f2)
-map  [EasyMotion]j <Plug>(easymotion-j)
-map  [EasyMotion]k <Plug>(easymotion-k)
-map  [EasyMotion]l <Plug>(easymotion-bd-jk)
-nmap [EasyMotion]l <Plug>(easymotion-overwin-line)
-map  [EasyMotion]w <Plug>(easymotion-bd-w)
-nmap [EasyMotion]w <Plug>(easymotion-overwin-w)
-
-" Move line
-omap f <Plug>(easymotion-fl)
-omap F <Plug>(easymotion-Fl)
-omap t <Plug>(easymotion-tl)
-omap T <Plug>(easymotion-Tl)
+" let g:EasyMotion_do_mapping = 0
+" let g:EasyMotion_smartcase = 1
+" let g:EasyMotion_startofline = 0
+" let g:EasyMotion_keys = 'HJKLASDFGYUIOPQWERTNMZXCVB'
+" let g:EasyMotion_use_upper = 1
+" let g:EasyMotion_enter_jump_first = 1
+" let g:EasyMotion_space_jump_first = 1
+" highlight link EasyMotionIncSearch Search
+" highlight link EasyMotionMoveHL Search
+"
+" map [EasyMotion] <Nop>
+" map ; [EasyMotion]
+"
+" nmap [EasyMotion]f <Plug>(easymotion-overwin-f2)
+" vmap [EasyMotion]f <Plug>(easymotion-bd-f2)
+" map  [EasyMotion]j <Plug>(easymotion-j)
+" map  [EasyMotion]k <Plug>(easymotion-k)
+" map  [EasyMotion]l <Plug>(easymotion-bd-jk)
+" nmap [EasyMotion]l <Plug>(easymotion-overwin-line)
+" map  [EasyMotion]w <Plug>(easymotion-bd-w)
+" nmap [EasyMotion]w <Plug>(easymotion-overwin-w)
 " }}}3
 
 " edgemotion {{{3
@@ -1126,6 +1121,15 @@ vnoremap <silent> <Leader>r y:<C-u>OverCommandLine<CR>%s/<C-r>=substitute(@0, '/
 augroup qfreplace
   autocmd!
   autocmd FileType qf nnoremap <buffer> r :<C-u>Qfreplace<CR>
+augroup END
+" }}}3
+
+" sneak {{{3
+let g:sneak#s_next = 1
+augroup sneak
+  autocmd!
+  autocmd ColorScheme * highlight Sneak ctermfg=black ctermbg=13
+  autocmd ColorScheme * highlight SneakScope ctermfg=black ctermbg=13
 augroup END
 " }}}3
 
