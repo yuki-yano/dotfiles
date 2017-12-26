@@ -29,7 +29,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Language {{{3
   call dein#add('Chiel92/vim-autoformat',                  {'lazy': 1, 'on_cmd': 'Autoformat'})
   call dein#add('Shougo/context_filetype.vim')
-  call dein#add('Shougo/echodoc.vim',                      {'lazy': 1, 'on_event': 'InsertEnter'})
   call dein#add('Valloric/MatchTagAlways',                 {'lazy': 1, 'on_ft': ['html', 'xml', 'erb']})
   call dein#add('Vimjas/vim-python-pep8-indent',           {'lazy': 1, 'on_ft': 'python'})
   call dein#add('ap/vim-css-color',                        {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
@@ -85,27 +84,26 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Completion {{{3
-  call dein#add('Shougo/deoplete.nvim', {'lazy': 1, 'on_event': 'InsertEnter', 'hook_post_source': 'call Hook_on_post_source_deoplete()'})
+  call dein#add('Shougo/deoplete.nvim')
   if !has('nvim')
-    call dein#add('roxma/nvim-yarp',          {'lazy': 1, 'on_event': 'InsertEnter'})
-    call dein#add('roxma/vim-hug-neovim-rpc', {'lazy': 1, 'on_event': 'InsertEnter'})
+    call dein#add('roxma/nvim-yarp')
+    call dein#add('roxma/vim-hug-neovim-rpc')
   endif
 
-  let s:lazy_deoplete = {'lazy': 1, 'on_source': 'deoplete.nvim'}
-  call dein#add('Shougo/neco-vim',            s:lazy_deoplete)
-  call dein#add('carlitux/deoplete-ternjs',   s:lazy_deoplete)
-  call dein#add('ozelentok/deoplete-gtags',   s:lazy_deoplete)
-  call dein#add('ujihisa/neco-look',          s:lazy_deoplete)
-  call dein#add('wokalski/autocomplete-flow', s:lazy_deoplete)
-  call dein#add('zchee/deoplete-jedi',        s:lazy_deoplete)
+  call dein#add('Shougo/deoplete-rct')
+  call dein#add('Shougo/neco-vim')
+  call dein#add('carlitux/deoplete-ternjs')
+  call dein#add('ozelentok/deoplete-gtags')
+  call dein#add('ujihisa/neco-look')
+  call dein#add('wokalski/autocomplete-flow')
+  call dein#add('zchee/deoplete-jedi')
+  call dein#add('zchee/deoplete-zsh')
   " }}}3
 
   " Fuzzy Finder {{{3
-  call dein#add('Shougo/unite.vim')
   call dein#add('Shougo/denite.nvim')
+  call dein#add('Shougo/unite.vim')
 
-  call dein#add('Shougo/neomru.vim')
-  call dein#add('Shougo/neoyank.vim')
   call dein#add('Shougo/unite-session')
   call dein#add('Shougo/vimfiler')
   call dein#add('chemzqm/denite-extra')
@@ -511,10 +509,11 @@ augroup MyVimrc
 
   " Completion
   autocmd FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
-  autocmd FileType ruby          setlocal omnifunc=
-  autocmd FileType eruby.html    setlocal omnifunc=
+  autocmd FileType ruby          setlocal omnifunc=rubycomplete#Complete
+  autocmd FileType eruby.html    setlocal omnifunc=htmlcomplete#CompleteTags
   autocmd FileType python        setlocal omnifunc=pythoncomplete#Complete
   autocmd FileType css           setlocal omnifunc=csscomplete#CompleteCSS
+  autocmd FileType scss          setlocal omnifunc=csscomplete#CompleteCSS
   autocmd FileType javascript    setlocal dict=~/dotfiles/.vim/dict/javascript.dict
   autocmd FileType ruby,eruby    setlocal dict=~/dotfiles/.vim/dict/rails.dict
 
@@ -800,7 +799,7 @@ endif
 
 " deoplete.nvim && neosnippet.vim {{{3
 if has('nvim')
-  if dein#tap("deoplete.nvim")
+  if dein#tap('deoplete.nvim')
     let g:deoplete#enable_at_startup = 1
     let g:deoplete#enable_smart_case = 1
     let g:deoplete#enable_camel_case = 1
@@ -809,12 +808,32 @@ if has('nvim')
     let g:deoplete#file#enable_buffer_path = 1
     let g:deoplete#tag#cache_limit_size = 5000000
 
+    call deoplete#custom#source('neosnippet', 'rank', 700)
+    call deoplete#custom#source('ternjs',     'rank', 700)
+    call deoplete#custom#source('flow',       'rank', 700)
+    call deoplete#custom#source('rct',        'rank', 700)
+    call deoplete#custom#source('jedi',       'rank', 700)
+    call deoplete#custom#source('vim',        'rank', 700)
+    call deoplete#custom#source('zsh',        'rank', 700)
+    call deoplete#custom#source('gtags',      'rank', 600)
+    call deoplete#custom#source('tag',        'rank', 500)
+    call deoplete#custom#source('buffer',     'rank', 400)
+    call deoplete#custom#source('omni',       'rank', 300)
+    call deoplete#custom#source('dictionary', 'rank', 200)
+    call deoplete#custom#source('look',       'rank', 100)
+
+    call deoplete#custom#source('buffer',     'mark', '[buffer]')
+    call deoplete#custom#source('tag',        'mark', '[tag]')
+    call deoplete#custom#source('dictionary', 'mark', '[dict]')
+    call deoplete#custom#source('omni',       'mark', '[omni]')
+    call deoplete#custom#source('rct',        'mark', '[rct]')
+
     let g:deoplete#sources = {}
-    let g:deoplete#sources._          = ['buffer', 'omni', 'look']
-    let g:deoplete#sources.javascript = ['ternjs', 'flow', 'gtags', 'tag', 'omni', 'buffer', 'neosnippet', 'dictionary', 'look']
-    let g:deoplete#sources.ruby       = ['gtags', 'tag', 'buffer', 'neosnippet', 'dictionary', 'look']
-    let g:deoplete#sources.python     = ['jedi', 'buffer', 'gtags', 'tag', 'omni', 'neosnippet', 'look']
-    let g:deoplete#sources.vim        = ['vim', 'buffer', 'gtags', 'tag', 'look']
+    let g:deoplete#sources._          = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet']
+    let g:deoplete#sources.javascript = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'ternjs', 'flow']
+    let g:deoplete#sources.ruby       = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'rct']
+    let g:deoplete#sources.python     = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'jedi']
+    let g:deoplete#sources.vim        = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'vim']
 
     let g:deoplete#omni#input_patterns = {}
     let g:deoplete#omni#input_patterns._ = ''
@@ -855,25 +874,6 @@ if has('nvim')
     endfunction
 
     inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
-
-    function! Hook_on_post_source_deoplete() abort
-      call deoplete#custom#source('neosnippet', 'rank', 1100)
-      call deoplete#custom#source('ternjs',     'rank', 1000)
-      call deoplete#custom#source('flow',       'rank', 900)
-      call deoplete#custom#source('jedi',       'rank', 800)
-      call deoplete#custom#source('vim',        'rank', 700)
-      call deoplete#custom#source('buffer',     'rank', 600)
-      call deoplete#custom#source('gtags',      'rank', 500)
-      call deoplete#custom#source('tag',        'rank', 400)
-      call deoplete#custom#source('omni',       'rank', 300)
-      call deoplete#custom#source('dictionary', 'rank', 200)
-      call deoplete#custom#source('look',       'rank', 100)
-
-      call deoplete#custom#source('buffer',     'mark', '[buffer]')
-      call deoplete#custom#source('tag',        'mark', '[tag]')
-      call deoplete#custom#source('dictionary', 'mark', '[dict]')
-      call deoplete#custom#source('omni',       'mark', '[omni]')
-    endfunction
   endif
 end
 
