@@ -218,9 +218,16 @@ namespace :apm do
     end
   end
 
-  desc 'Update Apmfile'
+  desc 'Update atom packages'
   task update: 'Apmfile' do
-    File.write('Apmfile', `apm list --installed --bare`.split("\n").map { |package| package.split('@')[0] }.join("\n"))
+    sh 'apm upgrade'
+  end
+
+  namespace :update do
+    desc 'Update Apmfile'
+    task file: 'Apmfile' do
+      File.write('Apmfile', `apm list --installed --bare`.split("\n").map { |package| package.split('@')[0] }.join("\n"))
+    end
   end
 
   desc 'Uninstall atom packages'
