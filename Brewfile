@@ -99,6 +99,7 @@ install ripgrep
 install rmtrash
 install rsync
 install the_silver_searcher
+install tldr
 install tree
 install unison
 install w3m
