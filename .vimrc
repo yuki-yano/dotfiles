@@ -842,10 +842,15 @@ if has('nvim')
     call deoplete#custom#source('look',       'rank', 100)
 
     call deoplete#custom#source('buffer',     'mark', '[buffer]')
+    call deoplete#custom#source('gtags',      'mark', '[gtags]')
     call deoplete#custom#source('tag',        'mark', '[tag]')
     call deoplete#custom#source('dictionary', 'mark', '[dict]')
     call deoplete#custom#source('omni',       'mark', '[omni]')
+    call deoplete#custom#source('tern',       'mark', '[tern]')
+    call deoplete#custom#source('flow',       'mark', '[flow]')
     call deoplete#custom#source('rct',        'mark', '[rct]')
+    call deoplete#custom#source('jedi',       'mark', '[jedi]')
+    call deoplete#custom#source('vim',        'mark', '[vim]')
 
     let g:deoplete#sources = {}
     let g:deoplete#sources._          = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet']
