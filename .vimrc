@@ -913,7 +913,7 @@ if dein#tap('vimfiler')
         \ 'explorer' : 1,
         \ 'winwidth' : 35,
         \ 'split' : 1,
-        \ 'simple' : 1,
+        \ 'explorer_columns': 'gitstatus:devicons'
         \ })
   let g:vimfiler_enable_auto_cd = 1
   let g:vimfiler_ignore_pattern = '^\%(.git\|.DS_Store\)$'
