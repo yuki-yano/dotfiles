@@ -1,3 +1,5 @@
+scriptencoding utf-8
+
 " Plugin Manager {{{1
 
 " Install & Load Dein {{{2
@@ -225,13 +227,11 @@ endif
 " Settings {{{1
 
 " Encoding {{{2
-set encoding=utf-8
 set fileencodings=utf-8,sjis,cp932,euc-jp
 set fileformats=unix,mac,dos
 " }}}2
 
 " Appearance {{{2
-set cmdheight=2
 set nocursorline
 set diffopt=filler,icase,vertical
 set display=lastline
@@ -273,7 +273,7 @@ endif
 "---------------------------------------------------------------------------"
 
 "" Leader
-let mapleader = " "
+let mapleader = ' '
 
 "" Setting for Neovim
 if has('nvim')
@@ -337,7 +337,7 @@ set tabstop=4
 " }}}2
 
 " Term {{{2
-if $TERM == 'screen'
+if $TERM ==# 'screen'
   set t_Co=256
 endif
 " }}}2
@@ -606,7 +606,7 @@ let g:go_highlight_structs = 1
 let g:go_highlight_interfaces = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_build_constraints = 1
-let g:go_fmt_command = "goimports"
+let g:go_fmt_command = 'goimports'
 " }}}3
 
 " html5 {{{3
@@ -647,7 +647,7 @@ let g:vim_indent_cont = 0
 " Completion & Fuzzy Match & vimfiler {{{2
 
 " Denite & Unite {{{3
-if dein#tap("denite.nvim")
+if dein#tap('denite.nvim')
   " Denite
 
   " highlight
@@ -671,59 +671,63 @@ if dein#tap("denite.nvim")
   call denite#custom#map('insert', '<C-n>', '<denite:move_to_next_line>', 'noremap')
   call denite#custom#map('insert', '<C-p>', '<denite:move_to_previous_line>', 'noremap')
 
-  " option
-  call denite#custom#source('buffer,file_mru,file_old,file_rec,grep,line', 'matchers', ['matcher_cpsm', 'matcher_fuzzy'])
+  "" option
+  call denite#custom#source('file_rec,grep,tag,gtags', 'matchers', ['matcher_fuzzy', 'matcher_cpsm'])
+  call denite#custom#source('file_mru', 'matchers', ['matcher_fuzzy', 'matcher_cpsm', 'converter_relative_word', 'matcher_project_files'])
   call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
         \[
         \ '*~', '*.o', '*.exe', '*.bak',
         \ '.DS_Store', '*.pyc', '*.sw[po]', '*.class',
         \ '.hg/', '.git/', '.bzr/', '.svn/',
-        \ 'node_modules', 'vendor/bundle',
+        \ 'node_modules', 'vendor/bundle', '__pycache__/', 'venv/',
         \ 'tags', 'tags-*', '.png', 'jp[e]g', '.gif',
         \ '*.min.*'
         \])
+
   call denite#custom#var('file_rec', 'command', ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
-  call denite#custom#var('grep',     'command', ['ag'])
-  call denite#custom#var('grep',     'recursive_opts', [])
-  call denite#custom#var('grep',     'pattern_opt', [])
-  call denite#custom#var('grep',     'default_opts', ['--follow', '--no-group', '--no-color'])
+  call denite#custom#var('grep', 'command', ['ag'])
+  call denite#custom#var('grep', 'recursive_opts', [])
+  call denite#custom#var('grep', 'pattern_opt', [])
+  call denite#custom#var('grep', 'default_opts', ['--follow', '--no-group', '--no-color'])
 
-  " file & buffer
-  " nnoremap <silent> <Leader>p  :<C-u>Denite file_rec -direction=botright -mode=insert<CR>
-  nnoremap <silent> <Leader>m :<C-u>Denite file_mru -direction=botright -mode=insert<CR>
-  nnoremap <silent> <Leader>f :<C-u>Denite buffer file_rec -direction=topleft -mode=insert<CR>
-  " nnoremap <silent> <Leader>b :<C-u>Denite buffer -direction=topleft -mode=insert<CR>
+  "" file & buffer
+  " nnoremap <silent> <Leader>p :<C-u>Denite file_rec -direction=botright -mode=insert<CR>
+  nnoremap <silent> <Leader>b :<C-u>Denite buffer -direction=topleft -mode=insert<CR>
+  " nnoremap <silent> <Leader>h :<C-u>Denite file_mru -direction=botright -mode=insert<CR>
 
-  " grep
+  "" grep
   " nnoremap <silent> <Leader>/ :<C-u>Denite line -auto-preview<CR>
   " nnoremap <silent> <Leader>* :<C-u>DeniteCursorWord line -auto-preview<CR>
   " nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep -auto-preview<CR>
   " nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep -auto-preview<CR>
 
-  " tag
+  "" tag
   " nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord tag -auto-preview<CR>
 
-  " outline
+  "" outline
   nnoremap <silent> <Leader>o :<C-u>Denite outline<CR>
 
-  " ctags & gtags
+  "" jump
+  " nnoremap <silent> <Leader><C-o> :<C-u>Denite jump change -auto-preview -direction=botright<CR>
+
+  "" ctags & gtags
   nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context -direction=botright<CR>
 
-  " yank
-  " nnoremap <silent> <Leader>p :<C-u>Denite neoyank -direction=topleft<CR>
+  "" yank
+  nnoremap <silent> <Leader>p :<C-u>Denite unite:yankround -direction=topleft<CR>
 
-  " quickfix
+  "" quickfix
   " nnoremap <silent> <Leader>l :Denite location_list -no-quit -auto-resize<CR>
   " nnoremap <silent> <Leader>q :Denite quickfix -no-quit -auto-resize<CR>
 
-  " session
+  "" session
   " nnoremap <silent> <Leader>sl :<C-u>Denite session<CR>
 
-  " resume
-  nnoremap <silent> <Leader>dre :<C-u>Denite -resume<CR>
+  "" resume
+  nnoremap <silent> <Leader>re :<C-u>Denite -resume<CR>
 endif
 
-if dein#tap("unite.vim")
+if dein#tap('unite.vim')
   " Unite
 
   "" keymap
@@ -894,7 +898,7 @@ endif
 " }}}3
 
 " vimfiler {{{3
-if dein#tap("vimfiler")
+if dein#tap('vimfiler')
   let g:vimfiler_as_default_explorer = 1
   let g:vimfiler_safe_mode_by_default = 0
   let g:vimfiler_tree_opened_icon = '▾'
@@ -959,7 +963,7 @@ endfunction
 " }}}3
 
 " git-gutter {{{3
-if dein#tap("vim-gitgutter")
+if dein#tap('vim-gitgutter')
   let g:gitgutter_map_keys = 0
   nmap <silent> gp <Plug>GitGutterPrevHunk
   nmap <silent> gn <Plug>GitGutterNextHunk
@@ -1061,7 +1065,7 @@ map <M-k> <Plug>(edgemotion-k)
 " }}}3
 
 " jplus {{{3
-if dein#tap("vim-jplus")
+if dein#tap('vim-jplus')
   nmap J         <Plug>(jplus)
   vmap J         <Plug>(jplus)
   nmap <Leader>J <Plug>(jplus-input)
@@ -1070,7 +1074,7 @@ endif
 " }}}3
 
 " lexima {{{3
-if dein#tap("lexima.vim")
+if dein#tap('lexima.vim')
   function! Hook_on_post_source_lexima() abort
     let rules = []
 
@@ -1169,7 +1173,7 @@ let g:fastfold_fold_movement_commands = [']z', '[z', 'zj', 'zk']
 " }}}3
 
 " foldCC {{{3
-if dein#tap("foldCC.vim")
+if dein#tap('foldCC.vim')
   set foldtext=FoldCCtext()
 endif
 " }}}3
@@ -1408,7 +1412,7 @@ let g:mta_filetypes = {
 " }}}3
 
 " operator-flashy {{{3
-if dein#tap("vim-operator-flashy")
+if dein#tap('vim-operator-flashy')
   map y <Plug>(operator-flashy)
   nmap Y <Plug>(operator-flashy)$
 endif
