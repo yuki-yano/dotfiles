@@ -527,11 +527,15 @@ augroup MyVimrc
 
   " Remove Tailing Space
   autocmd BufWritePre * call s:TrimEndLines()
+
   " Auto CursorLine
   autocmd CursorMoved,CursorMovedI * call s:AutoCursorline('CursorMoved')
   autocmd CursorHold,CursorHoldI * call s:AutoCursorline('CursorHold')
   autocmd WinEnter * call s:AutoCursorline('WinEnter')
   autocmd WinLeave * call s:AutoCursorline('WinLeave')
+
+  " Disable Auto Comment
+  autocmd FileType * setlocal formatoptions-=ro
 augroup END
 " }}}1
 
