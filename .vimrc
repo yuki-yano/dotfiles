@@ -122,18 +122,18 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Edit & Move & Search {{{3
-  call dein#add('LeafCage/yankround.vim',         {'lazy': 1, 'on_map': '<Plug>'})
+  " call dein#add('easymotion/vim-easymotion',      {'lazy': 1, 'on_map': {'nvxo': '<Plug>'}})
+  call dein#add('LeafCage/yankround.vim')
   call dein#add('chrisbra/NrrwRgn',               {'lazy': 1, 'on_cmd': ['NR', 'NW', 'WidenRegion', 'NRV', 'NUD', 'NRP', 'NRM', 'NRS', 'NRN', 'NRL']})
   call dein#add('cohama/lexima.vim',              {'lazy': 1, 'on_event': 'InsertEnter', 'hook_post_source': 'call Hook_on_post_source_lexima()'})
   call dein#add('dhruvasagar/vim-table-mode',     {'lazy': 1, 'on_cmd': 'TableModeToggle'})
-  call dein#add('easymotion/vim-easymotion',      {'lazy': 1, 'on_map': {'nvxo': '<Plug>'}})
   call dein#add('godlygeek/tabular',              {'lazy': 1, 'on_cmd': 'Tabularize'})
   call dein#add('h1mesuke/vim-alignta',           {'lazy': 1, 'on_cmd': 'Alignta'})
   call dein#add('haya14busa/incsearch.vim',       {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-asterisk',        {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-edgemotion',      {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-metarepeat',      {'lazy': 1, 'on_map': ['go', 'g.']})
-  call dein#add('junegunn/vim-easy-align',        {'lazy': 1, 'on_map': {'v': '<Plug>'}})
+  call dein#add('junegunn/vim-easy-align')
   call dein#add('jwhitley/vim-matchit')
   call dein#add('kana/vim-operator-replace',      {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('mopp/vim-operator-convert-case')
@@ -142,8 +142,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('osyo-manga/vim-over',            {'lazy': 1, 'on_cmd': 'OverCommandLine'})
   call dein#add('rhysd/clever-f.vim',             {'lazy': 1, 'on_map': {'nvxo': '<Plug>'}})
   call dein#add('rking/ag.vim',                   {'lazy': 1, 'on_cmd': 'Ag'})
-  call dein#add('thinca/vim-qfreplace',           {'lazy': 1, 'on_cmd': ['Qfreplace', 'Unite', 'UniteWithCursorWord', 'Vimfiler', 'VimFilerExplorer']})
-  call dein#add('thinca/vim-visualstar',          {'lazy': 1, 'on_map': {'v': '<Plug>'}})
+  call dein#add('thinca/vim-qfreplace')
   call dein#add('tomtom/tcomment_vim',            {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
   call dein#add('tpope/vim-repeat',               {'lazy': 1, 'on_map': {'n': '<Plug>'}})
   call dein#add('tpope/vim-speeddating',          {'lazy': 1, 'on_map': {'n': '<Plug>'}})
@@ -173,7 +172,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Shougo/deol.nvim',             {'lazy': 1, 'on_cmd': ['Deol', 'DeolCd', 'DeolEdit'], 'on_map': '<Plug>'})
   call dein#add('aiya000/aho-bakaup.vim')
   call dein#add('bogado/file-line')
-  call dein#add('daisuzu/translategoogle.vim',  {'lazy': 1, 'on_cmd': 'Trans'})
+  call dein#add('daisuzu/translategoogle.vim')
   call dein#add('dietsche/vim-lastplace')
   call dein#add('itchyny/vim-extracmd')
   call dein#add('janko-m/vim-test',             {'lazy': 1, 'on_cmd': ['TestNearest','TestFile','TestSuite','TestLast','TestVisit']})
@@ -391,7 +390,7 @@ let g:loaded_matchparen    = 1
 " Command {{{1
 
 " GoogleTranslation {{{2
-function! TransRange() range
+function! s:transRange(...) range
   let texts = []
   for n in range(a:firstline, a:lastline)
     let line = getline(n)
@@ -401,24 +400,25 @@ function! TransRange() range
   15new | put!=translategoogle#command(join(texts))
 endfunction
 
-command! -range Trans <line1>,<line2>call TransRange()
+command! -nargs=* -range Trans <line1>,<line2>call s:transRange(<f-args>)
 " }}}2
 
 " ToggleHiglight {{{2
-noremap <silent> <Leader>h :<C-u>call <SID>ToggleHiglight()<CR>
-function! s:ToggleHiglight()
-  if exists("g:syntax_on")
+function! s:toggleHighlight()
+  if exists('g:syntax_on')
     syntax off
   else
     syntax enable
   endif
 endfunction
+
+command! ToggleHighlight call s:toggleHighlight()
 " }}}2
 
 " TrimEndLines {{{2
 function! s:TrimEndLines()
-  let save_cursor = getpos(".")
-  :silent! %s#\($\n\s*\)\+\%$##
+  let save_cursor = getpos('.')
+  normal! :silent! %s#\($\n\s*\)\+\%$##
   call setpos('.', save_cursor)
 endfunction
 " }}}2
@@ -558,7 +558,7 @@ highlight ALEError ctermfg=0 ctermbg=203
 " }}}3
 
 " autoformat {{{3
-nnoremap <Leader>a :<C-u>Autoformat<CR>
+nnoremap <Leader>af :<C-u>Autoformat<CR>
 
 " ruby
 let g:formatters_ruby = ['rubocop']
@@ -635,6 +635,11 @@ let g:rubycomplete_buffer_loading       = 1
 let g:rubycomplete_classes_in_global    = 1
 let g:rubycomplete_include_object       = 1
 let g:rubycomplete_include_object_space = 1
+" }}}3
+
+" vim {{{3
+let g:vimsyntax_noerror = 1
+let g:vim_indent_cont = 0
 " }}}3
 
 " }}}2
@@ -888,10 +893,6 @@ if has('conceal')
 endif
 " }}}3
 
-" neomru {{{3
-let g:neomru#file_mru_ignore_pattern = '^gina:\/\/.*$'
-" }}}3
-
 " vimfiler {{{3
 if dein#tap("vimfiler")
   let g:vimfiler_as_default_explorer = 1
@@ -962,8 +963,6 @@ if dein#tap("vim-gitgutter")
   let g:gitgutter_map_keys = 0
   nmap <silent> gp <Plug>GitGutterPrevHunk
   nmap <silent> gn <Plug>GitGutterNextHunk
-  nmap <silent> <Leader>hs <Plug>GitGutterStageHunk
-  nmap <silent> <Leader>hu <Plug>GitGutterUndoHunk
   nnoremap <silent> <Leader>gg :<C-u>GitGutterToggle<CR>
   nnoremap <silent> <Leader>gh :<C-u>GitGutterLineHighlightsToggle<CR>
 endif
@@ -974,11 +973,6 @@ function! Hook_on_post_source_gina() abort
   let cmd_opt = {'noremap': 1, 'silent': 1}
   call gina#custom#mapping#nmap('branch', 'n', '<Plug>(gina-branch-new)')
 endfunction
-
-nnoremap <silent> <Leader>gs  :<C-u>Gina status<CR>
-nnoremap <silent> <Leader>gd  :<C-u>Gina diff<CR>
-nnoremap <silent> <Leader>gdc :<C-u>Gina diff --cached<CR>
-nnoremap <silent> <Leader>gci :<C-u>Gina commit<CR>
 
 function! s:gina_blame_settings()
   nmap <buffer> <C-l> <C-w>l
@@ -997,18 +991,18 @@ augroup END
 " Edit & Move & Search {{{2
 
 " incsearch & anzu & asterisk {{{3
-if dein#tap("incsearch.vim")
-  let g:anzu_status_format = "(%i/%l)"
+if dein#tap('incsearch.vim')
+  let g:anzu_status_format = '(%i/%l)'
 
-  map  /  <Plug>(incsearch-forward)
-  map  ?  <Plug>(incsearch-backward)
-  map  g/ <Plug>(incsearch-stay)
-  map  n  <Plug>(anzu-n)zzzv
-  map  N  <Plug>(anzu-N)zzzv
-  nmap *  <Plug>(asterisk-z*)<Plug>(anzu-update-search-status-with-echo)
-  nmap #  <Plug>(asterisk-z#)<Plug>(anzu-update-search-status-with-echo)
-  nmap g* <Plug>(asterisk-gz*)<Plug>(anzu-update-search-status-with-echo)
-  nmap g# <Plug>(asterisk-gz#)<Plug>(anzu-update-search-status-with-echo)
+  map /  <Plug>(incsearch-forward)
+  map ?  <Plug>(incsearch-backward)
+  map g/ <Plug>(incsearch-stay)
+  map n  <Plug>(anzu-n)zzzv
+  map N  <Plug>(anzu-N)zzzv
+  map *  <Plug>(asterisk-z*)<Plug>(anzu-update-search-status-with-echo)
+  map #  <Plug>(asterisk-z#)<Plug>(anzu-update-search-status-with-echo)
+  map g* <Plug>(asterisk-gz*)<Plug>(anzu-update-search-status-with-echo)
+  map g# <Plug>(asterisk-gz#)<Plug>(anzu-update-search-status-with-echo)
   nmap <silent> <Esc><Esc> <Plug>(anzu-clear-search-status)<Plug>(anzu-clear-sign-matchline):nohlsearch<CR>
 endif
 " }}}3
@@ -1084,7 +1078,7 @@ if dein#tap("lexima.vim")
           \ {'char': '(',     'at': '(\%#)',   'input': '<Del>'},
           \ {'char': '{',     'at': '{\%#}',   'input': '<Del>'},
           \ {'char': '[',     'at': '\[\%#\]', 'input': '<Del>'},
-          \ {'char': '{',     'at': '{\%#$',   'input': '{{<CR>}}}', 'filetype': 'vim'},
+          \ {'char': '{',     'at': '{\%#$',   'input': '{{<CR>" }}}', 'filetype': 'vim'},
           \ {'char': '<C-h>', 'at': '(\%#)',   'input': '<BS><Del>'},
           \ {'char': '<C-h>', 'at': '{\%#}',   'input': '<BS><Del>'},
           \ {'char': '<C-h>', 'at': '\[\%#\]', 'input': '<BS><Del>'},
@@ -1120,16 +1114,35 @@ nnoremap <silent> <Leader>r :<C-u>OverCommandLine<CR>%s//g<Left><Left>
 vnoremap <silent> <Leader>r y:<C-u>OverCommandLine<CR>%s/<C-r>=substitute(@0, '/', '\\/', 'g')<CR>//g<Left><Left>
 " }}}3
 
+" qfreplace {{{3
+augroup qfreplace
+  autocmd!
+  autocmd FileType qf nnoremap <buffer> r :<C-u>Qfreplace<CR>
+augroup END
+" }}}3
+
 " tcomment {{{3
 noremap <silent> <Leader>cc :TComment<CR>
 " }}}3
 
 " yankround & Unite {{{3
-if dein#tap("yankround.vim")
-  let g:neoyank#limit = 10000
-  nmap p <Plug>(yankround-p)
+if dein#tap('yankround.vim')
+  let g:yankround_max_history = 1000
+  let g:yankround_use_region_hl = 1
+
+  augroup yankround
+    autocmd!
+    autocmd ColorScheme * highlight YankRoundRegion ctermfg=209 ctermbg=237
+    autocmd ColorScheme * highlight YankRoundRegion ctermfg=209 ctermbg=237
+  augroup END
+
+  nmap p  <Plug>(yankround-p)
+  nmap P  <Plug>(yankround-P)
+  nmap gp <Plug>(yankround-gp)
+  nmap gP <Plug>(yankround-gP)
   nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : ':<C-u>Unite file_rec/async:! -start-insert<CR>'
   nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : ''
+  cmap <C-y> <Plug>(yankround-insert-register)
 endif
 " }}}3
 
@@ -1143,8 +1156,9 @@ let g:better_whitespace_filetypes_blacklist = ['tag', 'help', 'vimfiler', 'unite
 
 " devicons {{{3
 let g:webdevicons_enable = 1
-let g:webdevicons_enable_unite = 1
-let g:webdevicons_enable_vimfiler = 1
+let g:webdevicons_enable_unite = 0
+let g:webdevicons_enable_denite = 0
+let g:webdevicons_enable_vimfiler = 0
 let g:WebDevIconsUnicodeDecorateFileNodes = 1
 " }}}3
 
@@ -1454,24 +1468,26 @@ let g:expand_region_text_objects_ruby = {
 " }}}3
 
 " extracmd {{{3
-if dein#tap("vim-extracmd")
-  call extracmd#set('w!!',          'w !sudo tee > /dev/null %')
+if dein#tap('vim-extracmd')
+  call extracmd#set('w!!',          'w suda://%')
   call extracmd#set('dein',         'Dein')
   call extracmd#set('u[nite]',      'Unite')
   call extracmd#set('d[enite]',     'Denite')
   call extracmd#set('ag',           'Ag!')
   call extracmd#set('gina',         'Gina')
   call extracmd#set('git',          'Gina')
+  call extracmd#set('gs ',          'Gina status')
   call extracmd#set('gci',          'Gina commit')
+  call extracmd#set('gd',           'Gina diff')
+  call extracmd#set('gdc',          'Gina diff --cached')
   call extracmd#set('blame',        'Gina blame :%')
   call extracmd#set('agit',         'Agit')
-  call extracmd#set('agf',          'AgitFile')
+  call extracmd#set('root',         'Rooter')
   call extracmd#set('alc',          'Ref webdict alc')
   call extracmd#set('tag',          'TagbarOpen j<CR>')
   call extracmd#set('nr',           'NR<CR>')
   call extracmd#set('sctartch',     'Scratch<CR>')
   call extracmd#set('capture',      'Capture')
-  call extracmd#set('editorconfig', 'Dein source editorconfig-vim')
   call extracmd#set('json',         '%!python -m json.tool<CR>')
 endif
 " }}}3
@@ -1482,7 +1498,6 @@ nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
 
 " neoterm {{{3
 let g:neoterm_position = 'vertical'
-nnoremap <silent> <Leader>tig :<C-u>T tig<CR>
 " }}}3
 
 " ref {{{3
@@ -1504,20 +1519,14 @@ let g:scratch_no_mappings = 1
 let g:submode_keep_leaving_key = 1
 
 "" edit
-call submode#enter_with('changebuf', 'n', '', 'g;', 'g;')
-call submode#map('changebuf', 'n', '', ';', 'g;')
-
-"" buffer
-call submode#enter_with('changebuf', 'n', '', 'gh', ':bp<CR>')
-call submode#enter_with('changebuf', 'n', '', 'gl', ':bn<CR>')
-call submode#map('changebuf', 'n', '', 'h', ':bp<CR>')
-call submode#map('changebuf', 'n', '', 'l', ':bn<CR>')
+call submode#enter_with('jump', 'n', '', 'g;', 'g;')
+call submode#map('jump', 'n', '', ';', 'g;')
 
 "" tab
-call submode#enter_with('changetab', 'n', '', 'gt', 'gt')
-call submode#enter_with('changetab', 'n', '', 'gT', 'gT')
-call submode#map('changetab', 'n', '', 't', 'gt')
-call submode#map('changetab', 'n', '', 'T', 'gT')
+call submode#enter_with('changetab', 'n', '', 'gh', 'gT')
+call submode#enter_with('changetab', 'n', '', 'gl', 'gt')
+call submode#map('changetab', 'n', '', 'h', 'gT')
+call submode#map('changetab', 'n', '', 'l', 'gt')
 " }}}3
 
 " tagbar {{{3
@@ -1537,9 +1546,7 @@ nnoremap <silent> <Leader>u :<C-u>UndotreeToggle<CR>
 " }}}3
 
 " windowswap {{{3
-let g:windowswap_map_keys = 0 "prevent default bindings
-nnoremap <silent> <leader>yw :call WindowSwap#MarkWindowSwap()<CR>
-nnoremap <silent> <leader>pw :call WindowSwap#DoWindowSwap()<CR>
+let g:windowswap_map_keys = 0
 nnoremap <silent> <leader>ww :call WindowSwap#EasyWindowSwap()<CR>
 " }}}3
 
