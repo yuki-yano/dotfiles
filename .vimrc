@@ -288,6 +288,10 @@ if has('nvim')
   nmap <BS> <C-W>h
 endif
 
+"" Move
+noremap H ^
+noremap L $
+
 "" Window
 nnoremap <silent> <C-h> :wincmd h<CR>
 nnoremap <silent> <C-l> :wincmd l<CR>
@@ -305,12 +309,6 @@ nnoremap B :<C-u>ls<CR>:buffer<Space>
 "" Ignore registers
 nnoremap x "_x
 
-"" Yank & Paste
-nnoremap <silent> <Leader>pp :<C-u>set paste!<CR>
-
-" Repeat the previous macro.
-nnoremap Q @@
-
 "" Move CommandLine
 noremap! <C-a> <Home>
 noremap! <C-b> <Left>
@@ -321,14 +319,17 @@ noremap! <M-f> <S-Right>
 noremap! <M-b> <S-Left>
 cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
+cnoremap <C-y> <C-r>*
 
 "" tab
-nnoremap <Leader>tc :tablast <Bar> tabnew<CR>
+nnoremap <Leader>tt :tablast <Bar> tabnew<CR>
 nnoremap <Leader>td :tabclose<CR>
 
 "" Save & Quit
 nnoremap <silent> <Leader>w :<C-u>w<CR>
 
+"" redraw
+nnoremap <silent> <Leader><C-l> :<C-u>redraw!<CR>
 " }}}2
 
 " Indent {{{2
@@ -1557,6 +1558,7 @@ function! Tagbar_status_func(current, sort, fname, ...) abort
   let g:lightline.fname = a:fname
   return lightline#statusline(0)
 endfunction
+
 let g:tagbar_status_func = 'Tagbar_status_func'
 " }}}3
 
