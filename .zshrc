@@ -106,6 +106,9 @@ abbrev-alias -f RCB='echo -n "origin/"; git symbolic-ref --short HEAD'
 
 # Completion {{{
 
+fpath=(~/.zsh/completions $fpath)
+
+# zgenが実行している
 # autoload -Uz compinit
 # compinit -C
 
