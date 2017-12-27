@@ -213,7 +213,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   "  After Load {{{3
-  call dein#add('ryanoasis/vim-devicons')
+  " call dein#add('ryanoasis/vim-devicons')
   " }}}3
 
   call dein#end()
@@ -919,16 +919,20 @@ endif
 if dein#tap('vimfiler')
   let g:vimfiler_as_default_explorer = 1
   let g:vimfiler_safe_mode_by_default = 0
-  let g:vimfiler_tree_opened_icon = '▾'
-  let g:vimfiler_tree_closed_icon = '▸'
-  let g:vimfiler_marked_file_icon = '✓'
   let g:vimfiler_execute_file_list = {'jpg': 'open', 'jpeg': 'open', 'gif': 'open', 'png': 'open'}
   call vimfiler#custom#profile('default', 'context', {
         \ 'explorer' : 1,
         \ 'winwidth' : 35,
         \ 'split' : 1,
-        \ 'explorer_columns': 'gitstatus:devicons'
+        \ 'simple' : 1,
         \ })
+  " call vimfiler#custom#profile('default', 'context', {
+  "       \ 'explorer' : 1,
+  "       \ 'winwidth' : 35,
+  "       \ 'split' : 1,
+  "       \ 'simple' : 1,
+  "       \ 'explorer_columns': 'gitstatus:devicons'
+  "       \ })
   let g:vimfiler_enable_auto_cd = 1
   let g:vimfiler_ignore_pattern = '^\%(.git\|.DS_Store\)$'
   let g:vimfiler_trashbox_directory = '~/.Trash'
