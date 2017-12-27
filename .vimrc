@@ -106,6 +106,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Shougo/denite.nvim')
   call dein#add('Shougo/unite.vim')
 
+  call dein#add('Shougo/neomru.vim')
   call dein#add('Shougo/unite-session')
   call dein#add('Shougo/vimfiler')
   call dein#add('chemzqm/denite-extra')
