@@ -4,10 +4,10 @@ source ~/dotfiles/.zsh/zgen/zgen.zsh
 
 if ! zgen saved; then
   zgen load Tarrasch/zsh-autoenv
+  zgen load greymd/docker-zsh-completion
   zgen load knu/zsh-git-escape-magic
   zgen load mafredri/zsh-async
   zgen load mollifier/anyframe
-  zgen load momo-lab/zsh-abbrev-alias
   zgen load sindresorhus/pure
   zgen load tarruda/zsh-autosuggestions
   zgen load yuki-ycino/cdd
@@ -98,9 +98,6 @@ autoload -Uz add-zsh-hook
 autoload -Uz smart-insert-last-word
 zstyle :insert-last-word match '*([[:alpha:]/\\]?|?[[:alpha:]/\\])*'
 zle -N insert-last-word smart-insert-last-word
-
-abbrev-alias -f CB='git symbolic-ref --short HEAD'
-abbrev-alias -f RCB='echo -n "origin/"; git symbolic-ref --short HEAD'
 
 # }}}
 
@@ -324,7 +321,6 @@ bindkey '^xs'  emoji::cli
 bindkey '^xt'  fzf-file-widget
 bindkey '^z'   fancy-ctrl-z
 bindkey '^p'   up-line-or-history-ignoring
-bindkey " "   __abbrev_alias::magic_abbrev_expand
 
 # }}}
 
