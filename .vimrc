@@ -822,7 +822,7 @@ endif
 
 " deoplete.nvim && neosnippet.vim {{{3
 if has('nvim')
-  if dein#tap('deoplete.nvim')
+  if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
     let g:deoplete#enable_at_startup = 1
     let g:deoplete#enable_smart_case = 1
     let g:deoplete#enable_camel_case = 1
@@ -872,9 +872,9 @@ if has('nvim')
 
     let g:deoplete#omni#functions = {}
     let g:deoplete#omni#functions.javascript = ['jspc#omni', 'javascriptcomplete#CompleteJS']
-    let g:deoplete#omni#functions.ruby = ['rubycomplete#Complete']
-    let g:deoplete#omni#functions.python = ['pythoncomplete#Complete']
-    let g:deoplete#omni#functions.css = ['csscomplete#CompleteCSS']
+    let g:deoplete#omni#functions.ruby       = ['rubycomplete#Complete']
+    let g:deoplete#omni#functions.python     = ['pythoncomplete#Complete']
+    let g:deoplete#omni#functions.css        = ['csscomplete#CompleteCSS']
 
     " tern
     let g:tern_request_timeout = 1
@@ -884,17 +884,17 @@ if has('nvim')
           \ 'vue'
           \ ]
 
+    let g:neosnippet#disable_runtime_snippets = { '_' : 1 }
+    let g:neosnippet#snippets_directory = '~/.vim/bundle/repos/github.com/honza/vim-snippets/snippets/'
+
     inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+    inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
+    imap <expr><TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+    smap <expr><TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 
     function! s:my_cr_function()
-      if !pumvisible()
-        return "\<CR>"
-      endif
-
-      if neosnippet#jumpable()
-        return neosnippet#mappings#expand_or_jump_impl()
-      elseif neosnippet#expandable()
-        return neosnippet#mappings#expand_impl()
+      if neosnippet#expandable_or_jumpable()
+        return  "\<Plug>(neosnippet_expand_or_jump)"
       else
         return "\<C-y>" . deoplete#smart_close_popup()
       endif
@@ -904,11 +904,6 @@ if has('nvim')
   endif
 end
 
-let g:neosnippet#disable_runtime_snippets = { '_' : 1 }
-let g:neosnippet#enable_snipmate_compatibility = 0
-let g:neosnippet#snippets_directory = '~/.vim/bundle/repos/github.com/honza/vim-snippets/snippets/'
-imap <expr><TAB> neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)" : "\<TAB>"
-smap <expr><TAB> neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)" : "\<TAB>"
 
 if has('conceal')
   set conceallevel=2 concealcursor=niv
