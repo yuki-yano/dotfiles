@@ -684,8 +684,11 @@ if dein#tap('denite.nvim')
   call denite#custom#map('insert', '<C-p>', '<denite:move_to_previous_line>', 'noremap')
 
   "" option
-  call denite#custom#source('file_rec,grep,tag,gtags', 'matchers', ['matcher_fuzzy', 'matcher_cpsm'])
-  call denite#custom#source('file_mru', 'matchers', ['matcher_fuzzy', 'matcher_cpsm', 'converter_relative_word', 'matcher_project_files'])
+  call denite#custom#source('_', 'matchers', ['matcher_fuzzy', 'matcher_cpsm'])
+  call denite#custom#source('file_mru', 'matchers', ['matcher_fuzzy', 'matcher_cpsm', 'matcher_project_files'])
+
+  " うまく動作しない
+  " call denite#custom#source('file_mru', 'converters', ['converter_relative_word'])
   call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
         \[
         \ '*~', '*.o', '*.exe', '*.bak',
@@ -703,9 +706,9 @@ if dein#tap('denite.nvim')
   call denite#custom#var('grep', 'default_opts', ['--follow', '--no-group', '--no-color'])
 
   "" file & buffer
-  " nnoremap <silent> <Leader>p :<C-u>Denite file_rec -direction=botright -mode=insert<CR>
+  " nnoremap <silent> <Leader>p :<C-u>Denite file_rec -direction=topleft -mode=insert<CR>
   nnoremap <silent> <Leader>b :<C-u>Denite buffer -direction=topleft -mode=insert<CR>
-  " nnoremap <silent> <Leader>h :<C-u>Denite file_mru -direction=botright -mode=insert<CR>
+  " nnoremap <silent> <Leader>m :<C-u>Denite file_mru -direction=topleft -mode=insert<CR>
 
   "" grep
   " nnoremap <silent> <Leader>/ :<C-u>Denite line -auto-preview<CR>
@@ -800,8 +803,10 @@ if dein#tap('unite.vim')
   " nnoremap <silent> <Leader>p :<C-u>Unite yankround<CR>
 
   "" quickfix
-  nnoremap <silent> <Leader>q :<C-u>Unite quickfix -direction=botright -no-quit<CR>
-  nnoremap <silent> <Leader>l :<C-u>Unite location_list -direction=botright -no-quit<CR>
+  " let unite_quickfix_filename_is_pathshorten = 0
+  " call unite#custom_source('quickfix', 'sorters', 'sorter_reverse')
+  " nnoremap <silent> <Leader>q :<C-u>Unite quickfix -direction=botright -no-quit<CR>
+  " nnoremap <silent> <Leader>l :<C-u>Unite location_list -direction=botright -no-quit<CR>
 
   "" session
   nnoremap <Leader>ss :<C-u>UniteSessionSave<CR>
@@ -1025,8 +1030,9 @@ endif
 " }}}3
 
 " ag {{{3
-let g:ag_qhandler = ''
-nnoremap <Leader>ag :<C-u>Ag!<space><space><bar><space>Unite quickfix -direction=botright -no-quit<Home><Right><Right><Right><Right>
+let g:ag_qhandler = 'Denite quickfix -direction=botright -auto-resize -no-quit'
+let g:ag_apply_lmappings = 0
+let g:ag_apply_qmappings = 0
 " }}}3
 
 " clever-f {{{3
@@ -1160,7 +1166,7 @@ if dein#tap('yankround.vim')
   nmap P  <Plug>(yankround-P)
   nmap gp <Plug>(yankround-gp)
   nmap gP <Plug>(yankround-gP)
-  nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : ':<C-u>Unite file_rec/async:! -start-insert<CR>'
+  nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : ':<C-u>Denite file_rec -direction=topleft -mode=insert<CR>'
   nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : ''
   cmap <C-y> <Plug>(yankround-insert-register)
 endif
