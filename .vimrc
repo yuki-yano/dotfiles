@@ -317,8 +317,6 @@ noremap! <C-b> <Left>
 noremap! <C-d> <Del>
 noremap! <C-e> <End>
 noremap! <C-f> <Right>
-noremap! <M-f> <S-Right>
-noremap! <M-b> <S-Left>
 cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
 cnoremap <C-y> <C-r>*
@@ -572,7 +570,7 @@ highlight ALEError ctermfg=0 ctermbg=203
 " }}}3
 
 " autoformat {{{3
-nnoremap <Leader>af :<C-u>Autoformat<CR>
+nnoremap <Leader>a :<C-u>Autoformat<CR>
 
 " ruby
 let g:formatters_ruby = ['rubocop']
@@ -738,7 +736,7 @@ if dein#tap('denite.nvim')
   " nnoremap <silent> <Leader>sl :<C-u>Denite session<CR>
 
   "" resume
-  nnoremap <silent> <Leader>re :<C-u>Denite -resume<CR>
+  nnoremap <silent> <Leader>dr :<C-u>Denite -resume<CR>
 endif
 
 if dein#tap('unite.vim')
@@ -808,9 +806,6 @@ if dein#tap('unite.vim')
   "" session
   nnoremap <Leader>ss :<C-u>UniteSessionSave<CR>
   nnoremap <Leader>sl :<C-u>UniteSessionLoad<CR>
-
-  "" tab
-  nnoremap <silent> <Leader>ut :<C-u>Unite tab<CR>
 
   "" resume
   " nnoremap <silent> <Leader>re :<C-u>Unite -resume<CR>
@@ -1434,7 +1429,7 @@ let g:mta_filetypes = {
 
 " operator-flashy {{{3
 if dein#tap('vim-operator-flashy')
-  map y <Plug>(operator-flashy)
+  map  y <Plug>(operator-flashy)
   nmap Y <Plug>(operator-flashy)$
 endif
 " }}}3
@@ -1503,8 +1498,9 @@ let g:expand_region_text_objects_ruby = {
 if dein#tap('vim-extracmd')
   call extracmd#set('w!!',          'w suda://%')
   call extracmd#set('dein',         'Dein')
-  call extracmd#set('u[nite]',      'Unite')
   call extracmd#set('d[enite]',     'Denite')
+  call extracmd#set('u[nite]',      'Unite')
+  call extracmd#set('tab',          'Unite tab')
   call extracmd#set('ag',           'Ag!')
   call extracmd#set('gina',         'Gina')
   call extracmd#set('git',          'Gina')
@@ -1518,6 +1514,7 @@ if dein#tap('vim-extracmd')
   call extracmd#set('alc',          'Ref webdict alc')
   call extracmd#set('tag',          'TagbarOpen j<CR>')
   call extracmd#set('nr',           'NR<CR>')
+  call extracmd#set('space',        'StripWhitespace<CR>')
   call extracmd#set('sctartch',     'Scratch<CR>')
   call extracmd#set('capture',      'Capture')
   call extracmd#set('json',         '%!python -m json.tool<CR>')
