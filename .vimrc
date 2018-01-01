@@ -884,9 +884,9 @@ if has('nvim')
     let g:tern_request_timeout = 1
     let g:tern_show_signature_in_pum = 0
     let g:tern#filetypes = [
-          \ 'javascript',
-          \ 'vue'
-          \ ]
+    \ 'javascript',
+    \ 'vue'
+    \ ]
 
     let g:neosnippet#disable_runtime_snippets = { '_' : 1 }
     let g:neosnippet#snippets_directory = '~/.vim/bundle/repos/github.com/honza/vim-snippets/snippets/'
@@ -920,11 +920,11 @@ if dein#tap('vimfiler')
   let g:vimfiler_safe_mode_by_default = 0
   let g:vimfiler_execute_file_list = {'jpg': 'open', 'jpeg': 'open', 'gif': 'open', 'png': 'open'}
   call vimfiler#custom#profile('default', 'context', {
-        \ 'explorer' : 1,
-        \ 'winwidth' : 35,
-        \ 'split' : 1,
-        \ 'simple' : 1,
-        \ })
+  \ 'explorer' : 1,
+  \ 'winwidth' : 35,
+  \ 'split' : 1,
+  \ 'simple' : 1,
+  \ })
   " call vimfiler#custom#profile('default', 'context', {
   "       \ 'explorer' : 1,
   "       \ 'winwidth' : 35,
@@ -957,20 +957,20 @@ endif
 
 " agit {{{3
 let g:agit_preset_views = {
-      \ 'default': [
-      \   {'name': 'log'},
-      \   {'name': 'stat',
-      \    'layout': 'botright vnew'},
-      \   {'name': 'diff',
-      \    'layout': 'belowright {winheight(".") * 3 / 4}new'}
-      \ ],
-      \ 'file': [
-      \   {'name': 'filelog'},
-      \   {'name': 'stat',
-      \    'layout': 'botright vnew'},
-      \   {'name': 'diff',
-      \    'layout': 'belowright {winheight(".") * 3 / 4}new'}
-      \ ]}
+\ 'default': [
+\   {'name': 'log'},
+\   {'name': 'stat',
+\    'layout': 'botright vnew'},
+\   {'name': 'diff',
+\    'layout': 'belowright {winheight(".") * 3 / 4}new'}
+\ ],
+\ 'file': [
+\   {'name': 'filelog'},
+\   {'name': 'stat',
+\    'layout': 'botright vnew'},
+\   {'name': 'diff',
+\    'layout': 'belowright {winheight(".") * 3 / 4}new'}
+\ ]}
 " }}}3
 
 " committia {{{3
@@ -1093,23 +1093,23 @@ if dein#tap('lexima.vim')
     let rules = []
 
     let rules += [
-          \ {'char': '(',     'at': '(\%#)',   'input': '<Del>'},
-          \ {'char': '{',     'at': '{\%#}',   'input': '<Del>'},
-          \ {'char': '[',     'at': '\[\%#\]', 'input': '<Del>'},
-          \ {'char': '{',     'at': '{\%#$',   'input': '{{<CR>" }}}', 'filetype': 'vim'},
-          \ {'char': '<C-h>', 'at': '(\%#)',   'input': '<BS><Del>'},
-          \ {'char': '<C-h>', 'at': '{\%#}',   'input': '<BS><Del>'},
-          \ {'char': '<C-h>', 'at': '\[\%#\]', 'input': '<BS><Del>'},
-          \ {'char': '<C-h>', 'at': "'\\%#'",  'input': '<Del>'},
-          \ {'char': '<C-h>', 'at': '"\%#"',   'input': '<Del>'},
-          \ {'char': "'",     'at': "'\\%#'",  'input': '<Del>'},
-          \ {'char': '"',     'at': '"\%#"',   'input': '<Del>'},
-          \ {'char': "'",     'at': "'\\%#",   'input': "'"},
-          \ {'char': '"',     'at': '"\%#',    'input': '"'},
-          \ {'char': '(',     'at': '(\%#',    'input': ''},
-          \ {'char': '{',     'at': '{\%#',    'input': ''},
-          \ {'char': '[',     'at': '[\%#',    'input': ''},
-          \ ]
+    \ {'char': '(',     'at': '(\%#)',   'input': '<Del>'},
+    \ {'char': '{',     'at': '{\%#}',   'input': '<Del>'},
+    \ {'char': '[',     'at': '\[\%#\]', 'input': '<Del>'},
+    \ {'char': '{',     'at': '{\%#$',   'input': '{{<CR>" }}}', 'filetype': 'vim'},
+    \ {'char': '<C-h>', 'at': '(\%#)',   'input': '<BS><Del>'},
+    \ {'char': '<C-h>', 'at': '{\%#}',   'input': '<BS><Del>'},
+    \ {'char': '<C-h>', 'at': '\[\%#\]', 'input': '<BS><Del>'},
+    \ {'char': '<C-h>', 'at': "'\\%#'",  'input': '<Del>'},
+    \ {'char': '<C-h>', 'at': '"\%#"',   'input': '<Del>'},
+    \ {'char': "'",     'at': "'\\%#'",  'input': '<Del>'},
+    \ {'char': '"',     'at': '"\%#"',   'input': '<Del>'},
+    \ {'char': "'",     'at': "'\\%#",   'input': "'"},
+    \ {'char': '"',     'at': '"\%#',    'input': '"'},
+    \ {'char': '(',     'at': '(\%#',    'input': ''},
+    \ {'char': '{',     'at': '{\%#',    'input': ''},
+    \ {'char': '[',     'at': '[\%#',    'input': ''},
+    \ ]
 
     for rule in rules
       call lexima#add_rule(rule)
@@ -1399,11 +1399,11 @@ endif
 
 " MatchTagAlways {{{3
 let g:mta_filetypes = {
-      \ 'html' : 1,
-      \ 'xhtml' : 1,
-      \ 'xml' : 1,
-      \ 'erb' : 1
-      \}
+\ 'html' : 1,
+\ 'xhtml' : 1,
+\ 'xml' : 1,
+\ 'erb' : 1
+\}
 " }}}3
 
 " operator-flashy {{{3
@@ -1427,14 +1427,14 @@ xmap <Leader>H <Plug>(quickhl-manual-reset)
 " rainbow {{{3
 let g:rainbow_active = 1
 let g:rainbow_conf = {
-      \   'guifgs' : [ '#666666', '#0087ff', '#ff005f', '#875fd7', '#d78700', '#00af87' ],
-      \   'ctermfgs': [ '110', '150', '109', '216', '140', '203' ],
-      \   'separately' : {
-      \       '*':   {},
-      \       'vim': {},
-      \       'css': 0,
-      \   }
-      \ }
+\   'guifgs' : [ '#666666', '#0087ff', '#ff005f', '#875fd7', '#d78700', '#00af87' ],
+\   'ctermfgs': [ '110', '150', '109', '216', '140', '203' ],
+\   'separately' : {
+\       '*':   {},
+\       'vim': {},
+\       'css': 0,
+\   }
+\ }
 " }}}3
 
 " smartnumber {{{3
@@ -1468,9 +1468,9 @@ augroup END
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
 let g:expand_region_text_objects_ruby = {
-      \ 'im' :0,
-      \ 'am' :0
-      \ }
+\ 'im' :0,
+\ 'am' :0
+\ }
 " }}}3
 
 " extracmd {{{3
@@ -1510,10 +1510,10 @@ let g:neoterm_position = 'vertical'
 
 " ref {{{3
 let g:ref_source_webdict_sites = {
-      \ 'alc' : {
-      \   'url' : 'http://eow.alc.co.jp/%s/UTF-8/'
-      \   }
-      \ }
+\ 'alc' : {
+\   'url' : 'http://eow.alc.co.jp/%s/UTF-8/'
+\   }
+\ }
 function! g:ref_source_webdict_sites.alc.filter(output)
   return join(split(a:output, "\n")[42 :], "\n")
 endfunction
