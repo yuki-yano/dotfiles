@@ -249,6 +249,7 @@ set previewheight=18
 set pumheight=15
 set showmatch
 set showtabline=2
+set spelllang=en,cjk
 " }}}2
 
 " Folding {{{2
@@ -975,7 +976,6 @@ let g:agit_preset_views = {
 let g:committia_open_only_vim_starting = 0
 let g:committia_hooks = {}
 function! g:committia_hooks.edit_open(info)
-  setlocal spell
   imap <buffer><C-n> <Plug>(committia-scroll-diff-down-half)
   imap <buffer><C-p> <Plug>(committia-scroll-diff-up-half)
 endfunction
