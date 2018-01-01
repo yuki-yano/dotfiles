@@ -35,15 +35,11 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Vimjas/vim-python-pep8-indent',           {'lazy': 1, 'on_ft': 'python'})
   call dein#add('ap/vim-css-color',                        {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
   call dein#add('cakebaker/scss-syntax.vim',               {'lazy': 1, 'on_ft': ['sass', 'scss']})
-  call dein#add('cespare/vim-toml',                        {'lazy': 1, 'on_ft': 'toml'})
   call dein#add('davidhalter/jedi-vim',                    {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('ekalinin/Dockerfile.vim',                 {'lazy': 1, 'on_ft': 'dockerfile'})
   call dein#add('elzr/vim-json',                           {'lazy': 1, 'on_ft': 'json'})
   call dein#add('fatih/vim-go',                            {'lazy': 1, 'on_ft': 'go'})
   call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': 'css'})
-  call dein#add('hashivim/vim-terraform',                  {'lazy': 1, 'on_ft': 'terraform'})
   call dein#add('heavenshell/vim-pydocstring',             {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('kchmck/vim-coffee-script',                {'lazy': 1, 'on_ft': 'coffee'})
   call dein#add('kewah/vim-stylefmt',                      {'lazy': 1, 'on_ft': 'css'})
   call dein#add('mattn/emmet-vim',                         {'lazy': 1, 'on_ft': ['html', 'eruby.html', 'javascript', 'vue', 'vue.html.javascript.css']})
   call dein#add('maxmellon/vim-jsx-pretty',                {'lazy': 1, 'on_ft': 'javascript'})
@@ -59,13 +55,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
   call dein#add('rhysd/vim-gfm-syntax',                    {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('sgur/vim-editorconfig')
-  call dein#add('slim-template/vim-slim',                  {'lazy': 1, 'on_ft': 'slim'})
+  call dein#add('sheerun/vim-polyglot')
   call dein#add('soramugi/auto-ctags.vim')
   call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('tell-k/vim-autopep8',                     {'lazy': 1, 'on_ft': 'python'})
   call dein#add('thinca/vim-ft-help_fold',                 {'lazy': 1, 'on_ft': 'help'})
   call dein#add('tmhedberg/SimpylFold',                    {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('tmux-plugins/vim-tmux',                   {'lazy': 1, 'on_ft': 'tmux'})
   call dein#add('vim-jp/syntax-vim-ex',                    {'lazy': 1, 'on_ft': 'vim'})
   call dein#add('vim-python/python-syntax',                {'lazy': 1, 'on_ft': 'python'})
   call dein#add('vim-ruby/vim-ruby',                       {'lazy': 1, 'on_ft': ['ruby', 'eruby']})
@@ -640,6 +635,10 @@ let g:vim_json_syntax_conceal = 0
 " jsx-pretty {{{3
 let g:vim_jsx_pretty_colorful_config = 1
 " }}}3
+
+" polyglot {{{
+let g:polyglot_disabled = ['javascript', 'ruby', 'python', 'vue', 'json', 'css', 'sass', 'scss']
+" }}}
 
 " ruby {{{3
 let g:rubycomplete_rails                = 1
