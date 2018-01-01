@@ -690,17 +690,16 @@ if dein#tap('denite.nvim')
   call denite#custom#source('_', 'matchers', ['matcher_fuzzy', 'matcher_cpsm'])
   call denite#custom#source('file_mru', 'matchers', ['matcher_fuzzy', 'matcher_cpsm', 'matcher_project_files'])
 
-  " うまく動作しない
-  " call denite#custom#source('file_mru', 'converters', ['converter_relative_word'])
+  call denite#custom#source('file_mru', 'converters', ['converter_relative_abbr'])
   call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
-        \[
-        \ '*~', '*.o', '*.exe', '*.bak',
-        \ '.DS_Store', '*.pyc', '*.sw[po]', '*.class',
-        \ '.hg/', '.git/', '.bzr/', '.svn/',
-        \ 'node_modules', 'vendor/bundle', '__pycache__/', 'venv/',
-        \ 'tags', 'tags-*', '.png', 'jp[e]g', '.gif',
-        \ '*.min.*'
-        \])
+  \ [
+  \  '*~', '*.o', '*.exe', '*.bak',
+  \  '.DS_Store', '*.pyc', '*.sw[po]', '*.class',
+  \  '.hg/', '.git/', '.bzr/', '.svn/',
+  \  'node_modules', 'vendor/bundle', '__pycache__/', 'venv/',
+  \  'tags', 'tags-*', '.png', 'jp[e]g', '.gif',
+  \  '*.min.*'
+  \ ])
 
   call denite#custom#var('file_rec', 'command', ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
   call denite#custom#var('grep', 'command', ['ag'])
@@ -806,10 +805,11 @@ if dein#tap('unite.vim')
   " nnoremap <silent> <Leader>p :<C-u>Unite yankround<CR>
 
   "" quickfix
-  " let unite_quickfix_filename_is_pathshorten = 0
-  " call unite#custom_source('quickfix', 'sorters', 'sorter_reverse')
-  " nnoremap <silent> <Leader>q :<C-u>Unite quickfix -direction=botright -no-quit<CR>
-  " nnoremap <silent> <Leader>l :<C-u>Unite location_list -direction=botright -no-quit<CR>
+  let unite_quickfix_filename_is_pathshorten = 0
+  call unite#custom_source('quickfix', 'sorters', 'sorter_reverse')
+  call unite#custom_source('location_list', 'sorters', 'sorter_reverse')
+  nnoremap <silent> <Leader>q :<C-u>Unite quickfix -direction=botright -no-quit<CR>
+  nnoremap <silent> <Leader>l :<C-u>Unite location_list -direction=botright -no-quit<CR>
 
   "" session
   nnoremap <Leader>ss :<C-u>UniteSessionSave<CR>
@@ -1030,9 +1030,8 @@ if dein#tap('incsearch.vim')
 endif
 " }}}3
 
-" ag {{{3
-let g:ag_qhandler = 'Denite quickfix -direction=botright -auto-resize -no-quit'
-let g:ag_apply_lmappings = 0
+" Ag {{{3
+let g:ag_qhandler = 'Unite quickfix -direction=botright -auto-resize -no-quit'
 let g:ag_apply_qmappings = 0
 " }}}3
 
