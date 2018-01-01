@@ -67,7 +67,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('vim-scripts/python_match.vim',            {'lazy': 1, 'on_ft': 'python'})
   call dein#add('vimperator/vimperator.vim',               {'lazy': 1, 'on_ft': 'vimperator'})
   call dein#add('vimtaku/hl_matchit.vim',                  {'lazy': 1, 'on_ft': 'ruby'})
-  call dein#add('w0rp/ale',                                {'lazy': 1, 'on_ft': ['javascript', 'ruby', 'vue', 'css']})
+  call dein#add('w0rp/ale')
   call dein#add('ywatase/mdt.vim',                         {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('zebult/auto-gtags.vim')
   " }}}3
@@ -161,6 +161,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('itchyny/vim-highlighturl')
   call dein#add('itchyny/vim-parenmatch')
   call dein#add('luochen1990/rainbow')
+  call dein#add('maximbaz/lightline-ale')
   call dein#add('mopp/smartnumber.vim',           {'lazy': 1, 'on_cmd': 'SNumbersToggleRelative'})
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('t9md/vim-quickhl')
@@ -543,17 +544,16 @@ augroup END
 
 " ALE {{{3
 let g:ale_linters = {
-      \ 'html': [],
-      \ 'css': ['stylelint'],
-      \ 'javascript': ['eslint', 'flow'],
-      \ 'vue': ['eslint', 'flow'],
-      \ 'ruby': ['rubocop'],
-      \ 'eruby': []
-      \ }
+\ 'html': [],
+\ 'css': ['stylelint'],
+\ 'javascript': ['eslint', 'flow'],
+\ 'vue': ['eslint', 'flow'],
+\ 'ruby': ['rubocop'],
+\ 'eruby': []
+\ }
 let g:ale_sign_column_always = 1
 let g:ale_sign_error = "\uf421"
 let g:ale_sign_warning = "\uf420"
-let g:ale_statusline_format = ["\uf421 %d", "\uf420 %d", "\uf4a1"]
 let g:ale_linter_aliases = {'vue': 'css'}
 let g:ale_echo_msg_format = '[%linter%] %s'
 let g:ale_emit_conflict_warnings = 0
@@ -1211,62 +1211,64 @@ nnoremap <silent> <Leader>i :<C-u>:IndentLinesToggle<CR>
 " lightline {{{3
 if dein#tap('lightline.vim')
   let g:lightline = {
-        \ 'colorscheme': 'iceberg_yano',
-        \ 'mode_map': {'c': 'NORMAL'},
-        \ 'active': {
-        \   'left': [ [ 'mode', 'denite', 'paste' ], [ 'branch' ], ['readonly', 'filepath', 'filename', 'anzu' ] ],
-        \   'right': [
-        \     [ 'lineinfo', 'percent' ],
-        \     [ 'fileformat', 'fileencoding', 'filetype' ],
-        \     [ 'ale_error', 'ale_warning', 'ale_ok', 'ale_not_loaded' ]
-        \   ]
-        \ },
-        \ 'inactive': {
-        \   'left': [ [], [ 'branch' ], [ 'filepath' ], [ 'filename' ] ],
-        \   'right': [
-        \     [ 'lineinfo' ],
-        \     [ 'fileformat', 'fileencoding', 'filetype' ]
-        \   ]
-        \ },
-        \ 'component': {
-        \   'lineinfo': "\ue0a1 %3l[%L]:%-2v",
-        \ },
-        \ 'component_function': {
-        \   'readonly':     'LightlineReadonly',
-        \   'branch':       'LightlineBranch',
-        \   'filepath':     'LightlineFilepath',
-        \   'filename':     'LightlineFilename',
-        \   'filetype':     'LightlineFiletype',
-        \   'fileformat':   'LightlineFileformat',
-        \   'fileencoding': 'LightlineFileencoding',
-        \   'mode':         'LightlineMode',
-        \   'anzu':         'anzu#search_status',
-        \   'denite':       'LightlineDenite',
-        \ },
-        \ 'component_expand': {
-        \   'ale_error':      'LightlineAleError',
-        \   'ale_warning':    'LightlineAleWarning',
-        \   'ale_ok':         'LightlineAleOk',
-        \   'ale_not_loaded': 'LightlineAleNotLoaded',
-        \ },
-        \ 'component_type': {
-        \   'ale_error':      'error',
-        \   'ale_warning':    'warning',
-        \   'ale_ok':         'ok',
-        \   'ale_not_loaded': 'ok',
-        \ },
-        \ 'component_function_visible_condition': {
-        \   'modified': '&modified||!&modifiable',
-        \   'readonly': '&readonly',
-        \   'paste': '&paste',
-        \ },
-        \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2 " },
-        \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3 " },
-        \ 'enable': {
-        \ 'statusline': 1,
-        \ 'tabline': 1
-        \ }
-        \ }
+  \ 'colorscheme': 'iceberg_yano',
+  \ 'mode_map': {'c': 'NORMAL'},
+  \ 'active': {
+  \   'left': [ [ 'mode', 'denite', 'paste' ], [ 'branch' ], ['readonly', 'filepath', 'filename', 'anzu' ] ],
+  \   'right': [
+  \     [ 'lineinfo', 'percent' ],
+  \     [ 'fileformat', 'fileencoding', 'filetype' ],
+  \     [ 'linter_errors', 'linter_warnings', 'linter_ok' ]
+  \   ]
+  \ },
+  \ 'inactive': {
+  \   'left': [ [], [ 'branch' ], [ 'filepath' ], [ 'filename' ] ],
+  \   'right': [
+  \     [ 'lineinfo' ],
+  \     [ 'fileformat', 'fileencoding', 'filetype' ]
+  \   ]
+  \ },
+  \ 'component': {
+  \   'lineinfo': "\ue0a1 %3l[%L]:%-2v",
+  \ },
+  \ 'component_function': {
+  \   'readonly':     'LightlineReadonly',
+  \   'branch':       'LightlineBranch',
+  \   'filepath':     'LightlineFilepath',
+  \   'filename':     'LightlineFilename',
+  \   'filetype':     'LightlineFiletype',
+  \   'fileformat':   'LightlineFileformat',
+  \   'fileencoding': 'LightlineFileencoding',
+  \   'mode':         'LightlineMode',
+  \   'anzu':         'anzu#search_status',
+  \   'denite':       'LightlineDenite',
+  \ },
+  \ 'component_expand': {
+  \   'linter_warnings': 'lightline#ale#warnings',
+  \   'linter_errors':   'lightline#ale#errors',
+  \   'linter_ok':       'lightline#ale#ok',
+  \ },
+  \ 'component_type': {
+  \   'linter_errors':   'error',
+  \   'linter_warnings': 'warning',
+  \   'linter_ok':       'ok',
+  \ },
+  \ 'component_function_visible_condition': {
+  \   'modified': '&modified||!&modifiable',
+  \   'readonly': '&readonly',
+  \   'paste': '&paste',
+  \ },
+  \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2 " },
+  \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3 " },
+  \ 'enable': {
+  \   'statusline': 1,
+  \   'tabline': 1,
+  \ }
+  \ }
+
+  let g:lightline#ale#indicator_errors   = "\uf421"
+  let g:lightline#ale#indicator_warnings = "\uf420"
+  let g:lightline#ale#indicator_ok       = "\uf4a1"
 
   function! LightlineReadonly()
     return &readonly ? "\ue0a2" : ''
@@ -1371,55 +1373,7 @@ if dein#tap('lightline.vim')
   function! Lightline_denite() abort
     return (&filetype !=# 'denite') ? '' : (substitute(denite#get_status_mode(), '[- ]', '', 'g'))
   endfunction
-
-  function! LightlineAleError() abort
-    return s:ale_string(0)
-  endfunction
-
-  function! LightlineAleWarning() abort
-    return s:ale_string(1)
-  endfunction
-
-  function! LightlineAleOk() abort
-    return s:ale_string(2)
-  endfunction
-
-  function! LightlineAleNotLoaded() abort
-    if !exists('g:ale_buffer_info')
-      return "\uf204"
-    else
-      return ''
-    endif
-  endfunction
-
-  function! s:ale_string(mode)
-    if !exists('g:ale_buffer_info')
-      return ''
-    endif
-
-    let l:buffer = bufnr('%')
-    let l:counts = ale#statusline#Count(l:buffer)
-    let [l:error_format, l:warning_format, l:no_errors] = g:ale_statusline_format
-
-    if a:mode == 0 " Error
-      let l:errors = l:counts.error + l:counts.style_error
-      return l:errors ? printf(l:error_format, l:errors) : ''
-    elseif a:mode == 1 " Warning
-      let l:warnings = l:counts.warning + l:counts.style_warning
-      return l:warnings ? printf(l:warning_format, l:warnings) : ''
-    elseif a:mode == 2
-      let l:errors = l:counts.error + l:counts.style_error
-      let l:warnings = l:counts.warning + l:counts.style_warning
-      return l:errors == 0 && l:warnings == 0 ? l:no_errors : ''
-    endif
-  endfunction
 endif
-
-augroup lightline
-  autocmd!
-  autocmd FileType unite,denite,qf,vimfiler let b:cursorword=0
-  autocmd User ALELint call lightline#update()
-augroup END
 " }}}3
 
 " MatchTagAlways {{{3

@@ -1,6 +1,6 @@
 " =============================================================================
 " Filename: autoload/lightline/colorscheme/iceberg_yano.vim
-" Author: tibberd
+" Author: yuki_yano
 " License: MIT License
 " Last Change: 2017-05-09T18:04:32+0900.
 " =============================================================================
