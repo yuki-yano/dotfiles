@@ -834,16 +834,17 @@ if has('nvim')
     let g:deoplete#file#enable_buffer_path = 1
     let g:deoplete#tag#cache_limit_size = 5000000
 
-    call deoplete#custom#source('neosnippet', 'rank', 700)
-    call deoplete#custom#source('ternjs',     'rank', 700)
-    call deoplete#custom#source('flow',       'rank', 700)
-    call deoplete#custom#source('rct',        'rank', 700)
-    call deoplete#custom#source('jedi',       'rank', 700)
-    call deoplete#custom#source('vim',        'rank', 700)
-    call deoplete#custom#source('gtags',      'rank', 600)
-    call deoplete#custom#source('tag',        'rank', 500)
-    call deoplete#custom#source('buffer',     'rank', 400)
-    call deoplete#custom#source('omni',       'rank', 300)
+    call deoplete#custom#source('neosnippet', 'rank', 800)
+    call deoplete#custom#source('ternjs',     'rank', 800)
+    call deoplete#custom#source('flow',       'rank', 800)
+    call deoplete#custom#source('rct',        'rank', 800)
+    call deoplete#custom#source('jedi',       'rank', 800)
+    call deoplete#custom#source('vim',        'rank', 800)
+    call deoplete#custom#source('gtags',      'rank', 700)
+    call deoplete#custom#source('tag',        'rank', 600)
+    call deoplete#custom#source('buffer',     'rank', 500)
+    call deoplete#custom#source('omni',       'rank', 400)
+    call deoplete#custom#source('file',       'rank', 300)
     call deoplete#custom#source('dictionary', 'rank', 200)
     call deoplete#custom#source('look',       'rank', 100)
 
@@ -859,11 +860,11 @@ if has('nvim')
     call deoplete#custom#source('vim',        'mark', '[vim]')
 
     let g:deoplete#sources = {}
-    let g:deoplete#sources._          = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet']
-    let g:deoplete#sources.javascript = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'ternjs', 'flow']
-    let g:deoplete#sources.ruby       = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'rct']
-    let g:deoplete#sources.python     = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'jedi']
-    let g:deoplete#sources.vim        = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'vim']
+    let g:deoplete#sources._          = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file']
+    let g:deoplete#sources.javascript = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'ternjs', 'flow']
+    let g:deoplete#sources.ruby       = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'rct']
+    let g:deoplete#sources.python     = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'jedi']
+    let g:deoplete#sources.vim        = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'vim']
 
     let g:deoplete#omni#input_patterns = {}
     let g:deoplete#omni#input_patterns._ = ''
