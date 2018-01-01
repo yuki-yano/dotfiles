@@ -994,20 +994,59 @@ endif
 
 " gina {{{3
 function! Hook_on_post_source_gina() abort
-  let cmd_opt = {'noremap': 1, 'silent': 1}
-  call gina#custom#mapping#nmap('branch', 'n', '<Plug>(gina-branch-new)')
-endfunction
+  call gina#custom#command#option('br', '-v', 'v')
+  call gina#custom#command#option('br', '--all')
+  call gina#custom#command#option(
+  \ '/\%(status\|commit\)',
+  \ '-u|--untracked-files'
+  \ )
+  call gina#custom#command#option(
+  \ 'status',
+  \ '-b|--branch'
+  \)
+  call gina#custom#command#option(
+  \ 'status',
+  \ '-s|--short'
+  \ )
+  call gina#custom#action#alias(
+  \ 'branch', 'merge',
+  \ 'commit:merge'
+  \)
+  call gina#custom#action#alias(
+  \ 'branch', 'rebase',
+  \ 'commit:rebase'
+  \ )
 
-function! s:gina_blame_settings()
-  nmap <buffer> <C-l> <C-w>l
-  nmap <buffer> <C-r> <Plug>(gina-blame-redraw)
-endfunction
+  call gina#custom#action#alias(
+  \ '/\%(blame\|log\|reflog\)',
+  \ 'preview',
+  \ 'topleft show:commit:preview',
+  \ )
+  call gina#custom#mapping#nmap(
+  \ '/\%(blame\|log\|reflog\)',
+  \ 'p',
+  \ ':<C-u>call gina#action#call(''preview'')<CR>',
+  \ {'noremap': 1, 'silent': 1}
+  \ )
+  call gina#custom#mapping#nmap(
+  \ 'blame', '<C-l>',
+  \ '<C-w>l'
+  \)
+  call gina#custom#mapping#nmap(
+  \ 'blame', '<C-r>',
+  \ '<Plug>(gina-blame-redraw)'
+  \)
 
-augroup gina
-  autocmd!
-  autocmd FileType gina-blame  call s:gina_blame_settings()
-  autocmd FileType gina-commit setlocal spell
-augroup END
+  " Echo chunk info with j/k
+  call gina#custom#mapping#nmap(
+  \ 'blame', 'j',
+  \ 'j<Plug>(gina-blame-echo)'
+  \)
+  call gina#custom#mapping#nmap(
+  \ 'blame', 'k',
+  \ 'k<Plug>(gina-blame-echo)'
+  \)
+endfunction
 " }}}3
 
 " }}}2
