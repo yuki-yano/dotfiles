@@ -280,7 +280,7 @@ endif
 "---------------------------------------------------------------------------"
 
 "" Leader
-let mapleader = ' '
+let g:mapleader = ' '
 
 "" Setting for Neovim
 if has('nvim')
@@ -398,13 +398,13 @@ let g:loaded_matchparen    = 1
 
 " GoogleTranslation {{{2
 function! s:transRange(...) range
-  let texts = []
-  for n in range(a:firstline, a:lastline)
-    let line = getline(n)
-    call substitute(line, '\n\+$', ' ', '')
-    call add(texts, line)
+  let l:texts = []
+  for l:n in range(a:firstline, a:lastline)
+    let l:line = getline(l:n)
+    call substitute(l:line, '\n\+$', ' ', '')
+    call add(l:texts, l:line)
   endfor
-  15new | put!=translategoogle#command(join(texts))
+  15new | put!=translategoogle#command(join(l:texts))
 endfunction
 
 command! -nargs=* -range Trans <line1>,<line2>call s:transRange(<f-args>)
@@ -424,9 +424,9 @@ command! ToggleHighlight call s:toggleHighlight()
 
 " TrimEndLines {{{2
 function! s:TrimEndLines()
-  let save_cursor = getpos('.')
+  let l:save_cursor = getpos('.')
   normal! :silent! %s#\($\n\s*\)\+\%$##
-  call setpos('.', save_cursor)
+  call setpos('.', l:save_cursor)
 endfunction
 " }}}2
 
@@ -806,7 +806,7 @@ if dein#tap('unite.vim')
   " nnoremap <silent> <Leader>p :<C-u>Unite yankround<CR>
 
   "" quickfix
-  let unite_quickfix_filename_is_pathshorten = 0
+  let g:unite_quickfix_filename_is_pathshorten = 0
   call unite#custom_source('quickfix', 'sorters', 'sorter_reverse')
   call unite#custom_source('location_list', 'sorters', 'sorter_reverse')
   nnoremap <silent> <Leader>q :<C-u>Unite quickfix -direction=botright -no-quit<CR>
@@ -1130,9 +1130,9 @@ endif
 " lexima {{{3
 if dein#tap('lexima.vim')
   function! Hook_on_post_source_lexima() abort
-    let rules = []
+    let l:rules = []
 
-    let rules += [
+    let l:rules += [
     \ {'char': '(',     'at': '(\%#)',   'input': '<Del>'},
     \ {'char': '{',     'at': '{\%#}',   'input': '<Del>'},
     \ {'char': '[',     'at': '\[\%#\]', 'input': '<Del>'},
@@ -1151,8 +1151,8 @@ if dein#tap('lexima.vim')
     \ {'char': '[',     'at': '[\%#',    'input': ''},
     \ ]
 
-    for rule in rules
-      call lexima#add_rule(rule)
+    for l:rule in l:rules
+      call lexima#add_rule(l:rule)
     endfor
   endfunction
 endif
@@ -1336,8 +1336,8 @@ if dein#tap('lightline.vim')
   endfunction
 
   function! LightlineBranch()
-    let branch = gina#component#repo#branch()
-    return branch !=# "\ue0a0" ? "\ue0a0 " . branch : ''
+    let l:branch = gina#component#repo#branch()
+    return l:branch !=# "\ue0a0" ? "\ue0a0 " . l:branch : ''
     return ''
   endfunction
 
