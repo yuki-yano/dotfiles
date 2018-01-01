@@ -293,13 +293,14 @@ endif
 "" Move
 noremap H ^
 noremap L $
+noremap <C-o> <C-o>zzzv
+noremap <C-i> <C-i>zzzv
 
 "" Window
 nnoremap <silent> <C-h> :wincmd h<CR>
 nnoremap <silent> <C-l> :wincmd l<CR>
 nnoremap <silent> <C-k> :wincmd k<CR>
 nnoremap <silent> <C-j> :wincmd j<CR>
-nnoremap <silent> = <C-w>=
 
 "" Insert Mode
 inoremap <C-h> <BS>
