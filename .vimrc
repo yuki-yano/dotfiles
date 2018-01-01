@@ -52,6 +52,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('othree/javascript-libraries-syntax.vim',  {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('othree/jspc.vim',                         {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('pangloss/vim-javascript',                 {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('pocke/iro.vim')
   call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
   call dein#add('rhysd/vim-gfm-syntax',                    {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('sgur/vim-editorconfig')
@@ -76,6 +77,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('airblade/vim-gitgutter')
   call dein#add('airblade/vim-rooter')
   call dein#add('cohama/agit.vim', {'lazy': 1, 'on_cmd': ['Agit', 'AgitFile']})
+  call dein#add('hotwatermorning/auto-git-diff', {'lazy': 1, 'on_ft': 'gitrebase'})
   call dein#add('lambdalisue/gina.vim', {'lazy': 1, 'on_cmd': 'Gina', 'on_map': '<Plug>', 'on_event': 'BufWritePost', 'hook_post_source': 'call Hook_on_post_source_gina()'})
   call dein#add('lambdalisue/vim-unified-diff')
   call dein#add('rhysd/committia.vim')
@@ -140,6 +142,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('osyo-manga/vim-anzu',            {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('osyo-manga/vim-jplus',           {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('osyo-manga/vim-over',            {'lazy': 1, 'on_cmd': 'OverCommandLine'})
+  call dein#add('pocke/vim-operator-markdown',    {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/clever-f.vim',             {'lazy': 1, 'on_map': {'nvxo': '<Plug>'}})
   call dein#add('rking/ag.vim',                   {'lazy': 1, 'on_cmd': 'Ag'})
   call dein#add('thinca/vim-qfreplace')
@@ -157,13 +160,13 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('gregsexton/MatchTag')
   call dein#add('haya14busa/vim-operator-flashy', {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('itchyny/lightline.vim')
-  call dein#add('itchyny/vim-cursorword')
   call dein#add('itchyny/vim-highlighturl')
   call dein#add('itchyny/vim-parenmatch')
   call dein#add('luochen1990/rainbow')
   call dein#add('maximbaz/lightline-ale')
   call dein#add('mopp/smartnumber.vim',           {'lazy': 1, 'on_cmd': 'SNumbersToggleRelative'})
   call dein#add('ntpeters/vim-better-whitespace')
+  call dein#add('osyo-manga/vim-brightest')
   call dein#add('t9md/vim-quickhl')
   call dein#add('thinca/vim-zenspace')
   call dein#add('vim-scripts/AnsiEsc.vim')
@@ -176,15 +179,15 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('bogado/file-line')
   call dein#add('daisuzu/translategoogle.vim')
   call dein#add('dietsche/vim-lastplace')
+  call dein#add('haya14busa/vim-textobj-function-syntax')
   call dein#add('itchyny/vim-extracmd')
   call dein#add('janko-m/vim-test',             {'lazy': 1, 'on_cmd': ['TestNearest','TestFile','TestSuite','TestLast','TestVisit']})
   call dein#add('kana/vim-niceblock',           {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
   call dein#add('kana/vim-operator-user')
   call dein#add('kana/vim-submode')
-  call dein#add('kana/vim-textobj-function')
+  call dein#add('kana/vim-textobj-fold')
   call dein#add('kana/vim-textobj-indent')
   call dein#add('kana/vim-textobj-user')
-  call dein#add('kassio/neoterm')
   call dein#add('konfekt/fastfold')
   call dein#add('lambdalisue/suda.vim')
   call dein#add('majutsushi/tagbar',            {'lazy': 1, 'on_cmd': ['TagbarOpen', 'TagbarToggle']})
@@ -1115,9 +1118,17 @@ if dein#tap('lexima.vim')
 endif
 " }}}3
 
-" operator-convert-case.vim {{{3
+" operator-convert-case {{{3
 nmap <Leader>cl :<C-u>ConvertCaseLoop<CR>b
 " }}}3
+
+" operator-markdown {{{
+augroup operator-markdown
+  autocmd!
+  autocmd FileType markdown map <buffer> < <Plug>(operator-markdown-left)
+  autocmd FileType markdown map <buffer> > <Plug>(operator-markdown-right)
+augroup END
+" }}}
 
 " operator-replace {{{3
 map _ <Plug>(operator-replace)
@@ -1177,6 +1188,16 @@ endif
 " better-whitespace {{{3
 let g:better_whitespace_filetypes_blacklist = ['tag', 'help', 'vimfiler', 'unite', 'denite']
 " }}}3
+
+" brightest {{{
+let g:brightest#highlight = {
+\ 'group': 'BrightestUnderline'
+\ }
+
+let g:brightest#enable_filetypes = {
+\ 'ruby' : 0
+\ }
+" }}}
 
 " devicons {{{3
 let g:webdevicons_enable = 1
@@ -1523,10 +1544,6 @@ function! Tagbar_status_func(current, sort, fname, ...) abort
 endfunction
 
 let g:tagbar_status_func = 'Tagbar_status_func'
-" }}}3
-
-" test {{{3
-let test#strategy = 'neoterm'
 " }}}3
 
 " undotree {{{3
