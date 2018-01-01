@@ -278,12 +278,12 @@ function my-expand-abbrev-aux() {
 
 zle -N my-expand-abbrev
 
-neovim_autocd() {
+function neovim_autocd() {
   [[ $NVIM_LISTEN_ADDRESS ]] && neovim-autocd
 }
 chpwd_functions+=( neovim_autocd )
 
-up-line-or-history-ignoring() {
+function up-line-or-history-ignoring() {
 zle up-line-or-history
 case "$BUFFER" in
   fg|bg)
@@ -304,6 +304,14 @@ function rename_tmux_window() {
 }
 
 add-zsh-hook precmd rename_tmux_window
+
+# typo時にヒストリに記録しない
+function command_not_found_handler() {
+  tail -1 $HISTFILE |
+    grep -F "$*" > /dev/null 2>&1 &&
+    sed -i '$d' $HISTFILE
+  return 127
+}
 
 # }}}
 
