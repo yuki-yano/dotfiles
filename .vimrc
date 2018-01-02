@@ -497,30 +497,25 @@ augroup MyVimrc
   endif
 
   " Intent
-  autocmd FileType apache     setlocal sw=4 sts=4 ts=4 et
-  autocmd FileType java       setlocal sw=4 sts=4 ts=4 et
   autocmd FileType javascript setlocal sw=2 sts=2 ts=2 et
-  autocmd FileType markdown   setlocal sw=4 sts=4 ts=4 et
-  autocmd FileType perl       setlocal sw=4 sts=4 ts=4 et
-  autocmd FileType php        setlocal sw=4 sts=4 ts=4 et
   autocmd FileType ruby       setlocal sw=2 sts=2 ts=2 et
   autocmd FileType css        setlocal sw=2 sts=2 ts=2 et
   autocmd FileType scss       setlocal sw=2 sts=2 ts=2 et
-  autocmd FileType sh         setlocal sw=4 sts=4 ts=4 et
-  autocmd FileType sql        setlocal sw=4 sts=4 ts=4 et
+  autocmd FileType json       setlocal sw=2 sts=2 ts=2 et
+  autocmd FileType markdown   setlocal sw=2 sts=2 ts=2 et
+  autocmd FileType sh         setlocal sw=2 sts=2 ts=2 et
   autocmd FileType vim        setlocal sw=2 sts=2 ts=2 et
   autocmd FileType zsh        setlocal sw=2 sts=2 ts=2 et
 
   " Filetype
   autocmd BufNewFile,BufRead         *.erb set filetype=eruby.html
-  autocmd BufNewFile,BufRead          *.js set filetype=javascript
-  autocmd BufNewFile,BufRead          *.md set filetype=markdown
   autocmd BufNewFile,BufRead         *.vue set filetype=vue.html.javascript.css
+  autocmd BufNewFile,BufRead          *.md set filetype=markdown
   autocmd BufNewFile,BufRead        *.cson set filetype=coffee
   autocmd BufNewFile,BufRead  *.{yml,yaml} set filetype=yaml
   autocmd BufNewFile,BufRead      .babelrc set filetype=json
   autocmd BufNewFile,BufRead     .eslintrc set filetype=json
-  autocmd BufNewFile,BufRead  .stylelintrc set filetype=yaml
+  autocmd BufNewFile,BufRead  .stylelintrc set filetype=json
   autocmd BufNewFile,BufRead .tern-project set filetype=json
   autocmd BufNewFile,BufRead        .pryrc set filetype=ruby
   autocmd BufNewFile,BufRead       Gemfile set filetype=ruby
@@ -560,11 +555,12 @@ augroup END
 
 " ALE {{{3
 let g:ale_linters = {
-\ 'html': [],
-\ 'css': ['stylelint'],
 \ 'javascript': ['eslint', 'flow'],
-\ 'vue': ['eslint', 'flow'],
 \ 'ruby': ['rubocop'],
+\ 'vue': ['eslint', 'flow'],
+\ 'css': ['stylelint'],
+\ 'scss': ['stylelint'],
+\ 'html': [],
 \ 'eruby': []
 \ }
 let g:ale_sign_column_always = 1
@@ -668,6 +664,15 @@ let g:rubycomplete_include_object_space = 1
 let g:vimsyntax_noerror = 1
 let g:vim_indent_cont = 0
 " }}}3
+
+" vue {{{
+let g:vue_disable_pre_processors = 1
+augroup vue
+  autocmd!
+  autocmd FileType vue syntax sync fromstart
+  autocmd BufRead,BufNewFile *.vue setlocal filetype=vue.html.javascript.css
+augroup END
+" }}}
 
 " }}}2
 
