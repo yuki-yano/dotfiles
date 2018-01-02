@@ -31,6 +31,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Language {{{3
   call dein#add('Chiel92/vim-autoformat',                  {'lazy': 1, 'on_cmd': 'Autoformat'})
   call dein#add('Shougo/context_filetype.vim')
+  call dein#add('prettier/vim-prettier',                   {'lazy': 1, 'on_ft': ['javascript', 'vue', 'vue.html.javascript.css']})
   call dein#add('Valloric/MatchTagAlways',                 {'lazy': 1, 'on_ft': ['html', 'xml', 'erb']})
   call dein#add('Vimjas/vim-python-pep8-indent',           {'lazy': 1, 'on_ft': 'python'})
   call dein#add('ap/vim-css-color',                        {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
@@ -516,6 +517,7 @@ augroup MyVimrc
   autocmd BufNewFile,BufRead      .babelrc set filetype=json
   autocmd BufNewFile,BufRead     .eslintrc set filetype=json
   autocmd BufNewFile,BufRead  .stylelintrc set filetype=json
+  autocmd BufNewFile,BufRead   .prettierrc set filetype=json
   autocmd BufNewFile,BufRead .tern-project set filetype=json
   autocmd BufNewFile,BufRead        .pryrc set filetype=ruby
   autocmd BufNewFile,BufRead       Gemfile set filetype=ruby
@@ -596,8 +598,9 @@ let g:formatters_css  = ['prettier']
 let g:formatters_scss = ['prettier']
 
 " vue.js
-let g:formatdef_vue_prettier = '"cat | htmlbeautifier | vue-prettier --stdin"'
-let g:formatters_vue = ['vue_prettier']
+" Prettierはvim-prettierに任せる
+let g:formatdef_vue_format = '"cat | htmlbeautifier"'
+let g:formatters_vue = ['vue_format']
 
 " json
 let g:formatdef_jq = '"cat | jq ."'
@@ -654,6 +657,27 @@ let g:vim_jsx_pretty_colorful_config = 1
 " polyglot {{{
 let g:polyglot_disabled = ['javascript', 'ruby', 'python', 'vue', 'json', 'css', 'sass', 'scss']
 " }}}
+
+" prettier {{{3
+let g:prettier#exec_cmd_async = 1
+let g:prettier#autoformat = 0
+
+function! s:prettier_settings()
+  let g:prettier#exec_cmd_path = '~/dotfiles/node_modules/.bin/prettier'
+  nnoremap <silent> <buffer> <Leader>a :<C-u>Prettier<CR>
+endfunction
+
+function! s:prettier_vue_settings()
+  let g:prettier#exec_cmd_path = '~/dotfiles/node_modules/.bin/vue-prettier'
+  nnoremap <silent> <buffer> <Leader>a :<C-u>Autoformat <Bar> Prettier<CR>
+endfunction
+
+augroup prettier
+  autocmd!
+  autocmd FileType javascript              call s:prettier_settings()
+  autocmd FileType vue.html.javascript.css call s:prettier_vue_settings()
+augroup END
+" }}}3
 
 " ruby {{{3
 let g:rubycomplete_rails                = 1
