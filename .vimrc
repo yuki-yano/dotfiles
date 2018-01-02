@@ -365,7 +365,6 @@ set smartcase
 set autoread
 set belloff=all
 set clipboard+=unnamed
-set completeopt=longest,menuone,preview
 set ignorecase
 set langnoremap
 set lazyredraw
