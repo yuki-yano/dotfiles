@@ -172,7 +172,6 @@ end
 namespace :go do
   desc 'Install Go packages'
   task install: 'Gofile' do
-    sh 'go get -u all'
     File.readlines('Gofile').map(&:chomp).each do |package|
       sh "go get #{package}"
     end
