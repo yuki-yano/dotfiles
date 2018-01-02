@@ -583,22 +583,25 @@ nnoremap <Leader>a :<C-u>Autoformat<CR>
 let g:formatters_ruby = ['rubocop']
 
 " erb
-let g:formatdef_htmlbeautifier = '"SRC=/tmp/erb-temp-${RANDOM}.erb; cat > $SRC; htmlbeautifier $SRC; cat $SRC; rm -f $SRC"'
+let g:formatdef_htmlbeautifier = '"cat | htmlbeautifier"'
 let g:formatters_eruby         = ['htmlbeautifier']
 let g:formatters_eruby_html    = ['htmlbeautifier']
 
-" eslint
-let g:formatdef_prettier = '"cat | prettier --stdin"'
-let g:formatters_javascript = ['prettier']
+" javascript
+let g:formatters_javascript = ['eslint_local']
 
-" stylefmt
-let g:formatdef_stylefmt = '"cat | stylefmt -f -"'
-let g:formatters_css = ['stylefmt']
+" css & scss
+let g:formatdef_prettier = '"cat | prettier --stdin"'
+let g:formatters_css  = ['prettier']
+let g:formatters_scss = ['prettier']
 
 " vue.js
-let g:formatters_vue_html_javascript_css = []
-let g:formatdef_vuefmt = '"cat > vuefmt-temp.vue; ruby -e ''File.read(\"vuefmt-temp.vue\").gsub(%r{<template(.*?)>(.*)</template>}m) { |_| File.write(\"vuefmt-temp-template.xml\", \"<template#{$1}>#{$2}</template>\"); `touch \"vuefmt-temp-template.xml\"` unless File.exist?(\"vuefmt-temp-template.xml\")}''; cat vuefmt-temp-template.xml | htmlbeautifier; echo \"\"; touch vuefmt-temp-js.js; ruby -e ''File.read(\"vuefmt-temp.vue\").gsub(%r{<script>\n(.*)</script>}m) { |_| File.write(\"vuefmt-temp-js.js\", \"#{$1}\"); }''; eslint --fix vuefmt-temp-js.js >/dev/null 2>&1; echo \"<script>\"; cat vuefmt-temp-js.js; echo \"</script>\"; echo \"\"; ruby -e ''style = File.read(\"vuefmt-temp.vue\").gsub(%r{<style(.*?)>(.*?)</style>}m).each { |tag| css = $2; puts \"<style#{$1}>\"; print `echo \"#{css}\" | stylefmt --stdin-filename tmp`.chomp; puts \"</style>\"; puts\"\" }''; rm -f vuefmt-temp-js.js; rm -f vuefmt-temp-template.xml; rm -f vuefmt-temp.vue;"'
-let g:formatters_vue = ['vuefmt']
+let g:formatdef_vue_prettier = '"cat | htmlbeautifier | vue-prettier --stdin"'
+let g:formatters_vue = ['vue_prettier']
+
+" json
+let g:formatdef_jq = '"cat | jq ."'
+let g:formatters_json = ['jq']
 " }}}3
 
 " auto-ctags {{{3
