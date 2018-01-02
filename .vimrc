@@ -327,6 +327,7 @@ cnoremap <C-y> <C-r>*
 
 "" tab
 nnoremap <Leader>tt :tablast <Bar> tabnew<CR>
+nnoremap <Leader>tc :tablast <Bar> tabnew<CR>
 nnoremap <Leader>td :tabclose<CR>
 
 "" Save & Quit
@@ -1585,6 +1586,11 @@ call submode#enter_with('changetab', 'n', '', 'gh', 'gT')
 call submode#enter_with('changetab', 'n', '', 'gl', 'gt')
 call submode#map('changetab', 'n', '', 'h', 'gT')
 call submode#map('changetab', 'n', '', 'l', 'gt')
+
+call submode#enter_with('changetab', 'n', '', 'g<C-p>', 'gT')
+call submode#enter_with('changetab', 'n', '', 'g<C-n>', 'gt')
+call submode#map('changetab', 'n', '', '<C-p>', 'gT')
+call submode#map('changetab', 'n', '', '<C-n>', 'gt')
 " }}}3
 
 " tagbar {{{3
