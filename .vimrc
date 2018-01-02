@@ -364,7 +364,7 @@ set ignorecase
 set smartcase
 set autoread
 set belloff=all
-set clipboard+=unnamed
+set clipboard=unnamed,unnamedplus
 set ignorecase
 set langnoremap
 set lazyredraw
@@ -381,17 +381,25 @@ set wildmenu
 set wildmode=longest:full,full
 set wrapscan
 set synmaxcol=300
+set nostartofline
+set keywordprg=:help
+" }}}2
 
-" Turn off default plugins.
-let g:loaded_2html_plugin  = 1
-let g:loaded_gzip          = 1
-let g:loaded_rrhelper      = 1
-let g:loaded_tar           = 1
-let g:loaded_tarPlugin     = 1
-let g:loaded_vimballPlugin = 1
-let g:loaded_zip           = 1
-let g:loaded_zipPlugin     = 1
-let g:loaded_matchparen    = 1
+" Turn off default plugins. {{{2
+let g:loaded_gzip            = 1
+let g:loaded_tar             = 1
+let g:loaded_tarPlugin       = 1
+let g:loaded_zip             = 1
+let g:loaded_zipPlugin       = 1
+let g:loaded_rrhelper        = 1
+let g:loaded_2html_plugin    = 1
+let g:loaded_vimball         = 1
+let g:loaded_vimballPlugin   = 1
+let g:loaded_getscript       = 1
+let g:loaded_getscriptPlugin = 1
+let g:loaded_logipat         = 1
+let g:loaded_matchparen      = 1
+let g:loaded_man             = 1
 " }}}2
 
 " }}}1
