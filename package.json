@@ -22,6 +22,7 @@
     "placehold-cli": "^1.0.1",
     "prettier": "^1.9.2",
     "react": "^16.2.0",
+    "sort-package-json": "^1.7.1",
     "speed-test": "^1.8.0",
     "styled-components": "^2.1.2",
     "stylefmt": "^6.0.0",
