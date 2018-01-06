@@ -1237,9 +1237,9 @@ if dein#tap('lexima.vim')
     \ {'char': '"',     'at': '"\%#"',   'input': '<Del>'},
     \ {'char': "'",     'at': "'\\%#",   'input': "'"},
     \ {'char': '"',     'at': '"\%#',    'input': '"'},
-    \ {'char': '(',     'at': '(\%#',    'input': ''},
-    \ {'char': '{',     'at': '{\%#',    'input': ''},
-    \ {'char': '[',     'at': '[\%#',    'input': ''},
+    \ {'char': '(',     'at': '(\%#',    'input': '('},
+    \ {'char': '{',     'at': '{\%#',    'input': '{'},
+    \ {'char': '[',     'at': '[\%#',    'input': '['},
     \ ]
 
     for l:rule in l:rules
