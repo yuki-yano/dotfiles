@@ -129,11 +129,11 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Edit & Move & Search {{{3
-  " call dein#add('easymotion/vim-easymotion',      {'lazy': 1, 'on_map': {'nvxo': '<Plug>'}})
   call dein#add('LeafCage/yankround.vim')
   call dein#add('chrisbra/NrrwRgn',               {'lazy': 1, 'on_cmd': ['NR', 'NW', 'WidenRegion', 'NRV', 'NUD', 'NRP', 'NRM', 'NRS', 'NRN', 'NRL']})
   call dein#add('cohama/lexima.vim',              {'lazy': 1, 'on_event': 'InsertEnter', 'hook_post_source': 'call Hook_on_post_source_lexima()'})
   call dein#add('dhruvasagar/vim-table-mode',     {'lazy': 1, 'on_cmd': 'TableModeToggle'})
+  call dein#add('easymotion/vim-easymotion',      {'lazy': 1, 'on_map': {'nvxo': '<Plug>'}})
   call dein#add('godlygeek/tabular',              {'lazy': 1, 'on_cmd': 'Tabularize'})
   call dein#add('h1mesuke/vim-alignta',           {'lazy': 1, 'on_cmd': 'Alignta'})
   call dein#add('haya14busa/incsearch.vim',       {'lazy': 1, 'on_map': '<Plug>'})
@@ -1163,27 +1163,28 @@ vmap <Enter> <Plug>(EasyAlign)
 " }}}3
 
 " easymotion {{{3
-" let g:EasyMotion_do_mapping = 0
-" let g:EasyMotion_smartcase = 1
-" let g:EasyMotion_startofline = 0
-" let g:EasyMotion_keys = 'HJKLASDFGYUIOPQWERTNMZXCVB'
-" let g:EasyMotion_use_upper = 1
-" let g:EasyMotion_enter_jump_first = 1
-" let g:EasyMotion_space_jump_first = 1
-" highlight link EasyMotionIncSearch Search
-" highlight link EasyMotionMoveHL Search
-"
-" map [EasyMotion] <Nop>
-" map ; [EasyMotion]
-"
-" nmap [EasyMotion]f <Plug>(easymotion-overwin-f2)
-" vmap [EasyMotion]f <Plug>(easymotion-bd-f2)
-" map  [EasyMotion]j <Plug>(easymotion-j)
-" map  [EasyMotion]k <Plug>(easymotion-k)
-" map  [EasyMotion]l <Plug>(easymotion-bd-jk)
-" nmap [EasyMotion]l <Plug>(easymotion-overwin-line)
-" map  [EasyMotion]w <Plug>(easymotion-bd-w)
-" nmap [EasyMotion]w <Plug>(easymotion-overwin-w)
+let g:EasyMotion_do_mapping = 0
+let g:EasyMotion_smartcase = 1
+let g:EasyMotion_startofline = 0
+let g:EasyMotion_keys = 'HJKLASDFGYUIOPQWERTNMZXCVB'
+let g:EasyMotion_use_upper = 1
+let g:EasyMotion_enter_jump_first = 1
+let g:EasyMotion_space_jump_first = 1
+highlight link EasyMotionIncSearch Search
+highlight link EasyMotionMoveHL Search
+
+map   [EasyMotion] <Nop>
+map ; [EasyMotion]
+
+nmap [EasyMotion]; <Plug>(easymotion-overwin-f2)
+map  [EasyMotion]j <Plug>(easymotion-j)
+map  [EasyMotion]k <Plug>(easymotion-k)
+map  [EasyMotion]l <Plug>(easymotion-bd-jk)
+nmap [EasyMotion]l <Plug>(easymotion-overwin-line)
+omap f <Plug>(easymotion-fl)
+omap t <Plug>(easymotion-tl)
+omap F <Plug>(easymotion-Fl)
+omap T <Plug>(easymotion-Tl)
 " }}}3
 
 " eregex {{{
