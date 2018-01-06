@@ -1009,12 +1009,6 @@ if dein#tap('vimfiler')
   let g:vimfiler_as_default_explorer = 1
   let g:vimfiler_safe_mode_by_default = 0
   let g:vimfiler_execute_file_list = {'jpg': 'open', 'jpeg': 'open', 'gif': 'open', 'png': 'open'}
-  call vimfiler#custom#profile('default', 'context', {
-  \ 'explorer' : 1,
-  \ 'winwidth' : 35,
-  \ 'split' : 1,
-  \ 'simple' : 1,
-  \ })
   " call vimfiler#custom#profile('default', 'context', {
   "       \ 'explorer' : 1,
   "       \ 'winwidth' : 35,
@@ -1025,8 +1019,8 @@ if dein#tap('vimfiler')
   let g:vimfiler_enable_auto_cd = 1
   let g:vimfiler_ignore_pattern = '^\%(.git\|.DS_Store\)$'
   let g:vimfiler_trashbox_directory = '~/.Trash'
-  nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer<CR>
-  nnoremap <silent> <Leader>% :<C-u>VimFilerExplorer -find<CR>
+  nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple<CR>
+  nnoremap <silent> <Leader>% :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple<CR>
 
   function! s:vimfiler_settings()
     nmap <buffer> R <Plug>(vimfiler_redraw_screen)
