@@ -537,6 +537,13 @@ augroup MyVimrc
   autocmd BufNewFile,BufRead   Vagrantfile set filetype=ruby
   autocmd BufNewFile,BufRead    Schemafile set filetype=ruby
 
+  " Reassign Filetype
+  autocmd BufWritePost *
+  \ if &filetype ==# '' && exists('b:ftdetect') |
+  \  unlet! b:ftdetect |
+  \  filetype detect |
+  \ endif
+
   " Completion
   autocmd FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
   autocmd FileType ruby          setlocal omnifunc=rubycomplete#Complete
