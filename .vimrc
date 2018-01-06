@@ -35,6 +35,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Language {{{3
   call dein#add('Chiel92/vim-autoformat',                  {'lazy': 1, 'on_cmd': 'Autoformat'})
+  call dein#add('1995eaton/vim-better-css-completion',        {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
+  call dein#add('1995eaton/vim-better-javascript-completion', {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('Shougo/context_filetype.vim')
   call dein#add('prettier/vim-prettier',                   {'lazy': 1, 'on_ft': ['javascript', 'vue', 'vue.html.javascript.css']})
   call dein#add('Valloric/MatchTagAlways',                 {'lazy': 1, 'on_ft': ['html', 'xml', 'erb']})
@@ -611,6 +613,11 @@ let g:formatdef_jq = '"cat | jq ."'
 let g:formatters_json = ['jq']
 " }}}3
 
+" better-javascript-completion {{{
+let g:vimjs#casesensistive = 1
+let g:vimjs#chromeapis = 1
+let g:vimjs#smartcomplete = 1
+" }}}
 
 " echodoc {{{3
 let g:echodoc_enable_at_startup = 1
@@ -921,7 +928,7 @@ if has('nvim')
     let g:deoplete#omni#input_patterns.scss = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
 
     let g:deoplete#omni#functions = {}
-    let g:deoplete#omni#functions.javascript = ['jspc#omni', 'javascriptcomplete#CompleteJS']
+    let g:deoplete#omni#functions.javascript = ['jspc#omni', 'js#CompleteJS', 'javascriptcomplete#CompleteJS']
     let g:deoplete#omni#functions.ruby       = ['rubycomplete#Complete']
     let g:deoplete#omni#functions.python     = ['pythoncomplete#Complete']
     let g:deoplete#omni#functions.css        = ['csscomplete#CompleteCSS']
