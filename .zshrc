@@ -285,12 +285,12 @@ function neovim_autocd() {
 chpwd_functions+=( neovim_autocd )
 
 function up-line-or-history-ignoring() {
-zle up-line-or-history
-case "$BUFFER" in
-  fg|bg)
-    zle up-line-or-history
-    ;;
-esac
+  zle up-line-or-history
+  case "$BUFFER" in
+    fg|bg)
+      zle up-line-or-history
+      ;;
+  esac
 }
 zle -N up-line-or-history-ignoring
 
@@ -326,8 +326,6 @@ bindkey '^[p'  history-substring-search-up
 bindkey '^e'   end-of-line
 bindkey '^r'   anyframe-widget-put-history
 bindkey '^xk'  anyframe-widget-kill
-bindkey '^xs'  emoji::cli
-bindkey '^xt'  fzf-file-widget
 bindkey '^z'   fancy-ctrl-z
 bindkey '^p'   up-line-or-history-ignoring
 
