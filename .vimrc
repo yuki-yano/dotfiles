@@ -821,7 +821,7 @@ if dein#tap('denite.nvim')
   nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context -direction=botright<CR>
 
   "" yank
-  nnoremap <silent> <Leader>p :<C-u>Denite register -direction=topleft<CR>
+  " nnoremap <silent> <Leader>p :<C-u>Denite register -direction=topleft<CR>
 
   "" quickfix
   " nnoremap <silent> <Leader>l :Denite location_list -no-quit -auto-resize<CR>
@@ -891,8 +891,8 @@ if dein#tap('unite.vim')
   nnoremap <silent> <Leader><Leader>** :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
 
   "" yank
-  " let g:unite_source_history_yank_enable = 1
-  " nnoremap <silent> <Leader>p :<C-u>Unite yankround<CR>
+  let g:unite_source_history_yank_enable = 1
+  nnoremap <silent> <Leader>p :<C-u>Unite yankround<CR>
 
   "" quickfix
   let g:unite_quickfix_filename_is_pathshorten = 0
