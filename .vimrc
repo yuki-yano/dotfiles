@@ -142,7 +142,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('haya14busa/vim-metarepeat',      {'lazy': 1, 'on_map': ['go', 'g.']})
   call dein#add('junegunn/vim-easy-align')
   call dein#add('justinmk/vim-sneak')
-  call dein#add('jwhitley/vim-matchit')
   call dein#add('kana/vim-operator-replace',      {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('kshenoy/vim-signature')
   call dein#add('mopp/vim-operator-convert-case')
@@ -394,6 +393,8 @@ set wrapscan
 set synmaxcol=300
 set nostartofline
 set keywordprg=:help
+
+runtime macros/matchit.vim
 " }}}2
 
 " Turn off default plugins. {{{2
