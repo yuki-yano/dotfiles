@@ -1137,18 +1137,19 @@ call gina#custom#mapping#nmap(
 
 " incsearch & anzu & asterisk {{{3
 if dein#tap('incsearch.vim')
+  let g:incsearch#auto_nohlsearch = 1
   let g:anzu_status_format = '(%i/%l)'
 
   map /  <Plug>(incsearch-forward)
   map ?  <Plug>(incsearch-backward)
   map g/ <Plug>(incsearch-stay)
-  map n  <Plug>(anzu-n)zzzv
-  map N  <Plug>(anzu-N)zzzv
-  map *  <Plug>(asterisk-z*)<Plug>(anzu-update-search-status-with-echo)
-  map #  <Plug>(asterisk-z#)<Plug>(anzu-update-search-status-with-echo)
-  map g* <Plug>(asterisk-gz*)<Plug>(anzu-update-search-status-with-echo)
-  map g# <Plug>(asterisk-gz#)<Plug>(anzu-update-search-status-with-echo)
-  nmap <silent> <Esc><Esc> <Plug>(anzu-clear-search-status)<Plug>(anzu-clear-sign-matchline):nohlsearch<CR>
+  map n  <Plug>(incsearch-nohl)<Plug>(anzu-n)zzzv
+  map N  <Plug>(incsearch-nohl)<Plug>(anzu-N)zzzv
+  map *  <Plug>(incsearch-nohl)<Plug>(asterisk-z*)
+  map #  <Plug>(incsearch-nohl)<Plug>(asterisk-z#)
+  map g* <Plug>(incsearch-nohl)<Plug>(asterisk-gz*)
+  map g# <Plug>(incsearch-nohl)<Plug>(asterisk-gz#)
+  nnoremap <silent> <Esc><Esc> :<C-u>AnzuClearSearchStatus<CR>
 endif
 " }}}3
 
