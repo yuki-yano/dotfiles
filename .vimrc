@@ -687,9 +687,9 @@ let g:vim_json_syntax_conceal = 0
 let g:vim_jsx_pretty_colorful_config = 1
 " }}}3
 
-" polyglot {{{
-let g:polyglot_disabled = ['javascript', 'ruby', 'python', 'vue', 'json', 'css', 'sass', 'scss']
-" }}}
+" polyglot {{{3
+let g:polyglot_disabled = ['javascript', 'ruby', 'python', 'vue', 'json', 'css', 'sass', 'scss', 'markdown']
+" }}}3
 
 " prettier {{{3
 let g:prettier#exec_cmd_async = 1
