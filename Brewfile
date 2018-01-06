@@ -128,5 +128,5 @@ linkapps mpv
 
 ## Editor
 install vim --with-lua --with-python3
-install neovim/neovim/neovim
+install neovim
 install emacs --with-cocoa --with-gnutls --with-librsvg
