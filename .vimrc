@@ -1,4 +1,9 @@
-scriptencoding utf-8
+" Encoding {{{1
+if has('vim_starting')
+  set encoding=utf-8
+  scriptencoding utf-8
+endif
+" }}}1
 
 " Plugin Manager {{{1
 
