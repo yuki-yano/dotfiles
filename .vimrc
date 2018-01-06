@@ -322,6 +322,10 @@ nnoremap B :<C-u>ls<CR>:buffer<Space>
 "" Ignore registers
 nnoremap x "_x
 
+"" Indent
+vnoremap < <gv
+vnoremap > >gv|
+
 "" Move CommandLine
 noremap! <C-a> <Home>
 noremap! <C-b> <Left>
