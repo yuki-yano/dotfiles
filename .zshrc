@@ -87,6 +87,7 @@ SAVEHIST=50000
 setopt hist_ignore_dups
 setopt share_history
 setopt hist_ignore_space
+setopt hist_ignore_all_dups
 
 # C-w
 WORDCHARS="*?_-[]~=&!#$%^(){}<>"
