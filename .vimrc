@@ -1374,6 +1374,14 @@ if dein#tap('lightline.vim')
   \     [ 'fileformat', 'fileencoding', 'filetype' ]
   \   ]
   \ },
+  \ 'tabline': {
+  \   'left': [ [ 'tabs' ] ],
+  \   'right': []
+  \ },
+  \ 'tab': {
+  \   'active': [ 'tabnum', 'readonly', 'filename', 'modified' ],
+  \   'inactive': [ 'tabnum', 'readonly', 'filename', 'modified' ]
+  \ },
   \ 'component': {
   \   'lineinfo': "\ue0a1 %3l[%L]:%-2v",
   \ },
