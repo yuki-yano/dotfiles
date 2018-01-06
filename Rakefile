@@ -67,6 +67,7 @@ namespace :bundle do
     sh 'gem install bundler'        unless Gem::Specification.any? { |g| g.name == 'bundler' }
     sh 'gem install neovim'         unless Gem::Specification.any? { |g| g.name == 'neovim' }
     sh 'gem install rcodetools'     unless Gem::Specification.any? { |g| g.name == 'rcodetools' }
+    sh 'gem install fastri'         unless Gem::Specification.any? { |g| g.name == 'fastri' }
     sh 'gem update'
     File.delete('Gemfile.lock')     if File.exist?('Gemfile.lock')
     FileUtils.rm_r('vendor/bundle') if Dir.exist?('vendor/bundle')
