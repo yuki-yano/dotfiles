@@ -63,7 +63,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('rhysd/vim-gfm-syntax',                    {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('sgur/vim-editorconfig')
   call dein#add('sheerun/vim-polyglot')
-  call dein#add('soramugi/auto-ctags.vim')
   call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('tell-k/vim-autopep8',                     {'lazy': 1, 'on_ft': 'python'})
   call dein#add('thinca/vim-ft-help_fold',                 {'lazy': 1, 'on_ft': 'help'})
@@ -76,7 +75,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('vimtaku/hl_matchit.vim',                  {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('w0rp/ale')
   call dein#add('ywatase/mdt.vim',                         {'lazy': 1, 'on_ft': 'markdown'})
-  call dein#add('zebult/auto-gtags.vim')
+  call dein#add('yukiycino-dotfiles/gen_tags.vim')
   " }}}3
 
   " Git {{{3
@@ -612,13 +611,6 @@ let g:formatdef_jq = '"cat | jq ."'
 let g:formatters_json = ['jq']
 " }}}3
 
-" auto-ctags {{{3
-let g:auto_ctags = 1
-" }}}3
-
-" auto-gtags {{{3
-let g:auto_update_gtags = 1
-" }}}3
 
 " echodoc {{{3
 let g:echodoc_enable_at_startup = 1
@@ -627,6 +619,11 @@ let g:echodoc_enable_at_startup = 1
 " emmet {{{3
 let g:user_emmet_leader_key=','
 let g:user_emmet_mode='in'
+" }}}3
+
+" gen_tags {{{3
+let g:gen_tags#ctags_auto_gen = 1
+let g:gen_tags#gtags_auto_gen = 1
 " }}}3
 
 " go {{{3
