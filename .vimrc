@@ -568,6 +568,9 @@ augroup MyVimrc
 
   " Disable Auto Comment
   autocmd FileType * setlocal formatoptions-=ro
+
+  " Set Quit Map
+  autocmd FileType help nnoremap <silent> <buffer> q :quit<CR>
 augroup END
 " }}}1
 
