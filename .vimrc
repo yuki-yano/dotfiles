@@ -34,58 +34,58 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Language {{{3
-  call dein#add('Chiel92/vim-autoformat',                  {'lazy': 1, 'on_cmd': 'Autoformat'})
   call dein#add('1995eaton/vim-better-css-completion',        {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
   call dein#add('1995eaton/vim-better-javascript-completion', {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('Chiel92/vim-autoformat',                     {'lazy': 1, 'on_cmd': 'Autoformat'})
   call dein#add('Shougo/context_filetype.vim')
-  call dein#add('prettier/vim-prettier',                   {'lazy': 1, 'on_ft': ['javascript', 'vue', 'vue.html.javascript.css']})
-  call dein#add('Valloric/MatchTagAlways',                 {'lazy': 1, 'on_ft': ['html', 'xml', 'erb']})
-  call dein#add('Vimjas/vim-python-pep8-indent',           {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('ap/vim-css-color',                        {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
-  call dein#add('cakebaker/scss-syntax.vim',               {'lazy': 1, 'on_ft': ['sass', 'scss']})
-  call dein#add('davidhalter/jedi-vim',                    {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('elzr/vim-json',                           {'lazy': 1, 'on_ft': 'json'})
-  call dein#add('fatih/vim-go',                            {'lazy': 1, 'on_ft': 'go'})
-  call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': 'css'})
-  call dein#add('heavenshell/vim-pydocstring',             {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('kewah/vim-stylefmt',                      {'lazy': 1, 'on_ft': 'css'})
-  call dein#add('mattn/emmet-vim',                         {'lazy': 1, 'on_ft': ['html', 'eruby.html', 'javascript', 'vue', 'vue.html.javascript.css']})
-  call dein#add('maxmellon/vim-jsx-pretty',                {'lazy': 1, 'on_ft': 'javascript'})
-  call dein#add('mkomitee/vim-gf-python',                  {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('moll/vim-node',                           {'lazy': 1, 'on_ft': 'javascript'})
-  call dein#add('nsf/gocode',                              {'lazy': 1, 'on_ft': 'go', 'rtp': 'nvim', 'build': 'vim/symlink.sh'})
-  call dein#add('othree/csscomplete.vim',                  {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
-  call dein#add('othree/es.next.syntax.vim',               {'lazy': 1, 'on_ft': 'javascript'})
-  call dein#add('othree/html5.vim',                        {'lazy': 1, 'on_ft': ['html', 'eruby']})
-  call dein#add('othree/javascript-libraries-syntax.vim',  {'lazy': 1, 'on_ft': 'javascript'})
-  call dein#add('othree/jspc.vim',                         {'lazy': 1, 'on_ft': 'javascript'})
-  call dein#add('pangloss/vim-javascript',                 {'lazy': 1, 'on_ft': 'javascript'})
-  call dein#add('pocke/iro.vim')
-  call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
-  call dein#add('rhysd/vim-gfm-syntax',                    {'lazy': 1, 'on_ft': 'markdown'})
+  call dein#add('Valloric/MatchTagAlways',                    {'lazy': 1, 'on_ft': ['html', 'xml', 'erb']})
+  call dein#add('Vimjas/vim-python-pep8-indent',              {'lazy': 1, 'on_ft': 'python'})
+  call dein#add('ap/vim-css-color',                           {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
+  call dein#add('cakebaker/scss-syntax.vim',                  {'lazy': 1, 'on_ft': ['sass', 'scss']})
+  call dein#add('davidhalter/jedi-vim',                       {'lazy': 1, 'on_ft': 'python'})
+  call dein#add('elzr/vim-json',                              {'lazy': 1, 'on_ft': 'json'})
+  call dein#add('fatih/vim-go',                               {'lazy': 1, 'on_ft': 'go'})
+  call dein#add('hail2u/vim-css3-syntax',                     {'lazy': 1, 'on_ft': 'css'})
+  call dein#add('heavenshell/vim-pydocstring',                {'lazy': 1, 'on_ft': 'python'})
+  call dein#add('kewah/vim-stylefmt',                         {'lazy': 1, 'on_ft': 'css'})
+  call dein#add('mattn/emmet-vim',                            {'lazy': 1, 'on_ft': ['html', 'eruby.html', 'javascript', 'vue', 'vue.html.javascript.css']})
+  call dein#add('maxmellon/vim-jsx-pretty',                   {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('mkomitee/vim-gf-python',                     {'lazy': 1, 'on_ft': 'python'})
+  call dein#add('moll/vim-node',                              {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('nsf/gocode',                                 {'lazy': 1, 'on_ft': 'go', 'rtp': 'nvim', 'build': 'vim/symlink.sh'})
+  call dein#add('othree/csscomplete.vim',                     {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
+  call dein#add('othree/es.next.syntax.vim',                  {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('othree/html5.vim',                           {'lazy': 1, 'on_ft': ['html', 'eruby']})
+  call dein#add('othree/javascript-libraries-syntax.vim',     {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('othree/jspc.vim',                            {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('pangloss/vim-javascript',                    {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('pocke/iro.vim',                              {'lazy': 1, 'on_ft': 'ruby'})
+  call dein#add('posva/vim-vue',                              {'lazy': 1, 'on_ft': ['vue', 'vue.html.javascript.css']})
+  call dein#add('prettier/vim-prettier',                      {'lazy': 1, 'on_ft': ['javascript', 'vue', 'vue.html.javascript.css']})
+  call dein#add('rhysd/vim-gfm-syntax',                       {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('sgur/vim-editorconfig')
   call dein#add('sheerun/vim-polyglot')
-  call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': 'javascript'})
-  call dein#add('tell-k/vim-autopep8',                     {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('thinca/vim-ft-help_fold',                 {'lazy': 1, 'on_ft': 'help'})
-  call dein#add('tmhedberg/SimpylFold',                    {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('vim-jp/syntax-vim-ex',                    {'lazy': 1, 'on_ft': 'vim'})
-  call dein#add('vim-python/python-syntax',                {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('vim-ruby/vim-ruby',                       {'lazy': 1, 'on_ft': ['ruby', 'eruby']})
-  call dein#add('vim-scripts/python_match.vim',            {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('vimperator/vimperator.vim',               {'lazy': 1, 'on_ft': 'vimperator'})
-  call dein#add('vimtaku/hl_matchit.vim',                  {'lazy': 1, 'on_ft': 'ruby'})
+  call dein#add('styled-components/vim-styled-components',    {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('tell-k/vim-autopep8',                        {'lazy': 1, 'on_ft': 'python'})
+  call dein#add('thinca/vim-ft-help_fold',                    {'lazy': 1, 'on_ft': 'help'})
+  call dein#add('tmhedberg/SimpylFold',                       {'lazy': 1, 'on_ft': 'python'})
+  call dein#add('vim-jp/syntax-vim-ex',                       {'lazy': 1, 'on_ft': 'vim'})
+  call dein#add('vim-python/python-syntax',                   {'lazy': 1, 'on_ft': 'python'})
+  call dein#add('vim-ruby/vim-ruby',                          {'lazy': 1, 'on_ft': ['ruby', 'eruby']})
+  call dein#add('vim-scripts/python_match.vim',               {'lazy': 1, 'on_ft': 'python'})
+  call dein#add('vimperator/vimperator.vim',                  {'lazy': 1, 'on_ft': 'vimperator'})
+  call dein#add('vimtaku/hl_matchit.vim',                     {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('w0rp/ale')
-  call dein#add('ywatase/mdt.vim',                         {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('yukiycino-dotfiles/gen_tags.vim')
+  call dein#add('ywatase/mdt.vim',                            {'lazy': 1, 'on_ft': 'markdown'})
   " }}}3
 
   " Git {{{3
   call dein#add('airblade/vim-gitgutter')
   call dein#add('airblade/vim-rooter')
-  call dein#add('cohama/agit.vim', {'lazy': 1, 'on_cmd': ['Agit', 'AgitFile']})
+  call dein#add('cohama/agit.vim',               {'lazy': 1, 'on_cmd': ['Agit', 'AgitFile']})
   call dein#add('hotwatermorning/auto-git-diff', {'lazy': 1, 'on_ft': 'gitrebase'})
-  call dein#add('lambdalisue/gina.vim', {'lazy': 1, 'on_cmd': 'Gina', 'on_map': '<Plug>', 'on_event': 'BufWritePost', 'hook_post_source': 'call Hook_on_post_source_gina()'})
+  call dein#add('lambdalisue/gina.vim')
   call dein#add('lambdalisue/vim-unified-diff')
   call dein#add('rhysd/committia.vim')
   " }}}3
@@ -177,7 +177,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('t9md/vim-quickhl')
   call dein#add('thinca/vim-zenspace')
   call dein#add('vim-scripts/AnsiEsc.vim')
-  call dein#add('vimtaku/hl_matchit.vim')
   " }}}3
 
   " Util {{{3
@@ -1046,60 +1045,58 @@ endif
 " }}}3
 
 " gina {{{3
-function! Hook_on_post_source_gina() abort
-  call gina#custom#command#option('br', '-v', 'v')
-  call gina#custom#command#option('br', '--all')
-  call gina#custom#command#option(
-  \ '/\%(status\|commit\)',
-  \ '-u|--untracked-files'
-  \ )
-  call gina#custom#command#option(
-  \ 'status',
-  \ '-b|--branch'
-  \)
-  call gina#custom#command#option(
-  \ 'status',
-  \ '-s|--short'
-  \ )
-  call gina#custom#action#alias(
-  \ 'branch', 'merge',
-  \ 'commit:merge'
-  \)
-  call gina#custom#action#alias(
-  \ 'branch', 'rebase',
-  \ 'commit:rebase'
-  \ )
+call gina#custom#command#option('br', '-v', 'v')
+call gina#custom#command#option('br', '--all')
+call gina#custom#command#option(
+\ '/\%(status\|commit\)',
+\ '-u|--untracked-files'
+\ )
+call gina#custom#command#option(
+\ 'status',
+\ '-b|--branch'
+\)
+call gina#custom#command#option(
+\ 'status',
+\ '-s|--short'
+\ )
+call gina#custom#action#alias(
+\ 'branch', 'merge',
+\ 'commit:merge'
+\)
+call gina#custom#action#alias(
+\ 'branch', 'rebase',
+\ 'commit:rebase'
+\ )
 
-  call gina#custom#action#alias(
-  \ '/\%(blame\|log\|reflog\)',
-  \ 'preview',
-  \ 'topleft show:commit:preview',
-  \ )
-  call gina#custom#mapping#nmap(
-  \ '/\%(blame\|log\|reflog\)',
-  \ 'p',
-  \ ':<C-u>call gina#action#call(''preview'')<CR>',
-  \ {'noremap': 1, 'silent': 1}
-  \ )
-  call gina#custom#mapping#nmap(
-  \ 'blame', '<C-l>',
-  \ '<C-w>l'
-  \)
-  call gina#custom#mapping#nmap(
-  \ 'blame', '<C-r>',
-  \ '<Plug>(gina-blame-redraw)'
-  \)
+call gina#custom#action#alias(
+\ '/\%(blame\|log\|reflog\)',
+\ 'preview',
+\ 'topleft show:commit:preview',
+\ )
+call gina#custom#mapping#nmap(
+\ '/\%(blame\|log\|reflog\)',
+\ 'p',
+\ ':<C-u>call gina#action#call(''preview'')<CR>',
+\ {'noremap': 1, 'silent': 1}
+\ )
+call gina#custom#mapping#nmap(
+\ 'blame', '<C-l>',
+\ '<C-w>l'
+\)
+call gina#custom#mapping#nmap(
+\ 'blame', '<C-r>',
+\ '<Plug>(gina-blame-redraw)'
+\)
 
-  " Echo chunk info with j/k
-  call gina#custom#mapping#nmap(
-  \ 'blame', 'j',
-  \ 'j<Plug>(gina-blame-echo)'
-  \)
-  call gina#custom#mapping#nmap(
-  \ 'blame', 'k',
-  \ 'k<Plug>(gina-blame-echo)'
-  \)
-endfunction
+" Echo chunk info with j/k
+call gina#custom#mapping#nmap(
+\ 'blame', 'j',
+\ 'j<Plug>(gina-blame-echo)'
+\)
+call gina#custom#mapping#nmap(
+\ 'blame', 'k',
+\ 'k<Plug>(gina-blame-echo)'
+\)
 " }}}3
 
 " }}}2
@@ -1164,6 +1161,14 @@ vmap <Enter> <Plug>(EasyAlign)
 " map  [EasyMotion]w <Plug>(easymotion-bd-w)
 " nmap [EasyMotion]w <Plug>(easymotion-overwin-w)
 " }}}3
+
+" eregex {{{
+let g:eregex_default_enable = 0
+
+nnoremap <Leader>R "syiwq:%S/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
+nnoremap <Leader>r q:%S//g<Left><Left>
+vnoremap <Leader>r "syq:%S/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
+" }}}
 
 " edgemotion {{{3
 map <M-j> <Plug>(edgemotion-j)
