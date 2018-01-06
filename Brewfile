@@ -81,7 +81,6 @@ install gpg2
 install graphviz
 install gron
 install homebrew/dupes/libiconv
-install htop
 install httpie
 install jq
 install jvgrep
