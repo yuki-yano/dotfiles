@@ -148,7 +148,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mopp/vim-operator-convert-case')
   call dein#add('osyo-manga/vim-anzu',            {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('osyo-manga/vim-jplus',           {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('osyo-manga/vim-over',            {'lazy': 1, 'on_cmd': 'OverCommandLine'})
+  call dein#add('othree/eregex.vim')
   call dein#add('pocke/vim-operator-markdown',    {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/clever-f.vim',             {'lazy': 1, 'on_map': {'nvxo': '<Plug>'}})
   call dein#add('rking/ag.vim',                   {'lazy': 1, 'on_cmd': 'Ag'})
@@ -186,7 +186,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('daisuzu/translategoogle.vim')
   call dein#add('dietsche/vim-lastplace')
   call dein#add('haya14busa/vim-textobj-function-syntax')
-  call dein#add('itchyny/vim-extracmd')
   call dein#add('janko-m/vim-test',             {'lazy': 1, 'on_cmd': ['TestNearest','TestFile','TestSuite','TestLast','TestVisit']})
   call dein#add('kana/vim-niceblock',           {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
   call dein#add('kana/vim-operator-user')
@@ -208,6 +207,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('thinca/vim-ref',               {'lazy': 1, 'on_cmd': 'Ref'})
   call dein#add('tweekmonster/startuptime.vim', {'lazy': 1, 'on_cmd': 'StartupTime'})
   call dein#add('tyru/capture.vim',             {'lazy': 1, 'on_cmd': 'Capture'})
+  call dein#add('tyru/vim-altercmd')
   call dein#add('wesQ3/vim-windowswap',         {'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#DoWindowSwap']})
   " }}}3
 
@@ -341,6 +341,10 @@ nnoremap <silent> <Leader>w :<C-u>w<CR>
 
 "" redraw
 nnoremap <silent> <Leader><C-l> :<C-u>redraw!<CR>
+
+"" Command Line Window Mode
+nnoremap Q  <Nop>
+nnoremap gQ <Nop>
 " }}}2
 
 " Indent {{{2
@@ -362,7 +366,7 @@ endif
 " Misc {{{2
 set completeopt=longest,menuone,preview
 set noswapfile
-set history=10000
+set history=1000
 set undodir=~/.vim_undo
 set undofile
 set viewoptions=cursor,folds
@@ -493,9 +497,6 @@ endfunction
 augroup MyVimrc
   autocmd!
 
-  " Auto Load
-  autocmd InsertEnter,WinEnter * checktime
-
   " Line Number
   autocmd BufNewFile,BufRead,FileType * set number
   if has('nvim')
@@ -554,6 +555,29 @@ augroup MyVimrc
   " Disable Auto Comment
   autocmd FileType * setlocal formatoptions-=ro
 augroup END
+" }}}1
+
+" Command Line Window {{{1
+nnoremap : q:
+xnoremap : q:
+
+nnoremap q: :
+xnoremap q: :
+
+augroup cmdwin
+  autocmd!
+  autocmd CmdWinEnter * set nonumber | set norelativenumber
+  autocmd CmdWinEnter * setlocal completeopt+=noinsert
+  autocmd CmdwinEnter * call s:init_cmdwin()
+augroup END
+
+function! s:init_cmdwin()
+  nnoremap <buffer> q :<C-u>quit<CR>
+  inoremap <buffer> <expr> <CR>  pumvisible() ? "\<C-y>\<CR>"  : "\<CR>"
+  inoremap <buffer> <expr> <C-h> deoplete#smart_close_popup() . "\<C-h>"
+
+  startinsert!
+endfunction
 " }}}1
 
 " Plugin Settings {{{1
@@ -945,8 +969,8 @@ if has('nvim')
 
     inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
     inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
-    imap <expr><TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-    smap <expr><TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+    imap <expr> <TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+    smap <expr> <TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 
     function! s:my_cr_function()
       if neosnippet#expandable_or_jumpable()
@@ -1231,12 +1255,6 @@ augroup END
 map _ <Plug>(operator-replace)
 " }}}3
 
-" over {{{3
-nnoremap <silent> <Leader>R :<C-u>OverCommandLine<CR>%s/<C-r><C-w>//g<Left><Left>
-nnoremap <silent> <Leader>r :<C-u>OverCommandLine<CR>%s//g<Left><Left>
-vnoremap <silent> <Leader>r y:<C-u>OverCommandLine<CR>%s/<C-r>=substitute(@0, '/', '\\/', 'g')<CR>//g<Left><Left>
-" }}}3
-
 " qfreplace {{{3
 augroup qfreplace
   autocmd!
@@ -1272,7 +1290,7 @@ if dein#tap('yankround.vim')
   nmap P  <Plug>(yankround-P)
   nmap gp <Plug>(yankround-gp)
   nmap gP <Plug>(yankround-gP)
-  nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : ':<C-u>Denite file_rec -direction=topleft -mode=insert<CR>'
+  nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : 'q:Denite file_rec -direction=topleft -mode=insert<CR>'
   nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : ''
   cmap <C-y> <Plug>(yankround-insert-register)
 endif
@@ -1551,6 +1569,31 @@ let g:zenspace#default_mode = 'on'
 let g:bakaup_auto_backup = 1
 " }}}3
 
+" altercmd {{{
+call altercmd#load()
+
+AlterCommand! w!!       w<Space>suda://%
+AlterCommand! dein      Dein
+AlterCommand! d[enite]  Denite
+AlterCommand! u[nite]   Unite
+AlterCommand! tab       Unite<Space>tab
+AlterCommand! ag        Ag!
+AlterCommand! gina      Gina
+AlterCommand! git       Gina
+AlterCommand! gs        Gina<Space>status
+AlterCommand! gci       Gina<Space>commit
+AlterCommand! gd        Gina<Space>diff
+AlterCommand! gdc       Gina<Space>diff<Space>--cached
+AlterCommand! blame     Gina<Space>blame
+AlterCommand! agit      Agit
+AlterCommand! root      Rooter
+AlterCommand! alc       Ref<Space>webdict<Space>alc
+AlterCommand! tag       TagbarOpen<Space>j
+AlterCommand! nr        NR
+AlterCommand! scr[atch] Scratch
+AlterCommand! cap[ture] Capture
+" }}}
+
 " bufkill {{{3
 augroup bufkill
   autocmd!
@@ -1568,33 +1611,6 @@ let g:expand_region_text_objects_ruby = {
 \ 'im' :0,
 \ 'am' :0
 \ }
-" }}}3
-
-" extracmd {{{3
-if dein#tap('vim-extracmd')
-  call extracmd#set('w!!',          'w suda://%')
-  call extracmd#set('dein',         'Dein')
-  call extracmd#set('d[enite]',     'Denite')
-  call extracmd#set('u[nite]',      'Unite')
-  call extracmd#set('tab',          'Unite tab')
-  call extracmd#set('ag',           'Ag!')
-  call extracmd#set('gina',         'Gina')
-  call extracmd#set('git',          'Gina')
-  call extracmd#set('gs ',          'Gina status')
-  call extracmd#set('gci',          'Gina commit')
-  call extracmd#set('gd',           'Gina diff')
-  call extracmd#set('gdc',          'Gina diff --cached')
-  call extracmd#set('blame',        'Gina blame :%')
-  call extracmd#set('agit',         'Agit')
-  call extracmd#set('root',         'Rooter')
-  call extracmd#set('alc',          'Ref webdict alc')
-  call extracmd#set('tag',          'TagbarOpen j<CR>')
-  call extracmd#set('nr',           'NR<CR>')
-  call extracmd#set('space',        'StripWhitespace<CR>')
-  call extracmd#set('sctartch',     'Scratch<CR>')
-  call extracmd#set('capture',      'Capture')
-  call extracmd#set('json',         '%!python -m json.tool<CR>')
-endif
 " }}}3
 
 " maximizer {{{3
