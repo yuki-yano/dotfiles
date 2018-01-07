@@ -1,6 +1,4 @@
 "*":
-  "advanced-open-file":
-    fuzzyMatch: true
   "atom-beautify":
     css:
       beautify_on_save: true
@@ -22,7 +20,6 @@
   "autocomplete-plus":
     autoActivationDelay: 50
     confirmCompletion: "enter"
-    defaultProvider: "Fuzzy"
     fileBlacklist: [
       ".map"
     ]
@@ -43,10 +40,6 @@
       "source.python": [
         "BUCK"
       ]
-    disabledPackages: [
-      "symbols-view"
-      "smart-tab-name"
-    ]
     packagesWithKeymapsDisabled: [
       "emmet"
     ]
@@ -55,14 +48,12 @@
       "atom-material-ui"
       "iceberg-syntax"
     ]
-  "custom-title":
-    template: "<%= relativeFilePath %><% if (projectPath) { %> - <%= projectPath %><% } %><%=  %><% if (projectPath) { %> - <%= projectPath %><% } %> "
   editor:
     fontFamily: "Monaco Nerd Font"
     invisibles: {}
     scrollPastEnd: true
   "exception-reporting":
-    userId: "05ef3208-1cda-8a95-7587-f7ce79ab20d2"
+    userId: "94649692-c1b8-4525-b665-1b08d56983a4"
   "highlight-line": {}
   "highlight-selected":
     highlightInPanes: false
@@ -75,28 +66,8 @@
     showPanel: true
   "markdown-preview":
     useGitHubStyle: true
-  metrics:
-    userId: "0094ac662eca3e2e69c2465da6e67afd381397b9"
-  minimap:
-    plugins:
-      "git-diff": true
-      "minimap-autohide": true
-      "minimap-autohideDecorationsZIndex": 0
   narrow:
     notifiedVimModePlusSpecificDefaultKeymap: true
-  "prettier-atom":
-    formatOnSaveOptions:
-      enabled: true
-    prettierOptions:
-      semi: false
-      singleQuote: true
-    useEslint: true
-  "rubocop-auto-correct":
-    autoRun: true
-  stylefmt:
-    formatOnSave: true
-  "vim-mode":
-    useClipboardAsDefaultRegister: true
   "vim-mode-plus":
     flashOnMoveToOccurrence: true
     ignoreCaseForSearch: true
@@ -108,8 +79,6 @@
     useClipboardAsDefaultRegister: true
     useSmartcaseForSearch: true
     useSmartcaseForSearchCurrentWord: true
-  "vue-stylefmt":
-    formatOnSave: true
   welcome:
     showOnStartup: false
   whitespace:

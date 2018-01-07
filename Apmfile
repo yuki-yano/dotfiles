@@ -1,10 +1,6 @@
-atom-alignment
-atom-auto-programming
 atom-beautify
-atom-gtags
 atom-material-ui
 atom-ternjs
-auto-update-packages
 autocomplete-flow
 autocomplete-modules
 autocomplete-paths
@@ -12,7 +8,6 @@ busy-signal
 clipboard-plus
 color-picker
 cursor-history
-custom-title
 editorconfig
 emmet
 file-icons
@@ -24,9 +19,6 @@ iceberg-syntax
 ide-vue
 intentions
 language-babel
-language-docker
-language-gitignore
-language-terraform
 language-vue
 linter
 linter-erb
@@ -34,7 +26,6 @@ linter-eslint
 linter-rubocop
 linter-stylelint
 linter-ui-default
-merge-conflicts
 narrow
 open-recent
 persistent-undo
@@ -43,9 +34,8 @@ prettier-atom
 project-manager
 regex-railroad-diagram
 ruby-block
-stylefmt
+tablr
 teletype
 vim-mode-plus
 vim-mode-plus-ex-mode
 vim-mode-plus-keymaps-for-surround
-vue-stylefmt
