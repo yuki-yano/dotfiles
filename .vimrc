@@ -378,7 +378,7 @@ set history=1000
 set undodir=~/.vim_undo
 set undofile
 set viewoptions=cursor,folds
-set hlsearch
+set hlsearch | nohlsearch
 set ignorecase
 set smartcase
 set autoread
