@@ -353,6 +353,9 @@ nnoremap <silent> <Leader><C-l> :<C-u>redraw!<CR>
 "" Command Line Window Mode
 nnoremap Q  <Nop>
 nnoremap gQ <Nop>
+
+"" Macro
+nnoremap Q @q
 " }}}2
 
 " Indent {{{2
