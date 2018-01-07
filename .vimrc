@@ -243,6 +243,8 @@ endif
 " Encoding {{{2
 set fileencodings=utf-8,sjis,cp932,euc-jp
 set fileformats=unix,mac,dos
+set fileencoding=utf-8
+set termencoding=utf-8
 " }}}2
 
 " Appearance {{{2
