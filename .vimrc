@@ -431,7 +431,7 @@ let g:loaded_man             = 1
 " Command {{{1
 
 " GoogleTranslation {{{2
-function! s:transRange(...) range
+function! s:trans_range(...) range
   let l:texts = []
   for l:n in range(a:firstline, a:lastline)
     let l:line = getline(l:n)
@@ -441,11 +441,11 @@ function! s:transRange(...) range
   15new | put!=translategoogle#command(join(l:texts))
 endfunction
 
-command! -nargs=* -range Trans <line1>,<line2>call s:transRange(<f-args>)
+command! -nargs=* -range Trans <line1>,<line2>call s:trans_range(<f-args>)
 " }}}2
 
 " ToggleHiglight {{{2
-function! s:toggleHighlight()
+function! s:toggle_highlight()
   if exists('g:syntax_on')
     syntax off
   else
@@ -453,11 +453,11 @@ function! s:toggleHighlight()
   endif
 endfunction
 
-command! ToggleHighlight call s:toggleHighlight()
+command! ToggleHighlight call s:toggle_highlight()
 " }}}2
 
-" TrimEndLines {{{2
-function! s:TrimEndLines()
+" TrimEndLine {{{2
+function! s:trim_end_line()
   let l:save_cursor = getpos('.')
   normal! :silent! %s#\($\n\s*\)\+\%$##
   call setpos('.', l:save_cursor)
@@ -465,8 +465,8 @@ endfunction
 " }}}2
 
 " MoveToNewTab {{{2
-nnoremap <Leader>tm :<C-u>tablast <Bar> call <SID>MoveToNewTab()<CR>
-function! s:MoveToNewTab()
+nnoremap <Leader>tm :<C-u>tablast <Bar> call <SID>move_to_new_tab()<CR>
+function! s:move_to_new_tab()
   tab split
   tabprevious
 
@@ -482,7 +482,7 @@ endfunction
 
 " AutoCursorline {{{2
 let s:cursorline_lock = 0
-function! s:AutoCursorline(event)
+function! s:auto_cursorline(event)
   if a:event ==# 'WinEnter'
     setlocal cursorline
     let s:cursorline_lock = 2
@@ -567,13 +567,13 @@ AutoCmd FileType ruby,eruby    setlocal dict=~/dotfiles/.vim/dict/rails.dict
 AutoCmd InsertLeave * setlocal nopaste
 
 " Remove Tailing Space
-AutoCmd BufWritePre * call s:TrimEndLines()
+AutoCmd BufWritePre * call s:trim_end_line()
 
 " Auto CursorLine
-AutoCmd CursorMoved,CursorMovedI * call s:AutoCursorline('CursorMoved')
-AutoCmd CursorHold,CursorHoldI * call s:AutoCursorline('CursorHold')
-AutoCmd WinEnter * call s:AutoCursorline('WinEnter')
-AutoCmd WinLeave * call s:AutoCursorline('WinLeave')
+AutoCmd CursorMoved,CursorMovedI * call s:auto_cursorline('CursorMoved')
+AutoCmd CursorHold,CursorHoldI * call s:auto_cursorline('CursorHold')
+AutoCmd WinEnter * call s:auto_cursorline('WinEnter')
+AutoCmd WinLeave * call s:auto_cursorline('WinLeave')
 
 " Disable Auto Comment
 AutoCmd FileType * setlocal formatoptions-=ro
