@@ -59,7 +59,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('othree/javascript-libraries-syntax.vim',     {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('othree/jspc.vim',                            {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('pangloss/vim-javascript',                    {'lazy': 1, 'on_ft': 'javascript'})
-  call dein#add('pocke/iro.vim',                              {'lazy': 1, 'on_ft': 'ruby'})
+  call dein#add('pocke/iro.vim')
   call dein#add('posva/vim-vue',                              {'lazy': 1, 'on_ft': ['vue', 'vue.html.javascript.css']})
   call dein#add('prettier/vim-prettier',                      {'lazy': 1, 'on_ft': ['javascript', 'vue', 'vue.html.javascript.css']})
   call dein#add('rhysd/vim-gfm-syntax',                       {'lazy': 1, 'on_ft': 'markdown'})
@@ -691,6 +691,18 @@ let g:html5_rdfa_attributes_complete = 1
 let g:html5_microdata_attributes_complete = 1
 let g:html5_aria_attributes_complete = 1
 " }}}3
+
+" iro {{{
+if dein#tap('iro.vim')
+  function! s:iro_clean()
+    if &filetype !=# 'ruby'
+      execute printf('ruby Iro.clean(%d)', winnr())
+    endif
+  endfunction
+
+  AutoCmd BufEnter * call s:iro_clean()
+endif
+" }}}
 
 " javascript {{{3
 let g:jsx_ext_required = 0
