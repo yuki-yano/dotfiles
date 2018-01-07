@@ -506,74 +506,77 @@ endfunction
 " autocmd {{{1
 augroup MyVimrc
   autocmd!
+augroup END
 
-  " Line Number
-  autocmd BufNewFile,BufRead,FileType * set number
-  if has('nvim')
-    autocmd TermOpen * set nonumber | set norelativenumber
-  endif
+command! -nargs=* AutoCmd autocmd MyVimrc <args>
 
-  " Intent
-  autocmd FileType javascript setlocal sw=2 sts=2 ts=2 et
-  autocmd FileType ruby       setlocal sw=2 sts=2 ts=2 et
-  autocmd FileType css        setlocal sw=2 sts=2 ts=2 et
-  autocmd FileType scss       setlocal sw=2 sts=2 ts=2 et
-  autocmd FileType json       setlocal sw=2 sts=2 ts=2 et
-  autocmd FileType markdown   setlocal sw=2 sts=2 ts=2 et
-  autocmd FileType sh         setlocal sw=2 sts=2 ts=2 et
-  autocmd FileType vim        setlocal sw=2 sts=2 ts=2 et
-  autocmd FileType zsh        setlocal sw=2 sts=2 ts=2 et
+" Line Number
+autocmd BufNewFile,BufRead,FileType * set number
+if has('nvim')
+  autocmd TermOpen * set nonumber | set norelativenumber
+endif
 
-  " Filetype
-  autocmd BufNewFile,BufRead         *.erb set filetype=eruby.html
-  autocmd BufNewFile,BufRead         *.vue set filetype=vue.html.javascript.css
-  autocmd BufNewFile,BufRead          *.md set filetype=markdown
-  autocmd BufNewFile,BufRead        *.cson set filetype=coffee
-  autocmd BufNewFile,BufRead  *.{yml,yaml} set filetype=yaml
-  autocmd BufNewFile,BufRead      .babelrc set filetype=json
-  autocmd BufNewFile,BufRead     .eslintrc set filetype=json
-  autocmd BufNewFile,BufRead  .stylelintrc set filetype=json
-  autocmd BufNewFile,BufRead   .prettierrc set filetype=json
-  autocmd BufNewFile,BufRead .tern-project set filetype=json
-  autocmd BufNewFile,BufRead        .pryrc set filetype=ruby
-  autocmd BufNewFile,BufRead       Gemfile set filetype=ruby
-  autocmd BufNewFile,BufRead   Vagrantfile set filetype=ruby
-  autocmd BufNewFile,BufRead    Schemafile set filetype=ruby
+" Intent
+AutoCmd FileType javascript setlocal sw=2 sts=2 ts=2 et
+AutoCmd FileType ruby       setlocal sw=2 sts=2 ts=2 et
+AutoCmd FileType css        setlocal sw=2 sts=2 ts=2 et
+AutoCmd FileType scss       setlocal sw=2 sts=2 ts=2 et
+AutoCmd FileType json       setlocal sw=2 sts=2 ts=2 et
+AutoCmd FileType markdown   setlocal sw=2 sts=2 ts=2 et
+AutoCmd FileType sh         setlocal sw=2 sts=2 ts=2 et
+AutoCmd FileType vim        setlocal sw=2 sts=2 ts=2 et
+AutoCmd FileType zsh        setlocal sw=2 sts=2 ts=2 et
 
-  " Reassign Filetype
-  autocmd BufWritePost *
-  \ if &filetype ==# '' && exists('b:ftdetect') |
-  \  unlet! b:ftdetect |
-  \  filetype detect |
-  \ endif
+" Filetype
+AutoCmd BufNewFile,BufRead         *.erb set filetype=eruby.html
+AutoCmd BufNewFile,BufRead         *.vue set filetype=vue.html.javascript.css
+AutoCmd BufNewFile,BufRead          *.md set filetype=markdown
+AutoCmd BufNewFile,BufRead        *.cson set filetype=coffee
+AutoCmd BufNewFile,BufRead  *.{yml,yaml} set filetype=yaml
+AutoCmd BufNewFile,BufRead      .babelrc set filetype=json
+AutoCmd BufNewFile,BufRead     .eslintrc set filetype=json
+AutoCmd BufNewFile,BufRead  .stylelintrc set filetype=json
+AutoCmd BufNewFile,BufRead   .prettierrc set filetype=json
+AutoCmd BufNewFile,BufRead .tern-project set filetype=json
+AutoCmd BufNewFile,BufRead        .pryrc set filetype=ruby
+AutoCmd BufNewFile,BufRead       Gemfile set filetype=ruby
+AutoCmd BufNewFile,BufRead   Vagrantfile set filetype=ruby
+AutoCmd BufNewFile,BufRead    Schemafile set filetype=ruby
 
-  " Completion
-  autocmd FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
-  autocmd FileType ruby          setlocal omnifunc=rubycomplete#Complete
-  autocmd FileType eruby.html    setlocal omnifunc=htmlcomplete#CompleteTags
-  autocmd FileType python        setlocal omnifunc=pythoncomplete#Complete
-  autocmd FileType css           setlocal omnifunc=csscomplete#CompleteCSS
-  autocmd FileType scss          setlocal omnifunc=csscomplete#CompleteCSS
-  autocmd FileType javascript    setlocal dict=~/dotfiles/.vim/dict/javascript.dict
-  autocmd FileType ruby,eruby    setlocal dict=~/dotfiles/.vim/dict/rails.dict
+" Reassign Filetype
+AutoCmd BufWritePost *
+\ if &filetype ==# '' && exists('b:ftdetect') |
+\  unlet! b:ftdetect |
+\  filetype detect |
+\ endif
 
-  " Disable Paste Mode
-  autocmd InsertLeave * setlocal nopaste
+" Completion
+AutoCmd FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
+AutoCmd FileType ruby          setlocal omnifunc=rubycomplete#Complete
+AutoCmd FileType eruby.html    setlocal omnifunc=htmlcomplete#CompleteTags
+AutoCmd FileType python        setlocal omnifunc=pythoncomplete#Complete
+AutoCmd FileType css           setlocal omnifunc=csscomplete#CompleteCSS
+AutoCmd FileType scss          setlocal omnifunc=csscomplete#CompleteCSS
+AutoCmd FileType javascript    setlocal dict=~/dotfiles/.vim/dict/javascript.dict
+AutoCmd FileType ruby,eruby    setlocal dict=~/dotfiles/.vim/dict/rails.dict
 
-  " Remove Tailing Space
-  autocmd BufWritePre * call s:TrimEndLines()
+" Disable Paste Mode
+AutoCmd InsertLeave * setlocal nopaste
 
-  " Auto CursorLine
-  autocmd CursorMoved,CursorMovedI * call s:AutoCursorline('CursorMoved')
-  autocmd CursorHold,CursorHoldI * call s:AutoCursorline('CursorHold')
-  autocmd WinEnter * call s:AutoCursorline('WinEnter')
-  autocmd WinLeave * call s:AutoCursorline('WinLeave')
+" Remove Tailing Space
+AutoCmd BufWritePre * call s:TrimEndLines()
 
-  " Disable Auto Comment
-  autocmd FileType * setlocal formatoptions-=ro
+" Auto CursorLine
+AutoCmd CursorMoved,CursorMovedI * call s:AutoCursorline('CursorMoved')
+AutoCmd CursorHold,CursorHoldI * call s:AutoCursorline('CursorHold')
+AutoCmd WinEnter * call s:AutoCursorline('WinEnter')
+AutoCmd WinLeave * call s:AutoCursorline('WinLeave')
 
-  " Set Quit Map
-  autocmd FileType help nnoremap <silent> <buffer> q :quit<CR>
+" Disable Auto Comment
+AutoCmd FileType * setlocal formatoptions-=ro
+
+" Set Quit Map
+AutoCmd FileType help nnoremap <silent> <buffer> q :quit<CR>
 augroup END
 " }}}1
 
@@ -584,12 +587,8 @@ xnoremap : q:
 nnoremap q: :
 xnoremap q: :
 
-augroup cmdwin
-  autocmd!
-  autocmd CmdWinEnter * set nonumber | set norelativenumber
-  autocmd CmdWinEnter * setlocal completeopt+=noinsert
-  autocmd CmdwinEnter * call s:init_cmdwin()
-augroup END
+AutoCmd CmdWinEnter * set number | set norelativenumber
+AutoCmd CmdwinEnter * call s:init_cmdwin()
 
 function! s:init_cmdwin()
   nnoremap <buffer> q :<C-u>quit<CR>
@@ -724,11 +723,8 @@ function! s:prettier_vue_settings()
   nnoremap <silent> <buffer> <Leader>a :<C-u>Autoformat <Bar> Prettier<CR>
 endfunction
 
-augroup prettier
-  autocmd!
-  autocmd FileType javascript              call s:prettier_settings()
-  autocmd FileType vue.html.javascript.css call s:prettier_vue_settings()
-augroup END
+AutoCmd FileType javascript              call s:prettier_settings()
+AutoCmd FileType vue.html.javascript.css call s:prettier_vue_settings()
 " }}}3
 
 " ruby {{{3
@@ -746,11 +742,8 @@ let g:vim_indent_cont = 0
 
 " vue {{{
 let g:vue_disable_pre_processors = 1
-augroup vue
-  autocmd!
-  autocmd FileType vue syntax sync fromstart
-  autocmd BufRead,BufNewFile *.vue setlocal filetype=vue.html.javascript.css
-augroup END
+AutoCmd FileType vue syntax sync fromstart
+AutoCmd BufRead,BufNewFile *.vue setlocal filetype=vue.html.javascript.css
 " }}}
 
 " }}}2
@@ -854,10 +847,7 @@ if dein#tap('unite.vim')
     imap     <silent> <buffer> <C-w> <Plug>(unite_delete_backward_path)
   endfunction
 
-  augroup unite
-    autocmd!
-    autocmd FileType unite call s:unite_settings()
-  augroup END
+  AutoCmd FileType unite call s:unite_settings()
 
   "" file & buffer
   call unite#custom#source('buffer,file_rec,file_rec/async,file_rec/git', 'matchers', ['converter_relative_word', 'matcher_fuzzy'])
@@ -1034,10 +1024,7 @@ if dein#tap('vimfiler')
     nmap <buffer> <C-j> <C-w>j
   endfunction
 
-  augroup vimfiler
-    autocmd!
-    autocmd FileType vimfiler call s:vimfiler_settings()
-  augroup END
+  AutoCmd FileType vimfiler call s:vimfiler_settings()
 endif
 " }}}3
 
@@ -1260,11 +1247,8 @@ nmap <Leader>cl :<C-u>ConvertCaseLoop<CR>b
 " }}}3
 
 " operator-markdown {{{
-augroup operator-markdown
-  autocmd!
-  autocmd FileType markdown map <buffer> < <Plug>(operator-markdown-left)
-  autocmd FileType markdown map <buffer> > <Plug>(operator-markdown-right)
-augroup END
+AutoCmd FileType markdown map <buffer> < <Plug>(operator-markdown-left)
+AutoCmd FileType markdown map <buffer> > <Plug>(operator-markdown-right)
 " }}}
 
 " operator-replace {{{3
@@ -1272,19 +1256,13 @@ map _ <Plug>(operator-replace)
 " }}}3
 
 " qfreplace {{{3
-augroup qfreplace
-  autocmd!
-  autocmd FileType qf nnoremap <buffer> r :<C-u>Qfreplace<CR>
-augroup END
+AutoCmd FileType qf nnoremap <buffer> r :<C-u>Qfreplace<CR>
 " }}}3
 
 " sneak {{{3
 let g:sneak#s_next = 1
-augroup sneak
-  autocmd!
-  autocmd ColorScheme * highlight Sneak ctermfg=black ctermbg=13
-  autocmd ColorScheme * highlight SneakScope ctermfg=black ctermbg=13
-augroup END
+AutoCmd ColorScheme * highlight Sneak ctermfg=black ctermbg=13
+AutoCmd ColorScheme * highlight SneakScope ctermfg=black ctermbg=13
 " }}}3
 
 " tcomment {{{3
@@ -1303,11 +1281,8 @@ if dein#tap('yankround.vim')
   let g:yankround_max_history = 1000
   let g:yankround_use_region_hl = 1
 
-  augroup yankround
-    autocmd!
-    autocmd ColorScheme * highlight YankRoundRegion ctermfg=209 ctermbg=237
-    autocmd ColorScheme * highlight YankRoundRegion ctermfg=209 ctermbg=237
-  augroup END
+  AutoCmd ColorScheme * highlight YankRoundRegion ctermfg=209 ctermbg=237
+  AutoCmd ColorScheme * highlight YankRoundRegion ctermfg=209 ctermbg=237
 
   nmap p  <Plug>(yankround-p)
   nmap P  <Plug>(yankround-P)
@@ -1626,13 +1601,10 @@ AlterCommand! cap[ture] Capture
 " }}}
 
 " bufkill {{{3
-augroup bufkill
-  autocmd!
-  autocmd FileType *    nnoremap <silent> <Leader>d :BD<CR>
-  autocmd FileType help nnoremap <silent> <Leader>d :BW<CR>
-  autocmd FileType diff nnoremap <silent> <Leader>d :BW<CR>
-  autocmd FileType git  nnoremap <silent> <Leader>d :BW<CR>
-augroup END
+AutoCmd FileType *    nnoremap <silent> <Leader>d :BD<CR>
+AutoCmd FileType help nnoremap <silent> <Leader>d :BW<CR>
+AutoCmd FileType diff nnoremap <silent> <Leader>d :BW<CR>
+AutoCmd FileType git  nnoremap <silent> <Leader>d :BW<CR>
 " }}}3
 
 " expand-region {{{3
