@@ -1220,7 +1220,7 @@ if dein#tap('lexima.vim')
     \ {'char': '(',     'at': '(\%#)',   'input': '<Del>'},
     \ {'char': '{',     'at': '{\%#}',   'input': '<Del>'},
     \ {'char': '[',     'at': '\[\%#\]', 'input': '<Del>'},
-    \ {'char': '{',     'at': '{\%#$',   'input': '{{<CR>" }}}', 'filetype': 'vim'},
+    \ {'char': '{',     'at': '{\%#$',   'input': '{{<CR>', 'input_after': '<CR>" }}}', 'filetype': 'vim'},
     \ {'char': '<C-h>', 'at': '(\%#)',   'input': '<BS><Del>'},
     \ {'char': '<C-h>', 'at': '{\%#}',   'input': '<BS><Del>'},
     \ {'char': '<C-h>', 'at': '\[\%#\]', 'input': '<BS><Del>'},
