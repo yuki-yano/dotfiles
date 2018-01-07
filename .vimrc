@@ -147,6 +147,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mopp/vim-operator-convert-case')
   call dein#add('osyo-manga/vim-anzu',            {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('osyo-manga/vim-jplus',           {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('osyo-manga/vim-trip',            {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('othree/eregex.vim')
   call dein#add('pocke/vim-operator-markdown',    {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/clever-f.vim',             {'lazy': 1, 'on_map': {'nvxo': '<Plug>'}})
@@ -1287,6 +1288,13 @@ augroup END
 " tcomment {{{3
 noremap <silent> <Leader>cc :TComment<CR>
 " }}}3
+
+" trip {{{
+if dein#tap('trip.vim')
+  nmap <C-a> <Plug>(trip-increment)
+  nmap <C-x> <Plug>(trip-decrement)
+endif
+" }}}
 
 " yankround & Unite {{{3
 if dein#tap('yankround.vim')
