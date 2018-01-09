@@ -131,7 +131,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Edit & Move & Search {{{3
   call dein#add('LeafCage/yankround.vim')
   call dein#add('chrisbra/NrrwRgn',               {'lazy': 1, 'on_cmd': ['NR', 'NW', 'WidenRegion', 'NRV', 'NUD', 'NRP', 'NRM', 'NRS', 'NRN', 'NRL']})
-  call dein#add('cohama/lexima.vim',              {'lazy': 1, 'on_event': 'InsertEnter', 'hook_post_source': 'call Hook_on_post_source_lexima()'})
+  call dein#add('cohama/lexima.vim',              {'lazy': 1, 'on_event': 'InsertEnter', 'hook_source': 'call Hook_on_post_source_lexima()'})
   call dein#add('dhruvasagar/vim-table-mode',     {'lazy': 1, 'on_cmd': 'TableModeToggle'})
   call dein#add('easymotion/vim-easymotion',      {'lazy': 1, 'on_map': {'nvxo': '<Plug>'}})
   call dein#add('godlygeek/tabular',              {'lazy': 1, 'on_cmd': 'Tabularize'})
