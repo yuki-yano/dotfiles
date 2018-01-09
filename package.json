@@ -34,6 +34,7 @@
     "tern": "^0.21.0",
     "vtop": "^0.5.7",
     "vue-cli": "^2.9.2",
-    "vue-prettier": "^0.2.0"
+    "vue-prettier": "^0.2.0",
+    "vue-template-compiler": "^2.5.13"
   }
 }
