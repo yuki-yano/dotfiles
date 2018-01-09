@@ -141,9 +141,9 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('haya14busa/vim-edgemotion',      {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-metarepeat',      {'lazy': 1, 'on_map': ['go', 'g.']})
   call dein#add('junegunn/vim-easy-align')
-  call dein#add('justinmk/vim-sneak')
   call dein#add('kana/vim-operator-replace',      {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('kshenoy/vim-signature')
+  call dein#add('machakann/vim-sandwich')
   call dein#add('mopp/vim-operator-convert-case')
   call dein#add('osyo-manga/vim-anzu',            {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('osyo-manga/vim-jplus',           {'lazy': 1, 'on_map': '<Plug>'})
@@ -157,7 +157,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tomtom/tcomment_vim',            {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
   call dein#add('tpope/vim-repeat',               {'lazy': 1, 'on_map': {'n': '<Plug>'}})
   call dein#add('tpope/vim-speeddating',          {'lazy': 1, 'on_map': {'n': '<Plug>'}})
-  call dein#add('tpope/vim-surround')
   " }}}3
 
   " Appearance {{{3
@@ -1274,10 +1273,12 @@ map _ <Plug>(operator-replace)
 AutoCmd FileType qf nnoremap <buffer> r :<C-u>Qfreplace<CR>
 " }}}3
 
-" sneak {{{3
-let g:sneak#s_next = 1
-AutoCmd ColorScheme * highlight Sneak ctermfg=black ctermbg=13
-AutoCmd ColorScheme * highlight SneakScope ctermfg=black ctermbg=13
+" sandwich {{{3
+let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
+let g:sandwich#recipes += [
+\   { 'buns': ['\/', '\/'] },
+\   { 'buns': ['_', '_'] },
+\ ]
 " }}}3
 
 " tcomment {{{3
