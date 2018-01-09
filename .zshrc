@@ -201,10 +201,6 @@ function agvim () {
   vi $(ag $@ | peco --query "$LBUFFER" | awk -F : '{print $1 ":" $2}')
 }
 
-function iag() {
-  vi $(ag --nobreak --noheading . | peco | awk -F: '{print $1 ":" $2}')
-}
-
 # nicovideo
 function peco-nico-ranking() {
   ruby -r rss -e 'RSS::Parser.parse("http://www.nicovideo.jp/ranking/fav/daily/all?rss=2.0").channel.items.each {|item| puts item.link + "\t" + item.title}' | peco | while read line; do
