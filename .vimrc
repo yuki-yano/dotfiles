@@ -1697,7 +1697,7 @@ nnoremap <silent> <Leader>u :<C-u>UndotreeToggle<CR>
 
 " windowswap {{{3
 let g:windowswap_map_keys = 0
-nnoremap <silent> <leader>ww :call WindowSwap#EasyWindowSwap()<CR>
+nnoremap <silent> <C-w><C-w> :call WindowSwap#EasyWindowSwap()<CR>
 " }}}3
 
 " winresizer {{{3
