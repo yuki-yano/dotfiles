@@ -1,4 +1,4 @@
-# zgen {{{
+# Zgen {{{
 
 source ~/dotfiles/.zsh/zgen/zgen.zsh
 
@@ -139,7 +139,7 @@ zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
 
 # }}}
 
-# terminal {{{
+# Terminal {{{
 
 case "${TERM}" in
   screen)
@@ -177,13 +177,13 @@ esac
 
 # }}}
 
-# alias {{{
+# Alias {{{
 
 alias -g CB='$(git symbolic-ref --short HEAD)'
 
 # }}}
 
-# interactive finder {{{
+# Fuzzy Finder {{{
 
 f() {
   local dir
@@ -227,7 +227,7 @@ done
 
 # }}}
 
-# misc {{{
+# Misc {{{
 
 # コマンドラインスタックを表示
 show_buffer_stack() {
@@ -312,7 +312,7 @@ function command_not_found_handler() {
 
 # }}}
 
-# bindkey {{{
+# Bindkey {{{
 
 bindkey -e
 bindkey "^ "   my-expand-abbrev
@@ -327,13 +327,13 @@ bindkey '^p'   up-line-or-history-ignoring
 
 # }}}
 
-# local file {{{
+# Local File {{{
 
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
 
 # }}}
 
-# loading fzf {{{
+# Loading fzf {{{
 
 [ -f /usr/local/opt/fzf/shell/completion.zsh ] && source /usr/local/opt/fzf/shell/completion.zsh
 export FZF_DEFAULT_COMMAND='ag -g ""'
@@ -341,7 +341,7 @@ export FZF_DEFAULT_OPTS='--reverse'
 
 # }}}
 
-# profile {{{
+# Profile {{{
 
 if (which zprof > /dev/null) ;then
   zprof | less
