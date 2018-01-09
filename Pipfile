@@ -7,4 +7,4 @@ mypy
 neovim
 neovim-remote
 pygments-style-solarized
-vint
+vim-vint
