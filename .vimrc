@@ -433,8 +433,7 @@ function! s:trans_range(...) range
   let l:texts = []
   for l:n in range(a:firstline, a:lastline)
     let l:line = getline(l:n)
-    call substitute(l:line, '\n\+$', ' ', '')
-    call add(l:texts, l:line)
+    call add(l:texts, l:line . "\n")
   endfor
   15new | put!=translategoogle#command(join(l:texts))
 endfunction
