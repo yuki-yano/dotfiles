@@ -217,7 +217,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('vim-scripts/cecutil')
   " }}}3
 
-  "  After Load {{{3
+  "  DevIcons {{{3
   " call dein#add('ryanoasis/vim-devicons')
   " }}}3
 
@@ -578,7 +578,6 @@ AutoCmd FileType * setlocal formatoptions-=ro
 
 " Set Quit Map
 AutoCmd FileType help nnoremap <silent> <buffer> q :quit<CR>
-augroup END
 " }}}1
 
 " Command Line Window {{{1
