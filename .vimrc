@@ -1258,10 +1258,6 @@ if dein#tap('lexima.vim')
 endif
 " }}}3
 
-" operator-convert-case {{{3
-nmap <Leader>cl :<C-u>ConvertCaseLoop<CR>b
-" }}}3
-
 " operator-replace {{{3
 map _ <Plug>(operator-replace)
 " }}}3
@@ -1664,7 +1660,7 @@ endfunction
 let g:scratch_no_mappings = 1
 " }}}3
 
-" submode {{{3
+" submode & operator-convert-case {{{3
 let g:submode_keep_leaving_key = 1
 
 "" edit
@@ -1681,6 +1677,10 @@ call submode#enter_with('changetab', 'n', '', 'g<C-p>', 'gT')
 call submode#enter_with('changetab', 'n', '', 'g<C-n>', 'gt')
 call submode#map('changetab', 'n', '', '<C-p>', 'gT')
 call submode#map('changetab', 'n', '', '<C-n>', 'gt')
+
+"" operator-convert-case
+call submode#enter_with('convert', 'n', '', '<leader>cl', ':ConvertCaseLoop<CR>')
+call submode#map('convert', 'n', '', 'c', ':ConvertCaseLoop<CR>')
 " }}}3
 
 " tagbar {{{3
