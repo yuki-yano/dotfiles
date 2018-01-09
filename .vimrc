@@ -149,7 +149,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('osyo-manga/vim-jplus',           {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('osyo-manga/vim-trip',            {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('othree/eregex.vim')
-  call dein#add('pocke/vim-operator-markdown',    {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/clever-f.vim',             {'lazy': 1, 'on_map': {'nvxo': '<Plug>'}})
   call dein#add('rking/ag.vim',                   {'lazy': 1, 'on_cmd': 'Ag'})
   call dein#add('thinca/vim-qfreplace')
@@ -1259,11 +1258,6 @@ endif
 " operator-convert-case {{{3
 nmap <Leader>cl :<C-u>ConvertCaseLoop<CR>b
 " }}}3
-
-" operator-markdown {{{
-AutoCmd FileType markdown map <buffer> < <Plug>(operator-markdown-left)
-AutoCmd FileType markdown map <buffer> > <Plug>(operator-markdown-right)
-" }}}
 
 " operator-replace {{{3
 map _ <Plug>(operator-replace)
