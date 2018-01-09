@@ -597,6 +597,7 @@ function! s:init_cmdwin()
   nnoremap <buffer> q :<C-u>quit<CR>
   inoremap <buffer> <expr> <CR>  pumvisible() ? "\<C-y>\<CR>"  : "\<CR>"
   inoremap <buffer> <expr> <C-h> deoplete#smart_close_popup() . "\<C-h>"
+  inoremap <silent> <expr> <Tab> pumvisible() ? "\<Tab>" : deoplete#mappings#manual_complete()
 
   startinsert!
 endfunction
