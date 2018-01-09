@@ -577,6 +577,10 @@ AutoCmd FileType * setlocal formatoptions-=ro
 
 " Set Quit Map
 AutoCmd FileType help nnoremap <silent> <buffer> q :quit<CR>
+
+" Highlight Annotation Comment
+AutoCmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('Todo', '\(TODO\|FIXME\|NOTE\|INFO\|XXX\|TEMP\):')
+AutoCmd WinEnter,BufRead,BufNew,Syntax * highlight Todo ctermfg=229
 " }}}1
 
 " Command Line Window {{{1
