@@ -1569,7 +1569,6 @@ xmap <Leader>H <Plug>(quickhl-manual-reset)
 " rainbow {{{3
 let g:rainbow_active = 1
 let g:rainbow_conf = {
-\   'guifgs' : [ '#666666', '#0087ff', '#ff005f', '#875fd7', '#d78700', '#00af87' ],
 \   'ctermfgs': [ '110', '150', '109', '216', '140', '203' ],
 \   'separately' : {
 \       '*':   {},
