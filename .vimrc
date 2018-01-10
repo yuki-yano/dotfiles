@@ -1184,7 +1184,7 @@ let g:EasyMotion_space_jump_first = 1
 highlight link EasyMotionIncSearch Search
 highlight link EasyMotionMoveHL Search
 
-map   [EasyMotion] <Nop>
+map ; <Nop>
 map ; [EasyMotion]
 
 nmap [EasyMotion]; <Plug>(easymotion-overwin-f2)
