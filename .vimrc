@@ -136,7 +136,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('easymotion/vim-easymotion',      {'lazy': 1, 'on_map': {'nvxo': '<Plug>'}})
   call dein#add('godlygeek/tabular',              {'lazy': 1, 'on_cmd': 'Tabularize'})
   call dein#add('h1mesuke/vim-alignta',           {'lazy': 1, 'on_cmd': 'Alignta'})
-  call dein#add('haya14busa/incsearch.vim',       {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-asterisk',        {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-edgemotion',      {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-metarepeat',      {'lazy': 1, 'on_map': ['go', 'g.']})
@@ -1144,22 +1143,16 @@ call gina#custom#mapping#nmap(
 
 " Edit & Move & Search {{{2
 
-" incsearch & anzu & asterisk {{{3
-if dein#tap('incsearch.vim')
-  let g:incsearch#auto_nohlsearch = 1
-  let g:anzu_status_format = '(%i/%l)'
+" anzu & asterisk {{{3
+let g:anzu_status_format = '(%i/%l)'
 
-  map /  <Plug>(incsearch-forward)
-  map ?  <Plug>(incsearch-backward)
-  map g/ <Plug>(incsearch-stay)
-  map n  <Plug>(incsearch-nohl)<Plug>(anzu-n)zzzv
-  map N  <Plug>(incsearch-nohl)<Plug>(anzu-N)zzzv
-  map *  <Plug>(incsearch-nohl)<Plug>(asterisk-z*)
-  map #  <Plug>(incsearch-nohl)<Plug>(asterisk-z#)
-  map g* <Plug>(incsearch-nohl)<Plug>(asterisk-gz*)
-  map g# <Plug>(incsearch-nohl)<Plug>(asterisk-gz#)
-  nnoremap <silent> <Esc><Esc> :<C-u>AnzuClearSearchStatus<CR>
-endif
+map n  <Plug>(anzu-n)zzzv
+map N  <Plug>(anzu-N)zzzv
+map *  <Plug>(asterisk-z*)
+map #  <Plug>(asterisk-z#)
+map g* <Plug>(asterisk-gz*)
+map g# <Plug>(asterisk-gz#)
+nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <bar> AnzuClearSearchStatus<CR>
 " }}}3
 
 " Ag {{{3
