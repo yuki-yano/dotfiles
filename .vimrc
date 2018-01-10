@@ -585,9 +585,14 @@ AutoCmd WinEnter,BufRead,BufNew,Syntax * highlight Todo ctermfg=229
 " Command Line Window {{{1
 nnoremap : q:
 xnoremap : q:
-
 nnoremap q: :
 xnoremap q: :
+
+nnoremap / q/
+nnoremap q/ /
+
+nnoremap ? q?
+nnoremap q? ?
 
 AutoCmd CmdWinEnter * set number | set norelativenumber
 AutoCmd CmdwinEnter * call s:init_cmdwin()
