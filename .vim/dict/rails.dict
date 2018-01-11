@@ -7,7 +7,6 @@ Addrinfo
 Arc
 ArgumentError
 Array
-Array
 BMPString
 Base64
 BasicObject
@@ -16,7 +15,6 @@ Benchmark
 Benchmark::Job
 Benchmark::Report
 Benchmark::Tms
-BigDecimal
 BigDecimal
 BigMath
 Bignum
@@ -57,7 +55,6 @@ CloseKey
 ClosedQueueError
 Comparable
 Complex
-Complex
 ConditionVariable
 Continuation
 Coverage
@@ -94,7 +91,6 @@ Date
 DateTime
 DelegateClass
 Delegator
-Digest
 Digest
 Digest::Base
 Digest::Class
@@ -292,7 +288,6 @@ FileUtils::Verbose
 Find
 Fixnum
 Float
-Float
 FloatDomainError
 Font
 Forwardable
@@ -436,7 +431,6 @@ GraphicString
 Grid
 HTTPSession
 Hash
-Hash
 IA5String
 IO
 IO::WaitReadable
@@ -483,9 +477,7 @@ ISO64String
 IndexError
 Inspector
 Integer
-Integer
 Interrupt
-JSON
 JSON
 JSON::CircularDatastructure
 JSON::Editor
@@ -539,7 +531,6 @@ Logger::LogDevice::LogDeviceMutex
 Logger::Severity
 Logger::ShiftingError
 Mainloop
-Marshal
 Marshal
 MatchData
 Math
@@ -872,7 +863,6 @@ PTY
 PTY::ChildExited
 Pack
 Pathname
-Pathname
 PhotoImage
 Place
 Polygon
@@ -1162,7 +1152,6 @@ Random
 Range
 RangeError
 Rational
-Rational
 RbConfig
 Readline
 Readline::HISTORY
@@ -1240,7 +1229,6 @@ SecurityError
 Selection
 Sequence
 Set
-Set
 Shell
 Shell::AppendFile
 Shell::AppendIO
@@ -1278,7 +1266,6 @@ SortedSet
 Spinbox
 StandardError
 StopIteration
-String
 String
 StringIO
 StringScanner
@@ -1492,7 +1479,6 @@ TkFont::CoreMethods
 TkFont::DescendantFont
 TkFrame
 TkGrid
-TkGrid
 TkImage
 TkItemConfigMethod
 TkItemConfigOptkeys
@@ -1529,13 +1515,11 @@ TkOptionMenuButton
 TkOptionMenubutton
 TkOptionMenubutton::OptionMenu
 TkPack
-TkPack
 TkPackage
 TkPalette
 TkPanedWindow
 TkPanedwindow
 TkPhotoImage
-TkPlace
 TkPlace
 TkRTTimer
 TkRadioButton
@@ -1618,7 +1602,6 @@ TypeError
 UDPSocket
 UNIXServer
 UNIXSocket
-URI
 URI
 URI::BadURIError
 URI::Error
@@ -2068,7 +2051,6 @@ adler32_combine
 advise
 afamily
 after
-after
 after_cancel
 after_commit
 after_create
@@ -2192,13 +2174,11 @@ ask_yes_no
 asn1_flag
 aspect
 assert
-assert
 assert_block
 assert_difference
 assert_dom_equal
 assert_dom_not_equal
 assert_equal
-assert_generates
 assert_generates
 assert_in_delta
 assert_instance_of
@@ -2216,11 +2196,9 @@ assert_nothing_thrown
 assert_operator
 assert_raise
 assert_recognizes
-assert_recognizes
 assert_redirected_to
 assert_respond_to
 assert_response
-assert_routing
 assert_routing
 assert_same
 assert_select
@@ -2281,12 +2259,10 @@ attribute_method_matchers
 attribute_method_matchers?
 attribute_missing
 attribute_names
-attribute_names
 attribute_of
 attribute_present?
 attribute_types_cached_by_default
 attribute_types_cached_by_default?
-attributes
 attributes
 attributes=
 attributes_before_type_cast
@@ -2536,8 +2512,6 @@ change_column_default
 change_privilege
 change_table
 changed
-changed
-changed?
 changed?
 changed_attributes
 changed_for_autosave?
@@ -2584,8 +2558,6 @@ cipher
 ciphers
 civil
 class
-class
-class_eval
 class_eval
 class_exec
 class_inheritable_accessor
@@ -2629,7 +2601,6 @@ client_cert_cb
 client_error?
 client_frame
 client_thread
-clone
 clone
 clone_attribute_value
 clone_attributes
@@ -2764,7 +2735,6 @@ content_length
 content_range
 content_type
 context
-context
 continue
 continue_timeout
 contourbox
@@ -2781,8 +2751,6 @@ convpath
 cooked
 cooked!
 cookie
-cookies
-cookies
 cookies
 coords
 coords_3D_to_pixel
@@ -2835,7 +2803,6 @@ create_listeners
 create_makefile
 create_rule
 create_slave
-create_table
 create_table
 create_tmpsrc
 create_value
@@ -2953,7 +2920,6 @@ debug_output_synchronize
 debug_output_try_lock
 debug_output_unlock
 debugger
-debugger
 decode
 decode64
 decode_all
@@ -2979,7 +2945,6 @@ def_method
 def_module
 def_system_command
 def_unknown_proc
-default
 default
 default_acl
 default_argc_limit
@@ -3038,11 +3003,8 @@ deiconify
 del
 delay
 delegate
-delegate
 delegate_alias
 deletable?
-delete
-delete
 delete
 delete!
 delete_all
@@ -3090,7 +3052,6 @@ dest_directory
 destination_encoding
 destination_encoding_name
 destroy
-destroy
 destroy!
 destroyed?
 destroyed_by_association
@@ -3136,7 +3097,6 @@ disconnect
 disconnected?
 disjoint?
 dispid
-display
 display
 display_c_call
 display_char
@@ -3211,7 +3171,6 @@ dump_stream
 dump_tag
 dump_text
 dump_window
-dup
 dup
 duplicable?
 dynamic_width
@@ -3366,15 +3325,12 @@ entryconfiginfo
 entryconfigure
 entrypath
 enum_for
-enum_for
 envelope
 environment
 eof
 eof?
 epath
 eql?
-eql?
-equal?
 equal?
 erase
 erf
@@ -3390,7 +3346,6 @@ error_depth
 error_message
 error_on
 error_string
-errors
 errors
 errors_on
 errs
@@ -3434,7 +3389,6 @@ executable?
 executable_real?
 executables
 execute
-execute
 exempt_from_layout
 exist?
 existing
@@ -3453,7 +3407,6 @@ expand_path
 expand_tabs
 expanded_name
 expect
-expect
 expire
 expire_action
 expire_page
@@ -3465,7 +3418,6 @@ export_with_clear
 expose_cmd
 expunge
 ext
-extend
 extend
 extend_object
 extended
@@ -3495,7 +3447,6 @@ family_addrinfo
 fast_delete
 fast_generate
 fast_insert
-fatal
 fatal
 fatal?
 fcntl
@@ -3531,7 +3482,6 @@ fileno
 files
 fill
 fill_column
-filter
 filter
 filter_backtrace
 filter_parameter_logging
@@ -3590,12 +3540,8 @@ fix
 fixed_encoding?
 fixture_path
 fixtures
-fixtures
 fixup
 flags
-flash
-flash
-flash
 flash
 flatten
 flock
@@ -3647,7 +3593,6 @@ fragment
 frame
 free
 freeze
-freeze
 frexp
 friday?
 from
@@ -3665,7 +3610,6 @@ from_xml
 from_yaml
 front
 frozen?
-frozen?
 fsync
 fsync_dir
 ftype
@@ -3680,7 +3624,6 @@ gather_dependencies
 gcd
 gcdlcm
 gecos
-gem
 gem
 gem_file
 gem_file_list
@@ -3705,7 +3648,6 @@ generate_windows_script
 generator
 genspace
 geometry
-get
 get
 get2
 get3dcolor
@@ -3887,7 +3829,6 @@ has_transactional_callbacks?
 has_unit_tests?
 has_value?
 hash
-hash
 hash_kv
 hash_old
 have_devel?
@@ -3902,15 +3843,12 @@ have_struct_member
 have_type
 have_var
 head
-head
 head2
 header
 header?
 header_convert
 header_converters
 header_row?
-headers
-headers
 headers
 heading_cget
 heading_configinfo
@@ -3920,10 +3858,7 @@ helo
 help
 helpcontext
 helper
-helper
 helper_attr
-helper_attr
-helper_method
 helper_method
 helper_name
 helpfile
@@ -4086,7 +4021,6 @@ insert_columns
 insert_list
 insert_output
 inspect
-inspect
 inspect?
 inspect_mode
 inspect_sockaddr
@@ -4114,22 +4048,15 @@ installed_gems
 installed_spec_directories
 instance
 instance_eval
-instance_eval
-instance_exec
 instance_exec
 instance_method
 instance_methods
 instance_of?
-instance_of?
 instance_values
 instance_variable_defined?
-instance_variable_defined?
-instance_variable_get
 instance_variable_get
 instance_variable_names
 instance_variable_set
-instance_variable_set
-instance_variables
 instance_variables
 instate
 instruction
@@ -4216,7 +4143,6 @@ irb_path
 irb_require
 isEqual
 isPermaLink
-is_a?
 is_a?
 is_haml?
 is_hash?
@@ -4333,7 +4259,6 @@ latinfont_copy
 latintagfont_configure
 latintagfont_copy
 layout
-layout
 lazy
 lchmod
 lchown
@@ -4376,7 +4301,6 @@ listeners
 ljust
 ln_s
 ln_sf
-load
 load
 load_cmd_on_ip
 load_dependency
@@ -4435,10 +4359,6 @@ log2
 log2!
 log_src
 logger
-logger
-logger
-logger
-logger
 login
 logout
 lookup
@@ -4464,7 +4384,6 @@ mail
 mailbox
 mailfrom
 mails
-main
 main
 main_page
 main_type
@@ -4515,7 +4434,6 @@ mask!
 mask_bits!
 master?
 match
-match
 match?
 matched
 matched?
@@ -4549,7 +4467,6 @@ media_subtype
 media_type
 mem
 member
-member
 member?
 members
 memberwise
@@ -4572,16 +4489,13 @@ meta
 meta_vars
 metadata
 method
-method
 method_added
 method_defined?
 method_id
 method_list
 method_missing
-method_missing
 method_removed
 method_undefined
-methods
 methods
 metrics
 metrics_displayof
@@ -4631,7 +4545,6 @@ mon_synchronize
 mon_try_enter
 monday?
 mount
-mount
 mount_proc
 mountpoint?
 move
@@ -4658,7 +4571,6 @@ name_list
 named_captures
 named_scope
 names
-namespace
 namespace
 namespaces
 nan?
@@ -4699,7 +4611,6 @@ new_ostruct_member
 new_proc_class
 new_proc_class_random
 new_record?
-new_record?
 new_safeTk
 new_scope
 new_seed
@@ -4725,7 +4636,6 @@ next_values
 next_wait
 next_year
 nextrange
-nil?
 nil?
 nkf
 nlink
@@ -4785,7 +4695,6 @@ numeric_element
 numlist
 numlist_element
 object_group
-object_id
 object_id
 object_nl
 observ_info
@@ -4897,9 +4806,6 @@ panes
 param
 parameters
 params
-params
-params
-params
 params_ok?
 paranoid
 parent
@@ -4955,7 +4861,6 @@ peer_cert_chain
 peer_names
 peeraddr
 pending
-pending
 pending_interrupt?
 perform_validations
 period
@@ -5010,12 +4915,6 @@ polar
 polar_coordinates
 polar_to_pixel
 polymorphic_path
-polymorphic_path
-polymorphic_path
-polymorphic_path
-polymorphic_url
-polymorphic_url
-polymorphic_url
 polymorphic_url
 pop
 popd
@@ -5031,7 +4930,6 @@ pos
 position
 positionfrom
 positive?
-post
 post
 post2
 post_connection_check
@@ -5068,14 +4966,9 @@ present_exact
 pretty
 pretty_generate
 pretty_inspect
-pretty_inspect
-pretty_print
 pretty_print
 pretty_print_cycle
-pretty_print_cycle
 pretty_print_inspect
-pretty_print_inspect
-pretty_print_instance_variables
 pretty_print_instance_variables
 prev
 prev_day
@@ -5115,7 +5008,6 @@ private_key
 private_key?
 private_method_defined?
 private_methods
-private_methods
 problem
 procedure
 procedure_element
@@ -5149,7 +5041,6 @@ protected
 protected_instance_methods
 protected_method_defined?
 protected_methods
-protected_methods
 protocol
 protocols
 provide
@@ -5174,7 +5065,6 @@ pseudo_rand
 pseudo_rand_range
 pseudo_toplevel_evaluable?
 psych_to_yaml
-psych_to_yaml
 psych_y
 psych_yaml_as
 ptr
@@ -5192,11 +5082,8 @@ public_instance_methods
 public_key
 public_key?
 public_method
-public_method
 public_method_defined?
 public_methods
-public_methods
-public_send
 public_send
 pull
 purgeable?
@@ -5204,7 +5091,6 @@ push
 push_all_highest_version_gems_on_load_path
 push_gem_version_on_load_path
 pushd
-put
 put
 put2
 put_via_redirect
@@ -5232,7 +5118,6 @@ quoted_id
 racc_runtime_type
 radio_button
 radio_group
-raise
 raise
 raise_window
 raised_exception
@@ -5370,7 +5255,6 @@ relative?
 relative_path_from
 release
 reload
-reload
 remainder
 remember
 remember_transaction_record_state
@@ -5395,7 +5279,6 @@ remove_file
 remove_handler
 remove_index
 remove_instance_variable
-remove_instance_variable
 remove_leading_dot_dir
 remove_method
 remove_methods_etc
@@ -5409,7 +5292,6 @@ rename
 rename_column
 rename_index
 rename_table
-render
 render
 render_to_string
 render_views
@@ -5429,9 +5311,6 @@ reply_to
 report
 reqheight
 request
-request
-request
-request
 request_body_permitted?
 request_http_version
 request_line
@@ -5440,8 +5319,6 @@ request_time
 request_uri
 request_via_redirect
 require
-require
-require_dependency
 require_dependency
 require_exact
 require_or_load
@@ -5476,17 +5353,11 @@ resizable
 resolve
 resolve_args
 resource
-resource
 resources
-resources
-respond_to?
 respond_to?
 respond_to_missing?
 respond_to_without_attributes?
 respond_with
-response
-response
-response
 response
 response_body_permitted?
 response_handlers
@@ -5533,7 +5404,6 @@ rmtree
 rname
 rollback_active_record_state!
 rolledback!
-root
 root
 root?
 root_node
@@ -5630,8 +5500,6 @@ scenario
 schema_format
 scheme
 scope
-scope
-scope
 scope_name
 screen
 screencells
@@ -5684,7 +5552,6 @@ selection_to
 selection_toggle
 self
 send
-send
 send_event
 send_io
 send_mail
@@ -5704,7 +5571,6 @@ sequence
 serial
 serializable_hash
 serialize
-serialize
 serialized_attributes
 serve
 server
@@ -5718,9 +5584,6 @@ servername
 servername_cb
 service
 services
-session
-session
-session
 session
 session_add
 session_cache_mode
@@ -5917,14 +5780,11 @@ sin!
 singleline_format
 singleline_pp
 singleton_class
-singleton_class
 singleton_class?
-singleton_method
 singleton_method
 singleton_method_added
 singleton_method_removed
 singleton_method_undefined
-singleton_methods
 singleton_methods
 singular?
 sinh
@@ -5950,7 +5810,6 @@ slave?
 slave_of?
 slaves
 sleep
-slice
 slice
 slice!
 slice_after
@@ -6102,7 +5961,6 @@ sub_ext
 sub_type
 subdomain_of?
 subject
-subject
 subject_certificate
 subject_request
 submit
@@ -6215,8 +6073,6 @@ tagid
 tagid2obj
 tail
 taint
-taint
-tainted?
 tainted?
 take
 take_while
@@ -6224,7 +6080,6 @@ tan
 tan!
 tanh
 tanh!
-tap
 tap
 tar_bz2_file
 tar_command
@@ -6253,7 +6108,6 @@ terminate_interaction
 terminate_job
 terminated?
 termsig
-test
 test
 test_file
 test_files
@@ -6348,7 +6202,6 @@ to_int
 to_ints
 to_io
 to_json
-to_json
 to_json_raw
 to_json_raw_object
 to_key
@@ -6369,7 +6222,6 @@ to_re
 to_regexp
 to_ruby
 to_s
-to_s
 to_set
 to_str
 to_string
@@ -6377,14 +6229,10 @@ to_text
 to_time
 to_value
 to_xml
-to_xml
 to_yaml
-to_yaml
-to_yaml_properties
 to_yaml_properties
 today
 toeuc
-toggle
 toggle
 toggle!
 toggle_visibility
@@ -6403,7 +6251,6 @@ total
 total_in
 total_out
 total_time
-touch
 touch
 toutf16
 toutf32
@@ -6424,7 +6271,6 @@ trackback_abouts
 trackback_ping
 transact
 transaction
-transaction
 transaction_include_any_action?
 transaction_record_state
 transfer
@@ -6440,7 +6286,6 @@ traverse
 tree
 truncate
 truncate_output?
-trust
 trust
 trusted_cert_path
 try
@@ -6556,18 +6401,14 @@ unshift
 unstub
 unsubscribe
 untaint
-untaint
 untrace_var
 untrust
-untrust
-untrusted?
 untrusted?
 unused
 unused_bits
 unwrap
 upcase
 upcase!
-update
 update
 update!
 update_attribute
@@ -6596,7 +6437,6 @@ uptodate?
 upvar
 uri
 url
-url_for
 url_for
 urlsafe_base64
 urlsafe_decode64
@@ -6637,33 +6477,22 @@ valid_for_generate
 valid_jd?
 valid_ordinal?
 validate
-validate
 validate_on_create
 validate_on_update
 validates
 validates_absence_of
 validates_acceptance_of
-validates_acceptance_of
 validates_associated
-validates_confirmation_of
 validates_confirmation_of
 validates_each
 validates_exclusion_of
-validates_exclusion_of
-validates_format_of
 validates_format_of
 validates_inclusion_of
-validates_inclusion_of
-validates_length_of
 validates_length_of
 validates_numericality_of
-validates_numericality_of
 validates_presence_of
-validates_presence_of
-validates_size_of
 validates_size_of
 validates_uniqueness_of
-validates_with
 validates_with
 validation_context
 validation_context=
@@ -6682,7 +6511,6 @@ verbose
 verbose?
 verbose_flag
 verbosity
-verify
 verify
 verify_callback
 verify_chain
