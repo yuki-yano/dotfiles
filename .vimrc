@@ -5,6 +5,10 @@ if has('vim_starting')
 endif
 " }}}1
 
+" Variable Definition {{{
+let s:ale_filetypes = ['javascript', 'vue.html.javascript.css', 'ruby', 'pythond', 'json', 'css', 'scss', 'vim']
+" }}}
+
 " Plugin Manager {{{1
 
 " Install & Load Dein {{{2
@@ -218,7 +222,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " ALE {{{
-  let s:ale_filetypes = ['javascript', 'vue.html.javascript.css', 'ruby', 'pythond', 'json', 'css', 'scss', 'vim']
   call dein#add('w0rp/ale', {'lazy': 1, 'on_ft': s:ale_filetypes})
   " }}}
 
