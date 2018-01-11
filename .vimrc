@@ -75,7 +75,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('vim-scripts/python_match.vim',               {'lazy': 1, 'on_ft': 'python'})
   call dein#add('vimperator/vimperator.vim',                  {'lazy': 1, 'on_ft': 'vimperator'})
   call dein#add('vimtaku/hl_matchit.vim',                     {'lazy': 1, 'on_ft': 'ruby'})
-  call dein#add('w0rp/ale',                                   {'lazy': 1, 'on_ft': ['javascript', 'vue.html.javascript.css', 'ruby', 'pythond', 'json', 'css', 'scss', 'vim'], 'hook_source': 'call Hook_on_post_source_lightline_ale()'})
   call dein#add('yukiycino-dotfiles/gen_tags.vim')
   call dein#add('ywatase/mdt.vim',                            {'lazy': 1, 'on_ft': 'markdown'})
   " }}}3
@@ -217,7 +216,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('vim-scripts/cecutil')
   " }}}3
 
-  "  DevIcons {{{3
+  " ALE {{{
+  let s:ale_filetypes = ['javascript', 'vue.html.javascript.css', 'ruby', 'pythond', 'json', 'css', 'scss', 'vim']
+  call dein#add('w0rp/ale', {'lazy': 1, 'on_ft': s:ale_filetypes})
+  " }}}
+
+  " DevIcons {{{3
   " call dein#add('ryanoasis/vim-devicons')
   " }}}3
 
@@ -1370,6 +1374,7 @@ if dein#tap('lightline.vim')
   \   'right': [
   \     [ 'lineinfo', 'percent' ],
   \     [ 'fileformat', 'fileencoding', 'filetype' ],
+  \     [ 'linter_errors', 'linter_warnings', 'linter_ok', 'linter_disable' ]
   \   ]
   \ },
   \ 'inactive': {
@@ -1407,6 +1412,18 @@ if dein#tap('lightline.vim')
   \   'readonly': '&readonly',
   \   'paste': '&paste',
   \ },
+  \ 'component_type': {
+  \   'linter_disable':  'ok',
+  \   'linter_errors':   'error',
+  \   'linter_warnings': 'warning',
+  \   'linter_ok':       'ok',
+  \ },
+  \ 'component_expand': {
+  \   'linter_disable':  'LightlineAleDisable',
+  \   'linter_errors':   'lightline#ale#errors',
+  \   'linter_warnings': 'lightline#ale#warnings',
+  \   'linter_ok':       'LightlineAleOk',
+  \ },
   \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2 " },
   \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3 " },
   \ 'enable': {
@@ -1415,32 +1432,9 @@ if dein#tap('lightline.vim')
   \ }
   \ }
 
-  function! Hook_on_post_source_lightline_ale() abort
-    let g:lightline#ale#indicator_errors   = "\uf421"
-    let g:lightline#ale#indicator_warnings = "\uf420"
-    let g:lightline#ale#indicator_ok       = "\uf4a1"
-
-    let g:lightline.active = {
-    \   'left': [ [ 'mode', 'denite', 'paste' ], [ 'branch' ], ['readonly', 'filepath', 'filename', 'anzu' ] ],
-    \   'right': [
-    \     [ 'lineinfo', 'percent' ],
-    \     [ 'fileformat', 'fileencoding', 'filetype' ],
-    \     [ 'linter_errors', 'linter_warnings', 'linter_ok' ]
-    \   ]
-    \ }
-
-    let g:lightline.component_expand = {
-    \   'linter_warnings': 'lightline#ale#warnings',
-    \   'linter_errors':   'lightline#ale#errors',
-    \   'linter_ok':       'lightline#ale#ok',
-    \ }
-
-    let g:lightline.component_type = {
-    \   'linter_errors':   'error',
-    \   'linter_warnings': 'warning',
-    \   'linter_ok':       'ok',
-    \ }
-  endfunction
+  let g:lightline#ale#indicator_errors   = "\uf421"
+  let g:lightline#ale#indicator_warnings = "\uf420"
+  let g:lightline#ale#indicator_ok       = "\uf4a1"
 
   function! LightlineReadonly()
     return &readonly ? "\ue0a2" : ''
@@ -1544,6 +1538,22 @@ if dein#tap('lightline.vim')
 
   function! Lightline_denite() abort
     return (&filetype !=# 'denite') ? '' : (substitute(denite#get_status_mode(), '[- ]', '', 'g'))
+  endfunction
+
+  function! LightlineAleOk() abort
+    if count(s:ale_filetypes, &filetype) != 0
+      return lightline#ale#ok()
+    else
+      return ''
+    endif
+  endfunction
+
+  function! LightlineAleDisable() abort
+    if count(s:ale_filetypes, &filetype) == 0
+      return "\uf05e"
+    else
+      return ''
+    endif
   endfunction
 endif
 " }}}3
