@@ -292,6 +292,20 @@ zle -N up-line-or-history-ignoring
 
 # tmuxにカレントディレクトリ名を設定
 autoload -Uz add-zsh-hook
+add-zsh-hook preexec env_rehash
+add-zsh-hook precmd  env_rehash
+add-zsh-hook precmd  rename_tmux_window
+
+function env_rehash() {
+  if echo $1 | grep rbenv > /dev/null ; then
+    rbenv rehash
+  elif echo $1 | grep pyenv > /dev/null ; then
+    pyenv rehash
+  elif echo $1 | grep nodenv > /dev/null ; then
+    nodenv rehash
+  fi
+}
+
 function rename_tmux_window() {
   if [[ -n "$TMUX" ]] then
     local current_path=$(pwd | sed -e s/\ /_/g)
@@ -299,8 +313,6 @@ function rename_tmux_window() {
     tmux rename-window $current_dir
   fi
 }
-
-add-zsh-hook precmd rename_tmux_window
 
 # typo時にヒストリに記録しない
 function command_not_found_handler() {
