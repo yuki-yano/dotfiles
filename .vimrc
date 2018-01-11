@@ -604,10 +604,11 @@ AutoCmd CmdWinEnter * set number | set norelativenumber
 AutoCmd CmdwinEnter * call s:init_cmdwin()
 
 function! s:init_cmdwin()
-  nnoremap <buffer> q :<C-u>quit<CR>
-  inoremap <buffer> <expr> <CR>  pumvisible() ? "\<C-y>\<CR>"  : "\<CR>"
-  inoremap <buffer> <expr> <C-h> deoplete#smart_close_popup() . "\<C-h>"
+  nnoremap <silent> <buffer> q :<C-u>quit<CR>
+  inoremap <silent> <buffer> <expr> <CR>  pumvisible() ? "\<C-y>\<CR>"  : "\<CR>"
   inoremap <silent> <expr> <Tab> pumvisible() ? "\<Tab>" : deoplete#mappings#manual_complete()
+
+  nnoremap <buffer> <silent> dd :<C-u>rviminfo<CR>:call histdel(getcmdwintype(), line('.') - line('$'))<CR>:wviminfo!<CR>dd
 
   startinsert!
 endfunction
@@ -1008,6 +1009,7 @@ if has('nvim')
     let g:neosnippet#snippets_directory = '~/.vim/bundle/repos/github.com/honza/vim-snippets/snippets/'
 
     inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+    inoremap <silent> <expr> <C-h> deoplete#smart_close_popup() . "\<C-h>"
     inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
     imap <expr> <TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
     smap <expr> <TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
