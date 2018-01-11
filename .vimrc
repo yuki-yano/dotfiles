@@ -117,6 +117,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('osyo-manga/unite-highlight')
   call dein#add('osyo-manga/unite-quickfix')
   call dein#add('ozelentok/denite-gtags')
+  call dein#add('thinca/vim-unite-history')
   call dein#add('tsukkee/unite-tag')
 
   call dein#add('lighttiger2505/gtags.vim')
@@ -931,6 +932,10 @@ if dein#tap('unite.vim')
 
   " Dein
   nnoremap <silent> <Leader>dein :<C-u>Unite dein -start-insert<CR>
+
+  "" history
+  nnoremap <silent> <Leader><Leader>hc :<C-u>Unite history/command -direction=botright<CR>
+  nnoremap <silent> <Leader><Leader>hs :<C-u>Unite history/search  -direction=botright<CR>
 endif
 " }}}3
 
