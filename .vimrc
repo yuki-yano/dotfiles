@@ -6,7 +6,7 @@ endif
 " }}}1
 
 " Variable Definition {{{
-let s:ale_filetypes = ['javascript', 'vue.html.javascript.css', 'ruby', 'pythond', 'json', 'css', 'scss', 'vim']
+let s:ale_filetypes = ['javascript', 'javascript.jsx', 'vue.html.javascript.css', 'ruby', 'pythond', 'json', 'css', 'scss', 'vim']
 " }}}
 
 " Plugin Manager {{{1
