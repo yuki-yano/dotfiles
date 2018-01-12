@@ -103,6 +103,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Shougo/deoplete-rct')
   call dein#add('Shougo/neco-vim')
   call dein#add('carlitux/deoplete-ternjs')
+  call dein#add('fishbullet/deoplete-ruby')
   call dein#add('ozelentok/deoplete-gtags')
   call dein#add('ujihisa/neco-look')
   call dein#add('wokalski/autocomplete-flow')
@@ -958,6 +959,7 @@ if has('nvim')
     call deoplete#custom#source('ternjs',     'rank', 800)
     call deoplete#custom#source('flow',       'rank', 800)
     call deoplete#custom#source('rct',        'rank', 800)
+    call deoplete#custom#source('ruby',       'rank', 800)
     call deoplete#custom#source('jedi',       'rank', 800)
     call deoplete#custom#source('vim',        'rank', 800)
     call deoplete#custom#source('gtags',      'rank', 700)
@@ -976,13 +978,14 @@ if has('nvim')
     call deoplete#custom#source('tern',       'mark', '[tern]')
     call deoplete#custom#source('flow',       'mark', '[flow]')
     call deoplete#custom#source('rct',        'mark', '[rct]')
+    call deoplete#custom#source('ruby',       'mark', '[ruby]')
     call deoplete#custom#source('jedi',       'mark', '[jedi]')
     call deoplete#custom#source('vim',        'mark', '[vim]')
 
     let g:deoplete#sources = {}
     let g:deoplete#sources._          = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file']
     let g:deoplete#sources.javascript = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'ternjs', 'flow']
-    let g:deoplete#sources.ruby       = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'rct']
+    let g:deoplete#sources.ruby       = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'rct', 'ruby']
     let g:deoplete#sources.python     = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'jedi']
     let g:deoplete#sources.vim        = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'vim']
 
