@@ -84,6 +84,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Git {{{3
+  call dein#add('ToruIwashita/git-switcher.vim')
   call dein#add('airblade/vim-gitgutter')
   call dein#add('airblade/vim-rooter')
   call dein#add('cohama/agit.vim',               {'lazy': 1, 'on_cmd': ['Agit', 'AgitFile']})
