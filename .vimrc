@@ -1637,10 +1637,9 @@ AlterCommand! w!!       w<Space>suda://%
 AlterCommand! dein      Dein
 AlterCommand! d[enite]  Denite
 AlterCommand! u[nite]   Unite
-AlterCommand! tab       Unite<Space>tab
+AlterCommand! deol      Deol
 AlterCommand! ag        Ag!
 AlterCommand! gina      Gina
-AlterCommand! git       Gina
 AlterCommand! gs        Gina<Space>status
 AlterCommand! gci       Gina<Space>commit
 AlterCommand! gd        Gina<Space>diff
