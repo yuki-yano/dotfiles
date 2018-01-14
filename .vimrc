@@ -135,6 +135,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Edit & Move & Search {{{3
+  call dein#add('AndrewRadev/switch.vim',         {'lazy': 1, 'on_cmd': 'Switch'})
   call dein#add('LeafCage/yankround.vim')
   call dein#add('chrisbra/NrrwRgn',               {'lazy': 1, 'on_cmd': ['NR', 'NW', 'WidenRegion', 'NRV', 'NUD', 'NRP', 'NRM', 'NRS', 'NRN', 'NRL']})
   call dein#add('cohama/lexima.vim',              {'lazy': 1, 'on_event': 'InsertEnter', 'hook_source': 'call Hook_on_post_source_lexima()'})
@@ -1647,6 +1648,7 @@ AlterCommand! gdc       Gina<Space>diff<Space>--cached
 AlterCommand! blame     Gina<Space>blame
 AlterCommand! agit      Agit
 AlterCommand! root      Rooter
+AlterCommand! sw[tch]   Switch
 AlterCommand! alc       Ref<Space>webdict<Space>alc
 AlterCommand! tag       TagbarOpen<Space>j
 AlterCommand! nr        NR
