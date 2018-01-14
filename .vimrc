@@ -155,6 +155,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('osyo-manga/vim-jplus',           {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('osyo-manga/vim-trip',            {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('othree/eregex.vim')
+  call dein#add('rhysd/accelerated-jk')
   call dein#add('rhysd/clever-f.vim',             {'lazy': 1, 'on_map': {'nvxo': '<Plug>'}})
   call dein#add('rking/ag.vim',                   {'lazy': 1, 'on_cmd': 'Ag'})
   call dein#add('thinca/vim-qfreplace')
@@ -1170,6 +1171,11 @@ call gina#custom#mapping#nmap(
 " }}}2
 
 " Edit & Move & Search {{{2
+
+" accelerated-jk {{{
+nmap j <Plug>(accelerated_jk_j)
+nmap k <Plug>(accelerated_jk_k)
+" }}}
 
 " anzu & asterisk {{{3
 let g:anzu_status_format = '(%i/%l)'
