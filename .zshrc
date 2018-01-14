@@ -3,6 +3,7 @@
 source ~/dotfiles/.zsh/zgen/zgen.zsh
 
 if ! zgen saved; then
+  zgen load 39e/zsh-completions-anyenv
   zgen load Tarrasch/zsh-autoenv
   zgen load greymd/docker-zsh-completion
   zgen load knu/zsh-git-escape-magic
@@ -103,8 +104,6 @@ zle -N insert-last-word smart-insert-last-word
 # }}}
 
 # Completion {{{
-
-fpath=(~/.zsh/completions $fpath)
 
 # zgenが実行している
 # autoload -Uz compinit
