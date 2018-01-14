@@ -1211,11 +1211,12 @@ let g:EasyMotion_space_jump_first = 1
 highlight link EasyMotionIncSearch Search
 highlight link EasyMotionMoveHL Search
 
-nmap <Leader>s  <Plug>(easymotion-overwin-f2)
-map  <Leader>;j <Plug>(easymotion-j)
-map  <Leader>;k <Plug>(easymotion-k)
-map  <Leader>;l <Plug>(easymotion-bd-jk)
-nmap <Leader>;l <Plug>(easymotion-overwin-line)
+map  S  <Plug>(easymotion-s2)
+nmap S  <Plug>(easymotion-overwin-f2)
+map  sj <Plug>(easymotion-j)
+map  sk <Plug>(easymotion-k)
+map  sl <Plug>(easymotion-bd-jk)
+nmap sl <Plug>(easymotion-overwin-line)
 omap f <Plug>(easymotion-fl)
 omap t <Plug>(easymotion-tl)
 omap F <Plug>(easymotion-Fl)
