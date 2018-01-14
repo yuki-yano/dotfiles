@@ -612,7 +612,7 @@ AutoCmd CmdwinEnter * call s:init_cmdwin()
 function! s:init_cmdwin()
   nnoremap <silent> <buffer> q :<C-u>quit<CR>
   inoremap <silent> <buffer> <expr> <CR>  pumvisible() ? "\<C-y>\<CR>"  : "\<CR>"
-  inoremap <silent> <expr> <Tab> pumvisible() ? "\<Tab>" : deoplete#mappings#manual_complete()
+  inoremap <silent> <buffer> <expr> <Tab> pumvisible() ? "\<Tab>" : deoplete#mappings#manual_complete()
 
   nnoremap <buffer> <silent> dd :<C-u>rviminfo<CR>:call histdel(getcmdwintype(), line('.') - line('$'))<CR>:wviminfo!<CR>dd
 
