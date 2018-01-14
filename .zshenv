@@ -93,8 +93,8 @@ alias vr='nvr'
 export EFF_NO_GRAY=true
 
 # ls
-alias ll='ls -l'
-alias la='ls -al'
+alias ll='ls -lh'
+alias la='ls -alh'
 
 # sed
 alias sed=gsed
