@@ -108,6 +108,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('ujihisa/neco-look')
   call dein#add('wokalski/autocomplete-flow')
   call dein#add('zchee/deoplete-jedi')
+  call dein#add('zchee/deoplete-zsh')
   " }}}3
 
   " Fuzzy Finder {{{3
@@ -962,6 +963,7 @@ if has('nvim')
     call deoplete#custom#source('ruby',       'rank', 800)
     call deoplete#custom#source('jedi',       'rank', 800)
     call deoplete#custom#source('vim',        'rank', 800)
+    call deoplete#custom#source('zsh',        'rank', 800)
     call deoplete#custom#source('gtags',      'rank', 700)
     call deoplete#custom#source('tag',        'rank', 600)
     call deoplete#custom#source('buffer',     'rank', 500)
@@ -981,6 +983,7 @@ if has('nvim')
     call deoplete#custom#source('ruby',       'mark', '[ruby]')
     call deoplete#custom#source('jedi',       'mark', '[jedi]')
     call deoplete#custom#source('vim',        'mark', '[vim]')
+    call deoplete#custom#source('zsh',        'mark', '[zsh]')
 
     let g:deoplete#sources = {}
     let g:deoplete#sources._          = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file']
@@ -988,6 +991,7 @@ if has('nvim')
     let g:deoplete#sources.ruby       = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'rct', 'ruby']
     let g:deoplete#sources.python     = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'jedi']
     let g:deoplete#sources.vim        = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'vim']
+    let g:deoplete#sources.zsh        = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'zsh']
 
     let g:deoplete#omni#input_patterns = {}
     let g:deoplete#omni#input_patterns._ = ''

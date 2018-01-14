@@ -229,6 +229,10 @@ done
 
 # Misc {{{
 
+# zptyを読み込み
+# https://github.com/zchee/deoplete-zsh
+zmodload zsh/zpty
+
 # コマンドラインスタックを表示
 show_buffer_stack() {
   POSTDISPLAY="
