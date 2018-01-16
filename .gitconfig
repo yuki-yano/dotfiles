@@ -1,45 +1,66 @@
 [user]
   name  = yuki_yano
   email = yuki.ycino@gmail.com
+
 [color]
   ui = auto
+
 [core]
   autocrlf = input
   editor = nvim
   excludesfile = ~/.gitignore_global
   attributesfile = ~/.gitattributes
+
 [pager]
   log =  diff-highlight | less
   show = diff-highlight | less
   diff = diff-highlight | less
+
 [interactive]
   diffFilter = diff-highlight
+
 [include]
   path = ~/.gitconfig.local
+
 [push]
   default = current
+
+[fetch]
+  prune = true
+
 [diff]
   indentHeuristic = true
   compactionHeuristic = true
   renames = true
   mnemonicprefix = true
   tool = nvimdiff
+
 [merge]
   tool = Kaleidoscope
+
+[help]
+  autocorrect = -1
+
 [rerere]
   enabled = true
+
 [difftool]
   prompt = false
+
 [difftool "nvimdiff"]
   cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
+
 [mergetool "Kaleidoscope"]
   cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
   trustexitcode = true
+
 [ghq]
   root = ~/repos
+
 [url "git@github.com:"]
   pushInsteadOf = git://github.com/
   pushInsteadOf = https://github.com/
+
 [url "git://github.com/"]
   insteadOf = https://github.com/
 
