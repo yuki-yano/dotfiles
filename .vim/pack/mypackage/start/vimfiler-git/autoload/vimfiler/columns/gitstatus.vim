@@ -120,4 +120,4 @@ endfunction
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim:set et sw=2:
+" vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:

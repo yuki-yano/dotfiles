@@ -42,3 +42,5 @@
   pushInsteadOf = https://github.com/
 [url "git://github.com/"]
   insteadOf = https://github.com/
+
+# vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:

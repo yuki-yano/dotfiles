@@ -350,4 +350,4 @@ fi
 
 # }}}
 
-# vim:set et ts=2 sts=2 sw=2 fen fdm=marker:
+# vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:
