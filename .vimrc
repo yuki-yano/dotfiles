@@ -6,7 +6,7 @@ endif
 " }}}1
 
 " Variable Definition {{{
-let s:ale_filetypes = ['javascript', 'javascript.jsx', 'vue.html.javascript.css', 'ruby', 'pythond', 'json', 'css', 'scss', 'vim']
+let s:ale_filetypes = ['javascript', 'vue.html.javascript.css', 'ruby', 'pythond', 'json', 'css', 'scss', 'vim']
 " }}}
 
 " Plugin Manager {{{1
@@ -541,8 +541,9 @@ AutoCmd FileType vim        setlocal expandtab shiftwidth=2 softtabstop=2 tabsto
 AutoCmd FileType zsh        setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
 
 " Filetype
-AutoCmd BufNewFile,BufRead            *.erb set filetype=eruby.html
+AutoCmd BufNewFile,BufRead            *.js  set filetype=javascript
 AutoCmd BufNewFile,BufRead            *.vue set filetype=vue.html.javascript.css
+AutoCmd BufNewFile,BufRead            *.erb set filetype=eruby.html
 AutoCmd BufNewFile,BufRead             *.md set filetype=markdown
 AutoCmd BufNewFile,BufRead           *.cson set filetype=coffee
 AutoCmd BufNewFile,BufRead     *.{yml,yaml} set filetype=yaml
