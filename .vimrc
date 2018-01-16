@@ -83,6 +83,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('ywatase/mdt.vim',                            {'lazy': 1, 'on_ft': 'markdown'})
   " }}}3
 
+  " ALE {{{
+  call dein#add('w0rp/ale', {'lazy': 1, 'on_ft': s:ale_filetypes})
+  " }}}
+
   " Git {{{3
   call dein#add('ToruIwashita/git-switcher.vim')
   call dein#add('airblade/vim-gitgutter')
@@ -225,10 +229,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('vim-scripts/L9')
   call dein#add('vim-scripts/cecutil')
   " }}}3
-
-  " ALE {{{
-  call dein#add('w0rp/ale', {'lazy': 1, 'on_ft': s:ale_filetypes})
-  " }}}
 
   " DevIcons {{{3
   " call dein#add('ryanoasis/vim-devicons')
