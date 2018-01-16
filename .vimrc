@@ -541,20 +541,21 @@ AutoCmd FileType vim        setlocal expandtab shiftwidth=2 softtabstop=2 tabsto
 AutoCmd FileType zsh        setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
 
 " Filetype
-AutoCmd BufNewFile,BufRead         *.erb set filetype=eruby.html
-AutoCmd BufNewFile,BufRead         *.vue set filetype=vue.html.javascript.css
-AutoCmd BufNewFile,BufRead          *.md set filetype=markdown
-AutoCmd BufNewFile,BufRead        *.cson set filetype=coffee
-AutoCmd BufNewFile,BufRead  *.{yml,yaml} set filetype=yaml
-AutoCmd BufNewFile,BufRead      .babelrc set filetype=json
-AutoCmd BufNewFile,BufRead     .eslintrc set filetype=json
-AutoCmd BufNewFile,BufRead  .stylelintrc set filetype=json
-AutoCmd BufNewFile,BufRead   .prettierrc set filetype=json
-AutoCmd BufNewFile,BufRead .tern-project set filetype=json
-AutoCmd BufNewFile,BufRead        .pryrc set filetype=ruby
-AutoCmd BufNewFile,BufRead       Gemfile set filetype=ruby
-AutoCmd BufNewFile,BufRead   Vagrantfile set filetype=ruby
-AutoCmd BufNewFile,BufRead    Schemafile set filetype=ruby
+AutoCmd BufNewFile,BufRead            *.erb set filetype=eruby.html
+AutoCmd BufNewFile,BufRead            *.vue set filetype=vue.html.javascript.css
+AutoCmd BufNewFile,BufRead             *.md set filetype=markdown
+AutoCmd BufNewFile,BufRead           *.cson set filetype=coffee
+AutoCmd BufNewFile,BufRead     *.{yml,yaml} set filetype=yaml
+AutoCmd BufNewFile,BufRead         .babelrc set filetype=json
+AutoCmd BufNewFile,BufRead        .eslintrc set filetype=json
+AutoCmd BufNewFile,BufRead     .stylelintrc set filetype=json
+AutoCmd BufNewFile,BufRead      .prettierrc set filetype=json
+AutoCmd BufNewFile,BufRead    .tern-project set filetype=json
+AutoCmd BufNewFile,BufRead           .pryrc set filetype=ruby
+AutoCmd BufNewFile,BufRead          Gemfile set filetype=ruby
+AutoCmd BufNewFile,BufRead      Vagrantfile set filetype=ruby
+AutoCmd BufNewFile,BufRead       Schemafile set filetype=ruby
+AutoCmd BufNewFile,BufRead .gitconfig.local set filetype=gitconfig
 
 " Reassign Filetype
 AutoCmd BufWritePost *
