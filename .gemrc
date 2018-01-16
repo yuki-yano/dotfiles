@@ -1,11 +1,4 @@
----
-:benchmark: false
-gem: --no-rdoc --no-ri
-:verbose: true
-:sources:
-- http://gems.github.com
-- http://gems.rubyforge.org
-- http://rubygems.org/
-:bulk_threshold: 1000
-:backtrace: false
-:update_sources: true
+gemsrc_use_ghq: ~/ghq
+install: --no-document
+update: --no-document
+gem: --no-user-install
