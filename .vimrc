@@ -351,9 +351,9 @@ cnoremap <C-p> <Up>
 cnoremap <C-y> <C-r>*
 
 "" tab
-nnoremap <Leader>tt :tablast <Bar> tabnew<CR>
-nnoremap <Leader>tc :tablast <Bar> tabnew<CR>
-nnoremap <Leader>td :tabclose<CR>
+nnoremap <Leader>tt :<C-u>tablast <Bar> tabnew<CR>
+nnoremap <Leader>tc :<C-u>tablast <Bar> tabnew<CR>
+nnoremap <Leader>td :<C-u>tabclose<CR>
 
 "" Save & Quit
 nnoremap <silent> <Leader>w :<C-u>w<CR>
