@@ -152,7 +152,8 @@ esac
 
 # Alias {{{
 
-alias -g CB='$(git symbolic-ref --short HEAD)'
+alias -g  CB='$(git rev-parse --abbrev-ref HEAD)'
+alias -g RCB='origin/$(git rev-parse --abbrev-ref HEAD)'
 
 # }}}
 
