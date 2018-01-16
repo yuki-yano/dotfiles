@@ -530,15 +530,15 @@ if has('nvim')
 endif
 
 " Intent
-AutoCmd FileType javascript setlocal sw=2 sts=2 ts=2 et
-AutoCmd FileType ruby       setlocal sw=2 sts=2 ts=2 et
-AutoCmd FileType css        setlocal sw=2 sts=2 ts=2 et
-AutoCmd FileType scss       setlocal sw=2 sts=2 ts=2 et
-AutoCmd FileType json       setlocal sw=2 sts=2 ts=2 et
-AutoCmd FileType markdown   setlocal sw=2 sts=2 ts=2 et
-AutoCmd FileType sh         setlocal sw=2 sts=2 ts=2 et
-AutoCmd FileType vim        setlocal sw=2 sts=2 ts=2 et
-AutoCmd FileType zsh        setlocal sw=2 sts=2 ts=2 et
+AutoCmd FileType javascript setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType ruby       setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType css        setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType scss       setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType json       setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType markdown   setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType sh         setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType vim        setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType zsh        setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
 
 " Filetype
 AutoCmd BufNewFile,BufRead         *.erb set filetype=eruby.html
