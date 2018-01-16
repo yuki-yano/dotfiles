@@ -1393,7 +1393,7 @@ if dein#tap('lightline.vim')
   \ 'colorscheme': 'iceberg_yano',
   \ 'mode_map': {'c': 'NORMAL'},
   \ 'active': {
-  \   'left': [ [ 'mode', 'denite', 'paste' ], [ 'branch' ], ['readonly', 'filepath', 'filename', 'anzu' ] ],
+  \   'left': [ [ 'mode', 'denite', 'paste' ], [ 'branch' ], [ 'readonly', 'filepath', 'filename', 'anzu' ] ],
   \   'right': [
   \     [ 'lineinfo', 'percent' ],
   \     [ 'fileformat', 'fileencoding', 'filetype' ],
@@ -1401,7 +1401,7 @@ if dein#tap('lightline.vim')
   \   ]
   \ },
   \ 'inactive': {
-  \   'left': [ [], [ 'branch' ], [ 'filepath' ], [ 'filename' ] ],
+  \   'left': [ [], [ 'branch' ], [ 'filepath', 'filename' ] ],
   \   'right': [
   \     [ 'lineinfo' ],
   \     [ 'fileformat', 'fileencoding', 'filetype' ]
@@ -1429,6 +1429,9 @@ if dein#tap('lightline.vim')
   \   'mode':         'LightlineMode',
   \   'anzu':         'anzu#search_status',
   \   'denite':       'LightlineDenite',
+  \ },
+  \ 'tab_component_function': {
+  \   'readonly': 'LightlineTabReadonly',
   \ },
   \ 'component_function_visible_condition': {
   \   'modified': '&modified||!&modifiable',
@@ -1559,8 +1562,13 @@ if dein#tap('lightline.vim')
     endif
   endfunction
 
-  function! Lightline_denite() abort
+  function! LightlineDenite() abort
     return (&filetype !=# 'denite') ? '' : (substitute(denite#get_status_mode(), '[- ]', '', 'g'))
+  endfunction
+
+  function! LightlineTabReadonly(n) abort
+    let l:winnr = tabpagewinnr(a:n)
+    return gettabwinvar(a:n, l:winnr, '&readonly') ? "\ue0a2 " : ''
   endfunction
 
   function! LightlineAleOk() abort
