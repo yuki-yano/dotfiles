@@ -1716,16 +1716,17 @@ let g:submode_keep_leaving_key = 1
 call submode#enter_with('jump', 'n', '', 'g;', 'g;')
 call submode#map('jump', 'n', '', ';', 'g;')
 
+"" buffer
+call submode#enter_with('changebuffer', 'n', '', 'g<C-p>', ':bp<CR>')
+call submode#enter_with('changebuffer', 'n', '', 'g<C-n>', ':bn<CR>')
+call submode#map('changebuffer', 'n', '', '<C-p>', ':bp<CR>')
+call submode#map('changebuffer', 'n', '', '<C-n>', ':bn<CR>')
+
 "" tab
 call submode#enter_with('changetab', 'n', '', 'gh', 'gT')
 call submode#enter_with('changetab', 'n', '', 'gl', 'gt')
 call submode#map('changetab', 'n', '', 'h', 'gT')
 call submode#map('changetab', 'n', '', 'l', 'gt')
-
-call submode#enter_with('changetab', 'n', '', 'g<C-p>', 'gT')
-call submode#enter_with('changetab', 'n', '', 'g<C-n>', 'gt')
-call submode#map('changetab', 'n', '', '<C-p>', 'gT')
-call submode#map('changetab', 'n', '', '<C-n>', 'gt')
 
 "" operator-convert-case
 call submode#enter_with('convert', 'n', '', '<leader>cl', ':ConvertCaseLoop<CR>')
