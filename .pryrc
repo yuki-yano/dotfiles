@@ -1,4 +1,4 @@
-Pry.config.editor = 'neovim'
+Pry.config.editor = 'vim'
 
 require 'active_support'
 require 'active_support/core_ext'
