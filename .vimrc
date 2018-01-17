@@ -1691,31 +1691,32 @@ let g:bakaup_auto_backup = 1
 " altercmd {{{
 call altercmd#load()
 
-AlterCommand! w!!       w<Space>suda://%
-AlterCommand! dein      Dein
-AlterCommand! d[enite]  Denite
-AlterCommand! u[nite]   Unite
-AlterCommand! deol      Deol
-AlterCommand! ag        Ag!
-AlterCommand! gina      Gina
-AlterCommand! gs        Gina<Space>status
-AlterCommand! gci       Gina<Space>commit
-AlterCommand! gd        Gina<Space>diff
-AlterCommand! gdc       Gina<Space>diff<Space>--cached
-AlterCommand! blame     Gina<Space>blame
-AlterCommand! agit      Agit
-AlterCommand! root      Rooter
-AlterCommand! sw[tch]   Switch
-AlterCommand! alc       Ref<Space>webdict<Space>alc
-AlterCommand! tag       TagbarOpen<Space>j
-AlterCommand! nr        NR
-AlterCommand! scr[atch] Scratch
-AlterCommand! cap[ture] Capture
-AlterCommand! ss        SessionSave
-AlterCommand! so        SessionOpen
-AlterCommand! sr        SessionRemove
-AlterCommand! sl        SessionList
-AlterCommand! sc        SessionClose
+AlterCommand! <cmdwin> w!!       w<Space>suda://%
+AlterCommand! <cmdwin> dein      Dein
+AlterCommand! <cmdwin> d[enite]  Denite
+AlterCommand! <cmdwin> u[nite]   Unite
+AlterCommand! <cmdwin> deol      Deol
+AlterCommand! <cmdwin> ag        Ag!
+AlterCommand! <cmdwin> git       Gina
+AlterCommand! <cmdwin> gina      Gina
+AlterCommand! <cmdwin> gs        Gina<Space>status
+AlterCommand! <cmdwin> gci       Gina<Space>commit
+AlterCommand! <cmdwin> gd        Gina<Space>diff
+AlterCommand! <cmdwin> gdc       Gina<Space>diff<Space>--cached
+AlterCommand! <cmdwin> blame     Gina<Space>blame
+AlterCommand! <cmdwin> agit      Agit
+AlterCommand! <cmdwin> root      Rooter
+AlterCommand! <cmdwin> sw[tch]   Switch
+AlterCommand! <cmdwin> alc       Ref<Space>webdict<Space>alc
+AlterCommand! <cmdwin> tag       TagbarOpen<Space>j
+AlterCommand! <cmdwin> nr        NR
+AlterCommand! <cmdwin> scr[atch] Scratch
+AlterCommand! <cmdwin> cap[ture] Capture
+AlterCommand! <cmdwin> ss        SessionSave
+AlterCommand! <cmdwin> so        SessionOpen
+AlterCommand! <cmdwin> sr        SessionRemove
+AlterCommand! <cmdwin> sl        SessionList
+AlterCommand! <cmdwin> sc        SessionClose
 " }}}
 
 " bufkill {{{3
