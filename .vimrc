@@ -206,6 +206,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-textobj-underscore',            { 'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-user')
   call dein#add('konfekt/fastfold')
+  call dein#add('lambdalisue/session.vim',                { 'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
   call dein#add('lambdalisue/suda.vim')
   call dein#add('majutsushi/tagbar',                      { 'lazy': 1, 'on_cmd': ['TagbarOpen', 'TagbarToggle']})
   call dein#add('mattn/benchvimrc-vim',                   { 'lazy': 1, 'on_cmd': 'BenchVimrc'})
@@ -1712,6 +1713,11 @@ AlterCommand! tag       TagbarOpen<Space>j
 AlterCommand! nr        NR
 AlterCommand! scr[atch] Scratch
 AlterCommand! cap[ture] Capture
+AlterCommand! ss        SessionSave
+AlterCommand! so        SessionOpen
+AlterCommand! sr        SessionRemove
+AlterCommand! sl        SessionList
+AlterCommand! sc        SessionClose
 " }}}
 
 " bufkill {{{3
