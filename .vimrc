@@ -638,17 +638,15 @@ let g:ale_linters = {
 \ 'html': [],
 \ 'eruby': []
 \ }
-let g:ale_sign_column_always = 1
-let g:ale_sign_error = "\uf421"
-let g:ale_sign_warning = "\uf420"
+let g:ale_change_sign_column_color = 1
+let g:ale_set_signs = 1
+let g:ale_sign_error = "\uf057"
+let g:ale_sign_warning = "\uf071"
 let g:ale_linter_aliases = {'vue': 'css'}
 let g:ale_echo_msg_format = '[%linter%] %s'
 let g:ale_emit_conflict_warnings = 0
-
-highlight ALEWarningSign ctermfg=229
-highlight ALEErrorSign ctermfg=203
 highlight ALEWarning ctermfg=0 ctermbg=229
-highlight ALEError ctermfg=0 ctermbg=203
+highlight ALEError   ctermfg=0 ctermbg=203
 " }}}3
 
 " autoformat {{{3
