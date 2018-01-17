@@ -1260,33 +1260,76 @@ if dein#tap('lexima.vim')
   function! Hook_on_post_source_lexima() abort
     let l:rules = []
 
+    "" Ampersand
     let l:rules += [
-    \ {'char': '(',     'at': '(\%#)',   'input': '<Del>'},
-    \ {'char': '{',     'at': '{\%#}',   'input': '<Del>'},
+    \ {'char': '&',                        'input': '&& '},
+    \ {'char': '&',     'at': '\S\%#',     'input': ' && '},
+    \ {'char': '&',     'at': '\s\%#',     'input': '&& '},
+    \ {'char': '&',     'at': '&&\s\%#',   'input': '<BS><BS>'},
+    \ {'char': '&',     'at': '&\%#',      'input': '&', 'priority': 10},
+    \ {'char': '<C-h>', 'at': '\s&&\s\%#', 'input': '<BS><BS><BS><BS>'},
+    \ {'char': '<C-h>', 'at': '&&\s\%#',   'input': '<BS><BS><BS>'},
+    \ {'char': '<C-h>', 'at': '&&\%#',     'input': '<BS><BS>'},
+    \ ]
+
+    "" Bar
+    let l:rules += [
+    \ {'char': '<Bar>',                    'input': '|| '},
+    \ {'char': '<Bar>', 'at': '\S\%#',     'input': ' || '},
+    \ {'char': '<Bar>', 'at': '\s\%#',     'input': '|| '},
+    \ {'char': '<Bar>', 'at': '||\s\%#',   'input': '<BS><BS>'},
+    \ {'char': '<Bar>', 'at': '|\%#',      'input': '<Bar>', 'priority': 10},
+    \ {'char': '<C-h>', 'at': '\s||\s\%#', 'input': '<BS><BS><BS><BS>'},
+    \ {'char': '<C-h>', 'at': '||\s\%#',   'input': '<BS><BS><BS>'},
+    \ {'char': '<C-h>', 'at': '||\%#',     'input': '<BS><BS>'},
+    \ ]
+
+    "" Parenthesis
+    let l:rules += [
+    \ {'char': '(',     'at': '(\%#)', 'input': '<Del>'},
+    \ {'char': '(',     'at': '(\%#',  'input': '(', 'priority': 10},
+    \ {'char': '<C-h>', 'at': '(\%#)', 'input': '<BS><Del>'},
+    \ ]
+
+    "" Brace
+    let l:rules += [
+    \ {'char': '{',     'at': '{\%#}', 'input': '<Del>'},
+    \ {'char': '{',     'at': '{\%#',  'input': '{', 'priority': 10},
+    \ {'char': '<C-h>', 'at': '{\%#}', 'input': '<BS><Del>'},
+    \ ]
+
+    "" Bracket
+    let l:rules += [
     \ {'char': '[',     'at': '\[\%#\]', 'input': '<Del>'},
-    \ {'char': '<C-h>', 'at': '(\%#)',   'input': '<BS><Del>'},
-    \ {'char': '<C-h>', 'at': '{\%#}',   'input': '<BS><Del>'},
+    \ {'char': '[',     'at': '[\%#',    'input': '[', 'priority': 10},
     \ {'char': '<C-h>', 'at': '\[\%#\]', 'input': '<BS><Del>'},
-    \ {'char': '<C-h>', 'at': "'\\%#'",  'input': '<Del>'},
-    \ {'char': '<C-h>', 'at': '"\%#"',   'input': '<Del>'},
-    \ {'char': "'",     'at': "'\\%#'",  'input': '<Del>'},
-    \ {'char': '"',     'at': '"\%#"',   'input': '<Del>'},
-    \ {'char': "'",     'at': "'\\%#",   'input': "'"},
-    \ {'char': '"',     'at': '"\%#',    'input': '"'},
-    \ {'char': '(',     'at': '(\%#',    'input': '('},
-    \ {'char': '{',     'at': '{\%#',    'input': '{'},
-    \ {'char': '[',     'at': '[\%#',    'input': '['},
-    \
     \ ]
 
+    "" Sinble Quote
     let l:rules += [
-    \ {'char': '{',     'at': '{\%#$',  'input': '{{<CR>', 'input_after': '<CR>" }}}', 'filetype': 'vim'},
+    \ {'char': "'",     'at': "'\\%#'", 'input': '<Del>'},
+    \ {'char': "'",     'at': "'\\%#",  'input': "'", 'priority': 10},
+    \ {'char': '<C-h>', 'at': "'\\%#'", 'input': '<Del>'},
     \ ]
 
+    "" Double Quote
     let l:rules += [
-    \ {'char': '<bar>', 'at': 'do \%#', 'input': '<bar><bar><Left>', 'input_after': '<CR><CR>end', 'filetype': ['ruby', 'eruby']},
-    \ {'char': '<bar>', 'at': '{\%#}',  'input': '<space><bar><bar><Left>', 'input_after': '<space>', 'filetype': ['ruby', 'eruby']},
-    \ {'char': '<bar>', 'at': '{ \%# }', 'input': '<bar><bar><Left>', 'input_after': '<space>', 'filetype': ['ruby', 'eruby']},
+    \ {'char': '"',     'at': '"\%#"', 'input': '<Del>'},
+    \ {'char': '"',     'at': '"\%#',  'input': '"', 'priority': 10},
+    \ {'char': '<C-h>', 'at': '"\%#"', 'input': '<Del>'},
+    \ ]
+
+    "" vim
+    let l:rules += [
+    \ {'char': '{', 'at': '{\%#$', 'input': '{{<CR>', 'input_after': '<CR>" }}}', 'filetype': 'vim'},
+    \ ]
+
+    "" ruby
+    let l:rules += [
+    \ {'char': '<bar>', 'at': 'do\%#',     'input': '<Space><bar><bar><Left>', 'input_after': '<CR>end', 'filetype': ['ruby', 'eruby']},
+    \ {'char': '<bar>', 'at': 'do\s\%#',   'input': '<bar><bar><Left>', 'input_after': '<CR>end', 'filetype': ['ruby', 'eruby']},
+    \ {'char': '<bar>', 'at': '{\%#}',     'input': '<Space><bar><bar><Left>', 'input_after': '<Space>', 'filetype': ['ruby', 'eruby']},
+    \ {'char': '<bar>', 'at': '{\s\%#\s}', 'input': '<bar><bar><Left>', 'input_after': '<Space>', 'filetype': ['ruby', 'eruby']},
     \ ]
 
     for l:rule in l:rules
