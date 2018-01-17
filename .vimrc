@@ -134,6 +134,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('lighttiger2505/gtags.vim')
 
   call dein#add('Shougo/neosnippet')
+  call dein#add('Shougo/neosnippet-snippets')
   call dein#add('honza/vim-snippets')
 
   call dein#add('nixprime/cpsm', {'build': 'env PY3=ON ./install.sh'})
