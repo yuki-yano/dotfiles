@@ -121,9 +121,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Shougo/unite.vim')
 
   call dein#add('Shougo/neomru.vim')
-  call dein#add('Shougo/unite-session')
   call dein#add('Shougo/vimfiler')
-  call dein#add('chemzqm/denite-extra')
   call dein#add('hewes/unite-gtags')
   call dein#add('osyo-manga/unite-highlight')
   call dein#add('osyo-manga/unite-quickfix')
@@ -934,8 +932,8 @@ if dein#tap('unite.vim')
   nnoremap <silent> <Leader>l :<C-u>Unite location_list -direction=botright -no-quit<CR>
 
   "" session
-  nnoremap <Leader>ss :<C-u>UniteSessionSave<CR>
-  nnoremap <Leader>sl :<C-u>UniteSessionLoad<CR>
+  " nnoremap <Leader>ss :<C-u>UniteSessionSave<CR>
+  " nnoremap <Leader>sl :<C-u>UniteSessionLoad<CR>
 
   "" resume
   " nnoremap <silent> <Leader>re :<C-u>Unite -resume<CR>
@@ -1713,7 +1711,7 @@ AlterCommand! <cmdwin> tag       TagbarOpen<Space>j
 AlterCommand! <cmdwin> nr        NR
 AlterCommand! <cmdwin> scr[atch] Scratch
 AlterCommand! <cmdwin> cap[ture] Capture
-AlterCommand! <cmdwin> ss        SessionSave
+AlterCommand! <cmdwin> ss        SessionSave!
 AlterCommand! <cmdwin> so        SessionOpen
 AlterCommand! <cmdwin> sr        SessionRemove
 AlterCommand! <cmdwin> sl        SessionList
