@@ -282,7 +282,7 @@ set foldmethod=manual
 
 " Terminal {{{2
 if has('nvim')
-  tnoremap <silent> <ESC> <C-\><C-n>
+  tnoremap <silent> <Esc> <C-\><C-n>
 endif
 " }}}2
 
@@ -878,8 +878,8 @@ if dein#tap('unite.vim')
     nnoremap <silent> <buffer> <C-p>      k
     nnoremap <silent> <buffer> <C-j>      <C-w>j
     nnoremap <silent> <buffer> <C-k>      <C-w>k
-    nnoremap <silent> <buffer> <ESC><ESC> q
-    inoremap <silent> <buffer> <ESC><ESC> <ESC>q
+    nnoremap <silent> <buffer> <Esc><Esc> q
+    inoremap <silent> <buffer> <Esc><Esc> <Esc>q
     imap     <silent> <buffer> <C-w> <Plug>(unite_delete_backward_path)
   endfunction
 
