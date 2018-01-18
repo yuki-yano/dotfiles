@@ -211,6 +211,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mattn/benchvimrc-vim',                   { 'lazy': 1, 'on_cmd': 'BenchVimrc'})
   call dein#add('mbbill/undotree',                        { 'lazy': 1, 'on_cmd': 'UndotreeToggle'})
   call dein#add('mtth/scratch.vim',                       { 'lazy': 1, 'on_cmd': 'Scratch'})
+  call dein#add('osyo-manga/vim-gift')
+  call dein#add('pocke/vim-automatic',                    { 'depends': 'vim-gift'})
   call dein#add('qpkorr/vim-bufkill')
   call dein#add('rhysd/vim-textobj-ruby',                 { 'lazy': 1, 'on_ft': 'ruby', 'depends': 'vim-textobj-user'})
   call dein#add('simeji/winresizer',                      { 'lazy': 1, 'on_cmd': 'WinResizerStartResize'})
@@ -589,9 +591,6 @@ AutoCmd WinLeave * call s:auto_cursorline('WinLeave')
 " Disable Auto Comment
 AutoCmd FileType * setlocal formatoptions-=ro
 
-" Set Quit Map
-AutoCmd FileType help nnoremap <silent> <buffer> q :quit<CR>
-
 " Highlight Annotation Comment
 AutoCmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('Todo', '\(TODO\|FIXME\|NOTE\|INFO\|XXX\|TEMP\):')
 AutoCmd WinEnter,BufRead,BufNew,Syntax * highlight Todo ctermfg=229
@@ -613,7 +612,6 @@ AutoCmd CmdWinEnter * set number | set norelativenumber
 AutoCmd CmdwinEnter * call s:init_cmdwin()
 
 function! s:init_cmdwin()
-  nnoremap <silent> <buffer> q :<C-u>quit<CR>
   inoremap <silent> <buffer> <expr> <CR>  pumvisible() ? "\<C-y>\<CR>"  : "\<CR>"
   inoremap <silent> <buffer> <expr> <Tab> pumvisible() ? "\<Tab>" : deoplete#mappings#manual_complete()
 
@@ -1128,6 +1126,11 @@ call gina#custom#command#option(
 \ 'status',
 \ '-s|--short'
 \ )
+call gina#custom#command#option(
+\ 'diff',
+\ '--opener',
+\ 'split'
+\ )
 call gina#custom#action#alias(
 \ 'branch', 'merge',
 \ 'commit:merge'
@@ -1136,11 +1139,10 @@ call gina#custom#action#alias(
 \ 'branch', 'rebase',
 \ 'commit:rebase'
 \ )
-
 call gina#custom#action#alias(
 \ '/\%(blame\|log\|reflog\)',
 \ 'preview',
-\ 'topleft show:commit:preview',
+\ 'show:commit:preview',
 \ )
 call gina#custom#mapping#nmap(
 \ '/\%(blame\|log\|reflog\)',
@@ -1718,6 +1720,54 @@ AlterCommand! <cmdwin> so        SessionOpen
 AlterCommand! <cmdwin> sr        SessionRemove
 AlterCommand! <cmdwin> sl        SessionList
 AlterCommand! <cmdwin> sc        SessionClose
+" }}}
+
+" automatic {{{
+function! s:my_temp_win_init(config, context)
+  nnoremap <buffer> q :<C-u>q<CR>
+endfunction
+
+let g:automatic_default_set_config = {
+\   'apply':  function('s:my_temp_win_init'),
+\ }
+
+let g:automatic_config = [
+\   {
+\     'match': { 'filetype': 'help' },
+\   },
+\   {
+\     'match': { 'filetype': 'diff' },
+\     'set': {
+\       'move': 'topleft',
+\       'height': '30%'
+\     }
+\   },
+\   {
+\     'match': { 'filetype': 'git' },
+\   },
+\   {
+\     'match': { 'filetype': 'gina-status' },
+\     'set': {
+\       'move': 'topleft',
+\       'height': '20%'
+\     }
+\   },
+\   {
+\     'match': { 'filetype': 'gina-branch' },
+\   },
+\   {
+\     'match': { 'filetype': 'gina-log' },
+\   },
+\   {
+\     'match' : {
+\       'autocmds' : [ 'CmdwinEnter' ]
+\     },
+\     'set' : {
+\       'is_close_focus_out' : 1,
+\       'unsettings' : [ 'move', 'resize' ]
+\     },
+\   },
+\ ]
 " }}}
 
 " bufkill {{{3
