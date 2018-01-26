@@ -34,6 +34,7 @@ install ruby
 install ruby-build
 install sbt
 install scala
+install shellcheck
 install typesafe-activator
 install yarn
 
