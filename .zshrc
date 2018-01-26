@@ -13,6 +13,7 @@ if ! zgen saved; then
   zgen load mollifier/anyframe
   zgen load sindresorhus/pure
   zgen load tarruda/zsh-autosuggestions
+  zgen load unixorn/warhol.plugin.zsh
   zgen load yuki-ycino/cdd
   zgen load yuki-ycino/fancy-ctrl-z
   zgen load zdharma/fast-syntax-highlighting
