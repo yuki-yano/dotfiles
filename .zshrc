@@ -194,14 +194,6 @@ done
 # https://github.com/zchee/deoplete-zsh
 zmodload zsh/zpty
 
-# コマンドラインスタックを表示
-show_buffer_stack() {
-  POSTDISPLAY="
-  stack: $LBUFFER"
-  zle push-line
-}
-zle -N show_buffer_stack
-
 # abbrev
 # http://d.hatena.ne.jp/keno_ss/20140214/1392330322
 typeset -A myabbrev
