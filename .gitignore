@@ -65,9 +65,13 @@
 # Ruby
 /Gemfile.lock
 
+# Python
+bin/.mypy_cache
+
 # Node
 /.config/configstore
 /node_modules
+/package-lock.json
 /yarn.lock
 
 # Go
