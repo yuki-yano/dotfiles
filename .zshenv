@@ -17,6 +17,9 @@ setopt no_global_rcs
 # default path
 export PATH=$HOME/dotfiles/bin:$HOME/dotfiles/vendor/bin:$HOME/dotfiles/node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin
 
+# XDG Base Directory
+export XDG_CONFIG_HOME=$HOME/.config
+
 # homebrew
 alias brew='env PATH=${PATH/${HOME}\/\.pyenv\/shims:/} brew'
 
@@ -171,6 +174,6 @@ function gifa() {
 }
 
 # config
-[ -f ~/.config/nicovideo-dump.zsh ] && source ~/.config/nicovideo-dump.zsh
+[ -f ~/.config/nicovideo-dump.zsh ] && source "${XDG_CONFIG_HOME}/nicovideo-dump.zsh"
 
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:
