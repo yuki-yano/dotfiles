@@ -20,6 +20,9 @@ export PATH=$HOME/dotfiles/bin:$HOME/dotfiles/vendor/bin:$HOME/dotfiles/node_mod
 # XDG Base Directory
 export XDG_CONFIG_HOME=$HOME/.config
 
+# gtags
+export GTAGSLABEL=pygments
+
 # homebrew
 alias brew='env PATH=${PATH/${HOME}\/\.pyenv\/shims:/} brew'
 
