@@ -1,3 +1,5 @@
+#! /usr/local/bin/zsh
+
 # profile
 # zmodload zsh/zprof && zprof
 
@@ -16,7 +18,7 @@ setopt no_global_rcs
 export PATH=$HOME/dotfiles/bin:$HOME/dotfiles/vendor/bin:$HOME/dotfiles/node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin
 
 # homebrew
-alias brew="env PATH=${PATH/${HOME}\/\.pyenv\/shims:/} brew"
+alias brew='env PATH=${PATH/${HOME}\/\.pyenv\/shims:/} brew'
 
 # rbenv
 export PATH=$HOME/.rbenv/shims:$PATH
@@ -139,8 +141,8 @@ alias agit='nvim +Agit'
 alias gitt='gittower .'
 
 function gwt() {
-  GIT_CDUP_DIR=`git rev-parse --show-cdup`
-  git worktree add ${GIT_CDUP_DIR}git-worktrees/$1 -b $1
+  GIT_CDUP_DIR=$(git rev-parse --show-cdup)
+  git worktree add "${GIT_CDUP_DIR}git-worktrees/$1 -b $1"
 }
 
 # diff
@@ -153,7 +155,7 @@ if whence direnv > /dev/null; then
   }
   typeset -ag precmd_functions;
   if [[ -z ${precmd_functions[(r)_direnv_hook]} ]]; then
-    precmd_functions+=_direnv_hook;
+    precmd_functions+=(_direnv_hook);
   fi
 fi
 
