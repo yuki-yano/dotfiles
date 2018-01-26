@@ -1,10 +1,14 @@
 Pygments
+autoflake
 autopep8
 awscli
 flake8
+isort
 jedi
 mypy
 neovim
 neovim-remote
 pygments-style-solarized
+sqlparse
 vim-vint
+yapf
