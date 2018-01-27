@@ -446,6 +446,19 @@ let g:loaded_matchparen      = 1
 let g:loaded_man             = 1
 " }}}2
 
+" Disable Paste Mode {{{2
+AutoCmd InsertLeave * setlocal nopaste
+" }}}2
+
+" Disable Auto Comment {{{2
+AutoCmd FileType * setlocal formatoptions-=ro
+" }}}2
+
+" Highlight Annotation Comment {{{2
+AutoCmd WinEnter,BufRead,BufNew,Syntax * silent! call matchadd('Todo', '\(TODO\|FIXME\|NOTE\|INFO\|XXX\|TEMP\):')
+AutoCmd WinEnter,BufRead,BufNew,Syntax * highlight Todo ctermfg=229
+" }}}2
+
 " }}}1
 
 " Command {{{1
@@ -481,10 +494,12 @@ function! s:trim_end_line()
   normal! :silent! %s#\($\n\s*\)\+\%$##
   call setpos('.', l:save_cursor)
 endfunction
+
+" AutoCmd BufWritePre * call s:trim_end_line()
+command! TrimEndLine call s:trim_end_line()
 " }}}2
 
 " MoveToNewTab {{{2
-nnoremap <Leader>tm :<C-u>tablast <Bar> call <SID>move_to_new_tab()<CR>
 function! s:move_to_new_tab()
   tab split
   tabprevious
@@ -497,6 +512,8 @@ function! s:move_to_new_tab()
 
   tabnext
 endfunction
+
+nnoremap <Leader>tm :<C-u>tablast <Bar> call <SID>move_to_new_tab()<CR>
 " }}}2
 
 " AutoCursorline {{{2
@@ -584,9 +601,6 @@ AutoCmd FileType scss          setlocal omnifunc=csscomplete#CompleteCSS
 AutoCmd FileType javascript    setlocal dict=~/dotfiles/.vim/dict/javascript.dict
 AutoCmd FileType ruby,eruby    setlocal dict=~/dotfiles/.vim/dict/rails.dict
 
-" Disable Paste Mode
-AutoCmd InsertLeave * setlocal nopaste
-
 " Remove Tailing Space
 AutoCmd BufWritePre * call s:trim_end_line()
 
@@ -596,12 +610,6 @@ AutoCmd CursorHold,CursorHoldI * call s:auto_cursorline('CursorHold')
 AutoCmd WinEnter * call s:auto_cursorline('WinEnter')
 AutoCmd WinLeave * call s:auto_cursorline('WinLeave')
 
-" Disable Auto Comment
-AutoCmd FileType * setlocal formatoptions-=ro
-
-" Highlight Annotation Comment
-AutoCmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('Todo', '\(TODO\|FIXME\|NOTE\|INFO\|XXX\|TEMP\):')
-AutoCmd WinEnter,BufRead,BufNew,Syntax * highlight Todo ctermfg=229
 " }}}1
 
 " Command Line Window {{{1
