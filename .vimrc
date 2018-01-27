@@ -116,7 +116,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}
 
   " Git {{{3
-  call dein#add('ToruIwashita/git-switcher.vim')
   call dein#add('airblade/vim-gitgutter')
   call dein#add('airblade/vim-rooter')
   call dein#add('cohama/agit.vim',               {'lazy': 1, 'on_cmd': ['Agit', 'AgitFile']})
@@ -124,6 +123,29 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('lambdalisue/gina.vim')
   call dein#add('lambdalisue/vim-unified-diff')
   call dein#add('rhysd/committia.vim')
+
+  call dein#add('rhysd/ghpr-blame.vim',          {'lazy': 1, 'on_cmd': 'GHPRBlame'})
+  call dein#add('ToruIwashita/git-switcher.vim', {'lazy': 1, 'on_cmd': [
+  \ 'Gsw',
+  \ 'GswRemore',
+  \ 'GswPrev',
+  \ 'GswSave',
+  \ 'GswLoad',
+  \ 'GswMove',
+  \ 'GswRemove',
+  \ 'GswRemoveMergedBranches',
+  \ 'GswSessionList',
+  \ 'GswSessionList',
+  \ 'GswPrevBranchName',
+  \ 'GswClearState',
+  \ 'GswDeleteSession',
+  \ 'GswDeleteSessionsIfBranchNotExists',
+  \ 'GswBranch',
+  \ 'GswMergedBranch',
+  \ 'GswBranchRemote',
+  \ 'GswFetch',
+  \ 'GswPull'
+  \ ]})
   " }}}3
 
   " Completion {{{3
