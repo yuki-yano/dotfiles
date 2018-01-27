@@ -1462,8 +1462,20 @@ if dein#tap('accelerated-jk')
 endif
 " }}}3
 
-" anzu & asterisk {{{3
+" incsearch & anzu & asterisk {{{3
+let g:incsearch#magic = '\v'
 let g:anzu_status_format = '(%i/%l)'
+
+map /  <Plug>(incsearch-forward)
+map ?  <Plug>(incsearch-backward)
+map g/ <Plug>(incsearch-fuzzy-/)
+map g? <Plug>(incsearch-fuzzy-?)
+
+AutoCmd VimEnter * call s:incsearch_keymap()
+function! s:incsearch_keymap()
+  IncSearchNoreMap <C-d> <Over>(incsearch-scroll-f)
+  IncSearchNoreMap <C-u> <Over>(incsearch-scroll-b)
+endfunction
 
 map n  <Plug>(anzu-n)zzzv
 map N  <Plug>(anzu-N)zzzv
@@ -1471,7 +1483,7 @@ map *  <Plug>(asterisk-z*)
 map #  <Plug>(asterisk-z#)
 map g* <Plug>(asterisk-gz*)
 map g# <Plug>(asterisk-gz#)
-nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <bar> AnzuClearSearchStatus<CR>
+nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus<CR>
 " }}}3
 
 " Ag {{{3
@@ -1482,10 +1494,14 @@ let g:ag_apply_qmappings = 0
 " clever-f {{{3
 let g:clever_f_not_overwrites_standard_mappings = 0
 
-map f <Plug>(clever-f-f)
-map F <Plug>(clever-f-F)
-map t <Plug>(clever-f-t)
-map T <Plug>(clever-f-T)
+nmap f <Plug>(clever-f-f)
+vmap f <Plug>(clever-f-f)
+nmap F <Plug>(clever-f-F)
+vmap F <Plug>(clever-f-F)
+nmap t <Plug>(clever-f-t)
+vmap t <Plug>(clever-f-t)
+nmap T <Plug>(clever-f-T)
+vmap T <Plug>(clever-f-T)
 " }}}3
 
 " easy-align {{{3
@@ -1509,10 +1525,11 @@ map  sj <Plug>(easymotion-j)
 map  sk <Plug>(easymotion-k)
 map  sl <Plug>(easymotion-bd-jk)
 nmap sl <Plug>(easymotion-overwin-line)
-omap f <Plug>(easymotion-fl)
-omap t <Plug>(easymotion-tl)
-omap F <Plug>(easymotion-Fl)
-omap T <Plug>(easymotion-Tl)
+omap f  <Plug>(easymotion-fl)
+omap t  <Plug>(easymotion-tl)
+omap F  <Plug>(easymotion-Fl)
+omap T  <Plug>(easymotion-Tl)
+" }}}3
 " }}}3
 
 " eregex {{{
