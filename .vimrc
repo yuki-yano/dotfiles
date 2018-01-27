@@ -737,26 +737,24 @@ AutoCmd FileType sh,bash,zsh set keywordprg=man
 " }}}1
 
 " Command Line Window {{{1
+set cedit=\<C-c>
+
 nnoremap : q:
 xnoremap : q:
 nnoremap q: :
 xnoremap q: :
 
-nnoremap / q/
-nnoremap q/ /
-
-nnoremap ? q?
-nnoremap q? ?
-
-AutoCmd CmdWinEnter * set number | set norelativenumber
 AutoCmd CmdwinEnter * call s:init_cmdwin()
 
-function! s:init_cmdwin()
-  inoremap <silent> <buffer> <expr> <CR>  pumvisible() ? "\<C-y>\<CR>"  : "\<CR>"
-  inoremap <silent> <buffer> <expr> <Tab> pumvisible() ? "\<Tab>" : deoplete#mappings#manual_complete()
+function! s:init_cmdwin() abort
+  set number | set norelativenumber
 
-  nnoremap <buffer> <silent> dd :<C-u>rviminfo<CR>:call histdel(getcmdwintype(), line('.') - line('$'))<CR>:wviminfo!<CR>dd
+  inoremap <silent> <buffer> <expr> <CR>  pumvisible() ? "\<C-y>\<CR>" : "\<CR>"
+  inoremap <silent> <buffer> <expr> <Tab> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
 
+  inoremap <buffer> <expr> <C-r><C-w> "\<C-c>\<C-r>\<C-w>" . &g:cedit
+
+  " nnoremap <silent> <buffer> dd :<C-u>rviminfo<CR>:call histdel(getcmdwintype(), line('.') - line('$'))<CR>:wviminfo!<CR>dd
   startinsert!
 endfunction
 " }}}1
