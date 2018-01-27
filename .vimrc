@@ -272,6 +272,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('junegunn/goyo.vim',              {'lazy': 1, 'on_cmd': 'Goyo'})
   call dein#add('luochen1990/rainbow')
   call dein#add('maximbaz/lightline-ale')
+  call dein#add('mhinz/vim-startify')
   call dein#add('mopp/smartnumber.vim',           {'lazy': 1, 'on_cmd': 'SNumbersToggleRelative'})
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('osyo-manga/vim-brightest')
@@ -1880,6 +1881,35 @@ nmap <Leader>h <Plug>(quickhl-manual-this)
 xmap <Leader>h <Plug>(quickhl-manual-this)
 nmap <Leader>H <Plug>(quickhl-manual-reset)
 xmap <Leader>H <Plug>(quickhl-manual-reset)
+" }}}3
+
+" startify {{{3
+let g:startify_custom_header = [
+\ '╦ ╦┌┐┌┬  ┬┌┬┐┬┌┬┐┌─┐┌┬┐  ╔═╗┬  ┬ ┬┌─┐┬┌┐┌  ╦ ╦┌─┐┬─┐┬┌─┌─┐',
+\ '║ ║││││  │││││ │ ├┤  ││  ╠═╝│  │ ││ ┬││││  ║║║│ │├┬┘├┴┐└─┐',
+\ '╚═╝┘└┘┴─┘┴┴ ┴┴ ┴ └─┘─┴┘  ╩  ┴─┘└─┘└─┘┴┘└┘  ╚╩╝└─┘┴└─┴ ┴└─┘',
+\]
+
+let g:startify_list_order = [
+\ ['   Project:'],
+\ 'dir',
+\ ['   Recent Files:'],
+\ 'files',
+\ ['   Commands:'],
+\ 'commands'
+\ ]
+let g:startify_change_to_vcs_root = 1
+
+let g:startify_commands = [
+\ ['git status',        'Gina status'],
+\ ['git log',           'Agit'],
+\ ['git file log',      'AgitFile'],
+\ ['git diff',          'Gina diff'],
+\ ['git diff --cached', 'Gina diff --cached'],
+\ ['git blame',         'Gina blame'],
+\ ['Calendar',          'Calendar'],
+\ ]
+
 " }}}3
 
 " rainbow {{{3
