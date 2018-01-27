@@ -1964,7 +1964,7 @@ AlterCommand! <cmdwin> sc        SessionClose
 
 " automatic {{{
 function! s:my_temp_win_init(config, context)
-  nnoremap <buffer> q :<C-u>q<CR>
+  nnoremap <silent> <buffer> q :<C-u>q<CR>
 endfunction
 
 let g:automatic_default_set_config = {
@@ -1974,6 +1974,9 @@ let g:automatic_default_set_config = {
 let g:automatic_config = [
 \   {
 \     'match': { 'filetype': 'help' },
+\   },
+\   {
+\     'match': { 'filetype': 'qf' },
 \   },
 \   {
 \     'match': { 'filetype': 'diff' },
@@ -1999,8 +2002,20 @@ let g:automatic_config = [
 \     'match': { 'filetype': 'gina-log' },
 \   },
 \   {
+\     'match': {
+\       'filetype': 'scratch',
+\       'autocmds': [ 'FileType' ]
+\     },
+\   },
+\   {
+\     'match': {
+\       'filetype': 'capture',
+\       'autocmds': [ 'FileType' ]
+\     },
+\   },
+\   {
 \     'match' : {
-\       'autocmds' : [ 'CmdwinEnter' ]
+\       'autocmds': [ 'CmdwinEnter' ]
 \     },
 \     'set' : {
 \       'is_close_focus_out' : 1,
