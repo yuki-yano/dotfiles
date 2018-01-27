@@ -89,6 +89,7 @@ install jvgrep
 install libxml2
 install libxslt
 install lynx
+install mackup
 install nkf
 install pandoc
 install parallel
