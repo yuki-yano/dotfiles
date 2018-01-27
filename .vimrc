@@ -258,6 +258,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Appearance {{{3
+  call dein#add('AndrewRadev/linediff.vim',       {'lazy': 1, 'on_cmd': ['Linediff', 'LinediffReset']})
   call dein#add('LeafCage/foldCC.vim')
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
   call dein#add('cocopon/iceberg.vim')
