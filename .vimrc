@@ -374,12 +374,13 @@ endif
 " }}}2
 
 " Appearance {{{2
+set number
 set nocursorline
 set diffopt=filler,icase,vertical
 set display=lastline
 set helplang=ja
 set laststatus=2
-set listchars=tab:>\ ,trail:\ ,extends:<,precedes:<
+set list listchars=tab:^\ ,trail:_,extends:>,precedes:<
 set matchtime=1
 set previewheight=18
 set pumheight=15
@@ -489,7 +490,7 @@ nnoremap <silent> <Leader>s :terminal<CR>
 
 " Indent {{{2
 set autoindent
-set backspace=2
+set backspace=indent,eol,start
 set breakindent
 set expandtab
 set shiftwidth=4
@@ -535,10 +536,10 @@ set clipboard=unnamed,unnamedplus
 set langnoremap
 set lazyredraw
 set ttyfast
-set matchpairs+=<:>
+set matchpairs& matchpairs+=<:>
 set regexpengine=2
-set shell=/bin/bash
-set suffixesadd=.js,.rb,.ts,.json,.md
+set shell=zsh
+set suffixesadd=.js,.ts,.rb
 set timeoutlen=750
 set ttimeoutlen=10
 set virtualedit=all
