@@ -488,6 +488,22 @@ endfunction
 command! ToggleHighlight call s:toggle_highlight()
 " }}}2
 
+" Preserve {{{2
+function! s:preserve(command)
+  let l:lastsearch = @/
+  let l:view = winsaveview()
+  execute a:command
+  let @/ = l:lastsearch
+  call winrestview(l:view)
+endfunction
+
+command! -complete=command -nargs=* Preserve call s:preserve(<q-args>)
+" }}}2
+
+" Rename {{{2
+command! -nargs=1 -complete=file Rename file <args> | call delete(expand('#'))
+" }}}2
+
 " TrimEndLine {{{2
 function! s:trim_end_line()
   let l:save_cursor = getpos('.')
