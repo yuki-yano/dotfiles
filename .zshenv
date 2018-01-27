@@ -87,6 +87,9 @@ export GOPATH=$HOME/.go
 export PATH=$PATH:$GOPATH/bin
 export PATH=$PATH:$HOME/.ghg/bin
 
+# rust
+export PATH=$PATH:$HOME/.cargo/bin
+
 # llvm
 export PATH=/usr/local/opt/llvm/bin:$PATH
 

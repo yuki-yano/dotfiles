@@ -32,6 +32,7 @@ install rbenv
 install readline
 install ruby
 install ruby-build
+install rustup-init
 install sbt
 install scala
 install shellcheck
