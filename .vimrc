@@ -558,7 +558,17 @@ endfunction
 
 " }}}1
 
-" autocmd {{{1
+" Other Settings {{{1
+
+" vim {{{2
+AutoCmd FileType vim set keywordprg=:help
+" }}}2
+
+" shell {{{2
+AutoCmd FileType sh,bash,zsh set keywordprg=man
+" }}}2
+
+" autocmd {{{2
 augroup MyVimrc
   autocmd!
 augroup END
@@ -625,6 +635,7 @@ AutoCmd CursorMoved,CursorMovedI * call s:auto_cursorline('CursorMoved')
 AutoCmd CursorHold,CursorHoldI * call s:auto_cursorline('CursorHold')
 AutoCmd WinEnter * call s:auto_cursorline('WinEnter')
 AutoCmd WinLeave * call s:auto_cursorline('WinLeave')
+" }}}2
 
 " }}}1
 
