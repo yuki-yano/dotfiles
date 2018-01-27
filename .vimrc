@@ -1601,7 +1601,7 @@ endif
 " Appearance {{{2
 
 " better-whitespace {{{3
-let g:better_whitespace_filetypes_blacklist = ['tag', 'help', 'vimfiler', 'unite', 'denite']
+let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'tag', 'help', 'gitcommit', 'vimfiler', 'unite', 'denite']
 " }}}3
 
 " brightest {{{
