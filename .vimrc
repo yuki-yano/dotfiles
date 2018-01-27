@@ -186,21 +186,23 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Shougo/unite.vim')
 
   call dein#add('Shougo/neomru.vim')
+  call dein#add('Shougo/unite-outline')
   call dein#add('Shougo/vimfiler')
   call dein#add('hewes/unite-gtags')
   call dein#add('osyo-manga/unite-highlight')
   call dein#add('osyo-manga/unite-quickfix')
   call dein#add('ozelentok/denite-gtags')
-  call dein#add('thinca/vim-unite-history')
+  call dein#add('tacroe/unite-mark')
   call dein#add('tsukkee/unite-tag')
 
-  call dein#add('lighttiger2505/gtags.vim')
+  call dein#add('SpaceVim/gtags.vim')
 
   call dein#add('Shougo/neosnippet')
-  call dein#add('Shougo/neosnippet-snippets')
-  call dein#add('honza/vim-snippets')
+  call dein#add('Shougo/neosnippet-snippets', {'depends': 'neosnippet'})
 
-  call dein#add('nixprime/cpsm', {'build': 'env PY3=ON ./install.sh'})
+  set  runtimepath+=/usr/local/opt/fzf
+  call dein#add('yuki-ycino/fzf-preview-mode.vim')
+  " }}}3
   " }}}3
 
   " Edit & Move & Search {{{3
@@ -292,6 +294,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Library {{{3
   call dein#add('Shougo/vimproc.vim', {'build': 'make'})
+  call dein#add('nixprime/cpsm',          {'build': 'env PY3=ON ./install.sh'})
   call dein#add('vim-scripts/L9')
   call dein#add('vim-scripts/cecutil')
   " }}}3
@@ -949,7 +952,7 @@ if dein#tap('denite.nvim')
 
   "" file & buffer
   " nnoremap <silent> <Leader>p :<C-u>Denite file_rec -direction=topleft -mode=insert<CR>
-  nnoremap <silent> <Leader>b :<C-u>Denite buffer -direction=topleft -mode=insert<CR>
+  " nnoremap <silent> <Leader>b :<C-u>Denite buffer -direction=topleft -mode=insert<CR>
   " nnoremap <silent> <Leader>m :<C-u>Denite file_mru -direction=topleft -mode=insert<CR>
 
   "" grep
@@ -958,11 +961,8 @@ if dein#tap('denite.nvim')
   " nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep -auto-preview<CR>
   " nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep -auto-preview<CR>
 
-  "" tag
-  " nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord tag -auto-preview<CR>
-
   "" outline
-  nnoremap <silent> <Leader>o :<C-u>Denite outline<CR>
+  " nnoremap <silent> <Leader>o :<C-u>Denite outline<CR>
 
   "" jump
   " nnoremap <silent> <Leader><C-o> :<C-u>Denite jump change -auto-preview -direction=botright<CR>
@@ -1002,13 +1002,15 @@ if dein#tap('unite.vim')
 
   "" file & buffer
   call unite#custom#source('buffer,file_rec,file_rec/async,file_rec/git', 'matchers', ['converter_relative_word', 'matcher_fuzzy'])
-  call unite#custom#source('file_mru', 'matchers', ['converter_relative_word', 'matcher_project_files', 'matcher_fuzzy'])
+  call unite#custom#source('neomru/file', 'matchers', ['converter_relative_word', 'matcher_project_files', 'matcher_fuzzy'])
+  call unite#custom#source('file_mru', 'matchers', ['converter_relative_word', 'matcher_fuzzy'])
 
   let g:unite_source_rec_max_cache_files = 10000
   let g:unite_enable_auto_select = 0
   let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '-p', '~/.agignore', '-g', '']
   " nnoremap <silent> <Leader>p :<C-u>Unite file_rec/async:! -start-insert<CR>
-  nnoremap <silent> <Leader>m :<C-u>Unite file_mru -start-insert<CR>
+  nnoremap <silent> <Leader>m :<C-u>Unite neomru/file -start-insert<CR>
+  nnoremap <silent> <Leader>M :<C-u>Unite file_mru -start-insert<CR>
   " nnoremap <silent> <Leader>f :<C-u>Unite buffer file_mru file_rec/async:! -start-insert<CR>
   " nnoremap <silent> <Leader>b :<C-u>Unite buffer -start-insert<CR>
 
@@ -1019,7 +1021,7 @@ if dein#tap('unite.vim')
   " nnoremap <silent> <Leader><C-]> :<C-u>UniteWithCursorWord gtags/context tag -direction=botright<CR>
 
   "" outline
-  " nnoremap <silent> <Leader>o :<C-u>Unite outline -auto-preview -direction=botright<CR>
+  nnoremap <silent> <Leader>o :<C-u>Unite outline -auto-preview -direction=botright<CR>
 
   "" grep
   let g:unite_source_grep_command = 'ag'
@@ -1039,7 +1041,7 @@ if dein#tap('unite.vim')
 
   "" yank
   let g:unite_source_history_yank_enable = 1
-  nnoremap <silent> <Leader>p :<C-u>Unite yankround<CR>
+  nnoremap <silent> <Leader><Leader>p :<C-u>Unite yankround<CR>
 
   "" quickfix
   let g:unite_quickfix_filename_is_pathshorten = 0
@@ -1054,14 +1056,12 @@ if dein#tap('unite.vim')
 
   "" resume
   " nnoremap <silent> <Leader>re :<C-u>Unite -resume<CR>
-
-  " Dein
-  nnoremap <silent> <Leader>dein :<C-u>Unite dein -start-insert<CR>
-
-  "" history
-  nnoremap <silent> <Leader><Leader>hc :<C-u>Unite history/command -direction=botright<CR>
-  nnoremap <silent> <Leader><Leader>hs :<C-u>Unite history/search  -direction=botright<CR>
 endif
+" }}}3
+
+" fzf {{{3
+nnoremap <silent> <Leader>p :<C-u>ProjectFilesPreview<CR>
+nnoremap <silent> <Leader>b :<C-u>BuffersPreview<CR>
 " }}}3
 
 " deoplete.nvim && neosnippet.vim {{{3
