@@ -279,6 +279,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('t9md/vim-quickhl')
   call dein#add('thinca/vim-zenspace')
   call dein#add('vim-scripts/AnsiEsc.vim')
+  runtime macros/matchit.vim
   " }}}3
 
   " Util {{{3
@@ -547,8 +548,6 @@ set wildmode=longest:full,full
 set wrapscan
 set synmaxcol=300
 set nostartofline
-
-runtime macros/matchit.vim
 " }}}2
 
 " Turn off default plugins. {{{2
@@ -576,8 +575,6 @@ AutoCmd WinEnter,BufRead,BufNew,Syntax * highlight Todo ctermfg=229
 " }}}1
 
 " Command {{{1
-
-" Other Settings {{{1
 
 " ToggleHiglight {{{2
 function! s:toggle_highlight()
@@ -636,6 +633,8 @@ nnoremap <Leader>tm :<C-u>tablast <Bar> call <SID>move_to_new_tab()<CR>
 " }}}2
 
 " }}}1
+
+" Other Settings {{{1
 
 " FileType {{{2
 
@@ -734,6 +733,7 @@ AutoCmd FileType vim set keywordprg=:help
 AutoCmd FileType sh,bash,zsh set keywordprg=man
 " }}}2
 
+" }}}1
 
 " Command Line Window {{{1
 nnoremap : q:
