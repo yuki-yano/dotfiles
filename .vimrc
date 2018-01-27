@@ -5,9 +5,9 @@ if has('vim_starting')
 endif
 " }}}1
 
-" Variable Definition {{{
-let s:ale_filetypes = ['javascript', 'vue.html.javascript.css', 'ruby', 'pythond', 'json', 'css', 'scss', 'vim']
-" }}}
+" Variable Definition {{{1
+let s:ale_filetypes = ['javascript', 'typescript', 'vue', 'ruby', 'eruby', 'python', 'go', 'rust', 'json', 'html', 'css', 'scss', 'vim', 'sh', 'bash', 'zsh']
+" }}}1
 
 " Plugin Manager {{{1
 
@@ -671,18 +671,33 @@ endfunction
 " ALE {{{3
 let g:ale_linters = {
 \ 'javascript': ['eslint', 'flow'],
-\ 'ruby': ['rubocop'],
-\ 'vue': ['eslint', 'flow'],
-\ 'css': ['stylelint'],
-\ 'scss': ['stylelint'],
-\ 'html': [],
-\ 'eruby': []
+\ 'typescript': ['eslint', 'tslint'],
+\ 'vue':        ['eslint', 'flow'],
+\ 'ruby':       ['rubocop'],
+\ 'eruby':      [],
+\ 'python':     ['autopep8', 'flake8', 'isort', 'mypy', 'yapf'],
+\ 'go':         ['golint', 'go vet'],
+\ 'rust':       ['rustc', 'cargo', 'rustfmt', 'rls'],
+\ 'html':       ['htmlhint'],
+\ 'css':        ['stylelint'],
+\ 'scss':       ['stylelint'],
+\ 'vim':        ['vint'],
+\ 'sh':         ['shell', 'shellcheck'],
+\ 'bash':       ['shell', 'shellcheck'],
+\ 'zsh':        ['shell', 'shellcheck'],
 \ }
+
+let g:ale_linter_aliases = {
+\ 'vue'  : 'css',
+\ 'eruby': 'html',
+\ }
+
+let g:ale_sh_shellcheck_exclusions = 'SC1090,SC2155,SC2164,SC2190'
+
 let g:ale_change_sign_column_color = 1
 let g:ale_set_signs = 1
 let g:ale_sign_error = "\uf057"
 let g:ale_sign_warning = "\uf071"
-let g:ale_linter_aliases = {'vue': 'css'}
 let g:ale_echo_msg_format = '[%linter%] %s'
 let g:ale_emit_conflict_warnings = 0
 highlight ALEWarning ctermfg=0 ctermbg=229
@@ -695,13 +710,9 @@ nnoremap <Leader>a :<C-u>Autoformat<CR>
 " ruby
 let g:formatters_ruby = ['rubocop']
 
-" erb
+" eruby
 let g:formatdef_htmlbeautifier = '"cat | htmlbeautifier"'
 let g:formatters_eruby         = ['htmlbeautifier']
-let g:formatters_eruby_html    = ['htmlbeautifier']
-
-" javascript
-let g:formatters_javascript = ['eslint_local']
 
 " css & scss
 let g:formatdef_prettier = '"cat | prettier --stdin"'
