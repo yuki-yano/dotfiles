@@ -60,7 +60,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('fs111/pydoc.vim',                            {'lazy': 1, 'on_ft': 'python'})
   call dein#add('hail2u/vim-css3-syntax',                     {'lazy': 1, 'on_ft': 'css'})
   call dein#add('hashivim/vim-terraform',                     {'lazy': 1, 'on_ft': 'terraform'})
-  call dein#add('heavenshell/vim-jsdoc',                      {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
+  call dein#add('heavenshell/vim-jsdoc',                      {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('heavenshell/vim-pydocstring',                {'lazy': 1, 'on_ft': 'python'})
   call dein#add('iamcco/markdown-preview.vim',                {'lazy': 1, 'on_ft': 'markdown', 'depends': 'open-browser.vim'})
   call dein#add('iamcco/mathjax-support-for-mkdp',            {'lazy': 1, 'on_ft': 'markdown'})
@@ -72,30 +72,31 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kewah/vim-stylefmt',                         {'lazy': 1, 'on_ft': 'css'})
   call dein#add('lambdalisue/smartcl.vim')
   call dein#add('leafgarland/typescript-vim',                 {'lazy': 1, 'on_ft': 'typescript'})
-  call dein#add('mattn/emmet-vim',                            {'lazy': 1, 'on_ft': ['html', 'eruby', 'javascript', 'typescript', 'vue']})
-  call dein#add('maxmellon/vim-jsx-pretty',                   {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
   call dein#add('mhinz/vim-lookup')
+  call dein#add('mattn/emmet-vim',                            {'lazy': 1, 'on_ft': ['html', 'eruby', 'javascript', 'vue', 'vue.html.javascript.css']})
+  call dein#add('maxmellon/vim-jsx-pretty',                   {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('mzlogin/vim-markdown-toc',                   {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('noprompt/vim-yardoc',                        {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('othree/csscomplete.vim',                     {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
   call dein#add('othree/es.next.syntax.vim',                  {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('othree/html5.vim',                           {'lazy': 1, 'on_ft': ['html', 'eruby', 'markdown']})
-  call dein#add('othree/javascript-libraries-syntax.vim',     {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
-  call dein#add('othree/jspc.vim',                            {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
-  call dein#add('othree/yajs.vim',                            {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
+  call dein#add('othree/javascript-libraries-syntax.vim',     {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('othree/jspc.vim',                            {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('othree/yajs.vim',                            {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('pangloss/vim-javascript',                    {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('plytophogy/vim-virtualenv',                  {'lazy': 1, 'on_ft': 'python'})
   call dein#add('pocke/iro.vim')
   call dein#add('posva/vim-vue',                              {'lazy': 1, 'on_ft': 'vue'})
   call dein#add('prettier/vim-prettier',                      {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'vue', 'css', 'less', 'scss', 'json', 'graphql', 'markdown']})
+  call dein#add('prettier/vim-prettier',                      {'lazy': 1, 'on_ft': ['javascript', 'vue', 'vue.html.javascript.css']})
+  call dein#add('racer-rust/vim-racer',                       {'lazy': 1, 'on_ft': 'rust'})
   call dein#add('rust-lang/rust.vim',                         {'lazy': 1, 'on_ft': 'rust'})
   call dein#add('sgur/vim-editorconfig')
   call dein#add('sheerun/vim-polyglot')
-  call dein#add('styled-components/vim-styled-components',    {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
+  call dein#add('styled-components/vim-styled-components',    {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('syngan/vim-vimlint',                         {'lazy': 1, 'on_ft': 'vim'})
   call dein#add('tell-k/vim-autopep8',                        {'lazy': 1, 'on_ft': 'python'})
   call dein#add('tmhedberg/SimpylFold',                       {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('todesking/vint-syntastic',                   {'lazy': 1, 'on_ft': 'vim'})
   call dein#add('tpope/vim-bundler',                          {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('tpope/vim-rails',                            {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('tpope/vim-rake',                             {'lazy': 1, 'on_ft': 'ruby'})
@@ -155,28 +156,22 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('roxma/vim-hug-neovim-rpc')
   endif
 
-  call dein#add('autozimu/LanguageClient-neovim', {
-  \ 'on_ft': ['javascript', 'typescript', 'vue', 'rust'],
-  \ 'rev': 'next',
-  \ 'build': 'bash install.sh'})
+  call dein#add('autozimu/LanguageClient-neovim', {'rev': 'next', 'build': 'bash install.sh'})
 
-  call dein#add('Shougo/deoplete-rct',         {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'ruby'})
-  call dein#add('Shougo/neco-syntax',          {'lazy': 1, 'depends': 'deoplete.nvim'})
-  call dein#add('Shougo/neco-vim',             {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'vim'})
-  call dein#add('Shougo/neoinclude.vim',       {'lazy': 1, 'depends': 'deoplete.nvim'})
-  call dein#add('carlitux/deoplete-ternjs',    {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': ['javascript', 'typescript']})
-  call dein#add('fishbullet/deoplete-ruby',    {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'ruby'})
-  call dein#add('fszymanski/deoplete-emoji',   {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': ['gitcommit', 'markdown']})
-  call dein#add('mhartington/nvim-typescript', {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'typescript'})
-  call dein#add('osyo-manga/vim-monster',      {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'ruby'})
-  call dein#add('ozelentok/deoplete-gtags',    {'lazy': 1, 'depends': 'deoplete.nvim'})
-  call dein#add('rhysd/github-complete.vim',   {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': ['gitcommit', 'markdown']})
-  call dein#add('ujihisa/neco-look',           {'lazy': 1, 'depends': 'deoplete.nvim'})
-  call dein#add('wellle/tmux-complete.vim',    {'lazy': 1, 'depends': 'deoplete.nvim'})
-  call dein#add('wokalski/autocomplete-flow',  {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'javascript'})
-  call dein#add('zchee/deoplete-go',           {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'go', 'build': 'make'})
-  call dein#add('zchee/deoplete-jedi',         {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'python'})
-  call dein#add('zchee/deoplete-zsh',          {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'zsh'})
+  call dein#add('Shougo/deoplete-rct',        {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'ruby'})
+  call dein#add('Shougo/neco-syntax',         {'lazy': 1, 'depends': 'deoplete.nvim'})
+  call dein#add('Shougo/neco-vim',            {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'vim'})
+  call dein#add('carlitux/deoplete-ternjs',   {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'javascript'})
+  call dein#add('fishbullet/deoplete-ruby',   {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'ruby'})
+  call dein#add('fszymanski/deoplete-emoji',  {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': ['gitcommit', 'markdown']})
+  call dein#add('osyo-manga/vim-monster',     {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'ruby'})
+  call dein#add('ozelentok/deoplete-gtags',   {'lazy': 1, 'depends': 'deoplete.nvim'})
+  call dein#add('rhysd/github-complete.vim',  {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': ['gitcommit', 'markdown']})
+  call dein#add('ujihisa/neco-look',          {'lazy': 1, 'depends': 'deoplete.nvim'})
+  call dein#add('wellle/tmux-complete.vim',   {'lazy': 1, 'depends': 'deoplete.nvim'})
+  call dein#add('wokalski/autocomplete-flow', {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'javascript'})
+  call dein#add('zchee/deoplete-jedi',        {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'python'})
+  call dein#add('zchee/deoplete-zsh',         {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'zsh'})
 
   call dein#add('blueyed/vim-auto-programming', {'rev': 'neovim'})
   " }}}3
@@ -201,7 +196,11 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Shougo/neosnippet-snippets', {'depends': 'neosnippet'})
 
   set  runtimepath+=/usr/local/opt/fzf
-  call dein#add('yuki-ycino/fzf-preview-mode.vim')
+  call dein#local('/usr/local/opt/fzf/')
+  call dein#add('junegunn/fzf.vim',                {'depends': 'fzf'})
+  call dein#add('yuki-ycino/fzf-preview-mode.vim', {'depends': 'fzf.vim'})
+
+  call dein#add('nixprime/cpsm', {'build': 'env PY3=ON ./install.sh'})
   " }}}3
 
   " NerdTree {{{3
@@ -235,6 +234,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-textobj-function',              {'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-indent',                {'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-line',                  {'depends': 'vim-textobj-user'})
+  call dein#add('michaeljsmith/vim-indent-object',        {'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-user')
   call dein#add('kshenoy/vim-signature')
   call dein#add('machakann/vim-sandwich')
@@ -287,10 +287,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('aiya000/aho-bakaup.vim')
   call dein#add('bogado/file-line')
   call dein#add('dietsche/vim-lastplace')
+  call dein#add('haya14busa/vim-open-googletranslate',    {'lazy': 1, 'on_cmd': 'OpenGoogleTranslate'})
   call dein#add('haya14busa/vim-textobj-function-syntax', { 'depends': 'vim-textobj-user'})
   call dein#add('janko-m/vim-test',                       { 'lazy': 1, 'on_cmd': ['TestNearest','TestFile','TestSuite','TestLast','TestVisit']})
   call dein#add('kana/vim-niceblock',                     { 'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
-  call dein#add('haya14busa/vim-open-googletranslate', {'lazy': 1, 'on_cmd': 'OpenGoogleTranslate'})
   call dein#add('kana/vim-operator-user')
   call dein#add('kana/vim-submode',                       { 'depends': 'vim-operator-convert-case'})
   call dein#add('kana/vim-textobj-fold',                  { 'depends': 'vim-textobj-user'})
@@ -308,10 +308,16 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('pocke/vim-automatic',                    { 'depends': 'vim-gift'})
   call dein#add('qpkorr/vim-bufkill')
   call dein#add('rhysd/vim-textobj-ruby',                 { 'lazy': 1, 'on_ft': 'ruby', 'depends': 'vim-textobj-user'})
+  call dein#add('rizzatti/dash.vim',                      {'lazy': 1, 'on_cmd': ['Dash', 'DashKeywords']})
   call dein#add('simeji/winresizer',                      { 'lazy': 1, 'on_cmd': 'WinResizerStartResize'})
   call dein#add('szw/vim-maximizer',                      { 'lazy': 1, 'on_cmd': 'MaximizerToggle'})
   call dein#add('terryma/vim-expand-region',              { 'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('terryma/vim-multiple-cursors')
+  call dein#add('thinca/vim-localrc')
   call dein#add('thinca/vim-ref',                         { 'lazy': 1, 'on_cmd': 'Ref'})
+  call dein#add('thinca/vim-showtime',                    {'lazy': 1, 'on_cmd': ['ShowtimeStart', 'ShowtimeResume']})
+  call dein#add('tpope/vim-eunuch')
+  call dein#add('tpope/vim-unimpaired')
   call dein#add('tweekmonster/startuptime.vim',           { 'lazy': 1, 'on_cmd': 'StartupTime'})
   call dein#add('tyru/capture.vim',                       { 'lazy': 1, 'on_cmd': 'Capture'})
   call dein#add('tyru/open-browser.vim')
@@ -480,6 +486,9 @@ noremap ]' ]`
 noremap ]` ]'
 noremap [' [`
 noremap [` ['
+
+"" spellcheck
+map <leader>ss :set spell!<CR>
 
 "" terminal
 if has('nvim')
@@ -831,27 +840,25 @@ let g:vimjs#smartcomplete = 1
 " }}}
 
 " echodoc {{{3
+set cmdheight=2
 let g:echodoc_enable_at_startup = 1
 " }}}3
 
-" emmet {{{3
-let g:user_emmet_leader_key=','
-let g:user_emmet_mode='in'
-" }}}3
-
 " gen_tags {{{3
-" let g:gen_tags#ctags_auto_gen = 1
+let g:gen_tags#ctags_auto_gen = 1
 let g:gen_tags#gtags_auto_gen = 1
 " }}}3
 
 " go {{{3
+let g:go_fmt_command = 'goimports'
+
 let g:go_highlight_functions = 1
 let g:go_highlight_methods = 1
 let g:go_highlight_structs = 1
 let g:go_highlight_interfaces = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_build_constraints = 1
-let g:go_fmt_command = 'goimports'
+let g:go_addtags_transform = 'camelcase'
 " }}}3
 
 " html5 {{{3
@@ -861,21 +868,17 @@ let g:html5_microdata_attributes_complete = 1
 let g:html5_aria_attributes_complete = 1
 " }}}3
 
-" iro {{{
-if dein#tap('iro.vim')
-  function! s:iro_clean()
-    if &filetype !=# 'ruby'
-      execute printf('ruby Iro.clean(%d)', winnr())
-    endif
-  endfunction
-
-  AutoCmd BufEnter * call s:iro_clean()
-endif
-" }}}
-
 " javascript {{{3
 let g:jsx_ext_required = 0
+let g:javascript_plugin_jsdoc = 1
 let g:javascript_plugin_flow = 1
+" }}}3
+
+" jsdoc {{{3
+let g:jsdoc_allow_input_prompt = 1
+let g:jsdoc_input_description = 1
+let g:jsdoc_underscore_private = 1
+let g:jsdoc_enable_es6 = 1
 " }}}3
 
 " json {{{3
@@ -886,16 +889,55 @@ let g:vim_json_syntax_conceal = 0
 let g:vim_jsx_pretty_colorful_config = 1
 " }}}3
 
+" markdown {{{3
+let g:vim_markdown_folding_disabled = 1
+" }}}3
+
+" markdown-preview {{{3
+let g:mkdp_browserfunc = 'openbrowser#open'
+" }}}3
+
+" markdown-quote-syntax {{{3
+let g:markdown_quote_syntax_filetypes = {
+\ 'javascript' : {
+\    'start' : 'javascript',
+\ },
+\ 'ruby' : {
+\    'start' : 'ruby',
+\ },
+\ 'python' : {
+\    'start' : 'python',
+\ },
+\ 'json' : {
+\    'start' : 'json',
+\ },
+\ 'css' : {
+\    'start' : '\\%(css\\|scss\\)',
+\ },
+\ 'bash' : {
+\    'start' : 'bash',
+\ },
+\}
+
+" }}}3
+
+" MatchTagAlways {{{
+let g:mta_filetypes = {
+\ 'html' : 1,
+\ 'xml'  : 1,
+\ 'eruby': 1,
+\}
+" }}}
+
 " polyglot {{{3
-let g:polyglot_disabled = ['javascript', 'ruby', 'python', 'vue', 'json', 'css', 'sass', 'scss', 'markdown']
+let g:polyglot_disabled = ['javascript', 'typescript', 'coffee', 'vue', 'ruby', 'eruby', 'yard', 'python', 'go', 'rust', 'json', 'html5', 'css', 'scss', 'markdown', 'terraform']
 " }}}3
 
 " prettier {{{3
 let g:prettier#exec_cmd_async = 1
-let g:prettier#autoformat = 0
 
 function! s:prettier_settings()
-  let g:prettier#exec_cmd_path = '~/dotfiles/node_modules/.bin/prettier'
+  let g:prettier#exec_cmd_path = $HOME . '/dotfiles/node_modules/.bin/prettier'
   nnoremap <silent> <buffer> <Leader>a :<C-u>Prettier<CR>
 endfunction
 
@@ -904,8 +946,12 @@ function! s:prettier_vue_settings()
   nnoremap <silent> <buffer> <Leader>a :<C-u>Autoformat <Bar> Prettier<CR>
 endfunction
 
-AutoCmd FileType javascript              call s:prettier_settings()
-AutoCmd FileType vue.html.javascript.css call s:prettier_vue_settings()
+AutoCmd FileType javascript call s:prettier_settings()
+AutoCmd FileType vue        call s:prettier_vue_settings()
+" }}}3
+
+" racer {{{3
+let g:racer_experimental_completer = 1
 " }}}3
 
 " ruby {{{3
@@ -916,16 +962,41 @@ let g:rubycomplete_include_object       = 1
 let g:rubycomplete_include_object_space = 1
 " }}}3
 
+" rust {{{3
+let g:rustfmt_autosave = 1
+" }}}3
+
+" tern {{{3
+AutoCmd FileType typescript call tern#Enable()
+" }}}3
+
+" typescript {{{3
+let g:typescript_indent_disable = 1
+
+let g:nvim_typescript#javascript_support = 1
+let g:nvim_typescript#vue_support = 1
+
+AutoCmd FileType typescript JsPreTmpl html
+AutoCmd FileType typescript syn clear foldBraces
+" }}}3
+
 " vim {{{3
 let g:vimsyntax_noerror = 1
 let g:vim_indent_cont = 0
 " }}}3
 
+" vim-lookup {{{3
+AutoCmd FileType vim nnoremap <buffer> <silent> <CR> :call lookup#lookup()<CR>
+" }}}3
+
 " vue {{{
 let g:vue_disable_pre_processors = 1
 AutoCmd FileType vue syntax sync fromstart
-AutoCmd BufRead,BufNewFile *.vue setlocal filetype=vue.html.javascript.css
 " }}}
+
+" zsh {{{3
+let g:zsh_fold_enable = 1
+" }}}3
 
 " }}}2
 
@@ -1124,6 +1195,7 @@ if has('nvim')
     call deoplete#custom#source('ruby',           'rank',  900)
     call deoplete#custom#source('jedi',           'rank',  900)
     call deoplete#custom#source('go',             'rank',  900)
+    call deoplete#custom#source('racer',          'rank',  900)
     call deoplete#custom#source('emoji',          'rank',  900)
     call deoplete#custom#source('vim',            'rank',  900)
     call deoplete#custom#source('zsh',            'rank',  900)
@@ -1153,6 +1225,7 @@ if has('nvim')
     call deoplete#custom#source('ruby',           'mark', '[ruby]')
     call deoplete#custom#source('jedi',           'mark', '[jedi]')
     call deoplete#custom#source('go',             'mark', '[go]')
+    call deoplete#custom#source('racer',          'mark', '[racer]')
     call deoplete#custom#source('emoji',          'mark', '[emoji]')
     call deoplete#custom#source('vim',            'mark', '[vim]')
     call deoplete#custom#source('zsh',            'mark', '[zsh]')
@@ -1173,10 +1246,6 @@ if has('nvim')
     let g:deoplete#omni#input_patterns            = {}
     let g:deoplete#omni#input_patterns._          = ''
     let g:deoplete#omni#input_patterns.ruby       = '[^. *\t]\.\w*\|\h\w*::'
-    let g:deoplete#omni#input_patterns.javascript = ''
-    let g:deoplete#omni#input_patterns.typescript = ''
-    let g:deoplete#omni#input_patterns.python     = ''
-    let g:deoplete#omni#input_patterns.go         = ''
     let g:deoplete#omni#input_patterns.html       = '<[^>]*'
     let g:deoplete#omni#input_patterns.xml        = '<[^>]*'
     let g:deoplete#omni#input_patterns.css        = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
