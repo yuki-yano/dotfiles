@@ -250,7 +250,15 @@ endif
 
 " }}}1
 
-" Settings {{{1
+" Global Settings {{{1
+
+" Easy autocmd {{{2
+augroup MyVimrc
+  autocmd!
+augroup END
+
+command! -nargs=* AutoCmd autocmd MyVimrc <args>
+" }}}2
 
 " Encoding {{{2
 set fileencodings=utf-8,sjis,cp932,euc-jp
