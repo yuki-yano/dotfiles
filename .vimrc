@@ -2017,6 +2017,11 @@ AutoCmd FileType diff nnoremap <silent> <Leader>d :BW<CR>
 AutoCmd FileType git  nnoremap <silent> <Leader>d :BW<CR>
 " }}}3
 
+" calendar {{{3
+let g:calendar_google_calendar = 1
+let g:calendar_google_task = 1
+" }}}3
+
 " expand-region {{{3
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
@@ -2032,6 +2037,11 @@ nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
 
 " neoterm {{{3
 let g:neoterm_position = 'vertical'
+" }}}3
+
+" open-googletranslate {{{3
+let g:opengoogletranslate#openbrowsercmd = 'electron-open --without-focus'
+command! -range Trans <line1>,<line2>OpenGoogleTranslate
 " }}}3
 
 " ref {{{3
@@ -2080,6 +2090,10 @@ function! Tagbar_status_func(current, sort, fname, ...) abort
 endfunction
 
 let g:tagbar_status_func = 'Tagbar_status_func'
+" }}}3
+
+" thumbnail {{{3
+nnoremap <silent> <Leader>B :<C-u>Thumbnail<CR>
 " }}}3
 
 " undotree {{{3
