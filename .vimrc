@@ -1532,19 +1532,18 @@ omap t  <Plug>(easymotion-tl)
 omap F  <Plug>(easymotion-Fl)
 omap T  <Plug>(easymotion-Tl)
 " }}}3
+
+" edgemotion {{{3
+map <M-j> <Plug>(edgemotion-j)
+map <M-k> <Plug>(edgemotion-k)
 " }}}3
 
-" eregex {{{
+" eregex {{{3
 let g:eregex_default_enable = 0
 
 nnoremap <Leader>R "syiwq:%S/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
 nnoremap <Leader>r q:%S//g<Left><Left>
 vnoremap <Leader>r "syq:%S/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
-" }}}
-
-" edgemotion {{{3
-map <M-j> <Plug>(edgemotion-j)
-map <M-k> <Plug>(edgemotion-k)
 " }}}3
 
 " jplus {{{3
