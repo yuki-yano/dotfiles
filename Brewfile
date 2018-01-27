@@ -93,6 +93,7 @@ install mackup
 install nkf
 install pandoc
 install parallel
+install pkg-config
 install pngpaste
 install pstree
 install pup
