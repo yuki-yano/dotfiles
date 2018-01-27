@@ -18,6 +18,7 @@ install boost
 install flow
 install gcc
 install go
+install go-delve/delve/delve
 install llvm
 install lua
 install node
@@ -80,6 +81,7 @@ install eugenmayer/dockersync/unox
 install gist
 install global --with-pygments --with-ctags
 install gnu-sed
+install gpatch
 install gpg2
 install graphviz
 install gron
