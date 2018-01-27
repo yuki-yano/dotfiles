@@ -1931,36 +1931,44 @@ let g:zenspace#default_mode = 'on'
 let g:bakaup_auto_backup = 1
 " }}}3
 
-" altercmd {{{
-call altercmd#load()
+" altercmd {{{3
+if dein#tap('vim-altercmd')
+  call altercmd#load()
 
-AlterCommand! <cmdwin> w!!       w<Space>suda://%
-AlterCommand! <cmdwin> dein      Dein
-AlterCommand! <cmdwin> d[enite]  Denite
-AlterCommand! <cmdwin> u[nite]   Unite
-AlterCommand! <cmdwin> deol      Deol
-AlterCommand! <cmdwin> ag        Ag!
-AlterCommand! <cmdwin> git       Gina
-AlterCommand! <cmdwin> gina      Gina
-AlterCommand! <cmdwin> gs        Gina<Space>status
-AlterCommand! <cmdwin> gci       Gina<Space>commit
-AlterCommand! <cmdwin> gd        Gina<Space>diff
-AlterCommand! <cmdwin> gdc       Gina<Space>diff<Space>--cached
-AlterCommand! <cmdwin> blame     Gina<Space>blame
-AlterCommand! <cmdwin> agit      Agit
-AlterCommand! <cmdwin> root      Rooter
-AlterCommand! <cmdwin> sw[tch]   Switch
-AlterCommand! <cmdwin> alc       Ref<Space>webdict<Space>alc
-AlterCommand! <cmdwin> tag       TagbarOpen<Space>j
-AlterCommand! <cmdwin> nr        NR
-AlterCommand! <cmdwin> scr[atch] Scratch
-AlterCommand! <cmdwin> cap[ture] Capture
-AlterCommand! <cmdwin> ss        SessionSave!
-AlterCommand! <cmdwin> so        SessionOpen
-AlterCommand! <cmdwin> sr        SessionRemove
-AlterCommand! <cmdwin> sl        SessionList
-AlterCommand! <cmdwin> sc        SessionClose
-" }}}
+  AlterCommand! <cmdwin> w!!         w<Space>suda://%
+  AlterCommand! <cmdwin> dein        Dein
+  AlterCommand! <cmdwin> d[enite]    Denite
+  AlterCommand! <cmdwin> u[nite]     Unite
+  AlterCommand! <cmdwin> deol        Deol
+  AlterCommand! <cmdwin> ag          Ag!
+  AlterCommand! <cmdwin> git         Gina
+  AlterCommand! <cmdwin> gina        Gina
+  AlterCommand! <cmdwin> gs          Gina<Space>status
+  AlterCommand! <cmdwin> gci         Gina<Space>commit
+  AlterCommand! <cmdwin> gd          Gina<Space>diff
+  AlterCommand! <cmdwin> gdc         Gina<Space>diff<Space>--cached
+  AlterCommand! <cmdwin> blame       Gina<Space>blame
+  AlterCommand! <cmdwin> agit        Agit
+  AlterCommand! <cmdwin> gss         GswSave
+  AlterCommand! <cmdwin> gsl         GswLoad
+  AlterCommand! <cmdwin> root        Rooter
+  AlterCommand! <cmdwin> sw[tch]     Switch
+  AlterCommand! <cmdwin> sjs         SplitjoinSplit
+  AlterCommand! <cmdwin> sjj         SplitjoinJoin
+  AlterCommand! <cmdwin> alc         Ref<Space>webdict<Space>alc
+  AlterCommand! <cmdwin> tag         TagbarOpen<Space>j
+  AlterCommand! <cmdwin> nr          NR
+  AlterCommand! <cmdwin> scr[atch]   Scratch
+  AlterCommand! <cmdwin> cap[ture]   Capture
+  AlterCommand! <cmdwin> cal[endar]  Calendar
+  AlterCommand! <cmdwin> th[umbnail] Thumbnail
+  AlterCommand! <cmdwin> ss          SessionSave!
+  AlterCommand! <cmdwin> so          SessionOpen
+  AlterCommand! <cmdwin> sr          SessionRemove
+  AlterCommand! <cmdwin> sl          SessionList
+  AlterCommand! <cmdwin> sc          SessionClose
+endif
+" }}}3
 
 " automatic {{{
 function! s:my_temp_win_init(config, context)
