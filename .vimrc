@@ -365,8 +365,11 @@ command! -nargs=* AutoCmd autocmd MyVimrc <args>
 " Encoding {{{2
 set fileencodings=utf-8,sjis,cp932,euc-jp
 set fileformats=unix,mac,dos
-set fileencoding=utf-8
 set termencoding=utf-8
+
+if &modifiable
+  set fileencoding=utf-8
+endif
 " }}}2
 
 " Appearance {{{2
@@ -388,12 +391,6 @@ set spelllang=en,cjk
 set foldcolumn=1
 set foldenable
 set foldmethod=manual
-" }}}2
-
-" Terminal {{{2
-if has('nvim')
-  tnoremap <silent> <Esc> <C-\><C-n>
-endif
 " }}}2
 
 " Mappings {{{2
@@ -424,10 +421,13 @@ if has('nvim')
 endif
 
 "" Move
-noremap H ^
-noremap L $
-noremap <C-o> <C-o>zzzv
-noremap <C-i> <C-i>zzzv
+nnoremap <M-h> ^
+nnoremap <M-l> $
+nnoremap <C-o> <C-o>zzzv
+nnoremap <C-i> <C-i>zzzv
+
+"" Buffer
+nnoremap <C-b> <C-^>
 
 "" Window
 nnoremap <silent> <C-h> :wincmd h<CR>
@@ -457,25 +457,33 @@ noremap! <C-e> <End>
 noremap! <C-f> <Right>
 cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
-cnoremap <C-y> <C-r>*
 
 "" tab
 nnoremap <Leader>tt :<C-u>tablast <Bar> tabnew<CR>
-nnoremap <Leader>tc :<C-u>tablast <Bar> tabnew<CR>
-nnoremap <Leader>td :<C-u>tabclose<CR>
+nnoremap <Leader>tc :<C-u>tabclose<CR>
 
-"" Save & Quit
-nnoremap <silent> <Leader>w :<C-u>w<CR>
+"" Save
+nnoremap <silent> <Leader>w :<C-u>update<CR>
+nnoremap <silent> <Leader>W :<C-u>update!<CR>
 
 "" redraw
 nnoremap <silent> <Leader><C-l> :<C-u>redraw!<CR>
 
-"" Command Line Window Mode
-nnoremap Q  <Nop>
-nnoremap gQ <Nop>
-
 "" Macro
 nnoremap Q @q
+
+"" mark
+nnoremap ' `
+noremap ]' ]`
+noremap ]` ]'
+noremap [' [`
+noremap [` ['
+
+"" terminal
+if has('nvim')
+  tnoremap <silent> <Esc> <C-\><C-n>
+endif
+nnoremap <silent> <Leader>s :terminal<CR>
 " }}}2
 
 " Indent {{{2
@@ -495,6 +503,14 @@ endif
 if !has('nvim')
   set term=xterm-256color
 endif
+" }}}2
+
+" Disable Paste Mode {{{2
+AutoCmd InsertLeave * setlocal nopaste
+" }}}2
+
+" Disable Auto Comment {{{2
+AutoCmd FileType * setlocal formatoptions-=ro
 " }}}2
 
 " Highlight Annotation Comment {{{2
@@ -531,7 +547,6 @@ set wildmode=longest:full,full
 set wrapscan
 set synmaxcol=300
 set nostartofline
-set keywordprg=:help
 
 runtime macros/matchit.vim
 " }}}2
@@ -553,14 +568,6 @@ let g:loaded_matchparen      = 1
 let g:loaded_man             = 1
 " }}}2
 
-" Disable Paste Mode {{{2
-AutoCmd InsertLeave * setlocal nopaste
-" }}}2
-
-" Disable Auto Comment {{{2
-AutoCmd FileType * setlocal formatoptions-=ro
-" }}}2
-
 " Highlight Annotation Comment {{{2
 AutoCmd WinEnter,BufRead,BufNew,Syntax * silent! call matchadd('Todo', '\(TODO\|FIXME\|NOTE\|INFO\|XXX\|TEMP\):')
 AutoCmd WinEnter,BufRead,BufNew,Syntax * highlight Todo ctermfg=229
@@ -570,8 +577,7 @@ AutoCmd WinEnter,BufRead,BufNew,Syntax * highlight Todo ctermfg=229
 
 " Command {{{1
 
-
-" }}}2
+" Other Settings {{{1
 
 " ToggleHiglight {{{2
 function! s:toggle_highlight()
@@ -629,73 +635,31 @@ endfunction
 nnoremap <Leader>tm :<C-u>tablast <Bar> call <SID>move_to_new_tab()<CR>
 " }}}2
 
-" AutoCursorline {{{2
-let s:cursorline_lock = 0
-function! s:auto_cursorline(event)
-  if a:event ==# 'WinEnter'
-    setlocal cursorline
-    let s:cursorline_lock = 2
-  elseif a:event ==# 'WinLeave'
-    setlocal nocursorline
-  elseif a:event ==# 'CursorMoved'
-    if s:cursorline_lock
-      if 1 < s:cursorline_lock
-        let s:cursorline_lock = 1
-      else
-        setlocal nocursorline
-        let s:cursorline_lock = 0
-      endif
-    endif
-  elseif a:event ==# 'CursorHold'
-    setlocal cursorline
-    let s:cursorline_lock = 1
-  endif
-endfunction
-" }}}2
-
 " }}}1
 
-" Other Settings {{{1
+" FileType {{{2
 
-" vim {{{2
-AutoCmd FileType vim set keywordprg=:help
-" }}}2
+" Intent {{{3
+AutoCmd FileType go         setlocal noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
+AutoCmd FileType vim        setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType sh         setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType zsh        setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+" }}}3
 
-" shell {{{2
-AutoCmd FileType sh,bash,zsh set keywordprg=man
-" }}}2
+" iskeyword {{{3
+AutoCmd FileType javascript setlocal iskeyword+=$ iskeyword+=? iskeyword+=/
+AutoCmd FileType vue        setlocal iskeyword+=$ iskeyword+=& iskeyword+=- iskeyword+=? iskeyword+=/
+AutoCmd FileType ruby       setlocal iskeyword+=@ iskeyword+=! iskeyword+=? iskeyword+=&
+AutoCmd FileType html       setlocal iskeyword+=-
+AutoCmd FileType scss       setlocal iskeyword+=$ iskeyword+=& iskeyword+=-
+AutoCmd FileType sh         setlocal iskeyword+=$
+AutoCmd FileType zsh        setlocal iskeyword+=$
+" }}}3
 
-" autocmd {{{2
-augroup MyVimrc
-  autocmd!
-augroup END
-
-command! -nargs=* AutoCmd autocmd MyVimrc <args>
-
-" Line Number
-autocmd BufNewFile,BufRead,FileType * set number
-if has('nvim')
-  autocmd TermOpen * set nonumber | set norelativenumber
-endif
-
-" Intent
-AutoCmd FileType javascript setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType ruby       setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType css        setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType scss       setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType json       setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType markdown   setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType sh         setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType vim        setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType zsh        setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
-
-" Filetype
+" Set Filetype {{{3
 AutoCmd BufNewFile,BufRead            *.js  set filetype=javascript
-AutoCmd BufNewFile,BufRead            *.vue set filetype=vue.html.javascript.css
-AutoCmd BufNewFile,BufRead            *.erb set filetype=eruby.html
-AutoCmd BufNewFile,BufRead             *.md set filetype=markdown
+AutoCmd BufNewFile,BufRead            *.erb set filetype=eruby
 AutoCmd BufNewFile,BufRead           *.cson set filetype=coffee
-AutoCmd BufNewFile,BufRead     *.{yml,yaml} set filetype=yaml
 AutoCmd BufNewFile,BufRead         .babelrc set filetype=json
 AutoCmd BufNewFile,BufRead        .eslintrc set filetype=json
 AutoCmd BufNewFile,BufRead     .stylelintrc set filetype=json
@@ -713,28 +677,63 @@ AutoCmd BufWritePost *
 \  unlet! b:ftdetect |
 \  filetype detect |
 \ endif
+" }}}3
 
-" Completion
-AutoCmd FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
-AutoCmd FileType ruby          setlocal omnifunc=rubycomplete#Complete
-AutoCmd FileType eruby.html    setlocal omnifunc=htmlcomplete#CompleteTags
-AutoCmd FileType python        setlocal omnifunc=pythoncomplete#Complete
-AutoCmd FileType css           setlocal omnifunc=csscomplete#CompleteCSS
-AutoCmd FileType scss          setlocal omnifunc=csscomplete#CompleteCSS
-AutoCmd FileType javascript    setlocal dict=~/dotfiles/.vim/dict/javascript.dict
-AutoCmd FileType ruby,eruby    setlocal dict=~/dotfiles/.vim/dict/rails.dict
+" Completion {{{3
+set completefunc=autoprogramming#complete
 
-" Remove Tailing Space
-AutoCmd BufWritePre * call s:trim_end_line()
+AutoCmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+AutoCmd FileType typescript setlocal omnifunc=tsuquyomi#complete
+AutoCmd FileType ruby       setlocal omnifunc=rubycomplete#Complete
+AutoCmd FileType html       setlocal omnifunc=htmlcomplete#CompleteTags
+AutoCmd FileType eruby      setlocal omnifunc=htmlcomplete#CompleteTags
+AutoCmd FileType python     setlocal omnifunc=pythoncomplete#Complete
+AutoCmd FileType css        setlocal omnifunc=csscomplete#CompleteCSS
+AutoCmd FileType scss       setlocal omnifunc=csscomplete#CompleteCSS
+AutoCmd FileType gitcommit  setlocal omnifunc=github_complete#complete
+AutoCmd FileType markdown   setlocal omnifunc=github_complete#complete
 
-" Auto CursorLine
-AutoCmd CursorMoved,CursorMovedI * call s:auto_cursorline('CursorMoved')
-AutoCmd CursorHold,CursorHoldI * call s:auto_cursorline('CursorHold')
-AutoCmd WinEnter * call s:auto_cursorline('WinEnter')
-AutoCmd WinLeave * call s:auto_cursorline('WinLeave')
+AutoCmd FileType javascript setlocal dict=~/dotfiles/.vim/dict/javascript.dict
+AutoCmd FileType typescript setlocal dict=~/dotfiles/.vim/dict/javascript.dict
+AutoCmd FileType ruby,eruby setlocal dict=~/dotfiles/.vim/dict/rails.dict
+" }}}3
+
 " }}}2
 
-" }}}1
+" Terminal {{{2
+if has('nvim')
+  AutoCmd TermOpen * set nonumber | set norelativenumber
+endif
+" }}}2
+
+" HTML {{{2
+augroup HTML
+  autocmd!
+  autocmd FileType html call s:map_html_keys()
+  function! s:map_html_keys()
+    inoremap <silent> <buffer> \\ \
+    inoremap <silent> <buffer> \& &amp;
+    inoremap <silent> <buffer> \< &lt;
+    inoremap <silent> <buffer> \> &gt;
+    inoremap <silent> <buffer> \. ・
+    inoremap <silent> <buffer> \- &#8212;
+    inoremap <silent> <buffer> \<Space> &nbsp;
+    inoremap <silent> <buffer> \` &#8216;
+    inoremap <silent> <buffer> \' &#8217;
+    inoremap <silent> <buffer> \2 &#8220;
+    inoremap <silent> <buffer> \" &#8221;
+  endfunction
+augroup END
+" }}}2
+
+" vim {{{2
+AutoCmd FileType vim set keywordprg=:help
+" }}}2
+
+" shell {{{2
+AutoCmd FileType sh,bash,zsh set keywordprg=man
+" }}}2
+
 
 " Command Line Window {{{1
 nnoremap : q:
