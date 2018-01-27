@@ -12,7 +12,7 @@ let s:ale_filetypes = ['javascript', 'typescript', 'vue', 'ruby', 'eruby', 'pyth
 " Plugin Manager {{{1
 
 " Install & Load Dein {{{2
-let s:DEIN_BASE_PATH = '~/.vim/bundle/'
+let s:DEIN_BASE_PATH = $HOME . '/.vim/bundle/'
 let s:DEIN_PATH      = expand(s:DEIN_BASE_PATH . 'repos/github.com/Shougo/dein.vim')
 if !isdirectory(s:DEIN_PATH)
   if (executable('git') == 1) && (confirm('Install dein.vim or Launch vim immediately', "&Yes\n&No", 1) == 1)
@@ -261,7 +261,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('AndrewRadev/linediff.vim',       {'lazy': 1, 'on_cmd': ['Linediff', 'LinediffReset']})
   call dein#add('LeafCage/foldCC.vim')
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
-  call dein#add('cocopon/iceberg.vim')
   call dein#add('amix/vim-zenroom2',              {'lazy': 1, 'on_cmd': 'Goyo'})
   call dein#add('blueyed/vim-diminactive')
   call dein#add('edkolev/tmuxline.vim',           {'lazy': 1, 'on_cmd': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot']})
@@ -324,8 +323,16 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('vim-scripts/cecutil')
   " }}}3
 
+  " Color Theme {{{3
+  call dein#add('altercation/vim-colors-solarized')
+  call dein#add('cocopon/iceberg.vim')
+  call dein#add('nanotech/jellybeans.vim')
+  call dein#add('tomasr/molokai')
+  call dein#add('w0ng/vim-hybrid')
+  " }}}3
+
   " DevIcons {{{3
-  " call dein#add('ryanoasis/vim-devicons')
+  call dein#add('ryanoasis/vim-devicons')
   " }}}3
 
   call dein#end()
@@ -410,10 +417,8 @@ let g:maplocalleader = '\'
 
 "" Setting for Neovim
 if has('nvim')
-  let g:python_host_prog = expand('~/.pyenv/shims/python2')
-  let g:python3_host_prog = expand('~/.pyenv/shims/python3')
-
-  nmap <BS> <C-W>h
+  let g:python_host_prog  = $HOME . '/.pyenv/shims/python2'
+  let g:python3_host_prog = $HOME . '/.pyenv/shims/python3'
 endif
 
 "" Move
@@ -485,6 +490,14 @@ set tabstop=4
 if $TERM ==# 'screen'
   set t_Co=256
 endif
+if !has('nvim')
+  set term=xterm-256color
+endif
+" }}}2
+
+" Highlight Annotation Comment {{{2
+AutoCmd WinEnter,BufRead,BufNew,Syntax * silent! call matchadd('Todo', '\(TODO\|FIXME\|NOTE\|INFO\|XXX\|TEMP\):')
+AutoCmd WinEnter,BufRead,BufNew,Syntax * highlight Todo ctermfg=229
 " }}}2
 
 " Misc {{{2
@@ -500,7 +513,6 @@ set smartcase
 set autoread
 set belloff=all
 set clipboard=unnamed,unnamedplus
-set ignorecase
 set langnoremap
 set lazyredraw
 set ttyfast
@@ -1575,7 +1587,7 @@ if dein#tap('trip.vim')
 endif
 " }}}
 
-" yankround & Unite {{{3
+" yankround {{{3
 if dein#tap('yankround.vim')
   let g:yankround_max_history = 1000
   let g:yankround_use_region_hl = 1
@@ -2025,10 +2037,10 @@ call submode#enter_with('jump', 'n', '', 'g;', 'g;')
 call submode#map('jump', 'n', '', ';', 'g;')
 
 "" buffer
-call submode#enter_with('changebuffer', 'n', '', 'g<C-p>', ':bp<CR>')
-call submode#enter_with('changebuffer', 'n', '', 'g<C-n>', ':bn<CR>')
-call submode#map('changebuffer', 'n', '', '<C-p>', ':bp<CR>')
-call submode#map('changebuffer', 'n', '', '<C-n>', ':bn<CR>')
+call submode#enter_with('changebuffer', 'n', '', 'g<C-p>', ':bprevious<CR>')
+call submode#enter_with('changebuffer', 'n', '', 'g<C-n>', ':bnext<CR>')
+call submode#map('changebuffer', 'n', '', '<C-n>', ':bprevious<CR>')
+call submode#map('changebuffer', 'n', '', '<C-p>', ':bnext<CR>')
 
 "" tab
 call submode#enter_with('changetab', 'n', '', 'gh', 'gT')
@@ -2069,6 +2081,19 @@ nnoremap <silent> <C-e> :WinResizerStartResize<CR>
 
 " Load Colorscheme Later {{{1
 syntax enable
+
+" elflord {{{2
+" silent! colorscheme elflord
+" }}}2
+
+" hybrid {{{2
+" set background=dark
+" let g:hybrid_custom_term_colors = 1
+" let g:hybrid_reduced_contrast = 1
+" silent! colorscheme hybrid
+" }}}2
+
+" iceberg {{{2
 silent! colorscheme iceberg
 highlight Search       ctermfg=none ctermbg=237
 highlight LineNr       ctermfg=241
@@ -2076,6 +2101,26 @@ highlight CursorLineNr ctermbg=237 ctermfg=253
 highlight CursorLine   ctermbg=235
 highlight PmenuSel     cterm=reverse ctermfg=33 ctermbg=222
 highlight Visual       ctermfg=159 ctermbg=23
+" }}}2
+
+" jellybeans {{{2
+" silent! colorscheme jellybeans
+" }}}2
+
+" molokai {{{2
+" silent! colorscheme molokai
+" highlight Search   ctermfg=none ctermbg=237
+" highlight Visual   ctermfg=159 ctermbg=23
+" highlight Normal ctermbg=none
+" }}}2
+
+" solarized {{{2
+" set background=dark
+" let g:solarized_termcolors=256
+" let g:solarized_termtrans=1
+" colorscheme solarized
+" }}}2
+
 " }}}1
 
 " vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:
