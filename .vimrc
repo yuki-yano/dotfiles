@@ -1677,12 +1677,15 @@ if dein#tap('yankround.vim')
   AutoCmd ColorScheme * highlight YankRoundRegion ctermfg=209 ctermbg=237
   AutoCmd ColorScheme * highlight YankRoundRegion ctermfg=209 ctermbg=237
 
-  nmap p  <Plug>(yankround-p)
-  nmap P  <Plug>(yankround-P)
-  nmap gp <Plug>(yankround-gp)
-  nmap gP <Plug>(yankround-gP)
-  nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : 'q:Denite file_rec -direction=topleft -mode=insert<CR>'
-  nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : ''
+  nmap p     <Plug>(yankround-p)
+  nmap P     <Plug>(yankround-P)
+  nmap gp    <Plug>(yankround-gp)
+  nmap gP    <Plug>(yankround-gP)
+  cmap <C-r> <Plug>(yankround-insert-register)
+  cmap <C-y> <Plug>(yankround-pop)
+
+  nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "q:bprevious\<CR>"
+  nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : "q:bnext\<CR>"
   cmap <C-y> <Plug>(yankround-insert-register)
 endif
 " }}}3
