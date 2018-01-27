@@ -285,11 +285,11 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Shougo/deol.nvim',                       { 'lazy': 1, 'on_cmd': ['Deol', 'DeolCd', 'DeolEdit'], 'on_map': '<Plug>'})
   call dein#add('aiya000/aho-bakaup.vim')
   call dein#add('bogado/file-line')
-  call dein#add('daisuzu/translategoogle.vim')
   call dein#add('dietsche/vim-lastplace')
   call dein#add('haya14busa/vim-textobj-function-syntax', { 'depends': 'vim-textobj-user'})
   call dein#add('janko-m/vim-test',                       { 'lazy': 1, 'on_cmd': ['TestNearest','TestFile','TestSuite','TestLast','TestVisit']})
   call dein#add('kana/vim-niceblock',                     { 'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
+  call dein#add('haya14busa/vim-open-googletranslate', {'lazy': 1, 'on_cmd': 'OpenGoogleTranslate'})
   call dein#add('kana/vim-operator-user')
   call dein#add('kana/vim-submode',                       { 'depends': 'vim-operator-convert-case'})
   call dein#add('kana/vim-textobj-fold',                  { 'depends': 'vim-textobj-user'})
@@ -313,6 +313,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('thinca/vim-ref',                         { 'lazy': 1, 'on_cmd': 'Ref'})
   call dein#add('tweekmonster/startuptime.vim',           { 'lazy': 1, 'on_cmd': 'StartupTime'})
   call dein#add('tyru/capture.vim',                       { 'lazy': 1, 'on_cmd': 'Capture'})
+  call dein#add('tyru/open-browser.vim')
   call dein#add('tyru/vim-altercmd')
   call dein#add('wesQ3/vim-windowswap',                   { 'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#DoWindowSwap']})
   " }}}3
@@ -569,17 +570,7 @@ AutoCmd WinEnter,BufRead,BufNew,Syntax * highlight Todo ctermfg=229
 
 " Command {{{1
 
-" GoogleTranslation {{{2
-function! s:trans_range(...) range
-  let l:texts = []
-  for l:n in range(a:firstline, a:lastline)
-    let l:line = getline(l:n)
-    call add(l:texts, l:line . "\n")
-  endfor
-  15new | put!=translategoogle#command(join(l:texts))
-endfunction
 
-command! -nargs=* -range Trans <line1>,<line2>call s:trans_range(<f-args>)
 " }}}2
 
 " ToggleHiglight {{{2
