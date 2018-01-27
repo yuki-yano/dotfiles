@@ -1906,10 +1906,20 @@ let g:startify_commands = [
 let g:rainbow_active = 1
 let g:rainbow_conf = {
 \   'ctermfgs': [ '110', '150', '109', '216', '140', '203' ],
+\   'operators': '_,_',
+\   'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
 \   'separately' : {
-\       '*':   {},
-\       'vim': {},
-\       'css': 0,
+\   '*'        : {},
+\   'vim'      : {},
+\   'css'      : {},
+\   'scss'     : {},
+\   'thumbnail': 0,
+\   'html': {
+\     'parentheses': ['start=/\v\<((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
+\   },
+\   'eruby': {
+\     'parentheses': ['start=/\v\<((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
+\   },
 \   }
 \ }
 " }}}3
