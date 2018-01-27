@@ -155,15 +155,30 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('roxma/vim-hug-neovim-rpc')
   endif
 
-  call dein#add('Shougo/deoplete-rct')
-  call dein#add('Shougo/neco-vim')
-  call dein#add('carlitux/deoplete-ternjs')
-  call dein#add('fishbullet/deoplete-ruby')
-  call dein#add('ozelentok/deoplete-gtags')
-  call dein#add('ujihisa/neco-look')
-  call dein#add('wokalski/autocomplete-flow')
-  call dein#add('zchee/deoplete-jedi')
-  call dein#add('zchee/deoplete-zsh')
+  call dein#add('autozimu/LanguageClient-neovim', {
+  \ 'on_ft': ['javascript', 'typescript', 'vue', 'rust'],
+  \ 'rev': 'next',
+  \ 'build': 'bash install.sh'})
+
+  call dein#add('Shougo/deoplete-rct',         {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'ruby'})
+  call dein#add('Shougo/neco-syntax',          {'lazy': 1, 'depends': 'deoplete.nvim'})
+  call dein#add('Shougo/neco-vim',             {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'vim'})
+  call dein#add('Shougo/neoinclude.vim',       {'lazy': 1, 'depends': 'deoplete.nvim'})
+  call dein#add('carlitux/deoplete-ternjs',    {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': ['javascript', 'typescript']})
+  call dein#add('fishbullet/deoplete-ruby',    {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'ruby'})
+  call dein#add('fszymanski/deoplete-emoji',   {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': ['gitcommit', 'markdown']})
+  call dein#add('mhartington/nvim-typescript', {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'typescript'})
+  call dein#add('osyo-manga/vim-monster',      {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'ruby'})
+  call dein#add('ozelentok/deoplete-gtags',    {'lazy': 1, 'depends': 'deoplete.nvim'})
+  call dein#add('rhysd/github-complete.vim',   {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': ['gitcommit', 'markdown']})
+  call dein#add('ujihisa/neco-look',           {'lazy': 1, 'depends': 'deoplete.nvim'})
+  call dein#add('wellle/tmux-complete.vim',    {'lazy': 1, 'depends': 'deoplete.nvim'})
+  call dein#add('wokalski/autocomplete-flow',  {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'javascript'})
+  call dein#add('zchee/deoplete-go',           {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'go', 'build': 'make'})
+  call dein#add('zchee/deoplete-jedi',         {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'python'})
+  call dein#add('zchee/deoplete-zsh',          {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'zsh'})
+
+  call dein#add('blueyed/vim-auto-programming', {'rev': 'neovim'})
   " }}}3
 
   " Fuzzy Finder {{{3
@@ -1057,59 +1072,100 @@ if has('nvim')
     let g:deoplete#enable_camel_case = 1
     let g:deoplete#auto_complete_delay = 0
     let g:deoplete#auto_complete_start_length = 1
-    let g:deoplete#file#enable_buffer_path = 1
+    let g:deoplete#enable_refresh_always = 0
     let g:deoplete#tag#cache_limit_size = 5000000
+    let g:deoplete#skip_chars = ['(', ')']
 
-    call deoplete#custom#source('neosnippet', 'rank', 800)
-    call deoplete#custom#source('ternjs',     'rank', 800)
-    call deoplete#custom#source('flow',       'rank', 800)
-    call deoplete#custom#source('rct',        'rank', 800)
-    call deoplete#custom#source('ruby',       'rank', 800)
-    call deoplete#custom#source('jedi',       'rank', 800)
-    call deoplete#custom#source('vim',        'rank', 800)
-    call deoplete#custom#source('zsh',        'rank', 800)
-    call deoplete#custom#source('gtags',      'rank', 700)
-    call deoplete#custom#source('tag',        'rank', 600)
-    call deoplete#custom#source('buffer',     'rank', 500)
-    call deoplete#custom#source('omni',       'rank', 400)
-    call deoplete#custom#source('file',       'rank', 300)
-    call deoplete#custom#source('dictionary', 'rank', 200)
-    call deoplete#custom#source('look',       'rank', 100)
+    call deoplete#custom#source('_', 'converters', [
+    \ 'converter_remove_paren',
+    \ 'converter_remove_overlap',
+    \ 'converter_truncate_abbr',
+    \ 'converter_truncate_menu',
+    \ 'converter_auto_delimiter',
+    \ ])
 
-    call deoplete#custom#source('buffer',     'mark', '[buffer]')
-    call deoplete#custom#source('gtags',      'mark', '[gtags]')
-    call deoplete#custom#source('tag',        'mark', '[tag]')
-    call deoplete#custom#source('dictionary', 'mark', '[dict]')
-    call deoplete#custom#source('omni',       'mark', '[omni]')
-    call deoplete#custom#source('tern',       'mark', '[tern]')
-    call deoplete#custom#source('flow',       'mark', '[flow]')
-    call deoplete#custom#source('rct',        'mark', '[rct]')
-    call deoplete#custom#source('ruby',       'mark', '[ruby]')
-    call deoplete#custom#source('jedi',       'mark', '[jedi]')
-    call deoplete#custom#source('vim',        'mark', '[vim]')
-    call deoplete#custom#source('zsh',        'mark', '[zsh]')
+    let g:monster#completion#rcodetools#backend = 'async_rct_complete'
+    let g:deoplete#sources#go#gocode_binary = $GOPATH . '/bin/gocode'
+    let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+
+    call deoplete#custom#source('LanguageClient', 'rank', 1000)
+    call deoplete#custom#source('around',         'rank',  900)
+    call deoplete#custom#source('neosnippet',     'rank',  900)
+    call deoplete#custom#source('ternjs',         'rank',  900)
+    call deoplete#custom#source('flow',           'rank',  900)
+    call deoplete#custom#source('rct',            'rank',  900)
+    call deoplete#custom#source('ruby',           'rank',  900)
+    call deoplete#custom#source('jedi',           'rank',  900)
+    call deoplete#custom#source('go',             'rank',  900)
+    call deoplete#custom#source('emoji',          'rank',  900)
+    call deoplete#custom#source('vim',            'rank',  900)
+    call deoplete#custom#source('zsh',            'rank',  900)
+    call deoplete#custom#source('gtags',          'rank',  800)
+    call deoplete#custom#source('tag',            'rank',  700)
+    call deoplete#custom#source('member',         'rank',  600)
+    call deoplete#custom#source('buffer',         'rank',  500)
+    call deoplete#custom#source('omni',           'rank',  400)
+    call deoplete#custom#source('syntax',         'rank',  400)
+    call deoplete#custom#source('tmux',           'rank',  300)
+    call deoplete#custom#source('file',           'rank',  300)
+    call deoplete#custom#source('dictionary',     'rank',  200)
+    call deoplete#custom#source('look',           'rank',  100)
+
+    call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
+    call deoplete#custom#source('around',         'mark', '[around]')
+    call deoplete#custom#source('member',         'mark', '[member]')
+    call deoplete#custom#source('buffer',         'mark', '[buffer]')
+    call deoplete#custom#source('gtags',          'mark', '[gtags]')
+    call deoplete#custom#source('tag',            'mark', '[tag]')
+    call deoplete#custom#source('dictionary',     'mark', '[dict]')
+    call deoplete#custom#source('omni',           'mark', '[omni]')
+    call deoplete#custom#source('syntax',         'mark', '[syntax]')
+    call deoplete#custom#source('tern',           'mark', '[tern]')
+    call deoplete#custom#source('flow',           'mark', '[flow]')
+    call deoplete#custom#source('rct',            'mark', '[rct]')
+    call deoplete#custom#source('ruby',           'mark', '[ruby]')
+    call deoplete#custom#source('jedi',           'mark', '[jedi]')
+    call deoplete#custom#source('go',             'mark', '[go]')
+    call deoplete#custom#source('emoji',          'mark', '[emoji]')
+    call deoplete#custom#source('vim',            'mark', '[vim]')
+    call deoplete#custom#source('zsh',            'mark', '[zsh]')
+    call deoplete#custom#source('tmux',           'mark', '[tmux]')
 
     let g:deoplete#sources = {}
-    let g:deoplete#sources._          = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file']
-    let g:deoplete#sources.javascript = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'ternjs', 'flow']
-    let g:deoplete#sources.ruby       = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'rct', 'ruby']
-    let g:deoplete#sources.python     = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'jedi']
-    let g:deoplete#sources.vim        = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'vim']
-    let g:deoplete#sources.zsh        = ['gtags', 'tag', 'buffer', 'omni', 'dictionary', 'look', 'neosnippet', 'file', 'zsh']
+    let g:deoplete#sources._          = ['around', 'gtags', 'member', 'buffer', 'omni', 'syntax', 'dictionary', 'look', 'neosnippet', 'file']
+    let g:deoplete#sources.javascript = ['ternjs', 'flow']
+    let g:deoplete#sources.typescript = ['ternjs']
+    let g:deoplete#sources.ruby       = ['rct', 'ruby']
+    let g:deoplete#sources.python     = ['jedi']
+    let g:deoplete#sources.go         = ['go']
+    let g:deoplete#sources.markdown   = ['emoji']
+    let g:deoplete#sources.gitcommit  = ['emoji']
+    let g:deoplete#sources.vim        = ['vim']
+    let g:deoplete#sources.zsh        = ['zsh']
 
-    let g:deoplete#omni#input_patterns = {}
-    let g:deoplete#omni#input_patterns._ = ''
-    let g:deoplete#omni#input_patterns.ruby = ''
+    let g:deoplete#omni#input_patterns            = {}
+    let g:deoplete#omni#input_patterns._          = ''
+    let g:deoplete#omni#input_patterns.ruby       = '[^. *\t]\.\w*\|\h\w*::'
     let g:deoplete#omni#input_patterns.javascript = ''
-    let g:deoplete#omni#input_patterns.python = ''
-    let g:deoplete#omni#input_patterns.css  = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
-    let g:deoplete#omni#input_patterns.scss = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
+    let g:deoplete#omni#input_patterns.typescript = ''
+    let g:deoplete#omni#input_patterns.python     = ''
+    let g:deoplete#omni#input_patterns.go         = ''
+    let g:deoplete#omni#input_patterns.html       = '<[^>]*'
+    let g:deoplete#omni#input_patterns.xml        = '<[^>]*'
+    let g:deoplete#omni#input_patterns.css        = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
+    let g:deoplete#omni#input_patterns.scss       = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
+    let g:deoplete#omni#input_patterns.gitcommit  = '[ ]#[ 0-9a-zA-Z]*'
 
-    let g:deoplete#omni#functions = {}
+    let g:deoplete#omni#functions            = {}
+    let g:deoplete#omni#functions._          = ['autoprogramming#compwlete']
     let g:deoplete#omni#functions.javascript = ['jspc#omni', 'js#CompleteJS', 'javascriptcomplete#CompleteJS']
-    let g:deoplete#omni#functions.ruby       = ['rubycomplete#Complete']
+    let g:deoplete#omni#functions.typescript = ['tsuquyomi#complete', 'jspc#omni', 'js#CompleteJS', 'javascriptcomplete#CompleteJS']
+    let g:deoplete#omni#functions.ruby       = ['rubycomplete#Complete', 'monster#omnifunc']
     let g:deoplete#omni#functions.python     = ['pythoncomplete#Complete']
     let g:deoplete#omni#functions.css        = ['csscomplete#CompleteCSS']
+    let g:deoplete#omni#functions.scss       = ['csscomplete#CompleteCSS']
+    let g:deoplete#omni#functions.gitcommit  = ['github_complete#complete']
+    let g:deoplete#omni#functions.markdown   = ['github_complete#complete']
 
     " tern
     let g:tern_request_timeout = 1
@@ -1125,6 +1181,7 @@ if has('nvim')
     inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
     inoremap <silent> <expr> <C-h> deoplete#smart_close_popup() . "\<C-h>"
     inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
+    inoremap <silent> <expr> '  pumvisible() ? deoplete#close_popup() : "'"
     imap <expr> <TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
     smap <expr> <TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 
@@ -1139,11 +1196,18 @@ if has('nvim')
     inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
   endif
 end
+" }}}3
 
-
-if has('conceal')
-  set conceallevel=2 concealcursor=niv
-endif
+" LanguageClient {{{3
+let g:LanguageClient_autoStart = 1
+let g:LanguageClient_serverCommands = {
+\ 'vue': ['vls'],
+\ 'html': [],
+\ 'css': [],
+\ 'javascript': ['javascript-typescript-stdio'],
+\ 'typescript': ['javascript-typescript-stdio'],
+\ 'rust': ['rustup', 'run', 'nightly', 'rls'],
+\ }
 " }}}3
 
 " vimfiler {{{3
