@@ -124,6 +124,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('lambdalisue/gina.vim')
   call dein#add('lambdalisue/vim-unified-diff')
   call dein#add('rhysd/committia.vim')
+  call dein#add('rhysd/conflict-marker.vim')
 
   call dein#add('rhysd/ghpr-blame.vim',          {'lazy': 1, 'on_cmd': 'GHPRBlame'})
   call dein#add('ToruIwashita/git-switcher.vim', {'lazy': 1, 'on_cmd': [
@@ -255,6 +256,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tomtom/tcomment_vim',                    {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
   call dein#add('tpope/vim-repeat',                       {'lazy': 1, 'on_map': {'n': '<Plug>'}})
   call dein#add('tpope/vim-speeddating',                  {'lazy': 1, 'on_map': {'n': '<Plug>'}})
+  call dein#add('wsdjeg/FlyGrep.vim',                     {'lazy': 1, 'on_cmd': 'FlyGrep'})
   " }}}3
 
   " Appearance {{{3
@@ -1640,6 +1642,19 @@ if dein#tap('lexima.vim')
 endif
 " }}}3
 
+" multiple-cursors {{{
+let g:multi_cursor_start_word_key='g<C-n>'
+let g:multi_cursor_quit_key='<C-c>'
+nnoremap <C-c> :call multiple_cursors#quit()<CR>
+
+function g:Multiple_cursors_before()
+  let g:deoplete#disable_auto_complete = 1
+endfunction
+function g:Multiple_cursors_after()
+  let g:deoplete#disable_auto_complete = 0
+endfunction
+" }}}
+
 " operator-replace {{{3
 map _ <Plug>(operator-replace)
 " }}}3
@@ -1660,6 +1675,20 @@ endif
 
 " tcomment {{{3
 noremap <silent> <Leader>cc :TComment<CR>
+" }}}3
+
+" textmanip {{{3
+xmap <C-j> <Plug>(textmanip-move-down)
+xmap <C-k> <Plug>(textmanip-move-up)
+xmap <C-h> <Plug>(textmanip-move-left)
+xmap <C-l> <Plug>(textmanip-move-right)
+" }}}3
+
+" textobj-function {{{3
+omap iF <Plug>(textobj-function-i)
+omap aF <Plug>(textobj-function-a)
+vmap iF <Plug>(textobj-function-i)
+vmap aF <Plug>(textobj-function-a)
 " }}}3
 
 " trip {{{
