@@ -204,7 +204,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   set  runtimepath+=/usr/local/opt/fzf
   call dein#local('/usr/local/opt/fzf/')
   call dein#add('junegunn/fzf.vim',                {'depends': 'fzf'})
-  call dein#add('yuki-ycino/fzf-preview-mode.vim', {'depends': 'fzf.vim'})
+  call dein#local('~/repos/github.com/yuki-ycino', {}, ['fzf-preview.vim'])
   " }}}3
 
   " filer {{{3
@@ -385,6 +385,10 @@ augroup END
 
 command! -nargs=* AutoCmd autocmd MyVimrc <args>
 " }}}2
+
+" viminfo {{{
+set viminfo='1000
+" }}}
 
 " Encoding {{{2
 set fileencodings=utf-8,sjis,cp932,euc-jp
@@ -1171,8 +1175,10 @@ endif
 " }}}3
 
 " fzf {{{3
+let g:fzf_preview_command = 'head -100 {}'
 nnoremap <silent> <Leader>p :<C-u>ProjectFilesPreview<CR>
 nnoremap <silent> <Leader>b :<C-u>BuffersPreview<CR>
+nnoremap <silent> <Leader>m :<C-u>OldFilesPreview<CR>
 " }}}3
 
 " deoplete.nvim && neosnippet.vim {{{3
