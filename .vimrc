@@ -446,8 +446,8 @@ if has('nvim')
 endif
 
 "" Move
-nnoremap <M-b> ^
 nnoremap <M-f> $
+nnoremap <M-b> ^
 nnoremap <C-o> <C-o>zzzv
 nnoremap <C-i> <C-i>zzzv
 
