@@ -189,7 +189,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   call dein#add('Shougo/neomru.vim')
   call dein#add('Shougo/unite-outline')
-  call dein#add('Shougo/vimfiler')
   call dein#add('hewes/unite-gtags')
   call dein#add('osyo-manga/unite-highlight')
   call dein#add('osyo-manga/unite-quickfix')
@@ -208,9 +207,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('yuki-ycino/fzf-preview-mode.vim', {'depends': 'fzf.vim'})
   " }}}3
 
-  " NerdTree {{{3
-  call dein#add('scrooloose/nerdtree',                     {'lazy': 1, 'on_cmd': 'NERDTreeToggle'})
+  " filer {{{3
+  call dein#add('Shougo/vimfiler', {'lazy': 1, 'on_cmd': ['Vimfiler', 'VimFilerExplorer', 'VimfilerSplit', 'VimfilerTab', 'VimfilerCurrentDir', 'VimfilerCurrentDir', 'VimfilerBufferDir']})
 
+  call dein#add('cocopon/vaffle.vim', {'lazy': 1, 'on_cmd': 'Vaffle'})
+
+  call dein#add('scrooloose/nerdtree',                     {'lazy': 1, 'on_cmd': 'NERDTreeToggle'})
   call dein#add('Xuyuanp/nerdtree-git-plugin',             {'lazy': 1, 'depends': 'nerdtree'})
   call dein#add('jistr/vim-nerdtree-tabs',                 {'lazy': 1, 'depends': 'nerdtree'})
   call dein#add('tiagofumo/vim-nerdtree-syntax-highlight', {'lazy': 1, 'depends': 'nerdtree'})
