@@ -1655,7 +1655,7 @@ endif
 
 " multiple-cursors {{{
 let g:multi_cursor_start_word_key='g<C-n>'
-let g:multi_cursor_quit_key='<C-c>'
+let g:multi_cursor_quit_key='g<C-c>'
 nnoremap <C-c> :call multiple_cursors#quit()<CR>
 
 function g:Multiple_cursors_before()
