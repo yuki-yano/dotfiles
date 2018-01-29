@@ -8,6 +8,7 @@ jedi
 mypy
 neovim
 neovim-remote
+ptpython
 pygments-style-solarized
 sqlparse
 vim-vint
