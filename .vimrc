@@ -306,6 +306,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-textobj-indent',                {'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-underscore',            {'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-user')
+  call dein#add('kassio/neoterm')
   call dein#add('konfekt/fastfold')
   call dein#add('lambdalisue/session.vim',                {'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
   call dein#add('lambdalisue/suda.vim')
@@ -2206,6 +2207,20 @@ nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
 
 " neoterm {{{3
 let g:neoterm_position = 'vertical'
+let g:neoterm_autoinsert = 1
+let g:neoterm_repl_ruby = 'pry'
+let g:neoterm_repl_python = 'ptpython'
+
+nnoremap <silent> <Leader>TT :Tnew<CR>
+nnoremap <silent> <Leader>T :T<Space>
+
+nmap gx <Plug>(neoterm-repl-send)
+xmap gx <Plug>(neoterm-repl-send)
+nmap gxx <Plug>(neoterm-repl-send-line)
+
+nnoremap <silent> <Leader>th :call neoterm#close()<CR>
+nnoremap <silent> <Leader>tl :call neoterm#clear()<CR>
+nnoremap <silent> <Leader>tc :call neoterm#kill()<CR>
 " }}}3
 
 " open-googletranslate {{{3
