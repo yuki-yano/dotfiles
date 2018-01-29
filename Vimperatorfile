@@ -1,6 +1,7 @@
 _libly.js
 appendAnchor.js
 auto_detect_link.js
+buffer-multiple-hints.js
 copy.js
 feedSomeKeys_3.js
 multi_requester.js
