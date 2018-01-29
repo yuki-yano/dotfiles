@@ -163,6 +163,17 @@ function agvim () {
   vi "$(ag "$@" | peco --query "$LBUFFER" | awk -F : '{print $1 ":" $2}')"
 }
 
+# tmux
+s() {
+  local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
+    { tmux display-message -p -F "$fmt" && tmux list-sessions -F "$fmt"; } \
+      | awk '!seen[$1]++' \
+      | column -t -s'|' \
+      | fzf-tmux -q '$' --reverse --prompt 'switch session: ' -1 \
+      | cut -d':' -f1 \
+      | xargs tmux switch-client -t
+}
+
 # nicovideo
 function peco-nico-ranking() {
   ruby -r rss -e 'RSS::Parser.parse("http://www.nicovideo.jp/ranking/fav/daily/all?rss=2.0").channel.items.each {|item| puts item.link + "\t" + item.title}' | peco | while read -r line; do
