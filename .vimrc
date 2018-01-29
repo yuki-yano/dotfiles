@@ -1391,72 +1391,76 @@ endif
 " }}}3
 
 " gina {{{3
-call gina#custom#command#option('br', '-v', 'v')
-call gina#custom#command#option('br', '--all')
-call gina#custom#command#option(
-\ '/\%(status\|commit\)',
-\ '-u|--untracked-files'
-\ )
-call gina#custom#command#option(
-\ 'status',
-\ '-b|--branch'
-\)
-call gina#custom#command#option(
-\ 'status',
-\ '-s|--short'
-\ )
-call gina#custom#command#option(
-\ 'diff',
-\ '--opener',
-\ 'split'
-\ )
-call gina#custom#action#alias(
-\ 'branch', 'merge',
-\ 'commit:merge'
-\)
-call gina#custom#action#alias(
-\ 'branch', 'rebase',
-\ 'commit:rebase'
-\ )
-call gina#custom#action#alias(
-\ '/\%(blame\|log\|reflog\)',
-\ 'preview',
-\ 'show:commit:preview',
-\ )
-call gina#custom#mapping#nmap(
-\ '/\%(blame\|log\|reflog\)',
-\ 'p',
-\ ':<C-u>call gina#action#call(''preview'')<CR>',
-\ {'noremap': 1, 'silent': 1}
-\ )
-call gina#custom#mapping#nmap(
-\ 'blame', '<C-l>',
-\ '<C-w>l'
-\)
-call gina#custom#mapping#nmap(
-\ 'blame', '<C-r>',
-\ '<Plug>(gina-blame-redraw)'
-\)
+if dein#tap('gina.vim')
+  call gina#custom#command#option('br', '-v', 'v')
+  call gina#custom#command#option('br', '--all')
+  call gina#custom#command#option(
+  \ '/\%(status\|commit\)',
+  \ '-u|--untracked-files'
+  \ )
+  call gina#custom#command#option(
+  \ 'status',
+  \ '-b|--branch'
+  \)
+  call gina#custom#command#option(
+  \ 'status',
+  \ '-s|--short'
+  \ )
+  call gina#custom#command#option(
+  \ 'diff',
+  \ '--opener',
+  \ 'split'
+  \ )
+  call gina#custom#action#alias(
+  \ 'branch', 'merge',
+  \ 'commit:merge'
+  \)
+  call gina#custom#action#alias(
+  \ 'branch', 'rebase',
+  \ 'commit:rebase'
+  \ )
+  call gina#custom#action#alias(
+  \ '/\%(blame\|log\|reflog\)',
+  \ 'preview',
+  \ 'show:commit:preview',
+  \ )
+  call gina#custom#mapping#nmap(
+  \ '/\%(blame\|log\|reflog\)',
+  \ 'p',
+  \ ':<C-u>call gina#action#call(''preview'')<CR>',
+  \ {'noremap': 1, 'silent': 1}
+  \ )
+  call gina#custom#mapping#nmap(
+  \ 'blame', '<C-l>',
+  \ '<C-w>l'
+  \)
+  call gina#custom#mapping#nmap(
+  \ 'blame', '<C-r>',
+  \ '<Plug>(gina-blame-redraw)'
+  \)
 
-" Echo chunk info with j/k
-call gina#custom#mapping#nmap(
-\ 'blame', 'j',
-\ 'j<Plug>(gina-blame-echo)'
-\)
-call gina#custom#mapping#nmap(
-\ 'blame', 'k',
-\ 'k<Plug>(gina-blame-echo)'
-\)
+  " Echo chunk info with j/k
+  call gina#custom#mapping#nmap(
+  \ 'blame', 'j',
+  \ 'j<Plug>(gina-blame-echo)'
+  \)
+  call gina#custom#mapping#nmap(
+  \ 'blame', 'k',
+  \ 'k<Plug>(gina-blame-echo)'
+  \)
+endif
 " }}}3
 
 " }}}2
 
 " Edit & Move & Search {{{2
 
-" accelerated-jk {{{
-nmap j <Plug>(accelerated_jk_j)
-nmap k <Plug>(accelerated_jk_k)
-" }}}
+" accelerated-jk {{{3
+if dein#tap('accelerated-jk')
+  nmap j <Plug>(accelerated_jk_j)
+  nmap k <Plug>(accelerated_jk_k)
+endif
+" }}}3
 
 " anzu & asterisk {{{3
 let g:anzu_status_format = '(%i/%l)'
@@ -1628,11 +1632,13 @@ AutoCmd FileType qf nnoremap <buffer> r :<C-u>Qfreplace<CR>
 " }}}3
 
 " sandwich {{{3
-let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
-let g:sandwich#recipes += [
-\   { 'buns': ['\/', '\/'] },
-\   { 'buns': ['_', '_'] },
-\ ]
+if dein#tap('vim-sandwich')
+  let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
+  let g:sandwich#recipes += [
+  \   { 'buns': ['\/', '\/'] },
+  \   { 'buns': ['_', '_'] },
+  \ ]
+endif
 " }}}3
 
 " tcomment {{{3
@@ -2161,27 +2167,29 @@ let g:scratch_no_mappings = 1
 " }}}3
 
 " submode & operator-convert-case {{{3
-let g:submode_keep_leaving_key = 1
+if dein#tap('vim-submode')
+  let g:submode_keep_leaving_key = 1
 
-"" edit
-call submode#enter_with('jump', 'n', '', 'g;', 'g;')
-call submode#map('jump', 'n', '', ';', 'g;')
+  "" edit
+  call submode#enter_with('jump', 'n', '', 'g;', 'g;')
+  call submode#map('jump', 'n', '', ';', 'g;')
 
-"" buffer
-call submode#enter_with('changebuffer', 'n', '', 'g<C-p>', ':bprevious<CR>')
-call submode#enter_with('changebuffer', 'n', '', 'g<C-n>', ':bnext<CR>')
-call submode#map('changebuffer', 'n', '', '<C-n>', ':bprevious<CR>')
-call submode#map('changebuffer', 'n', '', '<C-p>', ':bnext<CR>')
+  "" buffer
+  call submode#enter_with('changebuffer', 'n', '', 'g<C-p>', ':bprevious<CR>')
+  call submode#enter_with('changebuffer', 'n', '', 'g<C-n>', ':bnext<CR>')
+  call submode#map('changebuffer', 'n', '', '<C-n>', ':bprevious<CR>')
+  call submode#map('changebuffer', 'n', '', '<C-p>', ':bnext<CR>')
 
-"" tab
-call submode#enter_with('changetab', 'n', '', 'gh', 'gT')
-call submode#enter_with('changetab', 'n', '', 'gl', 'gt')
-call submode#map('changetab', 'n', '', 'h', 'gT')
-call submode#map('changetab', 'n', '', 'l', 'gt')
+  "" tab
+  call submode#enter_with('changetab', 'n', '', 'gh', 'gT')
+  call submode#enter_with('changetab', 'n', '', 'gl', 'gt')
+  call submode#map('changetab', 'n', '', 'h', 'gT')
+  call submode#map('changetab', 'n', '', 'l', 'gt')
 
-"" operator-convert-case
-call submode#enter_with('convert', 'n', '', '<leader>cl', ':ConvertCaseLoop<CR>')
-call submode#map('convert', 'n', '', 'c', ':ConvertCaseLoop<CR>')
+  "" operator-convert-case
+  call submode#enter_with('convert', 'n', '', '<leader>cl', ':ConvertCaseLoop<CR>')
+  call submode#map('convert', 'n', '', 'c', ':ConvertCaseLoop<CR>')
+endif
 " }}}3
 
 " tagbar {{{3
