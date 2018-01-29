@@ -37,11 +37,11 @@ set! findbar.modalHighlight=false
 
 " To Enable map <Space>
 js <<EOM
-  window.addEventListener('keypress',function (event) {
-    var code=event.charCode;
+  window.addEventListener('keypress', function (event) {
+    var code = event.charCode;
     if ((liberator.mode === modes.INSERT && modes.extended === modes.MENU)
-    ||(liberator.mode ==modes.NORMAL && code==32)
-    ||(liberator.mode ==modes.COMMAND_LINE && code !=32)){
+    ||(liberator.mode == modes.NORMAL && code == 32)
+    ||(liberator.mode == modes.COMMAND_LINE && code != 32)){
       let map = mappings.get(liberator.mode, events.toString(event));
       if (map) {
         event.preventDefault();
@@ -49,7 +49,7 @@ js <<EOM
         map.execute();
       }
     }
-  },false);
+  }, false);
 EOM
 
 " My Customization
