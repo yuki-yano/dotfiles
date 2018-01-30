@@ -118,32 +118,55 @@ zle -N insert-last-word smart-insert-last-word
 # autoload -Uz compinit
 # compinit -C
 
-zstyle ':completion:*' verbose true
-zstyle ':completion:*' remote-access false
-zstyle ':completion:*' use-compctl false
-zstyle ':completion:*' group-name ''
-zstyle ':completion:*' special-dirs true
+# setopt
+setopt auto_param_slash
+setopt mark_dirs
+setopt list_types
+setopt auto_menu
+setopt auto_param_keys
+setopt interactive_comments
+
+setopt complete_in_word
+setopt always_last_prompt
+
+setopt print_eight_bit
+
+# zstyle
 zstyle ':completion:*' menu select=2
-zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
-zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' '+r:|[._-]=* r:|=* l:|=*'
+zstyle ':completion:*' group-name ''
 zstyle ':completion:*' completer _oldlist _complete _match _ignored
-zstyle ':completion:*' auto-description 'specify: %d'
-zstyle ':completion:*' use-cache yes
-zstyle ':completion:*' cache-path "$HOME/.zsh/cache"
+zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' '+r:|[._-]=* r:|=* l:|=*'
+zstyle ':completion:*' special-dirs true
 zstyle ':completion:*:options' description 'yes'
-zstyle ':completion:*:manuals' separate-sections true
-zstyle ':completion:*:functions' ignored-patterns '_*'
+zstyle ':completion:*' auto-description 'specify: %d'
+zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
+zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
+
+# Highlight
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*:default:*' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*:kill:*' list-colors '=(#b) #([0-9]#)*( *[a-z])*=34=31=33'
-zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
-zstyle ':completion:*' list-separator ' ==> '
 zstyle ':completion:*:messages' format '%F{YELLOW}%d'"$DEFAULT"
 zstyle ':completion:*:warnings' format '%F{RED}No matches for:''%F{YELLOW} %d'"$DEFAULT"
 zstyle ':completion:*:descriptions' format $'%{\e[38;5;147m%}%B[%d%B]%b%{\e[m%}'
 zstyle ':completion:*:corrections' format $'%{\e[38;5;147m%}%B[%d%B]%b%{\e[m%}'
+
+# Setting Separator
+zstyle ':completion:*' list-separator ' ==> '
+zstyle ':completion:*:manuals' separate-sections true
+
+
+# Ignore Completion
+zstyle ':completion:*:functions' ignored-patterns '_*'
+zstyle ':completion:*:*files'    ignored-patterns '*?.o' '*?~' '*\#'
+
+# Cache
+zstyle ':completion:*' use-cache yes
+zstyle ':completion:*' cache-path "$HOME/.zsh/cache"
+
+# Others
+zstyle ':completion:*' remote-access false
 zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
-zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
 
 # }}}
 
