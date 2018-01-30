@@ -935,8 +935,8 @@ let g:markdown_quote_syntax_filetypes = {
 \ 'css' : {
 \    'start' : '\\%(css\\|scss\\)',
 \ },
-\ 'bash' : {
-\    'start' : 'bash',
+\ 'sh' : {
+\    'start' : 'sh',
 \ },
 \}
 
