@@ -99,6 +99,7 @@ export PATH=$PATH:/usr/local/heroku/bin
 # vim
 alias vi='nvim'
 alias vr='nvr'
+alias vimdiff='nvim -d'
 
 # eslint-friendly-formatter
 export EFF_NO_GRAY=true
