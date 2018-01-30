@@ -14,6 +14,7 @@
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
     "firebase-tools": "^3.17.4",
+    "fixjson": "^1.1.0",
     "flow-bin": "^0.64.0",
     "flow-typed": "^2.2.3",
     "gtop": "^0.1.5",
