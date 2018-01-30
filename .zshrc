@@ -81,7 +81,6 @@ if [ -f ~/.dircolors ]; then
 fi
 
 # 各種機能
-setopt auto_cd
 setopt auto_pushd
 setopt pushd_ignore_dups
 setopt list_packed
@@ -90,7 +89,6 @@ setopt nolistbeep
 setopt histignorealldups histsavenodups
 setopt sharehistory
 setopt no_nomatch
-setopt magic_equal_subst
 
 # コマンド履歴設定
 HISTFILE=${HOME}/.zsh_history
@@ -213,7 +211,7 @@ done
 
 # Misc {{{
 
-# zptyを読み込み
+# Loading zpty
 # https://github.com/zchee/deoplete-zsh
 zmodload zsh/zpty
 
@@ -255,37 +253,14 @@ function my-expand-abbrev-aux() {
 
 zle -N my-expand-abbrev
 
+# neovim_remote
 function neovim_autocd() {
   [[ $NVIM_LISTEN_ADDRESS ]] && neovim-autocd
 }
 chpwd_functions+=( neovim_autocd )
 
-function up-line-or-history-ignoring() {
-  zle up-line-or-history
-  case "$LBUFFER" in
-    fg|bg)
-      zle up-line-or-history
-      ;;
-  esac
-}
-zle -N up-line-or-history-ignoring
-
 # tmuxにカレントディレクトリ名を設定
-autoload -Uz add-zsh-hook
-add-zsh-hook preexec env_rehash
-add-zsh-hook precmd  env_rehash
 add-zsh-hook precmd  rename_tmux_window
-
-function env_rehash() {
-  if echo "$1" | grep rbenv > /dev/null ; then
-    rbenv rehash
-  elif echo "$1" | grep pyenv > /dev/null ; then
-    pyenv rehash
-  elif echo "$1" | grep nodenv > /dev/null ; then
-    nodenv rehash
-  fi
-}
-
 function rename_tmux_window() {
   if [[ -n "$TMUX" ]] ; then
     local current_path=$(pwd | sed -e s/\ /_/g)
@@ -294,13 +269,44 @@ function rename_tmux_window() {
   fi
 }
 
-# typo時にヒストリに記録しない
-function command_not_found_handler() {
-  tail -1 "$HISTFILE" |
-    grep -F "$*" > /dev/null 2>&1 &&
-    sed -i '$d' "$HISTFILE"
-  return 127
+# anyenv系のコマンドを呼ぶ度にrehash
+add-zsh-hook preexec env_rehash
+add-zsh-hook precmd  env_rehash
+
+function env_rehash() {
+  if   echo "$1" | grep rbenv  > /dev/null ; then
+    rbenv rehash
+  elif echo "$1" | grep pyenv  > /dev/null ; then
+    pyenv rehash
+  elif echo "$1" | grep nodenv > /dev/null ; then
+    nodenv rehash
+  fi
 }
+
+# 失敗したコマンドを記録しない
+__record_command() {
+  typeset -g _LASTCMD=${1%%$'\n'}
+  return 1
+}
+zshaddhistory_functions+=(__record_command)
+
+__update_history() {
+  local last_status="$?"
+
+  # hist_ignore_space
+  if [[ ! -n ${_LASTCMD%% *} ]]; then
+    return
+  fi
+
+  # hist_reduce_blanks
+  local cmd_reduce_blanks=$(echo ${_LASTCMD} | tr -s ' ')
+
+  # Record the commands that have succeeded
+  if [[ ${last_status} == 0 ]]; then
+    print -sr -- "${cmd_reduce_blanks}"
+  fi
+}
+precmd_functions+=(__update_history)
 
 # }}}
 
@@ -315,7 +321,7 @@ bindkey '^e'   end-of-line
 bindkey '^r'   anyframe-widget-put-history
 bindkey '^xk'  anyframe-widget-kill
 bindkey '^z'   fancy-ctrl-z
-bindkey '^p'   up-line-or-history-ignoring
+bindkey '^p'   up-line-or-history
 
 # }}}
 
