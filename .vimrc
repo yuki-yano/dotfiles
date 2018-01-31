@@ -2066,24 +2066,24 @@ if dein#tap('vim-altercmd')
   AlterCommand! <cmdwin> gdc         Gina<Space>diff<Space>--cached
   AlterCommand! <cmdwin> blame       Gina<Space>blame
   AlterCommand! <cmdwin> agit        Agit
+  AlterCommand! <cmdwin> agitf[ile]  AgitFile
+  AlterCommand! <cmdwin> root        Rooter
   AlterCommand! <cmdwin> gss         GswSave
   AlterCommand! <cmdwin> gsl         GswLoad
-  AlterCommand! <cmdwin> root        Rooter
-  AlterCommand! <cmdwin> sw[tch]     Switch
-  AlterCommand! <cmdwin> sjs         SplitjoinSplit
-  AlterCommand! <cmdwin> sjj         SplitjoinJoin
-  AlterCommand! <cmdwin> alc         Ref<Space>webdict<Space>alc
-  AlterCommand! <cmdwin> tag         TagbarOpen<Space>j
-  AlterCommand! <cmdwin> nr          NR
-  AlterCommand! <cmdwin> scr[atch]   Scratch
-  AlterCommand! <cmdwin> cap[ture]   Capture
-  AlterCommand! <cmdwin> cal[endar]  Calendar
-  AlterCommand! <cmdwin> th[umbnail] Thumbnail
   AlterCommand! <cmdwin> ss          SessionSave!
   AlterCommand! <cmdwin> so          SessionOpen
   AlterCommand! <cmdwin> sr          SessionRemove
   AlterCommand! <cmdwin> sl          SessionList
   AlterCommand! <cmdwin> sc          SessionClose
+  AlterCommand! <cmdwin> tag         TagbarOpen<Space>j
+  AlterCommand! <cmdwin> nr          NR
+  AlterCommand! <cmdwin> va[fle]     Vaffle
+  AlterCommand! <cmdwin> sc[ratch]   Scratch
+  AlterCommand! <cmdwin> cap[ture]   Capture
+  AlterCommand! <cmdwin> cal[endar]  Calendar
+  AlterCommand! <cmdwin> th[umbnail] Thumbnail
+  AlterCommand! <cmdwin> alc         Ref<Space>webdict<Space>alc
+  AlterCommand! <cmdwin> mark[ed]    MarkedToggle
 endif
 " }}}3
 
