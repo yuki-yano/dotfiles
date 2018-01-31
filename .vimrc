@@ -1172,10 +1172,10 @@ endif
 " }}}3
 
 " fzf {{{3
-let g:fzf_preview_command = 'head -100 {}'
 nnoremap <silent> <Leader>p :<C-u>ProjectFilesPreview<CR>
 nnoremap <silent> <Leader>b :<C-u>BuffersPreview<CR>
-nnoremap <silent> <Leader>m :<C-u>OldFilesPreview<CR>
+nnoremap <silent> <Leader>m :<C-u>ProjectOldFilesPreview<CR>
+nnoremap <silent> <Leader>M :<C-u>OldFilesPreview<CR>
 " }}}3
 
 " deoplete.nvim && neosnippet.vim {{{3
