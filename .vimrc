@@ -1351,6 +1351,7 @@ endif
 " }}}3
 
 " NerdTree {{{3
+let g:NERDTreeShowHidden = 1
 let g:NERDTreeLimitedSyntax = 1
 let g:NERDTreeWinSize=35
 let g:NERDTreeDirArrowExpandable = '▸'
