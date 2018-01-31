@@ -209,7 +209,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " filer {{{3
   call dein#add('Shougo/vimfiler', {'lazy': 1, 'on_cmd': ['Vimfiler', 'VimFilerExplorer', 'VimfilerSplit', 'VimfilerTab', 'VimfilerCurrentDir', 'VimfilerCurrentDir', 'VimfilerBufferDir']})
 
-  call dein#add('cocopon/vaffle.vim', {'lazy': 1, 'on_cmd': 'Vaffle'})
+  call dein#add('cocopon/vaffle.vim')
 
   call dein#add('scrooloose/nerdtree',                     {'lazy': 1, 'on_cmd': 'NERDTreeToggle'})
   call dein#add('Xuyuanp/nerdtree-git-plugin',             {'lazy': 1, 'depends': 'nerdtree'})
