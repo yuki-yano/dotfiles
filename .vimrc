@@ -342,6 +342,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('nixprime/cpsm',          {'build': 'env PY3=ON ./install.sh'})
   call dein#add('thinca/vim-editvar')
   call dein#add('thinca/vim-prettyprint', {'lazy': 1, 'on_cmd': ['PrettyPrint', 'PP']})
+  call dein#add('vim-jp/vital.vim',       {'lazy': 1, 'on_cmd': 'Vitalize'})
   call dein#add('vim-scripts/L9')
   call dein#add('vim-scripts/cecutil')
   " }}}3
