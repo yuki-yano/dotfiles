@@ -2170,10 +2170,11 @@ let g:automatic_config = [
 " }}}
 
 " bufkill {{{3
-AutoCmd FileType *    nnoremap <silent> <Leader>d :BD<CR>
-AutoCmd FileType help nnoremap <silent> <Leader>d :BW<CR>
-AutoCmd FileType diff nnoremap <silent> <Leader>d :BW<CR>
-AutoCmd FileType git  nnoremap <silent> <Leader>d :BW<CR>
+AutoCmd FileType *      nnoremap <silent> <Leader>d :BD<CR>
+AutoCmd FileType help   nnoremap <silent> <Leader>d :BW<CR>
+AutoCmd FileType diff   nnoremap <silent> <Leader>d :BW<CR>
+AutoCmd FileType git    nnoremap <silent> <Leader>d :BW<CR>
+AutoCmd FileType vaffle nnoremap <silent> <Leader>d :BW<CR>
 " }}}3
 
 " calendar {{{3
