@@ -2106,8 +2106,7 @@ let g:automatic_config = [
 \   {
 \     'match': { 'filetype': 'diff' },
 \     'set': {
-\       'move': 'topleft',
-\       'height': '30%'
+\       'move': 'right',
 \     }
 \   },
 \   {
@@ -2121,10 +2120,24 @@ let g:automatic_config = [
 \     }
 \   },
 \   {
+\     'match': { 'filetype': 'gina-commit' },
+\     'set': {
+\       'move': 'topleft',
+\       'height': '25%'
+\     }
+\   },
+\   {
 \     'match': { 'filetype': 'gina-branch' },
+\     'set': {
+\       'move': 'topleft',
+\       'height': '30%'
+\     }
 \   },
 \   {
 \     'match': { 'filetype': 'gina-log' },
+\   },
+\   {
+\     'match': { 'filetype': 'gina-reflog' },
 \   },
 \   {
 \     'match': {
