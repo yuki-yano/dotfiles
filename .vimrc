@@ -2181,6 +2181,12 @@ let g:automatic_config = [
 \     },
 \   },
 \   {
+\     'match': {
+\       'filetype': 'ref-webdict',
+\       'autocmds': [ 'FileType' ]
+\     },
+\   },
+\   {
 \     'match' : {
 \       'autocmds': [ 'CmdwinEnter' ]
 \     },
