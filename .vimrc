@@ -1583,7 +1583,7 @@ if dein#tap('lexima.vim')
     \ {'char': '&',     'at': '\S\%#',     'input': ' && '},
     \ {'char': '&',     'at': '\s\%#',     'input': '&& '},
     \ {'char': '&',     'at': '&&\s\%#',   'input': '<BS><BS>'},
-    \ {'char': '&',     'at': '&\%#',      'input': '&', 'priority': 10},
+    \ {'char': '&',     'at': '&\%#',      'priority': 10},
     \ {'char': '<C-h>', 'at': '\s&&\s\%#', 'input': '<BS><BS><BS><BS>'},
     \ {'char': '<C-h>', 'at': '&&\s\%#',   'input': '<BS><BS><BS>'},
     \ {'char': '<C-h>', 'at': '&&\%#',     'input': '<BS><BS>'},
@@ -1604,47 +1604,43 @@ if dein#tap('lexima.vim')
     "" Parenthesis
     let l:rules += [
     \ {'char': '(',     'at': '(\%#)', 'input': '<Del>'},
-    \ {'char': '(',     'at': '(\%#',  'input': '('},
+    \ {'char': '(',     'at': '(\%#'},
     \ {'char': '<C-h>', 'at': '(\%#)', 'input': '<BS><Del>'},
     \ ]
 
     "" Brace
     let l:rules += [
     \ {'char': '{',     'at': '{\%#}', 'input': '<Del>'},
-    \ {'char': '{',     'at': '{\%#',  'input': '{'},
+    \ {'char': '{',     'at': '{\%#'},
     \ {'char': '<C-h>', 'at': '{\%#}', 'input': '<BS><Del>'},
     \ ]
 
     "" Bracket
     let l:rules += [
     \ {'char': '[',     'at': '\[\%#\]', 'input': '<Del>'},
-    \ {'char': '[',     'at': '\[\%#',   'input': '['},
+    \ {'char': '[',     'at': '\[\%#'},
     \ {'char': '<C-h>', 'at': '\[\%#\]', 'input': '<BS><Del>'},
     \ ]
 
     "" Sinble Quote
     let l:rules += [
     \ {'char': "'",     'at': "'\\%#'", 'input': '<Del>'},
-    \ {'char': "'",     'at': "'\\%#",  'input': "'"},
-    \ {'char': "'",     'at': "''\\%#", 'input': "'"},
+    \ {'char': "'",     'at': "'\\%#"},
+    \ {'char': "'",     'at': "''\\%#"},
     \ {'char': '<C-h>', 'at': "'\\%#'", 'input': '<Del>'},
     \ ]
 
     "" Double Quote
     let l:rules += [
     \ {'char': '"',     'at': '"\%#"', 'input': '<Del>'},
-    \ {'char': '"',     'at': '"\%#',  'input': '"'},
-    \ {'char': '"',     'at': '""\%#', 'input': '"'},
+    \ {'char': '"',     'at': '"\%#'},
+    \ {'char': '"',     'at': '""\%#'},
     \ {'char': '<C-h>', 'at': '"\%#"', 'input': '<Del>'},
     \ ]
 
-    "" vim
+    "" Back Quote
     let l:rules += [
-    \ {'char': '&',                        'input': '&', 'filetype': 'vim', 'priority': 10},
-    \ {'char': '&',     'at': '\S\%#',     'input': '&', 'filetype': 'vim', 'priority': 10},
-    \ {'char': '&',     'at': '\s\%#',     'input': '&', 'filetype': 'vim', 'priority': 10},
-    \ {'char': '&',     'at': '&\%#',      'input': '&', 'priority': 10},
-    \ {'char': '{', 'at': '{\%#$', 'input': '{{<CR>', 'input_after': '<CR>" }}}', 'filetype': 'vim', 'priority': 10},
+    \ {'char': '`', 'at': '`'},
     \ ]
 
     "" ruby
@@ -1653,6 +1649,20 @@ if dein#tap('lexima.vim')
     \ {'char': '<Bar>', 'at': 'do\s\%#',   'input': '<Bar><Bar><Left>', 'input_after': '<CR>end', 'filetype': ['ruby', 'eruby']},
     \ {'char': '<Bar>', 'at': '{\%#}',     'input': '<Space><Bar><Bar><Left>', 'input_after': '<Space>', 'filetype': ['ruby', 'eruby']},
     \ {'char': '<Bar>', 'at': '{\s\%#\s}', 'input': '<Bar><Bar><Left>', 'input_after': '<Space>', 'filetype': ['ruby', 'eruby']},
+    \ ]
+
+    "" markdown
+    let l:rules += [
+    \ {'char': '`', 'at': '``\%#', 'input_after': '<CR><CR>```', 'filetype': 'markdown', 'priority': 10},
+    \ ]
+
+    "" vim
+    let l:rules += [
+    \ {'char': '&',                'filetype': 'vim', 'priority': 10},
+    \ {'char': '&', 'at': '\S\%#', 'filetype': 'vim', 'priority': 10},
+    \ {'char': '&', 'at': '\s\%#', 'filetype': 'vim', 'priority': 10},
+    \ {'char': '&', 'at': '&\%#',  'priority': 10},
+    \ {'char': '{', 'at': '{\%#$', 'input': '{{<CR>', 'input_after': '<CR>" }}}', 'filetype': 'vim', 'priority': 10},
     \ ]
 
     for l:rule in l:rules
