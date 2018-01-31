@@ -513,7 +513,6 @@ map <leader>ss :set spell!<CR>
 if has('nvim')
   tnoremap <silent> <Esc> <C-\><C-n>
 endif
-nnoremap <silent> <Leader>s :terminal<CR>
 " }}}2
 
 " Indent {{{2
