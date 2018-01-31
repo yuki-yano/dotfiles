@@ -2213,6 +2213,12 @@ nnoremap <silent> <Leader>tl :call neoterm#clear()<CR>
 nnoremap <silent> <Leader>tc :call neoterm#kill()<CR>
 " }}}3
 
+" open-browser {{{
+let g:netrw_nogx = 1
+nmap gb <Plug>(openbrowser-smart-search)
+vmap gb <Plug>(openbrowser-smart-search)
+" }}}
+
 " open-googletranslate {{{3
 let g:opengoogletranslate#openbrowsercmd = 'electron-open --without-focus'
 command! -range Trans <line1>,<line2>OpenGoogleTranslate
