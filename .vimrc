@@ -2248,10 +2248,10 @@ if dein#tap('vim-submode')
   call submode#map('jump', 'n', '', ';', 'g;')
 
   "" buffer
-  call submode#enter_with('changebuffer', 'n', '', 'g<C-p>', ':bprevious<CR>')
-  call submode#enter_with('changebuffer', 'n', '', 'g<C-n>', ':bnext<CR>')
-  call submode#map('changebuffer', 'n', '', '<C-n>', ':bprevious<CR>')
-  call submode#map('changebuffer', 'n', '', '<C-p>', ':bnext<CR>')
+  call submode#enter_with('changebuffer', 'n', '', 'gp', ':bprevious<CR>')
+  call submode#enter_with('changebuffer', 'n', '', 'gn', ':bnext<CR>')
+  call submode#map('changebuffer', 'n', '', 'n', ':bprevious<CR>')
+  call submode#map('changebuffer', 'n', '', 'p', ':bnext<CR>')
 
   "" tab
   call submode#enter_with('changetab', 'n', '', 'gh', 'gT')
