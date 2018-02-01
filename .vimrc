@@ -711,8 +711,9 @@ AutoCmd FileType javascript setlocal iskeyword+=$ iskeyword+=? iskeyword+=/
 AutoCmd FileType vue        setlocal iskeyword+=$ iskeyword+=& iskeyword+=- iskeyword+=? iskeyword+=/
 AutoCmd FileType ruby       setlocal iskeyword+=@ iskeyword+=! iskeyword+=? iskeyword+=&
 AutoCmd FileType html       setlocal iskeyword+=-
+AutoCmd FileType css        setlocal iskeyword+=-
 AutoCmd FileType scss       setlocal iskeyword+=$ iskeyword+=& iskeyword+=-
-AutoCmd FileType sh         setlocal iskeyword+=$
+AutoCmd FileType sh         setlocal iskeyword+=$ iskeyword+=-
 AutoCmd FileType zsh        setlocal iskeyword+=$
 " }}}3
 
