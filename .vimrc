@@ -333,6 +333,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tyru/capture.vim',                       {'lazy': 1, 'on_cmd': 'Capture'})
   call dein#add('tyru/open-browser.vim')
   call dein#add('tyru/vim-altercmd')
+  call dein#add('vim-utils/vim-man',                      {'lazy': 1, 'on_cmd': ['Man', 'SMan', 'VMan', 'ManGrep']})
   call dein#add('wesQ3/vim-windowswap',                   {'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#DoWindowSwap']})
   " }}}3
 
@@ -2098,7 +2099,23 @@ let g:automatic_default_set_config = {
 
 let g:automatic_config = [
 \   {
-\     'match': { 'filetype': 'help' },
+\     'match': {
+\     'filetype': 'help',
+\     },
+\     'set': {
+\       'move': 'right',
+\       'width': '35%',
+\     },
+\   },
+\   {
+\     'match': {
+\       'filetype': 'man',
+\       'autocmds': ['FileType'],
+\   },
+\     'set': {
+\       'move': 'right',
+\       'width': '35%',
+\     },
 \   },
 \   {
 \     'match': { 'filetype': 'qf' },
@@ -2107,7 +2124,7 @@ let g:automatic_config = [
 \     'match': { 'filetype': 'diff' },
 \     'set': {
 \       'move': 'right',
-\     }
+\     },
 \   },
 \   {
 \     'match': { 'filetype': 'git' },
@@ -2116,22 +2133,22 @@ let g:automatic_config = [
 \     'match': { 'filetype': 'gina-status' },
 \     'set': {
 \       'move': 'topleft',
-\       'height': '20%'
+\       'height': '20%',
 \     }
 \   },
 \   {
 \     'match': { 'filetype': 'gina-commit' },
 \     'set': {
 \       'move': 'topleft',
-\       'height': '25%'
-\     }
+\       'height': '25%',
+\     },
 \   },
 \   {
 \     'match': { 'filetype': 'gina-branch' },
 \     'set': {
 \       'move': 'topleft',
-\       'height': '30%'
-\     }
+\       'height': '30%',
+\     },
 \   },
 \   {
 \     'match': { 'filetype': 'gina-log' },
@@ -2142,28 +2159,28 @@ let g:automatic_config = [
 \   {
 \     'match': {
 \       'filetype': 'scratch',
-\       'autocmds': [ 'FileType' ]
+\       'autocmds': ['FileType'],
 \     },
 \   },
 \   {
 \     'match': {
 \       'filetype': 'capture',
-\       'autocmds': [ 'FileType' ]
+\       'autocmds': ['FileType'],
 \     },
 \   },
 \   {
 \     'match': {
 \       'filetype': 'ref-webdict',
-\       'autocmds': [ 'FileType' ]
+\       'autocmds': ['FileType'],
 \     },
 \   },
 \   {
 \     'match' : {
-\       'autocmds': [ 'CmdwinEnter' ]
+\       'autocmds': ['CmdwinEnter'],
 \     },
 \     'set' : {
 \       'is_close_focus_out' : 1,
-\       'unsettings' : [ 'move', 'resize' ]
+\       'unsettings' : ['move', 'resize'],
 \     },
 \   },
 \ ]
