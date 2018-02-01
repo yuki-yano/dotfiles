@@ -988,9 +988,6 @@ AutoCmd FileType typescript call tern#Enable()
 " typescript {{{3
 let g:typescript_indent_disable = 1
 
-let g:nvim_typescript#javascript_support = 1
-let g:nvim_typescript#vue_support = 1
-
 AutoCmd FileType typescript JsPreTmpl html
 AutoCmd FileType typescript syn clear foldBraces
 " }}}3
