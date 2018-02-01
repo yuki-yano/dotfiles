@@ -783,6 +783,11 @@ augroup HTML
 augroup END
 " }}}2
 
+" csv {{{2
+AutoCmd FileType csv setlocal nowrap
+AutoCmd FileType csv let b:alignta_default_arguments = '@01 ,'
+" }}}2
+
 " vim {{{2
 AutoCmd FileType vim set keywordprg=:help
 " }}}2
