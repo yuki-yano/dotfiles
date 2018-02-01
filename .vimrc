@@ -238,6 +238,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('junegunn/vim-easy-align')
   call dein#add('kana/vim-operator-replace',              {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('kana/vim-textobj-function',              {'depends': 'vim-textobj-user'})
+  call dein#add('kana/vim-textobj-help',                  {'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-indent',                {'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-line',                  {'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-user')
@@ -661,13 +662,44 @@ endfunction
 nnoremap <Leader>tm :<C-u>tablast <Bar> call <SID>move_to_new_tab()<CR>
 " }}}2
 
+" HelpEdit & HelpView {{{
+function! s:option_to_view()
+  setlocal buftype=help nomodifiable readonly
+  setlocal nolist
+  if exists('+colorcolumn')
+    setlocal colorcolumn=
+  endif
+  if has('conceal')
+    setlocal conceallevel=2
+  endif
+endfunction
+
+function! s:option_to_edit()
+  setlocal buftype= modifiable noreadonly
+  setlocal list tabstop=8 shiftwidth=8 softtabstop=8 noexpandtab textwidth=78
+  if exists('+colorcolumn')
+    setlocal colorcolumn=+1
+  endif
+  if has('conceal')
+    setlocal conceallevel=0
+  endif
+endfunction
+
+command! -buffer -bar HelpEdit call s:option_to_edit()
+command! -buffer -bar HelpView call s:option_to_view()
+" }}}
+
 " }}}1
 
-" Other Settings {{{1
+" FileType Settings {{{1
 
 " FileType {{{2
 
 " Intent {{{3
+AutoCmd FileType javascript setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType typescript setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType ruby       setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType python     setlocal expandtab   shiftwidth=4 softtabstop=4 tabstop=4
 AutoCmd FileType go         setlocal noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
 AutoCmd FileType vim        setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType sh         setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
@@ -1671,6 +1703,13 @@ omap iF <Plug>(textobj-function-i)
 omap aF <Plug>(textobj-function-a)
 vmap iF <Plug>(textobj-function-i)
 vmap aF <Plug>(textobj-function-a)
+" }}}3
+
+" textobj-help {{{3
+if &buftype ==# 'help'
+  map <silent> <buffer> J <Plug>(textobj-help-any-n)
+  map <silent> <buffer> K <Plug>(textobj-help-any-p)
+endif
 " }}}3
 
 " trip {{{
