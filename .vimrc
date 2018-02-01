@@ -1017,6 +1017,7 @@ let g:rustfmt_autosave = 1
 
 " tern {{{3
 AutoCmd FileType typescript call tern#Enable()
+AutoCmd FileType typescript setlocal completeopt+=preview
 " }}}3
 
 " typescript {{{3
