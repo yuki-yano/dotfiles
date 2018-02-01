@@ -763,10 +763,10 @@ if has('nvim')
 endif
 " }}}2
 
-" HTML {{{2
+" HTML & eruby {{{2
 augroup HTML
   autocmd!
-  autocmd FileType html call s:map_html_keys()
+  autocmd FileType html,eruby call s:map_html_keys()
   function! s:map_html_keys()
     inoremap <silent> <buffer> \\ \
     inoremap <silent> <buffer> \& &amp;
@@ -779,6 +779,8 @@ augroup HTML
     inoremap <silent> <buffer> \' &#8217;
     inoremap <silent> <buffer> \2 &#8220;
     inoremap <silent> <buffer> \" &#8221;
+
+    let b:match_words .= ',{:},(:)'
   endfunction
 augroup END
 " }}}2
