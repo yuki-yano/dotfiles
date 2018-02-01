@@ -297,7 +297,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('dietsche/vim-lastplace')
   call dein#add('haya14busa/vim-open-googletranslate',    {'lazy': 1, 'on_cmd': 'OpenGoogleTranslate'})
   call dein#add('haya14busa/vim-textobj-function-syntax', {'depends': 'vim-textobj-user'})
-  call dein#add('itchyny/calendar.vim',                   {'lazy': 1, 'on_cmd': 'Calendar'})
+  call dein#add('itchyny/calendar.vim',                   {'lazy': 1, 'on_cmd': 'Calendar', 'hook_source': 'call Hook_on_post_source_calendar()'})
   call dein#add('itchyny/thumbnail.vim',                  {'lazy': 1, 'on_cmd': 'Thumbnail'})
   call dein#add('janko-m/vim-test',                       {'lazy': 1, 'on_cmd': ['TestNearest','TestFile','TestSuite','TestLast','TestVisit']})
   call dein#add('kana/vim-niceblock',                     {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
@@ -2180,6 +2180,15 @@ AutoCmd FileType vaffle nnoremap <silent> <Leader>d :BW<CR>
 " calendar {{{3
 let g:calendar_google_calendar = 1
 let g:calendar_google_task = 1
+
+function! Hook_on_post_source_calendar() abort
+  setlocal whichwrap=b,s,<,>,[,],h,l
+  nunmap <buffer> <Left>
+  nunmap <buffer> <Right>
+  nmap <buffer> < <Plug>CalendarGotoPrevMonth
+  nmap <buffer> > <Plug>CalendarGotoNextMonth
+  nmap <nowait> <buffer> q <Plug>CalendarClose
+endfunction
 " }}}3
 
 " expand-region {{{3
