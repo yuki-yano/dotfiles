@@ -65,9 +65,6 @@
 # Ruby
 /Gemfile.lock
 
-# Python
-bin/.mypy_cache
-
 # Node
 /.config/configstore
 /node_modules
