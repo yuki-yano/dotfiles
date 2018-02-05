@@ -14,8 +14,8 @@ if ! zgen saved; then
   zgen load sindresorhus/pure
   zgen load tarruda/zsh-autosuggestions
   zgen load unixorn/warhol.plugin.zsh
-  zgen load yuki-ycino/cdd
-  zgen load yuki-ycino/fancy-ctrl-z
+  zgen load yukiycino-dotfiles/cdd
+  zgen load yukiycino-dotfiles/fancy-ctrl-z
   zgen load zdharma/fast-syntax-highlighting
   zgen load zsh-users/zsh-completions src
   zgen load zsh-users/zsh-history-substring-search
