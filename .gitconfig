@@ -32,7 +32,7 @@
   indentHeuristic = true
   compactionHeuristic = true
   renames = true
-  mnemonicprefix = true
+  mnemonicprefix = false
   tool = nvimdiff
 
 [merge]
