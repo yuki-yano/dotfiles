@@ -306,31 +306,6 @@ function env_rehash() {
   fi
 }
 
-# 失敗したコマンドを記録しない
-__record_command() {
-  typeset -g _LASTCMD=${1%%$'\n'}
-  return 1
-}
-zshaddhistory_functions+=(__record_command)
-
-__update_history() {
-  local last_status="$?"
-
-  # hist_ignore_space
-  if [[ ! -n ${_LASTCMD%% *} ]]; then
-    return
-  fi
-
-  # hist_reduce_blanks
-  local cmd_reduce_blanks=$(echo ${_LASTCMD} | tr -s ' ')
-
-  # Record the commands that have succeeded
-  if [[ ${last_status} == 0 ]]; then
-    print -sr -- "${cmd_reduce_blanks}"
-  fi
-}
-precmd_functions+=(__update_history)
-
 # }}}
 
 # Bindkey {{{
