@@ -118,7 +118,6 @@ install yank
 install ghq
 install gibo
 install git
-install git-now
 install hub
 install mercurial
 install subversion
