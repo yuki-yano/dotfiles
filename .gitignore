@@ -20,6 +20,7 @@
 /.vim/viminfo
 /.vim/sessions
 /.vim/view
+/.vim/backup/
 
 # Emacs
 /.emacs.d/ac-comphist.dat
