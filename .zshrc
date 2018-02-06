@@ -1,6 +1,6 @@
 #! /usr/local/bin/zsh
 
-# Zgen {{{
+# zgen {{{
 
 source ~/dotfiles/.zsh/zgen/zgen.zsh
 
@@ -27,6 +27,9 @@ if ! zgen saved; then
   # shellcheck disable=SC2044
   for f in $(find ~/.zgen/ -name "*.zsh"); do zcompile "$f"; done
 fi
+
+# pure settings
+export PURE_PROMPT_SYMBOL='$'
 
 # shellcheck disable=SC2034,SC2154
 {

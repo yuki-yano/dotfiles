@@ -16,7 +16,7 @@ function is_charging() {
 function get_meter() {
   local percentage=$1
   if is_charging; then
-    echo '|⚡︎⚡︎⚡︎⚡︎⚡︎|'
+    echo ' ⚡ '
   else
     if [ $percentage -le 20 ]; then
       echo '|█    |'

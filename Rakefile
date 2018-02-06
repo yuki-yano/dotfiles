@@ -1,6 +1,7 @@
 SRC_DIR = File.dirname(File.expand_path(__FILE__))
 VIMPERATOR_DIR = File.join(SRC_DIR, '.vimperator')
 DOTFILES_SRCS = %w[
+  .Xdefaults
   .agignore
   .amethyst
   .atom
@@ -26,7 +27,6 @@ DOTFILES_SRCS = %w[
   .vimperator
   .vimperatorrc
   .vimrc
-  .vimshrc
   .zsh
   .zshenv
   .zshrc

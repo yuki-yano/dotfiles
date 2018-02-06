@@ -1,0 +1,50 @@
+urxvt*termName: xterm-256color
+! urxvt*termName: urxvt-256color
+
+Xft*dpi: 72
+Xft*antialias: true
+Xft*hinting: true
+Xft.hintstyle: hintslight
+Xft.lcdfilter: lcddefault
+Xft.rgba: rgb
+URxvt.scrollBar: False
+URxvt.geometry: 80x24
+URxvt.transparent: true
+URxvt.tintColor: white
+URxvt.letterSpace: -1
+URxvt.url-select.underline: true
+
+URxvt*font: \
+  xft:Menlo:size=14:antialias=true:hinting=true,\
+  xft:Ricty:size=16::antialias=true:hinting=true
+
+
+! Iceberg
+*foreground:   #d9d9d9
+*background:   #252525
+*cursorColor:  #d0d2d1
+
+! Black + Grey (Comment)
+*color0:       #000000
+*color8:       #000000
+! Red + Bright Red
+*color1:       #ff7772
+*color9:       #f08786
+! Green + Bright Green
+*color2:       #bddc99
+*color10:      #8bb899
+! Yellow (Orange) + Bright Yellow (Yellow)
+*color3:       #deb372
+*color11:      #daddbe
+! Blue + Bright Blue
+*color4:       #98bddf
+*color12:      #99bedd
+! Magenta (Purple) + Bright Magenta
+*color5:       #d87280
+*color13:      #eab09b
+! Cyan (Aqua) + Bright Cyan
+*color6:       #98bcbe
+*color14:      #72bcba
+! Light Grey (Selection) + White (Current Line)
+*color7:       #d9d9d9
+*color15:      #d9d8d4

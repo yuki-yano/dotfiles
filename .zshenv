@@ -15,7 +15,7 @@ alias c=ccat
 setopt no_global_rcs
 
 # default path
-export PATH=$HOME/dotfiles/bin:$HOME/dotfiles/vendor/bin:$HOME/dotfiles/node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin
+export PATH=$HOME/dotfiles/vendor/bin:$HOME/dotfiles/node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin
 
 # XDG Base Directory
 export XDG_CONFIG_HOME=$HOME/.config
@@ -84,17 +84,17 @@ nodenv() {
 
 # go
 export GOPATH=$HOME/.go
-export PATH=$PATH:$GOPATH/bin
-export PATH=$PATH:$HOME/.ghg/bin
+export PATH=$GOPATH/bin:$PATH
+export PATH=$HOME/.ghg/bin:$PATH
 
 # rust
-export PATH=$PATH:$HOME/.cargo/bin
+export PATH=$HOME/.cargo/bin:$PATH
 
 # llvm
 export PATH=/usr/local/opt/llvm/bin:$PATH
 
 # heroku
-export PATH=$PATH:/usr/local/heroku/bin
+export PATH=/usr/local/heroku/bin:$PATH
 
 # vim
 alias vi='nvim'
@@ -179,6 +179,9 @@ function gifo() {
 function gifa() {
   git-foresta --all --style=10 "$@" | less -RSX
 }
+
+#  Finally add the path of dotfiles/bin to the beginning
+export PATH=$HOME/dotfiles/bin:$PATH
 
 # config
 [ -f ~/.config/nicovideo-dump.zsh ] && source "${XDG_CONFIG_HOME}/nicovideo-dump.zsh"
