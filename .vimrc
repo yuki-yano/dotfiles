@@ -212,7 +212,22 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " filer {{{3
-  call dein#add('Shougo/vimfiler', {'lazy': 1, 'on_cmd': ['Vimfiler', 'VimFilerExplorer', 'VimfilerSplit', 'VimfilerTab', 'VimfilerCurrentDir', 'VimfilerCurrentDir', 'VimfilerBufferDir']})
+  call dein#add('Shougo/vimfiler', {'lazy': 1, 'on_cmd': [
+  \ 'VimFiler',
+  \ 'VimFilerCreate',
+  \ 'VimFilerSimple',
+  \ 'VimFilerSplit',
+  \ 'VimFilerTab',
+  \ 'VimFilerDouble',
+  \ 'VimFilerCurrentDir',
+  \ 'VimFilerBufferDir',
+  \ 'VimFilerExplorer',
+  \ 'VimFilerClose',
+  \ 'VimFilerEdit',
+  \ 'VimFilerWrite',
+  \ 'VimFilerSource',
+  \ 'VimFilerRead',
+  \ ]})
 
   call dein#add('cocopon/vaffle.vim')
 
