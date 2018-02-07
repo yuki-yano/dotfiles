@@ -1,8 +1,12 @@
 " Encoding {{{1
 if has('vim_starting')
   set encoding=utf-8
-  scriptencoding utf-8
+  set fileencodings=utf-8,sjis,cp932,euc-jp
+  set fileformats=unix,mac,dos
+  set termencoding=utf-8
 endif
+
+scriptencoding utf-8
 " }}}1
 
 " Variable Definition {{{1
@@ -391,16 +395,6 @@ command! -nargs=* AutoCmd autocmd MyVimrc <args>
 " viminfo {{{
 set viminfo='1000
 " }}}
-
-" Encoding {{{2
-set fileencodings=utf-8,sjis,cp932,euc-jp
-set fileformats=unix,mac,dos
-set termencoding=utf-8
-
-if &modifiable
-  set fileencoding=utf-8
-endif
-" }}}2
 
 " Appearance {{{2
 set number
