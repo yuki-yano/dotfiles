@@ -244,10 +244,9 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-textobj-indent',                {'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-line',                  {'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-user')
-  call dein#add('kshenoy/vim-signature')
-  call dein#add('machakann/vim-sandwich')
-  call dein#add('michaeljsmith/vim-indent-object',        {'depends': 'vim-textobj-user'})
-  call dein#add('mopp/vim-operator-convert-case')
+  call dein#add('machakann/vim-sandwich',                 {'lazy': 1, 'on_map': {'nv': ['sa', 'sr', 'sd' ], 'o': ['ib', 'is', 'ab', 'as']}, 'hook_source': 'call Hook_on_post_source_sandwich()'})
+  call dein#add('mattesgroeger/vim-bookmarks')
+  call dein#add('mopp/vim-operator-convert-case',         {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('osyo-manga/vim-anzu',                    {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('osyo-manga/vim-jplus',                   {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('osyo-manga/vim-trip',                    {'lazy': 1, 'on_map': '<Plug>'})
@@ -362,10 +361,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('nanotech/jellybeans.vim')
   call dein#add('tomasr/molokai')
   call dein#add('w0ng/vim-hybrid')
-  " }}}3
-
-  " DevIcons {{{3
-  call dein#add('ryanoasis/vim-devicons')
   " }}}3
 
   call dein#end()
@@ -861,8 +856,6 @@ let g:ale_sh_shellcheck_exclusions = 'SC1090,SC2155,SC2164,SC2190'
 
 let g:ale_change_sign_column_color = 1
 let g:ale_set_signs = 1
-let g:ale_sign_error = "\uf057"
-let g:ale_sign_warning = "\uf071"
 let g:ale_echo_msg_format = '[%linter%] %s'
 let g:ale_emit_conflict_warnings = 0
 highlight ALEWarning ctermfg=0 ctermbg=229
@@ -1418,7 +1411,6 @@ if dein#tap('vimfiler')
   "       \ 'winwidth' : 35,
   "       \ 'split' : 1,
   "       \ 'simple' : 1,
-  "       \ 'explorer_columns': 'gitstatus:devicons'
   "       \ })
   let g:vimfiler_enable_auto_cd = 1
   let g:vimfiler_ignore_pattern = '^\%(.git\|.DS_Store\)$'
@@ -1819,14 +1811,6 @@ let g:brightest#enable_filetypes = {
 \ }
 " }}}
 
-" devicons {{{3
-let g:webdevicons_enable = 1
-let g:webdevicons_enable_unite = 0
-let g:webdevicons_enable_denite = 0
-let g:webdevicons_enable_vimfiler = 0
-let g:WebDevIconsUnicodeDecorateFileNodes = 1
-" }}}3
-
 " fastfold {{{3
 let g:fastfold_savehook = 1
 let g:fastfold_fold_command_suffixes =  ['x','X','a','A','o','O','c','C']
@@ -1855,11 +1839,15 @@ if dein#tap('lightline.vim')
   \ 'colorscheme': 'iceberg_yano',
   \ 'mode_map': {'c': 'NORMAL'},
   \ 'active': {
-  \   'left': [ [ 'mode', 'denite', 'paste' ], [ 'branch' ], [ 'readonly', 'filepath', 'filename', 'anzu' ] ],
+  \   'left': [
+  \     [ 'mode', 'paste' ],
+  \     [ 'branch' ],
+  \     [ 'readonly', 'filepath', 'filename', 'anzu' ]
+  \    ],
   \   'right': [
   \     [ 'lineinfo', 'percent' ],
   \     [ 'fileformat', 'fileencoding', 'filetype' ],
-  \     [ 'linter_errors', 'linter_warnings', 'linter_ok', 'linter_disable' ]
+  \     [ 'linter_errors', 'linter_warnings', 'linter_ok', 'linter_unload' ]
   \   ]
   \ },
   \ 'inactive': {
@@ -1878,69 +1866,52 @@ if dein#tap('lightline.vim')
   \   'inactive': [ 'tabnum', 'readonly', 'filename', 'modified' ]
   \ },
   \ 'component': {
-  \   'lineinfo': "\ue0a1 %3l[%L]:%-2v",
-  \ },
+  \   'fileformat':   "%{winwidth(0) > 120 ? &fileformat : ''}",
+  \   'readonly':     "%{&readonly ? 'RO' : ''}",
+  \   'lineinfo':     '%4l[%L]:%-2v',
+  \   'fileencoding': "%{winwidth(0) > 120 ? (strlen(&fileencoding) ? &fileencoding : &encoding) : ''}",
+  \   'paste':        "%{&paste ? 'PASTE' : ''}",
+  \  },
   \ 'component_function': {
-  \   'readonly':     'LightlineReadonly',
-  \   'branch':       'LightlineBranch',
-  \   'filepath':     'LightlineFilepath',
-  \   'filename':     'LightlineFilename',
-  \   'filetype':     'LightlineFiletype',
-  \   'fileformat':   'LightlineFileformat',
-  \   'fileencoding': 'LightlineFileencoding',
-  \   'mode':         'LightlineMode',
+  \   'mode':         'lightline#mode',
+  \   'filepath':     'Lightline_filepath',
+  \   'filename':     'Lightline_filename',
+  \   'branch':       'gina#component#repo#branch',
   \   'anzu':         'anzu#search_status',
-  \   'denite':       'LightlineDenite',
   \ },
-  \ 'tab_component_function': {
-  \   'readonly': 'LightlineTabReadonly',
+  \ 'tab_component': {
+  \   'readonly': "gettabwinvar(a:n, tabpagewinnr(a:n), '&readonly') ? 'RO' : ''",
   \ },
   \ 'component_function_visible_condition': {
   \   'modified': '&modified||!&modifiable',
   \   'readonly': '&readonly',
-  \   'paste': '&paste',
+  \   'paste':    '&paste',
+  \   'spell':    '&spell',
   \ },
   \ 'component_type': {
-  \   'linter_disable':  'ok',
+  \   'linter_unload':   'unload',
   \   'linter_errors':   'error',
   \   'linter_warnings': 'warning',
   \   'linter_ok':       'ok',
   \ },
   \ 'component_expand': {
-  \   'linter_disable':  'LightlineAleDisable',
+  \   'linter_unload':   'Lightline_ale_unload',
   \   'linter_errors':   'lightline#ale#errors',
   \   'linter_warnings': 'lightline#ale#warnings',
-  \   'linter_ok':       'LightlineAleOk',
+  \   'linter_ok':       'Lightline_ale_ok',
   \ },
-  \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2 " },
-  \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3 " },
   \ 'enable': {
   \   'statusline': 1,
-  \   'tabline': 1,
+  \   'tabline':    1,
   \ }
   \ }
 
-  let g:lightline#ale#indicator_errors   = "\uf421"
-  let g:lightline#ale#indicator_warnings = "\uf420"
-  let g:lightline#ale#indicator_ok       = "\uf4a1"
+  let g:lightline#ale#indicator_errors   = 'E'
+  let g:lightline#ale#indicator_warnings = 'W'
+  let g:lightline#ale#indicator_ok       = 'OK'
 
-  function! LightlineReadonly()
-    return &readonly ? "\ue0a2" : ''
-  endfunction
-
-  function! LightlineBranch()
-    let l:branch = gina#component#repo#branch()
-    return l:branch !=# "\ue0a0" ? "\ue0a0 " . l:branch : ''
-    return ''
-  endfunction
-
-  function! LightlineFilepath()
-    if &filetype ==# 'vimfilter' || &filetype ==# 'unite' || &buftype ==# 'terminal' || winwidth(0) < 70
-      let l:path_string = ''
-    else
-      let l:path_string = substitute(expand('%:h'), $HOME, '~', '')
-    endif
-
+  function! Lightline_filepath()
+    let l:path_string = filereadable(expand('%:p:~')) || winwidth(0) < 60 ? '' : expand('%:p:~:h')
     let l:dirs = split(l:path_string, '/')
     if len(l:dirs) ==# 0
       return ''
@@ -1956,97 +1927,20 @@ if dein#tap('lightline.vim')
     endif
   endfunction
 
-  function! LightlineModified()
-    if &filetype =~# 'help\|vimfiler'
-      return ''
-    elseif &modified
-      return " \uf040"
-    else
-      return ''
-    endif
-  endfunction
-
-  function! LightlineFilename()
-    if &filetype ==# 'vimfiler'
-      return vimfiler#get_status_string()
-    elseif &filetype ==# 'unite'
-      return unite#get_status_string()
-    elseif &filetype ==# 'denite'
-      return denite#get_status_sources() . denite#get_status_path() . denite#get_status_linenr()
-    elseif &filetype ==# 'tagbar'
-      return g:lightline.fname
-    elseif '' !=# expand('%:t')
-      return expand('%:t') . LightlineModified()
+  function! Lightline_filename()
+    if expand('%:t') !=# ''
+      return expand('%:t') . (&modified ? ' +' : '')
     else
       return '[No Name]'
     endif
   endfunction
 
-  function! LightlineFileformat()
-    if winwidth(0) < 120
-      return ''
-    else
-      if dein#tap('vim-devicons')
-        return &fileformat . ' ' . WebDevIconsGetFileFormatSymbol()
-      else
-        return &fileformat
-      endif
-    endif
+  function! Lightline_ale_ok() abort
+    return count(s:ale_filetypes, &filetype) != 0 ? lightline#ale#ok() : ''
   endfunction
 
-  function! LightlineFiletype()
-    if strlen(&filetype)
-      if dein#tap('vim-devicons')
-        return &filetype . ' ' . WebDevIconsGetFileTypeSymbol()
-      else
-        return &filetype
-      endif
-    else
-      return 'no ft'
-    endif
-  endfunction
-
-  function! LightlineFileencoding()
-    if winwidth(0) < 120
-      return ''
-    endif
-    return (strlen(&fileencoding) ? &fileencoding : &encoding)
-  endfunction
-
-  function! LightlineMode()
-    let l:fname = expand('%:t')
-    if l:fname =~# 'unite'
-      return 'Unite'
-    elseif l:fname =~# 'vimfiler'
-      return 'Vimfiler'
-    else
-      return lightline#mode()
-    endif
-  endfunction
-
-  function! LightlineDenite() abort
-    return (&filetype !=# 'denite') ? '' : (substitute(denite#get_status_mode(), '[- ]', '', 'g'))
-  endfunction
-
-  function! LightlineTabReadonly(n) abort
-    let l:winnr = tabpagewinnr(a:n)
-    return gettabwinvar(a:n, l:winnr, '&readonly') ? "\ue0a2 " : ''
-  endfunction
-
-  function! LightlineAleOk() abort
-    if count(s:ale_filetypes, &filetype) != 0
-      return lightline#ale#ok()
-    else
-      return ''
-    endif
-  endfunction
-
-  function! LightlineAleDisable() abort
-    if count(s:ale_filetypes, &filetype) == 0
-      return "\uf05e"
-    else
-      return ''
-    endif
+  function! Lightline_ale_unload() abort
+    return count(s:ale_filetypes, &filetype) == 0 ? 'UNUSE' : ''
   endfunction
 endif
 " }}}3
