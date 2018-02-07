@@ -610,6 +610,7 @@ function! s:toggle_highlight()
 endfunction
 
 command! ToggleHighlight call s:toggle_highlight()
+nnoremap <silent> <Leader>th :ToggleHighlight<CR>
 " }}}2
 
 " Preserve {{{2
@@ -2278,10 +2279,6 @@ nnoremap <silent> <Leader>T :T<Space>
 nmap gx <Plug>(neoterm-repl-send)
 xmap gx <Plug>(neoterm-repl-send)
 nmap gxx <Plug>(neoterm-repl-send-line)
-
-nnoremap <silent> <Leader>th :call neoterm#close()<CR>
-nnoremap <silent> <Leader>tl :call neoterm#clear()<CR>
-nnoremap <silent> <Leader>tc :call neoterm#kill()<CR>
 " }}}3
 
 " open-browser {{{
