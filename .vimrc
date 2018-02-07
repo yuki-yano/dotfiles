@@ -1179,7 +1179,7 @@ if dein#tap('unite.vim')
   " nnoremap <silent> <Leader><C-]> :<C-u>UniteWithCursorWord gtags/context tag -direction=botright<CR>
 
   "" outline
-  nnoremap <silent> <Leader>o :<C-u>Unite outline -auto-preview -direction=botright<CR>
+  nnoremap <silent> <Leader>o :<C-u>Unite outline -vertical -direction=botright -winwidth=40 -no-quit<CR>
 
   "" grep
   let g:unite_source_grep_command = 'ag'
