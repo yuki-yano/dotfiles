@@ -263,6 +263,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tpope/vim-repeat',                       {'lazy': 1, 'on_map': {'n': '<Plug>'}})
   call dein#add('tpope/vim-speeddating',                  {'lazy': 1, 'on_map': {'n': '<Plug>'}})
   call dein#add('wsdjeg/FlyGrep.vim',                     {'lazy': 1, 'on_cmd': 'FlyGrep'})
+  call dein#add('tyru/skk.vim')
+  call dein#add('vimtaku/vim-mlh',                        {'depends': ['webapi-vim', 'skk.vim']})
   " }}}3
 
   " Appearance {{{3
@@ -314,6 +316,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('lambdalisue/suda.vim')
   call dein#add('majutsushi/tagbar',                      {'lazy': 1, 'on_cmd': ['TagbarOpen', 'TagbarToggle']})
   call dein#add('mattn/benchvimrc-vim',                   {'lazy': 1, 'on_cmd': 'BenchVimrc'})
+  call dein#add('mattn/webapi-vim')
   call dein#add('mbbill/undotree',                        {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
   call dein#add('mtth/scratch.vim',                       {'lazy': 1, 'on_cmd': 'Scratch'})
   call dein#add('osyo-manga/vim-gift')
@@ -1691,6 +1694,11 @@ if dein#tap('vim-sandwich')
   \ ]
 endif
 " }}}3
+
+" skk {{{
+let g:skk_control_j_key = ''
+let g:skk_large_jisyo = expand('~/.config/nvim/dict/SKK-JISYO.L')
+" }}}
 
 " tcomment {{{3
 noremap <silent> <Leader>cc :TComment<CR>

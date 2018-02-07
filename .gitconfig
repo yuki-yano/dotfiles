@@ -9,7 +9,7 @@
   autocrlf = input
   editor = nvim
   excludesfile = ~/.gitignore_global
-  attributesfile = ~/.gitattributes
+  attributesfile = ~/.gitattributes_global
 
 [pager]
   log =  diff-highlight | less

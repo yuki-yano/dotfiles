@@ -10,7 +10,7 @@ DOTFILES_SRCS = %w[
   .ctags
   .dircolors
   .gemrc
-  .gitattributes
+  .gitattributes_global
   .gitconfig
   .gitignore_global
   .globalrc
