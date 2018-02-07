@@ -2155,7 +2155,7 @@ if dein#tap('vim-altercmd')
   AlterCommand! <cmdwin> cal[endar]  Calendar
   AlterCommand! <cmdwin> th[umbnail] Thumbnail
   AlterCommand! <cmdwin> alc         Ref<Space>webdict<Space>alc
-  AlterCommand! <cmdwin> mark[ed]    MarkedToggle
+  AlterCommand! <cmdwin> mark[ed]    MarkedOpen
 endif
 " }}}3
 
