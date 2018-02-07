@@ -1432,8 +1432,8 @@ if dein#tap('vimfiler')
   let g:vimfiler_enable_auto_cd = 1
   let g:vimfiler_ignore_pattern = '^\%(.git\|.DS_Store\)$'
   let g:vimfiler_trashbox_directory = '~/.Trash'
-  " nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple<CR>
-  " nnoremap <silent> <Leader>% :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple<CR>
+  nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple<CR>
+  nnoremap <silent> <Leader>% :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple<CR>
 
   function! s:vimfiler_settings()
     nmap <buffer> R <Plug>(vimfiler_redraw_screen)
@@ -1454,8 +1454,8 @@ let g:NERDTreeDirArrowCollapsible = '▾'
 let g:NERDTreeSyntaxDisableDefaultExtensions = 1
 let g:NERDTreeSyntaxEnabledExtensions =  ['js', 'vue', 'rb', 'erb', 'py', 'json', 'html', 'css', 'scss', 'vim', 'sh']
 
-nnoremap <silent> <Leader>e :NERDTreeTabsToggle<CR>
-nnoremap <silent> <Leader>% :NERDTreeFind<CR>
+" nnoremap <silent> <Leader>e :NERDTreeTabsToggle<CR>
+" nnoremap <silent> <Leader>% :NERDTreeFind<CR>
 
 AutoCmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 AutoCmd VimLeave * NERDTreeClose
