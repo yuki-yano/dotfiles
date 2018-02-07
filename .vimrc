@@ -1625,8 +1625,6 @@ highlight link EasyMotionMoveHL Search
 
 map  S  <Plug>(easymotion-s2)
 nmap S  <Plug>(easymotion-overwin-f2)
-map  sj <Plug>(easymotion-j)
-map  sk <Plug>(easymotion-k)
 map  sl <Plug>(easymotion-bd-jk)
 nmap sl <Plug>(easymotion-overwin-line)
 omap f  <Plug>(easymotion-fl)
@@ -1788,6 +1786,19 @@ endif
 let g:skk_control_j_key = ''
 let g:skk_large_jisyo = expand('~/.config/nvim/dict/SKK-JISYO.L')
 " }}}
+
+" splitjoin {{{
+let g:splitjoin_split_mapping = ''
+let g:splitjoin_join_mapping = ''
+
+nnoremap <silent> sj :SplitjoinJoin<CR>
+nnoremap <silent> ss :SplitjoinSplit<CR>
+" }}}
+
+" Switch {{{3
+let g:switch_mapping = ''
+nnoremap <silent> sw :<C-u>:Switch<CR>
+" }}}3
 
 " tcomment {{{3
 noremap <silent> <Leader>cc :TComment<CR>
