@@ -1518,27 +1518,31 @@ endif
 " }}}3
 
 " incsearch & anzu & asterisk {{{3
-let g:incsearch#magic = '\v'
-let g:anzu_status_format = '(%i/%l)'
+if dein#tap('incsearch.vim')
+  let g:incsearch#magic = '\v'
+  let g:anzu_status_format = '(%i/%l)'
 
-map /  <Plug>(incsearch-forward)
-map ?  <Plug>(incsearch-backward)
-map g/ <Plug>(incsearch-fuzzy-/)
-map g? <Plug>(incsearch-fuzzy-?)
+  map /  <Plug>(incsearch-forward)
+  map ?  <Plug>(incsearch-backward)
+  map g/ <Plug>(incsearch-fuzzy-/)
+  map g? <Plug>(incsearch-fuzzy-?)
 
-AutoCmd VimEnter * call s:incsearch_keymap()
-function! s:incsearch_keymap()
-  IncSearchNoreMap <C-d> <Over>(incsearch-scroll-f)
-  IncSearchNoreMap <C-u> <Over>(incsearch-scroll-b)
-endfunction
+  AutoCmd VimEnter * call s:incsearch_keymap()
+  function! s:incsearch_keymap()
+    IncSearchNoreMap <C-d> <Over>(incsearch-scroll-f)
+    IncSearchNoreMap <C-u> <Over>(incsearch-scroll-b)
+  endfunction
+endif
 
-map n  <Plug>(anzu-n)zzzv
-map N  <Plug>(anzu-N)zzzv
-map *  <Plug>(asterisk-z*)
-map #  <Plug>(asterisk-z#)
-map g* <Plug>(asterisk-gz*)
-map g# <Plug>(asterisk-gz#)
-nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus<CR>
+if dein#tap('vim-anzu')
+  map n  <Plug>(anzu-n)zzzv
+  map N  <Plug>(anzu-N)zzzv
+  map *  <Plug>(asterisk-z*)
+  map #  <Plug>(asterisk-z#)
+  map g* <Plug>(asterisk-gz*)
+  map g# <Plug>(asterisk-gz#)
+  nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus<CR>
+endif
 " }}}3
 
 " Ag {{{3
