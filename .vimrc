@@ -2138,91 +2138,85 @@ let g:automatic_default_set_config = {
 \ }
 
 let g:automatic_config = [
-\   {
-\     'match': {
-\     'filetype': 'help',
-\     },
-\     'set': {
-\       'move': 'right',
-\       'width': '35%',
-\     },
+\ {
+\   'match': { 'filetype': 'help' },
+\ },
+\ {
+\   'match': {
+\     'filetype': 'man',
+\     'autocmds': ['FileType'],
+\ },
+\   'set': {
+\     'move': 'right',
+\     'width': '35%',
 \   },
-\   {
-\     'match': {
-\       'filetype': 'man',
-\       'autocmds': ['FileType'],
+\ },
+\ {
+\   'match': { 'filetype': 'qf' },
+\ },
+\ {
+\   'match': { 'filetype': 'diff' },
+\   'set': {
+\     'move': 'right',
 \   },
-\     'set': {
-\       'move': 'right',
-\       'width': '35%',
-\     },
+\ },
+\ {
+\   'match': { 'filetype': 'git' },
+\ },
+\ {
+\   'match': { 'filetype': 'gina-status' },
+\   'set': {
+\     'move': 'topleft',
+\     'height': '20%',
+\   }
+\ },
+\ {
+\   'match': { 'filetype': 'gina-commit' },
+\   'set': {
+\     'move': 'topleft',
+\     'height': '25%',
 \   },
-\   {
-\     'match': { 'filetype': 'qf' },
+\ },
+\ {
+\   'match': { 'filetype': 'gina-branch' },
+\   'set': {
+\     'move': 'topleft',
+\     'height': '30%',
 \   },
-\   {
-\     'match': { 'filetype': 'diff' },
-\     'set': {
-\       'move': 'right',
-\     },
+\ },
+\ {
+\   'match': { 'filetype': 'gina-log' },
+\ },
+\ {
+\   'match': { 'filetype': 'gina-reflog' },
+\ },
+\ {
+\   'match': {
+\     'filetype': 'scratch',
+\     'autocmds': ['FileType'],
 \   },
-\   {
-\     'match': { 'filetype': 'git' },
+\ },
+\ {
+\   'match': {
+\     'filetype': 'capture',
+\     'autocmds': ['FileType'],
 \   },
-\   {
-\     'match': { 'filetype': 'gina-status' },
-\     'set': {
-\       'move': 'topleft',
-\       'height': '20%',
-\     }
+\ },
+\ {
+\   'match': {
+\     'filetype': 'ref-webdict',
+\     'autocmds': ['FileType'],
 \   },
-\   {
-\     'match': { 'filetype': 'gina-commit' },
-\     'set': {
-\       'move': 'topleft',
-\       'height': '25%',
-\     },
+\ },
+\ {
+\   'match' : {
+\     'autocmds': ['CmdwinEnter'],
 \   },
-\   {
-\     'match': { 'filetype': 'gina-branch' },
-\     'set': {
-\       'move': 'topleft',
-\       'height': '30%',
-\     },
+\   'set' : {
+\     'is_close_focus_out' : 1,
+\     'unsettings' : ['move', 'resize'],
 \   },
-\   {
-\     'match': { 'filetype': 'gina-log' },
-\   },
-\   {
-\     'match': { 'filetype': 'gina-reflog' },
-\   },
-\   {
-\     'match': {
-\       'filetype': 'scratch',
-\       'autocmds': ['FileType'],
-\     },
-\   },
-\   {
-\     'match': {
-\       'filetype': 'capture',
-\       'autocmds': ['FileType'],
-\     },
-\   },
-\   {
-\     'match': {
-\       'filetype': 'ref-webdict',
-\       'autocmds': ['FileType'],
-\     },
-\   },
-\   {
-\     'match' : {
-\       'autocmds': ['CmdwinEnter'],
-\     },
-\     'set' : {
-\       'is_close_focus_out' : 1,
-\       'unsettings' : ['move', 'resize'],
-\     },
-\   },
+\ },
 \ ]
 " }}}
 
