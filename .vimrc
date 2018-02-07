@@ -1126,6 +1126,7 @@ if dein#tap('denite.nvim')
 
   "" ctags & gtags
   nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context -direction=botright<CR>
+  nnoremap <silent> <Leader>gg :<C-u>Denite gtags_grep -direction=botright<CR>
 
   "" yank
   " nnoremap <silent> <Leader>p :<C-u>Denite register -direction=topleft<CR>
@@ -1489,8 +1490,8 @@ endfunction
 " git-gutter {{{3
 if dein#tap('vim-gitgutter')
   let g:gitgutter_map_keys = 0
-  nmap <silent> <Leader>gp <Plug>GitGutterPrevHunk
-  nmap <silent> <Leader>gn <Plug>GitGutterNextHunk
+  nmap <silent> ggp <Plug>GitGutterPrevHunk
+  nmap <silent> ggn <Plug>GitGutterNextHunk
 endif
 " }}}3
 
