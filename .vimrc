@@ -580,6 +580,7 @@ set matchpairs& matchpairs+=<:>
 set regexpengine=2
 set shell=zsh
 set suffixesadd=.js,.ts,.rb
+set ttimeout
 set timeoutlen=750
 set ttimeoutlen=10
 set virtualedit=all
