@@ -2117,6 +2117,7 @@ let g:zenspace#default_mode = 'on'
 
 " aho-bakaup.vim {{{3
 let g:bakaup_auto_backup = 1
+let g:bakaup_backup_dir = expand('~/.config/nvim/backup')
 " }}}3
 
 " altercmd {{{3
