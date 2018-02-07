@@ -164,20 +164,22 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   call dein#add('autozimu/LanguageClient-neovim', {'rev': 'next', 'build': 'bash install.sh'})
 
-  call dein#add('Shougo/deoplete-rct',        {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'ruby'})
-  call dein#add('Shougo/neco-syntax',         {'lazy': 1, 'depends': 'deoplete.nvim'})
-  call dein#add('Shougo/neco-vim',            {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'vim'})
-  call dein#add('carlitux/deoplete-ternjs',   {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'javascript'})
-  call dein#add('fishbullet/deoplete-ruby',   {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'ruby'})
-  call dein#add('fszymanski/deoplete-emoji',  {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': ['gitcommit', 'markdown']})
-  call dein#add('osyo-manga/vim-monster',     {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'ruby'})
-  call dein#add('ozelentok/deoplete-gtags',   {'lazy': 1, 'depends': 'deoplete.nvim'})
-  call dein#add('rhysd/github-complete.vim',  {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': ['gitcommit', 'markdown']})
-  call dein#add('ujihisa/neco-look',          {'lazy': 1, 'depends': 'deoplete.nvim'})
-  call dein#add('wellle/tmux-complete.vim',   {'lazy': 1, 'depends': 'deoplete.nvim'})
-  call dein#add('wokalski/autocomplete-flow', {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'javascript'})
-  call dein#add('zchee/deoplete-jedi',        {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'python'})
-  call dein#add('zchee/deoplete-zsh',         {'lazy': 1, 'depends': 'deoplete.nvim', 'on_ft': 'zsh'})
+  call dein#add('SevereOverfl0w/deoplete-github')
+  call dein#add('Shougo/deoplete-rct')
+  call dein#add('Shougo/neco-syntax')
+  call dein#add('Shougo/neco-vim')
+  call dein#add('carlitux/deoplete-ternjs')
+  call dein#add('fishbullet/deoplete-ruby')
+  call dein#add('fszymanski/deoplete-emoji')
+  call dein#add('mattn/vim-monster')
+  call dein#add('ozelentok/deoplete-gtags')
+  call dein#add('rhysd/github-complete.vim')
+  call dein#add('ujihisa/neco-look')
+  call dein#add('uplus/deoplete-solargraph')
+  call dein#add('wellle/tmux-complete.vim')
+  call dein#add('wokalski/autocomplete-flow')
+  call dein#add('zchee/deoplete-jedi')
+  call dein#add('zchee/deoplete-zsh')
 
   call dein#add('blueyed/vim-auto-programming', {'rev': 'neovim'})
   " }}}3
@@ -1227,7 +1229,6 @@ if has('nvim')
     let g:deoplete#auto_complete_start_length = 1
     let g:deoplete#enable_refresh_always = 0
     let g:deoplete#tag#cache_limit_size = 5000000
-    let g:deoplete#skip_chars = ['(', ')']
 
     call deoplete#custom#source('_', 'converters', [
     \ 'converter_remove_paren',
@@ -1238,6 +1239,7 @@ if has('nvim')
     \ ])
 
     let g:monster#completion#rcodetools#backend = 'async_rct_complete'
+
     let g:deoplete#sources#go#gocode_binary = $GOPATH . '/bin/gocode'
     let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 
@@ -1248,9 +1250,11 @@ if has('nvim')
     call deoplete#custom#source('flow',           'rank',  900)
     call deoplete#custom#source('rct',            'rank',  900)
     call deoplete#custom#source('ruby',           'rank',  900)
+    call deoplete#custom#source('solargraph',     'rank',  900)
     call deoplete#custom#source('jedi',           'rank',  900)
     call deoplete#custom#source('go',             'rank',  900)
     call deoplete#custom#source('racer',          'rank',  900)
+    call deoplete#custom#source('github',         'rank',  900)
     call deoplete#custom#source('emoji',          'rank',  900)
     call deoplete#custom#source('vim',            'rank',  900)
     call deoplete#custom#source('zsh',            'rank',  900)
@@ -1267,6 +1271,7 @@ if has('nvim')
 
     call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
     call deoplete#custom#source('around',         'mark', '[around]')
+    call deoplete#custom#source('neosnippet',     'mark', '[snippet]')
     call deoplete#custom#source('member',         'mark', '[member]')
     call deoplete#custom#source('buffer',         'mark', '[buffer]')
     call deoplete#custom#source('gtags',          'mark', '[gtags]')
@@ -1278,45 +1283,90 @@ if has('nvim')
     call deoplete#custom#source('flow',           'mark', '[flow]')
     call deoplete#custom#source('rct',            'mark', '[rct]')
     call deoplete#custom#source('ruby',           'mark', '[ruby]')
+    call deoplete#custom#source('solargraph',     'mark', '[solar]')
     call deoplete#custom#source('jedi',           'mark', '[jedi]')
     call deoplete#custom#source('go',             'mark', '[go]')
     call deoplete#custom#source('racer',          'mark', '[racer]')
+    call deoplete#custom#source('github',         'mark', '[github]')
     call deoplete#custom#source('emoji',          'mark', '[emoji]')
     call deoplete#custom#source('vim',            'mark', '[vim]')
     call deoplete#custom#source('zsh',            'mark', '[zsh]')
     call deoplete#custom#source('tmux',           'mark', '[tmux]')
 
+    let s:deoplete_default_sources = ['around', 'tag', 'member', 'buffer', 'omni', 'syntax', 'file', 'dictionary', 'LanguageClient', 'neosnippet', 'gtags', 'tmux', 'look']
     let g:deoplete#sources = {}
-    let g:deoplete#sources._          = ['around', 'gtags', 'member', 'buffer', 'omni', 'syntax', 'dictionary', 'look', 'neosnippet', 'file']
-    let g:deoplete#sources.javascript = ['ternjs', 'flow']
-    let g:deoplete#sources.typescript = ['ternjs']
-    let g:deoplete#sources.ruby       = ['rct', 'ruby']
-    let g:deoplete#sources.python     = ['jedi']
-    let g:deoplete#sources.go         = ['go']
-    let g:deoplete#sources.markdown   = ['emoji']
-    let g:deoplete#sources.gitcommit  = ['emoji']
-    let g:deoplete#sources.vim        = ['vim']
-    let g:deoplete#sources.zsh        = ['zsh']
+    let g:deoplete#sources._          = s:deoplete_default_sources
+    let g:deoplete#sources.javascript = s:deoplete_default_sources + ['ternjs', 'flow']
+    let g:deoplete#sources.typescript = s:deoplete_default_sources + ['ternjs']
+    let g:deoplete#sources.vue        = s:deoplete_default_sources + ['ternjs']
+    let g:deoplete#sources.ruby       = s:deoplete_default_sources + ['rct', 'ruby', 'solargraph']
+    let g:deoplete#sources.eruby      = s:deoplete_default_sources + ['rct', 'ruby', 'solargraph']
+    let g:deoplete#sources.python     = s:deoplete_default_sources + ['jedi']
+    let g:deoplete#sources.go         = s:deoplete_default_sources + ['go']
+    let g:deoplete#sources.rust       = s:deoplete_default_sources + ['racer']
+    let g:deoplete#sources.markdown   = s:deoplete_default_sources + ['github', 'emoji']
+    let g:deoplete#sources.html       = s:deoplete_default_sources
+    let g:deoplete#sources.xml        = s:deoplete_default_sources
+    let g:deoplete#sources.css        = s:deoplete_default_sources
+    let g:deoplete#sources.scss       = s:deoplete_default_sources
+    let g:deoplete#sources.vim        = s:deoplete_default_sources + ['vim']
+    let g:deoplete#sources.zsh        = s:deoplete_default_sources + ['zsh']
+    let g:deoplete#sources.gitcommit  = s:deoplete_default_sources + ['github', 'emoji']
 
     let g:deoplete#omni#input_patterns            = {}
     let g:deoplete#omni#input_patterns._          = ''
-    let g:deoplete#omni#input_patterns.ruby       = '[^. *\t]\.\w*\|\h\w*::'
-    let g:deoplete#omni#input_patterns.html       = '<[^>]*'
-    let g:deoplete#omni#input_patterns.xml        = '<[^>]*'
-    let g:deoplete#omni#input_patterns.css        = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
-    let g:deoplete#omni#input_patterns.scss       = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
-    let g:deoplete#omni#input_patterns.gitcommit  = '[ ]#[ 0-9a-zA-Z]*'
+    let g:deoplete#omni#input_patterns.javascript = ''
+    let g:deoplete#omni#input_patterns.typescript = ''
+    let g:deoplete#omni#input_patterns.vue        = ''
+    let g:deoplete#omni#input_patterns.ruby       = ''
+    let g:deoplete#omni#input_patterns.eruby      = ''
+    let g:deoplete#omni#input_patterns.python     = ''
+    let g:deoplete#omni#input_patterns.go         = ''
+    let g:deoplete#omni#input_patterns.rust       = ''
+    let g:deoplete#omni#input_patterns.markdown   = ''
+    let g:deoplete#omni#input_patterns.html       = ''
+    let g:deoplete#omni#input_patterns.xml        = ''
+    let g:deoplete#omni#input_patterns.css        = ''
+    let g:deoplete#omni#input_patterns.scss       = ''
+    let g:deoplete#omni#input_patterns.vim        = ''
+    let g:deoplete#omni#input_patterns.zsh        = ''
+    let g:deoplete#omni#input_patterns.gitcommit  = ''
+    " let g:deoplete#omni#input_patterns.javascript = '[^. \t0-9]\.([a-zA-Z_]\w*)?'
+    " let g:deoplete#omni#input_patterns.typescript = '[^. \t0-9]\.([a-zA-Z_]\w*)?'
+    " let g:deoplete#omni#input_patterns.vue        = ['[^. \t0-9]\.([a-zA-Z_]\w*)?', '<[^>]*', '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]']
+    " let g:deoplete#omni#input_patterns.ruby       = '[^. *\t]\.\w*\|\h\w*::'
+    " let g:deoplete#omni#input_patterns.eruby      = ''
+    " let g:deoplete#omni#input_patterns.python     = ['[^. ]\.\w*', 'import \w*', 'from \w*']
+    " let g:deoplete#omni#input_patterns.go         = '[^.[:digit:] *\t]\.\w*'
+    " let g:deoplete#omni#input_patterns.rust       = '(\.|::)\w*'
+    " let g:deoplete#omni#input_patterns.markdown   = ''
+    " let g:deoplete#omni#input_patterns.html       = '<[^>]*'
+    " let g:deoplete#omni#input_patterns.xml        = '<[^>]*'
+    " let g:deoplete#omni#input_patterns.css        = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
+    " let g:deoplete#omni#input_patterns.scss       = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
+    " let g:deoplete#omni#input_patterns.vim        = '\.\w*'
+    " let g:deoplete#omni#input_patterns.zsh        = '[^. \t0-9]\.\w*'
+    " let g:deoplete#omni#input_patterns.gitcommit  = '.+'
 
+    let s:deoplete_default_omni_sources = ['autoprogramming#compwlete']
     let g:deoplete#omni#functions            = {}
-    let g:deoplete#omni#functions._          = ['autoprogramming#compwlete']
-    let g:deoplete#omni#functions.javascript = ['jspc#omni', 'js#CompleteJS', 'javascriptcomplete#CompleteJS']
-    let g:deoplete#omni#functions.typescript = ['tsuquyomi#complete', 'jspc#omni', 'js#CompleteJS', 'javascriptcomplete#CompleteJS']
-    let g:deoplete#omni#functions.ruby       = ['rubycomplete#Complete', 'monster#omnifunc']
-    let g:deoplete#omni#functions.python     = ['pythoncomplete#Complete']
-    let g:deoplete#omni#functions.css        = ['csscomplete#CompleteCSS']
-    let g:deoplete#omni#functions.scss       = ['csscomplete#CompleteCSS']
-    let g:deoplete#omni#functions.gitcommit  = ['github_complete#complete']
-    let g:deoplete#omni#functions.markdown   = ['github_complete#complete']
+    let g:deoplete#omni#functions._          = s:deoplete_default_omni_sources
+    let g:deoplete#omni#functions.javascript = s:deoplete_default_omni_sources + ['jspc#omni', 'js#CompleteJS', 'javascriptcomplete#CompleteJS']
+    let g:deoplete#omni#functions.typescript = s:deoplete_default_omni_sources + ['tsuquyomi#complete', 'jspc#omni', 'js#CompleteJS', 'javascriptcomplete#CompleteJS']
+    let g:deoplete#omni#functions.vue        = s:deoplete_default_omni_sources + ['jspc#omni', 'js#CompleteJS', 'javascriptcomplete#CompleteJS', 'htmlcomplete#CompleteTags', 'csscomplete#CompleteCSS']
+    let g:deoplete#omni#functions.ruby       = s:deoplete_default_omni_sources + ['rubycomplete#Complete', 'monster#omnifunc']
+    let g:deoplete#omni#functions.eruby      = s:deoplete_default_omni_sources + ['rubycomplete#Complete', 'monster#omnifunc', 'htmlcomplete#CompleteTags']
+    let g:deoplete#omni#functions.python     = s:deoplete_default_omni_sources + ['pythoncomplete#Complete']
+    let g:deoplete#omni#functions.go         = s:deoplete_default_omni_sources
+    let g:deoplete#omni#functions.rust       = s:deoplete_default_omni_sources
+    let g:deoplete#omni#functions.markdown   = s:deoplete_default_omni_sources + ['github_complete#complete']
+    let g:deoplete#omni#functions.html       = s:deoplete_default_omni_sources + ['htmlcomplete#CompleteTags']
+    let g:deoplete#omni#functions.xml        = s:deoplete_default_omni_sources + ['htmlcomplete#CompleteTags']
+    let g:deoplete#omni#functions.css        = s:deoplete_default_omni_sources + ['csscomplete#CompleteCSS']
+    let g:deoplete#omni#functions.scss       = s:deoplete_default_omni_sources + ['csscomplete#CompleteCSS']
+    let g:deoplete#omni#functions.vim        = s:deoplete_default_omni_sources
+    let g:deoplete#omni#functions.zsh        = s:deoplete_default_omni_sources
+    let g:deoplete#omni#functions.gitcommit  = s:deoplete_default_omni_sources + ['github_complete#complete']
 
     " tern
     let g:tern_request_timeout = 1
@@ -1325,9 +1375,6 @@ if has('nvim')
     \ 'javascript',
     \ 'vue'
     \ ]
-
-    let g:neosnippet#disable_runtime_snippets = { '_' : 1 }
-    let g:neosnippet#snippets_directory = '~/.vim/bundle/repos/github.com/honza/vim-snippets/snippets/'
 
     inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
     inoremap <silent> <expr> <C-h> deoplete#smart_close_popup() . "\<C-h>"

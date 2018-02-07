@@ -10,6 +10,7 @@ neovim
 neovim-remote
 ptpython
 pygments-style-solarized
+solargraph-utils.py
 sqlparse
 vim-vint
 yapf
