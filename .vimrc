@@ -2350,15 +2350,6 @@ if dein#tap('vim-submode')
 endif
 " }}}3
 
-" tagbar {{{3
-function! Tagbar_status_func(current, sort, fname, ...) abort
-  let g:lightline.fname = a:fname
-  return lightline#statusline(0)
-endfunction
-
-let g:tagbar_status_func = 'Tagbar_status_func'
-" }}}3
-
 " thumbnail {{{3
 nnoremap <silent> <Leader>B :<C-u>Thumbnail<CR>
 " }}}3
