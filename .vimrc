@@ -2317,9 +2317,8 @@ let g:ref_source_webdict_sites = {
 \   'url' : 'http://eow.alc.co.jp/%s/UTF-8/'
 \   }
 \ }
-function! g:ref_source_webdict_sites.alc.filter(output)
-  return join(split(a:output, "\n")[42 :], "\n")
-endfunction
+
+nnoremap ga :<C-u>Ref webdict alc <C-r><C-w><CR>
 " }}}3
 
 " scratch {{{3
