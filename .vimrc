@@ -464,9 +464,6 @@ nnoremap <M-b> ^
 nnoremap <C-o> <C-o>zzzv
 nnoremap <C-i> <C-i>zzzv
 
-"" Buffer
-nnoremap <C-b> <C-^>
-
 "" Window
 nnoremap <silent> <C-h> :wincmd h<CR>
 nnoremap <silent> <C-l> :wincmd l<CR>
@@ -2336,10 +2333,10 @@ if dein#tap('vim-submode')
   call submode#map('jump', 'n', '', ';', 'g;')
 
   "" buffer
-  call submode#enter_with('changebuffer', 'n', '', 'gp', ':bprevious<CR>')
-  call submode#enter_with('changebuffer', 'n', '', 'gn', ':bnext<CR>')
-  call submode#map('changebuffer', 'n', '', 'n', ':bprevious<CR>')
-  call submode#map('changebuffer', 'n', '', 'p', ':bnext<CR>')
+  call submode#enter_with('changebuffer', 'n', '', '<C-p>', ':bprevious<CR>')
+  call submode#enter_with('changebuffer', 'n', '', '<C-n>', ':bnext<CR>')
+  call submode#map('changebuffer', 'n', '', '<C-p>', ':bprevious<CR>')
+  call submode#map('changebuffer', 'n', '', '<C-n>', ':bnext<CR>')
 
   "" tab
   call submode#enter_with('changetab', 'n', '', 'gh', 'gT')
