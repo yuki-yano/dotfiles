@@ -1778,11 +1778,13 @@ AutoCmd FileType qf nnoremap <buffer> r :<C-u>Qfreplace<CR>
 
 " sandwich {{{3
 if dein#tap('vim-sandwich')
-  let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
-  let g:sandwich#recipes += [
-  \   { 'buns': ['\/', '\/'] },
-  \   { 'buns': ['_', '_'] },
-  \ ]
+  function! Hook_on_post_source_sandwich() abort
+    let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
+    let g:sandwich#recipes += [
+    \   { 'buns': ['\/', '\/'] },
+    \   { 'buns': ['_', '_'] },
+    \ ]
+  endfunction
 endif
 " }}}3
 
