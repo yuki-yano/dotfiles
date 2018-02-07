@@ -334,7 +334,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('simeji/winresizer',                      {'lazy': 1, 'on_cmd': 'WinResizerStartResize'})
   call dein#add('szw/vim-maximizer',                      {'lazy': 1, 'on_cmd': 'MaximizerToggle'})
   call dein#add('terryma/vim-expand-region',              {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('terryma/vim-multiple-cursors')
   call dein#add('thinca/vim-localrc')
   call dein#add('thinca/vim-quickrun',                    {'lazy': 1, 'on_cmd': 'QuickRun'})
   call dein#add('thinca/vim-ref',                         {'lazy': 1, 'on_cmd': 'Ref'})
@@ -691,8 +690,13 @@ command! -buffer -bar HelpView call s:option_to_view()
 AutoCmd FileType javascript setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType typescript setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType ruby       setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType eruby      setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType python     setlocal expandtab   shiftwidth=4 softtabstop=4 tabstop=4
 AutoCmd FileType go         setlocal noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
+AutoCmd FileType rust       setlocal expandtab   shiftwidth=4 softtabstop=4 tabstop=4
+AutoCmd FileType html       setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType css        setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType scss       setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType vim        setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType sh         setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType zsh        setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
@@ -1558,7 +1562,55 @@ vmap T <Plug>(clever-f-T)
 " }}}3
 
 " easy-align {{{3
-vmap <Enter> <Plug>(EasyAlign)
+vnoremap <Enter> :EasyAlign!<CR>
+
+let g:easy_align_delimiters = {
+\ '>': {
+\   'pattern': '===\|<=>\|=\~[#?]\?\|=>\|[:+/*!%^=><&|.-?]*=[#?]\?\|[-=]>\|<[-=]',
+\   'left_margin':   0,
+\   'right_margin':  0,
+\   'stick_to_left':  1,
+\ },
+\ '/': {
+\   'pattern': '//\+\|/\*\|\*/',
+\   'left_margin':   1,
+\   'right_margin':  1,
+\   'stick_to_left':  0,
+\   'delimiter_align': 'l',
+\   'ignore_groups':   ['!Comment']
+\ },
+\ ']': {
+\   'pattern': '[[\]]',
+\   'left_margin':   0,
+\   'right_margin':  0,
+\   'stick_to_left':  0,
+\  },
+\ ')': {
+\   'pattern': '[()]',
+\   'left_margin':   0,
+\   'right_margin':  0,
+\   'stick_to_left':  0,
+\ },
+\ '#': { 'pattern': '#',
+\   'left_margin':   1,
+\   'right_margin':  1,
+\   'stick_to_left':  0,
+\   'ignore_groups': ['String'],
+\ },
+\ '"': {
+\   'left_margin':   1,
+\   'right_margin':  1,
+\   'stick_to_left':  0,
+\   'pattern': '"',
+\   'ignore_groups': ['String'],
+\ },
+\ ';': {
+\   'pattern': ';',
+\   'left_margin': 0,
+\   'right_margin':  1,
+\   'stick_to_left': 1,
+\ }
+\ }
 " }}}3
 
 " easymotion {{{3
