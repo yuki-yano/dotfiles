@@ -129,6 +129,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('cohama/agit.vim',               {'lazy': 1, 'on_cmd': ['Agit', 'AgitFile']})
   call dein#add('hotwatermorning/auto-git-diff', {'lazy': 1, 'on_ft': 'gitrebase'})
   call dein#add('lambdalisue/gina.vim')
+  call dein#add('lambdalisue/gina.vim',          {'lazy': 1, 'on_cmd': 'Gina', 'hook_source': 'call Hook_on_post_source_gina()'})
   call dein#add('lambdalisue/vim-unified-diff')
   call dein#add('rhysd/committia.vim')
   call dein#add('rhysd/conflict-marker.vim')
@@ -1483,24 +1484,26 @@ endif
 
 " gina {{{3
 if dein#tap('gina.vim')
-  call gina#custom#command#option('status', '--short')
-  call gina#custom#command#option('status', '--opener', 'split')
-  call gina#custom#mapping#nmap('status', '<C-j>', '<C-w>j', {'noremap': 1, 'silent': 1})
-  call gina#custom#mapping#nmap('status', '<C-k>', '<C-w>k', {'noremap': 1, 'silent': 1})
+  function! Hook_on_post_source_gina() abort
+    call gina#custom#command#option('status', '--short')
+    call gina#custom#command#option('status', '--opener', 'split')
+    call gina#custom#mapping#nmap('status', '<C-j>', '<C-w>j', {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('status', '<C-k>', '<C-w>k', {'noremap': 1, 'silent': 1})
 
-  call gina#custom#command#option('branch', '--opener', 'split')
-  call gina#custom#mapping#nmap('branch', 'g<CR>', '<Plug>(gina-commit-checkout-track)')
+    call gina#custom#command#option('branch', '--opener', 'split')
+    call gina#custom#mapping#nmap('branch', 'g<CR>', '<Plug>(gina-commit-checkout-track)')
 
-  call gina#custom#command#option('diff',   '--opener', 'vsplit')
-  call gina#custom#command#option('log',    '--opener', 'vsplit')
+    call gina#custom#command#option('diff',   '--opener', 'vsplit')
+    call gina#custom#command#option('log',    '--opener', 'vsplit')
 
-  call gina#custom#action#alias('/\%(blame\|log\|reflog\)', 'preview', 'topleft show:commit:preview')
-  call gina#custom#mapping#nmap('/\%(blame\|log\|reflog\)', 'p', ":<C-u>call gina#action#call('preview')<CR>", {'noremap': 1, 'silent': 1})
-  call gina#custom#mapping#nmap('blame', '<C-l>', '<C-w>l', {'noremap': 1, 'silent': 1})
-  call gina#custom#mapping#nmap('blame', '<C-r>', '<Plug>(gina-blame-redraw)', {'noremap': 1, 'silent': 1})
+    call gina#custom#action#alias('/\%(blame\|log\|reflog\)', 'preview', 'topleft show:commit:preview')
+    call gina#custom#mapping#nmap('/\%(blame\|log\|reflog\)', 'p', ":<C-u>call gina#action#call('preview')<CR>", {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('blame', '<C-l>', '<C-w>l', {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('blame', '<C-r>', '<Plug>(gina-blame-redraw)', {'noremap': 1, 'silent': 1})
 
-  call gina#custom#mapping#nmap('blame', 'j', 'j<Plug>(gina-blame-echo)')
-  call gina#custom#mapping#nmap('blame', 'k', 'k<Plug>(gina-blame-echo)')
+    call gina#custom#mapping#nmap('blame', 'j', 'j<Plug>(gina-blame-echo)')
+    call gina#custom#mapping#nmap('blame', 'k', 'k<Plug>(gina-blame-echo)')
+  endfunction
 endif
 " }}}3
 
