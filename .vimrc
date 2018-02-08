@@ -53,6 +53,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('SpaceVim/vim-markdown',                      {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('Vimjas/vim-python-pep8-indent',              {'lazy': 1, 'on_ft': 'python'})
   call dein#add('ap/vim-css-color',                           {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
+  call dein#add('billyvg/tigris.nvim',                        {'lazy': 1, 'on_ft': ['javascript', 'typescript'], 'build': './install.sh' })
   call dein#add('cakebaker/scss-syntax.vim',                  {'lazy': 1, 'on_ft': ['sass', 'scss']})
   call dein#add('cespare/vim-toml',                           {'lazy': 1, 'on_ft': 'toml'})
   call dein#add('chrisbra/vim-zsh',                           {'lazy': 1, 'on_ft': 'zsh'})
@@ -89,8 +90,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('othree/html5.vim',                           {'lazy': 1, 'on_ft': ['html', 'eruby', 'markdown']})
   call dein#add('othree/javascript-libraries-syntax.vim',     {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('othree/jspc.vim',                            {'lazy': 1, 'on_ft': 'javascript'})
-  call dein#add('othree/yajs.vim',                            {'lazy': 1, 'on_ft': 'javascript'})
-  call dein#add('pangloss/vim-javascript',                    {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('pearofducks/ansible-vim',                    {'lazy': 1, 'on_ft': ['ansible', 'ansible_templete', 'ansible_hosts']})
   call dein#add('plytophogy/vim-virtualenv',                  {'lazy': 1, 'on_ft': 'python'})
   call dein#add('pocke/iro.vim')
@@ -1036,6 +1035,12 @@ let g:rustfmt_autosave = 1
 AutoCmd FileType typescript call tern#Enable()
 AutoCmd FileType typescript setlocal completeopt+=preview
 " }}}3
+
+" tigris {{{
+let g:tigris#enabled = 1
+let g:tigris#on_the_fly_enabled = 1
+let g:tigris#delay = 300
+" }}}
 
 " typescript {{{3
 let g:typescript_indent_disable = 1
