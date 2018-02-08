@@ -135,4 +135,4 @@ linkapps mpv
 ## Editor
 install vim --with-lua --with-python3
 install neovim
-install emacs --with-cocoa --with-gnutls --with-librsvg
+install railwaycat/emacsmacport/emacs-mac
