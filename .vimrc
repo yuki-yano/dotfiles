@@ -206,7 +206,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Shougo/neosnippet-snippets')
 
   set  runtimepath+=/usr/local/opt/fzf
-  call dein#add('junegunn/fzf.vim',                {'depends': 'fzf'})
   call dein#local('~/repos/github.com/yuki-ycino', {}, ['fzf-preview.vim'])
   " }}}3
 
@@ -250,7 +249,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('godlygeek/tabular',                      {'lazy': 1, 'on_cmd': 'Tabularize'})
   call dein#add('h1mesuke/vim-alignta',                   {'lazy': 1, 'on_cmd': 'Alignta'})
   call dein#add('haya14busa/incsearch-fuzzy.vim',         {'lazy': 1, 'on_map': '<Plug>', 'depends': 'incsearch.vim'})
-  call dein#add('haya14busa/incsearch.vim',               {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('haya14busa/incsearch.vim',               {'lazy': 1, 'on_map': '<Plug>', 'on_source': 'vim-asterisk'})
   call dein#add('haya14busa/vim-asterisk',                {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-edgemotion',              {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-metarepeat',              {'lazy': 1, 'on_map': ['go', 'g.']})
@@ -273,6 +272,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('pbrisbin/vim-mkdir')
   call dein#add('rhysd/accelerated-jk',                   {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/clever-f.vim',                     {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('rhysd/vim-textobj-ruby',                 {'lazy': 1, 'on_ft': 'ruby', 'depends': 'vim-textobj-user'})
   call dein#add('rhysd/vim-textobj-ruby',                 {'lazy': 1, 'on_map': {'ox': ['ar', 'ir']}, 'depends': 'vim-textobj-user'})
   call dein#add('rhysd/vim-textobj-word-column',          {'lazy': 1, 'on_map': {'ox': ['av', 'iv']}, 'depends': 'vim-textobj-user'})
   call dein#add('rking/ag.vim',                           {'lazy': 1, 'on_cmd': 'Ag'})
@@ -285,14 +285,14 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tpope/vim-repeat',                       {'lazy': 1, 'on_map': {'n': '<Plug>'}})
   call dein#add('tpope/vim-speeddating',                  {'lazy': 1, 'on_map': {'n': '<Plug>'}})
   call dein#add('tyru/skk.vim')
-  call dein#add('vimtaku/vim-mlh',                        {'depends': ['webapi-vim', 'skk.vim']})
+  call dein#add('vimtaku/vim-mlh',                        {'on_source': ['webapi-vim', 'skk.vim']})
   " }}}3
 
   " Appearance {{{3
   call dein#add('AndrewRadev/linediff.vim',       {'lazy': 1, 'on_cmd': ['Linediff', 'LinediffReset']})
   call dein#add('LeafCage/foldCC.vim')
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
-  call dein#add('amix/vim-zenroom2',              {'lazy': 1, 'depends': 'goyo.vim'})
+  call dein#add('amix/vim-zenroom2',              {'lazy': 1, 'on_source': 'goyo.vim'})
   call dein#add('blueyed/vim-diminactive')
   call dein#add('edkolev/tmuxline.vim',           {'lazy': 1, 'on_cmd': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot']})
   call dein#add('fisle/vim-no-fixme')
@@ -348,7 +348,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('pocke/vim-automatic',                    {'depends': 'vim-gift'})
   call dein#add('powerman/vim-plugin-AnsiEsc')
   call dein#add('qpkorr/vim-bufkill')
-  call dein#add('rhysd/vim-textobj-ruby',                 {'lazy': 1, 'on_ft': 'ruby', 'depends': 'vim-textobj-user'})
   call dein#add('rickhowe/diffchar.vim')
   call dein#add('rizzatti/dash.vim',                      {'lazy': 1, 'on_cmd': ['Dash', 'DashKeywords']})
   call dein#add('simeji/winresizer',                      {'lazy': 1, 'on_cmd': 'WinResizerStartResize'})
@@ -1554,7 +1553,7 @@ if dein#tap('incsearch.vim')
   endfunction
 endif
 
-if dein#tap('vim-anzu')
+if dein#tap('vim-anzu') && dein#tap('vim-asterisk')
   map n  <Plug>(anzu-n)zzzv
   map N  <Plug>(anzu-N)zzzv
   map *  <Plug>(asterisk-z*)
