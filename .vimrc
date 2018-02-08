@@ -61,6 +61,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('digitaltoad/vim-pug',                        {'lazy': 1, 'on_ft': ['jade', 'pug']})
   call dein#add('ekalinin/Dockerfile.vim',                    {'lazy': 1, 'on_ft': 'Dockerfile'})
   call dein#add('elzr/vim-json',                              {'lazy': 1, 'on_ft': 'json'})
+  call dein#add('ensime/ensime-vim',                          {'lazy': 1, 'on_ft': 'scala'})
   call dein#add('fatih/vim-go',                               {'lazy': 1, 'on_ft': 'go'})
   call dein#add('fs111/pydoc.vim',                            {'lazy': 1, 'on_ft': 'python'})
   call dein#add('hail2u/vim-css3-syntax',                     {'lazy': 1, 'on_ft': 'css'})
@@ -913,6 +914,10 @@ let g:vimjs#smartcomplete = 1
 set cmdheight=2
 let g:echodoc_enable_at_startup = 1
 " }}}3
+
+" ensime {{{
+AutoCmd BufWritePost *.scala silent :EnTypeCheck
+" }}}
 
 " gen_tags {{{3
 let g:gen_tags#ctags_auto_gen = 1
