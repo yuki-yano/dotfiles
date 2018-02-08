@@ -611,11 +611,6 @@ let g:loaded_netrwSettings     = 1
 let g:loaded_netrwFileHandlers = 1
 " }}}2
 
-" Highlight Annotation Comment {{{2
-AutoCmd WinEnter,BufRead,BufNew,Syntax * silent! call matchadd('Todo', '\(TODO\|FIXME\|NOTE\|INFO\|XXX\|TEMP\):')
-AutoCmd WinEnter,BufRead,BufNew,Syntax * highlight Todo ctermfg=229
-" }}}2
-
 " }}}1
 
 " Command {{{1
