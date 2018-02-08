@@ -280,7 +280,10 @@ endif
 "---------------------------------------------------------------------------"
 
 "" Leader
-let g:mapleader = ' '
+noremap <Leader>      <Nop>
+noremap <LocalLeader> <Nop>
+let g:mapleader = "\<Space>"
+let g:maplocalleader = '\'
 
 "" Setting for Neovim
 if has('nvim')
