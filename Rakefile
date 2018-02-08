@@ -121,16 +121,23 @@ namespace :vimperator do
   task install: 'Vimperatorfile' do
     # vimperator-plugins
     File.readlines('Vimperatorfile').map(&:chomp).each do |plugin|
-      src = File.join(VIMPERATOR_DIR, 'vimperator-plugins', plugin)
-      dest = File.join(VIMPERATOR_DIR, 'plugin', plugin)
+      src  = "~/.vimperator/vimperator-plugins/#{plugin}"
+      dest = "~/.vimperator/plugin/#{plugin}"
       sh "ln -sfn #{src} #{dest}"
     end
 
     # local plugins
     FileList['.vimperator/local-plugins/*'].each do |plugin|
-      src = File.expand_path(plugin)
-      dest = File.join(VIMPERATOR_DIR, 'plugin', File.basename(plugin))
+      src = "~/#{plugin}"
+      dest = "~/.vimperator/plugin/#{File.basename(plugin)}"
       sh "ln -sfn #{src} #{dest}"
+    end
+  end
+
+  desc 'Uninstall vimperator plugins'
+  task :uninstall do
+    FileList['.vimperator/plugin/*'].each do |plugin|
+      sh "rm ~/#{plugin}"
     end
   end
 end
