@@ -127,11 +127,6 @@ alias y='yes'
 # ruby
 alias be='bundle exec'
 
-# git alias
-if whence hub > /dev/null; then
-  alias git='nocorrect hub'
-fi
-
 alias g='git'
 alias ga='git add'
 alias gaa='git add --all'
