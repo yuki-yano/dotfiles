@@ -129,7 +129,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('cohama/agit.vim',               {'lazy': 1, 'on_cmd': ['Agit', 'AgitFile', 'AgitGit', 'AgitDiff']})
   call dein#add('hotwatermorning/auto-git-diff', {'lazy': 1, 'on_ft': 'gitrebase'})
   call dein#add('kana/vim-gf-diff')
-  call dein#add('lambdalisue/gina.vim',          {'lazy': 1, 'on_cmd': 'Gina', 'hook_source': 'call Hook_on_post_source_gina()'})
+  call dein#add('lambdalisue/gina.vim')
   call dein#add('lambdalisue/vim-gista',          {'lazy': 1, 'on_cmd': 'Gista'})
   call dein#add('lambdalisue/vim-unified-diff')
   call dein#add('rhysd/committia.vim',           {'lazy': 1, 'on_ft': 'gitcommit'})
@@ -287,11 +287,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Appearance {{{3
+  " call dein#add('bagrat/vim-workspace')
   call dein#add('AndrewRadev/linediff.vim',       {'lazy': 1, 'on_cmd': ['Linediff', 'LinediffReset']})
   call dein#add('LeafCage/foldCC.vim')
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
   call dein#add('amix/vim-zenroom2',              {'lazy': 1, 'on_source': 'goyo.vim'})
-  call dein#add('blueyed/vim-diminactive')
+  call dein#add('bling/vim-bufferline')
   call dein#add('edkolev/tmuxline.vim',           {'lazy': 1, 'on_cmd': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot']})
   call dein#add('fisle/vim-no-fixme')
   call dein#add('gregsexton/MatchTag')
@@ -466,6 +467,10 @@ nnoremap <M-f> $
 nnoremap <M-b> ^
 nnoremap <C-o> <C-o>zzzv
 nnoremap <C-i> <C-i>zzzv
+
+"" Buffer
+nnoremap <silent> <C-p> :bprevious<CR>
+nnoremap <silent> <C-n> :bnext<CR>
 
 "" Window
 nnoremap <silent> <C-h> :wincmd h<CR>
@@ -1899,6 +1904,10 @@ let g:brightest#enable_filetypes = {
 \ }
 " }}}
 
+" bufferline {{{
+let g:bufferline_echo = 1
+" }}}
+
 " fastfold {{{3
 let g:fastfold_savehook = 1
 let g:fastfold_fold_command_suffixes =  ['x','X','a','A','o','O','c','C']
@@ -1929,46 +1938,55 @@ if dein#tap('lightline.vim')
   \ 'active': {
   \   'left': [
   \     [ 'mode', 'paste' ],
-  \     [ 'branch' ],
   \     [ 'readonly', 'filepath', 'filename', 'anzu' ]
   \    ],
   \   'right': [
-  \     [ 'lineinfo', 'percent' ],
+  \     [ 'percent', 'lineinfo' ],
   \     [ 'fileformat', 'fileencoding', 'filetype' ],
   \     [ 'linter_errors', 'linter_warnings', 'linter_ok', 'linter_unload' ]
   \   ]
   \ },
   \ 'inactive': {
-  \   'left': [ [], [ 'branch' ], [ 'filepath', 'filename' ] ],
+  \   'left': [ [], [], [ 'filepath', 'filename' ] ],
   \   'right': [
-  \     [ 'lineinfo' ],
-  \     [ 'fileformat', 'fileencoding', 'filetype' ]
+  \     [ 'percent', 'lineinfo' ],
+  \     [ 'fileformat', 'fileencoding', 'filetype' ],
   \   ]
   \ },
   \ 'tabline': {
-  \   'left': [ [ 'tabs' ] ],
-  \   'right': []
+  \   'left': [ [ 'branch' ], [ 'gitstatus' ], [ 'tabs' ] ],
   \ },
   \ 'tab': {
-  \   'active': [ 'tabnum', 'readonly', 'filename', 'modified' ],
-  \   'inactive': [ 'tabnum', 'readonly', 'filename', 'modified' ]
+  \   'active':   [ 'tabwinnum', 'readonly', 'filename', 'modified' ],
+  \   'inactive': [ 'tabwinnum', 'readonly', 'filename', 'modified' ]
   \ },
   \ 'component': {
-  \   'fileformat':   "%{winwidth(0) > 120 ? &fileformat : ''}",
+  \   'fileformat':   "%{ Lightline_is_visible() ? &fileformat : '' }",
+  \   'fileencoding': "%{ Lightline_is_visible() ? (strlen(&fileencoding) ? &fileencoding : &encoding) : ''}",
+  \   'lineinfo':     "%{ !Lightline_is_visible() ? '' : printf('%03d:%03d', line('.'), col('.')) }",
+  \   'percent':      "%{ !Lightline_is_visible() ? '' : printf('%3d%%', float2nr((1.0 * line('.')) / line('$') * 100.0)) }",
   \   'readonly':     "%{&readonly ? 'RO' : ''}",
-  \   'lineinfo':     '%4l[%L]:%-2v',
-  \   'fileencoding': "%{winwidth(0) > 120 ? (strlen(&fileencoding) ? &fileencoding : &encoding) : ''}",
   \   'paste':        "%{&paste ? 'PASTE' : ''}",
   \  },
   \ 'component_function': {
-  \   'mode':         'lightline#mode',
-  \   'filepath':     'Lightline_filepath',
-  \   'filename':     'Lightline_filename',
-  \   'branch':       'gina#component#repo#branch',
-  \   'anzu':         'anzu#search_status',
+  \   'mode':      'lightline#mode',
+  \   'filepath':  'Lightline_filepath',
+  \   'filename':  'Lightline_filename',
+  \   'branch':    'gina#component#repo#branch',
+  \   'gitstatus': 'Lightline_git_status',
+  \   'anzu':      'anzu#search_status',
   \ },
   \ 'tab_component': {
   \   'readonly': "gettabwinvar(a:n, tabpagewinnr(a:n), '&readonly') ? 'RO' : ''",
+  \ },
+  \ 'tab_component_function': {
+  \   'tabwinnum':   'Lightline_tab_win_num',
+  \ },
+  \ 'component_visible_condition': {
+  \   'lineinfo':     'Lightline_is_visible()',
+  \   'fileencoding': 'Lightline_is_visible()',
+  \   'fileformat':   'Lightline_is_visible()',
+  \   'percent':      'Lightline_is_visible()',
   \ },
   \ 'component_function_visible_condition': {
   \   'modified': '&modified||!&modifiable',
@@ -1991,14 +2009,18 @@ if dein#tap('lightline.vim')
   \ 'enable': {
   \   'statusline': 1,
   \   'tabline':    1,
-  \ }
+  \ },
   \ }
 
   let g:lightline#ale#indicator_errors   = 'E'
   let g:lightline#ale#indicator_warnings = 'W'
   let g:lightline#ale#indicator_ok       = 'OK'
 
-  function! Lightline_filepath()
+  function! Lightline_is_visible() abort
+    return 60 <= winwidth(0)
+  endfunction
+
+  function! Lightline_filepath() abort
     let l:path_string = filereadable(expand('%:p:~')) || winwidth(0) < 60 ? '' : expand('%:p:~:h')
     let l:dirs = split(l:path_string, '/')
     if len(l:dirs) ==# 0
@@ -2015,12 +2037,16 @@ if dein#tap('lightline.vim')
     endif
   endfunction
 
-  function! Lightline_filename()
+  function! Lightline_filename() abort
     if expand('%:t') !=# ''
       return expand('%:t') . (&modified ? ' +' : '')
     else
       return '[No Name]'
     endif
+  endfunction
+
+  function! Lightline_tab_win_num(n) abort
+    return a:n . ':' . len(tabpagebuflist(a:n))
   endfunction
 
   function! Lightline_ale_ok() abort
@@ -2029,6 +2055,22 @@ if dein#tap('lightline.vim')
 
   function! Lightline_ale_unload() abort
     return count(s:ale_filetypes, &filetype) == 0 ? 'UNUSE' : ''
+  endfunction
+
+  function! Lightline_git_status() abort
+    if gina#component#repo#branch() ==# ''
+      return ''
+    endif
+
+    let l:staged     = gina#component#status#staged()
+    let l:unstaged   = gina#component#status#unstaged()
+    let l:conflicted = gina#component#status#conflicted()
+    return printf(
+    \ 'S: %s, U: %s, C: %s',
+    \ l:staged ==# '' ? 0 : staged,
+    \ l:unstaged ==# '' ? 0 : unstaged,
+    \ l:conflicted ==# '' ? 0 : conflicted,
+    \)
   endfunction
 endif
 " }}}3
@@ -2115,6 +2157,20 @@ let g:rainbow_conf = {
 let g:snumber_enable_startup = 1
 nnoremap <silent> <Leader>n :SNumbersToggleRelative<CR>
 " }}}3
+
+" workspace {{{
+" let g:workspace_subseparator = ''
+"
+" function! g:WorkspaceSetCustomColors() abort
+"   highlight WorkSpaceBufferCurrent cterm=bold ctermfg=173 ctermbg=233
+"   highlight WorkSpaceBufferActive cterm=NONE ctermfg=68 ctermbg=232
+"   highlight WorkSpaceBufferHidden cterm=NONE ctermfg=248 ctermbg=232
+"   highlight WorkSpaceBufferTrunc cterm=NONE ctermfg=251 ctermbg=238
+"   highlight WorkSpaceTabCurrent cterm=NONE ctermfg=232 ctermbg=67
+"   highlight WorkSpaceTabHidden cterm=NONE ctermfg=232 ctermbg=240
+"   highlight WorkspaceFill cterm=NONE ctermfg=8 ctermbg=232
+" endfunction
+" }}}
 
 " zenspace {{{3
 let g:zenspace#default_mode = 'on'
@@ -2341,12 +2397,6 @@ if dein#tap('vim-submode')
   "" edit
   call submode#enter_with('jump', 'n', '', 'g;', 'g;')
   call submode#map('jump', 'n', '', ';', 'g;')
-
-  "" buffer
-  call submode#enter_with('changebuffer', 'n', '', '<C-p>', ':bprevious<CR>')
-  call submode#enter_with('changebuffer', 'n', '', '<C-n>', ':bnext<CR>')
-  call submode#map('changebuffer', 'n', '', '<C-p>', ':bprevious<CR>')
-  call submode#map('changebuffer', 'n', '', '<C-n>', ':bnext<CR>')
 
   "" tab
   call submode#enter_with('changetab', 'n', '', 'gh', 'gT')
