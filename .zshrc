@@ -1,10 +1,10 @@
-#! /usr/local/bin/zsh
-
 # zgen {{{
 
 source ~/dotfiles/.zsh/zgen/zgen.zsh
 
 if ! zgen saved; then
+  zgen load Valodim/zsh-curl-completion
+  zgen load glidenote/hub-zsh-completion
   zgen load 39e/zsh-completions-anyenv
   zgen load Valodim/zsh-curl-completion
   zgen load b4b4r07/zsh-vimode-visual
@@ -14,13 +14,11 @@ if ! zgen saved; then
   zgen load mafredri/zsh-async
   zgen load mollifier/anyframe
   zgen load sindresorhus/pure
-  zgen load tarruda/zsh-autosuggestions
-  zgen load unixorn/warhol.plugin.zsh
   zgen load yukiycino-dotfiles/cdd
   zgen load yukiycino-dotfiles/fancy-ctrl-z
   zgen load zdharma/fast-syntax-highlighting
+  zgen load zsh-users/zsh-autosuggestions
   zgen load zsh-users/zsh-completions src
-  zgen load zsh-users/zsh-history-substring-search
   zgen load zuxfoucault/colored-man-pages_mod
 
   zgen save
@@ -68,7 +66,40 @@ autoload -Uz terminfo
 
 # }}}
 
-# Color Definition {{{
+# Basic {{{
+
+# default settings
+setopt always_last_prompt
+setopt append_history
+setopt auto_list
+setopt auto_menu
+setopt auto_param_keys
+setopt auto_param_slash
+setopt auto_pushd
+setopt brace_ccl
+setopt complete_aliases
+setopt complete_in_word
+setopt hist_ignore_all_dups
+setopt hist_ignore_dups
+setopt hist_ignore_space
+setopt hist_no_store
+setopt hist_reduce_blanks
+setopt hist_save_no_dups
+setopt hist_verify
+setopt interactive_comments
+setopt list_types
+setopt magic_equal_subst
+setopt mark_dirs
+setopt multios
+setopt no_beep
+setopt no_flow_control
+setopt no_list_beep
+setopt notify
+setopt numeric_glob_sort
+setopt print_eight_bit
+setopt prompt_subst
+setopt pushd_ignore_dups
+setopt share_history
 
 # shellcheck disable=SC2154
 {
@@ -122,37 +153,21 @@ setopt pushd_ignore_dups
 setopt share_history
 
 ## dircolors
-if [ -f ~/.dircolors ]; then
-  if type dircolors > /dev/null 2>&1; then
-    eval "$(dircolors ~/.dircolors)"
-  elif type gdircolors > /dev/null 2>&1; then
-    eval "$(gdircolors ~/.dircolors)"
-  fi
+if [ -f ~/.dircolors ] && whence gdircolors > /dev/null; then
+  eval "$(gdircolors ~/.dircolors)"
 fi
 
-# 各種機能
-setopt auto_pushd
-setopt pushd_ignore_dups
-setopt list_packed
-setopt noautoremoveslash
-setopt nolistbeep
-setopt histignorealldups histsavenodups
-setopt sharehistory
-setopt no_nomatch
-
-# コマンド履歴設定
+# history
 HISTFILE=${HOME}/.zsh_history
 HISTSIZE=100000
 export SAVEHIST=100000
+HISTSIZE=50000
+export SAVEHIST=50000
 
-# C-w
+# C-w target chars
 export WORDCHARS="*?_-[]~=&!#$%^(){}<>"
 
-# add-zsh-hookの読み込み
-autoload -Uz add-zsh-hook
-
 # smart-insert-last-word
-autoload -Uz smart-insert-last-word
 zstyle :insert-last-word match '*([[:alpha:]/\\]?|?[[:alpha:]/\\])*'
 zle -N insert-last-word smart-insert-last-word
 
@@ -163,22 +178,7 @@ export REPORTTIME=3
 
 # Completion {{{
 
-# zgenが実行している
-# autoload -Uz compinit
-# compinit -C
-
-# setopt
-setopt auto_param_slash
-setopt mark_dirs
-setopt list_types
-setopt auto_menu
-setopt auto_param_keys
-setopt interactive_comments
-
-setopt complete_in_word
-setopt always_last_prompt
-
-setopt print_eight_bit
+export LISTMAX=1000
 
 # zstyle
 zstyle ':completion:*' menu select=2
@@ -194,8 +194,13 @@ zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character t
 
 # Highlight
 # shellcheck disable=SC2154
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*:messages' format '%F{YELLOW}%d'"$DEFAULT"
+zstyle ':completion:*:warnings' format '%F{RED}No matches for:''%F{YELLOW} %d'"$DEFAULT"
+zstyle ':completion:*:descriptions' format $'%{\e[38;5;147m%}%B[%d%B]%b%{\e[m%}'
+zstyle ':completion:*:corrections' format $'%{\e[38;5;147m%}%B[%d%B]%b%{\e[m%}'
 
-# Separator
+# Setting Separator
 zstyle ':completion:*' list-separator ' ==> '
 zstyle ':completion:*:manuals' separate-sections true
 
@@ -391,7 +396,7 @@ function neovim_autocd() {
 }
 chpwd_functions+=( neovim_autocd )
 
-# tmuxにカレントディレクトリ名を設定
+# Set current directory name to tmux window
 add-zsh-hook precmd  rename_tmux_window
 function rename_tmux_window() {
   if [[ -n "$TMUX" ]] ; then
@@ -401,7 +406,7 @@ function rename_tmux_window() {
   fi
 }
 
-# anyenv系のコマンドを呼ぶ度にrehash
+# Auto execute rehash when executing anyenv command
 add-zsh-hook preexec env_rehash
 add-zsh-hook precmd  env_rehash
 
@@ -538,7 +543,7 @@ fi
 
 # zcompile {{{
 
-if [ ! -f ~/.zshrc.zwc ] || [ $(readlink ~/.zshrc) -nt ~/.zshrc.zwc ]; then
+if [ ! -f ~/.zshrc.zwc ] || [ "$(readlink ~/.zshrc)" -nt ~/.zshrc.zwc ]; then
   zcompile ~/.zshrc
 fi
 
