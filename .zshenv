@@ -18,6 +18,9 @@ setopt no_global_rcs
 # default path
 export PATH=$HOME/dotfiles/vendor/bin:$HOME/dotfiles/node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin
 
+# curl
+export PATH=/usr/local/opt/curl/bin:$PATH
+
 # XDG Base Directory
 export XDG_CONFIG_HOME=$HOME/.config
 

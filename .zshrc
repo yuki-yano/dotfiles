@@ -6,9 +6,11 @@ source ~/dotfiles/.zsh/zgen/zgen.zsh
 
 if ! zgen saved; then
   zgen load 39e/zsh-completions-anyenv
-  zgen load Tarrasch/zsh-autoenv
-  zgen load greymd/docker-zsh-completion
+  zgen load Valodim/zsh-curl-completion
+  zgen load b4b4r07/zsh-vimode-visual
+  zgen load glidenote/hub-zsh-completion
   zgen load knu/zsh-git-escape-magic
+  zgen load kutsan/zsh-system-clipboard
   zgen load mafredri/zsh-async
   zgen load mollifier/anyframe
   zgen load sindresorhus/pure
@@ -31,6 +33,9 @@ fi
 # pure settings
 export PURE_PROMPT_SYMBOL='$'
 
+# zsh system clipboard
+export ZSH_SYSTEM_CLIPBOARD_TMUX_SUPPORT=true
+
 # shellcheck disable=SC2034,SC2154
 {
   FAST_HIGHLIGHT_STYLES[alias]=fg=blue
@@ -49,30 +54,72 @@ chpwd_functions+=_cdd_chpwd
 
 # }}}
 
+# autoload {{{
+
+autoload -Uz add-zsh-hook
+autoload -Uz colors; colors
+autoload -Uz edit-command-line
+autoload -Uz history-search-end
+autoload -Uz select-bracketed
+autoload -Uz select-quoted
+autoload -Uz smart-insert-last-word
+autoload -Uz surround
+autoload -Uz terminfo
+
+# }}}
+
 # Color Definition {{{
-local DEFAULT=$'%{^[[m%}'$
-local RED=$'%{^[[1;31m%}'$
-local GREEN=$'%{^[[1;32m%}'$
-local YELLOW=$'%{^[[1;33m%}'$
-local BLUE=$'%{^[[1;34m%}'$
-local PURPLE=$'%{^[[1;35m%}'$
-local LIGHT_BLUE=$'%{^[[1;36m%}'$
-local WHITE=$'%{^[[1;37m%}'$
+
+# shellcheck disable=SC2154
+{
+  export DEFAULT="${reset_color}"
+  export RED="${fg[red]}"
+  export GREEN="${fg[green]}"
+  export YELLOW="${fg[yellow]}"
+  export BLUE="${fg[blue]}"
+  export PURPLE="${fg[purple]}"
+  export CYAN="${fg[cyan]}"
+  export WHITE="${fg[white]}"
+}
+
 # }}}
 
 # Basic {{{
 
-# ls
-alias ls="ls -GF"
-alias gls="gls --color"
-
-# cd
-typeset -U chpwd_functions
-CD_HISTORY_FILE=${HOME}/.cd_history_file
-function chpwd_record_history() {
-  echo "$PWD" >> "${CD_HISTORY_FILE}"
-}
-chpwd_functions+=("$chpwd_functions" chpwd_record_history)
+# default settings
+setopt always_last_prompt
+setopt append_history
+setopt auto_list
+setopt auto_menu
+setopt auto_param_keys
+setopt auto_param_slash
+setopt auto_pushd
+setopt brace_ccl
+setopt complete_aliases
+setopt complete_in_word
+setopt hist_ignore_all_dups
+setopt hist_ignore_dups
+setopt hist_ignore_space
+setopt hist_no_store
+setopt hist_reduce_blanks
+setopt hist_save_no_dups
+setopt hist_verify
+setopt interactive_comments
+setopt list_types
+setopt long_list_jobs
+setopt magic_equal_subst
+setopt mark_dirs
+setopt multios
+setopt no_beep
+setopt no_flow_control
+setopt no_list_beep
+setopt no_no_match
+setopt notify
+setopt numeric_glob_sort
+setopt print_eight_bit
+setopt prompt_subst
+setopt pushd_ignore_dups
+setopt share_history
 
 ## dircolors
 if [ -f ~/.dircolors ]; then
@@ -95,12 +142,8 @@ setopt no_nomatch
 
 # コマンド履歴設定
 HISTFILE=${HOME}/.zsh_history
-HISTSIZE=50000
-export SAVEHIST=50000
-setopt hist_ignore_dups
-setopt share_history
-setopt hist_ignore_space
-setopt hist_ignore_all_dups
+HISTSIZE=100000
+export SAVEHIST=100000
 
 # C-w
 export WORDCHARS="*?_-[]~=&!#$%^(){}<>"
@@ -112,6 +155,9 @@ autoload -Uz add-zsh-hook
 autoload -Uz smart-insert-last-word
 zstyle :insert-last-word match '*([[:alpha:]/\\]?|?[[:alpha:]/\\])*'
 zle -N insert-last-word smart-insert-last-word
+
+# Show details automatically
+export REPORTTIME=3
 
 # }}}
 
@@ -137,7 +183,7 @@ setopt print_eight_bit
 # zstyle
 zstyle ':completion:*' menu select=2
 zstyle ':completion:*' group-name ''
-zstyle ':completion:*' completer _oldlist _complete _match _ignored
+zstyle ':completion:*'  completer _expand _complete _match _prefix _approximate _list _history
 zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' '+r:|[._-]=* r:|=* l:|=*'
 zstyle ':completion:*' special-dirs true
 zstyle ':completion:*:options' description 'yes'
@@ -147,21 +193,11 @@ zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
 zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
 
 # Highlight
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*:default:*' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*:messages' format '%F{YELLOW}%d'"$DEFAULT"
-zstyle ':completion:*:warnings' format '%F{RED}No matches for:''%F{YELLOW} %d'"$DEFAULT"
-zstyle ':completion:*:descriptions' format $'%{\e[38;5;147m%}%B[%d%B]%b%{\e[m%}'
-zstyle ':completion:*:corrections' format $'%{\e[38;5;147m%}%B[%d%B]%b%{\e[m%}'
+# shellcheck disable=SC2154
 
-# Setting Separator
+# Separator
 zstyle ':completion:*' list-separator ' ==> '
 zstyle ':completion:*:manuals' separate-sections true
-
-
-# Ignore Completion
-zstyle ':completion:*:functions' ignored-patterns '_*'
-zstyle ':completion:*:*files'    ignored-patterns '*?.o' '*?~' '*\#'
 
 # Cache
 zstyle ':completion:*' use-cache yes
@@ -175,6 +211,8 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 
 # Alias {{{
 
+alias tns='tmux new-session -d'
+
 alias -g  CB='$(git rev-parse --abbrev-ref HEAD)'
 alias -g RCB='origin/$(git rev-parse --abbrev-ref HEAD)'
 
@@ -182,11 +220,19 @@ alias -g RCB='origin/$(git rev-parse --abbrev-ref HEAD)'
 
 # Fuzzy Finder {{{
 
-f() {
+# Project
+function f() {
   local dir
-  dir="$(ghq list > /dev/null | fzf --reverse)" && cd "$(ghq root)/$dir"
+  dir=$(ghq root)/$(ghq list | fzf)
+  cd "$dir"
+
+  if [[ ! -z ${TMUX} ]]; then
+    repository=${dir##*/}
+    tmux rename-session "${repository//./-}"
+  fi
 }
 
+# Git
 alias -g  B='$(git branch -a | fzf --multi --prompt "All Branches>"    | sed -e "s/^\*\s*//g")'
 alias -g RB='$(git branch -r | fzf --multi --prompt "Remote Branches>" | sed -e "s/^\*\s*//g")'
 alias -g LB='$(git branch    | fzf --multi --prompt "Local Branches>"  | sed -e "s/^\*\s*//g")'
@@ -194,19 +240,51 @@ alias -g LB='$(git branch    | fzf --multi --prompt "Local Branches>"  | sed -e 
 alias -g S='$(git status -s           | cut -b 4- | uniq | fzf --multi --prompt "Changed File>")'
 alias -g U='$(git ls-files --unmerged | cut -f2   | uniq | fzf --multi --prompt "Unmerged File>")'
 
-function agvim () {
-  vi "$(ag "$@" | peco --query "$LBUFFER" | awk -F : '{print $1 ":" $2}')"
+# tmux
+
+function fs() {
+  local id
+
+  id="$(tmux list-sessions)"
+  create_new_session="Create New Session"
+  if [[ -n "$id" ]]; then
+    id="${create_new_session}:\\n$id"
+  else
+    id="${create_new_session}:"
+  fi
+  id="$(echo "$id" | fzf-tmux | cut -d: -f1)"
+  if [[ "$id" = "${create_new_session}" ]]; then
+    tmux-new-session
+  elif [[ -n "$id" ]]; then
+    if [[ -n $TMUX ]]; then
+      tmux switch-client -t "$id"
+    else
+      tmux attach-session -t "$id"
+    fi
+  else
+    :  # Start terminal normally
+  fi
 }
 
-# tmux
-s() {
-  local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
-    { tmux display-message -p -F "$fmt" && tmux list-sessions -F "$fmt"; } \
-      | awk '!seen[$1]++' \
-      | column -t -s'|' \
-      | fzf-tmux -q '$' --reverse --prompt 'switch session: ' -1 \
-      | cut -d':' -f1 \
-      | xargs tmux switch-client -t
+function ftpane() {
+  local panes current_window current_pane target target_window target_pane
+  panes=$(tmux list-panes -s -F '#I:#P - #{pane_current_path} #{pane_current_command}')
+  current_pane=$(tmux display-message -p '#I:#P')
+  current_window=$(tmux display-message -p '#I')
+
+  target=$(echo "$panes" | grep -v "$current_pane" | fzf-tmux +m --reverse) || return
+
+  target_window=$(echo "$target" | awk 'BEGIN{FS=":|-"} {print$1}')
+  target_pane=$(echo "$target" | awk 'BEGIN{FS=":|-"} {print$2}' | cut -c 1)
+
+  if [[ $current_window -eq $target_window ]]; then
+    tmux select-pane -t "${target_window}"."${target_pane}"
+  else
+    tmux select-pane -t "${target_window}"."${target_pane}" &&
+      tmux select-window -t "$target_window"
+  fi
+
+  exit 0
 }
 
 # nicovideo
@@ -232,6 +310,34 @@ function peco-nico-bgm() {
   echo "$line" | awk '{print $1}' | nicovideo-dump | mplayer - -novideo
 done
 }
+
+# }}}
+
+# Prompt {{{
+
+function zle-line-init()  {
+  VIM_NORMAL="%F{green}-- NORMAL --%f"
+  VIM_INSERT="%F{yellow}-- INSERT --%f"
+  VIM_VISUAL="%F{cyan}-- VISUAL --%f"
+  RPS1="${${${KEYMAP/vicmd/$VIM_NORMAL}/(main|viins)/$VIM_INSERT}/(vivis)/$VIM_VISUAL}"
+  RPS2=$RPS1
+
+  zle reset-prompt
+}
+
+# shellcheck disable=SC2034
+function zle-keymap-select() {
+  VIM_NORMAL="%F{green}-- NORMAL --%f"
+  VIM_INSERT="%F{yellow}-- INSERT --%f"
+  VIM_VISUAL="%F{cyan}-- VISUAL --%f"
+  RPS1="${${${KEYMAP/vicmd/$VIM_NORMAL}/(main|viins)/$VIM_INSERT}/(vivis)/$VIM_VISUAL}"
+  RPS2=$RPS1
+
+  zle reset-prompt
+}
+
+zle -N zle-line-init
+zle -N zle-keymap-select
 
 # }}}
 
@@ -313,16 +419,98 @@ function env_rehash() {
 
 # Bindkey {{{
 
-bindkey -e
-bindkey "^ "   my-expand-abbrev
-bindkey "^q"   show_buffer_stack
-bindkey '^[n'  history-substring-search-down
-bindkey '^[p'  history-substring-search-up
-bindkey '^e'   end-of-line
-bindkey '^r'   anyframe-widget-put-history
-bindkey '^xk'  anyframe-widget-kill
-bindkey '^z'   fancy-ctrl-z
-bindkey '^p'   up-line-or-history
+# Default bind
+# bindkey -e
+bindkey -v
+
+# Wait for next key input for 0.15 seconds (Default 0.4s)
+export KEYTIMEOUT=15
+
+bindkey -M viins '^ ' my-expand-abbrev
+bindkey -M viins '^]' insert-last-word
+
+# Add emacs bind
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end history-search-end
+
+bindkey -M viins '^a' beginning-of-line
+bindkey -M viins '^b' backward-char
+bindkey -M viins '^d' delete-char-or-list
+bindkey -M viins '^e' end-of-line
+bindkey -M viins '^f' forward-char
+bindkey -M viins '^g' send-break
+bindkey -M viins '^h' backward-delete-char
+bindkey -M viins '^k' kill-line
+bindkey -M viins '^n' history-beginning-search-forward-end
+bindkey -M viins '^p' history-beginning-search-backward-end
+bindkey -M viins '^u' backward-kill-line
+bindkey -M viins '^w' backward-kill-word
+bindkey -M viins '^y' yank
+bindkey -M viins '^q' push-line-or-edit
+
+# shellcheck disable=SC2154
+bindkey -M viins "$terminfo[kcbt]" reverse-menu-complete
+
+# Add vim bind
+bindkey -M vicmd 'j'  history-beginning-search-forward-end
+bindkey -M vicmd 'k'  history-beginning-search-backward-end
+bindkey -M vicmd '/'  vi-history-search-forward
+bindkey -M vicmd '?'  vi-history-search-backward
+bindkey -M vicmd 'gg' beginning-of-line
+bindkey -M vicmd 'G'  end-of-line
+bindkey -M vicmd 'q'  push-line-or-edit
+
+# Completion bind
+zmodload zsh/complist
+bindkey -M menuselect 'h' vi-backward-char
+bindkey -M menuselect 'j' vi-down-line-or-history
+bindkey -M menuselect 'k' vi-up-line-or-history
+bindkey -M menuselect 'l' vi-forward-char
+
+# All Mode bind
+bindkey -M viins '^r'   anyframe-widget-put-history
+bindkey -M vicmd '^r'   anyframe-widget-put-history
+bindkey -M vivis '^r'   anyframe-widget-put-history
+bindkey -M viins '^xk'  anyframe-widget-kill
+bindkey -M vicmd '^xk'  anyframe-widget-kill
+bindkey -M vivis '^xk'  anyframe-widget-kill
+bindkey -M viins '^x^k' anyframe-widget-kill
+bindkey -M vicmd '^x^k' anyframe-widget-kill
+bindkey -M vivis '^x^k' anyframe-widget-kill
+bindkey -M viins '^z'   fancy-ctrl-z
+bindkey -M vicmd '^z'   fancy-ctrl-z
+bindkey -M vivis '^z'   fancy-ctrl-z
+
+# Command Line Edit
+zle -N edit-command-line
+bindkey -M viins '^xe'  edit-command-line
+bindkey -M vicmd '^xe'  edit-command-line
+bindkey -M viins '^x^e' edit-command-line
+bindkey -M vicmd '^x^e' edit-command-line
+
+# Surround
+zle -N delete-surround surround
+zle -N add-surround surround
+zle -N change-surround surround
+bindkey -M vicmd  'sr' change-surround
+bindkey -M vicmd  'sd' delete-surround
+bindkey -M vicmd  'sa' add-surround
+bindkey -M visual 'S'  add-surround
+
+zle -N select-bracketed
+for m in visual vivis viopp; do
+  # shellcheck disable=SC2154
+  for c in {a,i}${(s..)^:-'()[]{}<>bB'}; do
+    bindkey -M "$m" "$c" select-bracketed
+  done
+done
+
+zle -N select-quoted
+for m in visual vivis viopp; do
+  for c in {a,i}{\',\",\`}; do
+    bindkey -M "$m" "$c" select-quoted
+  done
+done
 
 # }}}
 
@@ -335,7 +523,7 @@ bindkey '^p'   up-line-or-history
 # Loading fzf {{{
 
 [ -f /usr/local/opt/fzf/shell/completion.zsh ] && source /usr/local/opt/fzf/shell/completion.zsh
-export FZF_DEFAULT_COMMAND='ag -g ""'
+export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 export FZF_DEFAULT_OPTS='--reverse'
 
 # }}}

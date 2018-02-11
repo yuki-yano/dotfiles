@@ -23,6 +23,7 @@ DOTFILES_SRCS = %w[
   .stylelintrc
   .textlintrc
   .tigrc
+  .tmux
   .tmux.conf
   .vim
   .vimperator
