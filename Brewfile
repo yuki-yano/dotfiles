@@ -88,6 +88,7 @@ install graphviz
 install gron
 install homebrew/dupes/libiconv
 install httpie
+install httpstat
 install jq
 install jvgrep
 install libxml2
