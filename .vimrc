@@ -464,8 +464,8 @@ if has('nvim')
 endif
 
 "" Move
-nnoremap <M-f> $
-nnoremap <M-b> ^
+nnoremap <C-e> $
+nnoremap <C-a> ^
 nnoremap <C-o> <C-o>zzzv
 nnoremap <C-i> <C-i>zzzv
 
@@ -1866,8 +1866,8 @@ endif
 
 " trip {{{
 if dein#tap('trip.vim')
-  nmap <C-a> <Plug>(trip-increment)
-  nmap <C-x> <Plug>(trip-decrement)
+  nmap + <Plug>(trip-increment)
+  nmap - <Plug>(trip-decrement)
 endif
 " }}}
 
@@ -2436,7 +2436,7 @@ nnoremap <silent> <C-w><C-w> :call WindowSwap#EasyWindowSwap()<CR>
 " }}}3
 
 " winresizer {{{3
-nnoremap <silent> <C-e> :WinResizerStartResize<CR>
+nnoremap <silent> <Leader><C-e> :WinResizerStartResize<CR>
 " }}}3
 
 " }}}2
