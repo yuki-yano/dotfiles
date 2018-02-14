@@ -7,6 +7,7 @@ upgrade
 # Packages
 
 ## Shell
+install bash
 install fzf
 install peco
 install rxvt-unicode
@@ -61,6 +62,7 @@ install --use-gcc fontforge
 install Code-Hex/pget/pget
 install ack
 install ag
+install ansifilter
 install argon/mas/mas
 install asciinema
 install atool
@@ -79,6 +81,7 @@ install docker-completion
 install docker-compose-completion
 install dos2unix
 install eugenmayer/dockersync/unox
+install gawk
 install gist
 install global --with-pygments --with-ctags
 install gnu-sed
