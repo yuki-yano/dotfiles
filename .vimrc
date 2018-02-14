@@ -503,7 +503,7 @@ cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
 
 "" tab
-nnoremap <Leader>tt :<C-u>tablast <Bar> tabnew<CR>
+nnoremap <Leader>tt :<C-u>tablast <Bar> tabedit %<CR>
 nnoremap <Leader>tc :<C-u>tabclose<CR>
 
 "" Save
@@ -868,7 +868,7 @@ let g:ale_linter_aliases = {
 \ 'eruby': 'html',
 \ }
 
-let g:ale_sh_shellcheck_exclusions = 'SC1090,SC2155,SC2164,SC2190'
+let g:ale_sh_shellcheck_exclusions = 'SC1090,SC2148,SC2155,SC2164,SC2190'
 
 let g:ale_change_sign_column_color = 1
 let g:ale_set_signs = 1
@@ -1160,6 +1160,11 @@ endif
 if dein#tap('unite.vim')
   " Unite
 
+  " Start insert.
+  call unite#custom#profile('default', 'context', {
+  \   'start_insert': 1
+  \ })
+
   "" keymap
   function! s:unite_settings()
     nnoremap <silent> <buffer> <C-n>      j
@@ -1181,11 +1186,11 @@ if dein#tap('unite.vim')
   let g:unite_source_rec_max_cache_files = 10000
   let g:unite_enable_auto_select = 0
   let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '-p', '~/.agignore', '-g', '']
-  " nnoremap <silent> <Leader>p :<C-u>Unite file_rec/async:! -start-insert<CR>
-  nnoremap <silent> <Leader>m :<C-u>Unite neomru/file -start-insert<CR>
-  nnoremap <silent> <Leader>M :<C-u>Unite file_mru -start-insert<CR>
-  " nnoremap <silent> <Leader>f :<C-u>Unite buffer file_mru file_rec/async:! -start-insert<CR>
-  " nnoremap <silent> <Leader>b :<C-u>Unite buffer -start-insert<CR>
+  " nnoremap <silent> <Leader>p :<C-u>Unite file_rec/async:!<CR>
+  nnoremap <silent> <Leader>m :<C-u>Unite neomru/file<CR>
+  nnoremap <silent> <Leader>M :<C-u>Unite file_mru<CR>
+  " nnoremap <silent> <Leader>f :<C-u>Unite buffer file_mru file_rec/async:!<CR>
+  " nnoremap <silent> <Leader>b :<C-u>Unite buffer<CR>
 
   "" jump
   nnoremap <silent> <Leader><C-o> :<C-u>Unite jump change -auto-preview -direction=botright<CR>
@@ -1203,12 +1208,12 @@ if dein#tap('unite.vim')
 
   call unite#custom_source('line', 'sorters', 'sorter_reverse')
   call unite#custom_source('grep', 'sorters', 'sorter_reverse')
-  nnoremap <silent> <Leader>/          :<C-u>Unite line -direction=botright -buffer-name=search-buffer -start-insert -no-quit<CR>
-  nnoremap <silent> <Leader>//         :<C-u>Unite line -direction=botright -buffer-name=search-buffer -start-insert -no-quit -auto-preview<CR>
+  nnoremap <silent> <Leader>/          :<C-u>Unite line -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  nnoremap <silent> <Leader>//         :<C-u>Unite line -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
   nnoremap <silent> <Leader>*          :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit<CR>
   nnoremap <silent> <Leader>**         :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
-  nnoremap <silent> <Leader><Leader>/  :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -start-insert -no-quit<CR>
-  nnoremap <silent> <Leader><Leader>// :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -start-insert -no-quit -auto-preview<CR>
+  nnoremap <silent> <Leader><Leader>/  :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  nnoremap <silent> <Leader><Leader>// :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
   nnoremap <silent> <Leader><Leader>*  :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
   nnoremap <silent> <Leader><Leader>** :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
 
@@ -1956,6 +1961,7 @@ if dein#tap('lightline.vim')
   \ },
   \ 'tabline': {
   \   'left': [ [ 'branch' ], [ 'gitstatus' ], [ 'tabs' ] ],
+  \   'right': [ [] ],
   \ },
   \ 'tab': {
   \   'active':   [ 'tabwinnum', 'readonly', 'filename', 'modified' ],
@@ -2068,9 +2074,9 @@ if dein#tap('lightline.vim')
     let l:conflicted = gina#component#status#conflicted()
     return printf(
     \ 'S: %s, U: %s, C: %s',
-    \ l:staged ==# '' ? 0 : staged,
-    \ l:unstaged ==# '' ? 0 : unstaged,
-    \ l:conflicted ==# '' ? 0 : conflicted,
+    \ l:staged ==# '' ? 0 : l:staged,
+    \ l:unstaged ==# '' ? 0 : l:unstaged,
+    \ l:conflicted ==# '' ? 0 : l:conflicted,
     \)
   endfunction
 endif
@@ -2376,6 +2382,11 @@ vmap gb <Plug>(openbrowser-smart-search)
 let g:opengoogletranslate#openbrowsercmd = 'electron-open --without-focus'
 command! -range Trans <line1>,<line2>OpenGoogleTranslate
 " }}}3
+
+" quickrun {{{
+let g:quickrun_config={'_': {'split': 'vertical rightbelow'}}
+nnoremap <silent> \r :QuickRun<CR>
+" }}}
 
 " ref {{{3
 let g:ref_source_webdict_sites = {
