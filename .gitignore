@@ -12,6 +12,7 @@
 # tmux
 /.tmux/plugins/*
 /.tmux/resurrect/*
+!/.tmux/plugins/tpm
 
 # Vim
 /.vim/.netrwhist
