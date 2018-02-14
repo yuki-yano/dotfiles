@@ -3,8 +3,6 @@
 source ~/dotfiles/.zsh/zgen/zgen.zsh
 
 if ! zgen saved; then
-  zgen load Valodim/zsh-curl-completion
-  zgen load glidenote/hub-zsh-completion
   zgen load 39e/zsh-completions-anyenv
   zgen load Valodim/zsh-curl-completion
   zgen load b4b4r07/zsh-vimode-visual
@@ -66,6 +64,22 @@ autoload -Uz terminfo
 
 # }}}
 
+# Color Definition {{{
+
+# shellcheck disable=SC2154
+{
+  export DEFAULT="${reset_color}"
+  export RED="${fg[red]}"
+  export GREEN="${fg[green]}"
+  export YELLOW="${fg[yellow]}"
+  export BLUE="${fg[blue]}"
+  export PURPLE="${fg[purple]}"
+  export CYAN="${fg[cyan]}"
+  export WHITE="${fg[white]}"
+}
+
+# }}}
+
 # Basic {{{
 
 # default settings
@@ -88,12 +102,14 @@ setopt hist_save_no_dups
 setopt hist_verify
 setopt interactive_comments
 setopt list_types
+setopt long_list_jobs
 setopt magic_equal_subst
 setopt mark_dirs
 setopt multios
 setopt no_beep
 setopt no_flow_control
 setopt no_list_beep
+setopt no_no_match
 setopt notify
 setopt numeric_glob_sort
 setopt print_eight_bit
@@ -161,8 +177,6 @@ fi
 HISTFILE=${HOME}/.zsh_history
 HISTSIZE=100000
 export SAVEHIST=100000
-HISTSIZE=50000
-export SAVEHIST=50000
 
 # C-w target chars
 export WORDCHARS="*?_-[]~=&!#$%^(){}<>"
@@ -195,12 +209,12 @@ zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character t
 # Highlight
 # shellcheck disable=SC2154
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*:messages' format '%F{YELLOW}%d'"$DEFAULT"
-zstyle ':completion:*:warnings' format '%F{RED}No matches for:''%F{YELLOW} %d'"$DEFAULT"
-zstyle ':completion:*:descriptions' format $'%{\e[38;5;147m%}%B[%d%B]%b%{\e[m%}'
-zstyle ':completion:*:corrections' format $'%{\e[38;5;147m%}%B[%d%B]%b%{\e[m%}'
+zstyle ':completion:*:messages' format "$YELLOW" '%d' "$DEFAULT"
+zstyle ':completion:*:warnings' format "$RED" 'No matches for:' "$YELLOW" ' %d' "$DEFAULT"
+zstyle ':completion:*:descriptions' format "$YELLOW" 'completing %B%d%b' "$DEFAULT"
+zstyle ':completion:*:corrections' format "$YELLOW" '%B%d% ' "$RED" '(errors: %e)%b' "$DEFAULT"
 
-# Setting Separator
+# Separator
 zstyle ':completion:*' list-separator ' ==> '
 zstyle ':completion:*:manuals' separate-sections true
 

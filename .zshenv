@@ -109,6 +109,7 @@ alias vimdiff='nvim -d'
 export EFF_NO_GRAY=true
 
 # ls
+alias ls='gls --color=auto'
 alias ll='ls -lh'
 alias la='ls -alh'
 
