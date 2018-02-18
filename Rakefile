@@ -167,7 +167,7 @@ namespace :osx do
   end
 end
 
-namespace :homebrew do
+namespace :brew do
   desc 'Install homebrew packages'
   task bundle: 'Brewfile' do
     package = File.readlines('Brewfile').map(&:chomp).select do |line|
