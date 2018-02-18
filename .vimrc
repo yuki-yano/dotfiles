@@ -1859,7 +1859,7 @@ endif
 " }}}3
 
 " trip {{{
-if dein#tap('trip.vim')
+if dein#tap('vim-trip')
   nmap + <Plug>(trip-increment)
   nmap - <Plug>(trip-decrement)
 endif
