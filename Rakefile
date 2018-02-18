@@ -113,7 +113,14 @@ namespace :yarn do
   desc 'Install node modules'
   task install: 'package.json' do
     sh 'nodenv rehash'
+    sh 'rm -rf node_modules yarn.lock && yarn cache clean'
     sh 'yarn install'
+  end
+
+  desc 'Uninstall node modules'
+  task uninstall: 'package.json' do
+    sh 'nodenv rehash'
+    sh 'rm -rf node_modules yarn.lock && yarn cache clean'
   end
 end
 
