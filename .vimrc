@@ -462,8 +462,10 @@ if has('nvim')
 endif
 
 "" Move
-nnoremap <C-e> $
 nnoremap <C-a> ^
+nnoremap <C-e> $
+vnoremap <C-a> ^
+vnoremap <C-e> $
 nnoremap <C-o> <C-o>zzzv
 nnoremap <C-i> <C-i>zzzv
 
@@ -476,10 +478,6 @@ nnoremap <silent> <C-h> :wincmd h<CR>
 nnoremap <silent> <C-l> :wincmd l<CR>
 nnoremap <silent> <C-k> :wincmd k<CR>
 nnoremap <silent> <C-j> :wincmd j<CR>
-
-"" Insert Mode
-inoremap <C-h> <BS>
-inoremap <C-d> <Del>
 
 "" Select buffer
 nnoremap B :<C-u>ls<CR>:buffer<Space>
