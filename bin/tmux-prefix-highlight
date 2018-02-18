@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -e
+
+normal_mode_text='[N]'
+prefix_pressed_text='[T]'
+insert_mode_text='[I]'
+copy_mode_text='[Y]'
+
+normal_fg='fg=colour248'
+normal_bg='bg=colour8'
+prefix_fg='fg=colour75'
+prefix_bg='bg=colour8'
+insert_fg='fg=colour248'
+insert_bg='bg=colour8'
+copy_fg='fg=colour221'
+copy_bg='bg=colour8'
+
+normal_or_prefix="#{?client_prefix,#[${prefix_fg}]#[${prefix_bg}]${prefix_pressed_text},#[${normal_fg}]#[${normal_bg}]${normal_mode_text}}"
+copy_or_insert="#{?pane_in_mode,#[${copy_fg}]#[${copy_bg}]${copy_mode_text},#[${insert_fg}]#[${insert_bg}]${insert_mode_text}}"
+
+echo "${normal_or_prefix}:${copy_or_insert}#[fg=colour255]"

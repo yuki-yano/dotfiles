@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -e
+
+percentage=$(iostat -c 2 disk0 | sed '/^\s*$/d' | tail -n 1 | awk '{usage=100-$6} END {printf("%5.1f", usage)}' | sed 's/,/./')
+
+fcomp() {
+  awk -v n1="$1" -v n2="$2" 'BEGIN {if (n1<n2) exit 0; exit 1}'
+}
+
+cpu_load_status() {
+  local percentage=$1
+  if fcomp 80 "$percentage"; then
+    echo "high"
+  elif fcomp 30 "$percentage" && fcomp "$percentage" 80; then
+    echo "medium"
+  else
+    echo "low"
+  fi
+}
+
+echo -n 'CPU:'
+
+cpu_load_status=$(cpu_load_status "$percentage")
+if [[ $cpu_load_status == 'low' ]]; then
+  echo -n '#[fg=green]'
+elif [[ $cpu_load_status == 'medium' ]]; then
+  echo -n '#[fg=yellow]'
+elif [[ $cpu_load_status == 'high' ]]; then
+  echo -n '#[fg=red]'
+fi
+
+echo "${percentage}%#[DEFAULT]"

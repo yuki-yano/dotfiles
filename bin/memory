@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+set -e
+
+calc() {
+  local stdin;
+  read -r -d '' -u 0 stdin;
+  awk "BEGIN { print $stdin }";
+}
+
+fcomp() {
+  awk -v n1="$1" -v n2="$2" 'BEGIN {if (n1<n2) exit 0; exit 1}'
+}
+
+page_size=$(sysctl -nq "vm.pagesize")
+mem_usage=$(vm_stat | awk -v page_size="$page_size" -F ':' '
+BEGIN { free=0; used=0 }
+
+/Pages active/ ||
+  /Pages wired/ {
+gsub(/^[ \t]+|[ \t]+$/, "", $2); used+=$2;
+    }
+    /Pages free/ ||
+      /Pages inactive/ ||
+      /Pages speculative/ ||
+      /Pages occupied by compressor/ {
+    gsub(/^[ \t]+|[ \t]+$/, "", $2); free+=$2;
+  }
+END { print (free * page_size)/1024, (used * page_size)/1024 }
+')
+
+size_scale=1048576
+# Extract free and used memory in MiB, calculate total and percentage
+mem_free=$(echo "$mem_usage" | awk -v scale="$size_scale" '{ print $1/scale }')
+mem_used=$(echo "$mem_usage" | awk -v scale="$size_scale" '{ print $2/scale }')
+mem_total=$(echo "$mem_free + $mem_used" | calc)
+mem_pused=$(echo "($mem_used / $mem_total) * 100" | calc)
+# mem_pfree=$(echo "($mem_free / $mem_total) * 100" | calc)
+
+
+echo -n 'MEM: '
+
+if fcomp 90 "$mem_pused"; then
+  echo -n '#[fg=red]'
+elif fcomp 75 "$mem_pused"; then
+  echo -n '#[fg=yellow]'
+else
+  echo -n '#[fg=green]'
+fi
+
+mem_pused=$(printf "%.0f%%" "$mem_pused")
+mem_used=$(printf "%.1f%s" "$mem_used" "G")
+# mem_view="${mem_view//'#{mem.free}'/$(printf "$size_format" "$mem_free" "$size_unit")}"
+mem_total=$(printf "%.1f%s" "$mem_total" 'G')
+
+echo "$mem_pused ($mem_used/$mem_total)#[DEFAULT]"
