@@ -14,6 +14,7 @@ if ! zgen saved; then
   zgen load sindresorhus/pure
   zgen load yukiycino-dotfiles/cdd
   zgen load yukiycino-dotfiles/fancy-ctrl-z
+  zgen load yukiycino-dotfiles/zsh-extra-abbrev
   zgen load zdharma/fast-syntax-highlighting
   zgen load zsh-users/zsh-autosuggestions
   zgen load zsh-users/zsh-completions src
@@ -45,6 +46,11 @@ export ZSH_SYSTEM_CLIPBOARD_TMUX_SUPPORT=true
   FAST_HIGHLIGHT_STYLES[globbing]=fg=green,bold
   FAST_HIGHLIGHT_STYLES[history-expansion]=fg=green,bold
 }
+
+# extra-abbrev
+export EXTRA_ABBREV=(
+"gci" "gci -m '_|_'"
+)
 
 chpwd_functions+=_cdd_chpwd
 
@@ -259,53 +265,6 @@ alias -g LB='$(git branch    | fzf --multi --prompt "Local Branches>"  | sed -e 
 alias -g S='$(git status -s           | cut -b 4- | uniq | fzf --multi --prompt "Changed File>")'
 alias -g U='$(git ls-files --unmerged | cut -f2   | uniq | fzf --multi --prompt "Unmerged File>")'
 
-# tmux
-
-function fs() {
-  local id
-
-  id="$(tmux list-sessions)"
-  create_new_session="Create New Session"
-  if [[ -n "$id" ]]; then
-    id="${create_new_session}:\\n$id"
-  else
-    id="${create_new_session}:"
-  fi
-  id="$(echo "$id" | fzf-tmux | cut -d: -f1)"
-  if [[ "$id" = "${create_new_session}" ]]; then
-    tmux-new-session
-  elif [[ -n "$id" ]]; then
-    if [[ -n $TMUX ]]; then
-      tmux switch-client -t "$id"
-    else
-      tmux attach-session -t "$id"
-    fi
-  else
-    :  # Start terminal normally
-  fi
-}
-
-function ftpane() {
-  local panes current_window current_pane target target_window target_pane
-  panes=$(tmux list-panes -s -F '#I:#P - #{pane_current_path} #{pane_current_command}')
-  current_pane=$(tmux display-message -p '#I:#P')
-  current_window=$(tmux display-message -p '#I')
-
-  target=$(echo "$panes" | grep -v "$current_pane" | fzf-tmux +m --reverse) || return
-
-  target_window=$(echo "$target" | awk 'BEGIN{FS=":|-"} {print$1}')
-  target_pane=$(echo "$target" | awk 'BEGIN{FS=":|-"} {print$2}' | cut -c 1)
-
-  if [[ $current_window -eq $target_window ]]; then
-    tmux select-pane -t "${target_window}"."${target_pane}"
-  else
-    tmux select-pane -t "${target_window}"."${target_pane}" &&
-      tmux select-window -t "$target_window"
-  fi
-
-  exit 0
-}
-
 # nicovideo
 function peco-nico-ranking() {
   ruby -r rss -e 'RSS::Parser.parse("http://www.nicovideo.jp/ranking/fav/daily/all?rss=2.0").channel.items.each {|item| puts item.link + "\t" + item.title}' | peco | while read -r line; do
@@ -366,44 +325,6 @@ zle -N zle-keymap-select
 # https://github.com/zchee/deoplete-zsh
 zmodload zsh/zpty
 
-# abbrev
-# http://d.hatena.ne.jp/keno_ss/20140214/1392330322
-typeset -A myabbrev
-myabbrev=(
-"gci" "gci -m '_|_'"
-)
-
-function my-expand-abbrev() {
-  if [ -z "$RBUFFER" ] ; then
-    my-expand-abbrev-aux
-  else
-    zle end-of-line
-  fi
-}
-
-function my-expand-abbrev-aux() {
-  local init last value addleft addright
-  init=$(echo -nE "$LBUFFER" | sed -e "s/[_a-zA-Z0-9]*$//")
-  last=$(echo -nE "$LBUFFER" | sed -e "s/.*[^_a-zA-Z0-9]\\([_a-zA-Z0-9]*\\)$/\\1/")
-  value=${myabbrev[$last]}
-  if [[ $value = *_\|_* ]] ; then
-    addleft=${value%%_\|_*}
-    addright=${value#*_\|_}
-  else
-    addleft=$value
-    addright=""
-  fi
-  if [ "$last" = "PWD" ] ; then
-    LBUFFER=""
-    RBUFFER="$PWD"
-  else
-    LBUFFER=$init${addleft:-$last }
-    RBUFFER=$addright$RBUFFER
-  fi
-}
-
-zle -N my-expand-abbrev
-
 # neovim_remote
 function neovim_autocd() {
   [[ $NVIM_LISTEN_ADDRESS ]] && neovim-autocd
@@ -445,7 +366,7 @@ bindkey -v
 # Wait for next key input for 0.15 seconds (Default 0.4s)
 export KEYTIMEOUT=15
 
-bindkey -M viins '^ ' my-expand-abbrev
+bindkey -M viins '^ ' extra-abbrev
 bindkey -M viins '^]' insert-last-word
 
 # Add emacs bind
