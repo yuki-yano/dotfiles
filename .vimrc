@@ -1974,7 +1974,7 @@ if dein#tap('lightline.vim')
   \   'mode':      'lightline#mode',
   \   'filepath':  'Lightline_filepath',
   \   'filename':  'Lightline_filename',
-  \   'branch':    'gina#component#repo#branch',
+  \   'branch':    'gina#component#repo#preset',
   \   'gitstatus': 'Lightline_git_status',
   \   'anzu':      'anzu#search_status',
   \ },

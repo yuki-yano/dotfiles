@@ -69,7 +69,7 @@ let s:p.replace.middle  = [ [ s:base1,  s:base03 ] ]
 let s:p.visual.middle   = [ [ s:base1,  s:base03 ] ]
 
 let s:p.tabline.left = [
-\ [ s:base3, s:base01 ],
+\ [ s:base2, s:base01 ],
 \ [ s:base1, s:base01 ],
 \ [ s:blue,  s:base02 ], ]
 let s:p.tabline.tabsel  = [ [ s:orange, s:base03 ] ]
