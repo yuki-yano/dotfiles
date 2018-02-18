@@ -173,7 +173,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('carlitux/deoplete-ternjs')
   call dein#add('fishbullet/deoplete-ruby')
   call dein#add('fszymanski/deoplete-emoji')
-  call dein#add('mattn/vim-monster')
   call dein#add('rhysd/github-complete.vim')
   call dein#add('ujihisa/neco-look')
   call dein#add('uplus/deoplete-solargraph')
@@ -1262,8 +1261,6 @@ if has('nvim')
     \ 'converter_auto_delimiter',
     \ ])
 
-    let g:monster#completion#rcodetools#backend = 'async_rct_complete'
-
     let g:deoplete#sources#go#gocode_binary = $GOPATH . '/bin/gocode'
     let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 
@@ -1378,8 +1375,8 @@ if has('nvim')
     let g:deoplete#omni#functions.javascript = s:deoplete_default_omni_sources + ['jspc#omni', 'js#CompleteJS', 'javascriptcomplete#CompleteJS']
     let g:deoplete#omni#functions.typescript = s:deoplete_default_omni_sources + ['tsuquyomi#complete', 'jspc#omni', 'js#CompleteJS', 'javascriptcomplete#CompleteJS']
     let g:deoplete#omni#functions.vue        = s:deoplete_default_omni_sources + ['jspc#omni', 'js#CompleteJS', 'javascriptcomplete#CompleteJS', 'htmlcomplete#CompleteTags', 'csscomplete#CompleteCSS']
-    let g:deoplete#omni#functions.ruby       = s:deoplete_default_omni_sources + ['rubycomplete#Complete', 'monster#omnifunc']
-    let g:deoplete#omni#functions.eruby      = s:deoplete_default_omni_sources + ['rubycomplete#Complete', 'monster#omnifunc', 'htmlcomplete#CompleteTags']
+    let g:deoplete#omni#functions.ruby       = s:deoplete_default_omni_sources + ['rubycomplete#Complete']
+    let g:deoplete#omni#functions.eruby      = s:deoplete_default_omni_sources + ['rubycomplete#Complete', 'htmlcomplete#CompleteTags']
     let g:deoplete#omni#functions.python     = s:deoplete_default_omni_sources + ['pythoncomplete#Complete']
     let g:deoplete#omni#functions.go         = s:deoplete_default_omni_sources
     let g:deoplete#omni#functions.rust       = s:deoplete_default_omni_sources
