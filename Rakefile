@@ -257,6 +257,18 @@ namespace :apm do
   end
 end
 
+namespace :coteditor do
+  desc 'Integrate command line with citeditor'
+  task :install do
+    sh 'ln -sfn /Applications/CotEditor.app/Contents/SharedSupport/bin/cot /usr/local/bin/cot'
+  end
+
+  desc 'Delete cot command'
+  task :uninstall do
+    sh 'rm /usr/local/bin/cot'
+  end
+end
+
 namespace :vagrant do
   desc 'Install vagrant plugins'
   task plugins: 'VagrantPlugins' do
