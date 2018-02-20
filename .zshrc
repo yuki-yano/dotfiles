@@ -236,8 +236,6 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 
 # Alias {{{
 
-alias tns='tmux new-session -d'
-
 alias -g  CB='$(git rev-parse --abbrev-ref HEAD)'
 alias -g RCB='origin/$(git rev-parse --abbrev-ref HEAD)'
 
@@ -319,6 +317,46 @@ zle -N zle-keymap-select
 
 # }}}
 
+# tmux {{{
+function _left-pane() {
+  tmux select-pane -L
+}
+zle -N left-pane _left-pane
+
+function _down-pane() {
+  tmux select-pane -D
+}
+zle -N down-pane _down-pane
+
+function _up-pane() {
+  tmux select-pane -U
+}
+zle -N up-pane _up-pane
+
+function _right-pane() {
+  tmux select-pane -R
+}
+zle -N right-pane _right-pane
+
+function _backspace-or-left-pane() {
+  if [[ $#BUFFER -gt 0 ]]; then
+    zle backward-delete-char
+  elif [[ ! -z ${TMUX} ]]; then
+    zle left-pane
+  fi
+}
+zle -N backspace-or-left-pane _backspace-or-left-pane
+
+function _kill-line-or-up-pane() {
+  if [[ $#BUFFER -gt 0 ]]; then
+    zle kill-line
+  elif [[ ! -z ${TMUX} ]]; then
+    zle up-pane
+  fi
+}
+zle -N kill-line-or-up-pane _kill-line-or-up-pane
+# }}}
+
 # Misc {{{
 
 # Loading zpty
@@ -330,16 +368,6 @@ function neovim_autocd() {
   [[ $NVIM_LISTEN_ADDRESS ]] && neovim-autocd
 }
 chpwd_functions+=( neovim_autocd )
-
-# Set current directory name to tmux window
-add-zsh-hook precmd  rename_tmux_window
-function rename_tmux_window() {
-  if [[ -n "$TMUX" ]] ; then
-    local current_path=$(pwd | sed -e s/\ /_/g)
-    local current_dir=$(basename "$current_path")
-    tmux rename-window "$current_dir"
-  fi
-}
 
 # Auto execute rehash when executing anyenv command
 add-zsh-hook preexec env_rehash
@@ -379,8 +407,8 @@ bindkey -M viins '^d' delete-char-or-list
 bindkey -M viins '^e' end-of-line
 bindkey -M viins '^f' forward-char
 bindkey -M viins '^g' send-break
-bindkey -M viins '^h' backward-delete-char
-bindkey -M viins '^k' kill-line
+bindkey -M viins '^h' backspace-or-left-pane
+bindkey -M viins '^k' kill-line-or-up-pane
 bindkey -M viins '^n' history-beginning-search-forward-end
 bindkey -M viins '^p' history-beginning-search-backward-end
 bindkey -M viins '^u' backward-kill-line
@@ -399,6 +427,10 @@ bindkey -M vicmd '?'  vi-history-search-backward
 bindkey -M vicmd 'gg' beginning-of-line
 bindkey -M vicmd 'G'  end-of-line
 bindkey -M vicmd 'q'  push-line-or-edit
+
+# Add tmux bind
+bindkey -M vicmd '^k' up-pane
+bindkey -M vivis '^k' up-pane
 
 # Completion bind
 zmodload zsh/complist

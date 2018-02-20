@@ -239,7 +239,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('FooSoft/vim-argwrap',                    {'lazy': 1, 'on_cmd': 'ArgWrap'})
   call dein#add('LeafCage/yankround.vim',                 {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('chrisbra/NrrwRgn',                       {'lazy': 1, 'on_cmd': ['NR', 'NW', 'WidenRegion', 'NRV', 'NUD', 'NRP', 'NRM', 'NRS', 'NRN', 'NRL']})
-  call dein#add('christoomey/vim-tmux-navigator')
   call dein#add('cohama/lexima.vim',                      {'lazy': 1, 'on_event': 'InsertEnter', 'hook_source': 'call Hook_on_post_source_lexima()'})
   call dein#add('dhruvasagar/vim-table-mode',             {'lazy': 1, 'on_cmd': 'TableModeToggle'})
   call dein#add('dyng/ctrlsf.vim',                        {'lazy': 1, 'on_cmd': 'CtrlSF'})
@@ -292,7 +291,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
   call dein#add('amix/vim-zenroom2',              {'lazy': 1, 'on_source': 'goyo.vim'})
   call dein#add('bling/vim-bufferline')
-  call dein#add('edkolev/tmuxline.vim',           {'lazy': 1, 'on_cmd': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot']})
   call dein#add('fisle/vim-no-fixme')
   call dein#add('gregsexton/MatchTag')
   call dein#add('haya14busa/vim-operator-flashy', {'lazy': 1, 'on_map': '<Plug>'})
@@ -309,6 +307,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('t9md/vim-quickhl',               {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-zenspace')
   runtime macros/matchit.vim
+  " }}}3
+
+  " tmux {{{3
+  call dein#add('benmills/vimux')
+  call dein#add('christoomey/vim-tmux-navigator')
+  call dein#add('edkolev/tmuxline.vim', { 'lazy': 1, 'on_cmd': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot']})
   " }}}3
 
   " Util {{{3
@@ -2177,6 +2181,18 @@ nnoremap <silent> <Leader>n :SNumbersToggleRelative<CR>
 " zenspace {{{3
 let g:zenspace#default_mode = 'on'
 " }}}3
+
+" }}}2
+
+" tmux {{{2
+
+" vimux {{{
+map <silent> <Leader>vp :VimuxPromptCommand<CR>
+map <silent> <Leader>vl :VimuxRunLastCommand<CR>
+map <silent> <Leader>vi :VimuxInspectRunner<CR>
+map <silent> <Leader>vz :VimuxZoomRunner<CR>
+map <silent> <Leader>vc :VimuxCloseRunner<CR>
+" }}}
 
 " }}}2
 
