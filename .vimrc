@@ -263,7 +263,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mopp/vim-operator-convert-case',         {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',                   {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('osyo-manga/vim-trip',                    {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('othree/eregex.vim',                      {'lazy': 1, 'on_cmd': 'S'})
   call dein#add('pbrisbin/vim-mkdir')
   call dein#add('rhysd/accelerated-jk',                   {'lazy': 1, 'on_map': '<Plug>'})
@@ -1862,13 +1861,6 @@ if &buftype ==# 'help'
   map <silent> <buffer> K <Plug>(textobj-help-any-p)
 endif
 " }}}3
-
-" trip {{{
-if dein#tap('vim-trip')
-  nmap + <Plug>(trip-increment)
-  nmap - <Plug>(trip-decrement)
-endif
-" }}}
 
 " yankround {{{3
 if dein#tap('yankround.vim')
