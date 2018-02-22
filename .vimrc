@@ -1735,7 +1735,7 @@ if dein#tap('lexima.vim')
     \ {'char': '<Bar>',                    'input': '|| '},
     \ {'char': '<Bar>', 'at': '\S\%#',     'input': ' || '},
     \ {'char': '<Bar>', 'at': '\s\%#',     'input': '|| '},
-    \ {'char': '<Bar>', 'at': '||\s\%#',   'input': '<BS><BS>'},
+    \ {'char': '<Bar>', 'at': '||\s\%#',   'input': '<BS><BS><BS><BS>|'},
     \ {'char': '<Bar>', 'at': '|\%#',      'input': '<Bar>', 'priority': 10},
     \ {'char': '<C-h>', 'at': '\s||\s\%#', 'input': '<BS><BS><BS><BS>'},
     \ {'char': '<C-h>', 'at': '||\s\%#',   'input': '<BS><BS><BS>'},
