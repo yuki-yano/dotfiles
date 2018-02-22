@@ -1537,26 +1537,24 @@ endif
 
 " gina {{{3
 if dein#tap('gina.vim')
-  function! Hook_on_post_source_gina() abort
-    call gina#custom#command#option('status', '--short')
-    call gina#custom#command#option('status', '--opener', 'split')
-    call gina#custom#mapping#nmap('status', '<C-j>', '<C-w>j', {'noremap': 1, 'silent': 1})
-    call gina#custom#mapping#nmap('status', '<C-k>', '<C-w>k', {'noremap': 1, 'silent': 1})
+  call gina#custom#command#option('status', '--short')
+  call gina#custom#command#option('status', '--opener', 'split')
+  call gina#custom#mapping#nmap('status', '<C-j>', '<C-w>j', {'noremap': 1, 'silent': 1})
+  call gina#custom#mapping#nmap('status', '<C-k>', '<C-w>k', {'noremap': 1, 'silent': 1})
 
-    call gina#custom#command#option('branch', '--opener', 'split')
-    call gina#custom#mapping#nmap('branch', 'g<CR>', '<Plug>(gina-commit-checkout-track)')
+  call gina#custom#command#option('branch', '--opener', 'split')
+  call gina#custom#mapping#nmap('branch', 'g<CR>', '<Plug>(gina-commit-checkout-track)')
 
-    call gina#custom#command#option('diff',   '--opener', 'vsplit')
-    call gina#custom#command#option('log',    '--opener', 'vsplit')
+  call gina#custom#command#option('diff',   '--opener', 'vsplit')
+  call gina#custom#command#option('log',    '--opener', 'vsplit')
 
-    call gina#custom#action#alias('/\%(blame\|log\|reflog\)', 'preview', 'topleft show:commit:preview')
-    call gina#custom#mapping#nmap('/\%(blame\|log\|reflog\)', 'p', ":<C-u>call gina#action#call('preview')<CR>", {'noremap': 1, 'silent': 1})
-    call gina#custom#mapping#nmap('blame', '<C-l>', '<C-w>l', {'noremap': 1, 'silent': 1})
-    call gina#custom#mapping#nmap('blame', '<C-r>', '<Plug>(gina-blame-redraw)', {'noremap': 1, 'silent': 1})
+  call gina#custom#action#alias('/\%(blame\|log\|reflog\)', 'preview', 'topleft show:commit:preview')
+  call gina#custom#mapping#nmap('/\%(blame\|log\|reflog\)', 'p', ":<C-u>call gina#action#call('preview')<CR>", {'noremap': 1, 'silent': 1})
+  call gina#custom#mapping#nmap('blame', '<C-l>', '<C-w>l', {'noremap': 1, 'silent': 1})
+  call gina#custom#mapping#nmap('blame', '<C-r>', '<Plug>(gina-blame-redraw)', {'noremap': 1, 'silent': 1})
 
-    call gina#custom#mapping#nmap('blame', 'j', 'j<Plug>(gina-blame-echo)')
-    call gina#custom#mapping#nmap('blame', 'k', 'k<Plug>(gina-blame-echo)')
-  endfunction
+  call gina#custom#mapping#nmap('blame', 'j', 'j<Plug>(gina-blame-echo)')
+  call gina#custom#mapping#nmap('blame', 'k', 'k<Plug>(gina-blame-echo)')
 endif
 " }}}3
 
