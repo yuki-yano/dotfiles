@@ -123,57 +123,6 @@ setopt prompt_subst
 setopt pushd_ignore_dups
 setopt share_history
 
-# shellcheck disable=SC2154
-{
-  export DEFAULT="${reset_color}"
-  export RED="${fg[red]}"
-  export GREEN="${fg[green]}"
-  export YELLOW="${fg[yellow]}"
-  export BLUE="${fg[blue]}"
-  export PURPLE="${fg[purple]}"
-  export CYAN="${fg[cyan]}"
-  export WHITE="${fg[white]}"
-}
-
-# }}}
-
-# Basic {{{
-
-# default settings
-setopt always_last_prompt
-setopt append_history
-setopt auto_list
-setopt auto_menu
-setopt auto_param_keys
-setopt auto_param_slash
-setopt auto_pushd
-setopt brace_ccl
-setopt complete_aliases
-setopt complete_in_word
-setopt hist_ignore_all_dups
-setopt hist_ignore_dups
-setopt hist_ignore_space
-setopt hist_no_store
-setopt hist_reduce_blanks
-setopt hist_save_no_dups
-setopt hist_verify
-setopt interactive_comments
-setopt list_types
-setopt long_list_jobs
-setopt magic_equal_subst
-setopt mark_dirs
-setopt multios
-setopt no_beep
-setopt no_flow_control
-setopt no_list_beep
-setopt no_no_match
-setopt notify
-setopt numeric_glob_sort
-setopt print_eight_bit
-setopt prompt_subst
-setopt pushd_ignore_dups
-setopt share_history
-
 ## dircolors
 if [ -f ~/.dircolors ] && whence gdircolors > /dev/null; then
   eval "$(gdircolors ~/.dircolors)"
