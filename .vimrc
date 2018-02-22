@@ -473,6 +473,15 @@ vnoremap <C-e> $
 nnoremap <C-o> <C-o>zzzv
 nnoremap <C-i> <C-i>zzzv
 
+"" CommandLine
+noremap! <C-a> <Home>
+noremap! <C-b> <Left>
+noremap! <C-d> <Del>
+noremap! <C-e> <End>
+noremap! <C-f> <Right>
+cnoremap <C-n> <Down>
+cnoremap <C-p> <Up>
+
 "" Buffer
 nnoremap <silent> <C-p> :bprevious<CR>
 nnoremap <silent> <C-n> :bnext<CR>
@@ -483,28 +492,41 @@ nnoremap <silent> <C-l> :wincmd l<CR>
 nnoremap <silent> <C-k> :wincmd k<CR>
 nnoremap <silent> <C-j> :wincmd j<CR>
 
-"" Select buffer
-nnoremap B :<C-u>ls<CR>:buffer<Space>
+"" increment & decrement
+noremap <silent> + <C-a>
+noremap <silent> - <C-x>
 
 "" Ignore registers
 nnoremap x "_x
+
+"" Select buffer
+nnoremap B :<C-u>ls<CR>:buffer<Space>
 
 "" Indent
 vnoremap < <gv
 vnoremap > >gv|
 
-"" Move CommandLine
-noremap! <C-a> <Home>
-noremap! <C-b> <Left>
-noremap! <C-d> <Del>
-noremap! <C-e> <End>
-noremap! <C-f> <Right>
-cnoremap <C-n> <Down>
-cnoremap <C-p> <Up>
+"" Tab
+nnoremap <silent> gt :<C-u>tablast <Bar> tabedit<CR>
+nnoremap <silent> gd :<C-u>tabclose<CR>
+"" submode
+" nnoremap <silent> gh :<C-u>tabprevious<CR>
+" nnoremap <silent> gl :<C-u>tabNext<CR>
+nnoremap <silent> g1 :<C-u>1tabnext<CR>
+nnoremap <silent> g2 :<C-u>2tabnext<CR>
+nnoremap <silent> g3 :<C-u>3tabnext<CR>
+nnoremap <silent> g4 :<C-u>4tabnext<CR>
+nnoremap <silent> g5 :<C-u>5tabnext<CR>
+nnoremap <silent> g6 :<C-u>6tabnext<CR>
+nnoremap <silent> g7 :<C-u>7tabnext<CR>
+nnoremap <silent> g8 :<C-u>8tabnext<CR>
+nnoremap <silent> g9 :<C-u>9tabnext<CR>
 
-"" tab
-nnoremap <Leader>tt :<C-u>tablast <Bar> tabedit %<CR>
-nnoremap <Leader>tc :<C-u>tabclose<CR>
+"" resize
+nnoremap <silent> <Left> :vertical resize -1<CR>
+nnoremap <silent> <Right> :vertical resize +1<CR>
+nnoremap <silent> <Up> :resize -1<CR>
+nnoremap <silent> <Down> :resize +1<CR>
 
 "" Save
 nnoremap <silent> <Leader>w :<C-u>update<CR>
@@ -1446,7 +1468,7 @@ if dein#tap('vimfiler')
   let g:vimfiler_ignore_pattern = '^\%(.git\|.DS_Store\)$'
   let g:vimfiler_trashbox_directory = '~/.Trash'
   nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple<CR>
-  nnoremap <silent> <Leader>% :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple<CR>
+  nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple<CR>
 
   function! s:vimfiler_settings()
     nmap <buffer> R <Plug>(vimfiler_redraw_screen)
@@ -1669,8 +1691,8 @@ omap T  <Plug>(easymotion-Tl)
 " }}}3
 
 " edgemotion {{{3
-map <M-j> <Plug>(edgemotion-j)
-map <M-k> <Plug>(edgemotion-k)
+map <silent> <Leader>j <Plug>(edgemotion-j)
+map <silent> <Leader>k <Plug>(edgemotion-k)
 " }}}3
 
 " eregex {{{3
@@ -2409,15 +2431,15 @@ let g:scratch_no_mappings = 1
 if dein#tap('vim-submode')
   let g:submode_keep_leaving_key = 1
 
-  "" edit
+  "" jump
   call submode#enter_with('jump', 'n', '', 'g;', 'g;')
   call submode#map('jump', 'n', '', ';', 'g;')
 
   "" tab
-  call submode#enter_with('changetab', 'n', '', 'gh', 'gT')
-  call submode#enter_with('changetab', 'n', '', 'gl', 'gt')
-  call submode#map('changetab', 'n', '', 'h', 'gT')
-  call submode#map('changetab', 'n', '', 'l', 'gt')
+  call submode#enter_with('changetab', 'n', '', 'gh', ':<C-u>tabprevious<CR>')
+  call submode#enter_with('changetab', 'n', '', 'gl', ':<c-u>tabnext<cr>')
+  call submode#map('changetab', 'n', '', 'h', ':<c-u>tabprevious<cr>')
+  call submode#map('changetab', 'n', '', 'l', ':<C-u>tabnext<CR>')
 
   "" operator-convert-case
   call submode#enter_with('convert', 'n', '', '<leader>cl', ':ConvertCaseLoop<CR>')
