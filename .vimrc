@@ -1260,7 +1260,9 @@ if dein#tap('unite.vim')
 endif
 " }}}3
 
-" fzf {{{3
+" fzf-preview {{{3
+let g:fzf_preview_filelist_command = 'rg --files --hidden --follow --glob "!.git/*"'
+
 nnoremap <silent> <Leader>p :<C-u>ProjectFilesPreview<CR>
 nnoremap <silent> <Leader>b :<C-u>BuffersPreview<CR>
 nnoremap <silent> <Leader>m :<C-u>ProjectOldFilesPreview<CR>
