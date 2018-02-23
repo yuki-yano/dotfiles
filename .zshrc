@@ -304,34 +304,15 @@ function _kill-line-or-up-pane() {
   fi
 }
 zle -N kill-line-or-up-pane _kill-line-or-up-pane
-# }}}
 
-# Misc {{{
-
-# Loading zpty
-# https://github.com/zchee/deoplete-zsh
-zmodload zsh/zpty
-
-# neovim_remote
-function neovim_autocd() {
-  [[ $NVIM_LISTEN_ADDRESS ]] && neovim-autocd
-}
-chpwd_functions+=( neovim_autocd )
-
-# Auto execute rehash when executing anyenv command
-add-zsh-hook preexec env_rehash
-add-zsh-hook precmd  env_rehash
-
-function env_rehash() {
-  if   echo "$1" | grep rbenv  > /dev/null ; then
-    rbenv rehash
-  elif echo "$1" | grep pyenv  > /dev/null ; then
-    pyenv rehash
-  elif echo "$1" | grep nodenv > /dev/null ; then
-    nodenv rehash
+function _accept-line-or-down-pane() {
+  if [[ $#BUFFER -gt 0 ]]; then
+    zle accept-line
+  elif [[ ! -z ${TMUX} ]]; then
+    zle down-pane
   fi
 }
-
+zle -N accept-line-or-down-pane _accept-line-or-down-pane
 # }}}
 
 # Bindkey {{{
@@ -356,7 +337,6 @@ bindkey -M viins '^d' delete-char-or-list
 bindkey -M viins '^e' end-of-line
 bindkey -M viins '^f' forward-char
 bindkey -M viins '^g' send-break
-bindkey -M viins '^h' backspace-or-left-pane
 bindkey -M viins '^k' kill-line-or-up-pane
 bindkey -M viins '^n' history-beginning-search-forward-end
 bindkey -M viins '^p' history-beginning-search-backward-end
@@ -378,8 +358,11 @@ bindkey -M vicmd 'G'  end-of-line
 bindkey -M vicmd 'q'  push-line-or-edit
 
 # Add tmux bind
+bindkey -M viins '^h' backspace-or-left-pane
 bindkey -M vicmd '^k' up-pane
 bindkey -M vivis '^k' up-pane
+bindkey -M vicmd '^j' accept-line-or-down-pane
+bindkey -M viins '^j' accept-line-or-down-pane
 
 # Completion bind
 zmodload zsh/complist
@@ -432,6 +415,34 @@ for m in visual vivis viopp; do
     bindkey -M "$m" "$c" select-quoted
   done
 done
+
+# }}}
+
+# Misc {{{
+
+# Loading zpty
+# https://github.com/zchee/deoplete-zsh
+zmodload zsh/zpty
+
+# neovim_remote
+function neovim_autocd() {
+  [[ $NVIM_LISTEN_ADDRESS ]] && neovim-autocd
+}
+chpwd_functions+=( neovim_autocd )
+
+# Auto execute rehash when executing anyenv command
+add-zsh-hook preexec env_rehash
+add-zsh-hook precmd  env_rehash
+
+function env_rehash() {
+  if   echo "$1" | grep rbenv  > /dev/null ; then
+    rbenv rehash
+  elif echo "$1" | grep pyenv  > /dev/null ; then
+    pyenv rehash
+  elif echo "$1" | grep nodenv > /dev/null ; then
+    nodenv rehash
+  fi
+}
 
 # }}}
 
