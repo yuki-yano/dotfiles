@@ -20,6 +20,8 @@ if ! zgen saved; then
   zgen load zsh-users/zsh-completions src
   zgen load zuxfoucault/colored-man-pages_mod
 
+  zgen oh-my-zsh plugins/extract
+
   zgen save
 
   # compile
