@@ -15,11 +15,13 @@ alias c=ccat
 # show: http://qiita.com/t-takaai/items/8574ff312f2caa5177c2
 setopt no_global_rcs
 
+typeset -U path fpath
+
 # default path
-export PATH=$HOME/dotfiles/vendor/bin:$HOME/dotfiles/node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin
+path=(~/dotfiles/vendor/bin(N-/) ~/dotfiles/node_modules/.bin(N-/) /usr/local/bin(N-/) /usr/bin(N-/) /bin(N-/) /usr/sbin(N-/) /usr/X11/bin(N-/))
 
 # curl
-export PATH=/usr/local/opt/curl/bin:$PATH
+path=(/usr/local/opt/curl/bin(N-/) $path)
 
 # XDG Base Directory
 export XDG_CONFIG_HOME=$HOME/.config
@@ -31,7 +33,7 @@ export GTAGSLABEL=pygments
 alias brew='env PATH=${PATH/${HOME}\/\.pyenv\/shims:/} brew'
 
 # rbenv
-export PATH=$HOME/.rbenv/shims:$PATH
+path=(~/.rbenv/shims(N-/) $path)
 export RBENV_SHELL=zsh
 function rbenv() {
   local command
@@ -49,8 +51,8 @@ function rbenv() {
 }
 
 # pyenv
+path=(~/.pyenv/shims(N-/) $path)
 export PYENV_ROOT=~/.pyenv
-export PATH=~/.pyenv/shims:$PATH
 export PYENV_SHELL=zsh
 export PYTHON_CONFIGURE_OPTS='--enable-framework'
 pyenv() {
@@ -69,7 +71,7 @@ pyenv() {
 }
 
 # nodenv
-export PATH=~/.nodenv/shims:$PATH
+path=(~/.nodenv/shims(N-/) $path)
 export NODENV_SHELL=zsh
 nodenv() {
   local command
@@ -88,17 +90,16 @@ nodenv() {
 
 # go
 export GOPATH=$HOME/.go
-export PATH=$GOPATH/bin:$PATH
-export PATH=$HOME/.ghg/bin:$PATH
+path=(~/.go/bin(N-/) ~/.ghg/bin(N-/) $path)
 
 # rust
-export PATH=$HOME/.cargo/bin:$PATH
+path=(~/.cargo/bin(N-/) $path)
 
 # llvm
-export PATH=/usr/local/opt/llvm/bin:$PATH
+path=(/usr/local/opt/llvm/bin(N-/) $path)
 
 # heroku
-export PATH=/usr/local/heroku/bin:$PATH
+path=(/usr/local/heroku/bin(N-/) $path)
 
 # vim
 alias vi='nvim'
@@ -181,7 +182,7 @@ function gifa() {
 }
 
 #  Finally add the path of dotfiles/bin to the beginning
-export PATH=$HOME/dotfiles/bin:$PATH
+path=(~/dotfiles/bin(N-/) $path)
 
 # config
 [ -f ~/.config/nicovideo-dump.zsh ] && source "${XDG_CONFIG_HOME}/nicovideo-dump.zsh"
