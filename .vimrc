@@ -1276,7 +1276,6 @@ if has('nvim')
     let g:deoplete#enable_camel_case = 1
     let g:deoplete#auto_complete_delay = 0
     let g:deoplete#auto_complete_start_length = 1
-    let g:deoplete#enable_refresh_always = 0
     let g:deoplete#tag#cache_limit_size = 5000000
 
     call deoplete#custom#source('_', 'converters', [
