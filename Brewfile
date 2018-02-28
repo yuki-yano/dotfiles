@@ -30,7 +30,7 @@ install nodenv
 install openssl
 install pyenv
 install python
-install python3
+install python2
 install rbenv
 install readline
 install ruby
