@@ -138,6 +138,6 @@ install youtube-dl
 linkapps mpv
 
 ## Editor
-install vim --with-lua --with-python3
+install vim --with-lua
 install neovim
 install railwaycat/emacsmacport/emacs-mac
