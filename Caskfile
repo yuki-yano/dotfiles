@@ -39,6 +39,7 @@ cask install kaleidoscope
 cask install karabiner-elements
 cask install keepingyouawake
 cask install keyboard-cleaner
+cask install keycue
 cask install kitematic
 cask install macvim-kaoriya
 cask install marp
@@ -56,6 +57,7 @@ cask install skitch
 cask install skype
 cask install sourcetree
 cask install tower
+cask install typinator
 cask install vagrant
 cask install virtualbox
 cask install visual-studio-code
