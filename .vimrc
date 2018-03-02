@@ -45,7 +45,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Language {{{3
   call dein#add('1995eaton/vim-better-javascript-completion', {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
   call dein#add('Chiel92/vim-autoformat',                     {'lazy': 1, 'on_cmd': 'Autoformat'})
-  call dein#add('Galooshi/vim-import-js',                     {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('Quramy/tsuquyomi',                           {'lazy': 1, 'on_ft': 'typescript'})
   call dein#add('Quramy/vim-js-pretty-template',              {'lazy': 1, 'on_ft': 'typescript'})
   call dein#add('Shougo/context_filetype.vim')
@@ -1906,7 +1905,7 @@ endif
 " Appearance {{{2
 
 " better-whitespace {{{3
-let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'tag', 'help', 'gitcommit', 'vimfiler', 'unite', 'denite']
+let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'tag', 'help', 'gitcommit', 'vimfiler', 'vimfiler:explorer', 'unite', 'denite']
 " }}}3
 
 " brightest {{{
