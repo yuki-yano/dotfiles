@@ -117,7 +117,9 @@ alias ll='ls -lh'
 alias la='ls -alh'
 
 # sed
-alias sed=gsed
+if whence gsed > /dev/null; then
+  alias sed='gsed'
+fi
 
 # cd
 alias u='cd ..'
