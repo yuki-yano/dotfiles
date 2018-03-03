@@ -280,7 +280,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tpope/vim-repeat',                       {'lazy': 1, 'on_map': {'n': '<Plug>'}})
   call dein#add('tpope/vim-speeddating',                  {'lazy': 1, 'on_map': {'n': '<Plug>'}})
   call dein#add('tyru/skk.vim')
-  call dein#add('vimtaku/vim-mlh',                        {'on_source': ['webapi-vim', 'skk.vim']})
+  call dein#add('vimtaku/vim-mlh')
   " }}}3
 
   " Appearance {{{3
