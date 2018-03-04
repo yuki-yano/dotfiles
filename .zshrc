@@ -143,7 +143,7 @@ zstyle :insert-last-word match '*([[:alpha:]/\\]?|?[[:alpha:]/\\])*'
 zle -N insert-last-word smart-insert-last-word
 
 # Show details automatically
-export REPORTTIME=3
+export REPORTTIME=10
 
 # }}}
 
