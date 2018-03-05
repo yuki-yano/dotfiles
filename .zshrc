@@ -361,6 +361,8 @@ bindkey -M vicmd 'q'  push-line-or-edit
 
 # Add tmux bind
 bindkey -M viins '^h' backspace-or-left-pane
+bindkey -M vicmd '^h' left-pane
+bindkey -M vivis '^h' left-pane
 bindkey -M vicmd '^k' up-pane
 bindkey -M vivis '^k' up-pane
 bindkey -M vicmd '^j' accept-line-or-down-pane
