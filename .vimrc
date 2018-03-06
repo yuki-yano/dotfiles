@@ -178,12 +178,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   call dein#add('Shougo/neomru.vim')
   call dein#add('Shougo/unite-outline')
-  call dein#add('hewes/unite-gtags')
-  call dein#add('osyo-manga/unite-highlight')
   call dein#add('osyo-manga/unite-quickfix')
   call dein#add('ozelentok/denite-gtags')
-  call dein#add('tacroe/unite-mark')
-  call dein#add('tsukkee/unite-tag')
 
   call dein#add('SpaceVim/gtags.vim')
 
@@ -213,27 +209,17 @@ if dein#load_state(s:DEIN_BASE_PATH)
   \ ]})
 
   call dein#add('cocopon/vaffle.vim')
-
-  call dein#add('scrooloose/nerdtree',                     {'lazy': 1, 'on_cmd': 'NERDTreeToggle'})
-  call dein#add('Xuyuanp/nerdtree-git-plugin',             {'lazy': 1, 'depends': 'nerdtree'})
-  call dein#add('jistr/vim-nerdtree-tabs',                 {'lazy': 1, 'depends': 'nerdtree'})
-  call dein#add('tiagofumo/vim-nerdtree-syntax-highlight', {'lazy': 1, 'depends': 'nerdtree'})
   " }}}3
 
   " Edit & Move & Search {{{3
   call dein#add('AndrewRadev/splitjoin.vim',              {'lazy': 1, 'on_cmd': ['SplitjoinJoin', 'SplitjoinSplit']})
   call dein#add('AndrewRadev/switch.vim',                 {'lazy': 1, 'on_cmd': 'Switch'})
   call dein#add('DeaR/vim-textobj-wiw',                   {'lazy': 1, 'on_map': {'n': [',w', ',b', ',e', ',ge'], 'ox': ['i,w', 'a,w']}, 'depends': 'vim-textobj-user'})
-  call dein#add('FooSoft/vim-argwrap',                    {'lazy': 1, 'on_cmd': 'ArgWrap'})
   call dein#add('LeafCage/yankround.vim',                 {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('chrisbra/NrrwRgn',                       {'lazy': 1, 'on_cmd': ['NR', 'NW', 'WidenRegion', 'NRV', 'NUD', 'NRP', 'NRM', 'NRS', 'NRN', 'NRL']})
   call dein#add('cohama/lexima.vim',                      {'lazy': 1, 'on_event': 'InsertEnter', 'hook_source': 'call Hook_on_post_source_lexima()'})
-  call dein#add('dhruvasagar/vim-table-mode',             {'lazy': 1, 'on_cmd': 'TableModeToggle'})
-  call dein#add('dyng/ctrlsf.vim',                        {'lazy': 1, 'on_cmd': 'CtrlSF'})
   call dein#add('easymotion/vim-easymotion')
   call dein#add('godlygeek/tabular',                      {'lazy': 1, 'on_cmd': 'Tabularize'})
-  call dein#add('h1mesuke/vim-alignta',                   {'lazy': 1, 'on_cmd': 'Alignta'})
-  call dein#add('haya14busa/incsearch-fuzzy.vim',         {'lazy': 1, 'on_map': '<Plug>', 'depends': 'incsearch.vim'})
   call dein#add('haya14busa/incsearch.vim',               {'lazy': 1, 'on_map': '<Plug>', 'on_source': 'vim-asterisk'})
   call dein#add('haya14busa/vim-asterisk',                {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-edgemotion',              {'lazy': 1, 'on_map': '<Plug>'})
@@ -242,7 +228,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('junegunn/vim-easy-align',                {'lazy': 1, 'on_cmd': 'EasyAlign'})
   call dein#add('kana/vim-operator-replace',              {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('kana/vim-textobj-fold',                  {'lazy': 1, 'on_map': {'ox': ['az', 'az']}, 'depends': 'vim-textobj-user'})
-  call dein#add('kana/vim-textobj-function',              {'lazy': 1, 'on_map': {'ox': ['iF', 'aF']}, 'depends': 'vim-textobj-user'})
+  call dein#add('kana/vim-textobj-function',              {'lazy': 1, 'on_map': {'ox': ['if', 'af', 'iF', 'aF']}, 'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-help',                  {'lazy': 1, 'on_map': {'n': ['J', 'K']}, 'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-indent',                {'lazy': 1, 'on_map': {'ox': ['ai', 'ii', 'aI',  'iI']}, 'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-line',                  {'lazy': 1, 'on_map': {'ox': ['al', 'il']}, 'depends': 'vim-textobj-user'})
@@ -256,13 +242,9 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('rhysd/accelerated-jk',                   {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/clever-f.vim',                     {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/vim-textobj-ruby',                 {'lazy': 1, 'on_ft': 'ruby', 'depends': 'vim-textobj-user'})
-  call dein#add('rhysd/vim-textobj-ruby',                 {'lazy': 1, 'on_map': {'ox': ['ar', 'ir']}, 'depends': 'vim-textobj-user'})
   call dein#add('rhysd/vim-textobj-word-column',          {'lazy': 1, 'on_map': {'ox': ['av', 'iv']}, 'depends': 'vim-textobj-user'})
   call dein#add('rking/ag.vim',                           {'lazy': 1, 'on_cmd': 'Ag'})
-  call dein#add('sgur/vim-textobj-parameter',             {'lazy': 1, 'on_map': {'ox': ['a,', 'i,', 'i2,']}, 'depends': 'vim-textobj-user'})
-  call dein#add('t9md/vim-textmanip',                     {'lazy': 1, 'on_map': {'v': ['<C-h>', '<C-j>', '<C-k>', '<C-l>']}})
   call dein#add('thinca/vim-qfreplace',                   {'lazy': 1, 'on_cmd': 'Qfreplace'})
-  call dein#add('thinca/vim-textobj-between',             {'lazy': 1, 'on_map': {'ox': ['af', 'if']}, 'depends': 'vim-textobj-user'})
   call dein#add('tommcdo/vim-exchange',                   {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
   call dein#add('tomtom/tcomment_vim',                    {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
   call dein#add('tpope/vim-repeat',                       {'lazy': 1, 'on_map': {'n': '<Plug>'}})
@@ -275,15 +257,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('AndrewRadev/linediff.vim',       {'lazy': 1, 'on_cmd': ['Linediff', 'LinediffReset']})
   call dein#add('LeafCage/foldCC.vim')
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
-  call dein#add('amix/vim-zenroom2',              {'lazy': 1, 'on_source': 'goyo.vim'})
   call dein#add('bling/vim-bufferline')
-  call dein#add('fisle/vim-no-fixme')
   call dein#add('gregsexton/MatchTag')
   call dein#add('haya14busa/vim-operator-flashy', {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('itchyny/lightline.vim')
   call dein#add('itchyny/vim-highlighturl')
   call dein#add('itchyny/vim-parenmatch')
-  call dein#add('junegunn/goyo.vim',              {'lazy': 1, 'on_cmd': 'Goyo'})
   call dein#add('luochen1990/rainbow')
   call dein#add('maximbaz/lightline-ale')
   call dein#add('mhinz/vim-startify')
@@ -298,69 +277,61 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " tmux {{{3
   call dein#add('benmills/vimux')
   call dein#add('christoomey/vim-tmux-navigator')
-  call dein#add('edkolev/tmuxline.vim', { 'lazy': 1, 'on_cmd': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot']})
+  " }}}3
+
+  " develop {{{3
+  call dein#add('haya14busa/vim-debugger', {'lazy': 1, 'on_func': 'debugger#init'})
+  call dein#add('thinca/vim-editvar',      {'lazy': 1, 'on_cmd': 'Editvar', 'on_func': 'editvar#open'})
+  call dein#add('thinca/vim-prettyprint',  {'lazy': 1, 'on_cmd': ['PrettyPrint', 'PP'], 'on_func': ['PrettyPrint', 'PP']})
+  call dein#add('tweekmonster/exception.vim')
+  call dein#add('vim-jp/vital.vim',        {'lazy': 1, 'on_cmd': 'Vitalize'})
   " }}}3
 
   " Util {{{3
-  call dein#add('Shougo/deol.nvim',                       {'lazy': 1, 'on_cmd': ['Deol', 'DeolCd', 'DeolEdit'], 'on_map': '<Plug>'})
-  call dein#add('Shougo/vinarise.vim',                    {'lazy': 1, 'on_cmd': 'Vinarise'})
+  call dein#add('Shougo/deol.nvim',                    {'lazy': 1, 'on_cmd': ['Deol', 'DeolCd', 'DeolEdit'], 'on_map': '<Plug>'})
+  call dein#add('Shougo/vinarise.vim',                 {'lazy': 1, 'on_cmd': 'Vinarise'})
   call dein#add('aiya000/aho-bakaup.vim')
   call dein#add('bogado/file-line')
   call dein#add('dietsche/vim-lastplace')
-  call dein#add('haya14busa/vim-debugger',                {'lazy': 1, 'on_func': 'debugger#init'})
-  call dein#add('haya14busa/vim-open-googletranslate',    {'lazy': 1, 'on_cmd': 'OpenGoogleTranslate'})
-  call dein#add('itchyny/calendar.vim',                   {'lazy': 1, 'on_cmd': 'Calendar', 'hook_source': 'call Hook_on_post_source_calendar()'})
-  call dein#add('itchyny/thumbnail.vim',                  {'lazy': 1, 'on_cmd': 'Thumbnail'})
-  call dein#add('janko-m/vim-test',                       {'lazy': 1, 'on_cmd': ['TestNearest','TestFile','TestSuite','TestLast','TestVisit']})
+  call dein#add('haya14busa/vim-open-googletranslate', {'lazy': 1, 'on_cmd': 'OpenGoogleTranslate'})
+  call dein#add('itchyny/calendar.vim',                {'lazy': 1, 'on_cmd': 'Calendar', 'hook_source': 'call Hook_on_post_source_calendar()'})
+  call dein#add('itchyny/thumbnail.vim',               {'lazy': 1, 'on_cmd': 'Thumbnail'})
+  call dein#add('janko-m/vim-test',                    {'lazy': 1, 'on_cmd': ['TestNearest','TestFile','TestSuite','TestLast','TestVisit']})
   call dein#add('kana/vim-gf-user')
-  call dein#add('kana/vim-niceblock',                     {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
+  call dein#add('kana/vim-niceblock',                  {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
   call dein#add('kana/vim-operator-user')
   call dein#add('kana/vim-submode')
   call dein#add('kana/vim-tabpagecd')
   call dein#add('kassio/neoterm')
   call dein#add('konfekt/fastfold')
-  call dein#add('lambdalisue/session.vim',                {'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
+  call dein#add('lambdalisue/session.vim',             {'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
   call dein#add('lambdalisue/smartcl.vim')
   call dein#add('lambdalisue/suda.vim')
-  call dein#add('lambdalisue/vim-manpager',               {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER'], 'depends': 'vim-plugin-AnsiEsc'})
-  call dein#add('lambdalisue/vim-pager',                  {'lazy': 1, 'on_cmd': 'PAGER', 'depends': 'vim-plugin-AnsiEsc'})
-  call dein#add('majutsushi/tagbar',                      {'lazy': 1, 'on_cmd': ['TagbarOpen', 'TagbarToggle']})
-  call dein#add('mattn/benchvimrc-vim',                   {'lazy': 1, 'on_cmd': 'BenchVimrc'})
-  call dein#add('mattn/learn-vimscript')
+  call dein#add('lambdalisue/vim-manpager',            {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER'], 'depends': 'vim-plugin-AnsiEsc'})
+  call dein#add('lambdalisue/vim-pager',               {'lazy': 1, 'on_cmd': 'PAGER', 'depends': 'vim-plugin-AnsiEsc'})
+  call dein#add('majutsushi/tagbar',                   {'lazy': 1, 'on_cmd': ['TagbarOpen', 'TagbarToggle']})
   call dein#add('mattn/webapi-vim')
-  call dein#add('mbbill/undotree',                        {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
-  call dein#add('mopp/layoutplugin.vim',                  {'lazy': 1, 'on_cmd': 'LayoutPlugin'})
-  call dein#add('mtth/scratch.vim',                       {'lazy': 1, 'on_cmd': ['Scratch', 'ScratchInsert', 'ScratchPreview', 'ScratchSelection']})
+  call dein#add('mbbill/undotree',                     {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
+  call dein#add('mtth/scratch.vim',                    {'lazy': 1, 'on_cmd': ['Scratch', 'ScratchInsert', 'ScratchPreview', 'ScratchSelection']})
   call dein#add('osyo-manga/vim-gift')
-  call dein#add('pocke/vim-automatic',                    {'depends': 'vim-gift'})
+  call dein#add('pocke/vim-automatic',                 {'depends': 'vim-gift'})
   call dein#add('powerman/vim-plugin-AnsiEsc')
-  call dein#add('qpkorr/vim-bufkill')
-  call dein#add('rickhowe/diffchar.vim')
-  call dein#add('rizzatti/dash.vim',                      {'lazy': 1, 'on_cmd': ['Dash', 'DashKeywords']})
-  call dein#add('romainl/vim-qf')
-  call dein#add('simeji/winresizer',                      {'lazy': 1, 'on_cmd': 'WinResizerStartResize'})
-  call dein#add('skywind3000/asyncrun.vim',               {'lazy': 1, 'on_cmd': ['AsyncRun', 'AsyncStop']})
-  call dein#add('szw/vim-maximizer',                      {'lazy': 1, 'on_cmd': 'MaximizerToggle'})
-  call dein#add('terryma/vim-expand-region',              {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('thinca/vim-editvar',                     {'lazy': 1, 'on_cmd': 'Editvar', 'on_func': 'editvar#open'})
+  call dein#add('qpkorr/vim-bufkill',                  {'lazy': 1, 'on_cmd': ['BUN', 'BD', 'BW', 'BB', 'BF', 'BA'], 'on_map': '<Plug>'})
+  call dein#add('simeji/winresizer',                   {'lazy': 1, 'on_cmd': 'WinResizerStartResize'})
+  call dein#add('szw/vim-maximizer',                   {'lazy': 1, 'on_cmd': 'MaximizerToggle'})
+  call dein#add('terryma/vim-expand-region',           {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-localrc')
-  call dein#add('thinca/vim-prettyprint',                 {'lazy': 1, 'on_cmd': ['PrettyPrint', 'PP'], 'on_func': ['PrettyPrint', 'PP']})
-  call dein#add('thinca/vim-quickrun',                    {'lazy': 1, 'on_cmd': 'QuickRun'})
-  call dein#add('thinca/vim-ref',                         {'lazy': 1, 'on_cmd': 'Ref'})
-  call dein#add('thinca/vim-showtime',                    {'lazy': 1, 'on_cmd': ['ShowtimeStart', 'ShowtimeResume']})
-  call dein#add('tpope/vim-unimpaired')
-  call dein#add('tweekmonster/startuptime.vim',           {'lazy': 1, 'on_cmd': 'StartupTime'})
-  call dein#add('tyru/capture.vim',                       {'lazy': 1, 'on_cmd': 'Capture'})
-  call dein#add('tyru/open-browser.vim',                  {'lazy': 1, 'on_map': {'n': ['<Plug>(openbrowser-open)']}, 'on_func': ['openbrowser#load', 'openbrowser#open']})
-  call dein#add('tyru/restart.vim',                       {'lazy': 1, 'on_cmd': 'Restart'})
+  call dein#add('thinca/vim-quickrun',                 {'lazy': 1, 'on_cmd': 'QuickRun'})
+  call dein#add('thinca/vim-ref',                      {'lazy': 1, 'on_cmd': 'Ref'})
+  call dein#add('tweekmonster/startuptime.vim',        {'lazy': 1, 'on_cmd': 'StartupTime'})
+  call dein#add('tyru/capture.vim',                    {'lazy': 1, 'on_cmd': 'Capture'})
   call dein#add('tyru/vim-altercmd')
-  call dein#add('vim-jp/vital.vim',                       {'lazy': 1, 'on_cmd': 'Vitalize'})
-  call dein#add('wesQ3/vim-windowswap',                   {'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#DoWindowSwap']})
+  call dein#add('wesQ3/vim-windowswap',                {'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#DoWindowSwap']})
   " }}}3
 
   " Library {{{3
-  call dein#add('Shougo/vimproc.vim',     {'build': 'make'})
-  call dein#add('nixprime/cpsm',          {'build': 'env PY3=ON ./install.sh'})
+  call dein#add('Shougo/vimproc.vim', {'build': 'make'})
+  call dein#add('nixprime/cpsm',      {'build': 'env PY3=ON ./install.sh'})
   call dein#add('vim-scripts/L9')
   call dein#add('vim-scripts/cecutil')
   " }}}3
@@ -1190,16 +1161,13 @@ if dein#tap('unite.vim')
   let g:unite_enable_auto_select = 0
   let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '-p', '~/.agignore', '-g', '']
   " nnoremap <silent> <Leader>p :<C-u>Unite file_rec/async:!<CR>
-  nnoremap <silent> <Leader>m :<C-u>Unite neomru/file<CR>
-  nnoremap <silent> <Leader>M :<C-u>Unite file_mru<CR>
+  " nnoremap <silent> <Leader>m :<C-u>Unite neomru/file<CR>
+  " nnoremap <silent> <Leader>M :<C-u>Unite file_mru<CR>
   " nnoremap <silent> <Leader>f :<C-u>Unite buffer file_mru file_rec/async:!<CR>
   " nnoremap <silent> <Leader>b :<C-u>Unite buffer<CR>
 
   "" jump
   nnoremap <silent> <Leader><C-o> :<C-u>Unite jump change -auto-preview -direction=botright<CR>
-
-  "" ctags & gtags
-  " nnoremap <silent> <Leader><C-]> :<C-u>UniteWithCursorWord gtags/context tag -direction=botright<CR>
 
   "" outline
   nnoremap <silent> <Leader>o :<C-u>Unite outline -vertical -direction=botright -winwidth=40 -no-quit<CR>
@@ -1460,22 +1428,6 @@ if dein#tap('vimfiler')
 endif
 " }}}3
 
-" NerdTree {{{3
-let g:NERDTreeShowHidden = 1
-let g:NERDTreeLimitedSyntax = 1
-let g:NERDTreeWinSize=35
-let g:NERDTreeDirArrowExpandable = '▸'
-let g:NERDTreeDirArrowCollapsible = '▾'
-let g:NERDTreeSyntaxDisableDefaultExtensions = 1
-let g:NERDTreeSyntaxEnabledExtensions =  ['js', 'vue', 'rb', 'erb', 'py', 'json', 'html', 'css', 'scss', 'vim', 'sh']
-
-" nnoremap <silent> <Leader>e :NERDTreeTabsToggle<CR>
-" nnoremap <silent> <Leader>% :NERDTreeFind<CR>
-
-AutoCmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-AutoCmd VimLeave * NERDTreeClose
-" }}}3
-
 " }}}2
 
 " Git {{{2
@@ -1510,8 +1462,6 @@ endfunction
 " git-gutter {{{3
 if dein#tap('vim-gitgutter')
   let g:gitgutter_map_keys = 0
-  nmap <silent> gp <Plug>GitGutterPrevHunk
-  nmap <silent> gn <Plug>GitGutterNextHunk
 endif
 " }}}3
 
@@ -1556,8 +1506,7 @@ if dein#tap('incsearch.vim')
 
   map /  <Plug>(incsearch-forward)
   map ?  <Plug>(incsearch-backward)
-  map g/ <Plug>(incsearch-fuzzy-/)
-  map g? <Plug>(incsearch-fuzzy-?)
+  map g/ <Plug>(incsearch-stay)
 
   AutoCmd VimEnter * call s:incsearch_keymap()
   function! s:incsearch_keymap()
@@ -1839,20 +1788,6 @@ nnoremap <silent> sw :<C-u>:Switch<CR>
 
 " tcomment {{{3
 noremap <silent> <Leader>cc :TComment<CR>
-" }}}3
-
-" textmanip {{{3
-xmap <C-j> <Plug>(textmanip-move-down)
-xmap <C-k> <Plug>(textmanip-move-up)
-xmap <C-h> <Plug>(textmanip-move-left)
-xmap <C-l> <Plug>(textmanip-move-right)
-" }}}3
-
-" textobj-function {{{3
-omap iF <Plug>(textobj-function-i)
-omap aF <Plug>(textobj-function-a)
-vmap iF <Plug>(textobj-function-i)
-vmap aF <Plug>(textobj-function-a)
 " }}}3
 
 " textobj-help {{{3
@@ -2357,12 +2292,6 @@ nmap gx <Plug>(neoterm-repl-send)
 xmap gx <Plug>(neoterm-repl-send)
 nmap gxx <Plug>(neoterm-repl-send-line)
 " }}}3
-
-" open-browser {{{
-let g:netrw_nogx = 1
-nmap gb <Plug>(openbrowser-smart-search)
-vmap gb <Plug>(openbrowser-smart-search)
-" }}}
 
 " open-googletranslate {{{3
 let g:opengoogletranslate#openbrowsercmd = 'electron-open --without-focus'
