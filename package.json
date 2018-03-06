@@ -23,6 +23,7 @@
     "import-js": "^2.10.0",
     "javascript-typescript-langserver": "^2.5.5",
     "js-beautify": "^1.7.5",
+    "jsonlint": "^1.6.3",
     "nativefier": "^7.5.4",
     "neovim": "^3.5.2",
     "npm-check-updates": "^2.14.0",

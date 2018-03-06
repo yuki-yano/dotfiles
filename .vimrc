@@ -733,6 +733,7 @@ AutoCmd FileType eruby      setlocal expandtab   shiftwidth=2 softtabstop=2 tabs
 AutoCmd FileType python     setlocal expandtab   shiftwidth=4 softtabstop=4 tabstop=4
 AutoCmd FileType go         setlocal noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
 AutoCmd FileType rust       setlocal expandtab   shiftwidth=4 softtabstop=4 tabstop=4
+AutoCmd FileType json       setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType html       setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType css        setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType scss       setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
@@ -875,6 +876,7 @@ let g:ale_linters = {
 \ 'python':     ['autopep8', 'flake8', 'isort', 'mypy', 'yapf'],
 \ 'go':         ['golint', 'go vet'],
 \ 'rust':       ['rustc', 'cargo', 'rustfmt', 'rls'],
+\ 'json':       ['jsonlint', 'jq'],
 \ 'html':       ['htmlhint'],
 \ 'css':        ['stylelint'],
 \ 'scss':       ['stylelint'],
