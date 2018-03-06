@@ -272,7 +272,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Appearance {{{3
-  " call dein#add('bagrat/vim-workspace')
   call dein#add('AndrewRadev/linediff.vim',       {'lazy': 1, 'on_cmd': ['Linediff', 'LinediffReset']})
   call dein#add('LeafCage/foldCC.vim')
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
@@ -2153,20 +2152,6 @@ let g:rainbow_conf = {
 let g:snumber_enable_startup = 1
 nnoremap <silent> <Leader>n :SNumbersToggleRelative<CR>
 " }}}3
-
-" workspace {{{
-" let g:workspace_subseparator = ''
-"
-" function! g:WorkspaceSetCustomColors() abort
-"   highlight WorkSpaceBufferCurrent cterm=bold ctermfg=173 ctermbg=233
-"   highlight WorkSpaceBufferActive cterm=NONE ctermfg=68 ctermbg=232
-"   highlight WorkSpaceBufferHidden cterm=NONE ctermfg=248 ctermbg=232
-"   highlight WorkSpaceBufferTrunc cterm=NONE ctermfg=251 ctermbg=238
-"   highlight WorkSpaceTabCurrent cterm=NONE ctermfg=232 ctermbg=67
-"   highlight WorkSpaceTabHidden cterm=NONE ctermfg=232 ctermbg=240
-"   highlight WorkspaceFill cterm=NONE ctermfg=8 ctermbg=232
-" endfunction
-" }}}
 
 " zenspace {{{3
 let g:zenspace#default_mode = 'on'
