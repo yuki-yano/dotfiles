@@ -367,11 +367,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Color Theme {{{3
-  call dein#add('altercation/vim-colors-solarized')
   call dein#add('cocopon/iceberg.vim')
-  call dein#add('nanotech/jellybeans.vim')
-  call dein#add('tomasr/molokai')
-  call dein#add('w0ng/vim-hybrid')
   " }}}3
 
   call dein#end()
@@ -2451,17 +2447,6 @@ nnoremap <silent> <Leader><C-e> :WinResizerStartResize<CR>
 " Load Colorscheme Later {{{1
 syntax enable
 
-" elflord {{{2
-" silent! colorscheme elflord
-" }}}2
-
-" hybrid {{{2
-" set background=dark
-" let g:hybrid_custom_term_colors = 1
-" let g:hybrid_reduced_contrast = 1
-" silent! colorscheme hybrid
-" }}}2
-
 " iceberg {{{2
 silent! colorscheme iceberg
 highlight Search       ctermfg=none ctermbg=237
@@ -2470,24 +2455,6 @@ highlight CursorLineNr ctermbg=237 ctermfg=253
 highlight CursorLine   ctermbg=235
 highlight PmenuSel     cterm=reverse ctermfg=33 ctermbg=222
 highlight Visual       ctermfg=159 ctermbg=23
-" }}}2
-
-" jellybeans {{{2
-" silent! colorscheme jellybeans
-" }}}2
-
-" molokai {{{2
-" silent! colorscheme molokai
-" highlight Search   ctermfg=none ctermbg=237
-" highlight Visual   ctermfg=159 ctermbg=23
-" highlight Normal ctermbg=none
-" }}}2
-
-" solarized {{{2
-" set background=dark
-" let g:solarized_termcolors=256
-" let g:solarized_termtrans=1
-" colorscheme solarized
 " }}}2
 
 " }}}1
