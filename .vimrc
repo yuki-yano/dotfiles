@@ -366,10 +366,6 @@ augroup END
 command! -nargs=* AutoCmd autocmd MyVimrc <args>
 " }}}2
 
-" viminfo {{{
-set viminfo='1000
-" }}}
-
 " Appearance {{{2
 set number
 set nocursorline
@@ -513,7 +509,25 @@ if has('nvim')
 endif
 " }}}2
 
-" Indent {{{2
+" Set Options {{{2
+
+" viminfo {{{3
+set viminfo='1000
+" }}}3
+
+" Appearance {{{3
+set conceallevel=2
+set hlsearch | nohlsearch
+set belloff=all
+set virtualedit=all
+set synmaxcol=300
+" }}}3
+
+" Same column move {{{3
+set nostartofline
+" }}}3
+
+" Indent {{{3
 set autoindent
 set backspace=indent,eol,start
 set breakindent
@@ -521,63 +535,71 @@ set expandtab
 set shiftwidth=4
 set smartindent
 set tabstop=4
-" }}}2
+" }}}3
 
-" Term {{{2
+" Search & Complete {{{3
+set ignorecase
+set smartcase
+set completeopt=longest,menuone,preview
+set wildignorecase
+set wildmenu
+set wildmode=longest:full,full
+set wrapscan
+" }}}3
+
+" history {{{3
+set history=1000
+set undodir=~/.vim_undo
+set undofile
+" }}}3
+
+" File {{{3
+set autoread
+set noswapfile
+set viewoptions=cursor,folds
+set suffixesadd=.js,.ts,.rb
+" }}}3
+
+" Term {{{3
+set shell=zsh
+set lazyredraw
+set ttyfast
+set ttimeout
+set timeoutlen=750
+set ttimeoutlen=10
 if $TERM ==# 'screen'
   set t_Co=256
 endif
 if !has('nvim')
   set term=xterm-256color
 endif
-" }}}2
+" }}}3
 
-" Disable Paste Mode {{{2
+" Disable Paste Mode {{{3
 AutoCmd InsertLeave * setlocal nopaste
-" }}}2
+" }}}3
 
-" Disable Auto Comment {{{2
+" Disable Auto Comment {{{3
 AutoCmd FileType * setlocal formatoptions-=ro
-" }}}2
+" }}}3
 
-" Highlight Annotation Comment {{{2
+" Highlight Annotation Comment {{{3
 AutoCmd WinEnter,BufRead,BufNew,Syntax * silent! call matchadd('Todo', '\(TODO\|FIXME\|OPTIMIZE\|HACK\|REVIEW\|NOTE\|INFO\|TEMP\):')
 AutoCmd WinEnter,BufRead,BufNew,Syntax * highlight Todo ctermfg=229
-" }}}2
+" }}}3
 
-" Misc {{{2
-set completeopt=longest,menuone,preview
-set noswapfile
-set history=1000
-set undodir=~/.vim_undo
-set undofile
-set viewoptions=cursor,folds
-set hlsearch | nohlsearch
-set ignorecase
-set smartcase
-set autoread
-set belloff=all
+" Clipboard {{{3
 set clipboard=unnamed,unnamedplus
-set langnoremap
-set lazyredraw
-set ttyfast
-set matchpairs& matchpairs+=<:>
-set regexpengine=2
-set shell=zsh
-set suffixesadd=.js,.ts,.rb
-set ttimeout
-set timeoutlen=750
-set ttimeoutlen=10
-set virtualedit=all
-set wildignorecase
-set wildmenu
-set wildmode=longest:full,full
-set wrapscan
-set synmaxcol=300
-set nostartofline
-" }}}2
+" }}}3
 
-" Turn off default plugins. {{{2
+" Misc {{{3
+set updatetime=100
+set matchpairs& matchpairs+=<:>
+set langnoremap
+set regexpengine=2
+" }}}3
+
+" Turn off default plugins. {{{3
 let g:loaded_gzip              = 1
 let g:loaded_tar               = 1
 let g:loaded_tarPlugin         = 1
@@ -593,6 +615,8 @@ let g:loaded_netrw             = 1
 let g:loaded_netrwPlugin       = 1
 let g:loaded_netrwSettings     = 1
 let g:loaded_netrwFileHandlers = 1
+" }}}3
+
 " }}}2
 
 " }}}1
