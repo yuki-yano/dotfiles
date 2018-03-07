@@ -2348,9 +2348,15 @@ if dein#tap('vim-submode')
 
   "" tab
   call submode#enter_with('changetab', 'n', '', 'gh', ':<C-u>tabprevious<CR>')
-  call submode#enter_with('changetab', 'n', '', 'gl', ':<c-u>tabnext<cr>')
-  call submode#map('changetab', 'n', '', 'h', ':<c-u>tabprevious<cr>')
+  call submode#enter_with('changetab', 'n', '', 'gl', ':<C-u>tabnext<CR>')
+  call submode#map('changetab', 'n', '', 'h', ':<C-u>tabprevious<CR>')
   call submode#map('changetab', 'n', '', 'l', ':<C-u>tabnext<CR>')
+
+  "" edgemotion
+  call submode#enter_with('edgemotion', 'n', '', '<Leader>j', '<Leader>j')
+  call submode#enter_with('edgemotion', 'n', '', '<Leader>k', '<Leader>k')
+  call submode#map('edgemotion', 'n', '', 'j', '<Leader>j')
+  call submode#map('edgemotion', 'n', '', 'k', '<Leader>k')
 
   "" operator-convert-case
   call submode#enter_with('convert', 'n', '', '<leader>cl', ':ConvertCaseLoop<CR>')
