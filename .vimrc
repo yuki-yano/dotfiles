@@ -420,12 +420,17 @@ if has('nvim')
 endif
 
 "" Move
-nnoremap <C-a> ^
-nnoremap <C-e> $
-vnoremap <C-a> ^
-vnoremap <C-e> $
+set nostartofline
+nnoremap H ^
+nnoremap L $
+vnoremap H ^
+vnoremap L $
 nnoremap <C-o> <C-o>zzzv
 nnoremap <C-i> <C-i>zzzv
+
+"" Edit
+nnoremap dw de
+nnoremap cw ce
 
 "" CommandLine
 noremap! <C-a> <Home>
@@ -500,7 +505,7 @@ noremap [' [`
 noremap [` ['
 
 "" spellcheck
-map <leader>ss :set spell!<CR>
+map <silent> <leader>ss :set spell!<CR>
 
 "" terminal
 if has('nvim')
