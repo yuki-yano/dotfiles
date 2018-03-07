@@ -187,6 +187,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Shougo/neosnippet-snippets')
 
   set  runtimepath+=/usr/local/opt/fzf
+  call dein#add('junegunn/fzf.vim')
   call dein#local('~/repos/github.com/yuki-ycino', {}, ['fzf-preview.vim'])
   " }}}3
 
@@ -1207,6 +1208,26 @@ if dein#tap('unite.vim')
   " nnoremap <silent> <Leader>re :<C-u>Unite -resume<CR>
 endif
 " }}}3
+
+" fzf {{{
+nnoremap <silent> <leader>f :FZFOpenFile<CR>
+command! FZFOpenFile call FZFOpenFileFunc()
+
+function! FZFOpenFileFunc()
+  let s:file_path = expand('<cfile>')
+
+  if s:file_path ==# ''
+    echo '[Error] <cfile> return empty string.'
+    return 0
+  endif
+
+  call fzf#run({
+  \ 'source': 'rg --files --hidden --follow --glob "!.git/*"',
+  \ 'sink': 'e',
+  \ 'options': '-x +s --query=' . shellescape(s:file_path),
+  \ 'window': 'top split new'})
+endfunction
+" }}}
 
 " fzf-preview {{{3
 let g:fzf_preview_filelist_command = 'rg --files --hidden --follow --glob "!.git/*"'
