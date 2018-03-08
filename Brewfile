@@ -6,6 +6,9 @@ upgrade
 
 # Packages
 
+## Mas
+install argon/mas/mas
+
 ## Shell
 install bash
 install fzf
@@ -14,13 +17,18 @@ install rxvt-unicode
 install tmux --with-utf8proc
 install zsh --disable-etcdir
 
+## Editor
+install vim --with-lua
+install neovim
+install railwaycat/emacsmacport/emacs-mac
+
 ## Languages
 install ansible
 install boost
 install flow
 install gcc
 install go
-install go-delve/delve/delve
+# install go-delve/delve/delve
 install llvm
 install lua
 install node
@@ -40,12 +48,10 @@ install sbt
 install scala
 install shellcheck
 install source-highlight
-install typesafe-activator
 install yarn
 
 ## Service
 install heroku-toolbelt
-install otto
 install packer
 install terraform
 
@@ -63,7 +69,6 @@ install Code-Hex/pget/pget
 install ack
 install ag
 install ansifilter
-install argon/mas/mas
 install asciinema
 install atool
 install autoconf
@@ -90,13 +95,10 @@ install gpatch
 install gpg2
 install graphviz
 install gron
-install homebrew/dupes/libiconv
 install httpie
 install httpstat
 install jq
 install jvgrep
-install libxml2
-install libxslt
 install lynx
 install mackup
 install nkf
@@ -136,8 +138,3 @@ install mplayer
 install mpv --with-bundle
 install youtube-dl
 linkapps mpv
-
-## Editor
-install vim --with-lua
-install neovim
-install railwaycat/emacsmacport/emacs-mac
