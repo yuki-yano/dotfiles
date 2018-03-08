@@ -9,8 +9,6 @@ tap caskroom/cask
 
 ## Casks
 cask install 1password
-cask install a-better-finder-attributes
-cask install a-better-finder-rename
 cask install alfred
 cask install appcleaner
 cask install atom
@@ -29,11 +27,13 @@ cask install flux
 cask install fork
 cask install fuwari
 cask install google-chrome
+cask install hyperswitch
 cask install imagealpha
 cask install imageoptim
 cask install istat-menus
 cask install iterm2
 cask install jasper
+cask install java
 cask install jetbrains-toolbox
 cask install kaleidoscope
 cask install karabiner-elements
@@ -60,9 +60,6 @@ cask install visual-studio-code
 cask install vivaldi
 cask install vlc
 cask install xquartz
-
-# Quick Look
-cask install qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package provisionql
 
 # Remove outdated versions
 cleanup
