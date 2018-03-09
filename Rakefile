@@ -73,7 +73,7 @@ namespace :bundle do
     sh 'gem install rcodetools' unless Gem::Specification.any? { |g| g.name == 'rcodetools' }
     sh 'gem install fastri'     unless Gem::Specification.any? { |g| g.name == 'fastri' }
     sh 'gem install solargraph' unless Gem::Specification.any? { |g| g.name == 'solargraph' }
-    sh 'gem update'
+    sh 'yes | gem update'
     File.delete('Gemfile.lock')     if File.exist?('Gemfile.lock')
     FileUtils.rm_r('vendor/bundle') if Dir.exist?('vendor/bundle')
     sh 'bundle install -j8 --path vendor/bundle --binstubs=vendor/bin'
