@@ -50,6 +50,9 @@ function rbenv() {
   esac
 }
 
+# python2
+path=(/usr/local/opt/python@2/bin(N-/) $path)
+
 # pyenv
 path=(~/.pyenv/shims(N-/) $path)
 export PYENV_ROOT=~/.pyenv
