@@ -4,9 +4,7 @@ source ~/dotfiles/.zsh/zgen/zgen.zsh
 
 if ! zgen saved; then
   zgen load 39e/zsh-completions-anyenv
-  zgen load Valodim/zsh-curl-completion
   zgen load b4b4r07/zsh-vimode-visual
-  zgen load glidenote/hub-zsh-completion
   zgen load knu/zsh-git-escape-magic
   zgen load kutsan/zsh-system-clipboard
   zgen load mafredri/zsh-async
@@ -18,7 +16,6 @@ if ! zgen saved; then
   zgen load zdharma/fast-syntax-highlighting
   zgen load zsh-users/zsh-autosuggestions
   zgen load zsh-users/zsh-completions src
-  zgen load zuxfoucault/colored-man-pages_mod
 
   zgen oh-my-zsh plugins/extract
 
