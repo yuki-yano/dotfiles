@@ -235,6 +235,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-textobj-line',                  {'lazy': 1, 'on_map': {'ox': ['al', 'il']}, 'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-user')
   call dein#add('machakann/vim-sandwich',                 {'lazy': 1, 'on_map': {'nv': ['sa', 'sr', 'sd' ], 'o': ['ib', 'is', 'ab', 'as']}, 'hook_source': 'call Hook_on_post_source_sandwich()'})
+  call dein#add('mhinz/vim-grepper',                      {'lazy': 1, 'on_cmd': ['Grepper', 'GrepperAg', 'GrepperGit'], 'on_map': '<Plug>'})
   call dein#add('mopp/vim-operator-convert-case',         {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',                   {'lazy': 1, 'on_map': '<Plug>'})
@@ -244,7 +245,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('rhysd/clever-f.vim',                     {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/vim-textobj-ruby',                 {'lazy': 1, 'on_ft': 'ruby', 'depends': 'vim-textobj-user'})
   call dein#add('rhysd/vim-textobj-word-column',          {'lazy': 1, 'on_map': {'ox': ['av', 'iv']}, 'depends': 'vim-textobj-user'})
-  call dein#add('rking/ag.vim',                           {'lazy': 1, 'on_cmd': 'Ag'})
   call dein#add('thinca/vim-qfreplace',                   {'lazy': 1, 'on_cmd': 'Qfreplace'})
   call dein#add('tommcdo/vim-exchange',                   {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
   call dein#add('tomtom/tcomment_vim',                    {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
@@ -1576,11 +1576,6 @@ if dein#tap('vim-anzu') && dein#tap('vim-asterisk')
 endif
 " }}}3
 
-" Ag {{{3
-let g:ag_qhandler = 'Unite quickfix -direction=botright -auto-resize -no-quit'
-let g:ag_apply_qmappings = 0
-" }}}3
-
 " clever-f {{{3
 let g:clever_f_not_overwrites_standard_mappings = 0
 
@@ -1678,6 +1673,14 @@ let g:eregex_default_enable = 0
 nnoremap <Leader>R "syiwq:%S/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
 nnoremap <Leader>r q:%S//g<Left><Left>
 vnoremap <Leader>r "syq:%S/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
+" }}}3
+
+" grepper {{{3
+let g:grepper = {}
+runtime plugin/grepper.vim
+let g:grepper.highlight = 1
+let g:grepper.open = 0
+AutoCmd User Grepper Unite quickfix -direction=botright -auto-resize -no-quit
 " }}}3
 
 " jplus {{{3
@@ -2172,7 +2175,7 @@ if dein#tap('vim-altercmd')
   AlterCommand! <cmdwin> d[enite]    Denite
   AlterCommand! <cmdwin> u[nite]     Unite
   AlterCommand! <cmdwin> deol        Deol
-  AlterCommand! <cmdwin> ag          Ag!
+  AlterCommand! <cmdwin> ag          GrepperAg
   AlterCommand! <cmdwin> git         Gina
   AlterCommand! <cmdwin> gina        Gina
   AlterCommand! <cmdwin> gs          Gina<Space>status
