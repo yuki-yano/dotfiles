@@ -16,6 +16,7 @@ DOTFILES_SRCS = %w[
   .globalrc
   .gvimrc
   .ideavimrc
+  .mackup.cfg
   .pryrc
   .railsrc
   .rdebugrc
