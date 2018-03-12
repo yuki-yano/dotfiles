@@ -1512,6 +1512,8 @@ endfunction
 " git-gutter {{{3
 if dein#tap('vim-gitgutter')
   let g:gitgutter_map_keys = 0
+  nmap gn <Plug>GitGutterNextHunk
+  nmap gp <Plug>GitGutterPrevHunk
 endif
 " }}}3
 
