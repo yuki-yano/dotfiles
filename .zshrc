@@ -362,7 +362,6 @@ bindkey -M vicmd '^h' left-pane
 bindkey -M vivis '^h' left-pane
 bindkey -M vicmd '^k' up-pane
 bindkey -M vivis '^k' up-pane
-bindkey -M vicmd '^j' accept-line-or-down-pane
 bindkey -M viins '^j' accept-line-or-down-pane
 
 # Completion bind
