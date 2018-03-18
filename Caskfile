@@ -42,6 +42,7 @@ cask install keepingyouawake
 cask install keyboard-cleaner
 cask install keycastr
 cask install keycue
+cask install kindle
 cask install kitematic
 cask install mediainfo
 cask install mplayerx
