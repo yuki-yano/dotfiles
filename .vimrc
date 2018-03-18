@@ -188,7 +188,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   set  runtimepath+=/usr/local/opt/fzf
   call dein#add('junegunn/fzf.vim')
-  call dein#local('~/repos/github.com/yuki-ycino', {}, ['fzf-preview.vim'])
+  call dein#add('yuki-ycino/fzf-preview.vim')
+  " call dein#local('~/repos/github.com/yuki-ycino', {}, ['fzf-preview.vim'])
   " }}}3
 
   " filer {{{3
