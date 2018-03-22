@@ -44,46 +44,39 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Language {{{3
   call dein#add('Chiel92/vim-autoformat',                 {'lazy': 1, 'on_cmd': 'Autoformat'})
+  call dein#add('MaxMEllon/vim-jsx-pretty',               {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('Quramy/tsuquyomi',                       {'lazy': 1, 'on_ft': 'typescript'})
   call dein#add('Shougo/context_filetype.vim')
   call dein#add('Shougo/echodoc.vim',                     {'lazy': 1, 'on_event': 'InsertEnter'})
-  call dein#add('plasticboy/vim-markdown',                {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('Vimjas/vim-python-pep8-indent',          {'lazy': 1, 'on_ft': 'python'})
   call dein#add('ap/vim-css-color',                       {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
-  call dein#add('billyvg/tigris.nvim',                    {'lazy': 1, 'on_ft': ['javascript', 'typescript'], 'build': './install.sh' })
   call dein#add('cakebaker/scss-syntax.vim',              {'lazy': 1, 'on_ft': ['sass', 'scss']})
   call dein#add('cespare/vim-toml',                       {'lazy': 1, 'on_ft': 'toml'})
   call dein#add('chrisbra/vim-zsh',                       {'lazy': 1, 'on_ft': 'zsh'})
   call dein#add('davidhalter/jedi-vim',                   {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('derekwyatt/vim-scala',                   {'lazy': 1, 'on_ft': 'scala'})
   call dein#add('digitaltoad/vim-pug',                    {'lazy': 1, 'on_ft': ['jade', 'pug']})
   call dein#add('ekalinin/Dockerfile.vim',                {'lazy': 1, 'on_ft': 'Dockerfile'})
   call dein#add('elzr/vim-json',                          {'lazy': 1, 'on_ft': 'json'})
-  call dein#add('ensime/ensime-vim',                      {'lazy': 1, 'on_ft': 'scala'})
   call dein#add('fatih/vim-go',                           {'lazy': 1, 'on_ft': 'go'})
-  call dein#add('fs111/pydoc.vim',                        {'lazy': 1, 'on_ft': 'python'})
   call dein#add('hail2u/vim-css3-syntax',                 {'lazy': 1, 'on_ft': 'css'})
   call dein#add('hashivim/vim-terraform',                 {'lazy': 1, 'on_ft': 'terraform'})
   call dein#add('heavenshell/vim-jsdoc',                  {'lazy': 1, 'on_ft': ['javascript', 'typescript'], 'on_cmd': 'JsDoc'})
-  call dein#add('heavenshell/vim-pydocstring',            {'lazy': 1, 'on_ft': 'python', 'on_cmd': 'PyDocString'})
   call dein#add('itspriddle/vim-marked',                  {'lazy': 1, 'on_ft': 'markdown'})
-  call dein#add('jodosha/vim-godebug',                    {'lazy': 1, 'on_ft': 'go'})
   call dein#add('jparise/vim-graphql',                    {'lazy': 1, 'on_ft': 'graphql'})
   call dein#add('jsfaint/gen_tags.vim')
   call dein#add('kchmck/vim-coffee-script',               {'lazy': 1, 'on_ft': 'coffee'})
   call dein#add('keith/tmux.vim',                         {'lazy': 1, 'on_ft': 'tmux'})
-  call dein#add('lambdalisue/vim-backslash',              {'lazy': 1, 'on_ft': 'vim'})
   call dein#add('leafgarland/typescript-vim',             {'lazy': 1, 'on_ft': 'typescript'})
   call dein#add('mattn/emmet-vim',                        {'lazy': 1, 'on_ft': ['html', 'eruby', 'javascript', 'vue']})
-  call dein#add('mechatroner/rainbow_csv',                {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
-  call dein#add('mhinz/vim-lookup',                       {'lazy': 1, 'on_ft': 'vim'})
   call dein#add('noprompt/vim-yardoc',                    {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('othree/csscomplete.vim',                 {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
   call dein#add('othree/es.next.syntax.vim',              {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('othree/html5.vim',                       {'lazy': 1, 'on_ft': ['html', 'eruby', 'markdown']})
   call dein#add('othree/javascript-libraries-syntax.vim', {'lazy': 1, 'on_ft': 'javascript'})
-  call dein#add('othree/jspc.vim',                        {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('othree/jspc.vim',                        {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
+  call dein#add('othree/yajs.vim',                        {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('pearofducks/ansible-vim',                {'lazy': 1, 'on_ft': ['ansible', 'ansible_templete', 'ansible_hosts']})
+  call dein#add('plasticboy/vim-markdown',                {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('plytophogy/vim-virtualenv',              {'lazy': 1, 'on_ft': 'python'})
   call dein#add('pocke/iro.vim')
   call dein#add('posva/vim-vue',                          {'lazy': 1, 'on_ft': 'vue'})
@@ -91,19 +84,11 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('rhysd/fixjson',                          {'lazy': 1, 'on_ft': 'json'})
   call dein#add('rust-lang/rust.vim',                     {'lazy': 1, 'on_ft': 'rust'})
   call dein#add('sgur/vim-editorconfig',                  {'lazy': 1, 'on_event': 'InsertEnter'})
-  call dein#add('sgur/vim-gf-autoload',                   {'lazy': 1, 'on_ft': 'vim'})
   call dein#add('slim-template/vim-slim',                 {'lazy': 1, 'on_ft': 'slim'})
   call dein#add('stephpy/vim-yaml',                       {'lazy': 1, 'on_ft': 'yaml'})
   call dein#add('tell-k/vim-autopep8',                    {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('tmhedberg/SimpylFold',                   {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('tpope/vim-bundler',                      {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('tpope/vim-rails',                        {'lazy': 1, 'on_ft': 'ruby'})
-  call dein#add('tpope/vim-rake',                         {'lazy': 1, 'on_ft': 'ruby'})
-  call dein#add('vim-jp/syntax-vim-ex',                   {'lazy': 1, 'on_ft': 'vim'})
-  call dein#add('vim-python/python-syntax',               {'lazy': 1, 'on_ft': 'python'})
   call dein#add('vim-ruby/vim-ruby',                      {'lazy': 1, 'on_ft': ['ruby', 'eruby']})
-  call dein#add('vim-scripts/python_match.vim',           {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('vimperator/vimperator.vim',              {'lazy': 1, 'on_ft': 'vimperator'})
   call dein#add('vimtaku/hl_matchit.vim',                 {'lazy': 1, 'on_ft': 'ruby'})
   " }}}3
 
@@ -116,9 +101,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('airblade/vim-rooter',           {'lazy': 1, 'on_cmd': 'Rooter'})
   call dein#add('cohama/agit.vim',               {'lazy': 1, 'on_cmd': ['Agit', 'AgitFile', 'AgitGit', 'AgitDiff']})
   call dein#add('hotwatermorning/auto-git-diff', {'lazy': 1, 'on_ft': 'gitrebase'})
-  call dein#add('kana/vim-gf-diff')
   call dein#add('lambdalisue/gina.vim')
-  call dein#add('lambdalisue/vim-gista',         {'lazy': 1, 'on_cmd': 'Gista'})
   call dein#add('lambdalisue/vim-unified-diff')
   call dein#add('rhysd/committia.vim',           {'lazy': 1, 'on_ft': 'gitcommit'})
   call dein#add('rhysd/conflict-marker.vim')
@@ -153,23 +136,20 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('roxma/vim-hug-neovim-rpc')
   endif
 
-  call dein#add('autozimu/LanguageClient-neovim', {'rev': 'next', 'build': 'bash install.sh'})
+  " call dein#add('autozimu/LanguageClient-neovim', {'rev': 'next', 'build': 'bash install.sh'})
 
-  call dein#add('SevereOverfl0w/deoplete-github')
-  call dein#add('Shougo/deoplete-rct')
   call dein#add('Shougo/neco-syntax')
   call dein#add('Shougo/neco-vim')
   call dein#add('carlitux/deoplete-ternjs')
   call dein#add('fishbullet/deoplete-ruby')
   call dein#add('fszymanski/deoplete-emoji')
-  call dein#add('rhysd/github-complete.vim')
   call dein#add('ujihisa/neco-look')
   call dein#add('uplus/deoplete-solargraph')
   call dein#add('wellle/tmux-complete.vim')
   call dein#add('wokalski/autocomplete-flow')
   call dein#add('zchee/deoplete-jedi')
 
-  call dein#add('blueyed/vim-auto-programming', {'rev': 'neovim'})
+  " call dein#add('blueyed/vim-auto-programming', {'rev': 'neovim'})
   " }}}3
 
   " Fuzzy Finder {{{3
@@ -214,8 +194,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Edit & Move & Search {{{3
-  call dein#add('AndrewRadev/splitjoin.vim',              {'lazy': 1, 'on_cmd': ['SplitjoinJoin', 'SplitjoinSplit']})
-  call dein#add('AndrewRadev/switch.vim',                 {'lazy': 1, 'on_cmd': 'Switch'})
   call dein#add('DeaR/vim-textobj-wiw',                   {'lazy': 1, 'on_map': {'n': [',w', ',b', ',e', ',ge'], 'ox': ['i,w', 'a,w']}, 'depends': 'vim-textobj-user'})
   call dein#add('LeafCage/yankround.vim',                 {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('chrisbra/NrrwRgn',                       {'lazy': 1, 'on_cmd': ['NR', 'NW', 'WidenRegion', 'NRV', 'NUD', 'NRP', 'NRM', 'NRS', 'NRN', 'NRL']})
@@ -229,23 +207,19 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('haya14busa/vim-textobj-function-syntax', {'lazy': 1, 'depends': 'vim-textobj-function'})
   call dein#add('junegunn/vim-easy-align',                {'lazy': 1, 'on_cmd': 'EasyAlign'})
   call dein#add('kana/vim-operator-replace',              {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('kana/vim-textobj-fold',                  {'lazy': 1, 'on_map': {'ox': ['az', 'az']}, 'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-function',              {'lazy': 1, 'on_map': {'ox': ['if', 'af', 'iF', 'aF']}, 'depends': 'vim-textobj-user'})
-  call dein#add('kana/vim-textobj-help',                  {'lazy': 1, 'on_map': {'n': ['J', 'K']}, 'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-indent',                {'lazy': 1, 'on_map': {'ox': ['ai', 'ii', 'aI',  'iI']}, 'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-line',                  {'lazy': 1, 'on_map': {'ox': ['al', 'il']}, 'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-user')
   call dein#add('machakann/vim-sandwich',                 {'lazy': 1, 'on_map': {'nv': ['sa', 'sr', 'sd' ], 'o': ['ib', 'is', 'ab', 'as']}, 'hook_source': 'call Hook_on_post_source_sandwich()'})
   call dein#add('mhinz/vim-grepper',                      {'lazy': 1, 'on_cmd': ['Grepper', 'GrepperAg', 'GrepperGit'], 'on_map': '<Plug>'})
-  call dein#add('mopp/vim-operator-convert-case',         {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('mopp/vim-operator-convert-case',         {'lazy': 1, 'on_cmd': 'ConvertCaseLoop'})
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',                   {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('othree/eregex.vim',                      {'lazy': 1, 'on_cmd': 'S'})
-  call dein#add('pbrisbin/vim-mkdir')
   call dein#add('rhysd/accelerated-jk',                   {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/clever-f.vim',                     {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/vim-textobj-ruby',                 {'lazy': 1, 'on_ft': 'ruby', 'depends': 'vim-textobj-user'})
-  call dein#add('rhysd/vim-textobj-word-column',          {'lazy': 1, 'on_map': {'ox': ['av', 'iv']}, 'depends': 'vim-textobj-user'})
   call dein#add('thinca/vim-qfreplace',                   {'lazy': 1, 'on_cmd': 'Qfreplace'})
   call dein#add('tommcdo/vim-exchange',                   {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
   call dein#add('tomtom/tcomment_vim',                    {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
@@ -259,7 +233,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('AndrewRadev/linediff.vim',       {'lazy': 1, 'on_cmd': ['Linediff', 'LinediffReset']})
   call dein#add('LeafCage/foldCC.vim')
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
-  call dein#add('bling/vim-bufferline')
   call dein#add('gregsexton/MatchTag')
   call dein#add('haya14busa/vim-operator-flashy', {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('itchyny/lightline.vim')
@@ -290,24 +263,18 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Util {{{3
-  call dein#add('Shougo/deol.nvim',                    {'lazy': 1, 'on_cmd': ['Deol', 'DeolCd', 'DeolEdit'], 'on_map': '<Plug>'})
-  call dein#add('Shougo/vinarise.vim',                 {'lazy': 1, 'on_cmd': 'Vinarise'})
   call dein#add('aiya000/aho-bakaup.vim')
   call dein#add('bogado/file-line')
   call dein#add('dietsche/vim-lastplace')
   call dein#add('haya14busa/vim-open-googletranslate', {'lazy': 1, 'on_cmd': 'OpenGoogleTranslate'})
-  call dein#add('itchyny/calendar.vim',                {'lazy': 1, 'on_cmd': 'Calendar', 'hook_source': 'call Hook_on_post_source_calendar()'})
-  call dein#add('itchyny/thumbnail.vim',               {'lazy': 1, 'on_cmd': 'Thumbnail'})
   call dein#add('janko-m/vim-test',                    {'lazy': 1, 'on_cmd': ['TestNearest','TestFile','TestSuite','TestLast','TestVisit']})
   call dein#add('kana/vim-gf-user')
   call dein#add('kana/vim-niceblock',                  {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
   call dein#add('kana/vim-operator-user')
   call dein#add('kana/vim-submode')
   call dein#add('kana/vim-tabpagecd')
-  call dein#add('kassio/neoterm')
   call dein#add('konfekt/fastfold')
   call dein#add('lambdalisue/session.vim',             {'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
-  call dein#add('lambdalisue/smartcl.vim')
   call dein#add('lambdalisue/suda.vim')
   call dein#add('lambdalisue/vim-manpager',            {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER'], 'depends': 'vim-plugin-AnsiEsc'})
   call dein#add('lambdalisue/vim-pager',               {'lazy': 1, 'on_cmd': 'PAGER', 'depends': 'vim-plugin-AnsiEsc'})
@@ -771,8 +738,6 @@ AutoCmd FileType html,eruby setlocal omnifunc=htmlcomplete#CompleteTags
 AutoCmd FileType python     setlocal omnifunc=pythoncomplete#Complete
 AutoCmd FileType css        setlocal omnifunc=csscomplete#CompleteCSS
 AutoCmd FileType scss       setlocal omnifunc=csscomplete#CompleteCSS
-AutoCmd FileType gitcommit  setlocal omnifunc=github_complete#complete
-AutoCmd FileType markdown   setlocal omnifunc=github_complete#complete
 
 AutoCmd FileType javascript setlocal dict=~/dotfiles/.vim/dict/javascript.dict
 AutoCmd FileType typescript setlocal dict=~/dotfiles/.vim/dict/javascript.dict
@@ -796,22 +761,15 @@ augroup HTML
     inoremap <silent> <buffer> \& &amp;
     inoremap <silent> <buffer> \< &lt;
     inoremap <silent> <buffer> \> &gt;
-    inoremap <silent> <buffer> \. ・
     inoremap <silent> <buffer> \- &#8212;
     inoremap <silent> <buffer> \<Space> &nbsp;
     inoremap <silent> <buffer> \` &#8216;
     inoremap <silent> <buffer> \' &#8217;
-    inoremap <silent> <buffer> \2 &#8220;
     inoremap <silent> <buffer> \" &#8221;
 
     let b:match_words .= ',{:},(:)'
   endfunction
 augroup END
-" }}}2
-
-" csv {{{2
-AutoCmd FileType csv setlocal nowrap
-AutoCmd FileType csv let b:alignta_default_arguments = '@01 ,'
 " }}}2
 
 " vim {{{2
@@ -854,12 +812,12 @@ endfunction
 " ALE {{{3
 let g:ale_linters = {
 \ 'javascript': ['eslint', 'flow'],
-\ 'typescript': ['eslint', 'tslint'],
+\ 'typescript': ['tslint', 'tsserver'],
 \ 'vue':        ['eslint', 'flow'],
 \ 'ruby':       ['rubocop'],
 \ 'eruby':      [],
 \ 'python':     ['autopep8', 'flake8', 'isort', 'mypy', 'yapf'],
-\ 'go':         ['golint', 'go vet'],
+\ 'go':         ['golint'],
 \ 'rust':       ['rustc', 'cargo', 'rustfmt', 'rls'],
 \ 'json':       ['jsonlint', 'jq'],
 \ 'html':       ['htmlhint'],
@@ -916,12 +874,8 @@ set cmdheight=2
 let g:echodoc_enable_at_startup = 1
 " }}}3
 
-" ensime {{{
-AutoCmd BufWritePost *.scala silent :EnTypeCheck
-" }}}
-
 " gen_tags {{{3
-" let g:gen_tags#ctags_auto_gen = 1
+let g:gen_tags#ctags_auto_gen = 1
 let g:gen_tags#gtags_auto_gen = 1
 " }}}3
 
@@ -944,10 +898,8 @@ let g:html5_microdata_attributes_complete = 1
 let g:html5_aria_attributes_complete = 1
 " }}}3
 
-" javascript {{{3
-let g:jsx_ext_required = 0
-let g:javascript_plugin_jsdoc = 1
-let g:javascript_plugin_flow = 1
+" javascript-libraries-syntax {{{3
+let g:used_javascript_libs = 'jquery,react,vue'
 " }}}3
 
 " jsdoc {{{3
@@ -959,10 +911,6 @@ let g:jsdoc_enable_es6 = 1
 
 " json {{{3
 let g:vim_json_syntax_conceal = 0
-" }}}3
-
-" jsx-pretty {{{3
-let g:vim_jsx_pretty_colorful_config = 1
 " }}}3
 
 " markdown {{{3
@@ -1041,22 +989,8 @@ let g:rubycomplete_include_object_space = 1
 let g:rustfmt_autosave = 1
 " }}}3
 
-" tern {{{3
-AutoCmd FileType typescript call tern#Enable()
-AutoCmd FileType typescript setlocal completeopt+=preview
-" }}}3
-
-" tigris {{{
-let g:tigris#enabled = 1
-let g:tigris#on_the_fly_enabled = 1
-let g:tigris#delay = 300
-" }}}
-
 " typescript {{{3
 let g:typescript_indent_disable = 1
-
-AutoCmd FileType typescript JsPreTmpl html
-AutoCmd FileType typescript syn clear foldBraces
 " }}}3
 
 " vim {{{3
@@ -1165,11 +1099,6 @@ endif
 if dein#tap('unite.vim')
   " Unite
 
-  " Start insert.
-  call unite#custom#profile('default', 'context', {
-  \   'start_insert': 1
-  \ })
-
   "" keymap
   function! s:unite_settings()
     nnoremap <silent> <buffer> <C-n>      j
@@ -1190,7 +1119,7 @@ if dein#tap('unite.vim')
 
   let g:unite_source_rec_max_cache_files = 10000
   let g:unite_enable_auto_select = 0
-  let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '-p', '~/.agignore', '-g', '']
+  let g:unite_source_rec_async_command = ['rg', '--files', '--follow', '--glob', '!.git/*']
   " nnoremap <silent> <Leader>p :<C-u>Unite file_rec/async:!<CR>
   " nnoremap <silent> <Leader>m :<C-u>Unite neomru/file<CR>
   " nnoremap <silent> <Leader>M :<C-u>Unite file_mru<CR>
@@ -1204,8 +1133,8 @@ if dein#tap('unite.vim')
   nnoremap <silent> <Leader>o :<C-u>Unite outline -vertical -direction=botright -winwidth=40 -no-quit<CR>
 
   "" grep
-  let g:unite_source_grep_command = 'ag'
-  let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
+  let g:unite_source_grep_command = 'rg'
+  let g:unite_source_grep_default_opts = '--vimgrep --hidden'
   let g:unite_source_grep_recursive_opt = ''
 
   call unite#custom_source('line', 'sorters', 'sorter_reverse')
@@ -1289,7 +1218,7 @@ if has('nvim')
     let g:deoplete#sources#go#gocode_binary = $GOPATH . '/bin/gocode'
     let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 
-    call deoplete#custom#source('LanguageClient', 'rank', 1000)
+    " call deoplete#custom#source('LanguageClient', 'rank', 1000)
     call deoplete#custom#source('around',         'rank',  900)
     call deoplete#custom#source('neosnippet',     'rank',  900)
     call deoplete#custom#source('ternjs',         'rank',  900)
@@ -1300,7 +1229,6 @@ if has('nvim')
     call deoplete#custom#source('jedi',           'rank',  900)
     call deoplete#custom#source('go',             'rank',  900)
     call deoplete#custom#source('racer',          'rank',  900)
-    call deoplete#custom#source('github',         'rank',  900)
     call deoplete#custom#source('emoji',          'rank',  900)
     call deoplete#custom#source('vim',            'rank',  900)
     call deoplete#custom#source('gtags',          'rank',  800)
@@ -1314,7 +1242,7 @@ if has('nvim')
     call deoplete#custom#source('dictionary',     'rank',  200)
     call deoplete#custom#source('look',           'rank',  100)
 
-    call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
+    " call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
     call deoplete#custom#source('around',         'mark', '[around]')
     call deoplete#custom#source('neosnippet',     'mark', '[snippet]')
     call deoplete#custom#source('member',         'mark', '[member]')
@@ -1332,12 +1260,11 @@ if has('nvim')
     call deoplete#custom#source('jedi',           'mark', '[jedi]')
     call deoplete#custom#source('go',             'mark', '[go]')
     call deoplete#custom#source('racer',          'mark', '[racer]')
-    call deoplete#custom#source('github',         'mark', '[github]')
     call deoplete#custom#source('emoji',          'mark', '[emoji]')
     call deoplete#custom#source('vim',            'mark', '[vim]')
     call deoplete#custom#source('tmux',           'mark', '[tmux]')
 
-    let s:deoplete_default_sources = ['around', 'tag', 'member', 'buffer', 'omni', 'syntax', 'file', 'dictionary', 'LanguageClient', 'neosnippet', 'gtags', 'tmux', 'look']
+    let s:deoplete_default_sources = ['around', 'tag', 'member', 'buffer', 'omni', 'syntax', 'file', 'dictionary', 'neosnippet', 'gtags', 'tmux', 'look'] " LanguageClient
     let g:deoplete#sources = {}
     let g:deoplete#sources._          = s:deoplete_default_sources
     let g:deoplete#sources.javascript = s:deoplete_default_sources + ['ternjs', 'flow']
@@ -1348,14 +1275,14 @@ if has('nvim')
     let g:deoplete#sources.python     = s:deoplete_default_sources + ['jedi']
     let g:deoplete#sources.go         = s:deoplete_default_sources + ['go']
     let g:deoplete#sources.rust       = s:deoplete_default_sources + ['racer']
-    let g:deoplete#sources.markdown   = s:deoplete_default_sources + ['github', 'emoji']
+    let g:deoplete#sources.markdown   = s:deoplete_default_sources + ['emoji']
     let g:deoplete#sources.html       = s:deoplete_default_sources
     let g:deoplete#sources.xml        = s:deoplete_default_sources
     let g:deoplete#sources.css        = s:deoplete_default_sources
     let g:deoplete#sources.scss       = s:deoplete_default_sources
     let g:deoplete#sources.vim        = s:deoplete_default_sources + ['vim']
     let g:deoplete#sources.zsh        = s:deoplete_default_sources
-    let g:deoplete#sources.gitcommit  = s:deoplete_default_sources + ['github', 'emoji']
+    let g:deoplete#sources.gitcommit  = s:deoplete_default_sources + ['emoji']
 
     let g:deoplete#omni#input_patterns            = {}
     let g:deoplete#omni#input_patterns._          = ''
@@ -1392,7 +1319,7 @@ if has('nvim')
     " let g:deoplete#omni#input_patterns.zsh        = '[^. \t0-9]\.\w*'
     " let g:deoplete#omni#input_patterns.gitcommit  = '.+'
 
-    let s:deoplete_default_omni_sources = ['autoprogramming#compwlete']
+    let s:deoplete_default_omni_sources = []
     let g:deoplete#omni#functions            = {}
     let g:deoplete#omni#functions._          = s:deoplete_default_omni_sources
     let g:deoplete#omni#functions.javascript = s:deoplete_default_omni_sources + ['jspc#omni', 'javascriptcomplete#CompleteJS']
@@ -1403,33 +1330,23 @@ if has('nvim')
     let g:deoplete#omni#functions.python     = s:deoplete_default_omni_sources + ['pythoncomplete#Complete']
     let g:deoplete#omni#functions.go         = s:deoplete_default_omni_sources
     let g:deoplete#omni#functions.rust       = s:deoplete_default_omni_sources
-    let g:deoplete#omni#functions.markdown   = s:deoplete_default_omni_sources + ['github_complete#complete']
     let g:deoplete#omni#functions.html       = s:deoplete_default_omni_sources + ['htmlcomplete#CompleteTags']
     let g:deoplete#omni#functions.xml        = s:deoplete_default_omni_sources + ['htmlcomplete#CompleteTags']
     let g:deoplete#omni#functions.css        = s:deoplete_default_omni_sources + ['csscomplete#CompleteCSS']
     let g:deoplete#omni#functions.scss       = s:deoplete_default_omni_sources + ['csscomplete#CompleteCSS']
     let g:deoplete#omni#functions.vim        = s:deoplete_default_omni_sources
     let g:deoplete#omni#functions.zsh        = s:deoplete_default_omni_sources
-    let g:deoplete#omni#functions.gitcommit  = s:deoplete_default_omni_sources + ['github_complete#complete']
 
-    " tern
-    let g:tern_request_timeout = 1
-    let g:tern_show_signature_in_pum = 0
-    let g:tern#filetypes = [
-    \ 'javascript',
-    \ 'vue'
-    \ ]
-
-    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+    inoremap <silent> <CR> <C-r>=<SID>deoplete_cr_function()<CR>
     inoremap <silent> <expr> <C-h> deoplete#smart_close_popup() . "\<C-h>"
     inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
-    inoremap <silent> <expr> '  pumvisible() ? deoplete#close_popup() : "'"
-    imap <expr> <TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-    smap <expr> <TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+    inoremap <silent> <expr> ' pumvisible() ? deoplete#close_popup() : "'"
+    imap <expr> <Tab> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<Tab>"
+    smap <expr> <Tab> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<Tab>"
 
-    function! s:my_cr_function()
+    function! s:deoplete_cr_function()
       if neosnippet#expandable_or_jumpable()
-        return  "\<Plug>(neosnippet_expand_or_jump)"
+        return "\<Plug>(neosnippet_expand_or_jump)"
       else
         return "\<C-y>" . deoplete#smart_close_popup()
       endif
@@ -1441,15 +1358,15 @@ end
 " }}}3
 
 " LanguageClient {{{3
-let g:LanguageClient_autoStart = 1
-let g:LanguageClient_serverCommands = {
-\ 'vue': ['vls'],
-\ 'html': [],
-\ 'css': [],
-\ 'javascript': [],
-\ 'typescript': ['javascript-typescript-stdio'],
-\ 'rust': ['rustup', 'run', 'nightly', 'rls'],
-\ }
+" let g:LanguageClient_autoStart = 1
+" let g:LanguageClient_serverCommands = {
+" \ 'vue': ['vls'],
+" \ 'html': [],
+" \ 'css': [],
+" \ 'javascript': [],
+" \ 'typescript': [],
+" \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
+" \ }
 " }}}3
 
 " vimfiler {{{3
@@ -1795,15 +1712,6 @@ if dein#tap('lexima.vim')
 endif
 " }}}3
 
-" multiple-cursors {{{
-function g:Multiple_cursors_before()
-  let g:deoplete#disable_auto_complete = 1
-endfunction
-function g:Multiple_cursors_after()
-  let g:deoplete#disable_auto_complete = 0
-endfunction
-" }}}
-
 " operator-replace {{{3
 map _ <Plug>(operator-replace)
 " }}}3
@@ -1829,28 +1737,8 @@ let g:skk_control_j_key = ''
 let g:skk_large_jisyo = expand('~/.config/nvim/dict/SKK-JISYO.L')
 " }}}
 
-" splitjoin {{{
-let g:splitjoin_split_mapping = ''
-let g:splitjoin_join_mapping = ''
-
-nnoremap <silent> sj :SplitjoinJoin<CR>
-nnoremap <silent> ss :SplitjoinSplit<CR>
-" }}}
-
-" Switch {{{3
-let g:switch_mapping = ''
-nnoremap <silent> sw :<C-u>:Switch<CR>
-" }}}3
-
 " tcomment {{{3
 noremap <silent> <Leader>cc :TComment<CR>
-" }}}3
-
-" textobj-help {{{3
-if &buftype ==# 'help'
-  map <silent> <buffer> J <Plug>(textobj-help-any-n)
-  map <silent> <buffer> K <Plug>(textobj-help-any-p)
-endif
 " }}}3
 
 " yankround {{{3
@@ -1887,10 +1775,6 @@ let g:brightest#highlight = {
 let g:brightest#enable_filetypes = {
 \ 'ruby' : 0
 \ }
-" }}}
-
-" bufferline {{{
-let g:bufferline_echo = 1
 " }}}
 
 " fastfold {{{3
@@ -2112,7 +1996,6 @@ let g:startify_commands = [
 \ ['git diff',          'Gina diff'],
 \ ['git diff --cached', 'Gina diff --cached'],
 \ ['git blame',         'Gina blame'],
-\ ['Calendar',          'Calendar'],
 \ ]
 
 " }}}3
@@ -2121,21 +2004,6 @@ let g:startify_commands = [
 let g:rainbow_active = 1
 let g:rainbow_conf = {
 \   'ctermfgs': [ '110', '150', '109', '216', '140', '203' ],
-\   'operators': '_,_',
-\   'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
-\   'separately' : {
-\   '*'        : {},
-\   'vim'      : {},
-\   'css'      : {},
-\   'scss'     : {},
-\   'thumbnail': 0,
-\   'html': {
-\     'parentheses': ['start=/\v\<((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
-\   },
-\   'eruby': {
-\     'parentheses': ['start=/\v\<((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
-\   },
-\   }
 \ }
 " }}}3
 
@@ -2188,21 +2056,15 @@ if dein#tap('vim-altercmd')
   AlterCommand! <cmdwin> blame       Gina<Space>blame
   AlterCommand! <cmdwin> agit        Agit
   AlterCommand! <cmdwin> agitf[ile]  AgitFile
-  AlterCommand! <cmdwin> root        Rooter
   AlterCommand! <cmdwin> gss         GswSave
   AlterCommand! <cmdwin> gsl         GswLoad
   AlterCommand! <cmdwin> ss          SessionSave!
   AlterCommand! <cmdwin> so          SessionOpen
-  AlterCommand! <cmdwin> sr          SessionRemove
-  AlterCommand! <cmdwin> sl          SessionList
-  AlterCommand! <cmdwin> sc          SessionClose
   AlterCommand! <cmdwin> tag         TagbarOpen<Space>j
   AlterCommand! <cmdwin> nr          NR
   AlterCommand! <cmdwin> va[fle]     Vaffle
   AlterCommand! <cmdwin> sc[ratch]   Scratch
   AlterCommand! <cmdwin> cap[ture]   Capture
-  AlterCommand! <cmdwin> cal[endar]  Calendar
-  AlterCommand! <cmdwin> th[umbnail] Thumbnail
   AlterCommand! <cmdwin> alc         Ref<Space>webdict<Space>alc
   AlterCommand! <cmdwin> mark[ed]    MarkedOpen
 endif
@@ -2308,20 +2170,6 @@ AutoCmd FileType git    nnoremap <silent> <Leader>d :BW<CR>
 AutoCmd FileType vaffle nnoremap <silent> <Leader>d :BW<CR>
 " }}}3
 
-" calendar {{{3
-let g:calendar_google_calendar = 1
-let g:calendar_google_task = 1
-
-function! Hook_on_post_source_calendar() abort
-  setlocal whichwrap=b,s,<,>,[,],h,l
-  nunmap <buffer> <Left>
-  nunmap <buffer> <Right>
-  nmap <buffer> < <Plug>CalendarGotoPrevMonth
-  nmap <buffer> > <Plug>CalendarGotoNextMonth
-  nmap <nowait> <buffer> q <Plug>CalendarClose
-endfunction
-" }}}3
-
 " expand-region {{{3
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
@@ -2333,20 +2181,6 @@ let g:expand_region_text_objects_ruby = {
 
 " maximizer {{{3
 nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
-" }}}3
-
-" neoterm {{{3
-let g:neoterm_position = 'vertical'
-let g:neoterm_autoinsert = 1
-let g:neoterm_repl_ruby = 'pry'
-let g:neoterm_repl_python = 'ptpython'
-
-nnoremap <silent> <Leader>TT :Tnew<CR>
-nnoremap <silent> <Leader>T :T<Space>
-
-nmap gx <Plug>(neoterm-repl-send)
-xmap gx <Plug>(neoterm-repl-send)
-nmap gxx <Plug>(neoterm-repl-send-line)
 " }}}3
 
 " open-googletranslate {{{3
@@ -2387,20 +2221,10 @@ if dein#tap('vim-submode')
   call submode#map('changetab', 'n', '', 'h', ':<C-u>tabprevious<CR>')
   call submode#map('changetab', 'n', '', 'l', ':<C-u>tabnext<CR>')
 
-  "" edgemotion
-  call submode#enter_with('edgemotion', 'n', '', '<Leader>j', '<Leader>j')
-  call submode#enter_with('edgemotion', 'n', '', '<Leader>k', '<Leader>k')
-  call submode#map('edgemotion', 'n', '', 'j', '<Leader>j')
-  call submode#map('edgemotion', 'n', '', 'k', '<Leader>k')
-
   "" operator-convert-case
   call submode#enter_with('convert', 'n', '', '<leader>cl', ':ConvertCaseLoop<CR>')
   call submode#map('convert', 'n', '', 'c', ':ConvertCaseLoop<CR>')
 endif
-" }}}3
-
-" thumbnail {{{3
-nnoremap <silent> <Leader>B :<C-u>Thumbnail<CR>
 " }}}3
 
 " undotree {{{3
