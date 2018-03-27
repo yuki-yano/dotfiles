@@ -641,7 +641,7 @@ function! s:move_to_new_tab()
   tabnext
 endfunction
 
-nnoremap <Leader>tm :<C-u>tablast <Bar> call <SID>move_to_new_tab()<CR>
+nnoremap gm :<C-u>tablast <Bar> call <SID>move_to_new_tab()<CR>
 " }}}2
 
 " HelpEdit & HelpView {{{
