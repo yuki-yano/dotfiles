@@ -236,6 +236,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('gregsexton/MatchTag')
   call dein#add('haya14busa/vim-operator-flashy', {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('itchyny/lightline.vim')
+  call dein#add('itchyny/vim-cursorword')
   call dein#add('itchyny/vim-highlighturl')
   call dein#add('itchyny/vim-parenmatch')
   call dein#add('luochen1990/rainbow')
@@ -243,7 +244,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mhinz/vim-startify')
   call dein#add('mopp/smartnumber.vim',           {'lazy': 1, 'on_cmd': 'SNumbersToggleRelative'})
   call dein#add('ntpeters/vim-better-whitespace')
-  call dein#add('osyo-manga/vim-brightest')
   call dein#add('t9md/vim-quickhl',               {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-zenspace')
   runtime macros/matchit.vim
@@ -1766,16 +1766,6 @@ endif
 " better-whitespace {{{3
 let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'tag', 'help', 'gitcommit', 'vimfiler', 'vimfiler:explorer', 'unite', 'denite']
 " }}}3
-
-" brightest {{{
-let g:brightest#highlight = {
-\ 'group': 'BrightestUnderline'
-\ }
-
-let g:brightest#enable_filetypes = {
-\ 'ruby' : 0
-\ }
-" }}}
 
 " fastfold {{{3
 let g:fastfold_savehook = 1
