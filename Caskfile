@@ -56,7 +56,6 @@ cask install sourcetree
 cask install sublime-text
 cask install tower
 cask install tripmode
-cask install typinator
 cask install vagrant
 cask install virtualbox
 cask install visual-studio-code
