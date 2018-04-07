@@ -15,7 +15,6 @@ $RECYCLE.BIN/
 .Trashes
 
 # Ruby
-/Gemfile.lock
 /.bundle
 /vendor/*
 
