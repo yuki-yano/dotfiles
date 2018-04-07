@@ -29,7 +29,6 @@ install flow
 install gcc
 install go
 # install go-delve/delve/delve
-install llvm
 install lua
 install node
 install olafurpg/scalafmt/scalafmt --HEAD
