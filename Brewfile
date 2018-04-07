@@ -88,7 +88,6 @@ install graphviz
 install gron
 install jq
 install jvgrep
-install mackup
 install nkf
 install pandoc
 install parallel
