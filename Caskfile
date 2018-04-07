@@ -32,7 +32,6 @@ cask install google-chrome
 cask install hyperswitch
 cask install imagealpha
 cask install imageoptim
-cask install istat-menus
 cask install iterm2
 cask install jasper
 cask install jetbrains-toolbox
