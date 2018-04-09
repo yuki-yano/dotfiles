@@ -67,9 +67,6 @@
 [url "git://github.com/"]
   insteadOf = https://github.com/
 
-[web]
-  browser = Firefox
-
 [browse-remote "github.com"]
   top  = https://{host}/{path}
   ref  = https://{host}/{path}/tree/{short_ref}
