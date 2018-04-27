@@ -16,7 +16,6 @@ $RECYCLE.BIN/
 
 # Ruby
 /.bundle
-/vendor/*
 
 # Python
 **/*.pyc

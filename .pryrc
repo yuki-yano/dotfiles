@@ -3,10 +3,6 @@ Pry.config.editor = 'vim'
 require 'active_support'
 require 'active_support/core_ext'
 
-require('awesome_print') do
-  AwesomePrint.pry!
-end
-
 begin
   require('hirb') do
     Hirb::View.instance_eval do

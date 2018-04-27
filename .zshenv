@@ -18,7 +18,7 @@ setopt no_global_rcs
 typeset -U path fpath
 
 # default path
-path=(~/dotfiles/vendor/bin(N-/) ~/dotfiles/node_modules/.bin(N-/) /usr/local/bin(N-/) /usr/bin(N-/) /bin(N-/) /sbin(N-/) /usr/sbin(N-/) /usr/X11/bin(N-/))
+path=(~/dotfiles/node_modules/.bin(N-/) /usr/local/bin(N-/) /usr/bin(N-/) /bin(N-/) /sbin(N-/) /usr/sbin(N-/) /usr/X11/bin(N-/))
 
 # curl
 path=(/usr/local/opt/curl/bin(N-/) $path)

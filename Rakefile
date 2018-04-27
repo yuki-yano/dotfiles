@@ -67,24 +67,17 @@ namespace :bundle do
   desc 'Install bundle'
   task install: 'Gemfile' do
     sh 'rbenv rehash'
-    sh 'gem install bundler'    unless Gem::Specification.any? { |g| g.name == 'bundler' }
-    sh 'gem install neovim'     unless Gem::Specification.any? { |g| g.name == 'neovim' }
-    sh 'gem install rcodetools' unless Gem::Specification.any? { |g| g.name == 'rcodetools' }
-    sh 'gem install fastri'     unless Gem::Specification.any? { |g| g.name == 'fastri' }
-    sh 'gem install iro'        unless Gem::Specification.any? { |g| g.name == 'iro' }
-    sh 'gem install solargraph' unless Gem::Specification.any? { |g| g.name == 'solargraph' }
     sh 'yes | gem update'
-    File.delete('Gemfile.lock')     if File.exist?('Gemfile.lock')
-    FileUtils.rm_r('vendor/bundle') if Dir.exist?('vendor/bundle')
-    sh 'bundle install -j8 --path vendor/bundle --binstubs=vendor/bin'
+    File.delete('Gemfile.lock') if File.exist?('Gemfile.lock')
+    sh 'bundle install'
   end
 
   desc 'Uninstall bundle install gems'
   task uninstall: 'Gemfile' do
     sh 'rbenv rehash'
-    sh 'gem install bundler' unless Gem::Specification.any? { |g| g.name == 'bundler' }
+    sh 'gem uninstall -I -a -x --user-install --force'
+    sh 'gem install bundler'
     File.delete('Gemfile.lock') if File.exist?('Gemfile.lock')
-    FileUtils.rm_r('vendor/bundle') if Dir.exist?('vendor/bundle')
   end
 end
 
