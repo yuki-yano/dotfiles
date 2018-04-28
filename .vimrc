@@ -143,7 +143,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('fishbullet/deoplete-ruby')
   call dein#add('fszymanski/deoplete-emoji')
   call dein#add('ujihisa/neco-look')
-  call dein#add('uplus/deoplete-solargraph')
+  " call dein#add('uplus/deoplete-solargraph')
   call dein#add('wellle/tmux-complete.vim')
   call dein#add('wokalski/autocomplete-flow')
   call dein#add('zchee/deoplete-jedi')
@@ -1245,9 +1245,8 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   call deoplete#custom#source('neosnippet',     'rank',  900)
   call deoplete#custom#source('ternjs',         'rank',  900)
   call deoplete#custom#source('flow',           'rank',  900)
-  call deoplete#custom#source('rct',            'rank',  900)
   call deoplete#custom#source('ruby',           'rank',  900)
-  call deoplete#custom#source('solargraph',     'rank',  900)
+  " call deoplete#custom#source('solargraph',     'rank',  900)
   call deoplete#custom#source('jedi',           'rank',  900)
   call deoplete#custom#source('go',             'rank',  900)
   call deoplete#custom#source('racer',          'rank',  900)
@@ -1276,9 +1275,8 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   call deoplete#custom#source('syntax',         'mark', '[syntax]')
   call deoplete#custom#source('tern',           'mark', '[tern]')
   call deoplete#custom#source('flow',           'mark', '[flow]')
-  call deoplete#custom#source('rct',            'mark', '[rct]')
   call deoplete#custom#source('ruby',           'mark', '[ruby]')
-  call deoplete#custom#source('solargraph',     'mark', '[solar]')
+  " call deoplete#custom#source('solargraph',     'mark', '[solar]')
   call deoplete#custom#source('jedi',           'mark', '[jedi]')
   call deoplete#custom#source('go',             'mark', '[go]')
   call deoplete#custom#source('racer',          'mark', '[racer]')
@@ -1292,8 +1290,10 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   let g:deoplete#sources.javascript = s:deoplete_default_sources + ['ternjs', 'flow']
   let g:deoplete#sources.typescript = s:deoplete_default_sources + ['ternjs']
   let g:deoplete#sources.vue        = s:deoplete_default_sources + ['ternjs']
-  let g:deoplete#sources.ruby       = s:deoplete_default_sources + ['rct', 'ruby', 'solargraph']
-  let g:deoplete#sources.eruby      = s:deoplete_default_sources + ['rct', 'ruby', 'solargraph']
+  " let g:deoplete#sources.ruby       = s:deoplete_default_sources + ['rct', 'ruby', 'solargraph']
+  let g:deoplete#sources.ruby       = s:deoplete_default_sources + ['ruby']
+  " let g:deoplete#sources.eruby      = s:deoplete_default_sources + ['rct', 'ruby', 'solargraph']
+  let g:deoplete#sources.eruby      = s:deoplete_default_sources + ['ruby']
   let g:deoplete#sources.python     = s:deoplete_default_sources + ['jedi']
   let g:deoplete#sources.go         = s:deoplete_default_sources + ['go']
   let g:deoplete#sources.rust       = s:deoplete_default_sources + ['racer']
