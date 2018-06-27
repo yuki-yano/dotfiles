@@ -7,7 +7,7 @@ upgrade
 # Packages
 
 ## Mas
-# install argon/mas/mas
+install mas
 
 ## Shell
 install bash
