@@ -12,6 +12,7 @@ if ! zgen saved; then
   zgen load sindresorhus/pure
   zgen load yukiycino-dotfiles/cdd
   zgen load yukiycino-dotfiles/fancy-ctrl-z
+  zgen load yukiycino-dotfiles/zsh-abbreviations
   zgen load yukiycino-dotfiles/zsh-extra-abbrev
   zgen load zdharma/fast-syntax-highlighting
   zgen load zsh-users/zsh-autosuggestions
@@ -43,9 +44,27 @@ export ZSH_SYSTEM_CLIPBOARD_TMUX_SUPPORT=true
   FAST_HIGHLIGHT_STYLES[history-expansion]=fg=green,bold
 }
 
+# abbreviations
+typeset -A abbreviations
+
+abbreviations=(
+  "g"    "git"
+  "ga"   "git add"
+  "gaa"  "git add --all"
+  "gs"   "git status --short --branch"
+  "gb"   "git branch"
+  "gd"   "git diff"
+  "gdw"  "git diff --color-words"
+  "gdc"  "git diff --cached"
+  "gdcw" "git diff --cached --color-words"
+  "gco"  "git checkout"
+  "gci"  "git commit"
+  "gst"  "git stash"
+)
+
 # extra-abbrev
 export EXTRA_ABBREV=(
-"gci" "gci -m '_|_'"
+"gci" "git commit -m '_|_'"
 )
 
 chpwd_functions+=_cdd_chpwd
@@ -95,6 +114,7 @@ setopt auto_pushd
 setopt brace_ccl
 setopt complete_aliases
 setopt complete_in_word
+setopt extended_glob
 setopt hist_ignore_all_dups
 setopt hist_ignore_dups
 setopt hist_ignore_space
@@ -324,8 +344,10 @@ bindkey -v
 # Wait for next key input for 0.15 seconds (Default 0.4s)
 export KEYTIMEOUT=15
 
-bindkey -M viins '^ ' extra-abbrev
-bindkey -M viins '^]' insert-last-word
+bindkey -M viins " "   magic-abbrev-expand
+bindkey -M viins "^x " no-magic-abbrev-expand
+bindkey -M viins '^ '  extra-abbrev
+bindkey -M viins '^]'  insert-last-word
 
 # Add emacs bind
 zle -N history-beginning-search-backward-end history-search-end

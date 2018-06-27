@@ -139,6 +139,7 @@ alias y='yes'
 # ruby
 alias be='bundle exec'
 
+# git
 alias g='git'
 alias ga='git add'
 alias gaa='git add --all'
@@ -151,10 +152,6 @@ alias gdcw='git diff --cached --color-words'
 alias gco='git checkout'
 alias gci='git commit'
 alias gst='git stash'
-alias gstl='git stash list'
-alias gstp='git stash pop'
-alias gcb='git rev-parse --abbrev-ref HEAD'
-alias gcbpull='git pull --rebase origin $(git rev-parse --abbrev-ref HEAD)'
 alias agit='nvim +Agit'
 alias gitt='gittower .'
 
