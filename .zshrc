@@ -200,11 +200,13 @@ zle -N peco-history-selection
 function f() {
   local dir
   dir=$(ghq root)/$(ghq list | fzf)
-  cd "$dir"
 
-  if [[ ! -z ${TMUX} ]]; then
-    repository=${dir##*/}
-    tmux rename-session "${repository//./-}"
+  if [ $dir != "$(ghq root)/" ]; then
+    cd "$dir"
+    if [[ ! -z ${TMUX} ]]; then
+      repository=${dir##*/}
+      tmux rename-session "${repository//./-}"
+    fi
   fi
 }
 
