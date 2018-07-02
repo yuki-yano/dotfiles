@@ -806,6 +806,24 @@ endfunction
 
 " Plugin Settings {{{1
 
+" Eager Load {{{2
+
+" altercmd {{{3
+if dein#tap('vim-altercmd')
+  call altercmd#load()
+endif
+" }}}3
+
+" }}}2
+
+" Plugin Manager {{{2
+
+" Dein {{{3
+AlterCommand! <cmdwin> dein Dein
+" }}}3
+
+" }}}2
+
 " Language {{{2
 
 " ALE {{{3
@@ -947,6 +965,10 @@ let g:markdown_quote_syntax_filetypes = {
 
 " }}}3
 
+" marked {{{3
+AlterCommand! <cmdwin> mark[ed] MarkedOpen
+" }}}3
+
 " MatchTagAlways {{{
 let g:mta_filetypes = {
 \ 'html' : 1,
@@ -1015,6 +1037,9 @@ let g:zsh_fold_enable = 1
 " Completion & Fuzzy Finder & vimfiler {{{2
 
 " Denite & Unite {{{3
+
+AlterCommand! <cmdwin> d[enite] Denite
+
 if dein#tap('denite.nvim')
   " Denite
 
@@ -1094,6 +1119,8 @@ if dein#tap('denite.nvim')
   "" resume
   nnoremap <silent> <Leader>dr :<C-u>Denite -resume<CR>
 endif
+
+AlterCommand! <cmdwin> u[nite] Unite
 
 if dein#tap('unite.vim')
   " Unite
@@ -1371,6 +1398,9 @@ endif
 " Git {{{2
 
 " agit {{{3
+AlterCommand! <cmdwin> agit       Agit
+AlterCommand! <cmdwin> agitf[ile] AgitFile
+
 if dein#tap('agit.vim')
   let g:agit_preset_views = {
   \ 'default': [
@@ -1387,9 +1417,6 @@ if dein#tap('agit.vim')
   \   {'name': 'diff',
   \    'layout': 'belowright {winheight(".") * 3 / 4}new'}
   \ ]}
-
-  AlterCommand! <cmdwin> agit       Agit
-  AlterCommand! <cmdwin> agitf[ile] AgitFile
 endif
 " }}}3
 
@@ -1410,7 +1437,20 @@ if dein#tap('vim-gitgutter')
 endif
 " }}}3
 
+" git-switcher {{{3
+AlterCommand! <cmdwin> gss GswSave
+AlterCommand! <cmdwin> gsl GswLoad
+" }}}3
+
 " gina {{{3
+AlterCommand! <cmdwin> git   Gina
+AlterCommand! <cmdwin> gina  Gina
+AlterCommand! <cmdwin> gs    Gina<Space>status
+AlterCommand! <cmdwin> gci   Gina<Space>commit
+AlterCommand! <cmdwin> gd    Gina<Space>diff
+AlterCommand! <cmdwin> gdc   Gina<Space>diff<Space>--cached
+AlterCommand! <cmdwin> blame Gina<Space>blame
+
 if dein#tap('gina.vim')
   call gina#custom#command#option('status', '--short')
   call gina#custom#command#option('status', '--opener', 'split')
@@ -1431,6 +1471,41 @@ if dein#tap('gina.vim')
   call gina#custom#mapping#nmap('blame', 'j', 'j<Plug>(gina-blame-echo)')
   call gina#custom#mapping#nmap('blame', 'k', 'k<Plug>(gina-blame-echo)')
 endif
+" }}}3
+
+" }}}2
+
+" filer {{{2
+
+" vimfiler {{{3
+if dein#tap('vimfiler')
+  " let g:vimfiler_as_default_explorer = 1
+  let g:vimfiler_safe_mode_by_default = 0
+  let g:vimfiler_execute_file_list = {'jpg': 'open', 'jpeg': 'open', 'gif': 'open', 'png': 'open'}
+  " call vimfiler#custom#profile('default', 'context', {
+  "       \ 'explorer' : 1,
+  "       \ 'winwidth' : 35,
+  "       \ 'split' : 1,
+  "       \ 'simple' : 1,
+  "       \ })
+  let g:vimfiler_enable_auto_cd = 1
+  let g:vimfiler_ignore_pattern = '^\%(.git\|.DS_Store\)$'
+  let g:vimfiler_trashbox_directory = '~/.Trash'
+  nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple<CR>
+  nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple<CR>
+
+  function! s:vimfiler_settings()
+    nmap <buffer> R <Plug>(vimfiler_redraw_screen)
+    nmap <buffer> <C-l> <C-w>l
+    nmap <buffer> <C-j> <C-w>j
+  endfunction
+
+  AutoCmd FileType vimfiler call s:vimfiler_settings()
+endif
+" }}}3
+
+" vaffle {{{3
+AlterCommand! <cmdwin> va[fle] Vaffle
 " }}}3
 
 " }}}2
@@ -1571,11 +1646,16 @@ vnoremap <Leader>r "syq:%S/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Le
 " }}}3
 
 " grepper {{{3
-let g:grepper = {}
-runtime plugin/grepper.vim
-let g:grepper.highlight = 1
-let g:grepper.open = 0
-AutoCmd User Grepper Unite quickfix -direction=botright -auto-resize -no-quit
+AlterCommand! <cmdwin> ag GrepperAg
+AlterCommand! <cmdwin> rg GrepperRg
+
+if dein#tap('vim-grepper')
+  let g:grepper = {}
+  runtime plugin/grepper.vim
+  let g:grepper.highlight = 1
+  let g:grepper.open = 0
+  AutoCmd User Grepper Unite quickfix -direction=botright -auto-resize -no-quit
+endif
 " }}}3
 
 " jplus {{{3
@@ -1685,6 +1765,10 @@ if dein#tap('lexima.vim')
     endfor
   endfunction
 endif
+" }}}3
+
+" NrrwRgn {{{3
+AlterCommand! <cmdwin> nr NR
 " }}}3
 
 " operator-replace {{{3
@@ -1966,10 +2050,12 @@ let g:startify_commands = [
 " }}}3
 
 " rainbow {{{3
-let g:rainbow_active = 1
-let g:rainbow_conf = {
-\   'ctermfgs': [ '110', '150', '109', '216', '140', '203' ],
-\ }
+if dein#tap('rainbow')
+  let g:rainbow_active = 1
+  let g:rainbow_conf = {}
+  let g:rainbow_conf.ctermfgs = [ '110', '150', '109', '216', '140', '203' ]
+  let g:rainbow_conf.diff = 0
+endif
 " }}}3
 
 " smartnumber {{{3
@@ -1985,54 +2071,21 @@ let g:zenspace#default_mode = 'on'
 
 " tmux {{{2
 
-" vimux {{{
-map <silent> <Leader>vp :VimuxPromptCommand<CR>
-map <silent> <Leader>vl :VimuxRunLastCommand<CR>
-map <silent> <Leader>vi :VimuxInspectRunner<CR>
-map <silent> <Leader>vz :VimuxZoomRunner<CR>
-map <silent> <Leader>vc :VimuxCloseRunner<CR>
-" }}}
+" vimux {{{3
+nnoremap <silent> <Leader>vp :<C-u>VimuxPromptCommand<CR>
+nnoremap <silent> <Leader>vl :<C-u>VimuxRunLastCommand<CR>
+nnoremap <silent> <Leader>vi :<C-u>VimuxInspectRunner<CR>
+nnoremap <silent> <Leader>vz :<C-u>VimuxZoomRunner<CR>
+nnoremap <silent> <Leader>vc :<C-u>VimuxCloseRunner<CR>
+" }}}3
 
 " }}}2
 
 " Util {{{2
 
-" aho-bakaup.vim {{{3
+" aho-bakaup {{{3
 let g:bakaup_auto_backup = 1
 let g:bakaup_backup_dir = expand('~/.config/nvim/backup')
-" }}}3
-
-" altercmd {{{3
-if dein#tap('vim-altercmd')
-  call altercmd#load()
-
-  AlterCommand! <cmdwin> w!!         w<Space>suda://%
-  AlterCommand! <cmdwin> dein        Dein
-  AlterCommand! <cmdwin> d[enite]    Denite
-  AlterCommand! <cmdwin> u[nite]     Unite
-  AlterCommand! <cmdwin> deol        Deol
-  AlterCommand! <cmdwin> ag          GrepperAg
-  AlterCommand! <cmdwin> git         Gina
-  AlterCommand! <cmdwin> gina        Gina
-  AlterCommand! <cmdwin> gs          Gina<Space>status
-  AlterCommand! <cmdwin> gci         Gina<Space>commit
-  AlterCommand! <cmdwin> gd          Gina<Space>diff
-  AlterCommand! <cmdwin> gdc         Gina<Space>diff<Space>--cached
-  AlterCommand! <cmdwin> blame       Gina<Space>blame
-  AlterCommand! <cmdwin> agit        Agit
-  AlterCommand! <cmdwin> agitf[ile]  AgitFile
-  AlterCommand! <cmdwin> gss         GswSave
-  AlterCommand! <cmdwin> gsl         GswLoad
-  AlterCommand! <cmdwin> ss          SessionSave!
-  AlterCommand! <cmdwin> so          SessionOpen
-  AlterCommand! <cmdwin> tag         TagbarOpen<Space>j
-  AlterCommand! <cmdwin> nr          NR
-  AlterCommand! <cmdwin> va[fle]     Vaffle
-  AlterCommand! <cmdwin> sc[ratch]   Scratch
-  AlterCommand! <cmdwin> cap[ture]   Capture
-  AlterCommand! <cmdwin> alc         Ref<Space>webdict<Space>alc
-  AlterCommand! <cmdwin> mark[ed]    MarkedOpen
-endif
 " }}}3
 
 " automatic {{{
@@ -2135,6 +2188,10 @@ AutoCmd FileType git    nnoremap <silent> <Leader>d :BW<CR>
 AutoCmd FileType vaffle nnoremap <silent> <Leader>d :BW<CR>
 " }}}3
 
+" capture {{{3
+AlterCommand! <cmdwin> cap[ture] Capture
+" }}}3
+
 " expand-region {{{3
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
@@ -2159,17 +2216,28 @@ nnoremap <silent> \r :QuickRun<CR>
 " }}}
 
 " ref {{{3
-let g:ref_source_webdict_sites = {
-\ 'alc' : {
-\   'url' : 'http://eow.alc.co.jp/%s/UTF-8/'
-\   }
-\ }
+AlterCommand! <cmdwin> alc Ref<Space>webdict<Space>alc
 
-nnoremap ga :<C-u>Ref webdict alc <C-r><C-w><CR>
+if dein#tap('vim-ref')
+  let g:ref_source_webdict_sites = {
+  \ 'alc' : {
+  \   'url' : 'http://eow.alc.co.jp/%s/UTF-8/'
+  \   }
+  \ }
+endif
+" }}}3
+
+" session {{{3
+AlterCommand! <cmdwin> ss SessionSave!
+AlterCommand! <cmdwin> so SessionOpen
 " }}}3
 
 " scratch {{{3
-let g:scratch_no_mappings = 1
+AlterCommand! <cmdwin> sc[ratch] Scratch
+
+if dein#tap('scratch.vim')
+  let g:scratch_no_mappings = 1
+endif
 " }}}3
 
 " submode & operator-convert-case {{{3
@@ -2190,6 +2258,10 @@ if dein#tap('vim-submode')
   call submode#enter_with('convert', 'n', '', '<leader>cl', ':ConvertCaseLoop<CR>')
   call submode#map('convert', 'n', '', 'c', ':ConvertCaseLoop<CR>')
 endif
+" }}}3
+
+" tagbar {{{3
+AlterCommand! <cmdwin> tag TagbarOpen<Space>j
 " }}}3
 
 " undotree {{{3
