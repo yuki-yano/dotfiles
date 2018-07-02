@@ -26,9 +26,6 @@ if ! zgen saved; then
   for f in $(find ~/.zgen/ -name "*.zsh"); do zcompile "$f"; done
 fi
 
-# pure settings
-export PURE_PROMPT_SYMBOL='$'
-
 # zsh system clipboard
 export ZSH_SYSTEM_CLIPBOARD_TMUX_SUPPORT=true
 
@@ -239,29 +236,23 @@ done
 
 # Prompt {{{
 
-function zle-line-init()  {
-  VIM_NORMAL="%F{green}-- NORMAL --%f"
-  VIM_INSERT="%F{yellow}-- INSERT --%f"
-  VIM_VISUAL="%F{cyan}-- VISUAL --%f"
-  RPS1="${${${KEYMAP/vicmd/$VIM_NORMAL}/(main|viins)/$VIM_INSERT}/(vivis)/$VIM_VISUAL}"
-  RPS2=$RPS1
+PROMPT='${VIM_PROMPT}%{$DEFAULT%} %(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
 
+prompt_pure_update_vim_prompt() {
+  VIM_NORMAL="%{$GREEN%}-- NORMAL --%{$DEFAULT%}"
+  VIM_INSERT="%{$YELLOW%}-- INSERT --%{$DEFAULT%}"
+  VIM_VISUAL="%{$CYAN%}-- VISUAL --%{$DEFAULT%}"
+  VIM_PROMPT="${${${KEYMAP/vicmd/$VIM_NORMAL}/(main|viins)/$VIM_INSERT}/(vivis)/$VIM_VISUAL}"
   zle reset-prompt
 }
 
-# shellcheck disable=SC2034
-function zle-keymap-select() {
-  VIM_NORMAL="%F{green}-- NORMAL --%f"
-  VIM_INSERT="%F{yellow}-- INSERT --%f"
-  VIM_VISUAL="%F{cyan}-- VISUAL --%f"
-  RPS1="${${${KEYMAP/vicmd/$VIM_NORMAL}/(main|viins)/$VIM_INSERT}/(vivis)/$VIM_VISUAL}"
-  RPS2=$RPS1
-
-  zle reset-prompt
+function zle-line-init zle-keymap-select zle-line-finish {
+  prompt_pure_update_vim_prompt
 }
 
 zle -N zle-line-init
 zle -N zle-keymap-select
+zle -N zle-line-finish
 
 # }}}
 
