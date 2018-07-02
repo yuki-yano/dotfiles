@@ -188,6 +188,14 @@ alias -g RCB='origin/$(git rev-parse --abbrev-ref HEAD)'
 
 # Fuzzy Finder {{{
 
+# history
+function peco-history-selection() {
+  BUFFER=$(\history -n -r 1 | peco --query "$LBUFFER")
+  CURSOR=$#BUFFER
+  zle reset-prompt
+}
+zle -N peco-history-selection
+
 # Project
 function f() {
   local dir
@@ -363,9 +371,9 @@ bindkey -M menuselect 'k' vi-up-line-or-history
 bindkey -M menuselect 'l' vi-forward-char
 
 # All Mode bind
-bindkey -M viins '^r'   anyframe-widget-put-history
-bindkey -M vicmd '^r'   anyframe-widget-put-history
-bindkey -M vivis '^r'   anyframe-widget-put-history
+bindkey -M viins '^r'   peco-history-selection
+bindkey -M vicmd '^r'   peco-history-selection
+bindkey -M vivis '^r'   peco-history-selection
 bindkey -M viins '^xk'  anyframe-widget-kill
 bindkey -M vicmd '^xk'  anyframe-widget-kill
 bindkey -M vivis '^xk'  anyframe-widget-kill
