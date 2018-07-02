@@ -1737,10 +1737,11 @@ if dein#tap('lexima.vim')
 
     "" ruby
     let l:rules += [
+    \ {'char': '&', 'filetype': ['ruby', 'eruby'], 'priority': 10},
     \ {'char': '<Bar>', 'at': 'do\%#',     'input': '<Space><Bar><Bar><Left>', 'input_after': '<CR>end', 'filetype': ['ruby', 'eruby']},
-    \ {'char': '<Bar>', 'at': 'do\s\%#',   'input': '<Bar><Bar><Left>', 'input_after': '<CR>end', 'filetype': ['ruby', 'eruby']},
+    \ {'char': '<Bar>', 'at': 'do\s\%#',   'input': '<Bar><Bar><Left>',        'input_after': '<CR>end', 'filetype': ['ruby', 'eruby']},
     \ {'char': '<Bar>', 'at': '{\%#}',     'input': '<Space><Bar><Bar><Left>', 'input_after': '<Space>', 'filetype': ['ruby', 'eruby']},
-    \ {'char': '<Bar>', 'at': '{\s\%#\s}', 'input': '<Bar><Bar><Left>', 'input_after': '<Space>', 'filetype': ['ruby', 'eruby']},
+    \ {'char': '<Bar>', 'at': '{\s\%#\s}', 'input': '<Bar><Bar><Left>',        'input_after': '<Space>', 'filetype': ['ruby', 'eruby']},
     \ ]
 
     "" markdown
@@ -1753,7 +1754,7 @@ if dein#tap('lexima.vim')
     \ {'char': '&',                'filetype': 'vim', 'priority': 10},
     \ {'char': '&', 'at': '\S\%#', 'filetype': 'vim', 'priority': 10},
     \ {'char': '&', 'at': '\s\%#', 'filetype': 'vim', 'priority': 10},
-    \ {'char': '&', 'at': '&\%#',  'priority': 10},
+    \ {'char': '&', 'at': '&\%#',                     'priority': 10},
     \ {'char': '{', 'at': '{\%#$', 'input': '{{<CR>', 'input_after': '<CR>" }}}', 'filetype': 'vim', 'priority': 10},
     \ ]
 
