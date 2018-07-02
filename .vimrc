@@ -155,9 +155,9 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Shougo/denite.nvim')
   call dein#add('Shougo/unite.vim')
 
+  " call dein#add('osyo-manga/unite-quickfix')
   call dein#add('Shougo/neomru.vim')
   call dein#add('Shougo/unite-outline')
-  call dein#add('osyo-manga/unite-quickfix')
   call dein#add('ozelentok/denite-gtags')
 
   call dein#add('SpaceVim/gtags.vim')
@@ -465,6 +465,10 @@ noremap ]' ]`
 noremap ]` ]'
 noremap [' [`
 noremap [` ['
+
+"" quickfix location_list
+nnoremap <silent> <leader>q :botright copen<CR>
+nnoremap <silent> <leader>l :botright lopen<CR>
 
 "" spellcheck
 map <silent> <leader>ss :set spell!<CR>
@@ -1176,11 +1180,11 @@ if dein#tap('unite.vim')
   nnoremap <silent> <Leader><Leader>p :<C-u>Unite yankround<CR>
 
   "" quickfix
-  let g:unite_quickfix_filename_is_pathshorten = 0
-  call unite#custom_source('quickfix', 'sorters', 'sorter_reverse')
-  call unite#custom_source('location_list', 'sorters', 'sorter_reverse')
-  nnoremap <silent> <Leader>q :<C-u>Unite quickfix -direction=botright -no-quit<CR>
-  nnoremap <silent> <Leader>l :<C-u>Unite location_list -direction=botright -no-quit<CR>
+  " let g:unite_quickfix_filename_is_pathshorten = 0
+  " call unite#custom_source('quickfix', 'sorters', 'sorter_reverse')
+  " call unite#custom_source('location_list', 'sorters', 'sorter_reverse')
+  " nnoremap <silent> <Leader>q :<C-u>Unite quickfix -direction=botright -no-quit<CR>
+  " nnoremap <silent> <Leader>l :<C-u>Unite location_list -direction=botright -no-quit<CR>
 
   "" session
   " nnoremap <Leader>ss :<C-u>UniteSessionSave<CR>
@@ -1218,6 +1222,7 @@ nnoremap <silent> <Leader>p :<C-u>ProjectFilesPreview<CR>
 nnoremap <silent> <Leader>b :<C-u>BuffersPreview<CR>
 nnoremap <silent> <Leader>m :<C-u>ProjectOldFilesPreview<CR>
 nnoremap <silent> <Leader>M :<C-u>OldFilesPreview<CR>
+nnoremap <silent> <Leader>g :<C-u>ProjectGrepPreview<CR>
 " }}}3
 
 " deoplete.nvim && neosnippet.vim {{{3
@@ -1650,8 +1655,6 @@ if dein#tap('vim-grepper')
   let g:grepper = {}
   runtime plugin/grepper.vim
   let g:grepper.highlight = 1
-  let g:grepper.open = 0
-  AutoCmd User Grepper Unite quickfix -direction=botright -auto-resize -no-quit
 endif
 " }}}3
 
@@ -2103,7 +2106,7 @@ let g:automatic_config = [
 \   'match': {
 \     'filetype': 'man',
 \     'autocmds': ['FileType'],
-\ },
+\   },
 \   'set': {
 \     'move': 'right',
 \     'width': '35%',
