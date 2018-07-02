@@ -844,18 +844,16 @@ let g:ale_linters = {
 \ 'bash':       ['shell', 'shellcheck'],
 \ 'zsh':        ['shell', 'shellcheck'],
 \ }
+let g:ale_ruby_rubocop_executable = 'bundle'
 
 let g:ale_linter_aliases = {
 \ 'vue'  : 'css',
 \ 'eruby': 'html',
 \ }
 
-let g:ale_sh_shellcheck_exclusions = 'SC1090,SC2148,SC2155,SC2164,SC2190'
-
 let g:ale_change_sign_column_color = 1
 let g:ale_set_signs = 1
 let g:ale_echo_msg_format = '[%linter%] %s'
-let g:ale_emit_conflict_warnings = 0
 highlight ALEWarning ctermfg=0 ctermbg=229
 highlight ALEError   ctermfg=0 ctermbg=203
 " }}}3
