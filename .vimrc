@@ -193,6 +193,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Edit & Move & Search {{{3
+  " call dein#add('tyru/skk.vim',                           {'lazy': 1, 'on_event': 'InsertEnter'})
+  " call dein#add('vimtaku/vim-mlh',                        {'lazy': 1, 'on_event': 'InsertEnter'})
   call dein#add('DeaR/vim-textobj-wiw',                   {'lazy': 1, 'on_map': {'n': [',w', ',b', ',e', ',ge'], 'ox': ['i,w', 'a,w']}, 'depends': 'vim-textobj-user'})
   call dein#add('LeafCage/yankround.vim',                 {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('chrisbra/NrrwRgn',                       {'lazy': 1, 'on_cmd': ['NR', 'NW', 'WidenRegion', 'NRV', 'NUD', 'NRP', 'NRM', 'NRS', 'NRN', 'NRL']})
@@ -224,8 +226,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tomtom/tcomment_vim',                    {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
   call dein#add('tpope/vim-repeat',                       {'lazy': 1, 'on_map': {'n': '<Plug>'}})
   call dein#add('tpope/vim-speeddating',                  {'lazy': 1, 'on_map': {'n': '<Plug>'}})
-  call dein#add('tyru/skk.vim')
-  call dein#add('vimtaku/vim-mlh')
   " }}}3
 
   " Appearance {{{3
