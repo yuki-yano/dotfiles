@@ -35,8 +35,9 @@ install olafurpg/scalafmt/scalafmt --HEAD
 install nodenv
 install openssl
 install pyenv
+install pipenv
 install python
-install python2
+install python@2
 install rbenv
 install readline
 install ruby
