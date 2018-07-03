@@ -23,26 +23,22 @@ if ! zgen saved; then
   zgen save
 
   # compile
-  # shellcheck disable=SC2044
   for f in $(find ~/.zgen/ -name "*.zsh"); do zcompile "$f"; done
 fi
 
 # zsh system clipboard
-export ZSH_SYSTEM_CLIPBOARD_TMUX_SUPPORT=true
+ZSH_SYSTEM_CLIPBOARD_TMUX_SUPPORT=true
 
-# shellcheck disable=SC2034,SC2154
-{
-  FAST_HIGHLIGHT_STYLES[alias]=fg=blue
-  FAST_HIGHLIGHT_STYLES[suffix-alias]=fg=blue
-  FAST_HIGHLIGHT_STYLES[builtin]=fg=blue
-  FAST_HIGHLIGHT_STYLES[function]=fg=blue
-  FAST_HIGHLIGHT_STYLES[command]=fg=blue
-  FAST_HIGHLIGHT_STYLES[precommand]=fg=blue,underline
-  FAST_HIGHLIGHT_STYLES[hashed-command]=fg=blue
-  FAST_HIGHLIGHT_STYLES[path]=fg=green
-  FAST_HIGHLIGHT_STYLES[globbing]=fg=green,bold
-  FAST_HIGHLIGHT_STYLES[history-expansion]=fg=green,bold
-}
+FAST_HIGHLIGHT_STYLES[alias]=fg=blue
+FAST_HIGHLIGHT_STYLES[suffix-alias]=fg=blue
+FAST_HIGHLIGHT_STYLES[builtin]=fg=blue
+FAST_HIGHLIGHT_STYLES[function]=fg=blue
+FAST_HIGHLIGHT_STYLES[command]=fg=blue
+FAST_HIGHLIGHT_STYLES[precommand]=fg=blue,underline
+FAST_HIGHLIGHT_STYLES[hashed-command]=fg=blue
+FAST_HIGHLIGHT_STYLES[path]=fg=green
+FAST_HIGHLIGHT_STYLES[globbing]=fg=green,bold
+FAST_HIGHLIGHT_STYLES[history-expansion]=fg=green,bold
 
 # abbreviations
 typeset -A abbreviations
@@ -63,8 +59,8 @@ abbreviations=(
 )
 
 # extra-abbrev
-export EXTRA_ABBREV=(
-"gci" "git commit -m '_|_'"
+EXTRA_ABBREV=(
+  "gci" "git commit -m '_|_'"
 )
 
 chpwd_functions+=_cdd_chpwd
@@ -87,17 +83,14 @@ autoload -Uz terminfo
 
 # Color Definition {{{
 
-# shellcheck disable=SC2154
-{
-  export DEFAULT="${reset_color}"
-  export RED="${fg[red]}"
-  export GREEN="${fg[green]}"
-  export YELLOW="${fg[yellow]}"
-  export BLUE="${fg[blue]}"
-  export PURPLE="${fg[purple]}"
-  export CYAN="${fg[cyan]}"
-  export WHITE="${fg[white]}"
-}
+DEFAULT="${reset_color}"
+RED="${fg[red]}"
+GREEN="${fg[green]}"
+YELLOW="${fg[yellow]}"
+BLUE="${fg[blue]}"
+PURPLE="${fg[purple]}"
+CYAN="${fg[cyan]}"
+WHITE="${fg[white]}"
 
 # }}}
 
@@ -147,23 +140,23 @@ fi
 # history
 HISTFILE=${HOME}/.zsh_history
 HISTSIZE=100000
-export SAVEHIST=100000
+SAVEHIST=100000
 
 # C-w target chars
-export WORDCHARS="*?_-[]~=&!#$%^(){}<>"
+WORDCHARS="*?_-[]~=&!#$%^(){}<>"
 
 # smart-insert-last-word
 zstyle :insert-last-word match '*([[:alpha:]/\\]?|?[[:alpha:]/\\])*'
 zle -N insert-last-word smart-insert-last-word
 
 # Show details automatically
-export REPORTTIME=10
+REPORTTIME=10
 
 # }}}
 
 # Completion {{{
 
-export LISTMAX=1000
+LISTMAX=1000
 
 # zstyle
 zstyle ':completion:*' menu select=2
@@ -178,7 +171,6 @@ zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
 zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
 
 # Highlight
-# shellcheck disable=SC2154
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*:messages' format "$YELLOW" '%d' "$DEFAULT"
 zstyle ':completion:*:warnings' format "$RED" 'No matches for:' "$YELLOW" ' %d' "$DEFAULT"
@@ -241,25 +233,25 @@ alias -g U='$(git ls-files --unmerged | cut -f2   | uniq | fzf --multi --prompt 
 # nicovideo
 function peco-nico-ranking() {
   ruby -r rss -e 'RSS::Parser.parse("http://www.nicovideo.jp/ranking/fav/daily/all?rss=2.0").channel.items.each {|item| puts item.link + "\t" + item.title}' | peco | while read -r line; do
-  echo "$line"
-  echo "$line" | awk '{print $1}' | nicovideo-dump | mplayer -
-done
+    echo "$line"
+    echo "$line" | awk '{print $1}' | nicovideo-dump | mplayer -
+  done
 }
 
 function peco-nico-tag() {
   TAG=$(url-encode "$*")
   ruby -r rss -e "RSS::Parser.parse(\"http://www.nicovideo.jp/tag/$TAG?rss=2.0\").channel.items.each {|item| puts item.link + \"\\t\" + item.title}" | peco | while read -r line; do
-  echo "$line"
-  echo "$line" | awk '{print $1}' | nicovideo-dump | mplayer -
-done
+    echo "$line"
+    echo "$line" | awk '{print $1}' | nicovideo-dump | mplayer -
+  done
 }
 
 function peco-nico-bgm() {
   TAG=$(url-encode "作業用BGM $*")
   ruby -r rss -e "RSS::Parser.parse(\"http://www.nicovideo.jp/tag/$TAG?rss=2.0\").channel.items.each {|item| puts item.link + \"\\t\" + item.title}" | peco | while read -r line; do
-  echo "$line"
-  echo "$line" | awk '{print $1}' | nicovideo-dump | mplayer - -novideo
-done
+    echo "$line"
+    echo "$line" | awk '{print $1}' | nicovideo-dump | mplayer - -novideo
+  done
 }
 
 # }}}
@@ -268,7 +260,7 @@ done
 
 PROMPT='${VIM_PROMPT}%{$DEFAULT%} %(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
 
-prompt_pure_update_vim_prompt() {
+function prompt_pure_update_vim_prompt() {
   VIM_NORMAL="%{$GREEN%}-- NORMAL --%{$DEFAULT%}"
   VIM_INSERT="%{$YELLOW%}-- INSERT --%{$DEFAULT%}"
   VIM_VISUAL="%{$CYAN%}-- VISUAL --%{$DEFAULT%}"
@@ -276,17 +268,17 @@ prompt_pure_update_vim_prompt() {
   zle reset-prompt
 }
 
-function zle-line-init zle-keymap-select zle-line-finish {
+function zle-line-init zle-keymap-select {
   prompt_pure_update_vim_prompt
 }
 
 zle -N zle-line-init
 zle -N zle-keymap-select
-zle -N zle-line-finish
 
 # }}}
 
 # tmux {{{
+
 function _left-pane() {
   tmux select-pane -L
 }
@@ -333,6 +325,7 @@ function _accept-line-or-down-pane() {
   fi
 }
 zle -N accept-line-or-down-pane _accept-line-or-down-pane
+
 # }}}
 
 # Bindkey {{{
@@ -342,7 +335,7 @@ zle -N accept-line-or-down-pane _accept-line-or-down-pane
 bindkey -v
 
 # Wait for next key input for 0.15 seconds (Default 0.4s)
-export KEYTIMEOUT=15
+KEYTIMEOUT=15
 
 bindkey -M viins " "   magic-abbrev-expand
 bindkey -M viins "^x " no-magic-abbrev-expand
@@ -367,7 +360,6 @@ bindkey -M viins '^w' backward-kill-word
 bindkey -M viins '^y' yank
 bindkey -M viins '^q' push-line-or-edit
 
-# shellcheck disable=SC2154
 bindkey -M viins "$terminfo[kcbt]" reverse-menu-complete
 
 # Add vim bind
@@ -426,7 +418,6 @@ bindkey -M visual 'S'  add-surround
 
 zle -N select-bracketed
 for m in visual vivis viopp; do
-  # shellcheck disable=SC2154
   for c in {a,i}${(s..)^:-'()[]{}<>bB'}; do
     bindkey -M "$m" "$c" select-bracketed
   done
@@ -478,8 +469,8 @@ function env_rehash() {
 # Loading fzf {{{
 
 [ -f /usr/local/opt/fzf/shell/completion.zsh ] && source /usr/local/opt/fzf/shell/completion.zsh
-export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
-export FZF_DEFAULT_OPTS='--reverse'
+FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
+FZF_DEFAULT_OPTS='--reverse'
 
 # }}}
 
