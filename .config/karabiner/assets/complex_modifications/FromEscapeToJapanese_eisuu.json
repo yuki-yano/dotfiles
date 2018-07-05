@@ -1,18 +1,93 @@
 {
-  "title": "ESCか^[で日本語入力を英数に",
+  "title": "Settings related to IME",
   "rules": [
     {
-      "description": "ESCか^[を押したときに日本語入力を英数に切り替える。",
+      "description": "Switch IME when command key is pressed",
       "manipulators": [
         {
           "type": "basic",
-          "from": { "key_code": "escape", "modifiers": { "optional": [ "any" ] } },
-          "to": [ { "key_code": "japanese_eisuu" }, { "key_code": "escape" } ]
+          "from": {
+            "key_code": "left_command",
+            "modifiers": {
+              "optional": [
+                "any"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "left_command"
+            }
+          ],
+          "to_if_alone": [
+            {
+              "key_code": "japanese_eisuu"
+            }
+          ]
         },
         {
           "type": "basic",
-          "from": { "key_code": "open_bracket", "modifiers": { "mandatory": ["left_control"] } },
-          "to": [ { "key_code": "japanese_eisuu" }, { "key_code": "escape" } ]
+          "from": {
+            "key_code": "right_command",
+            "modifiers": {
+              "optional": [
+                "any"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "right_command"
+            }
+          ],
+          "to_if_alone": [
+            {
+              "key_code": "japanese_kana"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "Press ESC to enter Japanese input as English characters",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": {
+            "key_code": "escape",
+            "modifiers": {
+              "optional": [
+                "any"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "japanese_eisuu"
+            },
+            {
+              "key_code": "escape"
+            }
+          ]
+        },
+        {
+          "type": "basic",
+          "from": {
+            "key_code": "open_bracket",
+            "modifiers": {
+              "mandatory": [
+                "left_control"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "japanese_eisuu"
+            },
+            {
+              "key_code": "escape"
+            }
+          ]
         }
       ]
     }
