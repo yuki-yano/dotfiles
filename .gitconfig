@@ -4,6 +4,8 @@
 
 [color]
   ui = auto
+  diff = always
+  diff-highlight = always
 
 [core]
   autocrlf = input
