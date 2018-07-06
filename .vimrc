@@ -213,7 +213,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-textobj-line',                  {'lazy': 1, 'on_map': {'ox': ['al', 'il']}, 'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-user')
   call dein#add('machakann/vim-sandwich',                 {'lazy': 1, 'on_map': {'nv': ['sa', 'sr', 'sd' ], 'o': ['ib', 'is', 'ab', 'as']}, 'hook_source': 'call Hook_on_post_source_sandwich()'})
-  call dein#add('mhinz/vim-grepper',                      {'lazy': 1, 'on_cmd': ['Grepper', 'GrepperAg', 'GrepperGit'], 'on_map': '<Plug>'})
+  call dein#add('mileszs/ack.vim')
   call dein#add('mopp/vim-operator-convert-case',         {'lazy': 1, 'on_cmd': 'ConvertCaseLoop'})
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',                   {'lazy': 1, 'on_map': '<Plug>'})
@@ -290,6 +290,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('thinca/vim-localrc')
   call dein#add('thinca/vim-quickrun',                 {'lazy': 1, 'on_cmd': 'QuickRun'})
   call dein#add('thinca/vim-ref',                      {'lazy': 1, 'on_cmd': 'Ref'})
+  call dein#add('tpope/vim-unimpaired')
   call dein#add('tweekmonster/startuptime.vim',        {'lazy': 1, 'on_cmd': 'StartupTime'})
   call dein#add('tyru/capture.vim',                    {'lazy': 1, 'on_cmd': 'Capture'})
   call dein#add('tyru/vim-altercmd')
@@ -466,10 +467,6 @@ noremap ]` ]'
 noremap [' [`
 noremap [` ['
 
-"" quickfix location_list
-nnoremap <silent> <leader>q :botright copen<CR>
-nnoremap <silent> <leader>l :botright lopen<CR>
-
 "" spellcheck
 map <silent> <leader>ss :set spell!<CR>
 
@@ -604,6 +601,32 @@ endfunction
 
 command! ToggleHighlight call s:toggle_highlight()
 nnoremap <silent> <Leader>th :ToggleHighlight<CR>
+" }}}2
+
+" ToggleQuickfix {{{2
+function! s:toggle_quickfix()
+  let _ = winnr('$')
+  cclose
+  if _ == winnr('$')
+    copen
+  endif
+endfunction
+
+command! ToggleQuickfix call s:toggle_quickfix()
+nnoremap <silent> <Leader>q :ToggleQuickfix<CR>
+" }}}2
+
+" ToggleLocationList {{{2
+function! s:toggle_location_list()
+  let _ = winnr('$')
+  lclose
+  if _ == winnr('$')
+    lopen
+  endif
+endfunction
+
+command! ToggleLocationList call s:toggle_location_list()
+nnoremap <silent> <Leader>l :ToggleLocationList<CR>
 " }}}2
 
 " Preserve {{{2
@@ -1521,6 +1544,12 @@ if dein#tap('accelerated-jk')
 endif
 " }}}3
 
+
+" ack {{{3
+let g:ackprg = 'ag --vimgrep'
+AlterCommand! <cmdwin> ag Ack!
+" }}}3
+
 " incsearch & anzu & asterisk {{{3
 if dein#tap('incsearch.vim')
   let g:incsearch#magic = '\v'
@@ -1645,17 +1674,6 @@ let g:eregex_default_enable = 0
 nnoremap <Leader>R "syiwq:%S/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
 nnoremap <Leader>r q:%S//g<Left><Left>
 vnoremap <Leader>r "syq:%S/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
-" }}}3
-
-" grepper {{{3
-AlterCommand! <cmdwin> ag GrepperAg
-AlterCommand! <cmdwin> rg GrepperRg
-
-if dein#tap('vim-grepper')
-  let g:grepper = {}
-  runtime plugin/grepper.vim
-  let g:grepper.highlight = 1
-endif
 " }}}3
 
 " jplus {{{3
