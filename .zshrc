@@ -226,6 +226,10 @@ function f() {
   fi
 }
 
+function agvim() {
+  vi $(ag $@ | peco --query "$LBUFFER" | awk -F : '{print "-c " $2 " " $1}')
+}
+
 # Git
 alias -g  B='$(git branch -a | fzf --multi --prompt "All Branches>"    | sed -e "s/^\*\s*//g")'
 alias -g RB='$(git branch -r | fzf --multi --prompt "Remote Branches>" | sed -e "s/^\*\s*//g")'
@@ -233,6 +237,38 @@ alias -g LB='$(git branch    | fzf --multi --prompt "Local Branches>"  | sed -e 
 
 alias -g S='$(git status -s           | cut -b 4- | uniq | fzf --multi --prompt "Changed File>")'
 alias -g U='$(git ls-files --unmerged | cut -f2   | uniq | fzf --multi --prompt "Unmerged File>")'
+
+function fadd() {
+  local addfiles
+  addfiles=($(git status --short | awk '{ print $2 }' | fzf --multi --preview 'git diff {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview))
+  if [[ -n $addfiles ]]; then
+    git add ${@:1} $addfiles && echo "added: $addfiles"
+  fi
+}
+
+function fcof() {
+  local checkoutfiles
+  checkoutfiles=($(git status --short | awk '{ print $2 }' | fzf --multi --preview 'git diff {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview))
+  if [[ -n $checkoutfiles ]]; then
+    git checkout -- ${@:1} $checkoutfiles && echo "checkouted: $checkoutfiles"
+  fi
+}
+
+function freset() {
+  local resetfiles
+  resetfiles=($(git status --short | awk '{ print $2 }' | fzf --multi --preview 'git diff {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview))
+  if [[ -n $resetfiles ]]; then
+    git reset ${@:1} $resetfiles && echo "reset: $resetfiles"
+  fi
+}
+
+function fcrm() {
+  local cancelrmfiles
+  cancelrmfiles=($(git status --short | awk '{ print $2 }' | fzf --multi --preview 'git diff {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview))
+  if [[ -n $cancelrmfiles ]]; then
+    git reset HEAD ${@:1} $cancelrmfiles && git checkout $cancelrmfiles && echo "cncel reset: $cancelrmfiles"
+  fi
+}
 
 # nicovideo
 function peco-nico-ranking() {
