@@ -4,12 +4,15 @@ source ~/dotfiles/.zsh/zgen/zgen.zsh
 
 if ! zgen saved; then
   zgen load 39e/zsh-completions-anyenv
+  zgen load RobSis/zsh-completion-generator
   zgen load b4b4r07/zsh-vimode-visual
+  zgen load changyuheng/zsh-interactive-cd
   zgen load knu/zsh-git-escape-magic
   zgen load kutsan/zsh-system-clipboard
   zgen load mafredri/zsh-async
   zgen load mollifier/anyframe
   zgen load sindresorhus/pure
+  zgen load xav-b/zsh-extend-history
   zgen load yukiycino-dotfiles/cdd
   zgen load yukiycino-dotfiles/fancy-ctrl-z
   zgen load yukiycino-dotfiles/zsh-abbreviations
@@ -28,6 +31,7 @@ fi
 
 # zsh system clipboard
 ZSH_SYSTEM_CLIPBOARD_TMUX_SUPPORT=true
+ZSH_COMPLETION_GENERATOR_DIR=$HOME/.zsh/completions
 
 FAST_HIGHLIGHT_STYLES[alias]=fg=blue
 FAST_HIGHLIGHT_STYLES[suffix-alias]=fg=blue
