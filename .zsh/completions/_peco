@@ -1,0 +1,27 @@
+#compdef peco
+
+# zsh completions for 'peco'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show this help message and exit]'
+  '--query[initial value for query]'
+  '--rcfile[path to the settings file]'
+  '--version[print the version and exit]'
+  {-b,--buffer-size}'[number of lines to keep in search buffer]'
+  '--null[expect NUL (\0) as separator for target/output]'
+  '--initial-index[position of the initial index of the selection (0 base)]'
+  '--initial-matcher[specify the default matcher (deprecated)]'
+  '--initial-filter[specify the default filter]'
+  '--prompt[specify the prompt string]'
+  '--layout[layout to be used. top-down or bottom-up. default is top-down]'
+  '--select-1[select first item and immediately exit if the input contains only 1 item]'
+  '--on-cancel[specify action on user cancel. success or error.]'
+  '--selection-prefix[use a prefix instead of changing line color to indicate currently selected lines.]'
+  '--exec[execute command instead of finishing/terminating peco.]'
+  '--print-query[]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

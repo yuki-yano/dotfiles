@@ -1,0 +1,13 @@
+#compdef ghq
+
+# zsh completions for 'ghq'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {--help,-h}'[show help]'
+  {--version,-v}'[print the version]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

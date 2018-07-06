@@ -1,0 +1,18 @@
+#compdef ccat
+
+# zsh completions for 'ccat'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--bg[": set to "light" or "dark" depending on the terminals background]'
+  {-C,--color}'[": colorize the output; value can be "never", "always" or "auto"]'
+  {-G,--color-code}'[set color codes]'
+  {-h,--help}'[help for ccat]'
+  '--html[output html]'
+  '--palette[show color palettes]'
+  {-v,--version}'[show version]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

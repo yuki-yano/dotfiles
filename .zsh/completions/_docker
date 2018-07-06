@@ -1,0 +1,21 @@
+#compdef docker
+
+# zsh completions for 'docker'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--config[location of client config files (default "~/.dwango-docker")]'
+  {-D,--debug}'[enable debug mode]'
+  {-H,--host}'[daemon socket(s) to connect to]'
+  {-l,--log-level}'[set the logging level ("debug"|"info"|"warn"|"error"|"fatal") (default "info")]'
+  '--tls[use TLS; implied by --tlsverify]'
+  '--tlscacert[trust certs signed only by this CA (default "~/.dwango-docker/ca.pem")]'
+  '--tlscert[path to TLS certificate file (default "~/.dwango-docker/cert.pem")]'
+  '--tlskey[path to TLS key file (default "~/.dwango-docker/key.pem")]'
+  '--tlsverify[use TLS and verify the remote]'
+  {-v,--version}'[print version information and quit]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments
