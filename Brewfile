@@ -94,7 +94,6 @@ install parallel
 install reattach-to-user-namespace
 install ripgrep
 install rsync
-install the_silver_searcher
 install tldr
 install tree
 install unison
