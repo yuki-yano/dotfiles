@@ -299,7 +299,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Library {{{3
   call dein#add('Shougo/vimproc.vim', {'build': 'make'})
-  call dein#add('nixprime/cpsm',      {'build': 'env PY3=ON ./install.sh'})
   call dein#add('vim-scripts/L9')
   call dein#add('vim-scripts/cecutil')
   " }}}3
@@ -1083,8 +1082,8 @@ if dein#tap('denite.nvim')
   call denite#custom#map('insert', '<C-p>', '<denite:move_to_previous_line>', 'noremap')
 
   "" option
-  call denite#custom#source('_', 'matchers', ['matcher_fuzzy', 'matcher_cpsm'])
-  call denite#custom#source('file_mru', 'matchers', ['matcher_fuzzy', 'matcher_cpsm', 'matcher_project_files'])
+  call denite#custom#source('_', 'matchers', ['matcher_fuzzy'])
+  call denite#custom#source('file_mru', 'matchers', ['matcher_fuzzy', 'matcher_project_files'])
 
   call denite#custom#source('file_mru', 'converters', ['converter_relative_abbr'])
   call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
