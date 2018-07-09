@@ -408,12 +408,6 @@ cnoremap <C-p> <Up>
 nnoremap <silent> <C-p> :bprevious<CR>
 nnoremap <silent> <C-n> :bnext<CR>
 
-"" Window
-nnoremap <silent> <C-h> :wincmd h<CR>
-nnoremap <silent> <C-l> :wincmd l<CR>
-nnoremap <silent> <C-k> :wincmd k<CR>
-nnoremap <silent> <C-j> :wincmd j<CR>
-
 "" increment & decrement
 noremap <silent> + <C-a>
 noremap <silent> - <C-x>
