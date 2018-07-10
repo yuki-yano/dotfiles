@@ -1123,7 +1123,7 @@ if dein#tap('denite.nvim')
 
   "" ctags & gtags
   nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context -direction=botright<CR>
-  nnoremap <silent> <Leader>gg :<C-u>Denite gtags_grep -direction=botright<CR>
+  nnoremap <silent> <Leader>gd    :<C-u>Denite gtags_grep -direction=botright<CR>
 
   "" yank
   " nnoremap <silent> <Leader>p :<C-u>Denite register -direction=topleft<CR>
@@ -1236,11 +1236,11 @@ endfunction
 " fzf-preview {{{3
 let g:fzf_preview_filelist_command = 'rg --files --hidden --follow --glob "!.git/*"'
 
-nnoremap <silent> <Leader>p :<C-u>ProjectFilesPreview<CR>
-nnoremap <silent> <Leader>b :<C-u>BuffersPreview<CR>
-nnoremap <silent> <Leader>m :<C-u>ProjectOldFilesPreview<CR>
-nnoremap <silent> <Leader>M :<C-u>OldFilesPreview<CR>
-nnoremap <silent> <Leader>g :<C-u>ProjectGrepPreview<CR>
+nnoremap <silent> <Leader>p  :<C-u>ProjectFilesPreview<CR>
+nnoremap <silent> <Leader>b  :<C-u>BuffersPreview<CR>
+nnoremap <silent> <Leader>m  :<C-u>ProjectOldFilesPreview<CR>
+nnoremap <silent> <Leader>M  :<C-u>OldFilesPreview<CR>
+nnoremap <silent> <Leader>gf :<C-u>ProjectGrepPreview<CR>
 " }}}3
 
 " deoplete.nvim && neosnippet.vim {{{3
@@ -1546,10 +1546,12 @@ if dein#tap('accelerated-jk')
 endif
 " }}}3
 
-
 " ack {{{3
+AlterCommand! <cmdwin> ag  Ack!
+AlterCommand! <cmdwin> ack Ack!
+
 let g:ackprg = 'ag --vimgrep'
-AlterCommand! <cmdwin> ag Ack!
+nnoremap <silent> <Leader>ga "syiwq:Ack! <C-r>=substitute(@s, '/', '\\/', 'g')<CR>
 " }}}3
 
 " incsearch & anzu & asterisk {{{3
