@@ -1809,6 +1809,7 @@ if dein#tap('vim-sandwich')
     let g:sandwich#recipes += [
     \   { 'buns': ['\/', '\/'] },
     \   { 'buns': ['_', '_'] },
+    \   { 'buns': ['`', '`'] },
     \ ]
   endfunction
 endif
