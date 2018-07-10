@@ -295,6 +295,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tyru/capture.vim',                    {'lazy': 1, 'on_cmd': 'Capture'})
   call dein#add('tyru/vim-altercmd')
   call dein#add('wesQ3/vim-windowswap',                {'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#DoWindowSwap']})
+  call dein#add('yssl/QFEnter')
   " }}}3
 
   " Library {{{3
@@ -602,7 +603,7 @@ function! s:toggle_quickfix()
   let _ = winnr('$')
   cclose
   if _ == winnr('$')
-    copen
+    botright copen
   endif
 endfunction
 
@@ -615,7 +616,7 @@ function! s:toggle_location_list()
   let _ = winnr('$')
   lclose
   if _ == winnr('$')
-    lopen
+    botright lopen
   endif
 endfunction
 
