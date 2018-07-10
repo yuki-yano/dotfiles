@@ -43,7 +43,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Language {{{3
-  " call dein#add('pocke/iro.vim')
   call dein#add('Chiel92/vim-autoformat',                 {'lazy': 1, 'on_cmd': 'Autoformat'})
   call dein#add('MaxMEllon/vim-jsx-pretty',               {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('Quramy/tsuquyomi',                       {'lazy': 1, 'on_ft': 'typescript'})
@@ -78,6 +77,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('pearofducks/ansible-vim',                {'lazy': 1, 'on_ft': ['ansible', 'ansible_templete', 'ansible_hosts']})
   call dein#add('plasticboy/vim-markdown',                {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('plytophogy/vim-virtualenv',              {'lazy': 1, 'on_ft': 'python'})
+  call dein#add('pocke/iro.vim',                          {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('posva/vim-vue',                          {'lazy': 1, 'on_ft': 'vue'})
   call dein#add('prettier/vim-prettier',                  {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'vue', 'css', 'scss', 'json', 'graphql', 'markdown']})
   call dein#add('rhysd/fixjson',                          {'lazy': 1, 'on_ft': 'json'})
