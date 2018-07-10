@@ -509,8 +509,8 @@ function env_rehash() {
 # Loading fzf {{{
 
 [ -f /usr/local/opt/fzf/shell/completion.zsh ] && source /usr/local/opt/fzf/shell/completion.zsh
-FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
-FZF_DEFAULT_OPTS='--reverse'
+export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
+export FZF_DEFAULT_OPTS='--reverse'
 
 # }}}
 
