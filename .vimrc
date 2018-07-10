@@ -1692,28 +1692,28 @@ if dein#tap('lexima.vim')
     let l:rules = []
 
     "" Ampersand
-    let l:rules += [
-    \ {'char': '&',                        'input': '&& '},
-    \ {'char': '&',     'at': '\S\%#',     'input': ' && '},
-    \ {'char': '&',     'at': '\s\%#',     'input': '&& '},
-    \ {'char': '&',     'at': '&&\s\%#',   'input': '<BS><BS>'},
-    \ {'char': '&',     'at': '&\%#',      'priority': 10},
-    \ {'char': '<C-h>', 'at': '\s&&\s\%#', 'input': '<BS><BS><BS><BS>'},
-    \ {'char': '<C-h>', 'at': '&&\s\%#',   'input': '<BS><BS><BS>'},
-    \ {'char': '<C-h>', 'at': '&&\%#',     'input': '<BS><BS>'},
-    \ ]
+    " let l:rules += [
+    " \ {'char': '&',                        'input': '&& '},
+    " \ {'char': '&',     'at': '\S\%#',     'input': ' && '},
+    " \ {'char': '&',     'at': '\s\%#',     'input': '&& '},
+    " \ {'char': '&',     'at': '&&\s\%#',   'input': '<BS><BS>'},
+    " \ {'char': '&',     'at': '&\%#',      'priority': 10},
+    " \ {'char': '<C-h>', 'at': '\s&&\s\%#', 'input': '<BS><BS><BS><BS>'},
+    " \ {'char': '<C-h>', 'at': '&&\s\%#',   'input': '<BS><BS><BS>'},
+    " \ {'char': '<C-h>', 'at': '&&\%#',     'input': '<BS><BS>'},
+    " \ ]
 
     "" Bar
-    let l:rules += [
-    \ {'char': '<Bar>',                    'input': '|| '},
-    \ {'char': '<Bar>', 'at': '\S\%#',     'input': ' || '},
-    \ {'char': '<Bar>', 'at': '\s\%#',     'input': '|| '},
-    \ {'char': '<Bar>', 'at': '||\s\%#',   'input': '<BS><BS><BS><BS>|'},
-    \ {'char': '<Bar>', 'at': '|\%#',      'input': '<Bar>', 'priority': 10},
-    \ {'char': '<C-h>', 'at': '\s||\s\%#', 'input': '<BS><BS><BS><BS>'},
-    \ {'char': '<C-h>', 'at': '||\s\%#',   'input': '<BS><BS><BS>'},
-    \ {'char': '<C-h>', 'at': '||\%#',     'input': '<BS><BS>'},
-    \ ]
+    " let l:rules += [
+    " \ {'char': '<Bar>',                    'input': '|| '},
+    " \ {'char': '<Bar>', 'at': '\S\%#',     'input': ' || '},
+    " \ {'char': '<Bar>', 'at': '\s\%#',     'input': '|| '},
+    " \ {'char': '<Bar>', 'at': '||\s\%#',   'input': '<BS><BS><BS><BS>|'},
+    " \ {'char': '<Bar>', 'at': '|\%#',      'input': '<Bar>', 'priority': 10},
+    " \ {'char': '<C-h>', 'at': '\s||\s\%#', 'input': '<BS><BS><BS><BS>'},
+    " \ {'char': '<C-h>', 'at': '||\s\%#',   'input': '<BS><BS><BS>'},
+    " \ {'char': '<C-h>', 'at': '||\%#',     'input': '<BS><BS>'},
+    " \ ]
 
     "" Parenthesis
     let l:rules += [
