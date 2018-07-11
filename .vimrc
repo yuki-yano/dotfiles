@@ -341,7 +341,7 @@ set diffopt=filler,icase,vertical
 set display=lastline
 set helplang=ja
 set laststatus=2
-set list listchars=tab:^\ ,trail:_,extends:>,precedes:<
+set list listchars=tab:^\ ,trail:_,eol:$,extends:>,precedes:<
 set matchtime=1
 set previewheight=18
 set pumheight=15
@@ -2316,6 +2316,7 @@ highlight CursorLineNr ctermbg=237 ctermfg=253
 highlight CursorLine   ctermbg=235
 highlight PmenuSel     cterm=reverse ctermfg=33 ctermbg=222
 highlight Visual       ctermfg=159 ctermbg=23
+highlight NonText      ctermfg=60
 " }}}2
 
 " }}}1
