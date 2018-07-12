@@ -135,7 +135,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('roxma/vim-hug-neovim-rpc')
   endif
 
-  call dein#add('autozimu/LanguageClient-neovim', {'rev': 'next', 'build': 'bash install.sh'})
+  " call dein#add('autozimu/LanguageClient-neovim', {'rev': 'next', 'build': 'bash install.sh'})
 
   call dein#add('Shougo/neco-syntax')
   call dein#add('Shougo/neco-vim')
@@ -1250,11 +1250,17 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   let g:deoplete#enable_camel_case = 1
   let g:deoplete#enable_ignore_case = 0
   let g:deoplete#auto_complete_delay = 0
-  let g:deoplete#enable_refresh_always = 0
+  let g:deoplete#enable_refresh_always = 1
   let g:deoplete#file#enable_buffer_path = 1
   let g:deoplete#max_list = 10000
   let g:deoplete#auto_complete_start_length = 3
   let g:deoplete#tag#cache_limit_size = 5000000
+
+  inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
+
+  imap <C-k> <Plug>(neosnippet_expand_or_jump)
+  smap <C-k> <Plug>(neosnippet_expand_or_jump)
+  xmap <C-k> <Plug>(neosnippet_expand_target)
 
   call deoplete#custom#source('_', 'converters', [
   \ 'converter_remove_paren',
@@ -1267,9 +1273,9 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   let g:deoplete#sources#go#gocode_binary = $GOPATH . '/bin/gocode'
   let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 
-  call deoplete#custom#source('LanguageClient', 'rank', 1000)
+  " call deoplete#custom#source('LanguageClient', 'rank', 1100)
+  call deoplete#custom#source('neosnippet',     'rank',  1000)
   call deoplete#custom#source('around',         'rank',  900)
-  call deoplete#custom#source('neosnippet',     'rank',  900)
   call deoplete#custom#source('ternjs',         'rank',  900)
   call deoplete#custom#source('flow',           'rank',  900)
   call deoplete#custom#source('ruby',           'rank',  900)
@@ -1290,9 +1296,9 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   call deoplete#custom#source('dictionary',     'rank',  200)
   call deoplete#custom#source('look',           'rank',  100)
 
-  call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
-  call deoplete#custom#source('around',         'mark', '[around]')
+  " call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
   call deoplete#custom#source('neosnippet',     'mark', '[snippet]')
+  call deoplete#custom#source('around',         'mark', '[around]')
   call deoplete#custom#source('member',         'mark', '[member]')
   call deoplete#custom#source('buffer',         'mark', '[buffer]')
   call deoplete#custom#source('gtags',          'mark', '[gtags]')
@@ -1311,22 +1317,23 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   call deoplete#custom#source('vim',            'mark', '[vim]')
   call deoplete#custom#source('tmux',           'mark', '[tmux]')
 
-  let s:deoplete_default_sources = ['around', 'tag', 'member', 'buffer', 'omni', 'syntax', 'file', 'dictionary', 'neosnippet', 'gtags', 'tmux', 'look'] " LanguageClient
+  let s:deoplete_default_sources = ['neosnippet', 'around', 'tag', 'member', 'buffer', 'omni', 'syntax', 'file', 'dictionary', 'gtags', 'tmux', 'look'] " LanguageClient
   let g:deoplete#sources = {}
   let g:deoplete#sources._          = s:deoplete_default_sources
-  let g:deoplete#sources.javascript = s:deoplete_default_sources + ['LanguageClient', 'ternjs', 'flow']
-  let g:deoplete#sources.typescript = s:deoplete_default_sources + ['LanguageClient', 'ternjs']
-  let g:deoplete#sources.vue        = s:deoplete_default_sources + ['LanguageClient', 'ternjs']
-  " let g:deoplete#sources.javascript = s:deoplete_default_sources + ['ternjs', 'flow']
-  " let g:deoplete#sources.typescript = s:deoplete_default_sources + ['ternjs']
-  " let g:deoplete#sources.vue        = s:deoplete_default_sources + ['ternjs']
+  " let g:deoplete#sources.javascript = s:deoplete_default_sources + ['LanguageClient', 'ternjs', 'flow']
+  " let g:deoplete#sources.typescript = s:deoplete_default_sources + ['LanguageClient', 'ternjs']
+  " let g:deoplete#sources.vue        = s:deoplete_default_sources + ['LanguageClient', 'ternjs']
+  let g:deoplete#sources.javascript = s:deoplete_default_sources + ['ternjs', 'flow']
+  let g:deoplete#sources.typescript = s:deoplete_default_sources + ['ternjs']
+  let g:deoplete#sources.vue        = s:deoplete_default_sources + ['ternjs']
   let g:deoplete#sources.ruby       = s:deoplete_default_sources + ['ruby']
   let g:deoplete#sources.eruby      = s:deoplete_default_sources + ['ruby']
   " let g:deoplete#sources.ruby       = s:deoplete_default_sources + ['ruby', 'solargraph']
   " let g:deoplete#sources.eruby      = s:deoplete_default_sources + ['ruby', 'solargraph']
   let g:deoplete#sources.python     = s:deoplete_default_sources + ['jedi']
   let g:deoplete#sources.go         = s:deoplete_default_sources + ['go']
-  let g:deoplete#sources.rust       = s:deoplete_default_sources + ['LanguageClient', 'racer']
+  " let g:deoplete#sources.rust       = s:deoplete_default_sources + ['LanguageClient', 'racer']
+  let g:deoplete#sources.rust       = s:deoplete_default_sources + ['racer']
   let g:deoplete#sources.markdown   = s:deoplete_default_sources + ['emoji']
   let g:deoplete#sources.html       = s:deoplete_default_sources
   let g:deoplete#sources.xml        = s:deoplete_default_sources
@@ -1388,36 +1395,19 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   let g:deoplete#omni#functions.scss       = s:deoplete_default_omni_sources + ['csscomplete#CompleteCSS']
   let g:deoplete#omni#functions.vim        = s:deoplete_default_omni_sources
   let g:deoplete#omni#functions.zsh        = s:deoplete_default_omni_sources
-
-  inoremap <silent> <CR> <C-r>=<SID>deoplete_cr_function()<CR>
-  inoremap <silent> <expr> <C-h> deoplete#smart_close_popup() . "\<C-h>"
-  inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
-  inoremap <silent> <expr> ' pumvisible() ? deoplete#close_popup() : "'"
-  imap <expr> <Tab> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<Tab>"
-  smap <expr> <Tab> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<Tab>"
-
-  function! s:deoplete_cr_function()
-    if neosnippet#expandable_or_jumpable()
-      return "\<Plug>(neosnippet_expand_or_jump)"
-    else
-      return "\<C-y>" . deoplete#smart_close_popup()
-    endif
-  endfunction
-
-  inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
 endif
 " }}}3
 
 " LanguageClient {{{3
-let g:LanguageClient_autoStart = 1
-let g:LanguageClient_serverCommands = {
-\ 'vue': ['vls'],
-\ 'html': [],
-\ 'css': [],
-\ 'javascript': ['javascript-typescript-stdio'],
-\ 'typescript': ['javascript-typescript-stdio'],
-\ 'rust': ['rustup', 'run', 'nightly', 'rls'],
-\ }
+" let g:LanguageClient_autoStart = 1
+" let g:LanguageClient_serverCommands = {
+" \ 'vue': ['vls'],
+" \ 'html': [],
+" \ 'css': [],
+" \ 'javascript': ['javascript-typescript-stdio'],
+" \ 'typescript': ['javascript-typescript-stdio'],
+" \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
+" \ }
 " }}}3
 
 " }}}2
