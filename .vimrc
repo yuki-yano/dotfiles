@@ -88,7 +88,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tell-k/vim-autopep8',                    {'lazy': 1, 'on_ft': 'python'})
   call dein#add('tpope/vim-rails',                        {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('vim-ruby/vim-ruby',                      {'lazy': 1, 'on_ft': ['ruby', 'eruby']})
-  call dein#add('vimtaku/hl_matchit.vim',                 {'lazy': 1, 'on_ft': 'ruby'})
   " }}}3
 
   " ALE {{{
