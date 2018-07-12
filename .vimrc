@@ -228,13 +228,13 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Appearance {{{3
+  " call dein#add('itchyny/vim-cursorword')
   call dein#add('AndrewRadev/linediff.vim',       {'lazy': 1, 'on_cmd': ['Linediff', 'LinediffReset']})
   call dein#add('LeafCage/foldCC.vim')
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
   call dein#add('gregsexton/MatchTag')
   call dein#add('haya14busa/vim-operator-flashy', {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('itchyny/lightline.vim')
-  call dein#add('itchyny/vim-cursorword')
   call dein#add('itchyny/vim-highlighturl')
   call dein#add('itchyny/vim-parenmatch')
   call dein#add('luochen1990/rainbow')
