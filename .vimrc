@@ -194,7 +194,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Edit & Move & Search {{{3
   " call dein#add('tyru/skk.vim',                           {'lazy': 1, 'on_event': 'InsertEnter'})
   " call dein#add('vimtaku/vim-mlh',                        {'lazy': 1, 'on_event': 'InsertEnter'})
-  call dein#add('DeaR/vim-textobj-wiw',                   {'lazy': 1, 'on_map': {'n': [',w', ',b', ',e', ',ge'], 'ox': ['i,w', 'a,w']}, 'depends': 'vim-textobj-user'})
+  call dein#add('DeaR/vim-textobj-wiw',                   {'lazy': 1, 'on_map': {'n': ['zw', 'zb', 'ze', 'zge'], 'ox': ['izw', 'azw']}, 'depends': 'vim-textobj-user'})
   call dein#add('LeafCage/yankround.vim',                 {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('chrisbra/NrrwRgn',                       {'lazy': 1, 'on_cmd': ['NR', 'NW', 'WidenRegion', 'NRV', 'NUD', 'NRP', 'NRM', 'NRS', 'NRN', 'NRL']})
   call dein#add('cohama/lexima.vim',                      {'lazy': 1, 'on_event': 'InsertEnter', 'hook_source': 'call Hook_on_post_source_lexima()'})
@@ -206,6 +206,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('haya14busa/vim-metarepeat',              {'lazy': 1, 'on_map': ['go', 'g.']})
   call dein#add('haya14busa/vim-textobj-function-syntax', {'lazy': 1, 'depends': 'vim-textobj-function'})
   call dein#add('junegunn/vim-easy-align',                {'lazy': 1, 'on_cmd': 'EasyAlign'})
+  call dein#add('justinmk/vim-sneak')
   call dein#add('kana/vim-operator-replace',              {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('kana/vim-textobj-function',              {'lazy': 1, 'on_map': {'ox': ['if', 'af', 'iF', 'aF']}, 'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-indent',                {'lazy': 1, 'on_map': {'ox': ['ai', 'ii', 'aI',  'iI']}, 'depends': 'vim-textobj-user'})
@@ -1635,7 +1636,7 @@ let g:easy_align_delimiters = {
 \ }
 " }}}3
 
-" easymotion {{{3
+" easymotion & sneak {{{3
 let g:EasyMotion_do_mapping = 0
 let g:EasyMotion_smartcase = 1
 let g:EasyMotion_startofline = 0
@@ -1648,12 +1649,17 @@ highlight link EasyMotionMoveHL Search
 
 map  S  <Plug>(easymotion-s2)
 nmap S  <Plug>(easymotion-overwin-f2)
-map  sl <Plug>(easymotion-bd-jk)
-nmap sl <Plug>(easymotion-overwin-line)
 omap f  <Plug>(easymotion-fl)
 omap t  <Plug>(easymotion-tl)
 omap F  <Plug>(easymotion-Fl)
 omap T  <Plug>(easymotion-Tl)
+
+nmap ss <Plug>Sneak_s
+nmap sS <Plug>Sneak_S
+xmap ss <Plug>Sneak_s
+xmap sS <Plug>Sneak_S
+omap ss <Plug>Sneak_s
+omap sS <Plug>Sneak_S
 " }}}3
 
 " edgemotion {{{3
@@ -1811,6 +1817,10 @@ let g:skk_large_jisyo = expand('~/.config/nvim/dict/SKK-JISYO.L')
 
 " tcomment {{{3
 noremap <silent> <Leader>cc :TComment<CR>
+" }}}3
+
+" textobj-wiw {{{3
+let g:textobj_wiw_default_key_mappings_prefix = 'z'
 " }}}3
 
 " yankround {{{3
