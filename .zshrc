@@ -238,35 +238,35 @@ alias -g LB='$(git branch    | fzf --multi --prompt "Local Branches>"  | sed -e 
 alias -g S='$(git status -s           | cut -b 4- | uniq | fzf --multi --prompt "Changed File>")'
 alias -g U='$(git ls-files --unmerged | cut -f2   | uniq | fzf --multi --prompt "Unmerged File>")'
 
-function fadd() {
+function fa() {
   local addfiles
-  addfiles=($(git status --short | awk '{ print $2 }' | fzf --multi --preview 'git diff {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview))
+  addfiles=($(git status --short | awk '{ print $2 }' | fzf --multi --prompt "Git Add Files>" --preview 'git diff --color=always {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview))
   if [[ -n $addfiles ]]; then
-    git add ${@:1} $addfiles && echo "added: $addfiles"
+    git add ${@:1} $addfiles && echo "Git Add: $addfiles"
   fi
 }
 
 function fcof() {
   local checkoutfiles
-  checkoutfiles=($(git status --short | awk '{ print $2 }' | fzf --multi --preview 'git diff {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview))
+  checkoutfiles=($(git status --short | awk '{ print $2 }' | fzf --multi --prompt "Git Checkout Files>" --preview 'git diff --color=always {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview))
   if [[ -n $checkoutfiles ]]; then
-    git checkout -- ${@:1} $checkoutfiles && echo "checkouted: $checkoutfiles"
+    git checkout -- ${@:1} $checkoutfiles && echo "Git Checkout Files: $checkoutfiles"
   fi
 }
 
-function freset() {
+function fco() {
+  local branch
+  branch=($(git branch | fzf --prompt "Git Checkout Branch>"))
+  if [[ -n $branch ]]; then
+    git checkout $branch && echo "Git Checkout Branch: $branch"
+  fi
+}
+
+function fre() {
   local resetfiles
-  resetfiles=($(git status --short | awk '{ print $2 }' | fzf --multi --preview 'git diff {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview))
+  resetfiles=($(git status --short | grep -E '^M' | awk '{ print $2 }' | fzf --multi --prompt "Git Reset Files>" --preview 'git diff --cached --color=always {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview))
   if [[ -n $resetfiles ]]; then
-    git reset ${@:1} $resetfiles && echo "reset: $resetfiles"
-  fi
-}
-
-function fcrm() {
-  local cancelrmfiles
-  cancelrmfiles=($(git status --short | awk '{ print $2 }' | fzf --multi --preview 'git diff {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview))
-  if [[ -n $cancelrmfiles ]]; then
-    git reset HEAD ${@:1} $cancelrmfiles && git checkout $cancelrmfiles && echo "cncel reset: $cancelrmfiles"
+    git reset ${@:1} $resetfiles && echo "Git Reset Files: $resetfiles"
   fi
 }
 
