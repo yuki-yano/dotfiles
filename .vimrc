@@ -1133,8 +1133,8 @@ let g:fzf_preview_filelist_command = 'rg --files --hidden --follow --glob "!.git
 
 nnoremap <silent> <Leader>p  :<C-u>ProjectFilesPreview<CR>
 nnoremap <silent> <Leader>b  :<C-u>BuffersPreview<CR>
-nnoremap <silent> <Leader>m  :<C-u>ProjectOldFilesPreview<CR>
-nnoremap <silent> <Leader>M  :<C-u>OldFilesPreview<CR>
+nnoremap <silent> <Leader>o  :<C-u>ProjectOldFilesPreview<CR>
+nnoremap <silent> <Leader>O  :<C-u>OldFilesPreview<CR>
 nnoremap <silent> <Leader>gf :<C-u>ProjectGrepPreview<CR>
 " }}}3
 
