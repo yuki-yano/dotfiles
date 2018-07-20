@@ -2021,8 +2021,9 @@ let g:rainbow_conf.diff = 0
 " }}}3
 
 " smartnumber {{{3
+AlterCommand! <cmdwin> num SNumbersToggleRelative
+
 let g:snumber_enable_startup = 1
-nnoremap <silent> <Leader>n :SNumbersToggleRelative<CR>
 " }}}3
 
 " zenspace {{{3
