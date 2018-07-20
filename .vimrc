@@ -2016,7 +2016,7 @@ let g:startify_commands = [
 " rainbow {{{3
 let g:rainbow_active = 1
 let g:rainbow_conf = {}
-let g:rainbow_conf.ctermfgs = [ '110', '150', '109', '216', '140', '203' ]
+let g:rainbow_conf.ctermfgs = ['darkred', 'darkcyan', 'darkblue', 'darkmagenta']
 let g:rainbow_conf.diff = 0
 " }}}3
 
