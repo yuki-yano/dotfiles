@@ -2213,7 +2213,7 @@ let g:ref_source_webdict_sites = {
 
 " session {{{3
 AlterCommand! <cmdwin> ss SessionSave!
-AlterCommand! <cmdwin> so SessionOpen
+AlterCommand! <cmdwin> sl SessionOpen
 " }}}3
 
 " scratch {{{3
