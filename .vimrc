@@ -104,7 +104,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Completion {{{3
-  call dein#add('Shougo/deoplete.nvim')
   if has('nvim')
     call dein#add('Shougo/deoplete.nvim')
 
