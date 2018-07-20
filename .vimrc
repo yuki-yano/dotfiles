@@ -421,6 +421,10 @@ map <silent> <leader>ss :set spell!<CR>
 if has('nvim')
   tnoremap <silent> <Esc> <C-\><C-n>
 endif
+
+"" Clipboard
+nnoremap sc :<C-u>call system('pbcopy', @")<CR>
+nnoremap sp :<C-u>r! pbpaste<CR>
 " }}}2
 
 " Set Options {{{2
@@ -503,7 +507,7 @@ AutoCmd WinEnter,BufRead,BufNew,Syntax * highlight Todo ctermfg=229
 " }}}3
 
 " Clipboard {{{3
-set clipboard=unnamed,unnamedplus
+" set clipboard=unnamed,unnamedplus
 " }}}3
 
 " Misc {{{3
