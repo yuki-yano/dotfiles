@@ -183,7 +183,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Appearance {{{3
-  " call dein#add('itchyny/vim-cursorword')
   call dein#add('AndrewRadev/linediff.vim',       {'lazy': 1, 'on_cmd': ['Linediff', 'LinediffReset']})
   call dein#add('LeafCage/foldCC.vim')
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
@@ -197,6 +196,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mhinz/vim-startify')
   call dein#add('mopp/smartnumber.vim',           {'lazy': 1, 'on_cmd': 'SNumbersToggleRelative'})
   call dein#add('ntpeters/vim-better-whitespace')
+  call dein#add('osyo-manga/vim-brightest')
   call dein#add('t9md/vim-quickhl',               {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-zenspace')
   " }}}3
@@ -511,7 +511,7 @@ AutoCmd WinEnter,BufRead,BufNew,Syntax * highlight Todo ctermfg=229
 " }}}3
 
 " Misc {{{3
-set updatetime=100
+set updatetime=500
 set matchpairs& matchpairs+=<:>
 set langnoremap
 set regexpengine=2
@@ -645,7 +645,20 @@ endfunction
 
 command! -buffer -bar HelpEdit call s:option_to_edit()
 command! -buffer -bar HelpView call s:option_to_view()
-" }}}
+" }}}2
+
+" Accelerate {{{2
+function! s:accelerate() abort
+  :IndentLinesDisable
+  :RainbowToggleOff
+  :BrightestDisable
+  :ALEDisable
+  syntax off
+  set nocursorline
+endfunction
+
+command! Accelerate call <SID>accelerate()
+" }}}2
 
 " }}}1
 
@@ -1795,6 +1808,14 @@ endif
 
 " better-whitespace {{{3
 let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'tag', 'help', 'gitcommit', 'vimfiler', 'vimfiler:explorer', 'unite', 'denite']
+" }}}3
+
+" brightest {{{3
+AlterCommand! <cmdwin> br[ight] BrightestToggle
+
+let g:brightest#enable_on_CursorHold = 1
+let g:brightest#enable_highlight_all_window = 1
+let g:brightest#highlight = { 'group': 'Search' }
 " }}}3
 
 " fastfold {{{3
