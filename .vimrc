@@ -2240,6 +2240,16 @@ endif
 
 " tagbar {{{3
 AlterCommand! <cmdwin> tag TagbarOpen<Space>j
+
+let g:tagbar_autoshowtag = 1
+let g:tagbar_autofocus   = 1
+let g:tagbar_sort        = 0
+
+function! Tagbar_status_func(current, sort, fname, ...) abort
+  let g:lightline.fname = a:fname
+  return lightline#statusline(0)
+endfunction
+let g:tagbar_status_func = 'Tagbar_status_func'
 " }}}3
 
 " undotree {{{3
