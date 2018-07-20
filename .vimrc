@@ -9,10 +9,6 @@ endif
 scriptencoding utf-8
 " }}}1
 
-" Variable Definition {{{1
-let s:ale_filetypes = ['javascript', 'typescript', 'vue', 'ruby', 'eruby', 'python', 'go', 'rust', 'json', 'html', 'css', 'scss', 'vim', 'sh', 'bash', 'zsh']
-" }}}1
-
 " Plugin Manager {{{1
 
 " Install & Load Dein {{{2
@@ -91,6 +87,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " ALE {{{
+  let s:ale_filetypes = ['javascript', 'typescript', 'vue', 'ruby', 'eruby', 'python', 'go', 'rust', 'json', 'html', 'css', 'scss', 'vim', 'sh', 'bash', 'zsh']
   call dein#add('w0rp/ale', {'lazy': 1, 'on_ft': s:ale_filetypes})
   " }}}
 
@@ -873,9 +870,12 @@ let g:ale_linter_aliases = {
 \ 'eruby': 'html',
 \ }
 
+let g:ale_sign_column_always = 1
 let g:ale_change_sign_column_color = 1
-let g:ale_set_signs = 1
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_insert_leave = 0
 let g:ale_echo_msg_format = '[%linter%] %s'
+
 highlight ALEWarning ctermfg=0 ctermbg=229
 highlight ALEError   ctermfg=0 ctermbg=203
 " }}}3
