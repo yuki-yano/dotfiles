@@ -983,24 +983,25 @@ if dein#tap('denite.nvim')
 
   "" highlight
   call denite#custom#option('default', 'prompt', '>')
-  call denite#custom#option('default', 'mode', 'normal')
+  call denite#custom#option('default', 'mode', 'insert')
   call denite#custom#option('default', 'highlight_matched', 'Search')
   call denite#custom#option('default', 'highlight_mode_normal', 'CursorLineNr')
   call denite#custom#option('default', 'highlight_mode_insert', 'CursorLineNr')
 
   "" keymap
-  call denite#custom#map('normal', '<Esc>', '<denite:quit>', 'noremap')
-  call denite#custom#map('normal', '<C-g>', '<denite:quit>', 'noremap')
-  call denite#custom#map('normal', '<C-n>', '<denite:move_to_next_line>', 'noremap')
+  call denite#custom#map('_',      '<C-v>', '<denite:do_action:preview>',     'noremap')
+  call denite#custom#map('normal', '<C-n>', '<denite:move_to_next_line>',     'noremap')
   call denite#custom#map('normal', '<C-p>', '<denite:move_to_previous_line>', 'noremap')
-  call denite#custom#map('normal', '<C-h>', '<denite:wincmd:h>', 'noremap')
-  call denite#custom#map('normal', '<C-j>', '<denite:wincmd:j>', 'noremap')
-  call denite#custom#map('normal', '<C-k>', '<denite:wincmd:k>', 'noremap')
-  call denite#custom#map('normal', '<C-l>', '<denite:wincmd:l>', 'noremap')
-  call denite#custom#map('insert', '<Esc>', '<denite:enter_mode:normal>', 'noremap')
-  call denite#custom#map('insert', '<C-g>', '<denite:enter_mode:normal>', 'noremap')
-  call denite#custom#map('insert', '<C-n>', '<denite:move_to_next_line>', 'noremap')
+  call denite#custom#map('normal', '<Esc>', '<denite:quit>',                  'noremap')
+  call denite#custom#map('normal', '<C-g>', '<denite:quit>',                  'noremap')
+  call denite#custom#map('normal', '<C-h>', '<denite:wincmd:h>',              'noremap')
+  call denite#custom#map('normal', '<C-j>', '<denite:wincmd:j>',              'noremap')
+  call denite#custom#map('normal', '<C-k>', '<denite:wincmd:k>',              'noremap')
+  call denite#custom#map('normal', '<C-l>', '<denite:wincmd:l>',              'noremap')
+  call denite#custom#map('insert', '<C-n>', '<denite:move_to_next_line>',     'noremap')
   call denite#custom#map('insert', '<C-p>', '<denite:move_to_previous_line>', 'noremap')
+  call denite#custom#map('insert', '<Esc>', '<denite:enter_mode:normal>',     'noremap')
+  call denite#custom#map('insert', '<C-g>', '<denite:enter_mode:normal>',     'noremap')
 
   "" option
   call denite#custom#source('_', 'matchers', ['matcher_fuzzy'])
@@ -1017,11 +1018,13 @@ if dein#tap('denite.nvim')
   \  '*.min.*'
   \ ])
 
-  call denite#custom#var('file_rec', 'command', ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
-  call denite#custom#var('grep', 'command', ['ag'])
+  call denite#custom#var('file_rec', 'command', [ 'rg', '--files', '--glob', '!.git', ''])
+  call denite#custom#var('grep', 'command', ['rg'])
+  call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])
   call denite#custom#var('grep', 'recursive_opts', [])
-  call denite#custom#var('grep', 'pattern_opt', [])
-  call denite#custom#var('grep', 'default_opts', ['--follow', '--no-group', '--no-color'])
+  call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
+  call denite#custom#var('grep', 'separator', ['--'])
+  call denite#custom#var('grep', 'final_opts', [])
 
   "" file & buffer
   " nnoremap <silent> <Leader>p :<C-u>Denite file_rec -direction=topleft -mode=insert<CR>
@@ -1029,30 +1032,23 @@ if dein#tap('denite.nvim')
   " nnoremap <silent> <Leader>m :<C-u>Denite file_mru -direction=topleft -mode=insert<CR>
 
   "" grep
-  " nnoremap <silent> <Leader>/ :<C-u>Denite line -auto-preview<CR>
-  " nnoremap <silent> <Leader>* :<C-u>DeniteCursorWord line -auto-preview<CR>
-  " nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep -auto-preview<CR>
-  " nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep -auto-preview<CR>
+  nnoremap <silent> <Leader>/         :<C-u>Denite line<CR>
+  nnoremap <silent> <Leader>*         :<C-u>DeniteCursorWord line<CR>
+  nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep<CR>
+  nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep<CR>
 
   "" outline
   " nnoremap <silent> <Leader>o :<C-u>Denite outline<CR>
 
   "" jump
-  " nnoremap <silent> <Leader><C-o> :<C-u>Denite jump change -auto-preview -direction=botright<CR>
+  nnoremap <silent> <Leader><C-o> :<C-u>Denite jump change -direction=botright<CR>
 
   "" ctags & gtags
-  nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context -direction=botright<CR>
-  nnoremap <silent> <Leader>gd    :<C-u>Denite gtags_grep -direction=botright<CR>
+  nnoremap <silent> <Leader><C-]>         :<C-u>DeniteCursorWord gtags_context -direction=botright<CR>
+  nnoremap <silent> <Leader><Leader><C-]> :<C-u>DeniteCursorWord gtags_grep -direction=botright<CR>
 
   "" yank
-  " nnoremap <silent> <Leader>p :<C-u>Denite register -direction=topleft<CR>
-
-  "" quickfix
-  " nnoremap <silent> <Leader>l :Denite location_list -no-quit -auto-resize<CR>
-  " nnoremap <silent> <Leader>q :Denite quickfix -no-quit -auto-resize<CR>
-
-  "" session
-  " nnoremap <silent> <Leader>sl :<C-u>Denite session<CR>
+  nnoremap <silent> <Leader><Leader>p :<C-u>Denite unite:yankround<CR>
 
   "" resume
   nnoremap <silent> <Leader>dr :<C-u>Denite -resume<CR>
@@ -1077,58 +1073,38 @@ if dein#tap('unite.vim')
   AutoCmd FileType unite call s:unite_settings()
 
   "" file & buffer
-  call unite#custom#source('buffer,file_rec,file_rec/async,file_rec/git', 'matchers', ['converter_relative_word', 'matcher_fuzzy'])
-  call unite#custom#source('neomru/file', 'matchers', ['converter_relative_word', 'matcher_project_files', 'matcher_fuzzy'])
-  call unite#custom#source('file_mru', 'matchers', ['converter_relative_word', 'matcher_fuzzy'])
+  " call unite#custom#source('buffer,file_rec,file_rec/async,file_rec/git', 'matchers', ['converter_relative_word', 'matcher_fuzzy'])
+  " call unite#custom#source('neomru/file', 'matchers', ['converter_relative_word', 'matcher_project_files', 'matcher_fuzzy'])
+  " call unite#custom#source('file_mru', 'matchers', ['converter_relative_word', 'matcher_fuzzy'])
 
-  let g:unite_source_rec_max_cache_files = 10000
-  let g:unite_enable_auto_select = 0
-  let g:unite_source_rec_async_command = ['rg', '--files', '--follow', '--glob', '!.git/*']
+  " let g:unite_source_rec_max_cache_files = 10000
+  " let g:unite_enable_auto_select = 0
+  " let g:unite_source_rec_async_command = ['rg', '--files', '--follow', '--glob', '!.git/*']
+
   " nnoremap <silent> <Leader>p :<C-u>Unite file_rec/async:!<CR>
   " nnoremap <silent> <Leader>m :<C-u>Unite neomru/file<CR>
   " nnoremap <silent> <Leader>M :<C-u>Unite file_mru<CR>
   " nnoremap <silent> <Leader>f :<C-u>Unite buffer file_mru file_rec/async:!<CR>
   " nnoremap <silent> <Leader>b :<C-u>Unite buffer<CR>
 
-  "" jump
-  nnoremap <silent> <Leader><C-o> :<C-u>Unite jump change -auto-preview -direction=botright<CR>
-
-  "" outline
-  nnoremap <silent> <Leader>o :<C-u>Unite outline -vertical -direction=botright -winwidth=40 -no-quit<CR>
-
   "" grep
-  let g:unite_source_grep_command = 'rg'
-  let g:unite_source_grep_default_opts = '--vimgrep --hidden'
-  let g:unite_source_grep_recursive_opt = ''
-
-  call unite#custom_source('line', 'sorters', 'sorter_reverse')
-  call unite#custom_source('grep', 'sorters', 'sorter_reverse')
-  nnoremap <silent> <Leader>/          :<C-u>Unite line -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  nnoremap <silent> <Leader>//         :<C-u>Unite line -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
-  nnoremap <silent> <Leader>*          :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  nnoremap <silent> <Leader>**         :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
-  nnoremap <silent> <Leader><Leader>/  :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  nnoremap <silent> <Leader><Leader>// :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
-  nnoremap <silent> <Leader><Leader>*  :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  nnoremap <silent> <Leader><Leader>** :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
+  " let g:unite_source_grep_command = 'rg'
+  " let g:unite_source_grep_default_opts = '--vimgrep --hidden'
+  " let g:unite_source_grep_recursive_opt = ''
+  "
+  " call unite#custom_source('line', 'sorters', 'sorter_reverse')
+  " call unite#custom_source('grep', 'sorters', 'sorter_reverse')
+  " nnoremap <silent> <Leader>/          :<C-u>Unite line -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  " nnoremap <silent> <Leader>//         :<C-u>Unite line -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
+  " nnoremap <silent> <Leader>*          :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  " nnoremap <silent> <Leader>**         :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
+  " nnoremap <silent> <Leader><Leader>/  :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  " nnoremap <silent> <Leader><Leader>// :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
+  " nnoremap <silent> <Leader><Leader>*  :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  " nnoremap <silent> <Leader><Leader>** :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
 
   "" yank
-  let g:unite_source_history_yank_enable = 1
-  nnoremap <silent> <Leader><Leader>p :<C-u>Unite yankround<CR>
-
-  "" quickfix
-  " let g:unite_quickfix_filename_is_pathshorten = 0
-  " call unite#custom_source('quickfix', 'sorters', 'sorter_reverse')
-  " call unite#custom_source('location_list', 'sorters', 'sorter_reverse')
-  " nnoremap <silent> <Leader>q :<C-u>Unite quickfix -direction=botright -no-quit<CR>
-  " nnoremap <silent> <Leader>l :<C-u>Unite location_list -direction=botright -no-quit<CR>
-
-  "" session
-  " nnoremap <Leader>ss :<C-u>UniteSessionSave<CR>
-  " nnoremap <Leader>sl :<C-u>UniteSessionLoad<CR>
-
-  "" resume
-  " nnoremap <silent> <Leader>re :<C-u>Unite -resume<CR>
+  " nnoremap <silent> <Leader><Leader>p :<C-u>Unite yankround<CR>
 endif
 " }}}3
 
