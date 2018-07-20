@@ -860,8 +860,11 @@ let g:formatdef_vue_format = '"cat | htmlbeautifier"'
 let g:formatters_vue = ['vue_format']
 
 " json
-let g:formatdef_jq = '"cat | jq ."'
-let g:formatters_json = ['jq']
+let g:formatdef_jq    = '"cat | jq ."'
+let g:formatters_json = ['fixjson', 'jq']
+
+" python
+let g:formatters_python = ['autopep8', 'yapf']
 " }}}3
 
 " echodoc {{{3
