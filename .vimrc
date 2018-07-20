@@ -1727,6 +1727,31 @@ if dein#tap('vim-sandwich')
     \   { 'buns': ['\/', '\/'] },
     \   { 'buns': ['_', '_'] },
     \   { 'buns': ['`', '`'] },
+    \   {
+    \     '__filetype__': 'ruby',
+    \     'buns':     ['#{', '}'],
+    \     'input':    ['#'],
+    \     'filetype': ['ruby', 'eruby'],
+    \   },
+    \   {
+    \     '__filetype__': 'ruby',
+    \     'buns':     ['-> () {', '}'],
+    \     'input':    ['->'],
+    \     'kind':     ['add'],
+    \     'filetype': ['ruby', 'eruby'],
+    \   },
+    \   {
+    \     '__filetype__': 'eruby',
+    \     'buns':     ['<% ', ' %>'],
+    \     'input':    ['%'],
+    \     'filetype': ['eruby'],
+    \   },
+    \   {
+    \     '__filetype__': 'eruby',
+    \     'buns':     ['<%= ', ' %>'],
+    \     'input':    ['='],
+    \     'filetype': ['eruby'],
+    \   },
     \ ]
   endfunction
 endif
