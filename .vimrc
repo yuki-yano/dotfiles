@@ -2075,7 +2075,10 @@ let g:automatic_config = [
 \   },
 \ },
 \ {
-\   'match': { 'filetype': 'qf' },
+\   'match': {
+\     'filetype': 'qf',
+\     'autocmds': ['FileType'],
+\   },
 \ },
 \ {
 \   'match': { 'filetype': 'diff' },
@@ -2112,6 +2115,16 @@ let g:automatic_config = [
 \ },
 \ {
 \   'match': { 'filetype': 'gina-reflog' },
+\ },
+\ {
+\   'match': {
+\     'filetype': 'quickrun',
+\     'autocmds': ['FileType'],
+\   },
+\   'set': {
+\     'move': 'right',
+\     'width': '35%',
+\   },
 \ },
 \ {
 \   'match': {
