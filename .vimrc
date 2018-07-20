@@ -2187,8 +2187,18 @@ command! -range Trans <line1>,<line2>OpenGoogleTranslate
 " }}}3
 
 " quickrun {{{
-let g:quickrun_config={'_': {'split': 'vertical rightbelow'}}
-nnoremap <silent> \r :QuickRun<CR>
+AlterCommand! <cmdwin> qrun QuickRun
+
+let g:quickrun_config = {
+\ '_' : {
+\   'runner': 'vimproc',
+\   'runner/vimproc/updatetime': 40,
+\   'outputter': 'error',
+\   'outputter/error/success': 'buffer',
+\   'outputter/error/error': 'quickfix',
+\ }
+\ }
+let g:quickrun_no_default_key_mappings = 1
 " }}}
 
 " ref {{{3
