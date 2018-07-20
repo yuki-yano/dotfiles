@@ -347,6 +347,8 @@ onoremap H ^
 onoremap L $
 nnoremap <C-o> <C-o>zzzv
 nnoremap <C-i> <C-i>zzzv
+nnoremap g; g;zzzv
+nnoremap g, g,zzzv
 
 "" Edit
 nnoremap dw de
@@ -396,10 +398,10 @@ nnoremap <silent> g8 :<C-u>8tabnext<CR>
 nnoremap <silent> g9 :<C-u>9tabnext<CR>
 
 "" resize
-nnoremap <silent> <Left> :vertical resize -1<CR>
+nnoremap <silent> <Left>  :vertical resize -1<CR>
 nnoremap <silent> <Right> :vertical resize +1<CR>
-nnoremap <silent> <Up> :resize -1<CR>
-nnoremap <silent> <Down> :resize +1<CR>
+nnoremap <silent> <Up>    :resize -1<CR>
+nnoremap <silent> <Down>  :resize +1<CR>
 
 "" Save
 nnoremap <silent> <Leader>w :<C-u>update<CR>
@@ -417,9 +419,6 @@ noremap ]' ]`
 noremap ]` ]'
 noremap [' [`
 noremap [` ['
-
-"" spellcheck
-map <silent> <leader>ss :set spell!<CR>
 
 "" terminal
 if has('nvim')
@@ -555,7 +554,21 @@ function! s:toggle_highlight()
 endfunction
 
 command! ToggleHighlight call s:toggle_highlight()
-nnoremap <silent> <Leader>th :ToggleHighlight<CR>
+" }}}2
+
+" RemoveTailSpace {{{2
+function! s:remove_tail_spaces() abort
+  if &filetype ==# 'markdown'
+    return
+  endif
+
+  let l:c = getpos('.')
+  g/.*\s$/normal $gelD
+  call setpos('.', l:c)
+endfunction
+
+command! RemoveTailSpace call s:remove_tail_spaces()
+AutoCmd BufWritePre * RemoveTailSpace
 " }}}2
 
 " ToggleQuickfix {{{2
@@ -596,17 +609,6 @@ endfunction
 command! -complete=command -nargs=* Preserve call s:preserve(<q-args>)
 " }}}2
 
-" TrimEndLine {{{2
-function! s:trim_end_line()
-  let l:save_cursor = getpos('.')
-  normal! :silent! %s#\($\n\s*\)\+\%$##
-  call setpos('.', l:save_cursor)
-endfunction
-
-" AutoCmd BufWritePre * call s:trim_end_line()
-command! TrimEndLine call s:trim_end_line()
-" }}}2
-
 " MoveToNewTab {{{2
 function! s:move_to_new_tab()
   tab split
@@ -624,7 +626,7 @@ endfunction
 nnoremap gm :<C-u>tablast <Bar> call <SID>move_to_new_tab()<CR>
 " }}}2
 
-" HelpEdit & HelpView {{{
+" HelpEdit & HelpView {{{2
 function! s:option_to_view()
   setlocal buftype=help nomodifiable readonly
   setlocal nolist
@@ -658,10 +660,18 @@ function! s:accelerate() abort
   :BrightestDisable
   :ALEDisable
   syntax off
-  set nocursorline
 endfunction
 
-command! Accelerate call <SID>accelerate()
+function! s:disable_accelerate() abort
+  :IndentLinesEnable
+  :RainbowToggleOn
+  :BrightestEnable
+  :ALEEnable
+  syntax enable
+endfunction
+
+command! Accelerate        call <SID>accelerate()
+command! DisableAccelerate call <SID>SIDdisable_accelerate()
 " }}}2
 
 " }}}1
@@ -699,7 +709,7 @@ AutoCmd FileType zsh        setlocal iskeyword+=$
 " }}}3
 
 " Set Filetype {{{3
-AutoCmd BufNewFile,BufRead            *.js  set filetype=javascript
+AutoCmd BufNewFile,BufRead             *.js set filetype=javascript
 AutoCmd BufNewFile,BufRead            *.erb set filetype=eruby
 AutoCmd BufNewFile,BufRead           *.cson set filetype=coffee
 AutoCmd BufNewFile,BufRead         .babelrc set filetype=json
@@ -805,6 +815,11 @@ endfunction
 " altercmd {{{3
 if dein#tap('vim-altercmd')
   call altercmd#load()
+
+  AlterCommand! <cmdwin> hi            ToggleHighlight
+  AlterCommand! <cmdwin> sp            setlocal<Space>spell!
+  AlterCommand! <cmdwin> acc[elarate]  Accelerate
+  AlterCommand! <cmdwin> dacc[elarate] DisableAccelerate
 endif
 " }}}3
 
