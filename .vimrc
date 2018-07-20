@@ -1974,6 +1974,8 @@ endif
 
 " parenmatch {{{3
 let g:loaded_matchparen = 1
+let g:parenmatch_highlight = 0
+hi link ParenMatch MatchParen
 " }}}3
 
 " quickhl {{{3
