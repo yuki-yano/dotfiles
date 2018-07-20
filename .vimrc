@@ -1979,10 +1979,10 @@ hi link ParenMatch MatchParen
 " }}}3
 
 " quickhl {{{3
-nmap <Leader>h <Plug>(quickhl-manual-this)
-xmap <Leader>h <Plug>(quickhl-manual-this)
-nmap <Leader>H <Plug>(quickhl-manual-reset)
-xmap <Leader>H <Plug>(quickhl-manual-reset)
+nmap <Leader>m <Plug>(quickhl-manual-this)
+xmap <Leader>m <Plug>(quickhl-manual-this)
+nmap <Leader>M <Plug>(quickhl-manual-reset)
+xmap <Leader>M <Plug>(quickhl-manual-reset)
 " }}}3
 
 " startify {{{3
