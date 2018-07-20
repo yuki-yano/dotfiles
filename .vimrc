@@ -1701,6 +1701,14 @@ if dein#tap('lexima.vim')
 endif
 " }}}3
 
+" operator-convert-case {{{3
+nmap <Leader>,cl <Plug>(operator-convert-case-lower-camel)
+nmap <Leader>,cu <Plug>(operator-convert-case-upper-camel)
+nmap <Leader>,sl <Plug>(operator-convert-case-lower-snake)
+nmap <Leader>,su <Plug>(operator-convert-case-upper-snake)
+nmap <Leader>,tt <Plug>(operator-convert-case-toggle-upper-lower)
+nmap <Leader>,ll <Plug>(operator-convert-case-loop)
+nmap <Leader>,cc <Plug>(operator-convert-case-convert)
 " }}}3
 
 " operator-replace {{{3
@@ -2162,7 +2170,7 @@ AlterCommand! <cmdwin> sc[ratch] Scratch
 let g:scratch_no_mappings = 1
 " }}}3
 
-" submode & operator-convert-case {{{3
+" submode {{{3
 if dein#tap('vim-submode')
   let g:submode_keep_leaving_key = 1
 
@@ -2175,10 +2183,6 @@ if dein#tap('vim-submode')
   call submode#enter_with('changetab', 'n', '', 'gl', ':<C-u>tabnext<CR>')
   call submode#map('changetab', 'n', '', 'h', ':<C-u>tabprevious<CR>')
   call submode#map('changetab', 'n', '', 'l', ':<C-u>tabnext<CR>')
-
-  "" operator-convert-case
-  call submode#enter_with('convert', 'n', '', '<leader>cl', ':ConvertCaseLoop<CR>')
-  call submode#map('convert', 'n', '', 'c', ':ConvertCaseLoop<CR>')
 endif
 " }}}3
 
