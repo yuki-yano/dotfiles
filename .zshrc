@@ -112,6 +112,7 @@ setopt brace_ccl
 setopt complete_aliases
 setopt complete_in_word
 setopt extended_glob
+setopt extended_history
 setopt hist_ignore_all_dups
 setopt hist_ignore_dups
 setopt hist_ignore_space
@@ -124,6 +125,7 @@ setopt list_types
 setopt long_list_jobs
 setopt magic_equal_subst
 setopt mark_dirs
+setopt menu_complete
 setopt multios
 setopt no_beep
 setopt no_flow_control
@@ -135,6 +137,7 @@ setopt print_eight_bit
 setopt prompt_subst
 setopt pushd_ignore_dups
 setopt share_history
+setopt transient_rprompt
 
 ## dircolors
 if [ -f ~/.dircolors ] && whence gdircolors > /dev/null; then
