@@ -188,6 +188,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
   call dein#add('blueyed/vim-diminactive')
   call dein#add('haya14busa/vim-operator-flashy', {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('inside/vim-search-pulse')
   call dein#add('itchyny/lightline.vim')
   call dein#add('itchyny/vim-highlighturl')
   call dein#add('itchyny/vim-parenmatch')
@@ -1457,17 +1458,22 @@ if dein#tap('incsearch.vim')
   endfunction
 endif
 
-if dein#tap('vim-anzu') && dein#tap('vim-asterisk')
-  map n  <Plug>(anzu-n)zzzv
-  map N  <Plug>(anzu-N)zzzv
-  map *  <Plug>(asterisk-z*)
-  map #  <Plug>(asterisk-z#)
-  map g* <Plug>(asterisk-gz*)
-  map g# <Plug>(asterisk-gz#)
+if dein#tap('vim-anzu') && dein#tap('vim-asterisk') && dein#tap('vim-search-pulse')
+  let g:vim_search_pulse_disable_auto_mappings = 1
+  let g:vim_search_pulse_mode = 'pattern'
+
+  map n   <Plug>(anzu-n)zzzv<Plug>Pulse
+  map N   <Plug>(anzu-N)zzzv<Plug>Pulse
+  map *   <Plug>(asterisk-z*)zzzv<Plug>Pulse
+  map #   <Plug>(asterisk-z#)zzzv<Plug>Pulse
+  map g*  <Plug>(asterisk-gz*)zzzv<Plug>Pulse
+  map g#  <Plug>(asterisk-gz#)zzzv<Plug>Pulse
+
   nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus<CR>
-endif
+  cmap <silent> <expr> <enter> search_pulse#PulseFirst()
 
-
+  AutoCmd User PrePulse  set cursorcolumn
+  AutoCmd User PostPulse set nocursorcolumn
 endif
 " }}}3
 
@@ -1854,7 +1860,7 @@ AlterCommand! <cmdwin> br[ight] BrightestToggle
 
 let g:brightest#enable_on_CursorHold = 1
 let g:brightest#enable_highlight_all_window = 1
-let g:brightest#highlight = { 'group': 'Search' }
+let g:brightest#highlight = { 'group': 'BrighTestBgLight' }
 " }}}3
 
 " fastfold {{{3
@@ -2334,13 +2340,14 @@ syntax enable
 
 " iceberg {{{2
 silent! colorscheme iceberg
-highlight Search       ctermfg=none ctermbg=237
-highlight LineNr       ctermfg=241
-highlight CursorLineNr ctermbg=237 ctermfg=253
-highlight CursorLine   ctermbg=235
-highlight PmenuSel     cterm=reverse ctermfg=33 ctermbg=222
-highlight Visual       ctermfg=159 ctermbg=23
-highlight NonText      ctermfg=60
+highlight Search           ctermfg=none  ctermbg=238
+highlight LineNr           ctermfg=241
+highlight CursorLineNr     ctermbg=237   ctermfg=253
+highlight CursorLine       ctermbg=235
+highlight PmenuSel         ctermbg=222   ctermfg=33  cterm=reverse
+highlight Visual           ctermfg=159   ctermbg=23
+highlight NonText          ctermfg=60
+highlight BrighTestBgLight ctermfg=none  ctermbg=236
 " }}}2
 
 " }}}1
