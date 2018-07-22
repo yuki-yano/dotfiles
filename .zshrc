@@ -164,31 +164,33 @@ REPORTTIME=10
 
 LISTMAX=1000
 
-# zstyle
+# Basic Configuration
+zstyle ':completion:*' verbose yes
 zstyle ':completion:*' menu select=2
 zstyle ':completion:*' group-name ''
-zstyle ':completion:*'  completer _expand _complete _match _prefix _approximate _list _history
-zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' '+r:|[._-]=* r:|=* l:|=*'
+zstyle ':completion:*' completer _expand _complete _match _prefix _approximate _list
+zstyle ':completion:*' matcher-list  'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*' special-dirs true
-zstyle ':completion:*:options' description 'yes'
-zstyle ':completion:*' auto-description 'specify: %d'
-zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
-zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
+zstyle ':completion:*' auto-description 'Specify: %d'
+zstyle ':completion:*' select-prompt %SScrolling Active: Current selection at %p%s
 zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
 
+zstyle ':completion:*:options'         description 'yes'
+zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
+
 # Highlight
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*:messages' format "$YELLOW" '%d' "$DEFAULT"
-zstyle ':completion:*:warnings' format "$RED" 'No matches for:' "$YELLOW" ' %d' "$DEFAULT"
-zstyle ':completion:*:descriptions' format "$YELLOW" 'completing %B%d%b' "$DEFAULT"
-zstyle ':completion:*:corrections' format "$YELLOW" '%B%d% ' "$RED" '(errors: %e)%b' "$DEFAULT"
+zstyle ':completion:*'              list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*:messages'     format "$YELLOW" '%d' "$DEFAULT"
+zstyle ':completion:*:warnings'     format "$RED" 'No matches for:' "$YELLOW" '%d' "$DEFAULT"
+zstyle ':completion:*:descriptions' format "$YELLOW" 'Completing %B%d%b' "$DEFAULT"
+zstyle ':completion:*:corrections'  format "$YELLOW" '%B%d% ' "$RED" '(Errors: %e)%b' "$DEFAULT"
 
 # Separator
-zstyle ':completion:*' list-separator ' ==> '
+zstyle ':completion:*'         list-separator ' ==> '
 zstyle ':completion:*:manuals' separate-sections true
 
 # Cache
-zstyle ':completion:*' use-cache yes
+zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$HOME/.zsh/cache"
 
 # Others
