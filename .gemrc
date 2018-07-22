@@ -1,4 +1,11 @@
-gemsrc_use_ghq: ~/ghq
-install: --no-document
-update: --no-document
-gem: --no-user-install
+---
+:backtrace: false
+:bulk_threshold: 1000
+:sources:
+- https://rubygems.org/
+:update_sources: true
+:verbose: true
+gemsrc_use_ghq: "~/ghq"
+install: "--document=yri"
+update: "--no-document"
+gem: "--no-user-install"
