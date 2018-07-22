@@ -172,7 +172,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('osyo-manga/vim-jplus',                   {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('othree/eregex.vim',                      {'lazy': 1, 'on_cmd': 'S'})
   call dein#add('rhysd/accelerated-jk',                   {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('rhysd/clever-f.vim',                     {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('rhysd/clever-f.vim')
   call dein#add('rhysd/vim-textobj-ruby',                 {'lazy': 1, 'on_ft': 'ruby', 'depends': 'vim-textobj-user'})
   call dein#add('thinca/vim-qfreplace',                   {'lazy': 1, 'on_cmd': 'Qfreplace'})
   call dein#add('tommcdo/vim-exchange',                   {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
@@ -224,6 +224,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mattn/webapi-vim')
   call dein#add('mbbill/undotree',                     {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
   call dein#add('mtth/scratch.vim',                    {'lazy': 1, 'on_cmd': ['Scratch', 'ScratchInsert', 'ScratchPreview', 'ScratchSelection']})
+  call dein#add('nonylene/vim-keymaps')
   call dein#add('osyo-manga/vim-gift')
   call dein#add('pocke/vim-automatic',                 {'depends': 'vim-gift'})
   call dein#add('powerman/vim-plugin-AnsiEsc')
@@ -1465,20 +1466,8 @@ if dein#tap('vim-anzu') && dein#tap('vim-asterisk')
   map g# <Plug>(asterisk-gz#)
   nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus<CR>
 endif
-" }}}3
 
-" clever-f {{{3
-if dein#tap('clever-f.vim')
-  let g:clever_f_not_overwrites_standard_mappings = 0
 
-  nmap f <Plug>(clever-f-f)
-  vmap f <Plug>(clever-f-f)
-  nmap F <Plug>(clever-f-F)
-  vmap F <Plug>(clever-f-F)
-  nmap t <Plug>(clever-f-t)
-  vmap t <Plug>(clever-f-t)
-  nmap T <Plug>(clever-f-T)
-  vmap T <Plug>(clever-f-T)
 endif
 " }}}3
 
@@ -1534,8 +1523,8 @@ let g:easy_align_delimiters = {
 \ }
 " }}}3
 
-" easymotion & sneak {{{3
-if dein#tap('vim-easymotion') && dein#tap('vim-sneak')
+" easymotion & clever-f & sneak & keymaps {{{3
+if dein#tap('vim-easymotion') && dein#tap('clever-f.vim') && dein#tap('vim-sneak') && dein#tap('vim-keymaps')
   let g:EasyMotion_do_mapping = 0
   let g:EasyMotion_smartcase = 1
   let g:EasyMotion_startofline = 0
@@ -1545,7 +1534,6 @@ if dein#tap('vim-easymotion') && dein#tap('vim-sneak')
   let g:EasyMotion_space_jump_first = 1
   highlight link EasyMotionIncSearch Search
   highlight link EasyMotionMoveHL Search
-
   map  S  <Plug>(easymotion-s2)
   nmap S  <Plug>(easymotion-overwin-f2)
   omap f  <Plug>(easymotion-fl)
@@ -1553,12 +1541,63 @@ if dein#tap('vim-easymotion') && dein#tap('vim-sneak')
   omap F  <Plug>(easymotion-Fl)
   omap T  <Plug>(easymotion-Tl)
 
-  nmap ss <Plug>Sneak_s
-  nmap sS <Plug>Sneak_S
-  xmap ss <Plug>Sneak_s
-  xmap sS <Plug>Sneak_S
-  omap ss <Plug>Sneak_s
-  omap sS <Plug>Sneak_S
+  let g:clever_f_not_overwrites_standard_mappings = 0
+  nmap f q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-f)
+  nmap F q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-F)
+  nmap t q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-t)
+  nmap T q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-T)
+  omap f q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-f)
+  omap F q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-F)
+  omap t q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-t)
+  omap T q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-T)
+  vmap f q:<C-u>KeyMapSet clever<CR>gv<Plug>(clever-f-f)
+  vmap F q:<C-u>KeyMapSet clever<CR>gv<Plug>(clever-f-F)
+  vmap t q:<C-u>KeyMapSet clever<CR>gv<Plug>(clever-f-t)
+  vmap T q:<C-u>KeyMapSet clever<CR>gv<Plug>(clever-f-T)
+
+  nmap ss q:<C-u>KeyMapSet sneak<CR><Plug>Sneak_s
+  nmap sS q:<C-u>KeyMapSet sneak<CR><Plug>Sneak_S
+  omap ss q:<C-u>KeyMapSet sneak<CR><Plug>Sneak_s
+  omap sS q:<C-u>KeyMapSet sneak<CR><Plug>Sneak_S
+  vmap ss q:<C-u>KeyMapSet sneak<CR>gv<Plug>Sneak_s
+  vmap sS q:<C-u>KeyMapSet sneak<CR>gv<Plug>Sneak_S
+
+  let g:keymaps =  [
+  \  {
+  \    'name': 'clever',
+  \    'keymap': {
+  \      'nmap': {
+  \        ';': '<Plug>(clever-f-repeat-forward)',
+  \        ',': '<Plug>(clever-f-repeat-back)',
+  \      },
+  \      'omap': {
+  \        ';': '<Plug>(clever-f-repeat-forward)',
+  \        ',': '<Plug>(clever-f-repeat-back)',
+  \      },
+  \      'vmap': {
+  \        ';': '<Plug>(clever-f-repeat-forward)',
+  \        ',': '<Plug>(clever-f-repeat-back)',
+  \      },
+  \    },
+  \  },
+  \  {
+  \    'name': 'sneak',
+  \    'keymap': {
+  \      'nmap': {
+  \        ';': '<Plug>Sneak_;',
+  \        ',': '<Plug>Sneak_,',
+  \      },
+  \      'vmap': {
+  \        ';': '<Plug>Sneak_;',
+  \        ',': '<Plug>Sneak_,',
+  \      },
+  \      'omap': {
+  \        ';': '<Plug>Sneak_;',
+  \        ',': '<Plug>Sneak_,',
+  \      },
+  \    },
+  \  },
+  \]
 endif
 " }}}3
 
