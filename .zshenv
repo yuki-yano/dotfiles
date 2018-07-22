@@ -8,6 +8,7 @@ export LANG=ja_JP.UTF-8
 
 # editor
 export EDITOR=nvim
+export VISUAL=nvim
 export MANPAGER='nvim -c MANPAGER -'
 alias c=ccat
 
