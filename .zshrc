@@ -86,6 +86,7 @@ autoload -Uz select-quoted
 autoload -Uz smart-insert-last-word
 autoload -Uz surround
 autoload -Uz terminfo
+autoload -Uz zed
 
 # }}}
 
@@ -382,6 +383,27 @@ zle -N accept-line-or-down-pane _accept-line-or-down-pane
 
 # }}}
 
+# zed {{{
+
+function _zed_page_up() {
+  integer count=$(( LINES / 2 - 1 ))
+  while (( count -- )); do
+    zle up-line
+  done
+}
+
+function _zed_page_down() {
+  integer count=$(( LINES / 2 - 1 ))
+  while (( count -- )); do
+    zle down-line
+  done
+}
+
+zle -N zed-page-up   _zed_page_up
+zle -N zed-page-down _zed_page_down
+
+# }}}
+
 # Bindkey {{{
 
 # Default bind
@@ -391,10 +413,14 @@ bindkey -v
 # Wait for next key input for 0.15 seconds (Default 0.4s)
 KEYTIMEOUT=15
 
-bindkey -M viins " "   magic-abbrev-expand
-bindkey -M viins "^x " no-magic-abbrev-expand
+bindkey -M viins ' '   magic-abbrev-expand
+bindkey -M viins '^x ' no-magic-abbrev-expand
 bindkey -M viins '^ '  extra-abbrev
 bindkey -M viins '^]'  insert-last-word
+bindkey -M viins '^[u' undo
+bindkey -M viins "^[r" redo
+bindkey -M viins '^[f' vi-forward-blank-word
+bindkey -M viins "^[b" vi-backward-blank-word
 
 # Add emacs bind
 zle -N history-beginning-search-backward-end history-search-end
@@ -435,10 +461,12 @@ bindkey -M viins '^j' accept-line-or-down-pane
 
 # Completion bind
 zmodload zsh/complist
-bindkey -M menuselect 'h' vi-backward-char
-bindkey -M menuselect 'j' vi-down-line-or-history
-bindkey -M menuselect 'k' vi-up-line-or-history
-bindkey -M menuselect 'l' vi-forward-char
+bindkey -M menuselect '^g' .send-break
+bindkey -M menuselect '^i' forward-char
+bindkey -M menuselect '^j' .accept-line
+bindkey -M menuselect '^k' accept-and-infer-next-history
+bindkey -M menuselect '^n' down-line-or-history
+bindkey -M menuselect '^p' up-line-or-history
 
 # All Mode bind
 bindkey -M viins '^r'   peco-history-selection
@@ -483,6 +511,28 @@ for m in visual vivis viopp; do
     bindkey -M "$m" "$c" select-quoted
   done
 done
+
+# zed
+zed -b
+bindkey -N zed viins
+
+bindkey -M zed       '^n' down-line-or-search
+bindkey -M zed       '^p' up-line-or-search
+bindkey -M zed       '^m' self-insert-unmeta
+bindkey -M zed       '^s' history-incremental-search-forward
+bindkey -M zed       '^r' history-incremental-search-backward
+bindkey -M zed-vicmd 'j'  down-line-or-search
+bindkey -M zed-vicmd 'k'  up-line-or-search
+bindkey -M zed-vicmd 'gg' vi-goto-first-line
+bindkey -M zed-vicmd 'G'  end-of-buffer
+bindkey -M zed-vicmd '^r' redo
+bindkey -M zed-vicmd '/'  history-incremental-search-forward
+bindkey -M zed-vicmd '?'  history-incremental-search-backward
+bindkey -M zed-vicmd 'n'  vi-repeat-search
+bindkey -M zed-vicmd 'N'  vi-rev-repeat-search
+bindkey -M zed-vicmd 'ZZ' accept-line
+bindkey -M zed-vicmd '^u' zed-page-up
+bindkey -M zed-vicmd '^d' zed-page-down
 
 # }}}
 
