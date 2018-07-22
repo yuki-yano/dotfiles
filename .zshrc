@@ -6,7 +6,6 @@ if ! zgen saved; then
   zgen load 39e/zsh-completions-anyenv
   zgen load RobSis/zsh-completion-generator
   zgen load b4b4r07/zsh-vimode-visual
-  zgen load changyuheng/zsh-interactive-cd
   zgen load knu/zsh-git-escape-magic
   zgen load kutsan/zsh-system-clipboard
   zgen load mafredri/zsh-async
