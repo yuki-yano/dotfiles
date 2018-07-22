@@ -16,6 +16,7 @@ if ! zgen saved; then
   zgen load yukiycino-dotfiles/fancy-ctrl-z
   zgen load yukiycino-dotfiles/zsh-abbreviations
   zgen load yukiycino-dotfiles/zsh-extra-abbrev
+  zgen load yukiycino-dotfiles/zsh-show-buffer-stack
   zgen load zdharma/fast-syntax-highlighting
   zgen load zsh-users/zsh-autosuggestions
   zgen load zsh-users/zsh-completions src
@@ -66,7 +67,11 @@ EXTRA_ABBREV=(
   "gci" "git commit -m '_|_'"
 )
 
+# cdd
 chpwd_functions+=_cdd_chpwd
+
+# show-buffer-stack
+add-zsh-hook precmd check-buffer-stack
 
 # }}}
 
@@ -303,6 +308,7 @@ function peco-nico-bgm() {
 # Prompt {{{
 
 PROMPT='${VIM_PROMPT}%{$DEFAULT%} %(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
+RPROMPT='${COMMAND_BUFFER_STACK}'
 
 function prompt_pure_update_vim_prompt() {
   VIM_NORMAL="%{$GREEN%}-- NORMAL --%{$DEFAULT%}"
@@ -406,7 +412,7 @@ bindkey -M viins '^p' history-beginning-search-backward-end
 bindkey -M viins '^u' backward-kill-line
 bindkey -M viins '^w' backward-kill-word
 bindkey -M viins '^y' yank
-bindkey -M viins '^q' push-line-or-edit
+bindkey -M viins '^q' show-buffer-stack
 
 bindkey -M viins "$terminfo[kcbt]" reverse-menu-complete
 
@@ -417,7 +423,7 @@ bindkey -M vicmd '/'  vi-history-search-forward
 bindkey -M vicmd '?'  vi-history-search-backward
 bindkey -M vicmd 'gg' beginning-of-line
 bindkey -M vicmd 'G'  end-of-line
-bindkey -M vicmd 'q'  push-line-or-edit
+bindkey -M vicmd 'q'  show-buffer-stack
 
 # Add tmux bind
 bindkey -M viins '^h' backspace-or-left-pane
