@@ -152,7 +152,7 @@ SAVEHIST=100000
 WORDCHARS="*?_-[]~=&!#$%^(){}<>"
 
 # smart-insert-last-word
-zstyle :insert-last-word match '*([[:alpha:]/\\]?|?[[:alpha:]/\\])*'
+zstyle :insert-last-word match '*([^[:space:]][[:alpha:]/\\]|[[:alpha:]/\\][^[:space:]])*'
 zle -N insert-last-word smart-insert-last-word
 
 # Show details automatically
