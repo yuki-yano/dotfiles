@@ -103,7 +103,12 @@ path=(~/.cargo/bin(N-/) $path)
 path=(/usr/local/opt/llvm/bin(N-/) $path)
 
 # heroku
+## Update completions
+## $ heroku autocomplete --refresh-cache
 path=(/usr/local/heroku/bin(N-/) $path)
+export HEROKU_AC_ANALYTICS_DIR=~/Library/Caches/heroku/autocomplete/completion_analytics
+export HEROKU_AC_COMMANDS_PATH=~/Library/Caches/heroku/autocomplete/commands
+export HEROKU_AC_ZSH_SETTERS_PATH=${HEROKU_AC_COMMANDS_PATH}_setters && test -f $HEROKU_AC_ZSH_SETTERS_PATH && source $HEROKU_AC_ZSH_SETTERS_PATH
 
 # vim
 alias vi='nvim'
