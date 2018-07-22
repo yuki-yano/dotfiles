@@ -312,7 +312,11 @@ function prompt_pure_update_vim_prompt() {
   zle reset-prompt
 }
 
-function zle-line-init zle-keymap-select {
+function zle-line-init {
+  prompt_pure_update_vim_prompt
+}
+
+function zle-keymap-select {
   prompt_pure_update_vim_prompt
 }
 
