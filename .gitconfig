@@ -60,7 +60,6 @@
 [ghq]
   root = ~/repos
   root = ~/go/src
-  root = ~/.vim/bundle/
 
 [url "git@github.com:"]
   pushInsteadOf = git://github.com/
