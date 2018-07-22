@@ -343,6 +343,8 @@ nnoremap H ^
 nnoremap L $
 vnoremap H ^
 vnoremap L $
+onoremap H ^
+onoremap L $
 nnoremap <C-o> <C-o>zzzv
 nnoremap <C-i> <C-i>zzzv
 
