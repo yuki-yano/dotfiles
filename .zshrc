@@ -70,6 +70,12 @@ abbreviations=(
   "gsts" "git stash && git stash pop"
 )
 
+function _magic-abbrev-expand-and-accept-line() {
+  zle magic-abbrev-expand
+  zle accept-line
+}
+zle -N magic-abbrev-expand-and-accept-line _magic-abbrev-expand-and-accept-line
+
 # extra-abbrev
 EXTRA_ABBREV=(
   "gci" "git commit -m '_|_'"
@@ -81,6 +87,8 @@ chpwd_functions+=_cdd_chpwd
 # show-buffer-stack
 add-zsh-hook precmd check-buffer-stack
 
+# autosuggestions
+ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(magic-abbrev-expand-and-accept-line $ZSH_AUTOSUGGEST_CLEAR_WIDGETS)
 # }}}
 
 # autoload {{{
@@ -220,15 +228,104 @@ alias -g RCB='origin/$(git rev-parse --abbrev-ref HEAD)'
 
 # }}}
 
-# Fuzzy Finder {{{
+# fzf {{{
 
-# history
-function peco-history-selection() {
-  BUFFER=$(\history -n -r 1 | peco --query "$LBUFFER")
-  CURSOR=$#BUFFER
-  zle reset-prompt
+# fzf
+function fzf-direct-completion() {
+  local tokens cmd1 cmd2 cmd3 cmd4
+  setopt localoptions noshwordsplit noksh_arrays noposixbuiltins
+  tokens=(${(z)LBUFFER})
+  cmd1=${tokens[1]}
+  cmd2=${tokens[2]}
+  cmd3=${tokens[3]}
+  cmd4=${tokens[4]}
+
+  case "$cmd1" in
+    git)
+      case "$cmd2" in
+        'add')
+          case "$cmd3" in
+            '')
+              _fzf_complete_git_add_file
+              return
+            ;;
+          esac
+        ;;
+        'reset')
+          case "$cmd3" in
+            'HEAD')
+              _fzf_complete_git_reset_file
+              return
+            ;;
+            '')
+              _fzf_complete_git_branch
+              return
+            ;;
+          esac
+        ;;
+        'checkout')
+          case "$cmd3" in
+            '--')
+              case "$cmd4" in
+                '')
+                  _fzf_complete_git_file
+                  return
+                ;;
+              esac
+            ;;
+            '')
+              _fzf_complete_git_branch
+              return
+            ;;
+          esac
+        ;;
+      esac
+      ;;
+  esac
+
+  zle expand-or-complete
 }
-zle -N peco-history-selection
+zle -N fzf-direct-completion
+
+function _fzf_complete_git_file() {
+  local files
+  files=$(git status --short | awk '{ print $2 }')
+  FZF_COMPLETION_OPTS="--multi --height 100% --prompt 'Git Files>' --preview 'git diff --color=always {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview"
+  _fzf_complete '' "$BUFFER" < <(
+    echo $files
+  )
+}
+
+function _fzf_complete_git_add_file() {
+  local add_files
+  add_files=$(git status --short | awk '{if (substr($0,2,1) !~ / /) print $2}')
+  FZF_COMPLETION_OPTS="--multi --height 100% --prompt 'Git Add Files>' --preview 'git diff --color=always {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview"
+  _fzf_complete '' "$BUFFER" < <(
+    echo $add_files
+  )
+}
+
+function _fzf_complete_git_reset_file() {
+  local reset_files
+  reset_files=$(git status --short | awk '{if (substr($0,1,1) ~ /M|A/) print $2}')
+  FZF_COMPLETION_OPTS="--multi --height 100% --prompt 'Git Reset Files>' --preview 'git diff --cached --color=always {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview"
+  _fzf_complete '' "$BUFFER" < <(
+    echo $reset_files
+  )
+}
+
+function _fzf_complete_git_branch() {
+  local branches
+  branches=$(git branch -vv --all)
+  FZF_COMPLETION_OPTS="--reverse --multi"
+  _fzf_complete '' "$BUFFER" < <(
+    echo $branches
+  )
+}
+
+function _fzf_complete_git_branch_post() {
+  awk '{if ($1 == "*") print "HEAD"; else print $1;}'
+}
 
 # Project
 function f() {
@@ -244,49 +341,22 @@ function f() {
   fi
 }
 
-function agvim() {
-  vi $(ag $@ | peco --query "$LBUFFER" | awk -F : '{print "-c " $2 " " $1}')
-}
-
-# Git
+# Git Alias
 alias -g  B='$(git branch -a | fzf --multi --prompt "All Branches>"    | sed -e "s/^\*\s*//g")'
 alias -g RB='$(git branch -r | fzf --multi --prompt "Remote Branches>" | sed -e "s/^\*\s*//g")'
 alias -g LB='$(git branch    | fzf --multi --prompt "Local Branches>"  | sed -e "s/^\*\s*//g")'
 
-alias -g S='$(git status -s           | cut -b 4- | uniq | fzf --multi --prompt "Changed File>")'
-alias -g U='$(git ls-files --unmerged | cut -f2   | uniq | fzf --multi --prompt "Unmerged File>")'
+# }}}
 
-function fa() {
-  local addfiles
-  addfiles=($(git status --short | awk '{ print $2 }' | fzf --multi --prompt "Git Add Files>" --preview 'git diff --color=always {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview))
-  if [[ -n $addfiles ]]; then
-    git add ${@:1} $addfiles && echo "Git Add: $addfiles"
-  fi
-}
+# peco {{{
 
-function fcof() {
-  local checkoutfiles
-  checkoutfiles=($(git status --short | awk '{ print $2 }' | fzf --multi --prompt "Git Checkout Files>" --preview 'git diff --color=always {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview))
-  if [[ -n $checkoutfiles ]]; then
-    git checkout -- ${@:1} $checkoutfiles && echo "Git Checkout Files: $checkoutfiles"
-  fi
+# history
+function peco-history-selection() {
+  BUFFER=$(\history -n -r 1 | peco --query "$BUFFER")
+  CURSOR=$#BUFFER
+  zle reset-prompt
 }
-
-function fco() {
-  local branch
-  branch=($(git branch | fzf --prompt "Git Checkout Branch>"))
-  if [[ -n $branch ]]; then
-    git checkout $branch && echo "Git Checkout Branch: $branch"
-  fi
-}
-
-function fre() {
-  local resetfiles
-  resetfiles=($(git status --short | grep -E '^M' | awk '{ print $2 }' | fzf --multi --prompt "Git Reset Files>" --preview 'git diff --cached --color=always {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview))
-  if [[ -n $resetfiles ]]; then
-    git reset ${@:1} $resetfiles && echo "Git Reset Files: $resetfiles"
-  fi
-}
+zle -N peco-history-selection
 
 # nicovideo
 function peco-nico-ranking() {
@@ -414,6 +484,21 @@ zle -N zed-page-down _zed_page_down
 
 # Bindkey {{{
 
+function _magic-abbrev-expand-and-fzf-direct-completion() {
+  local buf
+  buf="$BUFFER"
+  zle magic-abbrev-expand
+
+  if [[ $buf != $BUFFER ]]; then
+    BUFFER="$BUFFER "
+    CURSOR=$#BUFFER
+    zle reset-prompt
+  fi
+
+  zle fzf-direct-completion
+}
+zle -N magic-abbrev-expand-and-fzf-direct-completion _magic-abbrev-expand-and-fzf-direct-completion
+
 # Default bind
 # bindkey -e
 bindkey -v
@@ -421,9 +506,11 @@ bindkey -v
 # Wait for next key input for 0.15 seconds (Default 0.4s)
 KEYTIMEOUT=15
 
-bindkey -M viins ' '   magic-abbrev-expand
+bindkey -M viins '^i'  magic-abbrev-expand-and-fzf-direct-completion
+bindkey -M viins ' '   magic-abbrev-expand-and-space
 bindkey -M viins '^x ' no-magic-abbrev-expand
 bindkey -M viins '^ '  extra-abbrev
+bindkey -M viins '^m'  magic-abbrev-expand-and-accept-line
 bindkey -M viins '^]'  insert-last-word
 bindkey -M viins '^[u' undo
 bindkey -M viins "^[r" redo
@@ -458,6 +545,7 @@ bindkey -M vicmd '?'  vi-history-search-backward
 bindkey -M vicmd 'gg' beginning-of-line
 bindkey -M vicmd 'G'  end-of-line
 bindkey -M vicmd 'q'  show-buffer-stack
+bindkey -M vicmd '^m' abbrev-expand-and-accept-line
 
 # Add tmux bind
 bindkey -M viins '^h' backspace-or-left-pane
@@ -583,6 +671,7 @@ function env_rehash() {
 [ -f /usr/local/opt/fzf/shell/completion.zsh ] && source /usr/local/opt/fzf/shell/completion.zsh
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 export FZF_DEFAULT_OPTS='--reverse'
+export FZF_COMPLETION_TRIGGER=';'
 
 # }}}
 
