@@ -109,7 +109,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
     " call dein#add('autozimu/LanguageClient-neovim', {'rev': 'next', 'build': 'bash install.sh'})
     " call dein#add('blueyed/vim-auto-programming', {'rev': 'neovim'})
-    " call dein#add('uplus/deoplete-solargraph')
     call dein#add('Shougo/neco-syntax')
     call dein#add('Shougo/neco-vim')
     call dein#add('Shougo/neosnippet')
@@ -149,6 +148,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('vimtaku/vim-mlh',                        {'lazy': 1, 'on_event': 'InsertEnter'})
   call dein#add('DeaR/vim-textobj-wiw',                   {'lazy': 1, 'on_map': {'n': ['zw', 'zb', 'ze', 'zge'], 'ox': ['izw', 'azw']}, 'depends': 'vim-textobj-user'})
   call dein#add('LeafCage/yankround.vim')
+  call dein#add('chrisbra/NrrwRgn',                       {'lazy': 1, 'on_cmd': ['NR', 'NW', 'WidenRegion', 'NRV', 'NUD', 'NRP', 'NRM', 'NRS', 'NRN', 'NRL']})
   call dein#add('cohama/lexima.vim',                      {'lazy': 1, 'on_event': 'InsertEnter', 'hook_source': 'call Hook_on_post_source_lexima()'})
   call dein#add('easymotion/vim-easymotion')
   call dein#add('godlygeek/tabular',                      {'lazy': 1, 'on_cmd': 'Tabularize'})
@@ -167,10 +167,9 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-textobj-user')
   call dein#add('machakann/vim-sandwich',                 {'lazy': 1, 'on_map': {'nv': ['sa', 'sr', 'sd'], 'o': ['ib', 'is', 'ab', 'as']}, 'hook_source': 'call Hook_on_post_source_sandwich()'})
   call dein#add('mileszs/ack.vim')
-  call dein#add('mopp/vim-operator-convert-case',         {'lazy': 1, 'on_cmd': 'ConvertCaseLoop'})
+  call dein#add('mopp/vim-operator-convert-case')
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',                   {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('othree/eregex.vim',                      {'lazy': 1, 'on_cmd': 'S'})
   call dein#add('rhysd/accelerated-jk',                   {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/clever-f.vim')
   call dein#add('rhysd/vim-textobj-ruby',                 {'lazy': 1, 'on_ft': 'ruby', 'depends': 'vim-textobj-user'})
@@ -195,7 +194,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('luochen1990/rainbow')
   call dein#add('maximbaz/lightline-ale')
   call dein#add('mhinz/vim-startify')
-  call dein#add('mopp/smartnumber.vim',           {'lazy': 1, 'on_cmd': 'SNumbersToggleRelative'})
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('osyo-manga/vim-brightest')
   call dein#add('t9md/vim-quickhl',               {'lazy': 1, 'on_map': '<Plug>'})
@@ -203,7 +201,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " tmux {{{3
-  call dein#add('benmills/vimux')
   call dein#add('christoomey/vim-tmux-navigator')
   " }}}3
 
@@ -216,7 +213,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-gf-user')
   call dein#add('kana/vim-niceblock',                  {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
   call dein#add('kana/vim-operator-user')
-  call dein#add('kana/vim-submode')
   call dein#add('konfekt/fastfold')
   call dein#add('lambdalisue/session.vim',             {'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
   call dein#add('lambdalisue/vim-manpager',            {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER'], 'depends': 'vim-plugin-AnsiEsc'})
@@ -232,11 +228,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('qpkorr/vim-bufkill')
   call dein#add('simeji/winresizer',                   {'lazy': 1, 'on_cmd': 'WinResizerStartResize'})
   call dein#add('szw/vim-maximizer',                   {'lazy': 1, 'on_cmd': 'MaximizerToggle'})
-  call dein#add('terryma/vim-expand-region',           {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-localrc')
   call dein#add('thinca/vim-quickrun',                 {'lazy': 1, 'on_cmd': 'QuickRun'})
   call dein#add('thinca/vim-ref',                      {'lazy': 1, 'on_cmd': 'Ref'})
-  call dein#add('tpope/vim-dispatch')
+  call dein#add('tpope/vim-dispatch',                  {'lazy': 1, 'on_cmd': ['Dispatch', 'Focus', 'Focus!', 'Start', 'Start!']})
   call dein#add('tweekmonster/startuptime.vim',        {'lazy': 1, 'on_cmd': 'StartupTime'})
   call dein#add('tyru/capture.vim',                    {'lazy': 1, 'on_cmd': 'Capture'})
   call dein#add('tyru/vim-altercmd')
@@ -384,18 +379,8 @@ vnoremap > >gv|
 "" Tab
 nnoremap <silent> gt :<C-u>tablast <Bar> tabedit<CR>
 nnoremap <silent> gd :<C-u>tabclose<CR>
-"" submode
-" nnoremap <silent> gh :<C-u>tabprevious<CR>
-" nnoremap <silent> gl :<C-u>tabNext<CR>
-nnoremap <silent> g1 :<C-u>1tabnext<CR>
-nnoremap <silent> g2 :<C-u>2tabnext<CR>
-nnoremap <silent> g3 :<C-u>3tabnext<CR>
-nnoremap <silent> g4 :<C-u>4tabnext<CR>
-nnoremap <silent> g5 :<C-u>5tabnext<CR>
-nnoremap <silent> g6 :<C-u>6tabnext<CR>
-nnoremap <silent> g7 :<C-u>7tabnext<CR>
-nnoremap <silent> g8 :<C-u>8tabnext<CR>
-nnoremap <silent> g9 :<C-u>9tabnext<CR>
+nnoremap <silent> gh :<C-u>tabprevious<CR>
+nnoremap <silent> gl :<C-u>tabNext<CR>
 
 "" resize
 nnoremap <silent> <Left>  :vertical resize -1<CR>
@@ -419,6 +404,11 @@ noremap ]' ]`
 noremap ]` ]'
 noremap [' [`
 noremap [` ['
+"" regexp
+set inccommand=split
+nnoremap <Leader>R "syiw:%s/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
+nnoremap <Leader>r :%s//g<Left><Left>
+vnoremap <Leader>r "sy:%s/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
 
 "" terminal
 if has('nvim')
@@ -1206,7 +1196,6 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   call deoplete#custom#source('ternjs',         'rank',  900)
   call deoplete#custom#source('flow',           'rank',  900)
   call deoplete#custom#source('ruby',           'rank',  900)
-  " call deoplete#custom#source('solargraph',     'rank',  900)
   call deoplete#custom#source('jedi',           'rank',  900)
   call deoplete#custom#source('go',             'rank',  900)
   call deoplete#custom#source('emoji',          'rank',  900)
@@ -1235,7 +1224,6 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   call deoplete#custom#source('tern',           'mark', '[tern]')
   call deoplete#custom#source('flow',           'mark', '[flow]')
   call deoplete#custom#source('ruby',           'mark', '[ruby]')
-  " call deoplete#custom#source('solargraph',     'mark', '[solar]')
   call deoplete#custom#source('jedi',           'mark', '[jedi]')
   call deoplete#custom#source('go',             'mark', '[go]')
   call deoplete#custom#source('emoji',          'mark', '[emoji]')
@@ -1253,8 +1241,6 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   let g:deoplete#sources.vue        = s:deoplete_default_sources + ['ternjs']
   let g:deoplete#sources.ruby       = s:deoplete_default_sources + ['ruby']
   let g:deoplete#sources.eruby      = s:deoplete_default_sources + ['ruby']
-  " let g:deoplete#sources.ruby       = s:deoplete_default_sources + ['ruby', 'solargraph']
-  " let g:deoplete#sources.eruby      = s:deoplete_default_sources + ['ruby', 'solargraph']
   let g:deoplete#sources.python     = s:deoplete_default_sources + ['jedi']
   let g:deoplete#sources.go         = s:deoplete_default_sources + ['go']
   " let g:deoplete#sources.rust       = s:deoplete_default_sources + ['LanguageClient']
@@ -1629,14 +1615,6 @@ map <silent> <Leader>j <Plug>(edgemotion-j)
 map <silent> <Leader>k <Plug>(edgemotion-k)
 " }}}3
 
-" eregex {{{3
-let g:eregex_default_enable = 0
-
-nnoremap <Leader>R "syiwq:%S/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
-nnoremap <Leader>r q:%S//g<Left><Left>
-vnoremap <Leader>r "syq:%S/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
-" }}}3
-
 " jplus {{{3
 if dein#tap('vim-jplus')
   nmap J         <Plug>(jplus)
@@ -1777,13 +1755,7 @@ endif
 " }}}3
 
 " operator-convert-case {{{3
-nmap <Leader>,cl <Plug>(operator-convert-case-lower-camel)
-nmap <Leader>,cu <Plug>(operator-convert-case-upper-camel)
-nmap <Leader>,sl <Plug>(operator-convert-case-lower-snake)
-nmap <Leader>,su <Plug>(operator-convert-case-upper-snake)
-nmap <Leader>,tt <Plug>(operator-convert-case-toggle-upper-lower)
-nmap <Leader>,ll <Plug>(operator-convert-case-loop)
-nmap <Leader>,cc <Plug>(operator-convert-case-convert)
+nnoremap <silent> <Leader>cl :<C-u>ConvertCaseLoop<CR>
 " }}}3
 
 " operator-replace {{{3
@@ -1833,8 +1805,8 @@ endif
 " }}}3
 
 " skk {{{
-let g:skk_control_j_key = ''
-let g:skk_large_jisyo = expand('~/.config/nvim/dict/SKK-JISYO.L')
+" let g:skk_control_j_key = ''
+" let g:skk_large_jisyo = expand('~/.config/nvim/dict/SKK-JISYO.L')
 " }}}
 
 " tcomment {{{3
@@ -2115,23 +2087,11 @@ let g:zenspace#default_mode = 'on'
 
 " }}}2
 
-" tmux {{{2
-
-" vimux {{{3
-nnoremap <silent> <Leader>vp :<C-u>VimuxPromptCommand<CR>
-nnoremap <silent> <Leader>vl :<C-u>VimuxRunLastCommand<CR>
-nnoremap <silent> <Leader>vi :<C-u>VimuxInspectRunner<CR>
-nnoremap <silent> <Leader>vz :<C-u>VimuxZoomRunner<CR>
-nnoremap <silent> <Leader>vc :<C-u>VimuxCloseRunner<CR>
-" }}}3
-
-" }}}2
-
 " Util {{{2
 
 " aho-bakaup {{{3
 let g:bakaup_auto_backup = 1
-let g:bakaup_backup_dir = expand('~/.config/nvim/backup')
+let g:bakaup_backup_dir  = expand('~/.config/nvim/backup')
 " }}}3
 
 " automatic {{{
@@ -2251,13 +2211,6 @@ AutoCmd FileType vaffle nnoremap <silent> <Leader>d :BW<CR>
 AlterCommand! <cmdwin> cap[ture] Capture
 " }}}3
 
-" expand-region {{{3
-vmap v <Plug>(expand_region_expand)
-vmap <C-v> <Plug>(expand_region_shrink)
-let g:expand_region_text_objects_ruby = {
-\ 'im' :0,
-\ 'am' :0
-\ }
 " }}}3
 
 " maximizer {{{3
@@ -2303,22 +2256,6 @@ AlterCommand! <cmdwin> sl SessionOpen
 AlterCommand! <cmdwin> sc[ratch] Scratch
 
 let g:scratch_no_mappings = 1
-" }}}3
-
-" submode {{{3
-if dein#tap('vim-submode')
-  let g:submode_keep_leaving_key = 1
-
-  "" jump
-  call submode#enter_with('jump', 'n', '', 'g;', 'g;')
-  call submode#map('jump', 'n', '', ';', 'g;')
-
-  "" tab
-  call submode#enter_with('changetab', 'n', '', 'gh', ':<C-u>tabprevious<CR>')
-  call submode#enter_with('changetab', 'n', '', 'gl', ':<C-u>tabnext<CR>')
-  call submode#map('changetab', 'n', '', 'h', ':<C-u>tabprevious<CR>')
-  call submode#map('changetab', 'n', '', 'l', ':<C-u>tabnext<CR>')
-endif
 " }}}3
 
 " tagbar {{{3
