@@ -2059,13 +2059,42 @@ let g:startify_commands = [
 let g:rainbow_active = 1
 let g:rainbow_conf = {}
 let g:rainbow_conf.ctermfgs = ['darkred', 'darkcyan', 'darkblue', 'darkmagenta']
-let g:rainbow_conf.diff = 0
-" }}}3
+let g:rainbow_conf.operator = '_,_'
+let g:rainbow_conf.parentheses = ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold']
 
-" smartnumber {{{3
-AlterCommand! <cmdwin> num SNumbersToggleRelative
-
-let g:snumber_enable_startup = 1
+let g:rainbow_conf.separately = {
+\ '*': {},
+\ 'vim': {
+\   'parentheses': ['start=/(/ end=/)/', 'start=/\[/ end=/\]/', 'start=/{/ end=/}/ fold', 'start=/(/ end=/)/ containedin=vimFuncBody', 'start=/\[/ end=/\]/ containedin=vimFuncBody', 'start=/{/ end=/}/ fold containedin=vimFuncBody'],
+\ },
+\ 'html': {
+\   'parentheses': ['start=/\v\<((script|style|area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
+\ },
+\ 'erb': {
+\   'parentheses': ['start=/\v\<((script|style|area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
+\ },
+\ 'sh': {
+\   'parentheses': [['\(^\|\s\)\S*()\s*{\?\($\|\s\)','_^{_','}'], ['\(^\|\s\)if\($\|\s\)','_\(^\|\s\)\(then\|else\|elif\)\($\|\s\)_','\(^\|\s\)fi\($\|\s\)'], ['\(^\|\s\)for\($\|\s\)','_\(^\|\s\)\(do\|in\)\($\|\s\)_','\(^\|\s\)done\($\|\s\)'], ['\(^\|\s\)while\($\|\s\)','_\(^\|\s\)\(do\)\($\|\s\)_','\(^\|\s\)done\($\|\s\)'], ['\(^\|\s\)case\($\|\s\)','_\(^\|\s\)\(\S*)\|in\|;;\)\($\|\s\)_','\(^\|\s\)esac\($\|\s\)']],
+\ },
+\ 'scss'        : 0,
+\ 'css'         : 0,
+\ 'help'        : 0,
+\ 'man'         : 0,
+\ 'diff'        : 0,
+\ 'qf'          : 0,
+\ 'tag'         : 0,
+\ 'denite'      : 0,
+\ 'unite'       : 0,
+\ 'vimfiler'    : 0,
+\ 'git'         : 0,
+\ 'gitcommit'   : 0,
+\ 'gina-status' : 0,
+\ 'gina-commit' : 0,
+\ 'gina-reflog' : 0,
+\ 'gina-blame'  : 0,
+\ 'quickrun'    : 0,
+\ 'capture'     : 0,
+\ }
 " }}}3
 
 " zenspace {{{3
