@@ -824,18 +824,18 @@ let g:ale_linter_aliases = {
 \ 'eruby': 'html',
 \ }
 
-let g:ale_sign_column_always = 1
+let g:ale_sign_column_always       = 1
 let g:ale_change_sign_column_color = 1
-let g:ale_lint_on_text_changed = 'never'
-let g:ale_lint_on_insert_leave = 0
-let g:ale_echo_msg_format = '[%linter%] %s'
+let g:ale_lint_on_text_changed     = 'never'
+let g:ale_lint_on_insert_leave     = 0
+let g:ale_echo_msg_format          = '[%linter%] %s'
 
 highlight ALEWarning ctermfg=0 ctermbg=229
 highlight ALEError   ctermfg=0 ctermbg=203
 " }}}3
 
 " autoformat {{{3
-nnoremap <Leader>a :<C-u>Autoformat<CR>
+noremap <Leader>a :<C-u>Autoformat<CR>
 
 " ruby
 let g:formatters_ruby = ['rubocop']
@@ -852,7 +852,7 @@ let g:formatters_scss = ['prettier']
 " vue.js
 " Prettierはvim-prettierに任せる
 let g:formatdef_vue_format = '"cat | htmlbeautifier"'
-let g:formatters_vue = ['vue_format']
+let g:formatters_vue       = ['vue_format']
 
 " json
 let g:formatdef_jq    = '"cat | jq ."'
@@ -875,20 +875,20 @@ let g:gen_tags#gtags_auto_gen = 1
 " go {{{3
 let g:go_fmt_command = 'goimports'
 
-let g:go_highlight_functions = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_structs = 1
-let g:go_highlight_interfaces = 1
-let g:go_highlight_operators = 1
+let g:go_highlight_functions         = 1
+let g:go_highlight_methods           = 1
+let g:go_highlight_structs           = 1
+let g:go_highlight_interfaces        = 1
+let g:go_highlight_operators         = 1
 let g:go_highlight_build_constraints = 1
-let g:go_addtags_transform = 'camelcase'
+let g:go_addtags_transform           = 'camelcase'
 " }}}3
 
 " html5 {{{3
 let g:html5_event_handler_attributes_complete = 1
-let g:html5_rdfa_attributes_complete = 1
-let g:html5_microdata_attributes_complete = 1
-let g:html5_aria_attributes_complete = 1
+let g:html5_rdfa_attributes_complete          = 1
+let g:html5_microdata_attributes_complete     = 1
+let g:html5_aria_attributes_complete          = 1
 " }}}3
 
 " javascript-libraries-syntax {{{3
@@ -897,9 +897,9 @@ let g:used_javascript_libs = 'jquery,react,vue'
 
 " jsdoc {{{3
 let g:jsdoc_allow_input_prompt = 1
-let g:jsdoc_input_description = 1
+let g:jsdoc_input_description  = 1
 let g:jsdoc_underscore_private = 1
-let g:jsdoc_enable_es6 = 1
+let g:jsdoc_enable_es6         = 1
 " }}}3
 
 " json {{{3
@@ -907,10 +907,10 @@ let g:vim_json_syntax_conceal = 0
 " }}}3
 
 " markdown {{{3
-let g:vim_markdown_folding_disabled = 1
-let g:vim_markdown_conceal = 0
-let g:vim_markdown_frontmatter = 1
-let g:vim_markdown_json_frontmatter = 1
+let g:vim_markdown_folding_disabled     = 1
+let g:vim_markdown_conceal              = 0
+let g:vim_markdown_frontmatter          = 1
+let g:vim_markdown_json_frontmatter     = 1
 let g:vim_markdown_new_list_item_indent = 2
 " }}}3
 
@@ -953,7 +953,7 @@ let g:typescript_indent_disable = 1
 
 " vim {{{3
 let g:vimsyntax_noerror = 1
-let g:vim_indent_cont = 0
+let g:vim_indent_cont   = 0
 " }}}3
 
 " vue {{{
@@ -1062,7 +1062,7 @@ if dein#tap('unite.vim')
     nnoremap <silent> <buffer> <C-k>      <C-w>k
     nnoremap <silent> <buffer> <Esc><Esc> q
     inoremap <silent> <buffer> <Esc><Esc> <Esc>q
-    imap     <silent> <buffer> <C-w> <Plug>(unite_delete_backward_path)
+    imap     <silent> <buffer> <C-w>      <Plug>(unite_delete_backward_path)
   endfunction
 
   AutoCmd FileType unite call s:unite_settings()
@@ -1104,7 +1104,7 @@ endif
 " }}}3
 
 " fzf {{{
-nnoremap <silent> <leader>f :FZFOpenFile<CR>
+nnoremap <silent> <leader>gf :FZFOpenFile<CR>
 command! FZFOpenFile call FZFOpenFileFunc()
 
 function! FZFOpenFileFunc()
@@ -1135,16 +1135,16 @@ nnoremap <silent> <Leader>gf :<C-u>ProjectGrepPreview<CR>
 
 " deoplete.nvim && neosnippet.vim {{{3
 if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
-  let g:deoplete#enable_at_startup = 1
-  let g:deoplete#enable_smart_case = 1
-  let g:deoplete#enable_camel_case = 1
-  let g:deoplete#enable_ignore_case = 0
-  let g:deoplete#auto_complete_delay = 0
-  let g:deoplete#enable_refresh_always = 1
-  let g:deoplete#file#enable_buffer_path = 1
-  let g:deoplete#max_list = 10000
-  let g:deoplete#auto_complete_start_length = 3
-  let g:deoplete#tag#cache_limit_size = 5000000
+  let g:deoplete#enable_at_startup          = 1
+  let g:deoplete#enable_smart_case          = 1
+  let g:deoplete#enable_camel_case          = 1
+  let g:deoplete#enable_ignore_case         = 0
+  let g:deoplete#auto_complete_delay        = 0
+  let g:deoplete#enable_refresh_always      = 1
+  let g:deoplete#file#enable_buffer_path    = 1
+  let g:deoplete#max_list                   = 10000
+  let g:deoplete#auto_complete_start_length = 1
+  let g:deoplete#tag#cache_limit_size       = 5000000
 
   inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
 
@@ -1161,7 +1161,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   \ ])
 
   let g:deoplete#sources#go#gocode_binary = $GOPATH . '/bin/gocode'
-  let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+  let g:deoplete#sources#go#sort_class    = ['package', 'func', 'type', 'var', 'const']
 
   " call deoplete#custom#source('LanguageClient', 'rank', 1100)
   call deoplete#custom#source('neosnippet',     'rank',  1000)
@@ -1261,7 +1261,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   " let g:deoplete#omni#input_patterns.zsh        = '[^. \t0-9]\.\w*'
   " let g:deoplete#omni#input_patterns.gitcommit  = '.+'
 
-  let s:deoplete_default_omni_sources = []
+  let s:deoplete_default_omni_sources      = []
   let g:deoplete#omni#functions            = {}
   let g:deoplete#omni#functions._          = s:deoplete_default_omni_sources
   let g:deoplete#omni#functions.javascript = s:deoplete_default_omni_sources + ['jspc#omni', 'javascriptcomplete#CompleteJS']
@@ -1304,24 +1304,33 @@ AlterCommand! <cmdwin> agitf[ile] AgitFile
 let g:agit_preset_views = {
 \ 'default': [
 \   {'name': 'log'},
-\   {'name': 'stat',
-\    'layout': 'botright vnew'},
-\   {'name': 'diff',
-\    'layout': 'belowright {winheight(".") * 3 / 4}new'}
+\   {
+\     'name':   'stat',
+\     'layout': 'botright vnew'
+\   },
+\   {
+\     'name':   'diff',
+\     'layout': 'belowright {winheight(".") * 3 / 4}new'
+\   },
 \ ],
 \ 'file': [
 \   {'name': 'filelog'},
-\   {'name': 'stat',
-\    'layout': 'botright vnew'},
-\   {'name': 'diff',
-\    'layout': 'belowright {winheight(".") * 3 / 4}new'}
+\   {
+\    'name':   'stat',
+\    'layout': 'botright vnew'
+\   },
+\   {
+\     'name':   'diff',
+\     'layout': 'belowright {winheight(".") * 3 / 4}new'
+\   },
 \ ],
 \ }
 " }}}3
 
 " committia {{{3
 let g:committia_open_only_vim_starting = 0
-let g:committia_hooks = {}
+let g:committia_hooks                  = {}
+
 function! g:committia_hooks.edit_open(info)
   imap <buffer><C-n> <Plug>(committia-scroll-diff-down-half)
   imap <buffer><C-p> <Plug>(committia-scroll-diff-up-half)
@@ -1379,17 +1388,17 @@ endif
 
 " vimfiler {{{3
 let g:vimfiler_safe_mode_by_default = 0
-let g:vimfiler_execute_file_list = {'jpg': 'open', 'jpeg': 'open', 'gif': 'open', 'png': 'open'}
-let g:vimfiler_enable_auto_cd = 1
-let g:vimfiler_ignore_pattern = '^\%(.git\|.DS_Store\)$'
-let g:vimfiler_trashbox_directory = '~/.Trash'
+let g:vimfiler_execute_file_list    = {'jpg': 'open', 'jpeg': 'open', 'gif': 'open', 'png': 'open'}
+let g:vimfiler_enable_auto_cd       = 1
+let g:vimfiler_ignore_pattern       = '^\%(.git\|.DS_Store\)$'
+let g:vimfiler_trashbox_directory   = '~/.Trash'
 nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple<CR>
 nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple<CR>
 
 function! s:vimfiler_settings()
-  nmap <buffer> R <Plug>(vimfiler_redraw_screen)
-  nmap <buffer> <C-l> <C-w>l
-  nmap <buffer> <C-j> <C-w>j
+  nmap     <buffer> R     <Plug>(vimfiler_redraw_screen)
+  nnoremap <buffer> <C-l> <C-w>l
+  nnoremap <buffer> <C-j> <C-w>j
 endfunction
 
 AutoCmd FileType vimfiler call s:vimfiler_settings()
@@ -1445,8 +1454,8 @@ if dein#tap('vim-anzu') && dein#tap('vim-asterisk') && dein#tap('vim-search-puls
   map g*  <Plug>(asterisk-gz*)zzzv<Plug>Pulse
   map g#  <Plug>(asterisk-gz#)zzzv<Plug>Pulse
 
-  nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus<CR>
-  cmap <silent> <expr> <enter> search_pulse#PulseFirst()
+  nnoremap <silent>        <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus<CR>
+  cmap     <silent> <expr> <Enter>    search_pulse#PulseFirst()
 
   AutoCmd User PrePulse  set cursorcolumn
   AutoCmd User PostPulse set nocursorcolumn
@@ -1454,7 +1463,7 @@ endif
 " }}}3
 
 " easy-align {{{3
-vnoremap <Enter> :EasyAlign!<CR>
+vnoremap <Enter> :EasyAlign<CR>
 
 let g:easy_align_delimiters = {
 \ '>': {
@@ -1507,15 +1516,19 @@ let g:easy_align_delimiters = {
 
 " easymotion & clever-f & sneak & keymaps {{{3
 if dein#tap('vim-easymotion') && dein#tap('clever-f.vim') && dein#tap('vim-sneak') && dein#tap('vim-keymaps')
-  let g:EasyMotion_do_mapping = 0
-  let g:EasyMotion_smartcase = 1
-  let g:EasyMotion_startofline = 0
-  let g:EasyMotion_keys = 'HJKLASDFGYUIOPQWERTNMZXCVB'
-  let g:EasyMotion_use_upper = 1
+  " EasyMotion
+  let g:EasyMotion_do_mapping       = 0
+  let g:EasyMotion_smartcase        = 1
+  let g:EasyMotion_startofline      = 0
+  let g:EasyMotion_keys             = 'HJKLASDFGYUIOPQWERTNMZXCVB'
+  let g:EasyMotion_use_upper        = 1
   let g:EasyMotion_enter_jump_first = 1
   let g:EasyMotion_space_jump_first = 1
+  let g:EasyMotion_prompt           = 'Search by EasyMotion ({n} character(s)) > '
+
   highlight link EasyMotionIncSearch Search
-  highlight link EasyMotionMoveHL Search
+  highlight link EasyMotionMoveHL    Search
+
   map  S  <Plug>(easymotion-s2)
   nmap S  <Plug>(easymotion-overwin-f2)
   omap f  <Plug>(easymotion-fl)
@@ -1744,34 +1757,34 @@ if dein#tap('vim-sandwich')
   function! Hook_on_post_source_sandwich() abort
     let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
     let g:sandwich#recipes += [
-    \   { 'buns': ['\/', '\/'] },
-    \   { 'buns': ['_', '_'] },
-    \   { 'buns': ['`', '`'] },
-    \   {
-    \     '__filetype__': 'ruby',
-    \     'buns':     ['#{', '}'],
-    \     'input':    ['#'],
-    \     'filetype': ['ruby', 'eruby'],
-    \   },
-    \   {
-    \     '__filetype__': 'ruby',
-    \     'buns':     ['-> () {', '}'],
-    \     'input':    ['->'],
-    \     'kind':     ['add'],
-    \     'filetype': ['ruby', 'eruby'],
-    \   },
-    \   {
-    \     '__filetype__': 'eruby',
-    \     'buns':     ['<% ', ' %>'],
-    \     'input':    ['%'],
-    \     'filetype': ['eruby'],
-    \   },
-    \   {
-    \     '__filetype__': 'eruby',
-    \     'buns':     ['<%= ', ' %>'],
-    \     'input':    ['='],
-    \     'filetype': ['eruby'],
-    \   },
+    \ {'buns': ['\/', '\/']},
+    \ {'buns': ['_', '_']},
+    \ {'buns': ['`', '`']},
+    \ {
+    \   '__filetype__': 'ruby',
+    \   'buns':     ['#{', '}'],
+    \   'input':    ['#'],
+    \   'filetype': ['ruby', 'eruby'],
+    \ },
+    \ {
+    \   '__filetype__': 'ruby',
+    \   'buns':     ['-> () {', '}'],
+    \   'input':    ['->'],
+    \   'kind':     ['add'],
+    \   'filetype': ['ruby', 'eruby'],
+    \ },
+    \ {
+    \   '__filetype__': 'eruby',
+    \   'buns':     ['<% ', ' %>'],
+    \   'input':    ['%'],
+    \   'filetype': ['eruby'],
+    \ },
+    \ {
+    \   '__filetype__': 'eruby',
+    \   'buns':     ['<%= ', ' %>'],
+    \   'input':    ['='],
+    \   'filetype': ['eruby'],
+    \ },
     \ ]
   endfunction
 endif
@@ -1792,18 +1805,19 @@ let g:textobj_wiw_default_key_mappings_prefix = 'z'
 
 " yankround {{{3
 if dein#tap('yankround.vim')
-  let g:yankround_max_history = 1000
+  let g:yankround_max_history   = 1000
   let g:yankround_use_region_hl = 1
 
   AutoCmd ColorScheme * highlight YankRoundRegion ctermfg=209 ctermbg=237
   AutoCmd ColorScheme * highlight YankRoundRegion ctermfg=209 ctermbg=237
 
-  nmap p <Plug>(yankround-p)
-  xmap p <Plug>(yankround-p)
-  nmap P <Plug>(yankround-P)
+  nmap p  <Plug>(yankround-p)
+  xmap p  <Plug>(yankround-p)
+  nmap P  <Plug>(yankround-P)
   nmap gp <Plug>(yankround-gp)
   xmap gp <Plug>(yankround-gp)
   nmap gP <Plug>(yankround-gP)
+
   nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "q:bprevious\<CR>"
   nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : "q:bnext\<CR>"
 endif
@@ -1814,20 +1828,20 @@ endif
 " Appearance {{{2
 
 " better-whitespace {{{3
-let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'tag', 'help', 'gitcommit', 'vimfiler', 'vimfiler:explorer', 'unite', 'denite']
+let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'tag', 'help', 'gitcommit', 'vimfiler', 'unite', 'denite']
 " }}}3
 
 " brightest {{{3
 AlterCommand! <cmdwin> br[ight] BrightestToggle
 
-let g:brightest#enable_on_CursorHold = 1
+let g:brightest#enable_on_CursorHold        = 1
 let g:brightest#enable_highlight_all_window = 1
-let g:brightest#highlight = { 'group': 'BrighTestBgLight' }
+let g:brightest#highlight = {'group': 'BrighTestBgLight'}
 " }}}3
 
 " fastfold {{{3
-let g:fastfold_savehook = 1
-let g:fastfold_fold_command_suffixes =  ['x','X','a','A','o','O','c','C']
+let g:fastfold_savehook               = 1
+let g:fastfold_fold_command_suffixes  = ['x','X','a','A','o','O','c','C']
 let g:fastfold_fold_movement_commands = [']z', '[z', 'zj', 'zk']
 " }}}3
 
@@ -1842,7 +1856,7 @@ let g:hl_matchit_enable_on_vim_startup = 1
 " }}}3
 
 " indent-line {{{3
-let g:indentLine_enabled = 0
+let g:indentLine_enabled         = 0
 let g:indentLine_fileTypeExclude = ['json']
 nnoremap <silent> <Leader>i :<C-u>:IndentLinesToggle<CR>
 " }}}3
@@ -1854,35 +1868,35 @@ if dein#tap('lightline.vim')
   \ 'mode_map': {'c': 'NORMAL'},
   \ 'active': {
   \   'left': [
-  \     [ 'mode', 'paste' ],
-  \     [ 'readonly', 'filepath', 'filename', 'anzu' ]
+  \     ['mode', 'paste'],
+  \     ['readonly', 'filepath', 'filename', 'anzu'],
   \    ],
   \   'right': [
-  \     [ 'percent', 'lineinfo' ],
-  \     [ 'fileformat', 'fileencoding', 'filetype' ],
-  \     [ 'linter_errors', 'linter_warnings', 'linter_ok', 'linter_unload' ]
-  \   ]
+  \     ['percent', 'lineinfo'],
+  \     ['fileformat', 'fileencoding', 'filetype'],
+  \     ['linter_errors', 'linter_warnings', 'linter_ok', 'linter_unload'],
+  \   ],
   \ },
   \ 'inactive': {
-  \   'left': [ [], [], [ 'filepath', 'filename' ] ],
+  \   'left': [[], [], ['filepath', 'filename']],
   \   'right': [
-  \     [ 'percent', 'lineinfo' ],
-  \     [ 'fileformat', 'fileencoding', 'filetype' ],
-  \   ]
+  \     ['percent', 'lineinfo'],
+  \     ['fileformat', 'fileencoding', 'filetype'],
+  \   ],
   \ },
   \ 'tabline': {
-  \   'left': [ [ 'branch' ], [ 'gitstatus' ], [ 'tabs' ] ],
-  \   'right': [ [] ],
+  \   'left':  [['branch'], ['gitstatus'], ['tabs']],
+  \   'right': [[]],
   \ },
   \ 'tab': {
-  \   'active':   [ 'tabwinnum', 'readonly', 'filename', 'modified' ],
-  \   'inactive': [ 'tabwinnum', 'readonly', 'filename', 'modified' ]
+  \   'active':   ['tabwinnum', 'readonly', 'filename', 'modified'],
+  \   'inactive': ['tabwinnum', 'readonly', 'filename', 'modified'],
   \ },
   \ 'component': {
-  \   'fileformat':   "%{ Lightline_is_visible() ? &fileformat : '' }",
-  \   'fileencoding': "%{ Lightline_is_visible() ? (strlen(&fileencoding) ? &fileencoding : &encoding) : ''}",
-  \   'lineinfo':     "%{ !Lightline_is_visible() ? '' : printf('%03d:%03d', line('.'), col('.')) }",
-  \   'percent':      "%{ !Lightline_is_visible() ? '' : printf('%3d%%', float2nr((1.0 * line('.')) / line('$') * 100.0)) }",
+  \   'fileformat':   "%{Lightline_is_visible() ? &fileformat : ''}",
+  \   'fileencoding': "%{Lightline_is_visible() ? (strlen(&fileencoding) ? &fileencoding : &encoding) : ''}",
+  \   'lineinfo':     "%{!Lightline_is_visible() ? '' : printf('%03d:%03d', line('.'), col('.'))}",
+  \   'percent':      "%{!Lightline_is_visible() ? '' : printf('%3d%%', float2nr((1.0 * line('.')) / line('$') * 100.0))}",
   \   'readonly':     "%{&readonly ? 'RO' : ''}",
   \   'paste':        "%{&paste ? 'PASTE' : ''}",
   \  },
@@ -2018,7 +2032,7 @@ let g:startify_custom_header = [
 \ '╦ ╦┌┐┌┬  ┬┌┬┐┬┌┬┐┌─┐┌┬┐  ╔═╗┬  ┬ ┬┌─┐┬┌┐┌  ╦ ╦┌─┐┬─┐┬┌─┌─┐',
 \ '║ ║││││  │││││ │ ├┤  ││  ╠═╝│  │ ││ ┬││││  ║║║│ │├┬┘├┴┐└─┐',
 \ '╚═╝┘└┘┴─┘┴┴ ┴┴ ┴ └─┘─┴┘  ╩  ┴─┘└─┘└─┘┴┘└┘  ╚╩╝└─┘┴└─┴ ┴└─┘',
-\]
+\ ]
 
 let g:startify_list_order = [
 \ ['   Project:'],
@@ -2073,7 +2087,7 @@ function! s:my_temp_win_init(config, context)
 endfunction
 
 let g:automatic_default_set_config = {
-\   'apply':  function('s:my_temp_win_init'),
+\ 'apply': function('s:my_temp_win_init'),
 \ }
 
 let g:automatic_config = [
@@ -2110,7 +2124,7 @@ let g:automatic_config = [
 \   'set': {
 \     'move': 'topleft',
 \     'height': '20%',
-\   }
+\   },
 \ },
 \ {
 \   'match': { 'filetype': 'gina-commit' },
