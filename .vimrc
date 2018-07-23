@@ -378,7 +378,9 @@ nnoremap <silent> <Leader><C-l> :<C-u>redraw!<CR>
 nnoremap Q @q
 
 "" regexp
-set inccommand=split
+if has('nvim')
+  set inccommand=split
+endif
 nnoremap <Leader>R "syiw:%s/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
 nnoremap <Leader>r :%s//g<Left><Left>
 vnoremap <Leader>r "sy:%s/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
