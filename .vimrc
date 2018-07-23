@@ -2210,6 +2210,10 @@ AutoCmd FileType vaffle nnoremap <silent> <Leader>d :BW<CR>
 AlterCommand! <cmdwin> cap[ture] Capture
 " }}}3
 
+" dispatch {{{3
+AlterCommand! <cmdwin> dis[patch] Dispatch
+AlterCommand! <cmdwin> fo[cus]    Focus
+AlterCommand! <cmdwin> st[art]    Start
 " }}}3
 
 " maximizer {{{3
