@@ -536,9 +536,9 @@ AutoCmd BufWritePre * RemoveTailSpace
 
 " ToggleQuickfix {{{2
 function! s:toggle_quickfix()
-  let _ = winnr('$')
+  let l:_ = winnr('$')
   cclose
-  if _ == winnr('$')
+  if l:_ == winnr('$')
     botright copen
   endif
 endfunction
@@ -549,9 +549,9 @@ nnoremap <silent> <Leader>q :ToggleQuickfix<CR>
 
 " ToggleLocationList {{{2
 function! s:toggle_location_list()
-  let _ = winnr('$')
+  let l:_ = winnr('$')
   lclose
-  if _ == winnr('$')
+  if l:_ == winnr('$')
     botright lopen
   endif
 endfunction
