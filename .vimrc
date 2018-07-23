@@ -1536,63 +1536,49 @@ if dein#tap('vim-easymotion') && dein#tap('clever-f.vim') && dein#tap('vim-sneak
   omap F  <Plug>(easymotion-Fl)
   omap T  <Plug>(easymotion-Tl)
 
+  " clever-f
   let g:clever_f_not_overwrites_standard_mappings = 0
   nmap f q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-f)
   nmap F q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-F)
   nmap t q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-t)
   nmap T q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-T)
-  omap f q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-f)
-  omap F q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-F)
-  omap t q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-t)
-  omap T q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-T)
-  vmap f q:<C-u>KeyMapSet clever<CR>gv<Plug>(clever-f-f)
-  vmap F q:<C-u>KeyMapSet clever<CR>gv<Plug>(clever-f-F)
-  vmap t q:<C-u>KeyMapSet clever<CR>gv<Plug>(clever-f-t)
-  vmap T q:<C-u>KeyMapSet clever<CR>gv<Plug>(clever-f-T)
 
+  " sneak
+  let g:sneak#prompt = 'Search by Sneak (2 characters) >'
   nmap ss q:<C-u>KeyMapSet sneak<CR><Plug>Sneak_s
   nmap sS q:<C-u>KeyMapSet sneak<CR><Plug>Sneak_S
-  omap ss q:<C-u>KeyMapSet sneak<CR><Plug>Sneak_s
-  omap sS q:<C-u>KeyMapSet sneak<CR><Plug>Sneak_S
   vmap ss q:<C-u>KeyMapSet sneak<CR>gv<Plug>Sneak_s
   vmap sS q:<C-u>KeyMapSet sneak<CR>gv<Plug>Sneak_S
 
+  " keymaps
   let g:keymaps =  [
-  \  {
-  \    'name': 'clever',
-  \    'keymap': {
-  \      'nmap': {
-  \        ';': '<Plug>(clever-f-repeat-forward)',
-  \        ',': '<Plug>(clever-f-repeat-back)',
-  \      },
-  \      'omap': {
-  \        ';': '<Plug>(clever-f-repeat-forward)',
-  \        ',': '<Plug>(clever-f-repeat-back)',
-  \      },
-  \      'vmap': {
-  \        ';': '<Plug>(clever-f-repeat-forward)',
-  \        ',': '<Plug>(clever-f-repeat-back)',
-  \      },
-  \    },
-  \  },
-  \  {
-  \    'name': 'sneak',
-  \    'keymap': {
-  \      'nmap': {
-  \        ';': '<Plug>Sneak_;',
-  \        ',': '<Plug>Sneak_,',
-  \      },
-  \      'vmap': {
-  \        ';': '<Plug>Sneak_;',
-  \        ',': '<Plug>Sneak_,',
-  \      },
-  \      'omap': {
-  \        ';': '<Plug>Sneak_;',
-  \        ',': '<Plug>Sneak_,',
-  \      },
-  \    },
-  \  },
-  \]
+  \ {
+  \   'name': 'default',
+  \   'keymap': {},
+  \ },
+  \ {
+  \   'name': 'clever',
+  \   'keymap': {
+  \     'nmap': {
+  \       ';': '<Plug>(clever-f-repeat-forward)',
+  \       ',': '<Plug>(clever-f-repeat-back)',
+  \     },
+  \   },
+  \ },
+  \ {
+  \   'name': 'sneak',
+  \   'keymap': {
+  \     'nmap': {
+  \       ';': '<Plug>Sneak_;',
+  \       ',': '<Plug>Sneak_,',
+  \     },
+  \     'vmap': {
+  \       ';': '<Plug>Sneak_;',
+  \       ',': '<Plug>Sneak_,',
+  \     },
+  \   },
+  \ },
+  \ ]
 endif
 " }}}3
 
@@ -2310,14 +2296,16 @@ syntax enable
 
 " iceberg {{{2
 silent! colorscheme iceberg
-highlight Search           ctermfg=none  ctermbg=238
-highlight LineNr           ctermfg=241
-highlight CursorLineNr     ctermbg=237   ctermfg=253
-highlight CursorLine       ctermbg=235
-highlight PmenuSel         ctermbg=222   ctermfg=33  cterm=reverse
-highlight Visual           ctermfg=159   ctermbg=23
-highlight NonText          ctermfg=60
-highlight BrighTestBgLight ctermfg=none  ctermbg=236
+highlight Search              ctermfg=none  ctermbg=238
+highlight LineNr              ctermfg=241
+highlight CursorLineNr        ctermbg=237   ctermfg=253
+highlight CursorLine          ctermbg=235
+highlight PmenuSel            ctermbg=222   ctermfg=33  cterm=reverse
+highlight Visual              ctermfg=159   ctermbg=23
+highlight NonText             ctermfg=60
+highlight BrighTestBgLight    ctermfg=none  ctermbg=236
+highlight CleverFDefaultLabel ctermfg=9     ctermbg=236 cterm=bold
+highlight Sneak               ctermfg=132   ctermbg=236 cterm=bold
 " }}}2
 
 " }}}1
