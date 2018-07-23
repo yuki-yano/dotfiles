@@ -51,6 +51,9 @@ abbreviations=(
   "g"    "git"
   "ga"   "git add"
   "gaa"  "git add --all"
+  "gre"  "git reset"
+  "gref" "git reset HEAD"
+  "grm"  "git rm"
   "gs"   "git status --short --branch"
   "gb"   "git branch"
   "gd"   "git diff"
@@ -58,8 +61,13 @@ abbreviations=(
   "gdc"  "git diff --cached"
   "gdcw" "git diff --cached --color-words"
   "gco"  "git checkout"
+  "gcof" "git checkout --"
   "gci"  "git commit"
+  "gcia" "git commit --amend --no-edit"
+  "gp"   "git push"
   "gst"  "git stash"
+  "gstp" "git stash pop"
+  "gsts" "git stash && git stash pop"
 )
 
 # extra-abbrev
