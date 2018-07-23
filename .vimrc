@@ -332,23 +332,6 @@ if has('nvim')
   let g:python3_host_prog = $HOME . '/.pyenv/shims/python3'
 endif
 
-"" Move
-set nostartofline
-nnoremap H ^
-nnoremap L $
-vnoremap H ^
-vnoremap L $
-onoremap H ^
-onoremap L $
-nnoremap <C-o> <C-o>zzzv
-nnoremap <C-i> <C-i>zzzv
-nnoremap g; g;zzzv
-nnoremap g, g,zzzv
-
-"" Edit
-nnoremap dw de
-nnoremap cw ce
-
 "" CommandLine
 noremap! <C-a> <Home>
 noremap! <C-b> <Left>
@@ -361,10 +344,6 @@ cnoremap <C-p> <Up>
 "" Buffer
 nnoremap <silent> <C-p> :bprevious<CR>
 nnoremap <silent> <C-n> :bnext<CR>
-
-"" increment & decrement
-noremap <silent> + <C-a>
-noremap <silent> - <C-x>
 
 "" Ignore registers
 nnoremap x "_x
@@ -398,12 +377,6 @@ nnoremap <silent> <Leader><C-l> :<C-u>redraw!<CR>
 "" Macro
 nnoremap Q @q
 
-"" mark
-nnoremap ' `
-noremap ]' ]`
-noremap ]` ]'
-noremap [' [`
-noremap [` ['
 "" regexp
 set inccommand=split
 nnoremap <Leader>R "syiw:%s/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
