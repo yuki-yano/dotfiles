@@ -57,7 +57,7 @@ end
 namespace :gem do
   desc 'Uninstall gem'
   task :uninstall do
-    default_gem = 'bigdecimal|io-console|json|minitest|openssl|psych|rake|rdoc|test-unit|bundler|neovim|rcodetools'
+    default_gem = 'bigdecimal|bundler|cmath|csv|date|dbm|did_you_mean|etc|fcntl|fiddle|fileutils|io-console|ipaddr|json|minitest|net-telnet|openssl|power_assert|psych|rake|rdoc|scanf|sdbm|stringio|strscan|webrick|zlib'
     sh 'rbenv rehash'
     sh "gem uninstall -axI $(gem list --no-versions | egrep -v '#{default_gem}')"
   end
