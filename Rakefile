@@ -57,9 +57,8 @@ end
 namespace :gem do
   desc 'Uninstall gem'
   task :uninstall do
-    default_gem = 'bigdecimal|bundler|cmath|csv|date|dbm|did_you_mean|etc|fcntl|fiddle|fileutils|io-console|ipaddr|json|minitest|net-telnet|openssl|power_assert|psych|rake|rdoc|scanf|sdbm|stringio|strscan|webrick|zlib'
     sh 'rbenv rehash'
-    sh "gem uninstall -axI $(gem list --no-versions | egrep -v '#{default_gem}')"
+    sh 'gem uninstall --all --ignore-dependencies --executables $(gem list | grep -v "default" | awk "{print $1}")'
   end
 end
 
@@ -69,13 +68,13 @@ namespace :bundle do
     sh 'rbenv rehash'
     sh 'yes | gem update'
     File.delete('Gemfile.lock') if File.exist?('Gemfile.lock')
-    sh 'bundle install'
+    sh 'gem install bundler && bundle install'
   end
 
   desc 'Uninstall bundle install gems'
   task uninstall: 'Gemfile' do
     sh 'rbenv rehash'
-    sh 'gem uninstall -I -a -x --user-install --force'
+    sh 'gem uninstall --all --ignore-dependencies --executables --user-install --force'
     sh 'gem install bundler'
     File.delete('Gemfile.lock') if File.exist?('Gemfile.lock')
   end
