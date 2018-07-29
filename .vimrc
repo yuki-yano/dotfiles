@@ -206,6 +206,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Util {{{3
   call dein#add('aiya000/aho-bakaup.vim')
+  call dein#add('bfredl/nvim-miniyank')
   call dein#add('bogado/file-line')
   call dein#add('dietsche/vim-lastplace')
   call dein#add('haya14busa/vim-open-googletranslate', {'lazy': 1, 'on_cmd': 'OpenGoogleTranslate'})
@@ -974,6 +975,7 @@ let g:zsh_fold_enable = 1
 " Denite & Unite {{{3
 
 AlterCommand! <cmdwin> d[enite] Denite
+AlterCommand! <cmdwin> dr       Denite<Space>-resume
 
 if dein#tap('denite.nvim')
   " Denite
@@ -981,12 +983,13 @@ if dein#tap('denite.nvim')
   "" highlight
   call denite#custom#option('default', 'prompt', '>')
   call denite#custom#option('default', 'mode', 'insert')
-  call denite#custom#option('default', 'highlight_matched', 'Search')
+  call denite#custom#option('default', 'highlight_matched', 'Keyword')
   call denite#custom#option('default', 'highlight_mode_normal', 'CursorLineNr')
   call denite#custom#option('default', 'highlight_mode_insert', 'CursorLineNr')
+  call denite#custom#option('default', 'statusline', v:false)
 
   "" keymap
-  call denite#custom#map('_',      '<C-v>', '<denite:do_action:preview>',     'noremap')
+  call denite#custom#map('normal', 't',     '<denite:do_action:tabopen>',     'noremap')
   call denite#custom#map('normal', '<C-n>', '<denite:move_to_next_line>',     'noremap')
   call denite#custom#map('normal', '<C-p>', '<denite:move_to_previous_line>', 'noremap')
   call denite#custom#map('normal', '<Esc>', '<denite:quit>',                  'noremap')
@@ -1000,11 +1003,22 @@ if dein#tap('denite.nvim')
   call denite#custom#map('insert', '<Esc>', '<denite:enter_mode:normal>',     'noremap')
   call denite#custom#map('insert', '<C-g>', '<denite:enter_mode:normal>',     'noremap')
 
-  "" option
-  call denite#custom#source('_', 'matchers', ['matcher_fuzzy'])
-  call denite#custom#source('file_mru', 'matchers', ['matcher_fuzzy', 'matcher_project_files'])
+  "" Emacs bind
+  call denite#custom#map('insert', '<C-f>', '<denite:move_caret_to_right>',            'noremap')
+  call denite#custom#map('insert', '<C-b>', '<denite:move_caret_to_left>',             'noremap')
+  call denite#custom#map('insert', '<C-a>', '<denite:move_caret_to_head>',             'noremap')
+  call denite#custom#map('insert', '<C-e>', '<denite:move_caret_to_tail>',             'noremap')
+  call denite#custom#map('insert', '<BS>',  '<denite:smart_delete_char_before_caret>', 'noremap')
+  call denite#custom#map('insert', '<C-h>', '<denite:smart_delete_char_before_caret>', 'noremap')
+  call denite#custom#map('insert', '<C-w>', '<denite:delete_word_before_caret>',       'noremap')
+  call denite#custom#map('insert', '<C-k>', '<denite:delete_char_after_caret>',        'noremap')
 
-  call denite#custom#source('file_mru', 'converters', ['converter_relative_abbr'])
+  "" option
+  call denite#custom#source('_',        'matchers', ['matcher/fuzzy'])
+  call denite#custom#source('line',     'matchers', ['matcher/regexp'])
+  call denite#custom#source('file_mru', 'matchers', ['matcher/fuzzy', 'matcher/project_files'])
+
+  call denite#custom#source('file_mru', 'converters', ['converter/relative_abbr'])
   call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
   \ [
   \  '*~', '*.o', '*.exe', '*.bak',
@@ -1042,10 +1056,10 @@ if dein#tap('denite.nvim')
 
   "" ctags & gtags
   nnoremap <silent> <Leader><C-]>         :<C-u>DeniteCursorWord gtags_context -direction=botright<CR>
-  nnoremap <silent> <Leader><Leader><C-]> :<C-u>DeniteCursorWord gtags_grep -direction=botright<CR>
+  " nnoremap <silent> <Leader><Leader><C-]> :<C-u>DeniteCursorWord gtags_grep -direction=botright<CR>
 
   "" yank
-  nnoremap <silent> <Leader><Leader>p :<C-u>Denite unite:yankround<CR>
+  nnoremap <silent> <SID>(ctrlp) :<C-u>Denite miniyank<CR>
 
   "" resume
   nnoremap <silent> <Leader>dr :<C-u>Denite -resume<CR>
