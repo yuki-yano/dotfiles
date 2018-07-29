@@ -52,7 +52,6 @@ abbreviations=(
   "ga"   "git add"
   "gaa"  "git add --all"
   "gre"  "git reset"
-  "gref" "git reset HEAD"
   "grm"  "git rm"
   "gs"   "git status --short --branch"
   "gb"   "git branch"
@@ -67,7 +66,6 @@ abbreviations=(
   "gp"   "git push"
   "gst"  "git stash"
   "gstp" "git stash pop"
-  "gsts" "git stash && git stash pop"
 )
 
 function _magic-abbrev-expand-and-accept-line() {
@@ -230,11 +228,10 @@ alias -g RCB='origin/$(git rev-parse --abbrev-ref HEAD)'
 
 # fzf {{{
 
-# fzf
 function fzf-direct-completion() {
   local tokens cmd1 cmd2 cmd3 cmd4
-  setopt localoptions noshwordsplit noksh_arrays noposixbuiltins
-  tokens=(${(z)LBUFFER})
+  setopt localoptions noshwordsplit
+  tokens=(${(z)BUFFER})
   cmd1=${tokens[1]}
   cmd2=${tokens[2]}
   cmd3=${tokens[3]}
@@ -341,7 +338,7 @@ function f() {
   fi
 }
 
-# Git Alias
+# Global Alias
 alias -g  B='$(git branch -a | fzf --multi --prompt "All Branches>"    | sed -e "s/^\*\s*//g")'
 alias -g RB='$(git branch -r | fzf --multi --prompt "Remote Branches>" | sed -e "s/^\*\s*//g")'
 alias -g LB='$(git branch    | fzf --multi --prompt "Local Branches>"  | sed -e "s/^\*\s*//g")'
@@ -545,7 +542,7 @@ bindkey -M vicmd '?'  vi-history-search-backward
 bindkey -M vicmd 'gg' beginning-of-line
 bindkey -M vicmd 'G'  end-of-line
 bindkey -M vicmd 'q'  show-buffer-stack
-bindkey -M vicmd '^m' abbrev-expand-and-accept-line
+bindkey -M vicmd '^m' magic-abbrev-expand-and-accept-line
 
 # Add tmux bind
 bindkey -M viins '^h' backspace-or-left-pane
