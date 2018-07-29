@@ -117,55 +117,55 @@ namespace :yarn do
   end
 end
 
-namespace :vimperator do
-  desc 'Install vimperator plugins'
-  task install: 'Vimperatorfile' do
-    # vimperator-plugins
-    File.readlines('Vimperatorfile').map(&:chomp).each do |plugin|
-      src  = "~/.vimperator/vimperator-plugins/#{plugin}"
-      dest = "~/.vimperator/plugin/#{plugin}"
-      sh "ln -sfn #{src} #{dest}"
-    end
+# namespace :vimperator do
+#   desc 'Install vimperator plugins'
+#   task install: 'Vimperatorfile' do
+#     # vimperator-plugins
+#     File.readlines('Vimperatorfile').map(&:chomp).each do |plugin|
+#       src  = "~/.vimperator/vimperator-plugins/#{plugin}"
+#       dest = "~/.vimperator/plugin/#{plugin}"
+#       sh "ln -sfn #{src} #{dest}"
+#     end
+#
+#     # local plugins
+#     FileList['.vimperator/local-plugins/*'].each do |plugin|
+#       src = "~/#{plugin}"
+#       dest = "~/.vimperator/plugin/#{File.basename(plugin)}"
+#       sh "ln -sfn #{src} #{dest}"
+#     end
+#   end
+#
+#   desc 'Uninstall vimperator plugins'
+#   task :uninstall do
+#     FileList['.vimperator/plugin/*'].each do |plugin|
+#       sh "rm ~/#{plugin}"
+#     end
+#   end
+# end
 
-    # local plugins
-    FileList['.vimperator/local-plugins/*'].each do |plugin|
-      src = "~/#{plugin}"
-      dest = "~/.vimperator/plugin/#{File.basename(plugin)}"
-      sh "ln -sfn #{src} #{dest}"
-    end
-  end
-
-  desc 'Uninstall vimperator plugins'
-  task :uninstall do
-    FileList['.vimperator/plugin/*'].each do |plugin|
-      sh "rm ~/#{plugin}"
-    end
-  end
-end
-
-namespace :osx do
-  desc 'Setup OSX preferences'
-  task setup: OSX_SCRIPTS do |t|
-    t.prerequisites.each do |prereq|
-      system 'bash', prereq
-    end
-
-    # karabiner
-    # src = File.join(SRC_DIR, 'osx', 'karabiner', 'private.xml')
-    # dest = File.join(ENV['HOME'], 'Library', 'Application\ Support', 'Karabiner', 'private.xml')
-    # sh "ln -sfn #{src} #{dest}"
-
-    # BetterTouchTool
-    # src = File.join(ENV['HOME'], 'Dropbox', 'settings', 'BetterTouchTool')
-    # dest = File.join(ENV['HOME'], 'Library', 'Application\ Support', 'BetterTouchTool')
-    # sh "ln -sfn #{src} #{dest}"
-
-    # Witch
-    # src = File.join(ENV['HOME'], 'Dropbox', 'settings', 'Witch')
-    # dest = File.join(ENV['HOME'], 'Library', 'Application\ Support', 'Witch')
-    # sh "ln -sfn #{src} #{dest}"
-  end
-end
+# namespace :osx do
+#   desc 'Setup OSX preferences'
+#   task setup: OSX_SCRIPTS do |t|
+#     t.prerequisites.each do |prereq|
+#       system 'bash', prereq
+#     end
+#
+#     karabiner
+#     src = File.join(SRC_DIR, 'osx', 'karabiner', 'private.xml')
+#     dest = File.join(ENV['HOME'], 'Library', 'Application\ Support', 'Karabiner', 'private.xml')
+#     sh "ln -sfn #{src} #{dest}"
+#
+#     BetterTouchTool
+#     src = File.join(ENV['HOME'], 'Dropbox', 'settings', 'BetterTouchTool')
+#     dest = File.join(ENV['HOME'], 'Library', 'Application\ Support', 'BetterTouchTool')
+#     sh "ln -sfn #{src} #{dest}"
+#
+#     Witch
+#     src = File.join(ENV['HOME'], 'Dropbox', 'settings', 'Witch')
+#     dest = File.join(ENV['HOME'], 'Library', 'Application\ Support', 'Witch')
+#     sh "ln -sfn #{src} #{dest}"
+#   end
+# end
 
 namespace :brew do
   desc 'Install homebrew packages'
