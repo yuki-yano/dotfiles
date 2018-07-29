@@ -206,6 +206,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Util {{{3
+  " call dein#add('thinca/vim-quickrun',                 {'lazy': 1, 'on_cmd': 'QuickRun'})
   call dein#add('aiya000/aho-bakaup.vim')
   call dein#add('bfredl/nvim-miniyank')
   call dein#add('bogado/file-line')
@@ -231,7 +232,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('simeji/winresizer',                   {'lazy': 1, 'on_cmd': 'WinResizerStartResize'})
   call dein#add('szw/vim-maximizer',                   {'lazy': 1, 'on_cmd': 'MaximizerToggle'})
   call dein#add('thinca/vim-localrc')
-  call dein#add('thinca/vim-quickrun',                 {'lazy': 1, 'on_cmd': 'QuickRun'})
   call dein#add('thinca/vim-ref',                      {'lazy': 1, 'on_cmd': 'Ref'})
   call dein#add('tpope/vim-dispatch',                  {'lazy': 1, 'on_cmd': ['Dispatch', 'Focus', 'Focus!', 'Start', 'Start!']})
   call dein#add('tweekmonster/startuptime.vim',        {'lazy': 1, 'on_cmd': 'StartupTime'})
@@ -250,7 +250,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Library {{{3
-  call dein#add('Shougo/vimproc.vim', {'build': 'make'})
+  " call dein#add('Shougo/vimproc.vim', {'build': 'make'})
   call dein#add('vim-scripts/L9')
   call dein#add('vim-scripts/cecutil')
   " }}}3
@@ -2243,18 +2243,18 @@ command! -range Trans <line1>,<line2>OpenGoogleTranslate
 " }}}3
 
 " quickrun {{{
-AlterCommand! <cmdwin> qrun QuickRun
-
-let g:quickrun_config = {
-\ '_' : {
-\   'runner': 'vimproc',
-\   'runner/vimproc/updatetime': 40,
-\   'outputter': 'error',
-\   'outputter/error/success': 'buffer',
-\   'outputter/error/error': 'quickfix',
-\ }
-\ }
-let g:quickrun_no_default_key_mappings = 1
+" AlterCommand! <cmdwin> qrun QuickRun
+"
+" let g:quickrun_config = {
+" \ '_' : {
+" \   'runner': 'vimproc',
+" \   'runner/vimproc/updatetime': 40,
+" \   'outputter': 'error',
+" \   'outputter/error/success': 'buffer',
+" \   'outputter/error/error': 'quickfix',
+" \ }
+" \ }
+" let g:quickrun_no_default_key_mappings = 1
 " }}}
 
 " ref {{{3
