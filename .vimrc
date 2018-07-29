@@ -1884,9 +1884,6 @@ if dein#tap('lexima.vim')
     \ { 'filetype': 'markdown', 'char': '-',     'at': '^\s*- \%#',        'input': '<Left><Left><Tab><Del>+<Right>',                                               },
     \ { 'filetype': 'markdown', 'char': '-',     'at': '^\s*+ \%#',        'input': '<Left><Left><Tab><Del>*<Right>',                                               },
     \ { 'filetype': 'markdown', 'char': '-',     'at': '^\s*\* \%#',       'input': '<Left><Left><Tab><Del>-<Right>',                                               },
-    \ { 'filetype': 'markdown', 'char': '<TAB>', 'at': '^\s*- \%#',        'input': '<Left><Left><Tab><Del>+<Right>',                                               },
-    \ { 'filetype': 'markdown', 'char': '<TAB>', 'at': '^\s*+ \%#',        'input': '<Left><Left><Tab><Del>*<Right>',                                               },
-    \ { 'filetype': 'markdown', 'char': '<TAB>', 'at': '^\s*\* \%#',       'input': '<Left><Left><Tab><Del>-<Right>',                                               },
     \ { 'filetype': 'markdown', 'char': '<BS>',  'at': '^\s*- \%#',        'input': '<BS><BS><BS>* ',                                                               },
     \ { 'filetype': 'markdown', 'char': '<BS>',  'at': '^\s*+ \%#',        'input': '<BS><BS><BS>- ',                                                               },
     \ { 'filetype': 'markdown', 'char': '<BS>',  'at': '^\s*\* \%#',       'input': '<BS><BS><BS>+ ',                                                               },
@@ -1896,7 +1893,6 @@ if dein#tap('lexima.vim')
 
     "" vim
     let l:rules += [
-    \ { 'filetype': 'vim', 'char': '"', 'at': '^\s*\%#$',  'input': '" '                                              },
     \ { 'filetype': 'vim', 'char': '{', 'at': '^".*{\%#$', 'input': '{{', 'input_after': '<CR>" }}}', 'priority': 10, },
     \ ]
 
