@@ -383,7 +383,7 @@ function peco-nico-bgm() {
 
 # Prompt {{{
 
-PROMPT='${VIM_PROMPT}%{$DEFAULT%} %(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
+PROMPT='${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
 RPROMPT='${COMMAND_BUFFER_STACK}'
 
 function prompt_pure_update_vim_prompt() {
@@ -404,6 +404,15 @@ function zle-keymap-select {
 
 zle -N zle-line-init
 zle -N zle-keymap-select
+
+function venv_name () {
+  PYTHON_VIRTUAL_ENV_STRING=""
+  if [ -n "$VIRTUAL_ENV" ]; then
+    PYTHON_VIRTUAL_ENV_STRING="venv:$(basename $VIRTUAL_ENV) "
+  fi
+}
+
+add-zsh-hook precmd venv_name
 
 # }}}
 
