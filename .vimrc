@@ -15,7 +15,7 @@ scriptencoding utf-8
 let s:DEIN_BASE_PATH = $HOME . '/.vim/bundle/'
 let s:DEIN_PATH      = expand(s:DEIN_BASE_PATH . 'repos/github.com/Shougo/dein.vim')
 if !isdirectory(s:DEIN_PATH)
-  if (executable('git') == 1) && (confirm('Install dein.vim or Launch vim immediately', "&Yes\n&No", 1) == 1)
+  if executable('git') && confirm('Install dein.vim or Launch vim immediately', "&Yes\n&No", 1)
     execute '!git clone --depth=1 https://github.com/Shougo/dein.vim' s:DEIN_PATH
   endif
 endif
@@ -272,7 +272,7 @@ filetype plugin indent on
 " }}}2
 
 " Install Plugin {{{2
-if dein#check_install() && (confirm('Would you like to download some plugins ?', "&Yes\n&No", 1) == 1)
+if dein#check_install() && confirm('Would you like to download some plugins ?', "&Yes\n&No", 1)
   call dein#install()
 endif
 " }}}2
