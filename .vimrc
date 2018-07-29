@@ -39,6 +39,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Language {{{3
+  " call dein#add('pocke/iro.vim',                          {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('Chiel92/vim-autoformat',                 {'lazy': 1, 'on_cmd': 'Autoformat'})
   call dein#add('MaxMEllon/vim-jsx-pretty',               {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('Quramy/tsuquyomi',                       {'lazy': 1, 'on_ft': 'typescript'})
@@ -74,7 +75,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('pearofducks/ansible-vim',                {'lazy': 1, 'on_ft': ['ansible', 'ansible_templete', 'ansible_hosts']})
   call dein#add('plasticboy/vim-markdown',                {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('plytophogy/vim-virtualenv',              {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('pocke/iro.vim',                          {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('posva/vim-vue',                          {'lazy': 1, 'on_ft': 'vue'})
   call dein#add('prettier/vim-prettier',                  {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'vue', 'css', 'scss', 'json', 'graphql', 'markdown']})
   call dein#add('rust-lang/rust.vim',                     {'lazy': 1, 'on_ft': 'rust'})
@@ -131,7 +131,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Shougo/unite.vim')
 
   call dein#add('ozelentok/denite-gtags')
-  " call dein#add('Shougo/neomru.vim')
 
   call dein#local('/usr/local/opt/', {}, ['fzf'])
   call dein#add('junegunn/fzf.vim')
@@ -147,14 +146,14 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Edit & Move & Search {{{3
   " call dein#add('tyru/skk.vim',                           {'lazy': 1, 'on_event': 'InsertEnter'})
   " call dein#add('vimtaku/vim-mlh',                        {'lazy': 1, 'on_event': 'InsertEnter'})
-  call dein#add('DeaR/vim-textobj-wiw',                   {'lazy': 1, 'on_map': {'n': ['zw', 'zb', 'ze', 'zge'], 'ox': ['izw', 'azw']}, 'depends': 'vim-textobj-user'})
+  call dein#add('AndrewRadev/switch.vim',                 {'lazy': 1, 'on_cmd': 'Switch'})
   call dein#add('LeafCage/yankround.vim')
   call dein#add('chrisbra/NrrwRgn',                       {'lazy': 1, 'on_cmd': ['NR', 'NW', 'WidenRegion', 'NRV', 'NUD', 'NRP', 'NRM', 'NRS', 'NRN', 'NRL']})
   call dein#add('cohama/lexima.vim',                      {'lazy': 1, 'on_event': 'InsertEnter', 'hook_source': 'call Hook_on_post_source_lexima()'})
+  call dein#add('dyng/ctrlsf.vim',                        {'lazy': 1, 'on_cmd': ['CtrlSF', 'CtrlSFUpdate', 'CtrlSFOpen', 'CtrlSFToggle']})
   call dein#add('easymotion/vim-easymotion')
   call dein#add('godlygeek/tabular',                      {'lazy': 1, 'on_cmd': 'Tabularize'})
   call dein#add('h1mesuke/vim-alignta',                   {'lazy': 1, 'on_cmd': 'Alignta'})
-  call dein#add('haya14busa/incsearch.vim',               {'lazy': 1, 'on_map': '<Plug>', 'on_source': 'vim-asterisk'})
   call dein#add('haya14busa/vim-asterisk',                {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-edgemotion',              {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-metarepeat',              {'lazy': 1, 'on_map': ['go', 'g.']})
@@ -162,18 +161,23 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('junegunn/vim-easy-align',                {'lazy': 1, 'on_cmd': 'EasyAlign'})
   call dein#add('justinmk/vim-sneak')
   call dein#add('kana/vim-operator-replace',              {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('kana/vim-textobj-entire',                {'lazy': 1, 'on_map': {'ox': ['ie', 'ae']}, 'depends': 'vim-textobj-user'})
+  call dein#add('kana/vim-textobj-fold',                  {'lazy': 1, 'on_map': {'ox': ['iz', 'az']}, 'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-function',              {'lazy': 1, 'on_map': {'ox': ['if', 'af', 'iF', 'aF']}, 'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-indent',                {'lazy': 1, 'on_map': {'ox': ['ai', 'ii', 'aI',  'iI']}, 'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-line',                  {'lazy': 1, 'on_map': {'ox': ['al', 'il']}, 'depends': 'vim-textobj-user'})
   call dein#add('kana/vim-textobj-user')
   call dein#add('machakann/vim-sandwich',                 {'lazy': 1, 'on_map': {'nv': ['sa', 'sr', 'sd'], 'o': ['ib', 'is', 'ab', 'as']}, 'hook_source': 'call Hook_on_post_source_sandwich()'})
-  call dein#add('mileszs/ack.vim')
+  call dein#add('mattn/vim-textobj-url',                  {'lazy': 1, 'on_map': {'ox': ['au', 'iu']}, 'depends': 'vim-textobj-user'})
+  call dein#add('mileszs/ack.vim',                        {'lazy': 1, 'on_cmd': 'Ack'})
   call dein#add('mopp/vim-operator-convert-case')
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',                   {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/accelerated-jk',                   {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/clever-f.vim')
   call dein#add('rhysd/vim-textobj-ruby',                 {'lazy': 1, 'on_ft': 'ruby', 'depends': 'vim-textobj-user'})
+  call dein#add('terryma/vim-expand-region',              {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('terryma/vim-multiple-cursors')
   call dein#add('thinca/vim-qfreplace',                   {'lazy': 1, 'on_cmd': 'Qfreplace'})
   call dein#add('tommcdo/vim-exchange',                   {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
   call dein#add('tomtom/tcomment_vim',                    {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
@@ -186,17 +190,17 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('AndrewRadev/linediff.vim',       {'lazy': 1, 'on_cmd': ['Linediff', 'LinediffReset']})
   call dein#add('LeafCage/foldCC.vim')
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
-  call dein#add('blueyed/vim-diminactive')
   call dein#add('haya14busa/vim-operator-flashy', {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('inside/vim-search-pulse')
   call dein#add('itchyny/lightline.vim')
   call dein#add('itchyny/vim-highlighturl')
   call dein#add('itchyny/vim-parenmatch')
+  call dein#add('lambdalisue/smartcl.vim')
   call dein#add('luochen1990/rainbow')
   call dein#add('maximbaz/lightline-ale')
   call dein#add('mhinz/vim-startify')
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('osyo-manga/vim-brightest')
+  call dein#add('t9md/vim-choosewin',             {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('t9md/vim-quickhl',               {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-zenspace')
   " }}}3
@@ -233,9 +237,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('szw/vim-maximizer',                   {'lazy': 1, 'on_cmd': 'MaximizerToggle'})
   call dein#add('thinca/vim-localrc')
   call dein#add('thinca/vim-ref',                      {'lazy': 1, 'on_cmd': 'Ref'})
-  call dein#add('tpope/vim-dispatch',                  {'lazy': 1, 'on_cmd': ['Dispatch', 'Focus', 'Focus!', 'Start', 'Start!']})
+  call dein#add('tpope/vim-dispatch',                  {'lazy': 1, 'on_cmd': ['Dispatch', 'Focus', 'Start']})
   call dein#add('tweekmonster/startuptime.vim',        {'lazy': 1, 'on_cmd': 'StartupTime'})
   call dein#add('tyru/capture.vim',                    {'lazy': 1, 'on_cmd': 'Capture'})
+  call dein#add('tyru/open-browser.vim',               {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('tyru/vim-altercmd')
   call dein#add('wesQ3/vim-windowswap',                {'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#DoWindowSwap']})
   call dein#add('yssl/QFEnter')
@@ -828,18 +833,16 @@ let g:ale_linter_aliases = {
 \ 'eruby': 'html',
 \ }
 
+let g:ale_set_highlights           = 0
 let g:ale_sign_column_always       = 1
 let g:ale_change_sign_column_color = 1
 let g:ale_lint_on_text_changed     = 'never'
 let g:ale_lint_on_insert_leave     = 0
 let g:ale_echo_msg_format          = '[%linter%] %s'
-
-highlight ALEWarning ctermfg=0 ctermbg=229
-highlight ALEError   ctermfg=0 ctermbg=203
 " }}}3
 
 " autoformat {{{3
-noremap <Leader>a :<C-u>Autoformat<CR>
+noremap <silent> <Leader>a :<C-u>Autoformat<CR>
 
 " ruby
 let g:formatters_ruby = ['rubocop']
@@ -935,8 +938,8 @@ function! s:prettier_vue_settings()
   nnoremap <silent> <buffer> <Leader>a :<C-u>Autoformat <Bar> Prettier<CR>
 endfunction
 
-AutoCmd FileType javascript call s:prettier_settings()
-AutoCmd FileType vue        call s:prettier_vue_settings()
+AutoCmd FileType javascript call <SID>prettier_settings()
+AutoCmd FileType vue        call <SID>prettier_vue_settings()
 " }}}3
 
 " ruby {{{3
@@ -1165,18 +1168,20 @@ function! s:fzf_open_gf()
   \ 'window': 'top split new'})
   execute 'resize' float2nr(0.3 * &lines)
 endfunction
-" }}}
+
+command! FzfOpenGf call s:fzf_open_gf()
+nnoremap <silent> <leader>gf :FzfOpenGf<CR>
+" }}}3
 
 " fzf-preview {{{3
 AlterCommand! <cmdwin> fg[rep] ProjectGrepPreview
 
 let g:fzf_preview_filelist_command = 'rg --files --hidden --follow --glob "!.git/*"'
 
-nnoremap <silent> <Leader>p  :<C-u>ProjectFilesPreview<CR>
-nnoremap <silent> <Leader>b  :<C-u>BuffersPreview<CR>
-nnoremap <silent> <Leader>o  :<C-u>ProjectOldFilesPreview<CR>
-nnoremap <silent> <Leader>O  :<C-u>OldFilesPreview<CR>
-nnoremap <silent> <Leader>gf :<C-u>ProjectGrepPreview<CR>
+nnoremap <silent> <Leader>p :<C-u>ProjectFilesPreview<CR>
+nnoremap <silent> <Leader>b :<C-u>BuffersPreview<CR>
+nnoremap <silent> <Leader>o :<C-u>ProjectOldFilesPreview<CR>
+nnoremap <silent> <Leader>O :<C-u>OldFilesPreview<CR>
 " }}}3
 
 " deoplete.nvim && neosnippet.vim {{{3
@@ -1378,11 +1383,6 @@ let g:agit_preset_views = {
 " committia {{{3
 let g:committia_open_only_vim_starting = 0
 let g:committia_hooks                  = {}
-
-function! g:committia_hooks.edit_open(info)
-  imap <buffer><C-n> <Plug>(committia-scroll-diff-down-half)
-  imap <buffer><C-p> <Plug>(committia-scroll-diff-up-half)
-endfunction
 " }}}3
 
 " git-gutter {{{3
@@ -1469,41 +1469,50 @@ AlterCommand! <cmdwin> ag  Ack!
 AlterCommand! <cmdwin> ack Ack!
 
 let g:ackprg = 'ag --vimgrep'
-nnoremap <silent> <Leader>ga "syiwq:Ack! <C-r>=substitute(@s, '/', '\\/', 'g')<CR>
 " }}}3
 
-" incsearch & anzu & asterisk {{{3
-if dein#tap('incsearch.vim')
-  let g:incsearch#magic = '\v'
-  let g:anzu_status_format = '(%i/%l)'
+" ctrlsf {{{3
+AlterCommand! <cmdwin> grep CtrlSF<Space>-R
+AlterCommand! <cmdwin> csu  CtrlSFUpdate
+AlterCommand! <cmdwin> cst  CtrlSFToggle
+AlterCommand! <cmdwin> cso  CtrlSFOpen
 
-  map /  <Plug>(incsearch-forward)
-  map ?  <Plug>(incsearch-backward)
-  map g/ <Plug>(incsearch-stay)
+let g:ctrlsf_auto_close = {
+\ 'normal' : 0,
+\ 'compact': 0,
+\ }
 
-  AutoCmd VimEnter * call s:incsearch_keymap()
-  function! s:incsearch_keymap()
-    IncSearchNoreMap <C-d> <Over>(incsearch-scroll-f)
-    IncSearchNoreMap <C-u> <Over>(incsearch-scroll-b)
-  endfunction
-endif
+let g:ctrlsf_mapping = {
+\ 'open': [
+\   '<CR>',
+\   'o',
+\ ],
+\ 'openb':   'O',
+\ 'popenf':  'P',
+\ 'pquit':   'q',
+\ 'popen':   'p',
+\ 'quit':    'q',
+\ 'chgmode': 'M',
+\ 'next':    '<C-n>',
+\ 'prev':    '<C-p>',
+\ 'split':   '',
+\ 'vsplit':  '',
+\ 'stop':    '<C-c>',
+\ }
 
-if dein#tap('vim-anzu') && dein#tap('vim-asterisk') && dein#tap('vim-search-pulse')
-  let g:vim_search_pulse_disable_auto_mappings = 1
-  let g:vim_search_pulse_mode = 'pattern'
+let g:ctrlsf_populate_qflist = 1
+let g:ctrlsf_position        = 'right'
+let g:ctrlsf_winsize         = '30%'
+" }}}3
 
-  map n   <Plug>(anzu-n)zzzv<Plug>Pulse
-  map N   <Plug>(anzu-N)zzzv<Plug>Pulse
-  map *   <Plug>(asterisk-z*)zzzv<Plug>Pulse
-  map #   <Plug>(asterisk-z#)zzzv<Plug>Pulse
-  map g*  <Plug>(asterisk-gz*)zzzv<Plug>Pulse
-  map g#  <Plug>(asterisk-gz#)zzzv<Plug>Pulse
-
-  nnoremap <silent>        <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus<CR>
-  cmap     <silent> <expr> <Enter>    search_pulse#PulseFirst()
-
-  AutoCmd User PrePulse  set cursorcolumn
-  AutoCmd User PostPulse set nocursorcolumn
+" anzu & asterisk & search-pulse {{{3
+if dein#tap('vim-anzu') && dein#tap('vim-asterisk')
+  map n  <Plug>(anzu-n)zzzv
+  map N  <Plug>(anzu-N)zzzv
+  map *  <Plug>(asterisk-z*)
+  map #  <Plug>(asterisk-z#)
+  map g* <Plug>(asterisk-gz*)
+  map g# <Plug>(asterisk-gz#)
 endif
 " }}}3
 
@@ -1630,6 +1639,11 @@ endif
 " edgemotion {{{3
 map <silent> <Leader>j <Plug>(edgemotion-j)
 map <silent> <Leader>k <Plug>(edgemotion-k)
+" }}}3
+
+" expand-region {{{3
+vmap v <Plug>(expand_region_expand)
+vmap V <Plug>(expand_region_shrink)
 " }}}3
 
 " jplus {{{3
@@ -1821,17 +1835,18 @@ if dein#tap('vim-sandwich')
 endif
 " }}}3
 
-" skk {{{
+" skk {{{3
 " let g:skk_control_j_key = ''
 " let g:skk_large_jisyo = expand('~/.config/nvim/dict/SKK-JISYO.L')
-" }}}
+" }}}3
+
+" switch {{{3
+let g:switch_mapping = ''
+nnoremap <silent> - :<C-u>Switch<CR>
+" " }}}3
 
 " tcomment {{{3
 noremap <silent> <Leader>cc :TComment<CR>
-" }}}3
-
-" textobj-wiw {{{3
-let g:textobj_wiw_default_key_mappings_prefix = 'z'
 " }}}3
 
 " yankround {{{3
@@ -1839,18 +1854,16 @@ if dein#tap('yankround.vim')
   let g:yankround_max_history   = 1000
   let g:yankround_use_region_hl = 1
 
-  AutoCmd ColorScheme * highlight YankRoundRegion ctermfg=209 ctermbg=237
-  AutoCmd ColorScheme * highlight YankRoundRegion ctermfg=209 ctermbg=237
+  function! Hook_on_vimenter_event_yankround() abort
+    nmap p <Plug>(yankround-p)
+    xmap p <Plug>(yankround-p)
+    nmap P <Plug>(yankround-P)
 
-  nmap p  <Plug>(yankround-p)
-  xmap p  <Plug>(yankround-p)
-  nmap P  <Plug>(yankround-P)
-  nmap gp <Plug>(yankround-gp)
-  xmap gp <Plug>(yankround-gp)
-  nmap gP <Plug>(yankround-gP)
+    nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "<SID>(ctrlp)"
+    nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : "<SID>(ctrln)"
+  endfunction
 
-  nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "q:bprevious\<CR>"
-  nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : "q:bnext\<CR>"
+  AutoCmd VimEnter * call Hook_on_vimenter_event_yankround()
 endif
 " }}}3
 
@@ -1859,7 +1872,12 @@ endif
 " Appearance {{{2
 
 " better-whitespace {{{3
-let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'tag', 'help', 'gitcommit', 'vimfiler', 'unite', 'denite']
+let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'help', 'gitcommit', 'denite', 'tagbar', 'ctrlsf']
+" }}}3
+
+" choosewin {{{3
+let g:choosewin_tabline_replace = 0
+nnoremap <silent> <C-q> :<C-u>ChooseWin<CR>
 " }}}3
 
 " brightest {{{3
@@ -1868,12 +1886,14 @@ AlterCommand! <cmdwin> br[ight] BrightestToggle
 let g:brightest#enable_on_CursorHold        = 1
 let g:brightest#enable_highlight_all_window = 1
 let g:brightest#highlight = {'group': 'BrighTestBgLight'}
+let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat']
 " }}}3
 
 " fastfold {{{3
-let g:fastfold_savehook               = 1
+let g:fastfold_savehook = 1
 let g:fastfold_fold_command_suffixes  = ['x','X','a','A','o','O','c','C']
 let g:fastfold_fold_movement_commands = [']z', '[z', 'zj', 'zk']
+nmap zuz <Plug>(FastFoldUpdate)
 " }}}3
 
 " foldCC {{{3
@@ -2113,18 +2133,18 @@ let g:rainbow_conf.separately = {
 \ 'man'         : 0,
 \ 'diff'        : 0,
 \ 'qf'          : 0,
-\ 'tag'         : 0,
 \ 'denite'      : 0,
-\ 'unite'       : 0,
-\ 'vimfiler'    : 0,
+\ 'vaffle'      : 0,
 \ 'git'         : 0,
 \ 'gitcommit'   : 0,
 \ 'gina-status' : 0,
 \ 'gina-commit' : 0,
 \ 'gina-reflog' : 0,
 \ 'gina-blame'  : 0,
+\ 'tagbar'      : 0,
 \ 'quickrun'    : 0,
 \ 'capture'     : 0,
+\ 'ctrlsf'      : 0,
 \ }
 " }}}3
 
@@ -2177,6 +2197,12 @@ let g:automatic_config = [
 \   },
 \ },
 \ {
+\   'match': {
+\     'filetype': 'vaffle',
+\     'autocmds': ['FileType'],
+\   },
+\ },
+\ {
 \   'match': { 'filetype': 'git' },
 \ },
 \ {
@@ -2205,16 +2231,6 @@ let g:automatic_config = [
 \ },
 \ {
 \   'match': { 'filetype': 'gina-reflog' },
-\ },
-\ {
-\   'match': {
-\     'filetype': 'quickrun',
-\     'autocmds': ['FileType'],
-\   },
-\   'set': {
-\     'move': 'right',
-\     'width': '35%',
-\   },
 \ },
 \ {
 \   'match': {
@@ -2262,12 +2278,25 @@ AlterCommand! <cmdwin> cap[ture] Capture
 AlterCommand! <cmdwin> dis[patch] Dispatch
 AlterCommand! <cmdwin> fo[cus]    Focus
 AlterCommand! <cmdwin> st[art]    Start
+
+AlterCommand! <cmdwin> stree      Start!<Space>stree
+AlterCommand! <cmdwin> fork       Start!<Space>fork
 " }}}3
 
 " maximizer {{{3
 nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
 " }}}3
 
+" miniyank {{{3
+let g:miniyank_maxitems = 100
+" }}}3
+
+" open-browser {{{3
+let g:netrw_nogx = 1
+nmap gx <Plug>(openbrowser-smart-search)
+vmap gx <Plug>(openbrowser-smart-search)
+" }}}3
+"
 " open-googletranslate {{{3
 let g:opengoogletranslate#openbrowsercmd = 'electron-open --without-focus'
 command! -range Trans <line1>,<line2>OpenGoogleTranslate
