@@ -571,16 +571,63 @@ command! ToggleLocationList call <SID>toggle_location_list()
 nnoremap <silent> <Leader>l :ToggleLocationList<CR>
 " }}}2
 
-" Preserve {{{2
-function! s:preserve(command)
-  let l:lastsearch = @/
-  let l:view = winsaveview()
-  execute a:command
-  let @/ = l:lastsearch
-  call winrestview(l:view)
+" ins-completion menu {{{2
+let s:compl_key_dict = {
+\  char2nr("\<C-l>"): "\<C-x>\<C-l>",
+\  char2nr("\<C-n>"): "\<C-x>\<C-n>",
+\  char2nr("\<C-p>"): "\<C-x>\<C-p>",
+\  char2nr("\<C-k>"): "\<C-x>\<C-k>",
+\  char2nr("\<C-t>"): "\<C-x>\<C-t>",
+\  char2nr("\<C-i>"): "\<C-x>\<C-i>",
+\  char2nr("\<C-]>"): "\<C-x>\<C-]>",
+\  char2nr("\<C-f>"): "\<C-x>\<C-f>",
+\  char2nr("\<C-d>"): "\<C-x>\<C-d>",
+\  char2nr("\<C-v>"): "\<C-x>\<C-v>",
+\  char2nr("\<C-u>"): "\<C-x>\<C-u>",
+\  char2nr("\<C-o>"): "\<C-x>\<C-o>",
+\  char2nr('s'):      "\<C-x>s",
+\  char2nr("\<C-s>"): "\<C-x>s",
+\ }
+
+let s:hint_i_ctrl_x_msg = [
+\  '<C-l>: While lines',
+\  '<C-n>: keywords in the current file',
+\  "<C-k>: keywords in 'dictionary'",
+\  "<C-t>: keywords in 'thesaurus'",
+\  '<C-i>: keywords in the current and included files',
+\  '<C-]>: tags',
+\  '<C-f>: file names',
+\  '<C-d>: definitions or macros',
+\  '<C-v>: Vim command-line',
+\  "<C-u>: User defined completion ('completefunc')",
+\  "<C-o>: omni completion ('omnifunc')",
+\  "s: Spelling suggestions ('spell')"
+\ ]
+
+function! s:hint_i_ctrl_x() abort
+  echo join(s:hint_i_ctrl_x_msg, "\n")
+  let c = getchar()
+  return get(s:compl_key_dict, c, nr2char(c))
 endfunction
 
-command! -complete=command -nargs=* Preserve call <SID>preserve(<q-args>)
+inoremap <expr> <C-x> <SID>hint_i_ctrl_x()
+" }}}2
+
+" Mark & Register {{{2
+function! s:hint_cmd_output(prefix, cmd) abort
+  redir => str
+  :execute a:cmd
+  redir END
+  echo str
+  return a:prefix . nr2char(getchar())
+endfunction
+
+nnoremap <expr> m  <SID>hint_cmd_output('m', 'marks')
+nnoremap <expr> `  <SID>hint_cmd_output('`', 'marks')
+nnoremap <expr> '  <SID>hint_cmd_output("'", 'marks')
+nnoremap <expr> "  <SID>hint_cmd_output('"', 'registers')
+nnoremap <expr> q  <SID>hint_cmd_output('q', 'registers')
+nnoremap <expr> @  <SID>hint_cmd_output('@', 'registers')
 " }}}2
 
 " MoveToNewTab {{{2
@@ -600,31 +647,35 @@ endfunction
 nnoremap <silent> gm :<C-u>tablast <Bar> call <SID>move_to_new_tab()<CR>
 " }}}2
 
+" Preserve {{{2
+function! s:preserve(command)
+  let l:lastsearch = @/
+  let l:view = winsaveview()
+  execute a:command
+  let @/ = l:lastsearch
+  call winrestview(l:view)
+endfunction
+
+command! -complete=command -nargs=* Preserve call <SID>preserve(<q-args>)
+" }}}2
+
 " HelpEdit & HelpView {{{2
 function! s:option_to_view()
   setlocal buftype=help nomodifiable readonly
   setlocal nolist
-  if exists('+colorcolumn')
-    setlocal colorcolumn=
-  endif
-  if has('conceal')
-    setlocal conceallevel=2
-  endif
+  setlocal colorcolumn=
+  setlocal conceallevel=2
 endfunction
 
 function! s:option_to_edit()
   setlocal buftype= modifiable noreadonly
   setlocal list tabstop=8 shiftwidth=8 softtabstop=8 noexpandtab textwidth=78
-  if exists('+colorcolumn')
-    setlocal colorcolumn=+1
-  endif
-  if has('conceal')
-    setlocal conceallevel=0
-  endif
+  setlocal colorcolumn=+1
+  setlocal conceallevel=0
 endfunction
 
-command! -buffer -bar HelpEdit call <SID>option_to_edit()
-command! -buffer -bar HelpView call <SID>option_to_view()
+command! -buffer HelpEdit call <SID>option_to_edit()
+command! -buffer HelpView call <SID>option_to_view()
 " }}}2
 
 " Accelerate {{{2
