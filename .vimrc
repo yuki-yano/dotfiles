@@ -1120,12 +1120,38 @@ endif
 " endif
 " }}}3
 
-" fzf {{{
-nnoremap <silent> <leader>gf :FZFOpenFile<CR>
-command! FZFOpenFile call FZFOpenFileFunc()
+" fzf {{{3
+" Delete History
+" function! s:fzf_delete_history() abort
+"   call fzf#run({
+"   \ 'source': <SID>command_history(),
+"   \ 'options': '--multi --prompt="DeleteHistory>"',
+"   \ 'sink': function('<SID>delete_history'),
+"   \ 'window': 'top split new'
+"   \ })
+"   execute 'resize' float2nr(0.3 * &lines)
+" endfunction
+"
+" function! s:command_history() abort
+"   let l:out = ''
+"   redir => l:out
+"   silent! history
+"   redir END
+"
+"   return map(reverse(split(l:out, '\n')), "substitute(substitute(v:val, '\^\>', '', ''), '\^\\\s\\\+', '', '')")
+" endfunction
+"
+" function! s:delete_history(command) abort
+"   call histdel(':', str2nr(get(split(a:command, '  '), 0)))
+"   wviminfo
+" endfunction
+"
+" command! FzfDeleteHistory call s:fzf_delete_history()
+" nnoremap <silent> <Leader>h :<C-u>FzfDeleteHistory<CR>
 
-function! FZFOpenFileFunc()
-  let s:file_path = expand('<cfile>')
+" Open File at Cursor
+function! s:fzf_open_gf()
+  let s:file_path = tolower(expand('<cfile>'))
 
   if s:file_path ==# ''
     echo '[Error] <cfile> return empty string.'
@@ -1135,12 +1161,15 @@ function! FZFOpenFileFunc()
   call fzf#run({
   \ 'source': 'rg --files --hidden --follow --glob "!.git/*"',
   \ 'sink': 'e',
-  \ 'options': '-x +s --query=' . shellescape(s:file_path),
+  \ 'options': '-x --multi --prompt="CursorFiles>" --query=' . shellescape(s:file_path),
   \ 'window': 'top split new'})
+  execute 'resize' float2nr(0.3 * &lines)
 endfunction
 " }}}
 
 " fzf-preview {{{3
+AlterCommand! <cmdwin> fg[rep] ProjectGrepPreview
+
 let g:fzf_preview_filelist_command = 'rg --files --hidden --follow --glob "!.git/*"'
 
 nnoremap <silent> <Leader>p  :<C-u>ProjectFilesPreview<CR>
