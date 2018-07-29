@@ -1,14 +1,3 @@
-" Encoding {{{1
-if has('vim_starting')
-  set encoding=utf-8
-  set fileencodings=utf-8,sjis,cp932,euc-jp
-  set fileformats=unix,mac,dos
-  set termencoding=utf-8
-endif
-
-scriptencoding utf-8
-" }}}1
-
 " Plugin Manager {{{1
 
 " Install & Load Dein {{{2
@@ -120,8 +109,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('wellle/tmux-complete.vim')
     call dein#add('wokalski/autocomplete-flow')
     call dein#add('zchee/deoplete-jedi')
-  else
-    call dein#add('ervandew/supertab')
   endif
   " }}}3
 
@@ -281,36 +268,20 @@ endif
 
 " Global Settings {{{1
 
+" Encoding {{{2
+set encoding=utf-8
+set fileencodings=utf-8,sjis,cp932,euc-jp
+set fileformats=unix,mac,dos
+set termencoding=utf-8
+scriptencoding utf-8
+" }}}2
+
 " Easy autocmd {{{2
 augroup MyVimrc
   autocmd!
 augroup END
 
 command! -nargs=* AutoCmd autocmd MyVimrc <args>
-" }}}2
-
-" Appearance {{{2
-set hidden
-set number
-set nocursorline
-set diffopt=filler,icase,vertical
-set display=lastline
-set helplang=ja
-set laststatus=2
-set list listchars=tab:^\ ,trail:_,eol:$,extends:>,precedes:<
-set matchtime=1
-set previewheight=18
-set pumheight=15
-set showmatch
-set showtabline=2
-set spelllang=en,cjk
-set spellcapcheck=
-" }}}2
-
-" Folding {{{2
-set foldcolumn=1
-set foldenable
-set foldmethod=manual
 " }}}2
 
 " Mappings {{{2
@@ -376,11 +347,6 @@ noremap! <C-f> <Right>
 cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
 
-"" terminal
-if has('nvim')
-  tnoremap <Esc> <C-\><C-n>
-endif
-
 "" Indent
 vnoremap < <gv
 vnoremap > >gv|
@@ -401,9 +367,6 @@ nnoremap <Down>  :resize +1<CR>
 nnoremap Q @q
 
 "" regexp
-if has('nvim')
-  set inccommand=nosplit
-endif
 nnoremap <Leader>R "syiw:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
 nnoremap <Leader>r :%s/\v//g<Left><Left><Left>
 vnoremap <Leader>r "sy:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
@@ -415,17 +378,56 @@ nnoremap <silent> sp :<C-u>let @" = substitute(system("pbpaste"), "\n\+$", "", "
 
 " Set Options {{{2
 
-" viminfo {{{3
-set viminfo='1000
+" NeoVim {{{3
+if has('nvim')
+  let g:python_host_prog  = $HOME . '/.pyenv/shims/python2'
+  let g:python3_host_prog = $HOME . '/.pyenv/shims/python3'
+
+  set inccommand=nosplit
+
+  tnoremap <Esc> <C-\><C-n>
+  AutoCmd TermOpen * set nonumber | set norelativenumber
+
+  " block cursor for insert
+  " set guicursor=
+endif
 " }}}3
 
 " Appearance {{{3
-set scrolloff=5
-set conceallevel=2
-set hlsearch | nohlsearch
 set belloff=all
-set virtualedit=all
+set conceallevel=2
+set diffopt=filler,icase,vertical
+set display=lastline
+set helplang=ja
+set hidden
+set hlsearch | nohlsearch
+set laststatus=2
+set list listchars=tab:^\ ,trail:_,eol:$,extends:>,precedes:<
+set matchtime=1
+set nocursorline
+set number
+set previewheight=18
+set pumheight=15
+set scrolloff=5
+set showmatch
+set showtabline=2
+set spellcapcheck=
+set spelllang=en,cjk
 set synmaxcol=300
+set virtualedit=all
+" }}}3
+
+" Enable cursorcolumn in insert mode {{{3
+AutoCmd InsertEnter * setlocal cursorcolumn
+AutoCmd InsertLeave * setlocal nocursorcolumn
+" }}}3
+
+" Format Options {{{
+AutoCmd Filetype formatoptions setlocal formatoptions-=ro | setlocal formatoptions+=jBn
+" }}}
+
+" viminfo {{{3
+set viminfo='1000
 " }}}3
 
 " Cursor {{{3
@@ -443,13 +445,20 @@ set tabstop=4
 " }}}3
 
 " Search & Complete {{{3
-set ignorecase
-set smartcase
 set completeopt=longest,menuone,preview
+set ignorecase
+set regexpengine=2
+set smartcase
 set wildignorecase
 set wildmenu
 set wildmode=longest:full,full
 set wrapscan
+" }}}3
+
+" Folding {{{3
+set foldcolumn=1
+set foldenable
+set foldmethod=manual
 " }}}3
 
 " history {{{3
@@ -473,21 +482,17 @@ set ttimeout
 set timeoutlen=750
 set ttimeoutlen=10
 
-if $TERM ==# 'screen'
-  set t_Co=256
-endif
-
 if !has('nvim')
   set term=xterm-256color
 endif
+
+if $TERM ==# 'screen'
+  set t_Co=256
+endif
 " }}}3
 
-" Disable Paste Mode {{{3
+" Automatically Disable Paste Mode {{{3
 AutoCmd InsertLeave * setlocal nopaste
-" }}}3
-
-" Format Options {{{3
-AutoCmd FileType * setlocal formatoptions-=ro | setlocal formatoptions+=jBn
 " }}}3
 
 " Highlight Annotation Comment {{{3
@@ -498,18 +503,10 @@ AutoCmd WinEnter,BufRead,BufNew,Syntax * silent! call matchadd('Todo', '\(TODO\|
 " set clipboard=unnamed,unnamedplus
 " }}}3
 
-" NeoVim {{{3
-if has('nvim')
-  let g:python_host_prog  = $HOME . '/.pyenv/shims/python2'
-  let g:python3_host_prog = $HOME . '/.pyenv/shims/python3'
-endif
-" }}}
-
 " Misc {{{3
 set updatetime=500
 set matchpairs& matchpairs+=<:>
 set langnoremap
-set regexpengine=2
 " }}}3
 
 " Turn off default plugins. {{{3
@@ -668,6 +665,7 @@ AutoCmd FileType python     setlocal expandtab   shiftwidth=4 softtabstop=4 tabs
 AutoCmd FileType go         setlocal noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
 AutoCmd FileType rust       setlocal expandtab   shiftwidth=4 softtabstop=4 tabstop=4
 AutoCmd FileType json       setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType markdown   setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType html       setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType css        setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType scss       setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
@@ -726,12 +724,7 @@ AutoCmd FileType typescript setlocal dict=~/dotfiles/.vim/dict/javascript.dict
 AutoCmd FileType ruby,eruby setlocal dict=~/dotfiles/.vim/dict/rails.dict
 " }}}3
 
-" }}}2
 
-" Terminal {{{2
-if has('nvim')
-  AutoCmd TermOpen * set nonumber | set norelativenumber
-endif
 " }}}2
 
 " HTML & eruby {{{2
@@ -2477,11 +2470,11 @@ let g:automatic_config = [
 " }}}
 
 " bufkill {{{3
-AutoCmd FileType *      nnoremap <silent> <Leader>d :BD<CR>
-AutoCmd FileType help   nnoremap <silent> <Leader>d :BW<CR>
-AutoCmd FileType diff   nnoremap <silent> <Leader>d :BW<CR>
-AutoCmd FileType git    nnoremap <silent> <Leader>d :BW<CR>
-AutoCmd FileType vaffle nnoremap <silent> <Leader>d :BW<CR>
+AutoCmd FileType *      nnoremap <silent> <buffer> <Leader>d :BD<CR>
+AutoCmd FileType help   nnoremap <silent> <buffer> <Leader>d :BW<CR>
+AutoCmd FileType diff   nnoremap <silent> <buffer> <Leader>d :BW<CR>
+AutoCmd FileType git    nnoremap <silent> <buffer> <Leader>d :BW<CR>
+AutoCmd FileType vaffle nnoremap <silent> <buffer> <Leader>d :BW<CR>
 " }}}3
 
 " capture {{{3
@@ -2613,6 +2606,7 @@ AutoCmd ColorScheme * highlight Search       ctermfg=68   ctermbg=232
 AutoCmd ColorScheme * highlight LineNr       ctermfg=241
 AutoCmd ColorScheme * highlight CursorLineNr ctermfg=253  ctermbg=235
 AutoCmd ColorScheme * highlight CursorLine                ctermbg=235
+AutoCmd ColorScheme * highlight NonText      ctermfg=60
 AutoCmd ColorScheme * highlight StatusLine   ctermfg=0    ctermbg=234
 AutoCmd ColorScheme * highlight StatusLineNC ctermfg=0    ctermbg=234
 AutoCmd ColorScheme * highlight Todo         ctermfg=229
