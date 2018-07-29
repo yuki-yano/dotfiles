@@ -126,6 +126,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Fuzzy Finder {{{3
+  " call dein#add('Shougo/unite.vim')
   call dein#add('Shougo/denite.nvim')
   call dein#add('Shougo/unite.vim')
 
@@ -139,7 +140,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " filer {{{3
-  call dein#add('Shougo/vimfiler')
+  " call dein#add('Shougo/vimfiler')
   call dein#add('cocopon/vaffle.vim')
   " }}}3
 
@@ -1065,58 +1066,58 @@ if dein#tap('denite.nvim')
   nnoremap <silent> <Leader>dr :<C-u>Denite -resume<CR>
 endif
 
-AlterCommand! <cmdwin> u[nite] Unite
+" AlterCommand! <cmdwin> u[nite] Unite
 
-if dein#tap('unite.vim')
-  " Unite
-
-  "" keymap
-  function! s:unite_settings()
-    nnoremap <silent> <buffer> <C-n>      j
-    nnoremap <silent> <buffer> <C-p>      k
-    nnoremap <silent> <buffer> <C-j>      <C-w>j
-    nnoremap <silent> <buffer> <C-k>      <C-w>k
-    nnoremap <silent> <buffer> <Esc><Esc> q
-    inoremap <silent> <buffer> <Esc><Esc> <Esc>q
-    imap     <silent> <buffer> <C-w>      <Plug>(unite_delete_backward_path)
-  endfunction
-
-  AutoCmd FileType unite call s:unite_settings()
-
-  "" file & buffer
-  " call unite#custom#source('buffer,file_rec,file_rec/async,file_rec/git', 'matchers', ['converter_relative_word', 'matcher_fuzzy'])
-  " call unite#custom#source('neomru/file', 'matchers', ['converter_relative_word', 'matcher_project_files', 'matcher_fuzzy'])
-  " call unite#custom#source('file_mru', 'matchers', ['converter_relative_word', 'matcher_fuzzy'])
-
-  " let g:unite_source_rec_max_cache_files = 10000
-  " let g:unite_enable_auto_select = 0
-  " let g:unite_source_rec_async_command = ['rg', '--files', '--follow', '--glob', '!.git/*']
-
-  " nnoremap <silent> <Leader>p :<C-u>Unite file_rec/async:!<CR>
-  " nnoremap <silent> <Leader>m :<C-u>Unite neomru/file<CR>
-  " nnoremap <silent> <Leader>M :<C-u>Unite file_mru<CR>
-  " nnoremap <silent> <Leader>f :<C-u>Unite buffer file_mru file_rec/async:!<CR>
-  " nnoremap <silent> <Leader>b :<C-u>Unite buffer<CR>
-
-  "" grep
-  " let g:unite_source_grep_command = 'rg'
-  " let g:unite_source_grep_default_opts = '--vimgrep --hidden'
-  " let g:unite_source_grep_recursive_opt = ''
-  "
-  " call unite#custom_source('line', 'sorters', 'sorter_reverse')
-  " call unite#custom_source('grep', 'sorters', 'sorter_reverse')
-  " nnoremap <silent> <Leader>/          :<C-u>Unite line -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  " nnoremap <silent> <Leader>//         :<C-u>Unite line -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
-  " nnoremap <silent> <Leader>*          :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  " nnoremap <silent> <Leader>**         :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
-  " nnoremap <silent> <Leader><Leader>/  :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  " nnoremap <silent> <Leader><Leader>// :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
-  " nnoremap <silent> <Leader><Leader>*  :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  " nnoremap <silent> <Leader><Leader>** :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
-
-  "" yank
-  " nnoremap <silent> <Leader><Leader>p :<C-u>Unite yankround<CR>
-endif
+" if dein#tap('unite.vim')
+"   " Unite
+"
+"   "" keymap
+"   function! s:unite_settings()
+"     nnoremap <silent> <buffer> <C-n>      j
+"     nnoremap <silent> <buffer> <C-p>      k
+"     nnoremap <silent> <buffer> <C-j>      <C-w>j
+"     nnoremap <silent> <buffer> <C-k>      <C-w>k
+"     nnoremap <silent> <buffer> <Esc><Esc> q
+"     inoremap <silent> <buffer> <Esc><Esc> <Esc>q
+"     imap     <silent> <buffer> <C-w>      <Plug>(unite_delete_backward_path)
+"   endfunction
+"
+"   AutoCmd FileType unite call <SID>unite_settings()
+"
+"   " file & buffer
+"   call unite#custom#source('buffer,file_rec,file_rec/async,file_rec/git', 'matchers', ['converter_relative_word', 'matcher_fuzzy'])
+"   call unite#custom#source('neomru/file', 'matchers', ['converter_relative_word', 'matcher_project_files', 'matcher_fuzzy'])
+"   call unite#custom#source('file_mru', 'matchers', ['converter_relative_word', 'matcher_fuzzy'])
+"
+"   let g:unite_source_rec_max_cache_files = 10000
+"   let g:unite_enable_auto_select = 0
+"   let g:unite_source_rec_async_command = ['rg', '--files', '--follow', '--glob', '!.git/*']
+"
+"   nnoremap <silent> <Leader>p :<C-u>Unite file_rec/async:!<CR>
+"   nnoremap <silent> <Leader>m :<C-u>Unite neomru/file<CR>
+"   nnoremap <silent> <Leader>M :<C-u>Unite file_mru<CR>
+"   nnoremap <silent> <Leader>f :<C-u>Unite buffer file_mru file_rec/async:!<CR>
+"   nnoremap <silent> <Leader>b :<C-u>Unite buffer<CR>
+"
+"   " grep
+"   let g:unite_source_grep_command = 'rg'
+"   let g:unite_source_grep_default_opts = '--vimgrep --hidden'
+"   let g:unite_source_grep_recursive_opt = ''
+"
+"   call unite#custom_source('line', 'sorters', 'sorter_reverse')
+"   call unite#custom_source('grep', 'sorters', 'sorter_reverse')
+"   nnoremap <silent> <Leader>/          :<C-u>Unite line -direction=botright -buffer-name=search-buffer -no-quit<CR>
+"   nnoremap <silent> <Leader>//         :<C-u>Unite line -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
+"   nnoremap <silent> <Leader>*          :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit<CR>
+"   nnoremap <silent> <Leader>**         :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
+"   nnoremap <silent> <Leader><Leader>/  :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
+"   nnoremap <silent> <Leader><Leader>// :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
+"   nnoremap <silent> <Leader><Leader>*  :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
+"   nnoremap <silent> <Leader><Leader>** :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
+"
+"   " yank
+"   nnoremap <silent> <Leader><Leader>p :<C-u>Unite yankround<CR>
+" endif
 " }}}3
 
 " fzf {{{
@@ -1400,21 +1401,21 @@ endif
 " filer {{{2
 
 " vimfiler {{{3
-let g:vimfiler_safe_mode_by_default = 0
-let g:vimfiler_execute_file_list    = {'jpg': 'open', 'jpeg': 'open', 'gif': 'open', 'png': 'open'}
-let g:vimfiler_enable_auto_cd       = 1
-let g:vimfiler_ignore_pattern       = '^\%(.git\|.DS_Store\)$'
-let g:vimfiler_trashbox_directory   = '~/.Trash'
-nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple<CR>
-nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple<CR>
-
-function! s:vimfiler_settings()
-  nmap     <buffer> R     <Plug>(vimfiler_redraw_screen)
-  nnoremap <buffer> <C-l> <C-w>l
-  nnoremap <buffer> <C-j> <C-w>j
-endfunction
-
-AutoCmd FileType vimfiler call s:vimfiler_settings()
+" let g:vimfiler_safe_mode_by_default = 0
+" let g:vimfiler_execute_file_list    = {'jpg': 'open', 'jpeg': 'open', 'gif': 'open', 'png': 'open'}
+" let g:vimfiler_enable_auto_cd       = 1
+" let g:vimfiler_ignore_pattern       = '^\%(.git\|.DS_Store\)$'
+" let g:vimfiler_trashbox_directory   = '~/.Trash'
+" nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple<CR>
+" nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple<CR>
+"
+" function! s:vimfiler_settings()
+"   nmap     <buffer> R     <Plug>(vimfiler_redraw_screen)
+"   nnoremap <silent> <buffer> <C-l> <C-w>l
+"   nnoremap <silent> <buffer> <C-j> <C-w>j
+" endfunction
+"
+" AutoCmd FileType vimfiler call s:vimfiler_settings()
 " }}}3
 
 " vaffle {{{3
