@@ -2145,8 +2145,9 @@ if dein#tap('lightline.vim')
   let g:lightline#ale#indicator_ok       = 'OK'
 
   " Disable lineinfo, fileencoding and fileformat
-  let g:lightline_ignore_right_ft = [
+  let s:lightline_ignore_right_ft = [
   \ 'help',
+  \ 'diff',
   \ 'man',
   \ 'fzf',
   \ 'denite',
@@ -2161,8 +2162,9 @@ if dein#tap('lightline.vim')
   \ ]
 
 
-  let g:lightline_ft_to_mode_hash = {
+  let s:lightline_ft_to_mode_hash = {
   \ 'help':        'Help',
+  \ 'diff':        'Diff',
   \ 'man':         'Man',
   \ 'fzf':         'FZF',
   \ 'denite':      'Denite',
@@ -2176,7 +2178,7 @@ if dein#tap('lightline.vim')
   \ 'gina-blame':  'Git Blame',
   \ }
 
-  let g:lightline_ignore_modifiable_ft = [
+  let s:lightline_ignore_modifiable_ft = [
   \ 'qf',
   \ 'vaffle',
   \ 'tagbar',
@@ -2187,7 +2189,7 @@ if dein#tap('lightline.vim')
   \ 'gina-blame',
   \ ]
 
-  let g:lightline_ignore_filename_ft = [
+  let s:lightline_ignore_filename_ft = [
   \ 'qf',
   \ 'fzf',
   \ 'denite',
@@ -2200,7 +2202,7 @@ if dein#tap('lightline.vim')
   \ 'gina-blame',
   \ ]
 
-  let g:lightline_ignore_filepath_ft = [
+  let s:lightline_ignore_filepath_ft = [
   \ 'qf',
   \ 'fzf',
   \ 'denite',
@@ -2218,26 +2220,27 @@ if dein#tap('lightline.vim')
 
   function! Lightline_mode() abort
     let l:win = getwininfo(win_getid())[0]
-    return l:win.loclist ? 'Location List' : l:win.quickfix ? 'QuickFix' : get(g:lightline_ft_to_mode_hash, &filetype, lightline#mode())
+    return l:win.loclist ? 'Location List' : l:win.quickfix ? 'QuickFix' : get(s:lightline_ft_to_mode_hash, &filetype, lightline#mode())
   endfunction
 
   function! Lightline_filepath() abort
-    let l:path = filereadable(expand('%:p:~')) ? '' : expand('%:p:~:h')
-    let l:dirs     = split(l:path, '/')
-    let l:last_dir = remove(l:dirs, -1)
-    call map(l:dirs, 'v:val[0]')
-
-    if count(g:lightline_ignore_filepath_ft, &filetype) || !len(l:dirs) || expand('%:t') ==# '[Command Line]'
+    if count(s:lightline_ignore_filepath_ft, &filetype) || expand('%:t') ==# '[Command Line]'
       return ''
     endif
 
-    return !len(l:dirs) ? l:last_dir : join(l:dirs, '/') . '/' . l:last_dir
+    let l:path            = expand('%:p:~:h')
+    let l:not_home_prefix = match(l:path, '^/') != -1 ? '/' : ''
+    let l:dirs            = split(l:path, '/')
+    let l:last_dir        = remove(l:dirs, -1)
+    call map(l:dirs, 'v:val[0]')
+
+    return len(l:dirs) ? l:not_home_prefix . join(l:dirs, '/') . '/' . l:last_dir : l:last_dir
   endfunction
 
   function! Lightline_filename() abort
     let l:filename = expand('%:t')
 
-    if count(g:lightline_ignore_filename_ft, &filetype)
+    if count(s:lightline_ignore_filename_ft, &filetype)
       return ''
     elseif l:filename ==# ''
       return '[No Name]'
@@ -2249,19 +2252,19 @@ if dein#tap('lightline.vim')
   endfunction
 
   function! Lightline_filetype() abort
-    return !has_key(g:lightline_ft_to_mode_hash, &filetype) ?
+    return !has_key(s:lightline_ft_to_mode_hash, &filetype) ?
     \ &filetype :
     \ ''
   endfunction
 
   function! Lightline_lineinfo() abort
-    return !count(g:lightline_ignore_right_ft, &filetype) ?
+    return !count(s:lightline_ignore_right_ft, &filetype) ?
     \        printf('%d/%d [%d%%]',line('.'), line('$'), float2nr((1.0 * line('.')) / line('$') * 100.0)) :
     \        ''
   endfunction
 
   function! Lightline_fileencoding() abort
-    return !count(g:lightline_ignore_right_ft, &filetype) ?
+    return !count(s:lightline_ignore_right_ft, &filetype) ?
     \         strlen(&fileencoding) ?
     \           &fileencoding :
     \           &encoding :
@@ -2269,7 +2272,7 @@ if dein#tap('lightline.vim')
   endfunction
 
   function! Lightline_fileformat() abort
-    return !count(g:lightline_ignore_right_ft, &filetype) ?
+    return !count(s:lightline_ignore_right_ft, &filetype) ?
     \         &fileformat :
     \        ''
   endfunction
@@ -2314,7 +2317,9 @@ if dein#tap('lightline.vim')
   endfunction
 
   function! Lightline_keymap() abort
-    return "Map [" . keymaps#get_current_keymap_name() . "]"
+    return !has_key(s:lightline_ft_to_mode_hash, &filetype) ?
+    \ "Map [" . keymaps#get_current_keymap_name() . "]" :
+    \ ''
   endfunction
 endif
 " }}}3
