@@ -14,7 +14,7 @@
   attributesfile = ~/.gitattributes_global
 
 [alias]
-  save = !git stash && git stash pop
+  qsave = !git stash && git stash pop
 
 [pager]
   log =  diff-highlight | less

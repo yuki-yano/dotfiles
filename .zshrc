@@ -66,6 +66,7 @@ abbreviations=(
   "gp"   "git push"
   "gst"  "git stash"
   "gstp" "git stash pop"
+  "gq"   "git qsave"
 )
 
 function _magic-abbrev-expand-and-accept-line() {
