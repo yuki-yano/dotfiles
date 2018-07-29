@@ -1479,6 +1479,9 @@ if dein#tap('gina.vim')
   call gina#custom#mapping#nmap('status', '<C-k>', '<C-w>k',                {'noremap': 1, 'silent': 1})
   call gina#custom#mapping#nmap('status', '<C-^>', ':<C-u>Gina commit<CR>', {'noremap': 1, 'silent': 1})
 
+  call gina#custom#mapping#vmap('show',   'p',     ':diffput<CR>',          {'noremap': 1, 'silent': 1})
+  call gina#custom#mapping#vmap('show',   'o',     ':diffget<CR>',          {'noremap': 1, 'silent': 1})
+
   call gina#custom#mapping#nmap('commit', '<C-^>', ':<C-u>Gina status<CR>', {'noremap': 1, 'silent': 1})
 
   call gina#custom#mapping#nmap('branch', '<C-k>', '<C-w>k', {'noremap': 1, 'silent': 1})
@@ -1487,10 +1490,10 @@ if dein#tap('gina.vim')
   call gina#custom#mapping#nmap('branch', 'dd',    '<Plug>(gina-branch-delete)')
   call gina#custom#mapping#nmap('branch', 'DD',    '<Plug>(gina-branch-delete-force)')
 
-  call gina#custom#mapping#nmap('blame', '<C-l>', '<C-w>l', {'noremap': 1, 'silent': 1})
-  call gina#custom#mapping#nmap('blame', '<C-r>', '<Plug>(gina-blame-redraw)', {'noremap': 1, 'silent': 1})
-  call gina#custom#mapping#nmap('blame', 'j', 'j<Plug>(gina-blame-echo)')
-  call gina#custom#mapping#nmap('blame', 'k', 'k<Plug>(gina-blame-echo)')
+  call gina#custom#mapping#nmap('blame',  '<C-l>', '<C-w>l', {'noremap': 1, 'silent': 1})
+  call gina#custom#mapping#nmap('blame',  '<C-r>', '<Plug>(gina-blame-redraw)', {'noremap': 1, 'silent': 1})
+  call gina#custom#mapping#nmap('blame',  'j', 'j<Plug>(gina-blame-echo)')
+  call gina#custom#mapping#nmap('blame',  'k', 'k<Plug>(gina-blame-echo)')
 
   call gina#custom#action#alias('/\%(blame\|log\|reflog\)', 'preview', 'topleft show:commit:preview')
   call gina#custom#mapping#nmap('/\%(blame\|log\|reflog\)', 'p', ":<C-u>call gina#action#call('preview')<CR>", {'noremap': 1, 'silent': 1})
