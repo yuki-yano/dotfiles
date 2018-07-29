@@ -1953,77 +1953,68 @@ nnoremap <silent> <Leader>i :<C-u>:IndentLinesToggle<CR>
 if dein#tap('lightline.vim')
   let g:lightline = {
   \ 'colorscheme': 'iceberg_yano',
-  \ 'mode_map': {'c': 'NORMAL'},
   \ 'active': {
   \   'left': [
   \     ['mode', 'paste'],
-  \     ['readonly', 'filepath', 'filename', 'anzu'],
+  \     ['denite', 'filepath', 'filename', 'anzu'],
+  \     ['keymap'],
   \    ],
   \   'right': [
-  \     ['percent', 'lineinfo'],
-  \     ['fileformat', 'fileencoding', 'filetype'],
+  \     ['lineinfo'],
+  \     ['filetype', 'fileencoding', 'fileformat'],
   \     ['linter_errors', 'linter_warnings', 'linter_ok', 'linter_unload'],
   \   ],
   \ },
   \ 'inactive': {
-  \   'left': [[], [], ['filepath', 'filename']],
-  \   'right': [
-  \     ['percent', 'lineinfo'],
-  \     ['fileformat', 'fileencoding', 'filetype'],
-  \   ],
+  \   'left': [['mode'], [], ['filepath', 'filename']],
+  \   'right': [[], ['filetype', 'fileencoding', 'fileformat']],
   \ },
   \ 'tabline': {
-  \   'left':  [['branch'], ['gitstatus'], ['tabs']],
-  \   'right': [[]],
+  \   'left':  [['tabs']],
+  \   'right': [['branch'], ['gitstatus']],
   \ },
   \ 'tab': {
-  \   'active':   ['tabwinnum', 'readonly', 'filename', 'modified'],
-  \   'inactive': ['tabwinnum', 'readonly', 'filename', 'modified'],
+  \   'active':   ['tabwinnum', 'filename'],
+  \   'inactive': ['tabwinnum', 'filename'],
   \ },
   \ 'component': {
-  \   'fileformat':   "%{Lightline_is_visible() ? &fileformat : ''}",
-  \   'fileencoding': "%{Lightline_is_visible() ? (strlen(&fileencoding) ? &fileencoding : &encoding) : ''}",
-  \   'lineinfo':     "%{!Lightline_is_visible() ? '' : printf('%03d:%03d', line('.'), col('.'))}",
-  \   'percent':      "%{!Lightline_is_visible() ? '' : printf('%3d%%', float2nr((1.0 * line('.')) / line('$') * 100.0))}",
-  \   'readonly':     "%{&readonly ? 'RO' : ''}",
   \   'paste':        "%{&paste ? 'PASTE' : ''}",
   \  },
   \ 'component_function': {
-  \   'mode':      'lightline#mode',
-  \   'filepath':  'Lightline_filepath',
-  \   'filename':  'Lightline_filename',
-  \   'branch':    'gina#component#repo#preset',
-  \   'gitstatus': 'Lightline_git_status',
-  \   'anzu':      'anzu#search_status',
-  \ },
-  \ 'tab_component': {
-  \   'readonly': "gettabwinvar(a:n, tabpagewinnr(a:n), '&readonly') ? 'RO' : ''",
+  \   'mode':         'Lightline_mode',
+  \   'filepath':     'Lightline_filepath',
+  \   'filename':     'Lightline_filename',
+  \   'filetype':     'Lightline_filetype',
+  \   'lineinfo':     'Lightline_lineinfo',
+  \   'fileencoding': 'Lightline_fileencoding',
+  \   'fileformat':   'Lightline_fileformat',
+  \   'branch':       'gina#component#repo#preset',
+  \   'gitstatus':    'Lightline_git_status',
+  \   'anzu':         'anzu#search_status',
+  \   'denite':       'Lightline_denite',
+  \   'keymap':       'keymaps#get_current_keymap_name',
   \ },
   \ 'tab_component_function': {
   \   'tabwinnum':   'Lightline_tab_win_num',
   \ },
   \ 'component_visible_condition': {
+  \   'filepath':     'Lightline_is_visible()',
   \   'lineinfo':     'Lightline_is_visible()',
   \   'fileencoding': 'Lightline_is_visible()',
   \   'fileformat':   'Lightline_is_visible()',
-  \   'percent':      'Lightline_is_visible()',
   \ },
   \ 'component_function_visible_condition': {
-  \   'modified': '&modified||!&modifiable',
-  \   'readonly': '&readonly',
   \   'paste':    '&paste',
   \   'spell':    '&spell',
   \ },
   \ 'component_type': {
-  \   'linter_unload':   'unload',
   \   'linter_errors':   'error',
   \   'linter_warnings': 'warning',
   \   'linter_ok':       'ok',
   \ },
   \ 'component_expand': {
-  \   'linter_unload':   'Lightline_ale_unload',
-  \   'linter_errors':   'lightline#ale#errors',
-  \   'linter_warnings': 'lightline#ale#warnings',
+  \   'linter_errors':   'Lightline_ale_errors',
+  \   'linter_warnings': 'Lightline_ale_warnings',
   \   'linter_ok':       'Lightline_ale_ok',
   \ },
   \ 'enable': {
@@ -2036,61 +2027,173 @@ if dein#tap('lightline.vim')
   let g:lightline#ale#indicator_warnings = 'W'
   let g:lightline#ale#indicator_ok       = 'OK'
 
+  " Disable lineinfo, fileencoding and fileformat
+  let g:lightline_ignore_right_ft = [
+  \ 'help',
+  \ 'man',
+  \ 'fzf',
+  \ 'denite',
+  \ 'vaffle',
+  \ 'tagbar',
+  \ 'capture',
+  \ 'gina-status',
+  \ 'gina-branch',
+  \ 'gina-log',
+  \ 'gina-reflog',
+  \ 'gina-blame',
+  \ ]
+
+
+  let g:lightline_ft_to_mode_hash = {
+  \ 'help':        'Help',
+  \ 'man':         'Man',
+  \ 'fzf':         'FZF',
+  \ 'denite':      'Denite',
+  \ 'vaffle':      'Vaffle',
+  \ 'tagbar':      'TagBar',
+  \ 'capture':     'Capture',
+  \ 'gina-status': 'Git Status',
+  \ 'gina-branch': 'Git Branch',
+  \ 'gina-log':    'Git Log',
+  \ 'gina-reflog': 'Git Reflog',
+  \ 'gina-blame':  'Git Blame',
+  \ }
+
+  let g:lightline_ignore_modifiable_ft = [
+  \ 'qf',
+  \ 'vaffle',
+  \ 'tagbar',
+  \ 'gina-status',
+  \ 'gina-branch',
+  \ 'gina-log',
+  \ 'gina-reflog',
+  \ 'gina-blame',
+  \ ]
+
+  let g:lightline_ignore_filename_ft = [
+  \ 'qf',
+  \ 'fzf',
+  \ 'denite',
+  \ 'vaffle',
+  \ 'tagbar',
+  \ 'gina-status',
+  \ 'gina-branch',
+  \ 'gina-log',
+  \ 'gina-reflog',
+  \ 'gina-blame',
+  \ ]
+
+  let g:lightline_ignore_filepath_ft = [
+  \ 'qf',
+  \ 'fzf',
+  \ 'denite',
+  \ 'vaffle',
+  \ 'gina-status',
+  \ 'gina-branch',
+  \ 'gina-log',
+  \ 'gina-reflog',
+  \ 'gina-blame',
+  \ ]
+
   function! Lightline_is_visible() abort
-    return 60 <= winwidth(0)
+    return 80 < winwidth(0)
+  endfunction
+
+  function! Lightline_mode() abort
+    let l:win = getwininfo(win_getid())[0]
+    return l:win.loclist ? 'Location List' : l:win.quickfix ? 'QuickFix' : get(g:lightline_ft_to_mode_hash, &filetype, lightline#mode())
   endfunction
 
   function! Lightline_filepath() abort
-    let l:path_string = filereadable(expand('%:p:~')) || winwidth(0) < 60 ? '' : expand('%:p:~:h')
-    let l:dirs = split(l:path_string, '/')
-    if len(l:dirs) ==# 0
-      return ''
-    endif
-
+    let l:path = filereadable(expand('%:p:~')) ? '' : expand('%:p:~:h')
+    let l:dirs     = split(l:path, '/')
     let l:last_dir = remove(l:dirs, -1)
     call map(l:dirs, 'v:val[0]')
 
-    if len(l:dirs) ==# 0
-      return l:last_dir
-    else
-      return join(l:dirs, '/') . '/' . l:last_dir
+    if count(g:lightline_ignore_filepath_ft, &filetype) || !len(l:dirs) || expand('%:t') ==# '[Command Line]'
+      return ''
     endif
+
+    return !len(l:dirs) ? l:last_dir : join(l:dirs, '/') . '/' . l:last_dir
   endfunction
 
   function! Lightline_filename() abort
-    if expand('%:t') !=# ''
-      return expand('%:t') . (&modified ? ' +' : '')
-    else
+    let l:filename = expand('%:t')
+
+    if count(g:lightline_ignore_filename_ft, &filetype)
+      return ''
+    elseif l:filename ==# ''
       return '[No Name]'
+    elseif &modifiable
+      return l:filename . (&modified ? ' +' : '')
+    else
+      return l:filename . ' [X]'
     endif
   endfunction
 
+  function! Lightline_filetype() abort
+    return !has_key(g:lightline_ft_to_mode_hash, &filetype) ?
+    \ &filetype :
+    \ ''
+  endfunction
+
+  function! Lightline_lineinfo() abort
+    return !count(g:lightline_ignore_right_ft, &filetype) ?
+    \        printf('%d/%d [%d%%]',line('.'), line('$'), float2nr((1.0 * line('.')) / line('$') * 100.0)) :
+    \        ''
+  endfunction
+
+  function! Lightline_fileencoding() abort
+    return !count(g:lightline_ignore_right_ft, &filetype) ?
+    \         strlen(&fileencoding) ?
+    \           &fileencoding :
+    \           &encoding :
+    \         ''
+  endfunction
+
+  function! Lightline_fileformat() abort
+    return !count(g:lightline_ignore_right_ft, &filetype) ?
+    \         &fileformat :
+    \        ''
+  endfunction
+
+  "%{(strlen(&fileencoding) ? &fileencoding : &encoding)}",
+  "%{}",
+  "
   function! Lightline_tab_win_num(n) abort
     return a:n . ':' . len(tabpagebuflist(a:n))
   endfunction
 
-  function! Lightline_ale_ok() abort
-    return count(s:ale_filetypes, &filetype) != 0 ? lightline#ale#ok() : ''
+  function! Lightline_ale_errors() abort
+    return count(s:ale_filetypes, &filetype) ? lightline#ale#errors() : ''
   endfunction
 
-  function! Lightline_ale_unload() abort
-    return count(s:ale_filetypes, &filetype) == 0 ? 'UNUSE' : ''
+  function! Lightline_ale_warnings() abort
+    return count(s:ale_filetypes, &filetype) ? lightline#ale#warnings() : ''
+  endfunction
+
+  function! Lightline_ale_ok() abort
+    return count(s:ale_filetypes, &filetype) ? lightline#ale#ok() : ''
   endfunction
 
   function! Lightline_git_status() abort
     if gina#component#repo#branch() ==# ''
       return ''
+    else
+      let l:staged     = gina#component#status#staged()
+      let l:unstaged   = gina#component#status#unstaged()
+      let l:conflicted = gina#component#status#conflicted()
+      return printf(
+      \ 'S: %s, U: %s, C: %s',
+      \ l:staged ==# '' ? 0 : l:staged,
+      \ l:unstaged ==# '' ? 0 : l:unstaged,
+      \ l:conflicted ==# '' ? 0 : l:conflicted,
+      \ )
     endif
+  endfunction
 
-    let l:staged     = gina#component#status#staged()
-    let l:unstaged   = gina#component#status#unstaged()
-    let l:conflicted = gina#component#status#conflicted()
-    return printf(
-    \ 'S: %s, U: %s, C: %s',
-    \ l:staged ==# '' ? 0 : l:staged,
-    \ l:unstaged ==# '' ? 0 : l:unstaged,
-    \ l:conflicted ==# '' ? 0 : l:conflicted,
-    \)
+  function! Lightline_denite() abort
+    return (&filetype !=# 'denite') ? '' : (substitute(denite#get_status_mode(), '[- ]', '', 'g'))
   endfunction
 endif
 " }}}3
