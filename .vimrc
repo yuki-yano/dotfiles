@@ -1249,7 +1249,10 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   let g:deoplete#auto_complete_start_length = 1
   let g:deoplete#tag#cache_limit_size       = 5000000
 
+  inoremap <silent> <C-g>        <C-o>:call deoplete#custom#buffer_option('auto_complete', v:false)<CR>
   inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
+
+  AutoCmd InsertLeave * call deoplete#custom#buffer_option('auto_complete', v:true)
 
   imap <C-k> <Plug>(neosnippet_expand_or_jump)
   smap <C-k> <Plug>(neosnippet_expand_or_jump)
