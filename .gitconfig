@@ -13,6 +13,9 @@
   excludesfile = ~/.gitignore_global
   attributesfile = ~/.gitattributes_global
 
+[alias]
+  save = !git stash && git stash pop
+
 [pager]
   log =  diff-highlight | less
   show = diff-highlight | less
@@ -40,6 +43,9 @@
 
 [merge]
   tool = Kaleidoscope
+
+[rebase]
+	autostash = true
 
 [help]
   autocorrect = -1
