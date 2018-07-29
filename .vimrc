@@ -304,6 +304,7 @@ set pumheight=15
 set showmatch
 set showtabline=2
 set spelllang=en,cjk
+set spellcapcheck=
 " }}}2
 
 " Folding {{{2
