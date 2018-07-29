@@ -1468,6 +1468,25 @@ endif
 
 " vaffle {{{3
 AlterCommand! <cmdwin> va[fle] Vaffle
+
+let g:loaded_netrw = 1
+let g:loaded_netrwPlugin = 1
+let g:vaffle_open_selected_split_position = ''
+let g:vaffle_open_selected_vsplit_position = ''
+
+command! VaffleExplorer vertical topleft vsplit +Vaffle | vertical resize 35 | setlocal winfixwidth
+command! VaffleExplorerCurrent vertical topleft vsplit +Vaffle\ %:h | vertical resize 35 | setlocal winfixwidth
+
+nnoremap <silent> <Leader>e :VaffleExplorer<CR>
+nnoremap <silent> <Leader>E :VaffleExplorerCurrent<CR>
+
+function! s:customize_vaffle_mappings() abort
+  nmap <silent> <buffer> <nowait> <Space> <Plug>(vaffle-toggle-current)
+  nmap <silent> <buffer> <nowait> s       <Plug>(vaffle-open-selected-split)
+  nmap <silent> <buffer> <nowait> v       <Plug>(vaffle-open-selected-vsplit)
+endfunction
+
+AutoCmd Filetype vaffle call <SID>customize_vaffle_mappings()
 " }}}3
 
 " }}}2
