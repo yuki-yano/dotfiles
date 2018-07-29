@@ -1624,9 +1624,6 @@ if dein#tap('vim-easymotion') && dein#tap('clever-f.vim') && dein#tap('vim-sneak
   let g:EasyMotion_space_jump_first = 1
   let g:EasyMotion_prompt           = 'Search by EasyMotion ({n} character(s)) > '
 
-  highlight link EasyMotionIncSearch Search
-  highlight link EasyMotionMoveHL    Search
-
   map  S  <Plug>(easymotion-s2)
   nmap S  <Plug>(easymotion-overwin-f2)
   omap f  <Plug>(easymotion-fl)
@@ -2215,7 +2212,6 @@ endif
 " parenmatch {{{3
 let g:loaded_matchparen = 1
 let g:parenmatch_highlight = 0
-hi link ParenMatch MatchParen
 " }}}3
 
 " quickhl {{{3
@@ -2517,20 +2513,27 @@ nnoremap <silent> <Leader><C-w> :WinResizerStartResize<CR>
 " }}}1
 
 " Load Colorscheme Later {{{1
+AutoCmd ColorScheme * highlight Visual       ctermfg=159  ctermbg=23
+AutoCmd ColorScheme * highlight Search       ctermfg=68   ctermbg=232
+AutoCmd ColorScheme * highlight LineNr       ctermfg=241
+AutoCmd ColorScheme * highlight CursorLineNr ctermfg=253  ctermbg=235
+AutoCmd ColorScheme * highlight CursorLine                ctermbg=235
+AutoCmd ColorScheme * highlight StatusLine   ctermfg=0    ctermbg=234
+AutoCmd ColorScheme * highlight StatusLineNC ctermfg=0    ctermbg=234
+AutoCmd ColorScheme * highlight Todo         ctermfg=229
+
+AutoCmd ColorScheme * highlight link ParenMatch     MatchParen
+AutoCmd ColorScheme * highlight ALEWarning          ctermfg=0    ctermbg=229
+AutoCmd ColorScheme * highlight ALEError            ctermfg=0    ctermbg=203
+AutoCmd ColorScheme * highlight BrighTestBgLight    ctermfg=none ctermbg=236
+AutoCmd ColorScheme * highlight CleverFDefaultLabel ctermfg=9    ctermbg=236 cterm=bold
+AutoCmd ColorScheme * highlight Sneak               ctermfg=132  ctermbg=236 cterm=bold
+AutoCmd ColorScheme * highlight YankRoundRegion     ctermfg=209  ctermbg=237
+
 syntax enable
 
 " iceberg {{{2
-silent! colorscheme iceberg
-highlight Search              ctermfg=none  ctermbg=238
-highlight LineNr              ctermfg=241
-highlight CursorLineNr        ctermbg=237   ctermfg=253
-highlight CursorLine          ctermbg=235
-highlight PmenuSel            ctermbg=222   ctermfg=33  cterm=reverse
-highlight Visual              ctermfg=159   ctermbg=23
-highlight NonText             ctermfg=60
-highlight BrighTestBgLight    ctermfg=none  ctermbg=236
-highlight CleverFDefaultLabel ctermfg=9     ctermbg=236 cterm=bold
-highlight Sneak               ctermfg=132   ctermbg=236 cterm=bold
+colorscheme iceberg
 " }}}2
 
 " }}}1
