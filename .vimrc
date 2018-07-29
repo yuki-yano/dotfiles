@@ -334,11 +334,38 @@ noremap <LocalLeader> <Nop>
 let g:mapleader = "\<Space>"
 let g:maplocalleader = '\'
 
-"" Setting for Neovim
-if has('nvim')
-  let g:python_host_prog  = $HOME . '/.pyenv/shims/python2'
-  let g:python3_host_prog = $HOME . '/.pyenv/shims/python3'
-endif
+" BackSpace
+imap <C-h> <BS>
+cmap <C-h> <BS>
+
+"" Save
+nnoremap <silent> <Leader>w :<C-u>update<CR>
+nnoremap <silent> <Leader>W :<C-u>update!<CR>
+
+"" Cursor
+noremap 0 ^
+noremap ^ 0
+
+"" Automatically indent with i
+nnoremap <expr> i len(getline('.')) ? "i" : "cc"
+
+" Ignore registers
+nnoremap x "_x
+
+"" Buffer
+nnoremap [b :bprevious<CR>
+nnoremap ]b :bnext<CR>
+
+"" incsearch
+nnoremap / /\v
+
+"" QuickFix
+nnoremap [c :cprevious<CR>
+nnoremap ]c :cnext<CR>
+
+"" Location List
+nnoremap [l :lprevious<CR>
+nnoremap ]l :lnext<CR>
 
 "" CommandLine
 noremap! <C-a> <Home>
@@ -349,58 +376,41 @@ noremap! <C-f> <Right>
 cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
 
-"" Buffer
-nnoremap <silent> <C-p> :bprevious<CR>
-nnoremap <silent> <C-n> :bnext<CR>
-
-"" Ignore registers
-nnoremap x "_x
-
-"" Select buffer
-nnoremap B :<C-u>ls<CR>:buffer<Space>
+"" terminal
+if has('nvim')
+  tnoremap <Esc> <C-\><C-n>
+endif
 
 "" Indent
 vnoremap < <gv
 vnoremap > >gv|
 
 "" Tab
-nnoremap <silent> gt :<C-u>tablast <Bar> tabedit<CR>
-nnoremap <silent> gd :<C-u>tabclose<CR>
-nnoremap <silent> gh :<C-u>tabprevious<CR>
-nnoremap <silent> gl :<C-u>tabNext<CR>
+nnoremap gt :<C-u>tablast <Bar> tabedit<CR>
+nnoremap gd :<C-u>tabclose<CR>
+nnoremap gh :<C-u>tabprevious<CR>
+nnoremap gl :<C-u>tabNext<CR>
 
 "" resize
-nnoremap <silent> <Left>  :vertical resize -1<CR>
-nnoremap <silent> <Right> :vertical resize +1<CR>
-nnoremap <silent> <Up>    :resize -1<CR>
-nnoremap <silent> <Down>  :resize +1<CR>
-
-"" Save
-nnoremap <silent> <Leader>w :<C-u>update<CR>
-nnoremap <silent> <Leader>W :<C-u>update!<CR>
-
-"" redraw
-nnoremap <silent> <Leader><C-l> :<C-u>redraw!<CR>
+nnoremap <Left>  :vertical resize -1<CR>
+nnoremap <Right> :vertical resize +1<CR>
+nnoremap <Up>    :resize -1<CR>
+nnoremap <Down>  :resize +1<CR>
 
 "" Macro
 nnoremap Q @q
 
 "" regexp
 if has('nvim')
-  set inccommand=split
+  set inccommand=nosplit
 endif
-nnoremap <Leader>R "syiw:%s/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
-nnoremap <Leader>r :%s//g<Left><Left>
-vnoremap <Leader>r "sy:%s/<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
-
-"" terminal
-if has('nvim')
-  tnoremap <silent> <Esc> <C-\><C-n>
-endif
+nnoremap <Leader>R "syiw:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
+nnoremap <Leader>r :%s/\v//g<Left><Left><Left>
+vnoremap <Leader>r "sy:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
 
 "" Clipboard
-nnoremap sc :<C-u>call system('pbcopy', @")<CR>
-nnoremap sp :<C-u>r! pbpaste<CR>
+nnoremap <silent> sc :<C-u>call system("pbcopy", @") <Bar> echo "Copied \" register to OS clipboard"<CR>
+nnoremap <silent> sp :<C-u>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>
 " }}}2
 
 " Set Options {{{2
@@ -410,6 +420,7 @@ set viminfo='1000
 " }}}3
 
 " Appearance {{{3
+set scrolloff=5
 set conceallevel=2
 set hlsearch | nohlsearch
 set belloff=all
@@ -417,7 +428,7 @@ set virtualedit=all
 set synmaxcol=300
 " }}}3
 
-" Same column move {{{3
+" Cursor {{{3
 set nostartofline
 " }}}3
 
@@ -461,9 +472,11 @@ set ttyfast
 set ttimeout
 set timeoutlen=750
 set ttimeoutlen=10
+
 if $TERM ==# 'screen'
   set t_Co=256
 endif
+
 if !has('nvim')
   set term=xterm-256color
 endif
@@ -473,18 +486,24 @@ endif
 AutoCmd InsertLeave * setlocal nopaste
 " }}}3
 
-" Disable Auto Comment {{{3
-AutoCmd FileType * setlocal formatoptions-=ro
+" Format Options {{{3
+AutoCmd FileType * setlocal formatoptions-=ro | setlocal formatoptions+=jBn
 " }}}3
 
 " Highlight Annotation Comment {{{3
 AutoCmd WinEnter,BufRead,BufNew,Syntax * silent! call matchadd('Todo', '\(TODO\|FIXME\|OPTIMIZE\|HACK\|REVIEW\|NOTE\|INFO\|TEMP\):')
-AutoCmd WinEnter,BufRead,BufNew,Syntax * highlight Todo ctermfg=229
 " }}}3
 
 " Clipboard {{{3
 " set clipboard=unnamed,unnamedplus
 " }}}3
+
+" NeoVim {{{3
+if has('nvim')
+  let g:python_host_prog  = $HOME . '/.pyenv/shims/python2'
+  let g:python3_host_prog = $HOME . '/.pyenv/shims/python3'
+endif
+" }}}
 
 " Misc {{{3
 set updatetime=500
@@ -515,7 +534,7 @@ let g:loaded_netrwFileHandlers = 1
 
 " }}}1
 
-" Command {{{1
+" Command & Function {{{1
 
 " ToggleHiglight {{{2
 function! s:toggle_highlight()
@@ -526,22 +545,7 @@ function! s:toggle_highlight()
   endif
 endfunction
 
-command! ToggleHighlight call s:toggle_highlight()
-" }}}2
-
-" RemoveTailSpace {{{2
-function! s:remove_tail_spaces() abort
-  if &filetype ==# 'markdown'
-    return
-  endif
-
-  let l:c = getpos('.')
-  g/.*\s$/normal $gelD
-  call setpos('.', l:c)
-endfunction
-
-command! RemoveTailSpace call s:remove_tail_spaces()
-AutoCmd BufWritePre * RemoveTailSpace
+command! ToggleHighlight call <SID>toggle_highlight()
 " }}}2
 
 " ToggleQuickfix {{{2
@@ -553,7 +557,7 @@ function! s:toggle_quickfix()
   endif
 endfunction
 
-command! ToggleQuickfix call s:toggle_quickfix()
+command! ToggleQuickfix call <SID>toggle_quickfix()
 nnoremap <silent> <Leader>q :ToggleQuickfix<CR>
 " }}}2
 
@@ -566,7 +570,7 @@ function! s:toggle_location_list()
   endif
 endfunction
 
-command! ToggleLocationList call s:toggle_location_list()
+command! ToggleLocationList call <SID>toggle_location_list()
 nnoremap <silent> <Leader>l :ToggleLocationList<CR>
 " }}}2
 
@@ -579,7 +583,7 @@ function! s:preserve(command)
   call winrestview(l:view)
 endfunction
 
-command! -complete=command -nargs=* Preserve call s:preserve(<q-args>)
+command! -complete=command -nargs=* Preserve call <SID>preserve(<q-args>)
 " }}}2
 
 " MoveToNewTab {{{2
@@ -596,7 +600,7 @@ function! s:move_to_new_tab()
   tabnext
 endfunction
 
-nnoremap gm :<C-u>tablast <Bar> call <SID>move_to_new_tab()<CR>
+nnoremap <silent> gm :<C-u>tablast <Bar> call <SID>move_to_new_tab()<CR>
 " }}}2
 
 " HelpEdit & HelpView {{{2
@@ -622,8 +626,8 @@ function! s:option_to_edit()
   endif
 endfunction
 
-command! -buffer -bar HelpEdit call s:option_to_edit()
-command! -buffer -bar HelpView call s:option_to_view()
+command! -buffer -bar HelpEdit call <SID>option_to_edit()
+command! -buffer -bar HelpView call <SID>option_to_view()
 " }}}2
 
 " Accelerate {{{2
@@ -632,7 +636,6 @@ function! s:accelerate() abort
   :RainbowToggleOff
   :BrightestDisable
   :ALEDisable
-  syntax off
 endfunction
 
 function! s:disable_accelerate() abort
@@ -640,13 +643,16 @@ function! s:disable_accelerate() abort
   :RainbowToggleOn
   :BrightestEnable
   :ALEEnable
-  syntax enable
 endfunction
 
 command! Accelerate        call <SID>accelerate()
-command! DisableAccelerate call <SID>SIDdisable_accelerate()
+command! DisableAccelerate call <SID>disable_accelerate()
 " }}}2
 
+" VimShowHlGroup {{{2
+command! ShowHlGroup echo synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name')
+" }}}2
+"
 " }}}1
 
 " FileType Settings {{{1
@@ -731,7 +737,7 @@ endif
 " HTML & eruby {{{2
 augroup HTML
   autocmd!
-  autocmd FileType html,eruby call s:map_html_keys()
+  autocmd FileType html,eruby call <SID>map_html_keys()
   function! s:map_html_keys()
     inoremap <silent> <buffer> \\ \
     inoremap <silent> <buffer> \& &amp;
@@ -766,7 +772,7 @@ xnoremap : q:
 nnoremap q: :
 xnoremap q: :
 
-AutoCmd CmdwinEnter * call s:init_cmdwin()
+AutoCmd CmdwinEnter * call <SID>init_cmdwin()
 
 function! s:init_cmdwin() abort
   set number | set norelativenumber
@@ -791,6 +797,7 @@ if dein#tap('vim-altercmd')
 
   AlterCommand! <cmdwin> hi            ToggleHighlight
   AlterCommand! <cmdwin> sp            setlocal<Space>spell!
+  AlterCommand! <cmdwin> show[hlgroup] ShowHlGroup
   AlterCommand! <cmdwin> acc[elarate]  Accelerate
   AlterCommand! <cmdwin> dacc[elarate] DisableAccelerate
 endif
@@ -1831,7 +1838,7 @@ map _ <Plug>(operator-replace)
 " }}}3
 
 " qfreplace {{{3
-AutoCmd FileType qf nnoremap <buffer> r :<C-u>Qfreplace<CR>
+AutoCmd FileType qf nnoremap <silent> <buffer> r :<C-u>Qfreplace<CR>
 " }}}3
 
 " sandwich {{{3
@@ -2502,7 +2509,7 @@ nnoremap <silent> <C-w><C-w> :call WindowSwap#EasyWindowSwap()<CR>
 " }}}3
 
 " winresizer {{{3
-nnoremap <silent> <Leader><C-e> :WinResizerStartResize<CR>
+nnoremap <silent> <Leader><C-w> :WinResizerStartResize<CR>
 " }}}3
 
 " }}}2
