@@ -1633,47 +1633,78 @@ if dein#tap('vim-easymotion') && dein#tap('clever-f.vim') && dein#tap('vim-sneak
 
   " clever-f
   let g:clever_f_not_overwrites_standard_mappings = 0
-  nmap f q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-f)
-  nmap F q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-F)
-  nmap t q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-t)
-  nmap T q:<C-u>KeyMapSet clever<CR><Plug>(clever-f-T)
 
   " sneak
   let g:sneak#prompt = 'Search by Sneak (2 characters) >'
-  nmap ss q:<C-u>KeyMapSet sneak<CR><Plug>Sneak_s
-  nmap sS q:<C-u>KeyMapSet sneak<CR><Plug>Sneak_S
-  vmap ss q:<C-u>KeyMapSet sneak<CR>gv<Plug>Sneak_s
-  vmap sS q:<C-u>KeyMapSet sneak<CR>gv<Plug>Sneak_S
 
   " keymaps
   let g:keymaps =  [
   \ {
-  \   'name': 'default',
+  \   'name': 'Empty',
   \   'keymap': {},
   \ },
   \ {
-  \   'name': 'clever',
+  \   'name': 'Default',
   \   'keymap': {
   \     'nmap': {
-  \       ';': '<Plug>(clever-f-repeat-forward)',
-  \       ',': '<Plug>(clever-f-repeat-back)',
+  \       'f':  ':KeyMapSet CleverF<CR><Plug>(clever-f-f)',
+  \       'F':  ':KeyMapSet CleverF<CR><Plug>(clever-f-F)',
+  \       't':  ':KeyMapSet CleverF<CR><Plug>(clever-f-t)',
+  \       'T':  ':KeyMapSet CleverF<CR><Plug>(clever-f-T)',
+  \       'ss': ':KeyMapSet Sneak<CR><Plug>Sneak_s',
+  \       'sS': ':KeyMapSet Sneak<CR><Plug>Sneak_S',
+  \     },
+  \     'vmap': {
+  \       'f':  '<Esc>:KeyMapSet CleverF<CR>gv<Plug>(clever-f-f)',
+  \       'F':  '<Esc>:KeyMapSet CleverF<CR>gv<Plug>(clever-f-F)',
+  \       't':  '<Esc>:KeyMapSet CleverF<CR>gv<Plug>(clever-f-t)',
+  \       'T':  '<Esc>:KeyMapSet CleverF<CR>gv<Plug>(clever-f-T)',
+  \       'ss': '<Esc>:KeyMapSet Sneak<CR>gv<Plug>Sneak_s',
+  \       'sS': '<Esc>:KeyMapSet Sneak<CR>gv<Plug>Sneak_S',
+  \     },
+  \     'omap': {
+  \       'ss': '<Plug>Sneak_s',
+  \       'sS': '<Plug>Sneak_S',
   \     },
   \   },
   \ },
   \ {
-  \   'name': 'sneak',
+  \   'name': 'CleverF',
   \   'keymap': {
   \     'nmap': {
-  \       ';': '<Plug>Sneak_;',
-  \       ',': '<Plug>Sneak_,',
+  \       'f': '<Plug>(clever-f-f)',
+  \       'F': '<Plug>(clever-f-F)',
+  \       ';': '<Plug>(clever-f-f)',
+  \       ',': '<Plug>(clever-f-F)',
   \     },
   \     'vmap': {
-  \       ';': '<Plug>Sneak_;',
-  \       ',': '<Plug>Sneak_,',
+  \       'f': '<Plug>(clever-f-f)',
+  \       'F': '<Plug>(clever-f-F)',
+  \       ';': '<Plug>(clever-f-f)',
+  \       ',': '<Plug>(clever-f-F)',
+  \     },
+  \   },
+  \ },
+  \ {
+  \   'name': 'Sneak',
+  \   'keymap': {
+  \     'nmap': {
+  \       ';':  '<Plug>Sneak_;',
+  \       ',':  '<Plug>Sneak_,',
+  \       'ss': '<Plug>Sneak_;',
+  \       'sS': '<Plug>Sneak_,',
+  \     },
+  \     'vmap': {
+  \       ';':  '<Plug>Sneak_;',
+  \       ',':  '<Plug>Sneak_,',
+  \       'ss': '<Plug>Sneak_;',
+  \       'sS': '<Plug>Sneak_,',
   \     },
   \   },
   \ },
   \ ]
+
+  AutoCmd VimEnter * KeyMapSet Default
 endif
 " }}}3
 
@@ -2031,7 +2062,7 @@ if dein#tap('lightline.vim')
   \   'gitstatus':    'Lightline_git_status',
   \   'anzu':         'anzu#search_status',
   \   'denite':       'Lightline_denite',
-  \   'keymap':       'keymaps#get_current_keymap_name',
+  \   'keymap':       'Lightline_keymap',
   \ },
   \ 'tab_component_function': {
   \   'tabwinnum':   'Lightline_tab_win_num',
@@ -2041,6 +2072,7 @@ if dein#tap('lightline.vim')
   \   'lineinfo':     'Lightline_is_visible()',
   \   'fileencoding': 'Lightline_is_visible()',
   \   'fileformat':   'Lightline_is_visible()',
+  \   'keymap':       'Lightline_is_visible()',
   \ },
   \ 'component_function_visible_condition': {
   \   'paste':    '&paste',
@@ -2164,7 +2196,7 @@ if dein#tap('lightline.vim')
     elseif l:filename ==# ''
       return '[No Name]'
     elseif &modifiable
-      return l:filename . (&modified ? ' +' : '')
+      return l:filename . (&modified ? ' [+]' : '')
     else
       return l:filename . ' [X]'
     endif
@@ -2233,6 +2265,10 @@ if dein#tap('lightline.vim')
 
   function! Lightline_denite() abort
     return (&filetype !=# 'denite') ? '' : (substitute(denite#get_status_mode(), '[- ]', '', 'g'))
+  endfunction
+
+  function! Lightline_keymap() abort
+    return "Map [" . keymaps#get_current_keymap_name() . "]"
   endfunction
 endif
 " }}}3
@@ -2564,7 +2600,7 @@ endfunction
 " Mapping <Esc><Esc> {{{2
 function! EscEscReset() abort
   AnzuClearSearchStatus
-  KeyMapSet standby
+  KeyMapSet Default
 endfunction
 nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> call EscEscReset()<CR>
 " }}}
