@@ -101,7 +101,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('airblade/vim-rooter',           {'lazy': 1, 'on_cmd': 'Rooter'})
   call dein#add('cohama/agit.vim',               {'lazy': 1, 'on_cmd': ['Agit', 'AgitFile', 'AgitGit', 'AgitDiff']})
   call dein#add('hotwatermorning/auto-git-diff', {'lazy': 1, 'on_ft': 'gitrebase'})
-  call dein#add('lambdalisue/gina.vim')
+  call dein#add('lambdalisue/gina.vim',          {'lazy': 1, 'on_cmd': 'Gina', 'hook_source': 'call Hook_on_post_source_gina()'})
   call dein#add('lambdalisue/vim-unified-diff')
   call dein#add('rhysd/committia.vim',           {'lazy': 1, 'on_ft': 'gitcommit'})
   call dein#add('rhysd/conflict-marker.vim')
@@ -1507,40 +1507,42 @@ AlterCommand! <cmdwin> gdc   Gina<Space>diff<Space>--cached
 AlterCommand! <cmdwin> blame Gina<Space>blame
 
 if dein#tap('gina.vim')
-  call gina#custom#command#option('status', '--short')
+  function! Hook_on_post_source_gina()
+    call gina#custom#command#option('status', '--short')
 
-  call gina#custom#command#option('/\%(status\|commit\|branch\)', '--opener', 'split')
-  call gina#custom#command#option('/\%(diff\|log\)', '--opener', 'vsplit')
+    call gina#custom#command#option('/\%(status\|commit\|branch\)', '--opener', 'split')
+    call gina#custom#command#option('/\%(diff\|log\)', '--opener', 'vsplit')
 
-  call gina#custom#command#option('/\%(status\|changes\)', '--ignore-submodules')
-  call gina#custom#command#option('status', '--branch')
-  call gina#custom#command#option('branch', '-v', 'v')
-  call gina#custom#command#option('branch', '--all')
+    call gina#custom#command#option('/\%(status\|changes\)', '--ignore-submodules')
+    call gina#custom#command#option('status', '--branch')
+    call gina#custom#command#option('branch', '-v', 'v')
+    call gina#custom#command#option('branch', '--all')
 
-  call gina#custom#mapping#nmap('status', '<C-j>', '<C-w>j',                {'noremap': 1, 'silent': 1})
-  call gina#custom#mapping#nmap('status', '<C-k>', '<C-w>k',                {'noremap': 1, 'silent': 1})
-  call gina#custom#mapping#nmap('status', '<C-^>', ':<C-u>Gina commit<CR>', {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('status', '<C-j>', '<C-w>j',                {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('status', '<C-k>', '<C-w>k',                {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('status', '<C-^>', ':<C-u>Gina commit<CR>', {'noremap': 1, 'silent': 1})
 
-  call gina#custom#mapping#vmap('show',   'p',     ':diffput<CR>',          {'noremap': 1, 'silent': 1})
-  call gina#custom#mapping#vmap('show',   'o',     ':diffget<CR>',          {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#vmap('show',   'p',     ':diffput<CR>',          {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#vmap('show',   'o',     ':diffget<CR>',          {'noremap': 1, 'silent': 1})
 
-  call gina#custom#mapping#nmap('commit', '<C-^>', ':<C-u>Gina status<CR>', {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('commit', '<C-^>', ':<C-u>Gina status<CR>', {'noremap': 1, 'silent': 1})
 
-  call gina#custom#mapping#nmap('branch', '<C-k>', '<C-w>k', {'noremap': 1, 'silent': 1})
-  call gina#custom#mapping#nmap('branch', 'g<CR>', '<Plug>(gina-commit-checkout-track)')
-  call gina#custom#mapping#nmap('branch', 'nn',    '<Plug>(gina-branch-new)')
-  call gina#custom#mapping#nmap('branch', 'dd',    '<Plug>(gina-branch-delete)')
-  call gina#custom#mapping#nmap('branch', 'DD',    '<Plug>(gina-branch-delete-force)')
+    call gina#custom#mapping#nmap('branch', '<C-k>', '<C-w>k', {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('branch', 'g<CR>', '<Plug>(gina-commit-checkout-track)')
+    call gina#custom#mapping#nmap('branch', 'nn',    '<Plug>(gina-branch-new)')
+    call gina#custom#mapping#nmap('branch', 'dd',    '<Plug>(gina-branch-delete)')
+    call gina#custom#mapping#nmap('branch', 'DD',    '<Plug>(gina-branch-delete-force)')
 
-  call gina#custom#mapping#nmap('blame',  '<C-l>', '<C-w>l', {'noremap': 1, 'silent': 1})
-  call gina#custom#mapping#nmap('blame',  '<C-r>', '<Plug>(gina-blame-redraw)', {'noremap': 1, 'silent': 1})
-  call gina#custom#mapping#nmap('blame',  'j', 'j<Plug>(gina-blame-echo)')
-  call gina#custom#mapping#nmap('blame',  'k', 'k<Plug>(gina-blame-echo)')
+    call gina#custom#mapping#nmap('blame',  '<C-l>', '<C-w>l', {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('blame',  '<C-r>', '<Plug>(gina-blame-redraw)', {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('blame',  'j', 'j<Plug>(gina-blame-echo)')
+    call gina#custom#mapping#nmap('blame',  'k', 'k<Plug>(gina-blame-echo)')
 
-  call gina#custom#action#alias('/\%(blame\|log\|reflog\)', 'preview', 'topleft show:commit:preview')
-  call gina#custom#mapping#nmap('/\%(blame\|log\|reflog\)', 'p', ":<C-u>call gina#action#call('preview')<CR>", {'noremap': 1, 'silent': 1})
+    call gina#custom#action#alias('/\%(blame\|log\|reflog\)', 'preview', 'topleft show:commit:preview')
+    call gina#custom#mapping#nmap('/\%(blame\|log\|reflog\)', 'p', ":<C-u>call gina#action#call('preview')<CR>", {'noremap': 1, 'silent': 1})
 
-  call gina#custom#execute('/\%(ls\|log\|reflog\|grep\)', 'setlocal noautoread')
+    call gina#custom#execute('/\%(ls\|log\|reflog\|grep\)', 'setlocal noautoread')
+  endfunction
 endif
 " }}}3
 
@@ -2486,12 +2488,12 @@ let g:bakaup_backup_dir  = expand('~/.config/nvim/backup')
 " }}}3
 
 " automatic {{{
-function! s:my_temp_win_init(config, context)
+function! s:automatic_win_init(config, context)
   nnoremap <silent> <buffer> q :<C-u>q<CR>
 endfunction
 
 let g:automatic_default_set_config = {
-\ 'apply': function('s:my_temp_win_init'),
+\ 'apply': function('<SID>automatic_win_init'),
 \ }
 
 let g:automatic_config = [
@@ -2528,6 +2530,9 @@ let g:automatic_config = [
 \ },
 \ {
 \   'match': { 'filetype': 'git' },
+\ },
+\ {
+\   'bufname': 'gina\://'
 \ },
 \ {
 \   'match': { 'filetype': 'gina-status' },
