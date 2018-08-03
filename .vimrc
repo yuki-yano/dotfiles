@@ -2001,7 +2001,7 @@ endfunction
 " }}}3
 
 " operator-convert-case {{{3
-nnoremap <silent> <Leader>cl :<C-u>ConvertCaseLoop<CR>
+nmap <silent> <Leader>cc <Plug>(operator-convert-case-loop)
 " }}}3
 
 " operator-replace {{{3
