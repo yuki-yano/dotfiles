@@ -884,10 +884,6 @@ AutoCmd CmdwinEnter * call <SID>init_cmdwin()
 
 function! s:init_cmdwin() abort
   set number | set norelativenumber
-
-  inoremap <silent> <buffer> <expr> <CR>  pumvisible() ? "\<C-y>\<CR>" : "\<CR>"
-  inoremap <silent> <buffer> <expr> <Tab> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
-
   inoremap <buffer> <expr> <C-r><C-w> "\<C-c>\<C-r>\<C-w>" . &g:cedit
 
   " nnoremap <silent> <buffer> dd :<C-u>rviminfo<CR>:call histdel(getcmdwintype(), line('.') - line('$'))<CR>:wviminfo!<CR>dd
