@@ -130,7 +130,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Fuzzy Finder {{{3
-  " call dein#add('Shougo/unite.vim')
+  call dein#add('Shougo/unite.vim')
   call dein#add('Shougo/denite.nvim')
   call dein#add('ozelentok/denite-gtags')
 
@@ -282,7 +282,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Library {{{3
-  " call dein#add('Shougo/vimproc.vim', {'build': 'make'})
+  call dein#add('Shougo/vimproc.vim', {'build': 'make'})
   call dein#add('vim-scripts/L9')
   call dein#add('vim-scripts/cecutil')
   " }}}3
@@ -1571,21 +1571,27 @@ endif
 " filer {{{2
 
 " vimfiler {{{3
-" let g:vimfiler_safe_mode_by_default = 0
-" let g:vimfiler_execute_file_list    = {'jpg': 'open', 'jpeg': 'open', 'gif': 'open', 'png': 'open'}
-" let g:vimfiler_enable_auto_cd       = 1
-" let g:vimfiler_ignore_pattern       = '^\%(.git\|.DS_Store\)$'
-" let g:vimfiler_trashbox_directory   = '~/.Trash'
-" nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple<CR>
-" nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple<CR>
-"
-" function! s:vimfiler_settings()
-"   nmap     <buffer> R     <Plug>(vimfiler_redraw_screen)
-"   nnoremap <silent> <buffer> <C-l> <C-w>l
-"   nnoremap <silent> <buffer> <C-j> <C-w>j
-" endfunction
-"
-" AutoCmd FileType vimfiler call s:vimfiler_settings()
+let g:vimfiler_safe_mode_by_default = 0
+let g:vimfiler_execute_file_list    = {'jpg': 'open', 'jpeg': 'open', 'gif': 'open', 'png': 'open'}
+let g:vimfiler_enable_auto_cd       = 1
+let g:vimfiler_ignore_pattern       = '^\%(.git\|.DS_Store\)$'
+let g:vimfiler_trashbox_directory   = '~/.Trash'
+
+if dein#tap('lightline.vim')
+  nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple <Bar> call lightline#update()<CR>
+  nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple <Bar> call lightline#update()<CR>
+else
+  nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple<CR>
+  nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple<CR>
+endif
+
+function! s:vimfiler_settings()
+  nmap     <silent> <buffer> R     <Plug>(vimfiler_redraw_screen)
+  nnoremap <silent> <buffer> <C-l> <C-w>l
+  nnoremap <silent> <buffer> <C-j> <C-w>j
+endfunction
+
+AutoCmd FileType vimfiler call s:vimfiler_settings()
 " }}}3
 
 " vaffle {{{3
@@ -1599,8 +1605,8 @@ let g:vaffle_open_selected_vsplit_position = ''
 command! VaffleExplorer vertical topleft vsplit +Vaffle | vertical resize 35 | setlocal winfixwidth
 command! VaffleExplorerCurrent vertical topleft vsplit +Vaffle\ %:h | vertical resize 35 | setlocal winfixwidth
 
-nnoremap <silent> <Leader>e :VaffleExplorer<CR>
-nnoremap <silent> <Leader>E :VaffleExplorerCurrent<CR>
+" nnoremap <silent> <Leader>e :VaffleExplorer<CR>
+" nnoremap <silent> <Leader>E :VaffleExplorerCurrent<CR>
 
 function! s:customize_vaffle_mappings() abort
   nmap <silent> <buffer> <nowait> <Space> <Plug>(vaffle-toggle-current)
@@ -2239,6 +2245,7 @@ if dein#tap('lightline.vim')
   \ 'man',
   \ 'fzf',
   \ 'denite',
+  \ 'vimfiler',
   \ 'vaffle',
   \ 'tagbar',
   \ 'capture',
@@ -2256,6 +2263,7 @@ if dein#tap('lightline.vim')
   \ 'man':         'Man',
   \ 'fzf':         'FZF',
   \ 'denite':      'Denite',
+  \ 'vimfiler':    'VimFiler',
   \ 'vaffle':      'Vaffle',
   \ 'tagbar':      'TagBar',
   \ 'capture':     'Capture',
@@ -2268,6 +2276,7 @@ if dein#tap('lightline.vim')
 
   let s:lightline_ignore_modifiable_ft = [
   \ 'qf',
+  \ 'vimfiler',
   \ 'vaffle',
   \ 'tagbar',
   \ 'gina-status',
@@ -2281,6 +2290,7 @@ if dein#tap('lightline.vim')
   \ 'qf',
   \ 'fzf',
   \ 'denite',
+  \ 'vimfiler',
   \ 'vaffle',
   \ 'tagbar',
   \ 'gina-status',
@@ -2294,6 +2304,7 @@ if dein#tap('lightline.vim')
   \ 'qf',
   \ 'fzf',
   \ 'denite',
+  \ 'vimfiler',
   \ 'vaffle',
   \ 'gina-status',
   \ 'gina-branch',
