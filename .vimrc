@@ -574,6 +574,29 @@ AutoCmd WinEnter,BufRead,BufNew,Syntax * silent! call matchadd('Todo', '\(TODO\|
 
 " Command & Function {{{1
 
+" highlight cursorline and cursorcolumn with timer {{{2
+let s:highlight_cursor_wait = 500
+
+function! s:enter(...) abort
+  setlocal cursorline cursorcolumn
+  augroup highlight_cursor
+    autocmd!
+    autocmd CursorMoved,WinLeave * call s:leave()
+  augroup END
+endfunction
+
+function! s:leave() abort
+  setlocal nocursorline nocursorcolumn
+  augroup highlight_cursor
+    autocmd!
+    autocmd CursorHold * call s:enter()
+    autocmd WinEnter * call timer_start(s:highlight_cursor_wait, function('s:enter'))
+  augroup END
+endfunction
+
+call timer_start(s:highlight_cursor_wait, function('s:enter'))
+" }}}2
+
 " ToggleHiglight {{{2
 function! s:toggle_highlight()
   if exists('g:syntax_on')
