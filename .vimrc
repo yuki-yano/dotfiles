@@ -670,8 +670,8 @@ let s:hint_i_ctrl_x_msg = [
 
 function! s:hint_i_ctrl_x() abort
   echo join(s:hint_i_ctrl_x_msg, "\n")
-  let c = getchar()
-  return get(s:compl_key_dict, c, nr2char(c))
+  let l:c = getchar()
+  return get(s:compl_key_dict, l:c, nr2char(l:c))
 endfunction
 
 inoremap <expr> <C-x> <SID>hint_i_ctrl_x()
@@ -679,10 +679,10 @@ inoremap <expr> <C-x> <SID>hint_i_ctrl_x()
 
 " Mark & Register {{{2
 function! s:hint_cmd_output(prefix, cmd) abort
-  redir => str
+  redir => l:str
   :execute a:cmd
   redir END
-  echo str
+  echo l:str
   return a:prefix . nr2char(getchar())
 endfunction
 
@@ -690,8 +690,8 @@ nnoremap <expr> m  <SID>hint_cmd_output('m', 'marks')
 nnoremap <expr> `  <SID>hint_cmd_output('`', 'marks')
 nnoremap <expr> '  <SID>hint_cmd_output("'", 'marks')
 nnoremap <expr> "  <SID>hint_cmd_output('"', 'registers')
-nnoremap <expr> q  <SID>hint_cmd_output('q', 'registers')
-nnoremap <expr> @  <SID>hint_cmd_output('@', 'registers')
+" nnoremap <expr> q  <SID>hint_cmd_output('q', 'registers')
+" nnoremap <expr> @  <SID>hint_cmd_output('@', 'registers')
 " }}}2
 
 " MoveToNewTab {{{2
