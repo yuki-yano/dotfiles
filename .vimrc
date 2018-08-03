@@ -2416,7 +2416,7 @@ if dein#tap('lightline.vim')
 
   function! Lightline_keymap() abort
     return !has_key(s:lightline_ft_to_mode_hash, &filetype) ?
-    \ "Map [" . keymaps#get_current_keymap_name() . "]" :
+    \ 'Map [' . keymaps#get_current_keymap_name() . ']' :
     \ ''
   endfunction
 endif
