@@ -346,7 +346,7 @@ noremap <LocalLeader> <Nop>
 let g:mapleader = "\<Space>"
 let g:maplocalleader = '\'
 
-" BackSpace
+"" BackSpace
 imap <C-h> <BS>
 cmap <C-h> <BS>
 
@@ -429,24 +429,32 @@ nnoremap <silent> sp :<C-u>let @" = substitute(system("pbpaste"), "\n\+$", "", "
 
 " Set Options {{{2
 
-" NeoVim {{{3
+"" NeoVim
 if has('nvim')
+  if has('vim_starting') && empty(argv())
+    syntax off
+  endif
+
   let g:python_host_prog  = $HOME . '/.pyenv/shims/python2'
   let g:python3_host_prog = $HOME . '/.pyenv/shims/python3'
 
   set inccommand=nosplit
 
+  AutoCmd CursorHold * rshada | wshada
+
+  AutoCmd FocusGained * checktime
+
   tnoremap <Esc> <C-\><C-n>
   AutoCmd TermOpen * set nonumber | set norelativenumber
 
   " block cursor for insert
-  " set guicursor=
+  set guicursor=
 endif
-" }}}3
 
-" Appearance {{{3
+"" Appearance
 set belloff=all
 set conceallevel=2
+set concealcursor=niv
 set diffopt=filler,icase,vertical
 set display=lastline
 set helplang=ja
@@ -466,26 +474,10 @@ set spellcapcheck=
 set spelllang=en,cjk
 set synmaxcol=300
 set virtualedit=all
-" }}}3
+set matchpairs& matchpairs+=<:>
 
-" Enable cursorcolumn in insert mode {{{3
-AutoCmd InsertEnter * setlocal cursorcolumn
-AutoCmd InsertLeave * setlocal nocursorcolumn
-" }}}3
-
-" Format Options {{{
-AutoCmd Filetype formatoptions setlocal formatoptions-=ro | setlocal formatoptions+=jBn
-" }}}
-
-" viminfo {{{3
-set viminfo='1000
-" }}}3
-
-" Cursor {{{3
+"" Indent
 set nostartofline
-" }}}3
-
-" Indent {{{3
 set autoindent
 set backspace=indent,eol,start
 set breakindent
@@ -493,10 +485,15 @@ set expandtab
 set shiftwidth=4
 set smartindent
 set tabstop=4
-" }}}3
 
-" Search & Complete {{{3
-set completeopt=longest,menuone,preview
+AutoCmd FileType * setlocal formatoptions-=ro
+AutoCmd FileType * setlocal formatoptions+=jBn
+
+"" viminfo
+set viminfo='1000
+
+"" Search & Complete
+set completeopt=menu,menuone,preview,noinsert,noselect
 set ignorecase
 set regexpengine=2
 set smartcase
@@ -504,28 +501,31 @@ set wildignorecase
 set wildmenu
 set wildmode=longest:full,full
 set wrapscan
-" }}}3
 
-" Folding {{{3
+"" Folding
 set foldcolumn=1
 set foldenable
 set foldmethod=manual
-" }}}3
 
-" history {{{3
+"" history
 set history=1000
 set undodir=~/.vim_undo
 set undofile
-" }}}3
 
-" File {{{3
+"" FileType
 set autoread
-set noswapfile
 set viewoptions=cursor,folds
 set suffixesadd=.js,.ts,.rb
-" }}}3
 
-" Term {{{3
+"" Diff
+AutoCmd InsertLeave * if &l:diff | diffupdate | endif
+
+"" Swap File
+set swapfile
+set directory=~/.cache/vim/swap/
+AutoCmd SwapExists * let v:swapchoice = 'o'
+
+"" Term
 set shell=zsh
 set lazyredraw
 set ttyfast
@@ -540,27 +540,15 @@ endif
 if $TERM ==# 'screen'
   set t_Co=256
 endif
-" }}}3
 
-" Automatically Disable Paste Mode {{{3
+"" Automatically Disable Paste Mode
 AutoCmd InsertLeave * setlocal nopaste
-" }}}3
 
-" Highlight Annotation Comment {{{3
-AutoCmd WinEnter,BufRead,BufNew,Syntax * silent! call matchadd('Todo', '\(TODO\|FIXME\|OPTIMIZE\|HACK\|REVIEW\|NOTE\|INFO\|TEMP\):')
-" }}}3
-
-" Clipboard {{{3
-" set clipboard=unnamed,unnamedplus
-" }}}3
-
-" Misc {{{3
+"" Misc
 set updatetime=500
-set matchpairs& matchpairs+=<:>
 set langnoremap
-" }}}3
 
-" Turn off default plugins. {{{3
+"" Turn off default plugins.
 let g:loaded_gzip              = 1
 let g:loaded_tar               = 1
 let g:loaded_tarPlugin         = 1
@@ -576,7 +564,9 @@ let g:loaded_netrw             = 1
 let g:loaded_netrwPlugin       = 1
 let g:loaded_netrwSettings     = 1
 let g:loaded_netrwFileHandlers = 1
-" }}}3
+
+"" Highlight Annotation Comment
+AutoCmd WinEnter,BufRead,BufNew,Syntax * silent! call matchadd('Todo', '\(TODO\|FIXME\|OPTIMIZE\|HACK\|REVIEW\|NOTE\|INFO\|TEMP\):')
 
 " }}}2
 
