@@ -198,12 +198,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('AndrewRadev/linediff.vim',       {'lazy': 1, 'on_cmd': ['Linediff', 'LinediffReset']})
   call dein#add('LeafCage/foldCC.vim')
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
-  call dein#add('haya14busa/vim-operator-flashy', {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('itchyny/lightline.vim')
   call dein#add('itchyny/vim-highlighturl')
   call dein#add('itchyny/vim-parenmatch')
   call dein#add('lambdalisue/smartcl.vim')
   call dein#add('luochen1990/rainbow')
+  call dein#add('machakann/vim-highlightedyank')
   call dein#add('maximbaz/lightline-ale')
   call dein#add('mhinz/vim-startify')
   call dein#add('ntpeters/vim-better-whitespace')
@@ -1061,8 +1061,8 @@ if dein#tap('denite.nvim')
   call denite#custom#option('default', 'prompt', '>')
   call denite#custom#option('default', 'mode', 'insert')
   call denite#custom#option('default', 'highlight_matched', 'Keyword')
-  call denite#custom#option('default', 'highlight_mode_normal', 'CursorLineNr')
-  call denite#custom#option('default', 'highlight_mode_insert', 'CursorLineNr')
+  call denite#custom#option('default', 'highlight_mode_normal', 'DeniteLine')
+  call denite#custom#option('default', 'highlight_mode_insert', 'DeniteLine')
   call denite#custom#option('default', 'statusline', v:false)
 
   "" keymap
@@ -2061,7 +2061,7 @@ AlterCommand! <cmdwin> br[ight] BrightestToggle
 
 let g:brightest#enable_on_CursorHold        = 1
 let g:brightest#enable_highlight_all_window = 1
-let g:brightest#highlight = {'group': 'BrighTestBgLight'}
+let g:brightest#highlight = {'group': 'BrighTestHighlight'}
 let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat']
 " }}}3
 
@@ -2077,6 +2077,30 @@ if dein#tap('foldCC.vim')
   set foldtext=FoldCCtext()
 endif
 " }}}3
+
+" highlightedyank {{{3
+if dein#tap('vim-highlightedyank')
+  let g:highlightedyank_highlight_duration = 300
+
+  " function! s:highlight_yank_enter(...) abort
+  "   augroup highlight_yank
+  "     autocmd!
+  "     autocmd TextYankPost * call highlightedyank#debounce()
+  "     autocmd TextYankPost * setlocal list listchars-=eol:$
+  "     autocmd TextYankPost * call timer_start(g:highlightedyank_highlight_duration, function('s:highlight_yank_leave'))
+  "   augroup END
+  " endfunction
+  "
+  " function! s:highlight_yank_leave(...) abort
+  "   augroup highlight_yank
+  "     setlocal list listchars+=eol:$
+  "   augroup END
+  " endfunction
+  "
+  " call timer_start(g:highlightedyank_highlight_duration, function('s:highlight_yank_enter'))
+endif
+" }}}3
+
 
 " hl_matchit {{{3
 let g:hl_matchit_enable_on_vim_startup = 1
@@ -2344,13 +2368,6 @@ if dein#tap('lightline.vim')
     \ "Map [" . keymaps#get_current_keymap_name() . "]" :
     \ ''
   endfunction
-endif
-" }}}3
-
-" operator-flashy {{{3
-if dein#tap('vim-operator-flashy')
-  map  y <Plug>(operator-flashy)
-  nmap Y <Plug>(operator-flashy)$
 endif
 " }}}3
 
@@ -2681,26 +2698,36 @@ nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> call EscEscReset()<CR>
 
 " }}}1
 
-" Load Colorscheme Later {{{1
-AutoCmd ColorScheme * highlight Visual       ctermfg=159  ctermbg=23
-AutoCmd ColorScheme * highlight Search       ctermfg=68   ctermbg=232
-AutoCmd ColorScheme * highlight LineNr       ctermfg=241
-AutoCmd ColorScheme * highlight CursorLineNr ctermfg=253  ctermbg=235
-AutoCmd ColorScheme * highlight CursorLine                ctermbg=235
-AutoCmd ColorScheme * highlight NonText      ctermfg=60
-AutoCmd ColorScheme * highlight StatusLine   ctermfg=0    ctermbg=234
-AutoCmd ColorScheme * highlight StatusLineNC ctermfg=0    ctermbg=234
-AutoCmd ColorScheme * highlight Todo         ctermfg=229
-
-AutoCmd ColorScheme * highlight link ParenMatch     MatchParen
-AutoCmd ColorScheme * highlight ALEWarning          ctermfg=0    ctermbg=229
-AutoCmd ColorScheme * highlight ALEError            ctermfg=0    ctermbg=203
-AutoCmd ColorScheme * highlight BrighTestBgLight    ctermfg=none ctermbg=236
-AutoCmd ColorScheme * highlight CleverFDefaultLabel ctermfg=9    ctermbg=236 cterm=bold
-AutoCmd ColorScheme * highlight Sneak               ctermfg=132  ctermbg=236 cterm=bold
-AutoCmd ColorScheme * highlight YankRoundRegion     ctermfg=209  ctermbg=237
+" Load Colorscheme {{{1
 
 syntax enable
+
+" Highlight {{{2
+AutoCmd ColorScheme * highlight CursorColumn ctermfg=none ctermbg=235
+AutoCmd ColorScheme * highlight CursorLine   ctermfg=none ctermbg=235
+AutoCmd ColorScheme * highlight CursorLineNr ctermfg=253  ctermbg=none
+AutoCmd ColorScheme * highlight LineNr       ctermfg=241  ctermbg=none
+AutoCmd ColorScheme * highlight NonText      ctermfg=60   ctermbg=none
+AutoCmd ColorScheme * highlight Search       ctermfg=68   ctermbg=232
+AutoCmd ColorScheme * highlight Todo         ctermfg=229  ctermbg=none
+AutoCmd ColorScheme * highlight Visual       ctermfg=159  ctermbg=23
+
+AutoCmd ColorScheme * highlight link ParenMatch         MatchParen
+AutoCmd ColorScheme * highlight DeniteLine              ctermfg=111  ctermbg=236
+AutoCmd ColorScheme * highlight deniteSource_grepLineNR ctermfg=247  ctermbg=none
+AutoCmd ColorScheme * highlight deniteSource_grepFile   ctermfg=6    ctermbg=none
+AutoCmd ColorScheme * highlight ALEError                ctermfg=0    ctermbg=203
+AutoCmd ColorScheme * highlight ALEWarning              ctermfg=0    ctermbg=229
+AutoCmd ColorScheme * highlight CleverFDefaultLabel     ctermfg=9    ctermbg=236  cterm=underline,bold
+AutoCmd ColorScheme * highlight Sneak                   ctermfg=132  ctermbg=236  cterm=underline,bold
+AutoCmd ColorScheme * highlight BrighTestHighlight      ctermfg=none ctermbg=236  cterm=bold
+AutoCmd ColorScheme * highlight HighlightedyankRegion   ctermfg=1    ctermbg=none
+AutoCmd ColorScheme * highlight YankRoundRegion         ctermfg=209  ctermbg=237
+
+" Fix lightline
+AutoCmd ColorScheme * highlight StatusLine   ctermfg=0 ctermbg=7
+AutoCmd ColorScheme * highlight StatusLineNC ctermfg=0 ctermbg=7
+" }}}2
 
 " iceberg {{{2
 colorscheme iceberg
