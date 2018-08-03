@@ -51,11 +51,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Language {{{3
   " call dein#add('Quramy/tsuquyomi',                       {'lazy': 1, 'on_ft': 'typescript'})
   " call dein#add('pocke/iro.vim',                          {'lazy': 1, 'on_ft': 'ruby'})
-  call dein#add('Chiel92/vim-autoformat',                 {'lazy': 1, 'on_cmd': 'Autoformat'})
   call dein#add('HerringtonDarkholme/yats.vim',           {'lazy': 1, 'on_ft': 'typescript'})
   call dein#add('MaxMEllon/vim-jsx-pretty',               {'lazy': 1, 'on_ft': 'javascript'})
-  call dein#add('Shougo/context_filetype.vim')
-  call dein#add('Shougo/echodoc.vim',                     {'lazy': 1, 'on_event': 'InsertEnter'})
   call dein#add('SpaceVim/gtags.vim')
   call dein#add('Vimjas/vim-python-pep8-indent',          {'lazy': 1, 'on_ft': 'python'})
   call dein#add('ap/vim-css-color',                       {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
@@ -71,7 +68,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('heavenshell/vim-jsdoc',                  {'lazy': 1, 'on_ft': ['javascript', 'typescript'], 'on_cmd': 'JsDoc'})
   call dein#add('itspriddle/vim-marked',                  {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('jparise/vim-graphql',                    {'lazy': 1, 'on_ft': 'graphql'})
-  call dein#add('jsfaint/gen_tags.vim')
   call dein#add('kchmck/vim-coffee-script',               {'lazy': 1, 'on_ft': 'coffee'})
   call dein#add('keith/tmux.vim',                         {'lazy': 1, 'on_ft': 'tmux'})
   call dein#add('mattn/emmet-vim',                        {'lazy': 1, 'on_ft': ['html', 'eruby', 'javascript', 'vue']})
@@ -79,7 +75,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('noprompt/vim-yardoc',                    {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('othree/csscomplete.vim',                 {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
   call dein#add('othree/es.next.syntax.vim',              {'lazy': 1, 'on_ft': 'javascript'})
-  call dein#add('othree/html5.vim',                       {'lazy': 1, 'on_ft': ['html', 'eruby', 'markdown']})
+  call dein#add('othree/html5.vim',                       {'lazy': 1, 'on_ft': ['html', 'markdown', 'eruby']})
   call dein#add('othree/javascript-libraries-syntax.vim', {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('othree/jspc.vim',                        {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
   call dein#add('othree/yajs.vim',                        {'lazy': 1, 'on_ft': 'javascript'})
@@ -89,7 +85,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('posva/vim-vue',                          {'lazy': 1, 'on_ft': 'vue'})
   call dein#add('prettier/vim-prettier',                  {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'vue', 'css', 'scss', 'json', 'graphql', 'markdown']})
   call dein#add('rust-lang/rust.vim',                     {'lazy': 1, 'on_ft': 'rust'})
-  call dein#add('sgur/vim-editorconfig',                  {'lazy': 1, 'on_event': 'InsertEnter'})
   call dein#add('slim-template/vim-slim',                 {'lazy': 1, 'on_ft': 'slim'})
   call dein#add('stephpy/vim-yaml',                       {'lazy': 1, 'on_ft': 'yaml'})
   call dein#add('tell-k/vim-autopep8',                    {'lazy': 1, 'on_ft': 'python'})
@@ -102,7 +97,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}
 
   " Git {{{3
-  call dein#add('ToruIwashita/git-switcher.vim')
+  call dein#add('ToruIwashita/git-switcher.vim', {'lazy': 1, 'on_cmd': ['Gsw', 'GswSave', 'GswLoad']})
   call dein#add('airblade/vim-gitgutter')
   call dein#add('airblade/vim-rooter',           {'lazy': 1, 'on_cmd': 'Rooter'})
   call dein#add('cohama/agit.vim',               {'lazy': 1, 'on_cmd': ['Agit', 'AgitFile', 'AgitGit', 'AgitDiff']})
@@ -117,86 +112,112 @@ if dein#load_state(s:DEIN_BASE_PATH)
   if has('nvim')
     call dein#add('Shougo/deoplete.nvim')
 
-    " call dein#add('autozimu/LanguageClient-neovim', {'rev': 'next', 'build': 'bash install.sh'})
-    " call dein#add('blueyed/vim-auto-programming', {'rev': 'neovim'})
+    call dein#add('Shougo/context_filetype.vim')
     call dein#add('Shougo/neco-syntax')
     call dein#add('Shougo/neco-vim')
     call dein#add('Shougo/neosnippet')
     call dein#add('Shougo/neosnippet-snippets')
-    call dein#add('carlitux/deoplete-ternjs')
-    call dein#add('fishbullet/deoplete-ruby')
-    call dein#add('fszymanski/deoplete-emoji')
+    call dein#add('jsfaint/gen_tags.vim')
     call dein#add('ujihisa/neco-look')
     call dein#add('wellle/tmux-complete.vim')
-    call dein#add('wokalski/autocomplete-flow')
-    call dein#add('zchee/deoplete-jedi')
+
+    " call dein#add('autozimu/LanguageClient-neovim', {'rev': 'next', 'build': 'bash install.sh'})
+    " call dein#add('blueyed/vim-auto-programming', {'rev': 'neovim'})
+    call dein#add('fishbullet/deoplete-ruby',   {'lazy': 1, 'on_ft': ['ruby', 'eruby']})
+    call dein#add('wokalski/autocomplete-flow', {'lazy': 1, 'on_ft': 'javascript'})
+    call dein#add('zchee/deoplete-jedi',        {'lazy': 1, 'on_ft': 'python'})
+    call dein#add('carlitux/deoplete-ternjs',   {'lazy': 1, 'on_ft': 'javascript'})
   endif
   " }}}3
 
   " Fuzzy Finder {{{3
   " call dein#add('Shougo/unite.vim')
   call dein#add('Shougo/denite.nvim')
-  call dein#add('Shougo/unite.vim')
-
   call dein#add('ozelentok/denite-gtags')
 
   call dein#local('/usr/local/opt/', {}, ['fzf'])
   call dein#add('junegunn/fzf.vim')
-  call dein#add('yuki-ycino/fzf-preview.vim')
+  call dein#add('yuki-ycino/fzf-preview.vim',
+  \ {'lazy': 1,
+  \ 'on_cmd': ['ProjectFilesPreview',
+  \ 'BuffersPreview',
+  \ 'ProjectOldFilesPreview',
+  \ 'OldFilesPreview',
+  \ 'ProjectGrepPreview',
+  \ ],
+  \ })
   " call dein#local('~/repos/github.com/yuki-ycino', {}, ['fzf-preview.vim'])
   " }}}3
 
   " filer {{{3
-  " call dein#add('Shougo/vimfiler')
+  call dein#add('Shougo/vimfiler')
   call dein#add('cocopon/vaffle.vim')
   " }}}3
 
-  " Edit & Move & Search {{{3
-  " call dein#add('tyru/skk.vim',                           {'lazy': 1, 'on_event': 'InsertEnter'})
-  " call dein#add('vimtaku/vim-mlh',                        {'lazy': 1, 'on_event': 'InsertEnter'})
-  call dein#add('AndrewRadev/switch.vim',                 {'lazy': 1, 'on_cmd': 'Switch'})
-  call dein#add('LeafCage/yankround.vim')
-  call dein#add('chrisbra/NrrwRgn',                       {'lazy': 1, 'on_cmd': ['NR', 'NW', 'WidenRegion', 'NRV', 'NUD', 'NRP', 'NRM', 'NRS', 'NRN', 'NRL']})
-  call dein#add('cohama/lexima.vim',                      {'lazy': 1, 'on_event': 'InsertEnter', 'hook_source': 'call Hook_on_post_source_lexima()'})
-  call dein#add('dyng/ctrlsf.vim',                        {'lazy': 1, 'on_cmd': ['CtrlSF', 'CtrlSFUpdate', 'CtrlSFOpen', 'CtrlSFToggle']})
-  call dein#add('easymotion/vim-easymotion')
-  call dein#add('godlygeek/tabular',                      {'lazy': 1, 'on_cmd': 'Tabularize'})
-  call dein#add('h1mesuke/vim-alignta',                   {'lazy': 1, 'on_cmd': 'Alignta'})
-  call dein#add('haya14busa/vim-asterisk',                {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('haya14busa/vim-edgemotion',              {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('haya14busa/vim-metarepeat',              {'lazy': 1, 'on_map': ['go', 'g.']})
-  call dein#add('haya14busa/vim-textobj-function-syntax', {'lazy': 1, 'depends': 'vim-textobj-function'})
-  call dein#add('junegunn/vim-easy-align',                {'lazy': 1, 'on_cmd': 'EasyAlign'})
-  call dein#add('justinmk/vim-sneak')
-  call dein#add('kana/vim-operator-replace',              {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('kana/vim-textobj-entire',                {'lazy': 1, 'on_map': {'ox': ['ie', 'ae']}, 'depends': 'vim-textobj-user'})
-  call dein#add('kana/vim-textobj-fold',                  {'lazy': 1, 'on_map': {'ox': ['iz', 'az']}, 'depends': 'vim-textobj-user'})
-  call dein#add('kana/vim-textobj-function',              {'lazy': 1, 'on_map': {'ox': ['if', 'af', 'iF', 'aF']}, 'depends': 'vim-textobj-user'})
-  call dein#add('kana/vim-textobj-indent',                {'lazy': 1, 'on_map': {'ox': ['ai', 'ii', 'aI',  'iI']}, 'depends': 'vim-textobj-user'})
-  call dein#add('kana/vim-textobj-line',                  {'lazy': 1, 'on_map': {'ox': ['al', 'il']}, 'depends': 'vim-textobj-user'})
+  " textobj & operator {{{3
+  call dein#add('machakann/vim-sandwich', {
+  \ 'lazy': 1,
+  \ 'on_map': {
+  \    'nv': ['sa', 'sr', 'sd'],
+  \    'o': ['ib', 'is', 'ab', 'as']
+  \ },
+  \ 'hook_source': 'call Hook_on_post_source_sandwich()'
+  \ })
+
   call dein#add('kana/vim-textobj-user')
-  call dein#add('machakann/vim-sandwich',                 {'lazy': 1, 'on_map': {'nv': ['sa', 'sr', 'sd'], 'o': ['ib', 'is', 'ab', 'as']}, 'hook_source': 'call Hook_on_post_source_sandwich()'})
-  call dein#add('mattn/vim-textobj-url',                  {'lazy': 1, 'on_map': {'ox': ['au', 'iu']}, 'depends': 'vim-textobj-user'})
-  call dein#add('mileszs/ack.vim',                        {'lazy': 1, 'on_cmd': 'Ack'})
-  call dein#add('mopp/vim-operator-convert-case')
+  call dein#add('kana/vim-operator-user')
+
+  call dein#add('kana/vim-textobj-entire',   {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['ie', 'ae']}})
+  call dein#add('kana/vim-textobj-fold',     {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['iz', 'az']}})
+  call dein#add('kana/vim-textobj-function', {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['if', 'af', 'iF', 'aF']}})
+  call dein#add('kana/vim-textobj-indent',   {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['ai', 'ii', 'aI',  'iI']}})
+  call dein#add('kana/vim-textobj-line',     {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['al', 'il']}})
+  call dein#add('mattn/vim-textobj-url',     {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['au', 'iu']}})
+  call dein#add('rhysd/vim-textobj-ruby',    {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['ar', 'ir']}, 'on_ft': 'ruby'})
+
+  call dein#add('haya14busa/vim-textobj-function-syntax', {'lazy': 1, 'on_source': 'vim-textobj-function'})
+
+  call dein#add('kana/vim-operator-replace',      {'lazy': 1, 'depends': 'vim-operator-user', 'on_map': '<Plug>'})
+  call dein#add('mopp/vim-operator-convert-case', {'lazy': 1, 'depends': 'vim-operator-user', 'on_map': '<Plug>'})
+  " }}}3
+
+  " Edit & Move & Search {{{3
+  " call dein#add('tyru/skk.vim',              {'lazy': 1, 'on_event': 'InsertEnter'})
+  " call dein#add('vimtaku/vim-mlh',           {'lazy': 1, 'on_event': 'InsertEnter'})
+  call dein#add('AndrewRadev/switch.vim',        {'lazy': 1, 'on_cmd': 'Switch'})
+  call dein#add('Chiel92/vim-autoformat',        {'lazy': 1, 'on_cmd': 'Autoformat'})
+  call dein#add('LeafCage/yankround.vim')
+  call dein#add('chrisbra/NrrwRgn',              {'lazy': 1, 'on_cmd': ['NR', 'NW', 'WidenRegion', 'NRV', 'NUD', 'NRP', 'NRM', 'NRS', 'NRN', 'NRL']})
+  call dein#add('cohama/lexima.vim',             {'lazy': 1, 'on_event': 'InsertEnter', 'hook_source': 'call Hook_on_post_source_lexima()'})
+  call dein#add('dyng/ctrlsf.vim',               {'lazy': 1, 'on_cmd': ['CtrlSF', 'CtrlSFUpdate', 'CtrlSFOpen', 'CtrlSFToggle']})
+  call dein#add('easymotion/vim-easymotion')
+  call dein#add('editorconfig/editorconfig-vim', {'lazy': 1, 'on_event': 'InsertEnter'})
+  call dein#add('godlygeek/tabular',             {'lazy': 1, 'on_cmd': 'Tabularize'})
+  call dein#add('h1mesuke/vim-alignta',          {'lazy': 1, 'on_cmd': 'Alignta'})
+  call dein#add('haya14busa/vim-asterisk',       {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('haya14busa/vim-edgemotion',     {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('haya14busa/vim-metarepeat',     {'lazy': 1, 'on_map': ['go', 'g.']})
+  call dein#add('junegunn/vim-easy-align',       {'lazy': 1, 'on_cmd': 'EasyAlign'})
+  call dein#add('justinmk/vim-sneak')
+  call dein#add('mileszs/ack.vim',               {'lazy': 1, 'on_cmd': 'Ack'})
   call dein#add('osyo-manga/vim-anzu')
-  call dein#add('osyo-manga/vim-jplus',                   {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('rhysd/accelerated-jk',                   {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('osyo-manga/vim-jplus',          {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('rhysd/accelerated-jk',          {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/clever-f.vim')
-  call dein#add('rhysd/vim-textobj-ruby',                 {'lazy': 1, 'on_ft': 'ruby', 'depends': 'vim-textobj-user'})
-  call dein#add('terryma/vim-expand-region',              {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('terryma/vim-expand-region',     {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('terryma/vim-multiple-cursors')
-  call dein#add('thinca/vim-qfreplace',                   {'lazy': 1, 'on_cmd': 'Qfreplace'})
-  call dein#add('tommcdo/vim-exchange',                   {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
-  call dein#add('tomtom/tcomment_vim',                    {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
+  call dein#add('thinca/vim-qfreplace',          {'lazy': 1, 'on_cmd': 'Qfreplace'})
+  call dein#add('tommcdo/vim-exchange',          {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
+  call dein#add('tomtom/tcomment_vim',           {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
   call dein#add('tpope/vim-repeat')
-  call dein#add('tpope/vim-speeddating',                  {'lazy': 1, 'on_map': {'n': '<Plug>'}})
-  call dein#add('vim-scripts/Align',                      {'lazy': 1, 'on_cmd': 'Align'})
+  call dein#add('tpope/vim-speeddating',         {'lazy': 1, 'on_map': {'n': '<Plug>'}})
+  call dein#add('vim-scripts/Align',             {'lazy': 1, 'on_cmd': 'Align'})
   " }}}3
 
   " Appearance {{{3
   call dein#add('AndrewRadev/linediff.vim',       {'lazy': 1, 'on_cmd': ['Linediff', 'LinediffReset']})
   call dein#add('LeafCage/foldCC.vim')
+  call dein#add('Shougo/echodoc.vim')
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
   call dein#add('itchyny/lightline.vim')
   call dein#add('itchyny/vim-highlighturl')
@@ -219,6 +240,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Util {{{3
   " call dein#add('thinca/vim-quickrun',                 {'lazy': 1, 'on_cmd': 'QuickRun'})
+  call dein#add('SpaceVim/gtags.vim')
   call dein#add('aiya000/aho-bakaup.vim')
   call dein#add('bfredl/nvim-miniyank')
   call dein#add('bogado/file-line')
@@ -227,7 +249,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('janko-m/vim-test',                    {'lazy': 1, 'on_cmd': ['TestNearest','TestFile','TestSuite','TestLast','TestVisit']})
   call dein#add('kana/vim-gf-user')
   call dein#add('kana/vim-niceblock',                  {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
-  call dein#add('kana/vim-operator-user')
   call dein#add('konfekt/fastfold')
   call dein#add('lambdalisue/session.vim',             {'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
   call dein#add('lambdalisue/vim-manpager',            {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER'], 'depends': 'vim-plugin-AnsiEsc'})
