@@ -1537,6 +1537,7 @@ nmap gp <Plug>GitGutterPrevHunk
 " }}}3
 
 " git-switcher {{{3
+AlterCommand! <cmdwin> gsw Gsw
 AlterCommand! <cmdwin> gss GswSave
 AlterCommand! <cmdwin> gsl GswLoad
 " }}}3
