@@ -2114,7 +2114,7 @@ let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat
 
 " fastfold {{{3
 let g:fastfold_savehook = 1
-let g:fastfold_fold_command_suffixes  = ['x','X','a','A','o','O','c','C']
+let g:fastfold_fold_command_suffixes  = ['x', 'X', 'a', 'A', 'o', 'O', 'c', 'C']
 let g:fastfold_fold_movement_commands = [']z', '[z', 'zj', 'zk']
 nmap zuz <Plug>(FastFoldUpdate)
 " }}}3
