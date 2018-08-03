@@ -350,6 +350,12 @@ let g:maplocalleader = '\'
 imap <C-h> <BS>
 cmap <C-h> <BS>
 
+"" Yank
+nnoremap Y y$
+
+"" Disable s
+noremap s <Nop>
+
 "" Save
 nnoremap <silent> <Leader>w :<C-u>update<CR>
 nnoremap <silent> <Leader>W :<C-u>update!<CR>
@@ -357,6 +363,10 @@ nnoremap <silent> <Leader>W :<C-u>update!<CR>
 "" Cursor
 noremap 0 ^
 noremap ^ 0
+
+"" Smart <C-f> <C-b>
+noremap <expr> <C-f> max([winheight(0) - 2, 1]) . "\<C-d>" . (line('w$') >= line('$') ? "L" : "M")
+noremap <expr> <C-b> max([winheight(0) - 2, 1]) . "\<C-u>" . (line('w0') <= 1 ? "H" : "M")
 
 "" Automatically indent with i
 nnoremap <expr> i len(getline('.')) ? "i" : "cc"
