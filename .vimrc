@@ -1,3 +1,24 @@
+" Global Variables {{{1
+let g:ale_filetypes = [
+\ 'javascript',
+\ 'typescript',
+\ 'vue',
+\ 'ruby',
+\ 'eruby',
+\ 'python',
+\ 'go',
+\ 'rust',
+\ 'json',
+\ 'html',
+\ 'css',
+\ 'scss',
+\ 'vim',
+\ 'sh',
+\ 'bash',
+\ 'zsh',
+\ ]
+" }}}1
+
 " Plugin Manager {{{1
 
 " Install & Load Dein {{{2
@@ -76,8 +97,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " ALE {{{
-  let s:ale_filetypes = ['javascript', 'typescript', 'vue', 'ruby', 'eruby', 'python', 'go', 'rust', 'json', 'html', 'css', 'scss', 'vim', 'sh', 'bash', 'zsh']
-  call dein#add('w0rp/ale', {'lazy': 1, 'on_ft': s:ale_filetypes})
+  call dein#add('w0rp/ale', {'lazy': 1, 'on_ft': g:ale_filetypes})
   " }}}
 
   " Git {{{3
@@ -2285,15 +2305,15 @@ if dein#tap('lightline.vim')
   endfunction
 
   function! Lightline_ale_errors() abort
-    return count(s:ale_filetypes, &filetype) ? lightline#ale#errors() : ''
+    return count(g:ale_filetypes, &filetype) ? lightline#ale#errors() : ''
   endfunction
 
   function! Lightline_ale_warnings() abort
-    return count(s:ale_filetypes, &filetype) ? lightline#ale#warnings() : ''
+    return count(g:ale_filetypes, &filetype) ? lightline#ale#warnings() : ''
   endfunction
 
   function! Lightline_ale_ok() abort
-    return count(s:ale_filetypes, &filetype) ? lightline#ale#ok() : ''
+    return count(g:ale_filetypes, &filetype) ? lightline#ale#ok() : ''
   endfunction
 
   function! Lightline_git_status() abort
