@@ -183,6 +183,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Edit & Move & Search {{{3
   " call dein#add('tyru/skk.vim',              {'lazy': 1, 'on_event': 'InsertEnter'})
   " call dein#add('vimtaku/vim-mlh',           {'lazy': 1, 'on_event': 'InsertEnter'})
+  call dein#add('AndrewRadev/splitjoin.vim',     {'lazy': 1, 'on_cmd': ['SplitjoinJoin', 'SplitjoinSplit']})
   call dein#add('AndrewRadev/switch.vim',        {'lazy': 1, 'on_cmd': 'Switch'})
   call dein#add('Chiel92/vim-autoformat',        {'lazy': 1, 'on_cmd': 'Autoformat'})
   call dein#add('LeafCage/yankround.vim')
@@ -1840,10 +1841,10 @@ vmap V <Plug>(expand_region_shrink)
 
 " jplus {{{3
 if dein#tap('vim-jplus')
-  nmap J         <Plug>(jplus)
-  vmap J         <Plug>(jplus)
-  nmap <Leader>J <Plug>(jplus-input)
-  vmap <Leader>J <Plug>(jplus-input)
+  nmap J  <Plug>(jplus)
+  vmap J  <Plug>(jplus)
+  nmap gJ <Plug>(jplus-input)
+  vmap gJ <Plug>(jplus-input)
 endif
 " }}}3
 
@@ -2063,10 +2064,18 @@ endif
 " let g:skk_large_jisyo = expand('~/.config/nvim/dict/SKK-JISYO.L')
 " }}}3
 
+" splitjoin {{{3
+let g:splitjoin_split_mapping = ''
+let g:splitjoin_join_mapping = ''
+
+nnoremap <silent> <Leader>j :SplitjoinJoin<CR>
+nnoremap <silent> <Leader>s :SplitjoinSplit<CR>
+" }}}3
+
 " switch {{{3
 let g:switch_mapping = ''
 nnoremap <silent> - :<C-u>Switch<CR>
-" " }}}3
+" }}}3
 
 " tcomment {{{3
 noremap <silent> <Leader>cc :TComment<CR>
