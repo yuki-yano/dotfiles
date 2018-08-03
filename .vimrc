@@ -912,7 +912,8 @@ endif
 " Plugin Manager {{{2
 
 " Dein {{{3
-AlterCommand! <cmdwin> dein Dein
+AlterCommand! <cmdwin> dein      Dein
+AlterCommand! <cmdwin> reca[che] Dein<Space>recache-runtimepath
 " }}}3
 
 " }}}2
