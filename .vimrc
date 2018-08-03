@@ -2358,7 +2358,7 @@ if dein#tap('lightline.vim')
 
   function! Lightline_lineinfo() abort
     return !count(s:lightline_ignore_right_ft, &filetype) ?
-    \        printf('%d/%d [%d%%]',line('.'), line('$'), float2nr((1.0 * line('.')) / line('$') * 100.0)) :
+    \        printf('%d:%d | %d lines [%d%%]',line('.'), col('.'), line('$'), float2nr((1.0 * line('.')) / line('$') * 100.0)) :
     \        ''
   endfunction
 
