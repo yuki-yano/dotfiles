@@ -193,14 +193,6 @@ fi
 # pbcopy
 alias -g C='| pbcopy'
 
-# git-foresta
-function gifo() {
-  git-foresta --style=10 "$@" | less -RSX
-}
-function gifa() {
-  git-foresta --all --style=10 "$@" | less -RSX
-}
-
 #  Finally add the path of dotfiles/bin to the beginning
 path=(~/dotfiles/bin(N-/) $path)
 
