@@ -20,6 +20,7 @@ typeset -U path fpath
 
 # default path
 path=(~/dotfiles/node_modules/.bin(N-/) /usr/local/bin(N-/) /usr/bin(N-/) /bin(N-/) /sbin(N-/) /usr/sbin(N-/) /usr/X11/bin(N-/))
+fpath=(~/.zsh/completions(N-/) $fpath)
 
 # curl
 path=(/usr/local/opt/curl/bin(N-/) $path)
