@@ -120,11 +120,20 @@ alias vimdiff='nvim -d'
 export EFF_NO_GRAY=true
 
 # ls
-if whence gls > /dev/null; then
+if whence exa > /dev/null; then
+  alias ls="exa"
+  alias ll="exa -lh  --git"
+  alias la="exa -alh --git"
+  alias lt="exa -alh --git"
+elif whence gls > /dev/null; then
   alias ls='gls --color=auto'
+  alias ll='ls -lh'
+  alias la='ls -alh'
+else
+  alias ll='ls -lh'
+  alias la='ls -alh'
 fi
-alias ll='ls -lh'
-alias la='ls -alh'
+
 
 # sed
 if whence gsed > /dev/null; then

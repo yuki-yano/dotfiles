@@ -78,6 +78,7 @@ install docker-completion
 install docker-compose-completion
 install dos2unix
 install eugenmayer/dockersync/unox
+install exa
 install fpp
 install gawk
 install global --with-pygments --with-ctags
