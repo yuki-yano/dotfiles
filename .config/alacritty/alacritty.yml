@@ -59,7 +59,7 @@ colors:
     foreground: '0x26282a'
 
   normal:
-    black:   '0x26282a'
+    black:   '0x1e2132'
     red:     '0xe27878'
     green:   '0xb4be82'
     yellow:  '0xe2a478'
