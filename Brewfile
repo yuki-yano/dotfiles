@@ -93,6 +93,7 @@ install pandoc
 install parallel
 install reattach-to-user-namespace
 install ripgrep
+install rlwrap
 install rsync
 install tldr
 install tree
