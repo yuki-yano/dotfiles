@@ -160,7 +160,7 @@ setopt share_history
 setopt transient_rprompt
 
 ## dircolors
-if [ -f ~/.dircolors ] && whence gdircolors > /dev/null; then
+if [[ -f ~/.dircolors ]] && whence gdircolors > /dev/null; then
   eval "$(gdircolors ~/.dircolors)"
 fi
 
@@ -395,20 +395,20 @@ function prompt_pure_update_vim_prompt() {
   zle reset-prompt
 }
 
-function zle-line-init {
+function _zle-line-init {
   prompt_pure_update_vim_prompt
 }
 
-function zle-keymap-select {
+function _zle-keymap-select {
   prompt_pure_update_vim_prompt
 }
 
-zle -N zle-line-init
-zle -N zle-keymap-select
+zle -N zle-line-init _zle-line-init
+zle -N zle-keymap-select _zle-keymap-select
 
 function venv_name () {
   PYTHON_VIRTUAL_ENV_STRING=""
-  if [ -n "$VIRTUAL_ENV" ]; then
+  if [[ -n "$VIRTUAL_ENV" ]]; then
     PYTHON_VIRTUAL_ENV_STRING="venv:$(basename $VIRTUAL_ENV) "
   fi
 }
@@ -692,14 +692,23 @@ fi
 
 # zcompile {{{
 
-if [ ! -f ~/.zshrc.zwc ] || [ "$(readlink ~/.zshrc)" -nt ~/.zshrc.zwc ]; then
+# .zshrc
+if [[ ! -f ~/.zshrc.zwc ]] || [[ "$(readlink ~/.zshrc)" -nt ~/.zshrc.zwc ]]; then
   zcompile ~/.zshrc
 fi
 
-if [ ! -f ~/.zsh/zgen/zgen.zsh.zwc ] || [ ~/.zsh/zgen/zgen.zsh -nt ~/.zsh/zgen/zgen.zsh.zwc ]; then
+# zgen
+if [[ ! -f ~/.zsh/zgen/zgen.zsh.zwc ]] || [[ ~/.zsh/zgen/zgen.zsh -nt ~/.zsh/zgen/zgen.zsh.zwc ]]; then
   zcompile  ~/.zsh/zgen/zgen.zsh
 fi
 
+# fzf_completions
+for f in $(find ~/.zsh/fzf_completions/ -name "*.zsh")
+do
+  if [[ ! -f "$f.zwc" ]] || [[ $f -nt "$f.zwc" ]]; then
+    zcompile "$f"
+  fi
+done
 # }}}
 
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:
