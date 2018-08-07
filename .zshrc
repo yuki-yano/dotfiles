@@ -48,25 +48,30 @@ FAST_HIGHLIGHT_STYLES[history-expansion]=fg=green,bold
 typeset -A abbreviations
 
 abbreviations=(
-  "g"    "git"
-  "ga"   "git add"
-  "gaa"  "git add --all"
-  "gre"  "git reset"
-  "grm"  "git rm"
-  "gs"   "git status --short --branch"
-  "gb"   "git branch"
-  "gd"   "git diff"
-  "gdw"  "git diff --color-words"
-  "gdc"  "git diff --cached"
-  "gdcw" "git diff --cached --color-words"
-  "gco"  "git checkout"
-  "gcof" "git checkout --"
-  "gci"  "git commit"
-  "gcia" "git commit --amend --no-edit"
-  "gp"   "git push"
-  "gst"  "git stash"
-  "gstp" "git stash pop"
-  "gq"   "git qsave"
+  "g"      "git"
+  "ga"     "git add"
+  "gaa"    "git add --all"
+  "gre"    "git reset"
+  "gref"   "git reset --"
+  "gun"    "git unstage"
+  "grec"   "git recover"
+  "grm"    "git rm"
+  "gs"     "git status --short --branch"
+  "gb"     "git branch"
+  "gd"     "git diff"
+  "gdw"    "git diff --color-words"
+  "gdc"    "git diff --cached"
+  "gdcw"   "git diff --cached --color-words"
+  "gco"    "git checkout"
+  "gcof"   "git checkout --"
+  "gfo"    "git forget"
+  "gci"    "git commit"
+  "gcia"   "git commit --amend --no-edit"
+  "gp"     "git push"
+  "gst"    "git stash"
+  "gstp"   "git stash pop"
+  "gq"     "git qsave"
+  "cheats" "cheat --shell"
 )
 
 function _magic-abbrev-expand-and-accept-line() {
@@ -228,109 +233,31 @@ alias -g RCB='origin/$(git rev-parse --abbrev-ref HEAD)'
 # }}}
 
 # fzf {{{
+source ~/.zsh/fzf_completions/git.zsh
+source ~/.zsh/fzf_completions/anyenv.zsh
 
 function fzf-direct-completion() {
-  local tokens cmd1 cmd2 cmd3 cmd4
+  local tokens cmd
   setopt localoptions noshwordsplit
   tokens=(${(z)BUFFER})
-  cmd1=${tokens[1]}
-  cmd2=${tokens[2]}
-  cmd3=${tokens[3]}
-  cmd4=${tokens[4]}
+  cmd=${tokens[1]}
 
-  case "$cmd1" in
-    git)
-      case "$cmd2" in
-        'add')
-          case "$cmd3" in
-            '')
-              _fzf_complete_git_add_file
-              return
-            ;;
-          esac
-        ;;
-        'reset')
-          case "$cmd3" in
-            'HEAD')
-              _fzf_complete_git_reset_file
-              return
-            ;;
-            '')
-              _fzf_complete_git_branch
-              return
-            ;;
-          esac
-        ;;
-        'checkout')
-          case "$cmd3" in
-            '--')
-              case "$cmd4" in
-                '')
-                  _fzf_complete_git_file
-                  return
-                ;;
-              esac
-            ;;
-            '')
-              _fzf_complete_git_branch
-              return
-            ;;
-          esac
-        ;;
-      esac
-      ;;
-  esac
-
-  zle expand-or-complete
+  if [[ $cmd == "git" ]]; then
+    zle fzf-git-completion
+  elif [[ $cmd == "rbenv" || $cmd == "pyenv" || $cmd == "nodenv" ]]; then
+    zle fzf-anyenv-completion
+  else
+    zle expand-or-complete
+  fi
 }
 zle -N fzf-direct-completion
-
-function _fzf_complete_git_file() {
-  local files
-  files=$(git status --short | awk '{ print $2 }')
-  FZF_COMPLETION_OPTS="--multi --height 100% --prompt 'Git Files>' --preview 'git diff --color=always {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview"
-  _fzf_complete '' "$BUFFER" < <(
-    echo $files
-  )
-}
-
-function _fzf_complete_git_add_file() {
-  local add_files
-  add_files=$(git status --short | awk '{if (substr($0,2,1) !~ / /) print $2}')
-  FZF_COMPLETION_OPTS="--multi --height 100% --prompt 'Git Add Files>' --preview 'git diff --color=always {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview"
-  _fzf_complete '' "$BUFFER" < <(
-    echo $add_files
-  )
-}
-
-function _fzf_complete_git_reset_file() {
-  local reset_files
-  reset_files=$(git status --short | awk '{if (substr($0,1,1) ~ /M|A/) print $2}')
-  FZF_COMPLETION_OPTS="--multi --height 100% --prompt 'Git Reset Files>' --preview 'git diff --cached --color=always {}' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview"
-  _fzf_complete '' "$BUFFER" < <(
-    echo $reset_files
-  )
-}
-
-function _fzf_complete_git_branch() {
-  local branches
-  branches=$(git branch -vv --all)
-  FZF_COMPLETION_OPTS="--reverse --multi"
-  _fzf_complete '' "$BUFFER" < <(
-    echo $branches
-  )
-}
-
-function _fzf_complete_git_branch_post() {
-  awk '{if ($1 == "*") print "HEAD"; else print $1;}'
-}
 
 # Project
 function f() {
   local dir
   dir=$(ghq root)/$(ghq list | fzf)
 
-  if [ $dir != "$(ghq root)/" ]; then
+  if [[ $dir != "$(ghq root)/" ]]; then
     cd "$dir"
     if [[ ! -z ${TMUX} ]]; then
       repository=${dir##*/}
