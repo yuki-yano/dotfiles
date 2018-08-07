@@ -3,21 +3,24 @@
   email = yuki.ycino@gmail.com
 
 [color]
-  ui = auto
-  diff = auto
+  ui             = auto
+  diff           = auto
   diff-highlight = auto
 
 [core]
-  autocrlf = input
-  editor = nvim
-  excludesfile = ~/.gitignore_global
+  autocrlf       = input
+  editor         = nvim
+  excludesfile   = ~/.gitignore_global
   attributesfile = ~/.gitattributes_global
 
 [alias]
-  qsave = !git stash && git stash pop
+  forget  = checkout --
+  unstage = reset --
+  qsave   = !git stash && git stash pop
+  plog    = log --pretty='format:%C(yellow)%h %C(green)%cd %C(reset)%s %C(red)%d %C(cyan)[%an]' --date=iso
 
 [pager]
-  log =  diff-highlight | less
+  log  = diff-highlight | less
   show = diff-highlight | less
   diff = diff-highlight | less
 
