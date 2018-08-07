@@ -519,8 +519,8 @@ bindkey -M viins '^x ' no-magic-abbrev-expand
 bindkey -M viins '^ '  extra-abbrev
 bindkey -M viins '^m'  magic-abbrev-expand-and-accept-line
 bindkey -M viins '^]'  insert-last-word
-bindkey -M viins '^[u' undo
-bindkey -M viins "^[r" redo
+bindkey -M viins '^u'  undo
+bindkey -M viins "^[u" redo
 bindkey -M viins '^[f' vi-forward-blank-word
 bindkey -M viins "^[b" vi-backward-blank-word
 
@@ -537,10 +537,12 @@ bindkey -M viins '^g' send-break
 bindkey -M viins '^k' kill-line-or-up-pane
 bindkey -M viins '^n' history-beginning-search-forward-end
 bindkey -M viins '^p' history-beginning-search-backward-end
-bindkey -M viins '^u' backward-kill-line
 bindkey -M viins '^w' backward-kill-word
 bindkey -M viins '^y' yank
 bindkey -M viins '^q' show-buffer-stack
+
+# mapping undo and redo
+# bindkey -M viins '^u' backward-kill-line
 
 bindkey -M viins "$terminfo[kcbt]" reverse-menu-complete
 
@@ -570,6 +572,7 @@ bindkey -M menuselect '^j' .accept-line
 bindkey -M menuselect '^k' accept-and-infer-next-history
 bindkey -M menuselect '^n' down-line-or-history
 bindkey -M menuselect '^p' up-line-or-history
+bindkey -M menuselect '^h' undo
 
 # All Mode bind
 bindkey -M viins '^r'   peco-history-selection
