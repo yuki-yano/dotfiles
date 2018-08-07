@@ -51,14 +51,14 @@
 
 # Config
 /.config/asciinema
+/.config/configstore
 /.config/direnv
 /.config/filezilla
 /.config/hub
-/.config/karabiner
-/.config/memo
+/.config/junkfile/_posts
+/.config/memo/_posts
 /.config/nicovideo-dump.zsh
 /.config/nvim
-/.config/peco
 /.config/vim
 
 # Application
@@ -68,7 +68,6 @@
 /Gemfile.lock
 
 # Node
-/.config/configstore
 /node_modules
 /package-lock.json
 /yarn.lock

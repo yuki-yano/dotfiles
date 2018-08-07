@@ -4,9 +4,21 @@
     "Tab": "peco.ToggleSelectionAndSelectNext"
   },
   "Style": {
-    "Basic": ["on_default", "default"],
-    "Selected": ["undefline", "on_cyan", "black"],
-    "Query": ["yellow", "bold"],
-    "Matched": ["cyan", "magenta"]
+    "Basic": [
+      "on_default",
+      "default"
+    ],
+    "Selected": [
+      "on_cyan",
+      "black"
+    ],
+    "Query": [
+      "yellow",
+      "bold"
+    ],
+    "Matched": [
+      "red",
+      "bold"
+    ]
   }
 }
