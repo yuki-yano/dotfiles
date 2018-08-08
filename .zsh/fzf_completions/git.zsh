@@ -172,7 +172,7 @@ function _fzf_complete_git_reset_file_post() {
 function _fzf_complete_git_branch() {
   local branches
   branches=$(git branch -vv --all)
-  FZF_COMPLETION_OPTS='--reverse --preview="echo {} | awk '\''{ if ($1 != \"*\") print $1; else print $2 }'\'' | git plog --graph --color=always" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview'
+  FZF_COMPLETION_OPTS='--reverse --preview="git plog $(echo {} | awk '\''{ if ($1 != \"*\") print $1; else print $2 }'\'') --graph --color=always 2>/dev/null" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview'
   _fzf_complete '' "$BUFFER" < <(
   echo $branches
   )
