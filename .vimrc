@@ -126,6 +126,24 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('wokalski/autocomplete-flow', {'lazy': 1, 'on_ft': 'javascript'})
     call dein#add('zchee/deoplete-jedi',        {'lazy': 1, 'on_ft': 'python'})
     call dein#add('carlitux/deoplete-ternjs',   {'lazy': 1, 'on_ft': 'javascript'})
+
+    " call dein#add('ncm2/ncm2')
+    " call dein#add('roxma/nvim-yarp')
+    "
+    " call dein#add('prabirshrestha/async.vim')
+    " call dein#add('prabirshrestha/vim-lsp')
+    " call dein#add('ncm2/ncm2-vim-lsp')
+    "
+    " call dein#add('ncm2/ncm2-bufword')
+    " call dein#add('ncm2/ncm2-path')
+    " call dein#add('ncm2/ncm2-tmux')
+    " call dein#add('ncm2/ncm2-tagprefix')
+    " call dein#add('filipekiss/ncm2-look.vim')
+    " call dein#add('ncm2/ncm2-syntax')
+    " call dein#add('ncm2/ncm2-jedi')
+    " call dein#add('ncm2/ncm2-vim')
+    " call dein#add('ncm2/ncm2-go')
+    " call dein#add('yuki-ycino/ncm2-dictionary')
   endif
   " }}}3
 
@@ -469,7 +487,7 @@ set matchtime=1
 set nocursorline
 set number
 set previewheight=18
-set pumheight=15
+set pumheight=25
 set scrolloff=5
 set showmatch
 set showtabline=2
@@ -496,7 +514,7 @@ AutoCmd FileType * setlocal formatoptions+=jBn
 set viminfo='1000
 
 "" Search & Complete
-set completeopt=menu,menuone,preview,noinsert,noselect
+set completeopt=menu,menuone,noinsert,noselect
 set ignorecase
 set regexpengine=2
 set smartcase
@@ -1479,6 +1497,63 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   let g:deoplete#omni#functions.css        = ['csscomplete#CompleteCSS']
   let g:deoplete#omni#functions.scss       = ['csscomplete#CompleteCSS']
 endif
+" }}}3
+
+" ncm2 {{{3
+" let g:ncm2#complete_length = [[1,1],[7,1]]
+" let g:ncm2#popup_limit     = 5
+"
+" inoremap <silent>        <C-c> <Esc>
+" inoremap <silent> <expr> <CR> pumvisible() ? "\<C-y>\<CR>" : "\<CR>"
+" imap     <silent>        <C-n> <Plug>(ncm2_manual_trigger)
+"
+" " omnifunc
+" call ncm2#register_source({
+" \ 'name': 'ruby',
+" \ 'priority': 8,
+" \ 'complete_length': 1,
+" \ 'subscope_enable': 1,
+" \ 'scope': ['ruby', 'eruby'],
+" \ 'mark': 'ruby',
+" \ 'word_pattern': '\w+',
+" \ 'complete_pattern': ['\w+', '[^. *\t]\.\w*', '[a-zA-Z_]\w*::'],
+" \ 'on_complete': ['ncm2#on_complete#delay', 180,
+" \                 'ncm2#on_complete#omni', 'rubycomplete#Complete'],
+" \ })
+"
+" " lsp
+" call ncm2#override_source('typescript',              { 'priority': 9, 'mark': 'typescript', 'popup_limit': 10 })
+" call ncm2#override_source('ncm2_vim_lsp_solargraph', { 'priority': 9, 'mark': 'solar',      'popup_limit': 10 })
+"
+" " Sources
+" call ncm2#override_source('vim',        { 'priority': 8, 'mark': 'vim'                            })
+" call ncm2#override_source('jedi',       { 'priority': 8, 'mark': 'jedi'                           })
+" call ncm2#override_source('go',         { 'priority': 8, 'mark': 'go'                             })
+" call ncm2#override_source('ruby',       { 'priority': 8, 'mark': 'ruby'                           })
+"
+" call ncm2#override_source('bufword',    { 'priority': 8, 'mark': 'buffer'                         })
+" call ncm2#override_source('syntax',     { 'priority': 7, 'mark': 'syntax'                         })
+" call ncm2#override_source('gtags',      { 'priority': 7, 'mark': 'gtags',    'complete_length': 3 })
+" call ncm2#override_source('dictionary', { 'priority': 6, 'mark': 'dict',                          })
+" call ncm2#override_source('tagprefix',  { 'priority': 5, 'mark': 'tag'                            })
+" call ncm2#override_source('buflook',    { 'priority': 4, 'mark': 'look'                           })
+" call ncm2#override_source('tmux',       { 'priority': 3, 'mark': 'tmux',     'complete_length': 3 })
+" call ncm2#override_source('bufpath',    { 'priority': 2, 'mark': 'bufpath',  'complete_length': 3 })
+" call ncm2#override_source('cwdpath',    { 'priority': 2, 'mark': 'cwdpath',  'complete_length': 3 })
+"
+" call ncm2#override_source('rootpath',  {'enable': 0})
+"
+" AutoCmd BufEnter     * call ncm2#enable_for_buffer()
+" AutoCmd TextChangedI * call ncm2#auto_trigger()
+"
+" if executable('solargraph')
+"   AutoCmd User lsp_setup call lsp#register_server({
+"   \ 'name': 'solargraph',
+"   \ 'cmd': {server_info->[&shell, &shellcmdflag, 'solargraph stdio']},
+"   \ 'initialization_options': {"diagnostics": "true"},
+"   \ 'whitelist': ['ruby'],
+"   \ })
+" endif
 " }}}3
 
 " LanguageClient {{{3
@@ -2716,11 +2791,13 @@ nnoremap <silent> <Leader><C-w> :WinResizerStartResize<CR>
 " Multiple Cursor & lexima {{{2
 function! Correct_interference_multiple_cursor_before() abort
   let b:deoplete_disable_auto_complete = 1
+  " call ncm2#lock('vim-multiple-cursors')
   call Clear_lexima()
 endfunction
 
 function! Correct_interference_multiple_cursor_after() abort
   let b:deoplete_disable_auto_complete = 0
+  " call ncm2#unlock('vim-multiple-cursors')
   call Resetting_lexima()
 endfunction
 " }}}2
