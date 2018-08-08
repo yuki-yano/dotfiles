@@ -202,6 +202,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Edit & Move & Search {{{3
   " call dein#add('tyru/skk.vim',              {'lazy': 1, 'on_event': 'InsertEnter'})
   " call dein#add('vimtaku/vim-mlh',           {'lazy': 1, 'on_event': 'InsertEnter'})
+  " call dein#add('terryma/vim-multiple-cursors')
   call dein#add('AndrewRadev/splitjoin.vim',     {'lazy': 1, 'on_cmd': ['SplitjoinJoin', 'SplitjoinSplit']})
   call dein#add('AndrewRadev/switch.vim',        {'lazy': 1, 'on_cmd': 'Switch'})
   call dein#add('Chiel92/vim-autoformat',        {'lazy': 1, 'on_cmd': 'Autoformat'})
@@ -215,7 +216,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('h1mesuke/vim-alignta',          {'lazy': 1, 'on_cmd': 'Alignta'})
   call dein#add('haya14busa/vim-asterisk',       {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-edgemotion',     {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('haya14busa/vim-metarepeat',     {'lazy': 1, 'on_map': ['go', 'g.']})
+  call dein#add('haya14busa/vim-metarepeat',     {'lazy': 1, 'on_map': ['go', 'g.', '<Plug>']})
   call dein#add('junegunn/vim-easy-align',       {'lazy': 1, 'on_cmd': 'EasyAlign'})
   call dein#add('justinmk/vim-sneak')
   call dein#add('mileszs/ack.vim',               {'lazy': 1, 'on_cmd': 'Ack'})
@@ -224,7 +225,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('rhysd/accelerated-jk',          {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/clever-f.vim')
   call dein#add('terryma/vim-expand-region',     {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('terryma/vim-multiple-cursors')
   call dein#add('thinca/vim-qfreplace',          {'lazy': 1, 'on_cmd': 'Qfreplace'})
   call dein#add('tommcdo/vim-exchange',          {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
   call dein#add('tomtom/tcomment_vim',           {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
@@ -2017,27 +2017,27 @@ endif
 " }}}3
 
 " metarepeat {{{3
-" nmap <silent> <expr> <SID>(ctrln) v:hlsearch == ? "\<Plug>(metarepeat-preset-occurence)" : "*"
+nmap <silent> <expr> (ctrln) v:hlsearch ? "\<Plug>(metarepeat-preset-occurence)" : "*"
 " }}}3
 
 " multiple-cursor {{{3
-let g:multi_cursor_use_default_mapping = 0
-let g:multi_cursor_start_word_key      = '<C-n>'
-let g:multi_cursor_select_all_key      = 'g<C-n>'
-let g:multi_cursor_next_key            = '<C-n>'
-let g:multi_cursor_prev_key            = '<C-p>'
-let g:multi_cursor_skip_key            = '<C-x>'
-let g:multi_cursor_quit_key            = '<Esc>'
-
-nnoremap <silent> (ctrln) :<C-u> :call multiple_cursors#new("n", 1)<CR>
-
-function! Multiple_cursors_before() abort
-  call Correct_interference_multiple_cursor_before()
-endfunction
-
-function! Multiple_cursors_after() abort
-  call Correct_interference_multiple_cursor_after()
-endfunction
+" let g:multi_cursor_use_default_mapping = 0
+" let g:multi_cursor_start_word_key      = '<C-n>'
+" let g:multi_cursor_select_all_key      = 'g<C-n>'
+" let g:multi_cursor_next_key            = '<C-n>'
+" let g:multi_cursor_prev_key            = '<C-p>'
+" let g:multi_cursor_skip_key            = '<C-x>'
+" let g:multi_cursor_quit_key            = '<Esc>'
+"
+" nnoremap <silent> (ctrln) :<C-u> :call multiple_cursors#new("n", 1)<CR>
+"
+" function! Multiple_cursors_before() abort
+"   call Correct_interference_multiple_cursor_before()
+" endfunction
+"
+" function! Multiple_cursors_after() abort
+"   call Correct_interference_multiple_cursor_after()
+" endfunction
 " }}}3
 
 " operator-convert-case {{{3
