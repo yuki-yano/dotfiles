@@ -176,6 +176,17 @@ function gwt() {
   git worktree add "${GIT_CDUP_DIR}git-worktrees/$1 -b $1"
 }
 
+# tmux
+if [[ -z $TMUX ]]; then
+  function tmux() {
+    if [[ $# == 0 ]] && tmux has-session 2>/dev/null; then
+      command tmux attach-session
+    else
+      command tmux "$@"
+    fi
+  }
+fi
+
 # diff
 alias diff='diff -u'
 

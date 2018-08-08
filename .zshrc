@@ -48,30 +48,34 @@ FAST_HIGHLIGHT_STYLES[history-expansion]=fg=green,bold
 typeset -A abbreviations
 
 abbreviations=(
-  "g"      "git"
-  "ga"     "git add"
-  "gaa"    "git add --all"
-  "gre"    "git reset"
-  "gref"   "git reset --"
-  "gun"    "git unstage"
-  "grec"   "git recover"
-  "grm"    "git rm"
-  "gs"     "git status --short --branch"
-  "gb"     "git branch"
-  "gd"     "git diff"
-  "gdw"    "git diff --color-words"
-  "gdc"    "git diff --cached"
-  "gdcw"   "git diff --cached --color-words"
-  "gco"    "git checkout"
-  "gcof"   "git checkout --"
-  "gfo"    "git forget"
-  "gci"    "git commit"
-  "gcia"   "git commit --amend --no-edit"
-  "gp"     "git push"
-  "gst"    "git stash"
-  "gstp"   "git stash pop"
-  "gq"     "git qsave"
-  "cheats" "cheat --shell"
+"g"      "git"
+"ga"     "git add"
+"gaa"    "git add --all"
+"gre"    "git reset"
+"gref"   "git reset --"
+"gun"    "git unstage"
+"grec"   "git recover"
+"grm"    "git rm"
+"gs"     "git status --short --branch"
+"gb"     "git branch"
+"gd"     "git diff"
+"gdw"    "git diff --color-words"
+"gdc"    "git diff --cached"
+"gdcw"   "git diff --cached --color-words"
+"gco"    "git checkout"
+"gcof"   "git checkout --"
+"gfo"    "git forget"
+"gci"    "git commit"
+"gcia"   "git commit --amend --no-edit"
+"gp"     "git push"
+"gst"    "git stash"
+"gstp"   "git stash pop"
+"gq"     "git qsave"
+"t"      "tmux"
+"tl"     "tmux list-sessions"
+"ta"     "tmux attach-session"
+"ts"     "tmux swap-pane -t"
+"cheats" "cheat --shell"
 )
 
 function _magic-abbrev-expand-and-accept-line() {
@@ -235,6 +239,7 @@ alias -g RCB='origin/$(git rev-parse --abbrev-ref HEAD)'
 # fzf {{{
 source ~/.zsh/fzf_completions/git.zsh
 source ~/.zsh/fzf_completions/anyenv.zsh
+source ~/.zsh/fzf_completions/tmux.zsh
 
 function fzf-direct-completion() {
   local tokens cmd
@@ -246,6 +251,8 @@ function fzf-direct-completion() {
     zle fzf-git-completion
   elif [[ $cmd == "rbenv" || $cmd == "pyenv" || $cmd == "nodenv" ]]; then
     zle fzf-anyenv-completion
+  elif [[ $cmd == "tmux" ]]; then
+    zle fzf-tmux-completion
   else
     zle expand-or-complete
   fi
