@@ -2240,7 +2240,7 @@ if dein#tap('lightline.vim')
   \   ],
   \ },
   \ 'inactive': {
-  \   'left': [['mode'], [], ['filepath', 'filename']],
+  \   'left': [['mode'], [], ['filepath', 'filename', 'keymap']],
   \   'right': [[], ['filetype', 'fileencoding', 'fileformat']],
   \ },
   \ 'tabline': {
