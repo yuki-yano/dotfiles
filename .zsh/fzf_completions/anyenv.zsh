@@ -3,7 +3,7 @@
 function _fzf-anyenv-completion() {
   local tokens cmd1 cmd2 cmd3
   setopt localoptions noshwordsplit
-  tokens=(${(z)BUFFER})
+  tokens=(${(z)LBUFFER})
   cmd1=${tokens[1]}
   cmd2=${tokens[2]}
   cmd3=${tokens[3]}
@@ -21,6 +21,7 @@ function _fzf-anyenv-completion() {
      esac
      ;;
   esac
+  zle expand-or-complete
 }
 zle -N fzf-anyenv-completion _fzf-anyenv-completion
 

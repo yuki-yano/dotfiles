@@ -3,7 +3,7 @@
 function _fzf-git-completion() {
   local tokens cmd1 cmd2 cmd3 cmd4 cmd5
   setopt localoptions noshwordsplit
-  tokens=(${(z)BUFFER})
+  tokens=(${(z)LBUFFER})
   cmd1=${tokens[1]}
   cmd2=${tokens[2]}
   cmd3=${tokens[3]}
@@ -129,6 +129,7 @@ function _fzf-git-completion() {
       esac
       ;;
   esac
+  zle expand-or-complete
 }
 
 zle -N fzf-git-completion _fzf-git-completion
