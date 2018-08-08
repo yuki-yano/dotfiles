@@ -258,6 +258,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Util {{{3
   " call dein#add('thinca/vim-quickrun',                 {'lazy': 1, 'on_cmd': 'QuickRun'})
+  call dein#add('Shougo/junkfile.vim')
   call dein#add('SpaceVim/gtags.vim')
   call dein#add('aiya000/aho-bakaup.vim')
   call dein#add('bfredl/nvim-miniyank')
@@ -276,7 +277,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mattn/webapi-vim')
   call dein#add('mbbill/undotree',                     {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
   call dein#add('mtth/scratch.vim',                    {'lazy': 1, 'on_cmd': ['Scratch', 'ScratchInsert', 'ScratchPreview', 'ScratchSelection']})
-  call dein#add('Shougo/junkfile.vim')
   call dein#add('nonylene/vim-keymaps')
   call dein#add('osyo-manga/vim-gift')
   call dein#add('pocke/vim-automatic',                 {'depends': 'vim-gift'})
@@ -1111,10 +1111,6 @@ let g:vim_indent_cont   = 0
 let g:vue_disable_pre_processors = 1
 AutoCmd FileType vue syntax sync fromstart
 " }}}
-
-" zsh {{{3
-let g:zsh_fold_enable = 1
-" }}}3
 
 " }}}2
 
