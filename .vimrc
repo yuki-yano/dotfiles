@@ -846,9 +846,9 @@ AutoCmd FileType python     setlocal omnifunc=pythoncomplete#Complete
 AutoCmd FileType css        setlocal omnifunc=csscomplete#CompleteCSS
 AutoCmd FileType scss       setlocal omnifunc=csscomplete#CompleteCSS
 
-AutoCmd FileType javascript setlocal dict=~/dotfiles/.vim/dict/javascript.dict
-AutoCmd FileType typescript setlocal dict=~/dotfiles/.vim/dict/javascript.dict
-AutoCmd FileType ruby,eruby setlocal dict=~/dotfiles/.vim/dict/rails.dict
+AutoCmd FileType javascript setlocal dictionary=~/dotfiles/.vim/dict/javascript.dict
+AutoCmd FileType typescript setlocal dictionary=~/dotfiles/.vim/dict/javascript.dict
+AutoCmd FileType ruby,eruby setlocal dictionary=~/dotfiles/.vim/dict/ruby.dict
 " }}}3
 
 
