@@ -914,7 +914,8 @@ AutoCmd CmdwinEnter * call <SID>init_cmdwin()
 
 function! s:init_cmdwin() abort
   set number | set norelativenumber
-  inoremap <buffer> <expr> <C-r><C-w> "\<C-c>\<C-r>\<C-w>" . &g:cedit
+  inoremap <buffer> <C-c> <C-c>
+  inoremap <buffer> <C-c> <Esc>l<C-c>
 
   " nnoremap <silent> <buffer> dd :<C-u>rviminfo<CR>:call histdel(getcmdwintype(), line('.') - line('$'))<CR>:wviminfo!<CR>dd
   startinsert!
