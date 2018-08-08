@@ -134,7 +134,6 @@ else
   alias la='ls -alh'
 fi
 
-
 # sed
 if whence gsed > /dev/null; then
   alias sed='gsed'
@@ -151,9 +150,6 @@ alias p='popd'
 
 # yes
 alias y='yes'
-
-# ruby
-alias be='bundle exec'
 
 # git
 alias g='git'
