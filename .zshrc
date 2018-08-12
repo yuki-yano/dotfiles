@@ -271,7 +271,7 @@ zle -N fzf-direct-completion
 # Project
 function f() {
   local dir
-  dir=$(ghq root)/$(ghq list | fzf)
+  dir=$(ghq root)/$(ghq list | fzf --prompt='Project >')
 
   if [[ $dir != "$(ghq root)/" ]]; then
     cd "$dir"
