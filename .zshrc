@@ -3,6 +3,7 @@
 source ~/dotfiles/.zsh/zgen/zgen.zsh
 
 if ! zgen saved; then
+  # zgen load sindresorhus/pure
   zgen load 39e/zsh-completions-anyenv
   zgen load RobSis/zsh-completion-generator
   zgen load b4b4r07/zsh-vimode-visual
@@ -10,7 +11,6 @@ if ! zgen saved; then
   zgen load kutsan/zsh-system-clipboard
   zgen load mafredri/zsh-async
   zgen load mollifier/anyframe
-  zgen load sindresorhus/pure
   zgen load xav-b/zsh-extend-history
   zgen load yukiycino-dotfiles/cdd
   zgen load yukiycino-dotfiles/fancy-ctrl-z
@@ -28,6 +28,9 @@ if ! zgen saved; then
   # compile
   for f in $(find ~/.zgen/ -name "*.zsh"); do zcompile "$f"; done
 fi
+
+# async
+async_init
 
 # zsh system clipboard
 ZSH_SYSTEM_CLIPBOARD_TMUX_SUPPORT=true
@@ -97,6 +100,7 @@ add-zsh-hook precmd check-buffer-stack
 
 # autosuggestions
 ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(magic-abbrev-expand-and-accept-line $ZSH_AUTOSUGGEST_CLEAR_WIDGETS)
+
 # }}}
 
 # autoload {{{
@@ -314,10 +318,105 @@ function peco-nico-bgm() {
 
 # Prompt {{{
 
-PROMPT='${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
+# pure prompt
+# PROMPT='${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
+
+# Command Buffer Stack
 RPROMPT='${COMMAND_BUFFER_STACK}'
 
-function prompt_pure_update_vim_prompt() {
+PROMPT='
+%F{blue}%~%f $GIT_STATUS
+${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
+
+GIT_PREFIX="%F{247}("
+GIT_SUFFIX="%F{247})"
+GIT_SEPARATOR="%F{247}|"
+GIT_BRANCH="%F{242}"
+GIT_DIRTY="%F{242}*"
+GIT_STAGED="%{$fg[green]%}%{S:%G%}"
+GIT_CONFLICTS="%{$fg[red]%}%{UU:%G%}"
+GIT_CHANGED="%{$fg[red]%}%{M:%G%}"
+GIT_BEHIND="%{$fg[cyan]%}%{↓ %G%}"
+GIT_AHEAD="%{$fg[cyan]%}%{↑ %G%}"
+GIT_UNTRACKED="%{$fg[red]%}%{?:%G%}"
+GIT_CLEAN="%{$fg_bold[green]%}%{✔%G%}"
+
+function render_git_prompt() {
+  setopt localoptions noshwordsplit
+  local output="$@"
+  local current_git_status=("${(@s: :)output}")
+
+  local git_branch=${current_git_status[1]}
+  local git_ahead=${current_git_status[2]}
+  local git_behind=${current_git_status[3]}
+  local git_staged=${current_git_status[4]}
+  local git_conflicts=${current_git_status[5]}
+  local git_changed=${current_git_status[6]}
+  local git_untracked=${current_git_status[7]}
+
+  GIT_STATUS="$GIT_BRANCH$git_branch%{${reset_color}%}"
+  if [[ "$git_changed" -ne "0" ]] || [[ "$git_conflicts" -ne "0" ]] || [[ "$git_staged" -ne "0" ]] || [[ "$git_untracked" -ne "0" ]]; then
+    GIT_STATUS="$GIT_STATUS$GIT_DIRTY%{${reset_color}%}"
+  fi
+  GIT_STATUS="$GIT_STATUS $GIT_PREFIX%{${reset_color}%}"
+  if [[ "$git_behind" -ne "0" ]]; then
+    GIT_STATUS="$GIT_STATUS$GIT_BEHIND$git_behind%{${reset_color}%}"
+  fi
+  if [[ "$git_ahead" -ne "0" ]]; then
+    GIT_STATUS="$GIT_STATUS$GIT_AHEAD$git_ahead%{${reset_color}%}"
+  fi
+  if [[ "$git_behind" -ne "0" ]] || [ "$git_ahead" -ne "0" ]; then
+    GIT_STATUS="$GIT_STATUS$GIT_SEPARATOR"
+  fi
+  if [[ "$git_staged" -ne "0" ]]; then
+    GIT_STATUS="$GIT_STATUS $GIT_STAGED$git_staged%{${reset_color}%}"
+  fi
+  if [[ "$git_conflicts" -ne "0" ]]; then
+    GIT_STATUS="$GIT_STATUS $GIT_CONFLICTS$git_conflicts%{${reset_color}%}"
+  fi
+  if [[ "$git_changed" -ne "0" ]]; then
+    GIT_STATUS="$GIT_STATUS $GIT_CHANGED$git_changed%{${reset_color}%}"
+  fi
+  if [[ "$git_untracked" -ne "0" ]]; then
+    GIT_STATUS="$GIT_STATUS $GIT_UNTRACKED$git_untracked%{${reset_color}%}"
+  fi
+  if [[ "$git_changed" -eq "0" ]] && [[ "$git_conflicts" -eq "0" ]] && [[ "$git_staged" -eq "0" ]] && [[ "$git_untracked" -eq "0" ]]; then
+    GIT_STATUS="$GIT_STATUS $GIT_CLEAN"
+  fi
+  GIT_STATUS="$GIT_STATUS%{${reset_color}%} $GIT_SUFFIX"
+  # LAST_GIT_STATUS=$(date +%s)
+}
+
+# worker
+async_start_worker git_prompt_worker -n
+
+function git_prompt_callback() {
+  # if [[ $(($(date +%s) - $LAST_GIT_STATUS_TIME)) -gt 300 ]]; then
+  #   git fetch > /dev/null
+  # fi
+  render_git_prompt $(gitstatus $(pwd))
+}
+
+function update_git_status() {
+  if git rev-parse 2> /dev/null; then
+    async_job git_prompt_worker true
+  else
+    GIT_STATUS=''
+  fi
+}
+
+async_register_callback git_prompt_worker git_prompt_callback
+add-zsh-hook precmd update_git_status
+# LAST_GIT_STATUS_TIME=$(date +%s)
+
+TMOUT=1
+TRAPALRM() {
+  if [[ "$WIDGET" != "fzf-completion" ]]; then
+    zle reset-prompt
+  fi
+}
+
+function prompt_update_vim_prompt() {
   VIM_NORMAL="%{$GREEN%}-- NORMAL --%{$DEFAULT%}"
   VIM_INSERT="%{$YELLOW%}-- INSERT --%{$DEFAULT%}"
   VIM_VISUAL="%{$CYAN%}-- VISUAL --%{$DEFAULT%}"
@@ -326,11 +425,11 @@ function prompt_pure_update_vim_prompt() {
 }
 
 function _zle-line-init {
-  prompt_pure_update_vim_prompt
+  prompt_update_vim_prompt
 }
 
 function _zle-keymap-select {
-  prompt_pure_update_vim_prompt
+  prompt_update_vim_prompt
 }
 
 zle -N zle-line-init _zle-line-init
