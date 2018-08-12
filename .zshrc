@@ -268,6 +268,10 @@ function f() {
 
   if [[ $dir != "$(ghq root)/" ]]; then
     cd "$dir"
+    if [[ ! -z ${TMUX} ]]; then
+      repository=${dir##*/}
+      tmux rename-session "${repository//./-}"
+    fi
   fi
 }
 
