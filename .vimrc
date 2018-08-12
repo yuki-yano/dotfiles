@@ -1201,10 +1201,10 @@ if dein#tap('denite.nvim')
   " nnoremap <silent> <Leader>m :<C-u>Denite file_mru -direction=topleft -mode=insert<CR>
 
   "" grep
-  nnoremap <silent> <Leader>/         :<C-u>Denite line<CR>
-  nnoremap <silent> <Leader>*         :<C-u>DeniteCursorWord line<CR>
-  nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep -post-action=open<CR>
-  nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep -post-action=open<CR>
+  " nnoremap <silent> <Leader>/         :<C-u>Denite line<CR>
+  " nnoremap <silent> <Leader>*         :<C-u>DeniteCursorWord line<CR>
+  " nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep -post-action=open<CR>
+  " nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep -post-action=open<CR>
 
   "" outline
   " nnoremap <silent> <Leader>o :<C-u>Denite outline<CR>
@@ -1241,6 +1241,7 @@ if dein#tap('unite.vim')
     nnoremap <silent> <buffer> <C-p>      k
     nnoremap <silent> <buffer> <C-j>      <C-w>j
     nnoremap <silent> <buffer> <C-k>      <C-w>k
+    nmap     <silent> <buffer> p          <Plug>(unite_smart_preview)
     nnoremap <silent> <buffer> <Esc><Esc> q
     inoremap <silent> <buffer> <Esc><Esc> <Esc>q
     imap     <silent> <buffer> <C-w>      <Plug>(unite_delete_backward_path)
@@ -1252,20 +1253,16 @@ if dein#tap('unite.vim')
   nnoremap <silent> <Leader><C-]> :<C-u>UniteWithCursorWord gtags/context -direction=botright -no-quit<CR>
 
   " grep
-  " let g:unite_source_grep_command = 'rg'
-  " let g:unite_source_grep_default_opts = '--vimgrep --hidden'
-  " let g:unite_source_grep_recursive_opt = ''
+  let g:unite_source_grep_command = 'rg'
+  let g:unite_source_grep_default_opts = '--vimgrep --hidden'
+  let g:unite_source_grep_recursive_opt = ''
   "
-  " call unite#custom_source('line', 'sorters', 'sorter_reverse')
-  " call unite#custom_source('grep', 'sorters', 'sorter_reverse')
-  " nnoremap <silent> <Leader>/          :<C-u>Unite line -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  " nnoremap <silent> <Leader>//         :<C-u>Unite line -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
-  " nnoremap <silent> <Leader>*          :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  " nnoremap <silent> <Leader>**         :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
-  " nnoremap <silent> <Leader><Leader>/  :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  " nnoremap <silent> <Leader><Leader>// :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
-  " nnoremap <silent> <Leader><Leader>*  :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  " nnoremap <silent> <Leader><Leader>** :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit -auto-preview<CR>
+  call unite#custom_source('line', 'sorters', 'sorter_reverse')
+  call unite#custom_source('grep', 'sorters', 'sorter_reverse')
+  nnoremap <silent> <Leader>/          :<C-u>Unite line -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  nnoremap <silent> <Leader>*          :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  nnoremap <silent> <Leader><Leader>/  :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  nnoremap <silent> <Leader><Leader>*  :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
 
   " yank
   " nnoremap <silent> <Leader><Leader>p :<C-u>Unite yankround<CR>
