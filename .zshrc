@@ -456,18 +456,11 @@ add-zsh-hook precmd venv_name
 
 # tmux {{{
 
-function set-current-dir-or-project-name-to-tmux() {
-  local repository
-  if [[ ! -d .git ]]; then
-    tmux rename-window "${PWD:t} " > /dev/null
-  else
-    repository=$(basename "$(git rev-parse --show-toplevel)")
-    tmux rename-window  "${repository}" > /dev/null
-    tmux rename-session "${repository}" > /dev/null
-  fi
+function set-current-dir-to-tmux() {
+  tmux rename-window "${PWD:t} " > /dev/null
 }
-set-current-dir-or-project-name-to-tmux
-add-zsh-hook chpwd set-current-dir-or-project-name-to-tmux
+set-current-dir-to-tmux
+add-zsh-hook chpwd set-current-dir-to-tmux
 
 function _left-pane() {
   tmux select-pane -L
