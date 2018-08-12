@@ -6,6 +6,7 @@ if ! zgen saved; then
   # zgen load sindresorhus/pure
   zgen load 39e/zsh-completions-anyenv
   zgen load RobSis/zsh-completion-generator
+  zgen load yuki-ycino/tmuximum
   zgen load b4b4r07/zsh-vimode-visual
   zgen load knu/zsh-git-escape-magic
   zgen load kutsan/zsh-system-clipboard
@@ -72,7 +73,7 @@ abbreviations=(
 "gstp"   "git stash pop"
 "gq"     "git qsave"
 "g"      "rg"
-"t"      "tmux"
+"t"      "tmuximum"
 "tl"     "tmux list-sessions"
 "ta"     "tmux attach-session"
 "ts"     "tmux swap-pane -t"
@@ -630,6 +631,9 @@ bindkey -M vivis '^x^k' anyframe-widget-kill
 bindkey -M viins '^z'   fancy-ctrl-z
 bindkey -M vicmd '^z'   fancy-ctrl-z
 bindkey -M vivis '^z'   fancy-ctrl-z
+bindkey -M viins '^[t'  tmuximum
+bindkey -M vicmd '^[t'  tmuximum
+bindkey -M vivis '^[t'  tmuximum
 
 # Command Line Edit
 zle -N edit-command-line
