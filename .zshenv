@@ -145,6 +145,18 @@ alias uu='cd ../..'
 alias uuu='cd ../../..'
 alias uuuu='cd ../../../..'
 
+# diff
+alias diff='diff -u'
+
+# rpgrep
+function rg() {
+  if [[ -t 1 ]]; then
+    command rg -p "$@" | less -RFX
+  else
+    command rg "$@"
+  fi
+}
+
 # popd
 alias p='popd'
 
@@ -152,7 +164,6 @@ alias p='popd'
 alias y='yes'
 
 # git
-alias g='git'
 alias ga='git add'
 alias gaa='git add --all'
 alias gs='git status --short --branch'
@@ -182,9 +193,6 @@ if [[ -z $TMUX ]]; then
     fi
   }
 fi
-
-# diff
-alias diff='diff -u'
 
 # direnv
 if whence direnv > /dev/null; then

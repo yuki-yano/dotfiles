@@ -49,7 +49,6 @@ FAST_HIGHLIGHT_STYLES[history-expansion]=fg=green,bold
 typeset -A abbreviations
 
 abbreviations=(
-"g"      "git"
 "ga"     "git add"
 "gaa"    "git add --all"
 "gre"    "git reset"
@@ -72,6 +71,7 @@ abbreviations=(
 "gst"    "git stash"
 "gstp"   "git stash pop"
 "gq"     "git qsave"
+"g"      "rg"
 "t"      "tmux"
 "tl"     "tmux list-sessions"
 "ta"     "tmux attach-session"
