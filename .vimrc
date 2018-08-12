@@ -152,6 +152,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Shougo/unite.vim')
 
   call dein#add('ozelentok/denite-gtags')
+  call dein#add('Shougo/neomru.vim')
 
   call dein#local('/usr/local/opt/', {}, ['fzf'])
   call dein#add('junegunn/fzf.vim')
@@ -540,6 +541,10 @@ set suffixesadd=.js,.ts,.rb
 
 "" Diff
 AutoCmd InsertLeave * if &l:diff | diffupdate | endif
+
+"" Undo
+set undofile
+set undodir=~/.cache/vim/undo/
 
 "" Swap File
 set swapfile
@@ -1019,6 +1024,7 @@ let g:echodoc_enable_at_startup = 1
 " }}}3
 
 " gen_tags {{{3
+let g:gen_tags#use_cache_dir  = 0
 let g:gen_tags#ctags_auto_gen = 1
 let g:gen_tags#gtags_auto_gen = 1
 " }}}3
@@ -1219,7 +1225,8 @@ if dein#tap('unite.vim')
   " Unite
   let g:unite_force_overwrite_statusline = 0
   let g:unite_source_rec_max_cache_files = 10000
-  let g:unite_enable_auto_select = 0
+  let g:unite_enable_auto_select         = 0
+  let g:unite_data_directory             = expand("~/.cache/vim/unite")
 
   "" keymap
   function! s:unite_settings()
@@ -1253,6 +1260,11 @@ if dein#tap('unite.vim')
   " yank
   " nnoremap <silent> <Leader><Leader>p :<C-u>Unite yankround<CR>
 endif
+" }}}3
+
+" neomru {{{3
+let g:neomru#file_mru_path       = expand("~/.cache/vim/neomru/file")
+let g:neomru#dictionary_mru_path = expand("~/.cache/vim/neomru/dictionary")
 " }}}3
 
 " fzf {{{3
@@ -1332,6 +1344,8 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   let g:deoplete#file#enable_buffer_path = 1
   let g:deoplete#keyword_patterns        = {}
   let g:deoplete#keyword_patterns._      = '[a-zA-Z_]\k*'
+
+  let g:neosnippet#data_directory = expand("~/.cache/vim/neosnippet")
 
   " Keymap
   inoremap <silent> <expr> <BS>  deoplete#smart_close_popup() . "\<C-h>"
@@ -1693,6 +1707,7 @@ endif
 
 " vimfiler {{{3
 let g:vimfiler_safe_mode_by_default = 0
+let g:vimfiler_data_directory = expand("~/.cache/vim/vimfiler")
 let g:vimfiler_execute_file_list    = {'jpg': 'open', 'jpeg': 'open', 'gif': 'open', 'png': 'open'}
 let g:vimfiler_enable_auto_cd       = 1
 let g:vimfiler_ignore_pattern       = '^\%(.git\|.DS_Store\)$'
@@ -2581,7 +2596,7 @@ let g:zenspace#default_mode = 'on'
 
 " aho-bakaup {{{3
 let g:bakaup_auto_backup = 1
-let g:bakaup_backup_dir  = expand('~/.config/nvim/backup')
+let g:bakaup_backup_dir  = expand('~/.cache/vim/backup')
 " }}}3
 
 " automatic {{{
@@ -2726,6 +2741,7 @@ nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
 
 " miniyank {{{3
 let g:miniyank_maxitems = 100
+let g:miniyank_filename = expand("~/.cache/vim/miniyank.mpack")
 " }}}3
 
 " open-browser {{{3
