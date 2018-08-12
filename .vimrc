@@ -120,12 +120,13 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('ujihisa/neco-look')
     call dein#add('wellle/tmux-complete.vim')
 
-    call dein#add('autozimu/LanguageClient-neovim', {'rev': 'next', 'build': 'bash install.sh'})
     " call dein#add('blueyed/vim-auto-programming', {'rev': 'neovim'})
     " call dein#add('fishbullet/deoplete-ruby',   {'lazy': 1, 'on_ft': ['ruby', 'eruby']})
-    call dein#add('wokalski/autocomplete-flow', {'lazy': 1, 'on_ft': 'javascript'})
-    call dein#add('zchee/deoplete-jedi',        {'lazy': 1, 'on_ft': 'python'})
-    call dein#add('carlitux/deoplete-ternjs',   {'lazy': 1, 'on_ft': 'javascript'})
+    call dein#add('autozimu/LanguageClient-neovim', {'lazy': 1, 'on_ft': ['typescript', 'ruby'], 'rev': 'next', 'build': 'bash install.sh'})
+    call dein#add('carlitux/deoplete-ternjs',       {'lazy': 1, 'on_ft': 'javascript'})
+    call dein#add('machakann/vim-Verdin',           {'lazy': 1, 'on_ft': 'vim'})
+    call dein#add('wokalski/autocomplete-flow',     {'lazy': 1, 'on_ft': 'javascript'})
+    call dein#add('zchee/deoplete-jedi',            {'lazy': 1, 'on_ft': 'python'})
 
     " call dein#add('ncm2/ncm2')
     " call dein#add('roxma/nvim-yarp')
@@ -1535,6 +1536,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   let g:deoplete#omni#functions.xml        = ['htmlcomplete#CompleteTags']
   let g:deoplete#omni#functions.css        = ['csscomplete#CompleteCSS']
   let g:deoplete#omni#functions.scss       = ['csscomplete#CompleteCSS']
+  let g:deoplete#omni#functions.vim        = ['Verdin#omnifunc']
 endif
 " }}}3
 
@@ -1601,6 +1603,10 @@ let g:LanguageClient_serverCommands = {
 \ 'typescript': ['javascript-typescript-stdio'],
 \ 'ruby': [ 'solargraph',  'stdio' ],
 \ }
+" }}}3
+
+" Verdin {{{3
+let g:Verdin#cooperativemode = 1
 " }}}3
 
 " }}}2
