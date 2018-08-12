@@ -579,8 +579,8 @@ bindkey -M viins '^e' end-of-line
 bindkey -M viins '^f' forward-char
 bindkey -M viins '^g' send-break
 bindkey -M viins '^k' kill-line-or-up-pane
-bindkey -M viins '^n' history-beginning-search-forward-end
-bindkey -M viins '^p' history-beginning-search-backward-end
+bindkey -M viins '^n' history-beginning-search-forward
+bindkey -M viins '^p' history-beginning-search-backward
 bindkey -M viins '^w' backward-kill-word
 bindkey -M viins '^y' yank
 bindkey -M viins '^q' show-buffer-stack
