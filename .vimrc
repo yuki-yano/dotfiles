@@ -778,8 +778,8 @@ function! s:option_to_edit()
   setlocal conceallevel=0
 endfunction
 
-command! -buffer HelpEdit call <SID>option_to_edit()
-command! -buffer HelpView call <SID>option_to_view()
+command! HelpEdit call <SID>option_to_edit()
+command! HelpView call <SID>option_to_view()
 " }}}2
 
 " Accelerate {{{2
