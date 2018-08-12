@@ -153,6 +153,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Shougo/unite.vim')
 
   call dein#add('ozelentok/denite-gtags')
+  call dein#add('hewes/unite-gtags')
   call dein#add('Shougo/neomru.vim')
 
   call dein#local('/usr/local/opt/', {}, ['fzf'])
@@ -1212,7 +1213,7 @@ if dein#tap('denite.nvim')
   nnoremap <silent> <Leader><C-o> :<C-u>Denite jump change -auto-preview<CR>
 
   "" ctags & gtags
-  nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context<CR>
+  " nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context<CR>
   " nnoremap <silent> <Leader><Leader><C-]> :<C-u>DeniteCursorWord gtags_grep<CR>
 
   "" yank
@@ -1246,6 +1247,9 @@ if dein#tap('unite.vim')
   endfunction
 
   AutoCmd FileType unite call <SID>unite_settings()
+
+  " gtags
+  nnoremap <silent> <Leader><C-]> :<C-u>UniteWithCursorWord gtags/context -direction=botright -no-quit<CR>
 
   " grep
   " let g:unite_source_grep_command = 'rg'
