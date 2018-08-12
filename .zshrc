@@ -21,8 +21,6 @@ if ! zgen saved; then
   zgen load zsh-users/zsh-autosuggestions
   zgen load zsh-users/zsh-completions src
 
-  zgen oh-my-zsh plugins/extract
-
   zgen save
 
   # compile
