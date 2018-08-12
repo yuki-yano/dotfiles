@@ -246,6 +246,12 @@ source ~/.zsh/fzf_completions/tmux.zsh
 function fzf-direct-completion() {
   local tokens cmd
   setopt localoptions noshwordsplit
+
+  if [[ $BUFFER[-1] != " " ]]; then
+    zle expand-or-complete
+    return
+  fi
+
   tokens=(${(z)BUFFER})
   cmd=${tokens[1]}
 
