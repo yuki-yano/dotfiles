@@ -158,10 +158,14 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('junegunn/fzf.vim')
   call dein#add('yuki-ycino/fzf-preview.vim',
   \ {'lazy': 1,
-  \ 'on_cmd': ['ProjectFilesPreview',
+  \ 'on_cmd': [
+  \ 'ProjectFilesPreview',
+  \ 'GitFilesPreview',
   \ 'BuffersPreview',
   \ 'ProjectOldFilesPreview',
+  \ 'ProjectMruFilesPreview',
   \ 'OldFilesPreview',
+  \ 'MruFilesPreview',
   \ 'ProjectGrepPreview',
   \ ],
   \ })
@@ -1323,9 +1327,10 @@ AlterCommand! <cmdwin> fg[rep] ProjectGrepPreview
 let g:fzf_preview_filelist_command = 'rg --files --hidden --follow --glob "!.git/*"'
 
 nnoremap <silent> <Leader>p :<C-u>ProjectFilesPreview<CR>
+nnoremap <silent> <Leader>g :<C-u>GitFilesPreview<CR>
 nnoremap <silent> <Leader>b :<C-u>BuffersPreview<CR>
-nnoremap <silent> <Leader>o :<C-u>ProjectOldFilesPreview<CR>
-nnoremap <silent> <Leader>O :<C-u>OldFilesPreview<CR>
+nnoremap <silent> <Leader>o :<C-u>ProjectMruFilesPreview<CR>
+nnoremap <silent> <Leader>O :<C-u>MruFilesPreview<CR>
 " }}}3
 
 " deoplete.nvim && neosnippet.vim {{{3
