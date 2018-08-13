@@ -1,3 +1,4 @@
 #!/usr/bin/env ruby
 
-puts ARGV[0].gsub(/#{Dir::home}/, '~')
+path = ARGV[0].gsub(/#{Dir.home}/, '~')
+puts path.split('/')[0..-2].map { |dir| dir.slice(0, 1) }.join('/') + "/#{path.split('/').last}"

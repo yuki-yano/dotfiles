@@ -46,5 +46,5 @@ fi
 if [[ "$git_changed" -eq "0" ]] && [[ "$git_conflicts" -eq "0" ]] && [[ "$git_staged" -eq "0" ]] && [[ "$git_untracked" -eq "0" ]]; then
   GIT_STATUS="$GIT_STATUS#[fg=green,bg=colour236]✔"
 fi
-GIT_STATUS="$GIT_STATUS #[fg=colour246,bg=colour236]) "
+GIT_STATUS="$GIT_STATUS #[fg=colour246,bg=colour236])"
 echo $GIT_STATUS
