@@ -2269,7 +2269,7 @@ if dein#tap('lightline.vim')
   \ },
   \ 'tabline': {
   \   'left':  [['tabs']],
-  \   'right': [['branch'], ['gitstatus']],
+  \   'right': [],
   \ },
   \ 'tab': {
   \   'active':   ['tabwinnum', 'filename'],
