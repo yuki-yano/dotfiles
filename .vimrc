@@ -1736,11 +1736,11 @@ let g:vimfiler_ignore_pattern       = '^\%(.git\|.DS_Store\)$'
 let g:vimfiler_trashbox_directory   = '~/.Trash'
 
 if dein#tap('lightline.vim')
-  nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple <Bar> call lightline#update()<CR>
-  nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple <Bar> call lightline#update()<CR>
+  nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -simple <Bar> call lightline#update()<CR>
+  nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -simple -find <Bar> call lightline#update()<CR>
 else
-  nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple<CR>
-  nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple<CR>
+  nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -simple<CR>
+  nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -simple -find<CR>
 endif
 
 function! s:vimfiler_settings()
@@ -2286,7 +2286,7 @@ if dein#tap('lightline.vim')
   \   'inactive': ['tabwinnum', 'filename'],
   \ },
   \ 'component': {
-  \   'paste':        "%{&paste ? 'PASTE' : ''}",
+  \   'paste': "%{&paste ? 'PASTE' : ''}",
   \  },
   \ 'component_function': {
   \   'mode':         'Lightline_mode',
