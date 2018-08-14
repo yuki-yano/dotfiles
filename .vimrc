@@ -926,12 +926,21 @@ AutoCmd CmdwinEnter * call <SID>init_cmdwin()
 
 function! s:init_cmdwin() abort
   set number | set norelativenumber
+  nnoremap <silent> <buffer> q :<C-u>quit<CR>
   inoremap <buffer> <C-c> <C-c>
   inoremap <buffer> <C-c> <Esc>l<C-c>
 
   " nnoremap <silent> <buffer> dd :<C-u>rviminfo<CR>:call histdel(getcmdwintype(), line('.') - line('$'))<CR>:wviminfo!<CR>dd
   startinsert!
 endfunction
+" }}}1
+
+" set quit {{{1
+AutoCmd FileType help    nnoremap <silent> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType man     nnoremap <silent> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType qf      nnoremap <silent> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType diff    nnoremap <silent> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType git     nnoremap <silent> <buffer> q :<C-u>quit<CR>
 " }}}1
 
 " Plugin Settings {{{1
@@ -1679,7 +1688,7 @@ if dein#tap('gina.vim')
     call gina#custom#command#option('status', '--short')
 
     call gina#custom#command#option('/\%(status\|commit\|branch\)', '--opener', 'split')
-    call gina#custom#command#option('/\%(diff\|log\)', '--opener', 'vsplit')
+    call gina#custom#command#option('/\%(diff\|log\)', '--opener',  'vsplit')
 
     call gina#custom#command#option('/\%(status\|changes\)', '--ignore-submodules')
     call gina#custom#command#option('status', '--branch')
@@ -1701,15 +1710,18 @@ if dein#tap('gina.vim')
     call gina#custom#mapping#nmap('branch', 'dd',    '<Plug>(gina-branch-delete)')
     call gina#custom#mapping#nmap('branch', 'DD',    '<Plug>(gina-branch-delete-force)')
 
-    call gina#custom#mapping#nmap('blame',  '<C-l>', '<C-w>l', {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('blame',  '<C-l>', '<C-w>l',                    {'noremap': 1, 'silent': 1})
     call gina#custom#mapping#nmap('blame',  '<C-r>', '<Plug>(gina-blame-redraw)', {'noremap': 1, 'silent': 1})
-    call gina#custom#mapping#nmap('blame',  'j', 'j<Plug>(gina-blame-echo)')
-    call gina#custom#mapping#nmap('blame',  'k', 'k<Plug>(gina-blame-echo)')
+    call gina#custom#mapping#nmap('blame',  'j',     'j<Plug>(gina-blame-echo)')
+    call gina#custom#mapping#nmap('blame',  'k',     'k<Plug>(gina-blame-echo)')
 
     call gina#custom#action#alias('/\%(blame\|log\|reflog\)', 'preview', 'topleft show:commit:preview')
-    call gina#custom#mapping#nmap('/\%(blame\|log\|reflog\)', 'p', ":<C-u>call gina#action#call('preview')<CR>", {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('/\%(blame\|log\|reflog\)', 'p',       ":<C-u>call gina#action#call('preview')<CR>", {'noremap': 1, 'silent': 1})
 
-    call gina#custom#execute('/\%(ls\|log\|reflog\|grep\)', 'setlocal noautoread')
+    call gina#custom#execute('/\%(ls\|log\|reflog\|grep\)',                 'setlocal noautoread')
+    call gina#custom#execute('/\%(status\|branch\|ls\|log\|reflog\|grep\)', 'setlocal cursorline')
+
+    call gina#custom#mapping#nmap('/\%(status\|commit\|branch\|ls\|log\|reflog\|grep\)', 'q', 'ZQ', {'nnoremap': 1, 'silent': 1})
   endfunction
 endif
 " }}}3
@@ -1745,6 +1757,7 @@ AutoCmd FileType vimfiler call s:vimfiler_settings()
 
 " vaffle {{{3
 AlterCommand! <cmdwin> va[fle] Vaffle
+AutoCmd FileType vaffle  nnoremap <silent> <buffer> q :<C-u>quit<CR>
 
 let g:loaded_netrw = 1
 let g:loaded_netrwPlugin = 1
@@ -2613,13 +2626,13 @@ let g:bakaup_backup_dir  = expand('~/.cache/vim/backup')
 " }}}3
 
 " automatic {{{
-function! s:automatic_win_init(config, context)
-  nnoremap <silent> <buffer> q :<C-u>q<CR>
-endfunction
-
-let g:automatic_default_set_config = {
-\ 'apply': function('<SID>automatic_win_init'),
-\ }
+" function! s:automatic_win_init(config, context)
+"   nnoremap <silent> <buffer> q :<C-u>q<CR>
+" endfunction
+"
+" let g:automatic_default_set_config = {
+" \ 'apply': function('<SID>automatic_win_init'),
+" \ }
 
 let g:automatic_config = [
 \ {
@@ -2657,9 +2670,6 @@ let g:automatic_config = [
 \   'match': { 'filetype': 'git' },
 \ },
 \ {
-\   'bufname': 'gina\://'
-\ },
-\ {
 \   'match': { 'filetype': 'gina-status' },
 \   'set': {
 \     'move': 'topleft',
@@ -2687,6 +2697,12 @@ let g:automatic_config = [
 \   'match': { 'filetype': 'gina-reflog' },
 \ },
 \ {
+\   'match': { 'filetype': 'gina-grep' },
+\   'set': {
+\     'move': 'right',
+\   },
+\ },
+\ {
 \   'match': {
 \     'filetype': 'scratch',
 \     'autocmds': ['FileType'],
@@ -2698,26 +2714,12 @@ let g:automatic_config = [
 \     'autocmds': ['FileType'],
 \   },
 \ },
-\ {
-\   'match': {
-\     'filetype': 'ref-webdict',
-\     'autocmds': ['FileType'],
-\   },
-\ },
-\ {
-\   'match' : {
-\     'autocmds': ['CmdwinEnter'],
-\   },
-\   'set' : {
-\     'is_close_focus_out' : 1,
-\     'unsettings' : ['move', 'resize'],
-\   },
-\ },
 \ ]
 " }}}
 
 " bufkill {{{3
-AutoCmd FileType *      nnoremap <silent> <buffer> <Leader>d :BD<CR>
+nnoremap <silent> <Leader>d :BD<CR>
+
 AutoCmd FileType help   nnoremap <silent> <buffer> <Leader>d :BW<CR>
 AutoCmd FileType diff   nnoremap <silent> <buffer> <Leader>d :BW<CR>
 AutoCmd FileType git    nnoremap <silent> <buffer> <Leader>d :BW<CR>
@@ -2726,6 +2728,7 @@ AutoCmd FileType vaffle nnoremap <silent> <buffer> <Leader>d :BW<CR>
 
 " capture {{{3
 AlterCommand! <cmdwin> cap[ture] Capture
+AutoCmd FileType capture nnoremap <silent> <buffer> q :<C-u>quit<CR>
 " }}}3
 
 " dispatch {{{3
@@ -2800,6 +2803,7 @@ AlterCommand! <cmdwin> sl SessionOpen
 
 " scratch {{{3
 AlterCommand! <cmdwin> sc[ratch] Scratch
+AutoCmd FileType scratch nnoremap <silent> <buffer> q :<C-u>quit<CR>
 
 let g:scratch_no_mappings = 1
 " }}}3
