@@ -1210,10 +1210,10 @@ if dein#tap('denite.nvim')
   " nnoremap <silent> <Leader>m :<C-u>Denite file_mru -direction=topleft -mode=insert<CR>
 
   "" grep
-  " nnoremap <silent> <Leader>/         :<C-u>Denite line<CR>
-  " nnoremap <silent> <Leader>*         :<C-u>DeniteCursorWord line<CR>
-  " nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep -post-action=open<CR>
-  " nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep -post-action=open<CR>
+  nnoremap <silent> <Leader>/         :<C-u>Denite line<CR>
+  nnoremap <silent> <Leader>*         :<C-u>DeniteCursorWord line<CR>
+  nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep -post-action=open<CR>
+  nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep -post-action=open<CR>
 
   "" outline
   " nnoremap <silent> <Leader>o :<C-u>Denite outline<CR>
@@ -1222,7 +1222,7 @@ if dein#tap('denite.nvim')
   nnoremap <silent> <Leader><C-o> :<C-u>Denite jump change -auto-preview<CR>
 
   "" ctags & gtags
-  " nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context<CR>
+  nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context<CR>
   " nnoremap <silent> <Leader><Leader><C-]> :<C-u>DeniteCursorWord gtags_grep<CR>
 
   "" yank
@@ -1259,7 +1259,7 @@ if dein#tap('unite.vim')
   AutoCmd FileType unite call <SID>unite_settings()
 
   " gtags
-  nnoremap <silent> <Leader><C-]> :<C-u>UniteWithCursorWord gtags/context -direction=botright -no-quit<CR>
+  " nnoremap <silent> <Leader><C-]> :<C-u>UniteWithCursorWord gtags/context -direction=botright -no-quit<CR>
 
   " grep
   let g:unite_source_grep_command = 'rg'
@@ -1268,10 +1268,10 @@ if dein#tap('unite.vim')
   "
   call unite#custom_source('line', 'sorters', 'sorter_reverse')
   call unite#custom_source('grep', 'sorters', 'sorter_reverse')
-  nnoremap <silent> <Leader>/          :<C-u>Unite line -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  nnoremap <silent> <Leader>*          :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  nnoremap <silent> <Leader><Leader>/  :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  nnoremap <silent> <Leader><Leader>*  :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  " nnoremap <silent> <Leader>/          :<C-u>Unite line -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  " nnoremap <silent> <Leader>*          :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  " nnoremap <silent> <Leader><Leader>/  :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
+  " nnoremap <silent> <Leader><Leader>*  :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
 
   " yank
   " nnoremap <silent> <Leader><Leader>p :<C-u>Unite yankround<CR>
@@ -2997,11 +2997,12 @@ if dein#tap('vim-keymaps')
   \   execute 'KeyMapSet Default' |
   \   execute 'KeyMapSet QuickFix' |
   \ endif
-  AutoCmd FileType denite |
-  \   highlight CursorColumn ctermfg=none ctermbg=236 |
-  \   highlight CursorLine   ctermfg=none ctermbg=236 |
-  \ execute 'KeyMapSet Default' |
-  \ execute 'KeyMapSet Denite'
+
+  " AutoCmd FileType denite |
+  " \   highlight CursorColumn ctermfg=none ctermbg=236 |
+  " \   highlight CursorLine   ctermfg=none ctermbg=236 |
+  " \   execute 'KeyMapSet Default' |
+  " \   execute 'KeyMapSet Denite'
 endif
 " }}}
 
