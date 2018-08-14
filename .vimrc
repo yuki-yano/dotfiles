@@ -885,23 +885,20 @@ AutoCmd FileType ruby,eruby setlocal dictionary=~/dotfiles/.vim/dict/ruby.dict
 " }}}2
 
 " HTML & eruby {{{2
-augroup HTML
-  autocmd!
-  autocmd FileType html,eruby call <SID>map_html_keys()
-  function! s:map_html_keys()
-    inoremap <silent> <buffer> \\ \
-    inoremap <silent> <buffer> \& &amp;
-    inoremap <silent> <buffer> \< &lt;
-    inoremap <silent> <buffer> \> &gt;
-    inoremap <silent> <buffer> \- &#8212;
-    inoremap <silent> <buffer> \<Space> &nbsp;
-    inoremap <silent> <buffer> \` &#8216;
-    inoremap <silent> <buffer> \' &#8217;
-    inoremap <silent> <buffer> \" &#8221;
+AutoCmd FileType html,eruby call <SID>map_html_keys()
+function! s:map_html_keys()
+  inoremap <silent> <buffer> \\ \
+  inoremap <silent> <buffer> \& &amp;
+  inoremap <silent> <buffer> \< &lt;
+  inoremap <silent> <buffer> \> &gt;
+  inoremap <silent> <buffer> \- &#8212;
+  inoremap <silent> <buffer> \<Space> &nbsp;
+  inoremap <silent> <buffer> \` &#8216;
+  inoremap <silent> <buffer> \' &#8217;
+  inoremap <silent> <buffer> \" &#8221;
 
-    let b:match_words .= ',{:},(:)'
-  endfunction
-augroup END
+  let b:match_words .= ',{:},(:)'
+endfunction
 " }}}2
 
 " vim {{{2
