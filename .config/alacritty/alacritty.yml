@@ -108,6 +108,7 @@ live_config_reload: true
 key_bindings:
   - { key: Q,        mods: Command,       action: Quit                        }
   - { key: Q,        mods: Control,       chars: "\x11"                       }
+  - { key: Key6,     mods: Control,       chars: "\x1e"                       }
   - { key: Escape,                        chars: "\x1b"                       }
   - { key: Space,    mods: Control,       chars: "\x00"                       }
   - { key: A,        mods: Command,       chars: "\x1ba"                      }
