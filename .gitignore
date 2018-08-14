@@ -66,6 +66,8 @@
 
 # Ruby
 /Gemfile.lock
+/vendor/bin
+/vendor/bundle
 
 # Node
 /node_modules
