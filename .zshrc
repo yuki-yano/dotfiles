@@ -1,15 +1,14 @@
 # zgen {{{
 
-source ~/dotfiles/.zsh/zgen/zgen.zsh
+source ~/.zsh/zgen/zgen.zsh
 
 if ! zgen saved; then
+  # zgen load RobSis/zsh-completion-generator
   # zgen load sindresorhus/pure
   zgen load 39e/zsh-completions-anyenv
-  zgen load RobSis/zsh-completion-generator
   zgen load yuki-ycino/tmuximum
   zgen load b4b4r07/zsh-vimode-visual
   zgen load knu/zsh-git-escape-magic
-  zgen load kutsan/zsh-system-clipboard
   zgen load mafredri/zsh-async
   zgen load mollifier/anyframe
   zgen load xav-b/zsh-extend-history
