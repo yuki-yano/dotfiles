@@ -17,11 +17,11 @@ draw_bold_text_with_bright_colors: true
 
 font:
   normal:
-    family: Ricty
+    family: Cica
   bold:
-    family: Ricty
+    family: Cica
   italic:
-    family: Ricty
+    family: Cica
 
   size: 16.0
 
