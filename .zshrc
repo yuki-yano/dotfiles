@@ -389,7 +389,7 @@ function render_git_prompt() {
     GIT_STATUS="$GIT_STATUS $GIT_UNTRACKED$git_untracked%{${reset_color}%}"
   fi
   if [[ "$git_changed" -eq "0" ]] && [[ "$git_conflicts" -eq "0" ]] && [[ "$git_staged" -eq "0" ]] && [[ "$git_untracked" -eq "0" ]]; then
-    GIT_STATUS="$GIT_STATUS $GIT_CLEAN"
+    GIT_STATUS="$GIT_STATUS $GIT_CLEAN "
   fi
   GIT_STATUS="$GIT_STATUS%{${reset_color}%} $GIT_SUFFIX"
   # LAST_GIT_STATUS=$(date +%s)
