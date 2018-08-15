@@ -350,6 +350,18 @@ function peco-history-selection() {
 }
 zle -N peco-history-selection
 
+function peco-process-selection() {
+  local pids
+  pids=$(\ps -u $USER -o 'pid,stat,%cpu,%mem,cputime,command' | peco | awk '{ print $1 }' | tr '\n' ' ' )
+
+  if [[ $pids != "" ]]; then
+    BUFFER="kill $pids"
+    CURSOR=$#BUFFER
+  fi
+  zle reset-prompt
+}
+zle -N peco-process-selection
+
 # nicovideo
 function peco-nico-ranking() {
   ruby -r rss -e 'RSS::Parser.parse("http://www.nicovideo.jp/ranking/fav/daily/all?rss=2.0").channel.items.each {|item| puts item.link + "\t" + item.title}' | peco | while read -r line; do
@@ -645,12 +657,12 @@ bindkey -M menuselect '^h' undo
 bindkey -M viins '^r'   peco-history-selection
 bindkey -M vicmd '^r'   peco-history-selection
 bindkey -M vivis '^r'   peco-history-selection
-bindkey -M viins '^xk'  anyframe-widget-kill
-bindkey -M vicmd '^xk'  anyframe-widget-kill
-bindkey -M vivis '^xk'  anyframe-widget-kill
-bindkey -M viins '^x^k' anyframe-widget-kill
-bindkey -M vicmd '^x^k' anyframe-widget-kill
-bindkey -M vivis '^x^k' anyframe-widget-kill
+bindkey -M viins '^xk'  peco-process-selection
+bindkey -M vicmd '^xk'  peco-process-selection
+bindkey -M vivis '^xk'  peco-process-selection
+bindkey -M viins '^x^k' peco-process-selection
+bindkey -M vicmd '^x^k' peco-process-selection
+bindkey -M vivis '^x^k' peco-process-selection
 
 # Command Line Edit
 zle -N edit-command-line
