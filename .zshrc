@@ -144,8 +144,8 @@ add-zsh-hook precmd check-buffer-stack
 
 # autosuggestions
 function set_autosuggest() {
-  _zsh_autosuggest_start
   ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(magic-abbrev-expand-and-accept-line $ZSH_AUTOSUGGEST_CLEAR_WIDGETS)
+  _zsh_autosuggest_start
 }
 
 # cdd
