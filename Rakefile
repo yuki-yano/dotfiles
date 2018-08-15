@@ -1,5 +1,7 @@
-SRC_DIR = File.dirname(File.expand_path(__FILE__))
+SRC_DIR        = File.dirname(File.expand_path(__FILE__))
 VIMPERATOR_DIR = File.join(SRC_DIR, '.vimperator')
+ZPLUGIN_DIR    = File.join(ENV['HOME'], '.zplugin')
+ZGEN_DIR       = File.join(ENV['HOME'], '.zsh/zgen')
 DOTFILES_SRCS = %w[
   .Xdefaults
   .agignore
@@ -47,11 +49,40 @@ namespace :dotfiles do
   end
 end
 
-namespace :zgen do
-  desc 'Update zgen'
-  task :update do
-    sh 'curl -fLo ~/.zsh/zgen/zgen.zsh --create-dirs https://raw.githubusercontent.com/tarjoilija/zgen/master/zgen.zsh'
-    sh 'curl -fLo ~/.zsh/zgen/_zgen --create-dirs https://raw.githubusercontent.com/tarjoilija/zgen/master/_zgen'
+namespace :zsh do
+  namespace :zplugin do
+    # @see https://github.com/zdharma/zplugin/blob/master/doc/install.sh
+    desc 'Install zplugin'
+    task :install do
+      begin
+        FileUtils.mkdir(ZPLUGIN_DIR)
+        puts ">>> Downloading zplugin to #{ZPLUGIN_DIR}/bin"
+        sh "cd #{ZPLUGIN_DIR}; git clone --depth 10 https://github.com/zdharma/zplugin.git bin"
+        puts '>>> Done'
+      rescue Errno::EEXIST => _
+        puts 'Zplugin directory already exists'
+        exit 1
+      end
+    end
+
+    desc 'Uninstall zplugin'
+    task :uninstall do
+      begin
+        FileUtils.rm_r(ZPLUGIN_DIR)
+        puts "Remove directory #{ZPLUGIN_DIR}"
+      rescue Errno::ENOENT => _
+        puts "#{ZPLUGIN_DIR} does not exist"
+        exit 1
+      end
+    end
+  end
+
+  namespace :zgen do
+    desc 'Update zgen'
+    task :update do
+      sh "curl -fLo #{ZGEN_DIR}/zgen.zsh --create-dirs https://raw.githubusercontent.com/tarjoilija/zgen/master/zgen.zsh"
+      sh "curl -fLo #{ZGEN_DIR}/_zgen --create-dirs https://raw.githubusercontent.com/tarjoilija/zgen/master/_zgen"
+    end
   end
 end
 
