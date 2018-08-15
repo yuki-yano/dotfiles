@@ -1,49 +1,98 @@
-# zgen {{{
+# zplugin {{{
 
-source ~/.zsh/zgen/zgen.zsh
+source $HOME/.zplugin/bin/zplugin.zsh
 
-if ! zgen saved; then
-  # zgen load RobSis/zsh-completion-generator
-  # zgen load sindresorhus/pure
-  zgen load 39e/zsh-completions-anyenv
-  zgen load yuki-ycino/tmuximum
-  zgen load b4b4r07/zsh-vimode-visual
-  zgen load knu/zsh-git-escape-magic
-  zgen load mafredri/zsh-async
-  zgen load mollifier/anyframe
-  zgen load xav-b/zsh-extend-history
-  zgen load yukiycino-dotfiles/cdd
-  zgen load yukiycino-dotfiles/fancy-ctrl-z
-  zgen load yukiycino-dotfiles/zsh-abbreviations
-  zgen load yukiycino-dotfiles/zsh-extra-abbrev
-  zgen load yukiycino-dotfiles/zsh-show-buffer-stack
-  zgen load zdharma/fast-syntax-highlighting
-  zgen load zsh-users/zsh-autosuggestions
-  zgen load zsh-users/zsh-completions src
+# sync loading {{{
+zplugin light b4b4r07/zsh-vimode-visual
+zplugin light yukiycino-dotfiles/zsh-abbreviations
+zplugin light yukiycino-dotfiles/zsh-extra-abbrev
+zplugin light yukiycino-dotfiles/zsh-show-buffer-stack
+# }}}
 
-  zgen save
+# async loading {{{
 
-  # compile
-  for f in $(find ~/.zgen/ -name "*.zsh"); do zcompile "$f"; done
-fi
+# PROMPT
+zplugin ice lucid wait"!0" atinit"zpcompinit; zpcdreplay" atload"set_fast_theme"
+zplugin light zdharma/fast-syntax-highlighting
+
+zplugin ice lucid wait'!0' atload'set_autosuggest'
+zplugin light zsh-users/zsh-autosuggestions
+
+zplugin ice lucid wait"0" atload"set_async"
+zplugin light mafredri/zsh-async
+
+# completion
+zplugin ice lucid wait"0" blockf
+zplugin light zsh-users/zsh-completions
+
+zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)rbe*]} ]] || [[ -n ${ZLAST_COMMANDS[(r)pye*]} ]] || [[ -n ${ZLAST_COMMANDS[(r)node*]} ]]'
+zplugin light 39e/zsh-completions-anyenv
+
+# util
+zplugin ice lucid wait"2"
+zplugin light yukiycino-dotfiles/fancy-ctrl-z
+
+zplugin ice lucid wait"2"
+zplugin snippet 'https://github.com/knu/zsh-git-escape-magic/blob/master/git-escape-magic'
+
+# command
+zplugin ice lucid wait"0" as"program" pick"tmuximum" src"tmuximum.plugin.zsh"
+zplugin light yuki-ycino/tmuximum
+
+zplugin ice lucid wait"2" as"program" pick"bin/git-dsf"
+zplugin light zdharma/zsh-diff-so-fancy
+
+zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)genc*]} ]]'
+zplugin light RobSis/zsh-completion-generator
+
+# zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cdd*]} ]]'
+# zplugin light yukiycino-dotfiles/cdd
+# }}}
 
 # async
-async_init
+function set_async() {
+  async_init
 
-# zsh system clipboard
-ZSH_SYSTEM_CLIPBOARD_TMUX_SUPPORT=true
-ZSH_COMPLETION_GENERATOR_DIR=$HOME/.zsh/completions
+  async_start_worker git_prompt_worker -n
+  function git_prompt_callback() {
+    render_git_prompt $(gitstatus $(pwd))
+  }
+  function update_git_status() {
+    if git rev-parse 2> /dev/null; then
+      async_job git_prompt_worker true
+    else
+      GIT_STATUS=''
+    fi
+  }
+  async_register_callback git_prompt_worker git_prompt_callback
+  add-zsh-hook precmd update_git_status
+  update_git_status
 
-FAST_HIGHLIGHT_STYLES[alias]=fg=blue
-FAST_HIGHLIGHT_STYLES[suffix-alias]=fg=blue
-FAST_HIGHLIGHT_STYLES[builtin]=fg=blue
-FAST_HIGHLIGHT_STYLES[function]=fg=blue
-FAST_HIGHLIGHT_STYLES[command]=fg=blue
-FAST_HIGHLIGHT_STYLES[precommand]=fg=blue,underline
-FAST_HIGHLIGHT_STYLES[hashed-command]=fg=blue
-FAST_HIGHLIGHT_STYLES[path]=fg=green
-FAST_HIGHLIGHT_STYLES[globbing]=fg=green,bold
-FAST_HIGHLIGHT_STYLES[history-expansion]=fg=green,bold
+  async_start_worker tmux_dir_worker -n
+  function set_current_dir_to_tmux() {
+    tmux rename-window "${PWD:t} " > /dev/null
+  }
+  function kick_tmux_dir_worker() {
+    async_job tmux_dir_worker true
+  }
+  async_register_callback tmux_dir_worker set_current_dir_to_tmux
+  add-zsh-hook chpwd kick_tmux_dir_worker
+  kick_tmux_dir_worker
+}
+
+# fast-syntax-highlighting
+function set_fast_theme() {
+  FAST_HIGHLIGHT_STYLES[alias]='fg=blue'
+  FAST_HIGHLIGHT_STYLES[suffix-alias]='fg=blue'
+  FAST_HIGHLIGHT_STYLES[builtin]='fg=blue'
+  FAST_HIGHLIGHT_STYLES[function]='fg=blue'
+  FAST_HIGHLIGHT_STYLES[command]='fg=blue'
+  FAST_HIGHLIGHT_STYLES[precommand]='fg=blue,underline'
+  FAST_HIGHLIGHT_STYLES[hashed-command]='fg=blue'
+  FAST_HIGHLIGHT_STYLES[path]='fg=green'
+  FAST_HIGHLIGHT_STYLES[globbing]='fg=green,bold'
+  FAST_HIGHLIGHT_STYLES[history-expansion]='fg=green,bold'
+}
 
 # abbreviations
 typeset -A abbreviations
@@ -90,14 +139,17 @@ EXTRA_ABBREV=(
   "gci" "git commit -m '_|_'"
 )
 
-# cdd
-chpwd_functions+=_cdd_chpwd
-
 # show-buffer-stack
 add-zsh-hook precmd check-buffer-stack
 
 # autosuggestions
-ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(magic-abbrev-expand-and-accept-line $ZSH_AUTOSUGGEST_CLEAR_WIDGETS)
+function set_autosuggest() {
+  _zsh_autosuggest_start
+  ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(magic-abbrev-expand-and-accept-line $ZSH_AUTOSUGGEST_CLEAR_WIDGETS)
+}
+
+# cdd
+# chpwd_functions+=_cdd_chpwd
 
 # }}}
 
@@ -395,28 +447,6 @@ function render_git_prompt() {
   # LAST_GIT_STATUS=$(date +%s)
 }
 
-# worker
-async_start_worker git_prompt_worker -n
-
-function git_prompt_callback() {
-  # if [[ $(($(date +%s) - $LAST_GIT_STATUS_TIME)) -gt 300 ]]; then
-  #   git fetch > /dev/null
-  # fi
-  render_git_prompt $(gitstatus $(pwd))
-}
-
-function update_git_status() {
-  if git rev-parse 2> /dev/null; then
-    async_job git_prompt_worker true
-  else
-    GIT_STATUS=''
-  fi
-}
-
-async_register_callback git_prompt_worker git_prompt_callback
-add-zsh-hook precmd update_git_status
-# LAST_GIT_STATUS_TIME=$(date +%s)
-
 TMOUT=1
 TRAPALRM() {
   if [[ "$WIDGET" != "fzf-completion" ]]; then
@@ -455,12 +485,6 @@ add-zsh-hook precmd venv_name
 # }}}
 
 # tmux {{{
-
-function set-current-dir-to-tmux() {
-  tmux rename-window "${PWD:t} " > /dev/null
-}
-set-current-dir-to-tmux
-add-zsh-hook chpwd set-current-dir-to-tmux
 
 function _left-pane() {
   tmux select-pane -L
@@ -627,12 +651,6 @@ bindkey -M vivis '^xk'  anyframe-widget-kill
 bindkey -M viins '^x^k' anyframe-widget-kill
 bindkey -M vicmd '^x^k' anyframe-widget-kill
 bindkey -M vivis '^x^k' anyframe-widget-kill
-bindkey -M viins '^z'   fancy-ctrl-z
-bindkey -M vicmd '^z'   fancy-ctrl-z
-bindkey -M vivis '^z'   fancy-ctrl-z
-bindkey -M viins '^[t'  tmuximum
-bindkey -M vicmd '^[t'  tmuximum
-bindkey -M vivis '^[t'  tmuximum
 
 # Command Line Edit
 zle -N edit-command-line
@@ -665,26 +683,26 @@ for m in visual vivis viopp; do
 done
 
 # zed
-zed -b
-bindkey -N zed viins
-
-bindkey -M zed       '^n' down-line-or-search
-bindkey -M zed       '^p' up-line-or-search
-bindkey -M zed       '^m' self-insert-unmeta
-bindkey -M zed       '^s' history-incremental-search-forward
-bindkey -M zed       '^r' history-incremental-search-backward
-bindkey -M zed-vicmd 'j'  down-line-or-search
-bindkey -M zed-vicmd 'k'  up-line-or-search
-bindkey -M zed-vicmd 'gg' vi-goto-first-line
-bindkey -M zed-vicmd 'G'  end-of-buffer
-bindkey -M zed-vicmd '^r' redo
-bindkey -M zed-vicmd '/'  history-incremental-search-forward
-bindkey -M zed-vicmd '?'  history-incremental-search-backward
-bindkey -M zed-vicmd 'n'  vi-repeat-search
-bindkey -M zed-vicmd 'N'  vi-rev-repeat-search
-bindkey -M zed-vicmd 'ZZ' accept-line
-bindkey -M zed-vicmd '^u' zed-page-up
-bindkey -M zed-vicmd '^d' zed-page-down
+# zed -b
+# bindkey -N zed viins
+#
+# bindkey -M zed       '^n' down-line-or-search
+# bindkey -M zed       '^p' up-line-or-search
+# bindkey -M zed       '^m' self-insert-unmeta
+# bindkey -M zed       '^s' history-incremental-search-forward
+# bindkey -M zed       '^r' history-incremental-search-backward
+# bindkey -M zed-vicmd 'j'  down-line-or-search
+# bindkey -M zed-vicmd 'k'  up-line-or-search
+# bindkey -M zed-vicmd 'gg' vi-goto-first-line
+# bindkey -M zed-vicmd 'G'  end-of-buffer
+# bindkey -M zed-vicmd '^r' redo
+# bindkey -M zed-vicmd '/'  history-incremental-search-forward
+# bindkey -M zed-vicmd '?'  history-incremental-search-backward
+# bindkey -M zed-vicmd 'n'  vi-repeat-search
+# bindkey -M zed-vicmd 'N'  vi-rev-repeat-search
+# bindkey -M zed-vicmd 'ZZ' accept-line
+# bindkey -M zed-vicmd '^u' zed-page-up
+# bindkey -M zed-vicmd '^d' zed-page-down
 
 # }}}
 
