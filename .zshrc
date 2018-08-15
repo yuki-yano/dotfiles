@@ -400,19 +400,6 @@ PROMPT='
 %F{blue}%~%f $GIT_STATUS
 ${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
 
-GIT_PREFIX="%F{247}("
-GIT_SUFFIX="%F{247})"
-GIT_SEPARATOR="%F{247}|"
-GIT_BRANCH="%F{242}"
-GIT_DIRTY="%F{242}*"
-GIT_STAGED="%{$fg[green]%}%{S:%G%}"
-GIT_CONFLICTS="%{$fg[red]%}%{UU:%G%}"
-GIT_CHANGED="%{$fg[red]%}%{M:%G%}"
-GIT_BEHIND="%{$fg[cyan]%}%{↓ %G%}"
-GIT_AHEAD="%{$fg[cyan]%}%{↑ %G%}"
-GIT_UNTRACKED="%{$fg[red]%}%{?:%G%}"
-GIT_CLEAN="%{$fg_bold[green]%}%{✔%G%}"
-
 function render_git_prompt() {
   setopt localoptions noshwordsplit
   local output="$@"
@@ -426,36 +413,36 @@ function render_git_prompt() {
   local git_changed=${current_git_status[6]}
   local git_untracked=${current_git_status[7]}
 
-  GIT_STATUS="$GIT_BRANCH$git_branch%{${reset_color}%}"
-  if [[ "$git_changed" -ne "0" ]] || [[ "$git_conflicts" -ne "0" ]] || [[ "$git_staged" -ne "0" ]] || [[ "$git_untracked" -ne "0" ]]; then
-    GIT_STATUS="$GIT_STATUS$GIT_DIRTY%{${reset_color}%}"
+  GIT_STATUS="%F{242}${git_branch}%{$DEFAULT%}"
+  if [[ "${git_changed}" -ne "0" ]] || [[ "${git_conflicts}" -ne "0" ]] || [[ "${git_staged}" -ne "0" ]] || [[ "${git_untracked}" -ne "0" ]]; then
+    GIT_STATUS="${GIT_STATUS}%F{242}*%{$DEFAULT%}"
   fi
-  GIT_STATUS="$GIT_STATUS $GIT_PREFIX%{${reset_color}%}"
-  if [[ "$git_behind" -ne "0" ]]; then
-    GIT_STATUS="$GIT_STATUS$GIT_BEHIND$git_behind%{${reset_color}%}"
+  GIT_STATUS="${GIT_STATUS} %F{247}(%{$DEFAULT%}"
+  if [[ "${git_behind}" -ne "0" ]]; then
+    GIT_STATUS="${GIT_STATUS}%{$CYAN%}%{↓ %G%}${git_behind}%{$DEFAULT%}"
   fi
-  if [[ "$git_ahead" -ne "0" ]]; then
-    GIT_STATUS="$GIT_STATUS$GIT_AHEAD$git_ahead%{${reset_color}%}"
+  if [[ "${git_ahead}" -ne "0" ]]; then
+    GIT_STATUS="${GIT_STATUS}%{$CYAN%}%{↑ %G%}${git_ahead}%{$DEFAULT%}"
   fi
-  if [[ "$git_behind" -ne "0" ]] || [ "$git_ahead" -ne "0" ]; then
-    GIT_STATUS="$GIT_STATUS$GIT_SEPARATOR"
+  if [[ "${git_behind}" -ne "0" ]] || [ "${git_ahead}" -ne "0" ]; then
+    GIT_STATUS="${GIT_STATUS}%F{247}|"
   fi
-  if [[ "$git_staged" -ne "0" ]]; then
-    GIT_STATUS="$GIT_STATUS $GIT_STAGED$git_staged%{${reset_color}%}"
+  if [[ "${git_staged}" -ne "0" ]]; then
+    GIT_STATUS="${GIT_STATUS} %{$GREEN%}%{S:%G%}${git_staged}%{$DEFAULT%}"
   fi
-  if [[ "$git_conflicts" -ne "0" ]]; then
-    GIT_STATUS="$GIT_STATUS $GIT_CONFLICTS$git_conflicts%{${reset_color}%}"
+  if [[ "${git_conflicts}" -ne "0" ]]; then
+    GIT_STATUS="${GIT_STATUS} %{$RED%}%{UU:%G%}${git_conflicts}%{$DEFAULT%}"
   fi
-  if [[ "$git_changed" -ne "0" ]]; then
-    GIT_STATUS="$GIT_STATUS $GIT_CHANGED$git_changed%{${reset_color}%}"
+  if [[ "${git_changed}" -ne "0" ]]; then
+    GIT_STATUS="${GIT_STATUS} %{$RED%}%{M:%G%}${git_changed}%{$DEFAULT%}"
   fi
-  if [[ "$git_untracked" -ne "0" ]]; then
-    GIT_STATUS="$GIT_STATUS $GIT_UNTRACKED$git_untracked%{${reset_color}%}"
+  if [[ "${git_untracked}" -ne "0" ]]; then
+    GIT_STATUS="${GIT_STATUS} %{$RED%}%{?:%G%}${git_untracked}%{$DEFAULT%}"
   fi
-  if [[ "$git_changed" -eq "0" ]] && [[ "$git_conflicts" -eq "0" ]] && [[ "$git_staged" -eq "0" ]] && [[ "$git_untracked" -eq "0" ]]; then
-    GIT_STATUS="$GIT_STATUS $GIT_CLEAN "
+  if [[ "${git_changed}" -eq "0" ]] && [[ "${git_conflicts}" -eq "0" ]] && [[ "${git_staged}" -eq "0" ]] && [[ "${git_untracked}" -eq "0" ]]; then
+    GIT_STATUS="${GIT_STATUS} %{${fg_bold[green]}%}%{✔%G%} "
   fi
-  GIT_STATUS="$GIT_STATUS%{${reset_color}%} $GIT_SUFFIX"
+  GIT_STATUS="${GIT_STATUS}%{${DEFAULT}%} %F{247})"
   # LAST_GIT_STATUS=$(date +%s)
 }
 
