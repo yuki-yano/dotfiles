@@ -1,6 +1,14 @@
 # zplugin {{{
 
-source $HOME/.zplugin/bin/zplugin.zsh
+ZPLG_HOME=$HOME/.zplugin
+
+if [[ ! -d $ZPLG_HOME ]]; then
+  if whence git > /dev/null; then
+    git clone --depth 10 https://github.com/zdharma/zplugin.git $ZPLG_HOME/bin
+  fi
+fi
+
+source $ZPLG_HOME/bin/zplugin.zsh
 
 # sync loading {{{
 zplugin light b4b4r07/zsh-vimode-visual
