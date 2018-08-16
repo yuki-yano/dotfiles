@@ -36,7 +36,7 @@ zplugin ice lucid wait"2"
 zplugin snippet 'https://github.com/knu/zsh-git-escape-magic/blob/master/git-escape-magic'
 
 # command
-zplugin ice lucid wait"0" as"program" pick"tmuximum" src"tmuximum.plugin.zsh"
+zplugin ice lucid wait"0" as"program" pick"tmuximum" src"tmuximum.plugin.zsh" atload"set_tmuximum"
 zplugin light yuki-ycino/tmuximum
 
 zplugin ice lucid wait"2" as"program" pick"bin/git-dsf"
@@ -151,6 +151,12 @@ add-zsh-hook precmd check-buffer-stack
 function set_autosuggest() {
   ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(magic-abbrev-expand-and-accept-line $ZSH_AUTOSUGGEST_CLEAR_WIDGETS)
   _zsh_autosuggest_start
+}
+
+function set_tmuximum() {
+  bindkey -M viins '^[t' tmuximum
+  bindkey -M vicmd '^[t' tmuximum
+  bindkey -M vivis '^[t' tmuximum
 }
 
 # cdd
