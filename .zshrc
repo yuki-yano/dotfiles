@@ -50,6 +50,9 @@ zplugin light yuki-ycino/tmuximum
 zplugin ice lucid wait"2" as"program" pick"bin/git-dsf"
 zplugin light zdharma/zsh-diff-so-fancy
 
+zplugin ice lucid wait"2" as"program" pick"git-sync" src"git-sync.sh"
+zplugin light caarlos0/zsh-git-sync
+
 zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)genc*]} ]]'
 zplugin light RobSis/zsh-completion-generator
 
