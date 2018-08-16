@@ -45,6 +45,9 @@ zplugin light zdharma/zsh-diff-so-fancy
 zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)genc*]} ]]'
 zplugin light RobSis/zsh-completion-generator
 
+zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)extr*]} ]]' depth"1"
+zplugin snippet OMZ::plugins/extract/extract.plugin.zsh
+
 # zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cdd*]} ]]'
 # zplugin light yukiycino-dotfiles/cdd
 # }}}
