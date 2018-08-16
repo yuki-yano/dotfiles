@@ -53,6 +53,7 @@ zplugin snippet OMZ::plugins/extract/extract.plugin.zsh
 # }}}
 
 # async
+current_dir=$(pwd)
 function set_async() {
   async_init
 
@@ -60,23 +61,27 @@ function set_async() {
   function git_prompt_callback() {
     render_git_prompt $(gitstatus $(pwd))
   }
-  function update_git_status() {
+  function kick_git_prompt_worker() {
     if git rev-parse 2> /dev/null; then
+      async_flush_jobs git_prompt_worker
       async_job git_prompt_worker true
     else
       GIT_STATUS=''
     fi
   }
   async_register_callback git_prompt_worker git_prompt_callback
-  add-zsh-hook precmd update_git_status
-  update_git_status
+  add-zsh-hook precmd kick_git_prompt_worker
+  cd $current_dir; kick_git_prompt_worker
 
   async_start_worker tmux_dir_worker -n
   function set_current_dir_to_tmux() {
     tmux rename-window "${PWD:t} " > /dev/null
   }
   function kick_tmux_dir_worker() {
-    async_job tmux_dir_worker true
+    if [[ ! -z ${TMUX} ]]; then
+      async_flush_jobs tmux_dir_worker
+      async_job tmux_dir_worker true
+    fi
   }
   async_register_callback tmux_dir_worker set_current_dir_to_tmux
   add-zsh-hook chpwd kick_tmux_dir_worker
