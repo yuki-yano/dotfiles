@@ -92,6 +92,11 @@ function set_fast_theme() {
   FAST_HIGHLIGHT_STYLES[path]='fg=green'
   FAST_HIGHLIGHT_STYLES[globbing]='fg=green,bold'
   FAST_HIGHLIGHT_STYLES[history-expansion]='fg=green,bold'
+
+  bindkey -M viins '^p' history-search-backward
+  bindkey -M viins '^n' history-search-forward
+  bindkey -M vicmd 'k'  history-search-forward
+  bindkey -M vicmd 'j'  history-search-backword
 }
 
 # abbreviations
@@ -603,10 +608,6 @@ bindkey -M viins "^[u" redo
 bindkey -M viins '^[f' vi-forward-blank-word
 bindkey -M viins "^[b" vi-backward-blank-word
 
-# Add emacs bind
-zle -N history-beginning-search-backward-end history-search-end
-zle -N history-beginning-search-forward-end history-search-end
-
 bindkey -M viins '^a' beginning-of-line
 bindkey -M viins '^b' backward-char
 bindkey -M viins '^d' delete-char-or-list
@@ -614,9 +615,9 @@ bindkey -M viins '^e' end-of-line
 bindkey -M viins '^f' forward-char
 bindkey -M viins '^g' send-break
 bindkey -M viins '^k' kill-line-or-up-pane
-bindkey -M viins '^n' history-beginning-search-forward
-bindkey -M viins '^p' history-beginning-search-backward
 bindkey -M viins '^w' backward-kill-word
+bindkey -M viins '^p' up-line-or-history
+bindkey -M viins '^n' down-line-or-history
 bindkey -M viins '^y' yank
 bindkey -M viins '^q' show-buffer-stack
 
@@ -626,8 +627,8 @@ bindkey -M viins '^q' show-buffer-stack
 bindkey -M viins "$terminfo[kcbt]" reverse-menu-complete
 
 # Add vim bind
-bindkey -M vicmd 'j'  history-beginning-search-forward-end
-bindkey -M vicmd 'k'  history-beginning-search-backward-end
+bindkey -M vicmd 'k'  up-line-or-history
+bindkey -M vicmd 'j'  down-line-or-history
 bindkey -M vicmd '/'  vi-history-search-forward
 bindkey -M vicmd '?'  vi-history-search-backward
 bindkey -M vicmd 'gg' beginning-of-line
