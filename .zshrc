@@ -65,6 +65,7 @@ current_dir=$(pwd)
 function set_async() {
   async_init
 
+  # Async update git prompt
   async_start_worker git_prompt_worker -n
   function git_prompt_callback() {
     render_git_prompt $(gitstatus $(pwd))
@@ -81,6 +82,7 @@ function set_async() {
   add-zsh-hook precmd kick_git_prompt_worker
   cd $current_dir; kick_git_prompt_worker
 
+  # Update tmux window title to directory name
   async_start_worker tmux_dir_worker -n
   function set_current_dir_to_tmux() {
     tmux rename-window "${PWD:t} " > /dev/null
