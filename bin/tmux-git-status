@@ -21,30 +21,30 @@ GIT_STATUS="#[fg=colour254,bg=colour236] Git: #[fg=colour250,bg=colour236]$git_b
 # if [[ "$git_changed" -ne "0" ]] || [[ "$git_conflicts" -ne "0" ]] || [[ "$git_staged" -ne "0" ]] || [[ "$git_untracked" -ne "0" ]]; then
 #   GIT_STATUS="$GIT_STATUS*"
 # fi
-GIT_STATUS=$GIT_STATUS" #[fg=colour246,bg=colour236]("
-if [[ "$git_behind" -ne "0" ]]; then
-  GIT_STATUS="$GIT_STATUS#[fg=cyan,bg=colour236]↓ $git_behind"
+GIT_STATUS=${GIT_STATUS}" #[fg=colour246,bg=colour236]("
+if [[ "${git_behind}" -ne "0" ]]; then
+  GIT_STATUS="${GIT_STATUS}#[fg=cyan,bg=colour236]↓ ${git_behind}"
 fi
-if [[ "$git_ahead" -ne "0" ]]; then
-  GIT_STATUS="$GIT_STATUS#[fg=cyan,bg=colour236]↑ $git_ahead"
+if [[ "${git_ahead}" -ne "0" ]]; then
+  GIT_STATUS="${GIT_STATUS}#[fg=cyan,bg=colour236]↑ ${git_ahead}"
 fi
-if [[ "$git_behind" -ne "0" ]] || [ "$git_ahead" -ne "0" ]; then
-  GIT_STATUS="$GIT_STATUS|"
+if [[ "${git_behind}" -ne "0" ]] || [ "${git_ahead}" -ne "0" ]; then
+  GIT_STATUS="${GIT_STATUS}|"
 fi
-if [[ "$git_staged" -ne "0" ]]; then
-  GIT_STATUS="$GIT_STATUS #[fg=green,bg=colour236]S:$git_staged"
+if [[ "${git_staged}" -ne "0" ]]; then
+  GIT_STATUS="${GIT_STATUS} #[fg=green,bg=colour236]S:${git_staged}"
 fi
-if [[ "$git_conflicts" -ne "0" ]]; then
-  GIT_STATUS="$GIT_STATUS #[fg=red,bg=colour236]UU:$git_conflicts"
+if [[ "${git_conflicts}" -ne "0" ]]; then
+  GIT_STATUS="${GIT_STATUS} #[fg=red,bg=colour236]UU:${git_conflicts}"
 fi
-if [[ "$git_changed" -ne "0" ]]; then
-  GIT_STATUS="$GIT_STATUS #[fg=red,bg=colour236]M:$git_changed"
+if [[ "${git_changed}" -ne "0" ]]; then
+  GIT_STATUS="${GIT_STATUS} #[fg=red,bg=colour236]M:${git_changed}"
 fi
-if [[ "$git_untracked" -ne "0" ]]; then
-  GIT_STATUS="$GIT_STATUS #[fg=red,bg=colour236]?:$git_untracked"
+if [[ "${git_untracked}" -ne "0" ]]; then
+  GIT_STATUS="${GIT_STATUS} #[fg=red,bg=colour236]?:${git_untracked}"
 fi
-if [[ "$git_changed" -eq "0" ]] && [[ "$git_conflicts" -eq "0" ]] && [[ "$git_staged" -eq "0" ]] && [[ "$git_untracked" -eq "0" ]]; then
-  GIT_STATUS="$GIT_STATUS#[fg=green,bg=colour236]✔"
+if [[ "${git_changed}" -eq "0" ]] && [[ "${git_conflicts}" -eq "0" ]] && [[ "${git_staged}" -eq "0" ]] && [[ "${git_untracked}" -eq "0" ]]; then
+  GIT_STATUS="${GIT_STATUS}#[fg=green,bg=colour236]✔"
 fi
-GIT_STATUS="$GIT_STATUS #[fg=colour246,bg=colour236])"
-echo $GIT_STATUS
+GIT_STATUS="${GIT_STATUS} #[fg=colour246,bg=colour236])"
+echo "${GIT_STATUS} "
