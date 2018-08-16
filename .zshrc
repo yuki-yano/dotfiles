@@ -134,6 +134,7 @@ abbreviations=(
 "gstp"   "git stash pop"
 "gq"     "git qsave"
 "g"      "rg"
+"dco"    "docker-compose"
 "t"      "tmuximum"
 "tl"     "tmux list-sessions"
 "ta"     "tmux attach-session"
