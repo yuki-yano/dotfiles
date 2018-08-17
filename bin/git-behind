@@ -1,8 +1,0 @@
-#!/bin/bash
-
-while read local remote
-do
-    [ -z "$remote" ] && continue
-    echo $(git rev-list --left-right ${local}...${remote} -- | grep -c '^>' /tmp/git_upstream_status_delta)
-    echo -n $AHEAD
-done < <(git for-each-ref --format="%(refname:short) %(upstream:short)" refs/heads)
