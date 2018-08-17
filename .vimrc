@@ -1903,18 +1903,36 @@ if dein#tap('vim-easymotion') && dein#tap('clever-f.vim') && dein#tap('vim-sneak
   let g:EasyMotion_space_jump_first = 1
   let g:EasyMotion_prompt           = 'Search by EasyMotion ({n} character(s)) > '
 
-  map  S  <Plug>(easymotion-s2)
-  nmap S  <Plug>(easymotion-overwin-f2)
-  omap f  <Plug>(easymotion-fl)
-  omap t  <Plug>(easymotion-tl)
-  omap F  <Plug>(easymotion-Fl)
-  omap T  <Plug>(easymotion-Tl)
+  map  <silent> S <Plug>(easymotion-s2)
+  nmap <silent> S <Plug>(easymotion-overwin-f2)
+  omap <silent> f <Plug>(easymotion-fl)
+  omap <silent> t <Plug>(easymotion-tl)
+  omap <silent> F <Plug>(easymotion-Fl)
+  omap <silent> T <Plug>(easymotion-Tl)
 
   " clever-f
   let g:clever_f_not_overwrites_standard_mappings = 0
 
+  nmap <silent> f <Plug>(clever-f-f)
+  nmap <silent> F <Plug>(clever-f-F)
+  nmap <silent> t <Plug>(clever-f-t)
+  nmap <silent> T <Plug>(clever-f-T)
+  xmap <silent> f <Plug>(clever-f-f)
+  xmap <silent> F <Plug>(clever-f-F)
+  xmap <silent> t <Plug>(clever-f-t)
+  xmap <silent> T <Plug>(clever-f-T)
+
   " sneak
   let g:sneak#prompt = 'Search by Sneak (2 characters) >'
+
+  nmap <silent> ss <Plug>Sneak_s
+  nmap <silent> sS <Plug>Sneak_S
+  nmap <silent> ;  <Plug>Sneak_;
+  nmap <silent> ,  <Plug>Sneak_,
+  xmap <silent> ss <Plug>Sneak_s
+  xmap <silent> sS <Plug>Sneak_S
+  xmap <silent> ;  <Plug>Sneak_;
+  xmap <silent> ,  <Plug>Sneak_,
 endif
 " }}}3
 
@@ -2866,6 +2884,10 @@ nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> call EscEscReset()<CR>
 if dein#tap('vim-keymaps')
   let g:keymaps_unmap_keys = 0
 
+  nnoremap <silent> ;q :<C-u>KeyMapSet QuickFix<CR>
+  nnoremap <silent> ;l :<C-u>KeyMapSet LocationList<CR>
+  nnoremap <silent> ;d :<C-u>KeyMapSet Denite<CR>
+
   let g:keymaps = [
   \ {
   \   'name': 'Empty',
@@ -2876,70 +2898,9 @@ if dein#tap('vim-keymaps')
   let g:default_mapping = {
   \ 'name': 'Default',
   \ 'keymap': {
-  \   'nnoremap <silent>': {
-  \     ';q': ':<C-u>KeyMapSet QuickFix<CR>',
-  \     ';l': ':<C-u>KeyMapSet LocationList<CR>',
-  \     ';d': ':<C-u>KeyMapSet Denite<CR>',
-  \   },
   \   'nmap <silent> <expr>': {
   \     '<C-p>': 'yankround#is_active() ? "\<Plug>(yankround-prev)" : "(ctrlp)"',
   \     '<C-n>': 'yankround#is_active() ? "\<Plug>(yankround-next)" : "(ctrln)"',
-  \   },
-  \   'nmap <silent>': {
-  \     'f':  ':KeyMapSet CleverF<CR><Plug>(clever-f-f)',
-  \     'F':  ':KeyMapSet CleverF<CR><Plug>(clever-f-F)',
-  \     't':  ':KeyMapSet CleverF<CR><Plug>(clever-f-t)',
-  \     'T':  ':KeyMapSet CleverF<CR><Plug>(clever-f-T)',
-  \     'ss': ':KeyMapSet Sneak<CR><Plug>Sneak_s',
-  \     'sS': ':KeyMapSet Sneak<CR><Plug>Sneak_S',
-  \   },
-  \   'xmap <silent>': {
-  \     'f':  '<Esc>:KeyMapSet CleverF<CR>gv<Plug>(clever-f-f)',
-  \     'F':  '<Esc>:KeyMapSet CleverF<CR>gv<Plug>(clever-f-F)',
-  \     't':  '<Esc>:KeyMapSet CleverF<CR>gv<Plug>(clever-f-t)',
-  \     'T':  '<Esc>:KeyMapSet CleverF<CR>gv<Plug>(clever-f-T)',
-  \     'ss': '<Esc>:KeyMapSet Sneak<CR>gv<Plug>Sneak_s',
-  \     'sS': '<Esc>:KeyMapSet Sneak<CR>gv<Plug>Sneak_S',
-  \   },
-  \   'omap <silent>': {
-  \     'ss': '<Plug>Sneak_s',
-  \     'sS': '<Plug>Sneak_S',
-  \   },
-  \ },
-  \ }
-
-  let g:clever_mapping = {
-  \ 'name': 'CleverF',
-  \ 'keymap': {
-  \   'nmap <silent>': {
-  \     'f': '<Plug>(clever-f-f)',
-  \     'F': '<Plug>(clever-f-F)',
-  \     ';': '<Plug>(clever-f-f)',
-  \     ',': '<Plug>(clever-f-F)',
-  \   },
-  \   'xmap <silent>': {
-  \     'f': '<Plug>(clever-f-f)',
-  \     'F': '<Plug>(clever-f-F)',
-  \     ';': '<Plug>(clever-f-f)',
-  \     ',': '<Plug>(clever-f-F)',
-  \   },
-  \ },
-  \ }
-
-  let g:sneak_mapping = {
-  \ 'name': 'Sneak',
-  \ 'keymap': {
-  \   'nmap <silent>': {
-  \     ';':  '<Plug>Sneak_;',
-  \     ',':  '<Plug>Sneak_,',
-  \     'ss': '<Plug>Sneak_;',
-  \     'sS': '<Plug>Sneak_,',
-  \   },
-  \   'xmap <silent>': {
-  \     ';':  '<Plug>Sneak_;',
-  \     ',':  '<Plug>Sneak_,',
-  \     'ss': '<Plug>Sneak_;',
-  \     'sS': '<Plug>Sneak_,',
   \   },
   \ },
   \ }
@@ -2975,8 +2936,6 @@ if dein#tap('vim-keymaps')
   \ }
 
   call extend(g:keymaps, [g:default_mapping])
-  call extend(g:keymaps, [g:clever_mapping])
-  call extend(g:keymaps, [g:sneak_mapping])
   call extend(g:keymaps, [g:quickfix_mapping])
   call extend(g:keymaps, [g:location_list_mapping])
   call extend(g:keymaps, [g:denite_mapping])
