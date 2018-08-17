@@ -71,15 +71,11 @@ function set_async() {
   # Async update git prompt
   async_start_worker git_prompt_worker -n
   function git_prompt_callback() {
-    render_git_prompt $(gitstatus $(pwd))
+    GIT_STATUS=$(githud zsh)
   }
   function kick_git_prompt_worker() {
-    if git rev-parse 2> /dev/null; then
-      async_flush_jobs git_prompt_worker
-      async_job git_prompt_worker true
-    else
-      GIT_STATUS=''
-    fi
+    async_flush_jobs git_prompt_worker
+    async_job git_prompt_worker true
   }
   async_register_callback git_prompt_worker git_prompt_callback
   add-zsh-hook precmd kick_git_prompt_worker
@@ -445,52 +441,6 @@ RPROMPT='${COMMAND_BUFFER_STACK}'
 PROMPT='
 %F{blue}%~%f $GIT_STATUS
 ${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
-
-function render_git_prompt() {
-  setopt localoptions noshwordsplit
-  local output="$@"
-  local current_git_status=("${(@s: :)output}")
-
-  local git_branch=${current_git_status[1]}
-  local git_ahead=${current_git_status[2]}
-  local git_behind=${current_git_status[3]}
-  local git_staged=${current_git_status[4]}
-  local git_conflicts=${current_git_status[5]}
-  local git_changed=${current_git_status[6]}
-  local git_untracked=${current_git_status[7]}
-
-  GIT_STATUS="%F{242}${git_branch}%{$DEFAULT%}"
-  if [[ "${git_changed}" -ne "0" ]] || [[ "${git_conflicts}" -ne "0" ]] || [[ "${git_staged}" -ne "0" ]] || [[ "${git_untracked}" -ne "0" ]]; then
-    GIT_STATUS="${GIT_STATUS}%F{242}*%{$DEFAULT%}"
-  fi
-  GIT_STATUS="${GIT_STATUS} %F{247}(%{$DEFAULT%}"
-  if [[ "${git_behind}" -ne "0" ]]; then
-    GIT_STATUS="${GIT_STATUS}%{$CYAN%}%{↓ %G%}${git_behind}%{$DEFAULT%}"
-  fi
-  if [[ "${git_ahead}" -ne "0" ]]; then
-    GIT_STATUS="${GIT_STATUS}%{$CYAN%}%{↑ %G%}${git_ahead}%{$DEFAULT%}"
-  fi
-  if [[ "${git_behind}" -ne "0" ]] || [ "${git_ahead}" -ne "0" ]; then
-    GIT_STATUS="${GIT_STATUS}%F{247}|"
-  fi
-  if [[ "${git_staged}" -ne "0" ]]; then
-    GIT_STATUS="${GIT_STATUS} %{$GREEN%}%{S:%G%}${git_staged}%{$DEFAULT%}"
-  fi
-  if [[ "${git_conflicts}" -ne "0" ]]; then
-    GIT_STATUS="${GIT_STATUS} %{$RED%}%{UU:%G%}${git_conflicts}%{$DEFAULT%}"
-  fi
-  if [[ "${git_changed}" -ne "0" ]]; then
-    GIT_STATUS="${GIT_STATUS} %{$RED%}%{M:%G%}${git_changed}%{$DEFAULT%}"
-  fi
-  if [[ "${git_untracked}" -ne "0" ]]; then
-    GIT_STATUS="${GIT_STATUS} %{$RED%}%{?:%G%}${git_untracked}%{$DEFAULT%}"
-  fi
-  if [[ "${git_changed}" -eq "0" ]] && [[ "${git_conflicts}" -eq "0" ]] && [[ "${git_staged}" -eq "0" ]] && [[ "${git_untracked}" -eq "0" ]]; then
-    GIT_STATUS="${GIT_STATUS} %{${fg_bold[green]}%}%{✔%G%} "
-  fi
-  GIT_STATUS="${GIT_STATUS}%{${DEFAULT}%} %F{247})"
-  # LAST_GIT_STATUS=$(date +%s)
-}
 
 TMOUT=1
 TRAPALRM() {

@@ -14,6 +14,7 @@ DOTFILES_SRCS = %w[
   .gemrc
   .gitattributes_global
   .gitconfig
+  .githudrc
   .gitignore_global
   .globalrc
   .gvimrc
@@ -25,7 +26,6 @@ DOTFILES_SRCS = %w[
   .stylelintrc
   .textlintrc
   .tigrc
-  .tmux
   .tmux.conf
   .vim
   .vimperator
