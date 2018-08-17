@@ -71,7 +71,7 @@ function set_async() {
   # Async update git prompt
   async_start_worker git_prompt_worker -n
   function git_prompt_callback() {
-    GIT_STATUS=$(githud zsh)
+    GIT_STATUS=$(git-prompt zsh)
   }
   function kick_git_prompt_worker() {
     async_flush_jobs git_prompt_worker

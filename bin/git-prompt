@@ -1,0 +1,311 @@
+#!/usr/bin/env bash
+#
+# tmux-gitbar: Git in tmux status bar
+#
+# Created by Aurélien Rainone
+# github.com/aurelien-rainone/tmux-gitbar
+
+# Additional keywords for tmux status string
+readonly BRANCH_KWD="\#{git_branch}"
+readonly REMOTE_KWD="\#{git_remote}"
+readonly UPSTREAM_KWD="\#{git_upstream}"
+readonly FLAGS_KWD="\#{git_flags}"
+
+  # Symbols shown in status string.
+# Can be redefined here, or preferably in tmux-gitbar.conf
+NO_REMOTE_TRACKING_SYMBOL="L"
+BRANCH_SYMBOL=""
+STAGED_SYMBOL="M"
+CONFLICT_SYMBOL="UU"
+CHANGED_SYMBOL="M"
+UNTRACKED_SYMBOL="?"
+DELETED_SYMBOL="D"
+STAGE_DELETED_SYMBOL="D"
+STASHED_SYMBOL="≡"
+CLEAN_SYMBOL="✔"
+AHEAD_SYMBOL="↑ "
+BEHIND_SYMBOL="↓ "
+PREHASH_SYMBOL=":"
+
+# Defaut Tmux format strings for Git bar components.
+# Can be redefined here, or preferably in tmux-gitbar.conf
+if [[ $1 == "zsh" ]]; then
+  BRANCH_FMT="%F{white}"
+  UPSTREAM_FMT="%F{cyan}"
+  REMOTE_FMT="%F{cyan}"
+  CLEAN_FMT="%F{green}%B"
+  STAGED_FMT="%F{green}%B"
+  CONFLICTS_FMT="%F{red}%B"
+  CHANGED_FMT="%F{red}%B"
+  STASHED_FMT="%F{blue}%B"
+  UNTRACKED_FMT="%F{red}%B"
+  DELETED_FMT="%F{red}%B"
+  STAGE_DELETED_FMT="%F{green}%B"
+  RESET_FMT="%b%F{white}"
+
+  BRANCH_UPSTREAM_DELIMITER="%F{5}->%f"
+else
+  BRANCH_FMT="#[fg=white]"
+  UPSTREAM_FMT="#[fg=cyan]"
+  REMOTE_FMT="#[fg=cyan]"
+  CLEAN_FMT="#[fg=green,bold]"
+  STAGED_FMT="#[fg=green,bold]"
+  CONFLICTS_FMT="#[fg=red,bold]"
+  CHANGED_FMT="#[fg=red,bold]"
+  STASHED_FMT="#[fg=blue,bold]"
+  UNTRACKED_FMT="#[fg=red,bold]"
+  DELETED_FMT="#[fg=red,bold]"
+  STAGE_DELETED_FMT="#[fg=green,bold]"
+  RESET_FMT="#[fg=default]"
+
+  BRANCH_UPSTREAM_DELIMITER="#[fg=colour5]->#[fg=default]"
+fi
+
+# Delimiter between symbol and numeric value
+FLAGS_DELIMITER_FMT=" "
+SYMBOL_DELIMITER_FMT=":"
+SPLIT_DELIMITER_FMT="| "
+
+# helper
+is_osx() {
+  [ $(uname) == "Darwin" ]
+}
+
+find_readlink() {
+
+  if is_osx; then
+    _readlink='greadlink -e'
+  else
+    _readlink='readlink -e'
+  fi
+}
+
+# gitstatus
+gitstatus() {
+  dir="$1"
+  if [ ! -d "$1" ]; then
+    exit 1
+  fi
+  cd "$dir" > /dev/null
+
+  readonly gitstatus=$( LC_ALL=C git status --untracked-files=all --porcelain --branch )
+
+  # if the status is fatal, exit now
+  [[ "$?" -ne 0 ]] && exit 0
+
+  num_staged=0
+  num_changed=0
+  num_deleted=0
+  num_stage_deleted=0
+  num_conflicts=0
+  num_untracked=0
+  while IFS='' read -r line || [[ -n "$line" ]]; do
+    status=${line:0:2}
+    case "$status" in
+      '##')
+        if [[ $line = *"No commits yet"* ]]; then
+          # fixes #54 (garbage output on new repos)
+          line=$(echo $line | sed  "s/.*yet on //")
+        fi
+        branch_line="${line/\.\.\./^}" ;;
+      ?M) ((num_changed++)) ;;
+      ?D) ((num_deleted++)) ;;
+      D?) ((num_stage_deleted++)) ;;
+      U?) ((num_conflicts++)) ;;
+      \?\?) ((num_untracked++)) ;;
+      *) ((num_staged++)) ;;
+    esac
+  done <<< "$gitstatus"
+
+  num_stashed=0
+  stash_file="$( git rev-parse --git-dir )/logs/refs/stash"
+  if [[ -e "${stash_file}" ]]; then
+    while IFS='' read -r wcline || [[ -n "$wcline" ]]; do
+      ((num_stashed++))
+    done < "${stash_file}"
+  fi
+
+  clean=0
+  if (( num_changed == 0 && num_staged == 0 && num_untracked == 0 && num_stashed == 0 && num_conflicts == 0 )) ; then
+    clean=1
+  fi
+
+  IFS="^" read -ra branch_fields <<< "${branch_line/\#\# }"
+    branch="${branch_fields[0]}"
+  remote=
+  upstream=
+
+  if [[ "$branch" == *"Initial commit on"* ]]; then
+    IFS=" " read -ra fields <<< "$branch"
+    branch="${fields[3]}"
+    remote="_NO_REMOTE_TRACKING_"
+  elif [[ "$branch" == *"no branch"* ]]; then
+    tag=$( git describe --exact-match )
+    if [[ -n "$tag" ]]; then
+      branch="$tag"
+    else
+      branch="_PREHASH_$( git rev-parse --short HEAD )"
+    fi
+  else
+    if [[ "${#branch_fields[@]}" -eq 1 ]]; then
+      remote="_NO_REMOTE_TRACKING_"
+    else
+      IFS="[,]" read -ra remote_fields <<< "${branch_fields[1]}"
+      upstream="${remote_fields[0]}"
+      for remote_field in "${remote_fields[@]}"; do
+        if [[ "$remote_field" == *ahead* ]]; then
+          num_ahead=${remote_field:6}
+          ahead="_AHEAD_${num_ahead}"
+        fi
+        if [[ "$remote_field" == *behind* ]]; then
+          num_behind=${remote_field:7}
+          behind="_BEHIND_${num_behind# }"
+        fi
+      done
+      remote="${behind}${ahead}"
+    fi
+  fi
+
+  if [[ -z "$remote" ]] ; then
+    remote='.'
+  fi
+
+  if [[ -z "$upstream" ]] ; then
+    upstream='^'
+  fi
+
+  printf "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n" \
+    "$branch" \
+    "$remote" \
+    "$upstream" \
+    $num_staged \
+    $num_conflicts \
+    $num_changed \
+    $num_untracked \
+    $num_deleted \
+    $num_stage_deleted \
+    $num_stashed \
+    $clean
+}
+
+# Save status bar settings so that we can reset it later
+# Find the top-level directory of the current Git working tree
+find_git_repo() {
+  local is_working_tree=$(git rev-parse --is-inside-work-tree 2> /dev/null)
+  if [ "$is_working_tree" == true ]; then
+    git_repo="$(git rev-parse --show-toplevel)"
+  else
+    git_repo=""
+  fi
+}
+
+# Search branch info and replace with symbols
+replace_branch_symbols() {
+
+  local s1; local s2; local s3
+  s1="${1//_AHEAD_/${AHEAD_SYMBOL}}"
+  s2="${s1//_BEHIND_/${BEHIND_SYMBOL}}"
+  s3="${s2//_NO_REMOTE_TRACKING_/${NO_REMOTE_TRACKING_SYMBOL}}"
+
+  echo "${s3//_PREHASH_/${PREHASH_SYMBOL}}"
+}
+
+# Read git variables
+read_git_info() {
+
+  local -a git_status_fields
+  git_status_fields=($(gitstatus $git_repo 2>/dev/null))
+
+  git_branch="$(replace_branch_symbols ${git_status_fields[0]})"
+  if [[ ${git_status_fields[1]} == "." ]]; then
+    git_remote=""
+  else
+    git_remote="$(replace_branch_symbols ${git_status_fields[1]}) "
+  fi
+  git_upstream="${git_status_fields[2]}"
+  git_num_staged="${git_status_fields[3]}"
+  git_num_conflicts="${git_status_fields[4]}"
+  git_num_changed="${git_status_fields[5]}"
+  git_num_untracked="${git_status_fields[6]}"
+  git_num_deleted="${git_status_fields[7]}"
+  git_num_stage_deleted="${git_status_fields[8]}"
+  git_num_stashed="${git_status_fields[9]}"
+  git_clean="${git_status_fields[10]}"
+}
+
+do_interpolation() {
+  chk_gitvar() {
+    local v
+    if [[ "x$2" == "x-n" ]] ; then
+      v="$2 \"\$git_$1\""
+    elif [[ "x$2" == x-eq* ]] ; then
+      v="\$git_$1 $2"
+    else
+      v="\$git_num_$1 $2"
+    fi
+    if eval "test $v" ; then
+      if [[ $# -lt 2 || "$3" != '-' ]]; then
+        echo "${3}"
+      else
+        echo ""
+      fi
+    fi
+  }
+
+  # Create the 3 branch components
+  branch="${BRANCH_FMT}${BRANCH_SYMBOL}${git_branch}${RESET_FMT}"
+  upstream="${UPSTREAM_FMT}${git_upstream}${RESET_FMT}"
+  remote="${REMOTE_FMT}${git_remote}${RESET_FMT}"
+
+  # Create the git flags components
+  clean_flag=$(chk_gitvar 'clean' '-eq 1' "${CLEAN_FMT}${CLEAN_SYMBOL}${RESET_FMT}${FLAGS_DELIMITER_FMT}")
+  staged=$(chk_gitvar 'staged' '-ne 0' "${STAGED_FMT}${STAGED_SYMBOL}${SYMBOL_DELIMITER_FMT}${git_num_staged}${RESET_FMT}${FLAGS_DELIMITER_FMT}")
+  conflicts=$(chk_gitvar 'conflicts' '-ne 0' "${CONFLICTS_FMT}${CONFLICT_SYMBOL}${SYMBOL_DELIMITER_FMT}${git_num_conflicts}${RESET_FMT}${FLAGS_DELIMITER_FMT}")
+  changed=$(chk_gitvar 'changed' '-ne 0' "${CHANGED_FMT}${CHANGED_SYMBOL}${SYMBOL_DELIMITER_FMT}${git_num_changed}${RESET_FMT}${FLAGS_DELIMITER_FMT}")
+  stashed=$(chk_gitvar 'stashed' '-ne 0' "${STASHED_FMT}${STASHED_SYMBOL}${SYMBOL_DELIMITER_FMT}${git_num_stashed}${RESET_FMT}${FLAGS_DELIMITER_FMT}")
+  untracked=$(chk_gitvar 'untracked' '-ne 0' "${UNTRACKED_FMT}${UNTRACKED_SYMBOL}${SYMBOL_DELIMITER_FMT}${git_num_untracked}${RESET_FMT}${FLAGS_DELIMITER_FMT}")
+  deleted=$(chk_gitvar 'deleted' '-ne 0' "${DELETED_FMT}${DELETED_SYMBOL}${SYMBOL_DELIMITER_FMT}${git_num_deleted}${RESET_FMT}${FLAGS_DELIMITER_FMT}")
+  stage_deleted=$(chk_gitvar 'stage_deleted' '-ne 0' "${STAGE_DELETED_FMT}${STAGE_DELETED_SYMBOL}${SYMBOL_DELIMITER_FMT}${git_num_stage_deleted}${RESET_FMT}${FLAGS_DELIMITER_FMT}")
+
+  dirty_flags=$(chk_gitvar 'clean' '-eq 0' "${staged}${stage_deleted}${conflicts}${changed}${deleted}${stashed}${untracked}")
+
+  flags="${SPLIT_DELIMITER_FMT}${clean_flag}${dirty_flags}"
+
+  # Put it all together
+  local in="$1"
+  local s1="${in/$BRANCH_KWD/$branch}"
+  local s2="${s1/$REMOTE_KWD/$remote}"
+  local s3="${s2/$UPSTREAM_KWD/$upstream}"
+  local out="${s3/$FLAGS_KWD/$flags}"
+
+  echo "$out" | awk '{sub(/[ \t]+$/, "")}1'
+}
+
+# Update tmux git status bar, called within PROMPT_COMMAND
+update_gitbar() {
+  if [[ $git_repo ]]; then
+    read_git_info
+
+    # append Git status to current status string
+    local status_string
+    status_string="$(do_interpolation "#{git_branch}${BRANCH_UPSTREAM_DELIMITER}#{git_upstream} #{git_remote}#{git_flags}")"
+    echo "$status_string"
+
+  else
+    find_git_repo
+
+    if [[ $git_repo ]]; then
+      update_gitbar
+    fi
+  fi
+}
+
+main() {
+  if [[ $# -eq 2 ]]; then
+    cd $2
+  fi
+  find_readlink
+  update_gitbar
+}
+
+main "$@"
