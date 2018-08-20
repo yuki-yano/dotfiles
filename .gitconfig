@@ -19,6 +19,7 @@
   cancel  = !git now && git reset --hard HEAD~
   qsave   = !git stash && git stash pop
   plog    = log --pretty='format:%C(yellow)%h %C(green)%cd %C(reset)%s %C(red)%d %C(cyan)[%an]' --date=iso
+  fzflog  = !git plog --graph --color=always 2>/dev/null
 
 [pager]
   log  = diff-highlight | less

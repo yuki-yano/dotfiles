@@ -412,6 +412,11 @@ function fzf-direct-completion() {
   local tokens cmd
   setopt localoptions noshwordsplit
 
+  if [[ $BUFFER[-1] == $FZF_COMPLETION_TRIGGER ]]; then
+    zle fzf-completion
+    return
+  fi
+
   if [[ $BUFFER[-1] != " " ]]; then
     zle expand-or-complete
     return
@@ -460,9 +465,9 @@ function f() {
 }
 
 # Global Alias
-alias -g  B='$(git branch -a | fzf --multi --prompt "All Branches>"    | sed -e "s/^\*\s*//g")'
-alias -g RB='$(git branch -r | fzf --multi --prompt "Remote Branches>" | sed -e "s/^\*\s*//g")'
-alias -g LB='$(git branch    | fzf --multi --prompt "Local Branches>"  | sed -e "s/^\*\s*//g")'
+alias -g  B='$(git branch -a | fzf-branch | fzf --multi --preview="git fzflog {}" --prompt "All Branches>" | sed -e "s/^\*\s*//g")'
+alias -g RB='$(git branch -r | fzf-branch | fzf --multi --preview="git fzflog {}" --prompt "Remote Branches>" | sed -e "s/^\*\s*//g")'
+alias -g LB='$(git branch    | fzf-branch | fzf --multi --preview="git fzflog {}" --prompt "Local Branches>"  | sed -e "s/^\*\s*//g")'
 
 # }}}
 

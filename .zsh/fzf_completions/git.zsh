@@ -65,6 +65,18 @@ function _fzf-git-completion() {
               ;;
           esac
           ;;
+        branch)
+          case "$cmd3" in
+            -d|-D|-m|-u)
+              case "$cmd4" in
+                '')
+                  _fzf_complete_git_branch
+                  return
+                  ;;
+              esac
+              ;;
+          esac
+          ;;
         checkout)
           case "$cmd3" in
             -b|-t)
