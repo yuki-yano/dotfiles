@@ -22,6 +22,11 @@ typeset -U path fpath
 path=(~/dotfiles/node_modules/.bin(N-/) /usr/local/bin(N-/) /usr/bin(N-/) /bin(N-/) /sbin(N-/) /usr/sbin(N-/) /usr/X11/bin(N-/))
 fpath=(~/.zsh/completions(N-/) $fpath)
 
+# zplugin
+ZPLG_HOME=$HOME/.zplugin
+ZPFX=$ZPLG_HOME/polaris
+path=($ZPFX/bin(N-/) $path)
+
 # curl
 path=(/usr/local/opt/curl/bin(N-/) $path)
 
@@ -122,21 +127,6 @@ alias vimdiff='nvim -d'
 # eslint-friendly-formatter
 export EFF_NO_GRAY=true
 
-# ls
-if whence exa > /dev/null; then
-  alias ls="exa"
-  alias ll="exa -lh  --git"
-  alias la="exa -alh --git"
-  alias lt="exa -alh --git"
-elif whence gls > /dev/null; then
-  alias ls='gls --color=auto'
-  alias ll='ls -lh'
-  alias la='ls -alh'
-else
-  alias ll='ls -lh'
-  alias la='ls -alh'
-fi
-
 # sed
 if whence gsed > /dev/null; then
   alias sed='gsed'
@@ -150,15 +140,6 @@ alias uuuu='cd ../../../..'
 
 # diff
 alias diff='diff -u'
-
-# rpgrep
-function rg() {
-  if [[ -t 1 ]]; then
-    command rg -p "$@" | less -RFX
-  else
-    command rg "$@"
-  fi
-}
 
 # popd
 alias p='popd'
