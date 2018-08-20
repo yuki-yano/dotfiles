@@ -206,7 +206,7 @@ abbreviations=(
 "gstp"   "git stash pop"
 "gq"     "git qsave"
 "gca"    "git cancel"
-"g"      "rg"
+"gbr"    "git browse-remote"
 "dco"    "docker-compose"
 "t"      "tmuximum"
 "tl"     "tmux list-sessions"
