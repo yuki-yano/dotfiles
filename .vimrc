@@ -208,9 +208,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Edit & Move & Search {{{3
+  " call dein#add('justinmk/vim-sneak')
+  " call dein#add('terryma/vim-multiple-cursors')
   " call dein#add('tyru/skk.vim',              {'lazy': 1, 'on_event': 'InsertEnter'})
   " call dein#add('vimtaku/vim-mlh',           {'lazy': 1, 'on_event': 'InsertEnter'})
-  " call dein#add('terryma/vim-multiple-cursors')
   call dein#add('AndrewRadev/splitjoin.vim',     {'lazy': 1, 'on_cmd': ['SplitjoinJoin', 'SplitjoinSplit']})
   call dein#add('AndrewRadev/switch.vim',        {'lazy': 1, 'on_cmd': 'Switch'})
   call dein#add('Chiel92/vim-autoformat',        {'lazy': 1, 'on_cmd': 'Autoformat'})
@@ -226,7 +227,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('haya14busa/vim-edgemotion',     {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-metarepeat',     {'lazy': 1, 'on_map': ['go', 'g.', '<Plug>']})
   call dein#add('junegunn/vim-easy-align',       {'lazy': 1, 'on_cmd': 'EasyAlign'})
-  call dein#add('justinmk/vim-sneak')
+  call dein#add('mg979/vim-visual-multi',        {'rev': 'test'})
   call dein#add('mileszs/ack.vim',               {'lazy': 1, 'on_cmd': 'Ack'})
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',          {'lazy': 1, 'on_map': '<Plug>'})
@@ -285,7 +286,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mattn/webapi-vim')
   call dein#add('mbbill/undotree',                     {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
   call dein#add('mtth/scratch.vim',                    {'lazy': 1, 'on_cmd': ['Scratch', 'ScratchInsert', 'ScratchPreview', 'ScratchSelection']})
-  call dein#add('nonylene/vim-keymaps')
   call dein#add('osyo-manga/vim-gift')
   call dein#add('pocke/vim-automatic',                 {'depends': 'vim-gift'})
   call dein#add('powerman/vim-plugin-AnsiEsc')
@@ -658,6 +658,7 @@ function! s:toggle_quickfix()
   cclose
   if l:_ == winnr('$')
     botright copen
+    call g:Set_quickfix_keymap()
   endif
 endfunction
 
@@ -671,6 +672,7 @@ function! s:toggle_location_list()
   lclose
   if l:_ == winnr('$')
     botright lopen
+    call g:Set_locationlist_keymap()
   endif
 endfunction
 
@@ -1893,7 +1895,7 @@ let g:easy_align_delimiters = {
 " }}}3
 
 " easymotion & clever-f & sneak {{{3
-if dein#tap('vim-easymotion') && dein#tap('clever-f.vim') && dein#tap('vim-sneak') && dein#tap('vim-keymaps')
+if dein#tap('vim-easymotion') && dein#tap('clever-f.vim')
   " EasyMotion
   let g:EasyMotion_do_mapping       = 0
   let g:EasyMotion_smartcase        = 1
@@ -1904,12 +1906,14 @@ if dein#tap('vim-easymotion') && dein#tap('clever-f.vim') && dein#tap('vim-sneak
   let g:EasyMotion_space_jump_first = 1
   let g:EasyMotion_prompt           = 'Search by EasyMotion ({n} character(s)) > '
 
-  map  <silent> S <Plug>(easymotion-s2)
-  nmap <silent> S <Plug>(easymotion-overwin-f2)
-  omap <silent> f <Plug>(easymotion-fl)
-  omap <silent> t <Plug>(easymotion-tl)
-  omap <silent> F <Plug>(easymotion-Fl)
-  omap <silent> T <Plug>(easymotion-Tl)
+  nmap <silent> S         <Plug>(easymotion-overwin-f2)
+  nmap <silent> ss        <Plug>(easymotion-bd-f2)
+  omap <silent> f         <Plug>(easymotion-fl)
+  omap <silent> t         <Plug>(easymotion-tl)
+  omap <silent> F         <Plug>(easymotion-Fl)
+  omap <silent> T         <Plug>(easymotion-Tl)
+  nmap <silent> <Leader>l <Plug>(easymotion-overwin-line)
+  map  <silent> <Leader>l <Plug>(easymotion-bd-jk)
 
   " clever-f
   let g:clever_f_not_overwrites_standard_mappings = 0
@@ -1924,16 +1928,16 @@ if dein#tap('vim-easymotion') && dein#tap('clever-f.vim') && dein#tap('vim-sneak
   xmap <silent> T <Plug>(clever-f-T)
 
   " sneak
-  let g:sneak#prompt = 'Search by Sneak (2 characters) >'
-
-  nmap <silent> ss <Plug>Sneak_s
-  nmap <silent> sS <Plug>Sneak_S
-  nmap <silent> ;  <Plug>Sneak_;
-  nmap <silent> ,  <Plug>Sneak_,
-  xmap <silent> ss <Plug>Sneak_s
-  xmap <silent> sS <Plug>Sneak_S
-  xmap <silent> ;  <Plug>Sneak_;
-  xmap <silent> ,  <Plug>Sneak_,
+  " let g:sneak#prompt = 'Search by Sneak (2 characters) >'
+  "
+  " nmap <silent> ss <Plug>Sneak_s
+  " nmap <silent> sS <Plug>Sneak_S
+  " nmap <silent> ;  <Plug>Sneak_;
+  " nmap <silent> ,  <Plug>Sneak_,
+  " xmap <silent> ss <Plug>Sneak_s
+  " xmap <silent> sS <Plug>Sneak_S
+  " xmap <silent> ;  <Plug>Sneak_;
+  " xmap <silent> ,  <Plug>Sneak_,
 endif
 " }}}3
 
@@ -2103,30 +2107,6 @@ if dein#tap('lexima.vim')
 endif
 " }}}3
 
-" metarepeat {{{3
-nmap <silent> <expr> (ctrln) v:hlsearch ? "\<Plug>(metarepeat-preset-occurence)" : "*"
-" }}}3
-
-" multiple-cursor {{{3
-" let g:multi_cursor_use_default_mapping = 0
-" let g:multi_cursor_start_word_key      = '<C-n>'
-" let g:multi_cursor_select_all_key      = 'g<C-n>'
-" let g:multi_cursor_next_key            = '<C-n>'
-" let g:multi_cursor_prev_key            = '<C-p>'
-" let g:multi_cursor_skip_key            = '<C-x>'
-" let g:multi_cursor_quit_key            = '<Esc>'
-"
-" nnoremap <silent> (ctrln) :<C-u> :call multiple_cursors#new("n", 1)<CR>
-"
-" function! Multiple_cursors_before() abort
-"   call Correct_interference_multiple_cursor_before()
-" endfunction
-"
-" function! Multiple_cursors_after() abort
-"   call Correct_interference_multiple_cursor_after()
-" endfunction
-" }}}3
-
 " operator-convert-case {{{3
 nmap <silent> <Leader>cc <Plug>(operator-convert-case-loop)
 " }}}3
@@ -2199,6 +2179,119 @@ nnoremap <silent> - :<C-u>Switch<CR>
 noremap <silent> <Leader>cc :TComment<CR>
 " }}}3
 
+" visual-multi {{{3
+let g:VM_leader = '\'
+
+let g:VM_default_mappings           = 1
+let g:VM_sublime_mappings           = 0
+let g:VM_mouse_mappings             = 0
+let g:VM_extended_mappings          = 0
+let g:VM_no_meta_mappings           = 1
+let g:VM_reselect_first_insert      = 0
+let g:VM_reselect_first_always      = 0
+let g:VM_case_setting               = 'smart'
+let g:VM_pick_first_after_n_cursors = 0
+let g:VM_dynamic_synmaxcol          = 20
+let g:VM_disable_syntax_in_imode    = 0
+let g:VM_exit_on_1_cursor_left      = 0
+let g:VM_manual_infoline            = 0
+
+let g:VM_maps = {}
+"
+let g:VM_maps['Find Under']                  = '<C-n>'
+let g:VM_maps['Find Subword Under']          = '<C-n>'
+let g:VM_maps['Skip Region']                 = '<C-s>'
+let g:VM_maps['Erase Regions']               = 'gr'
+let g:VM_maps['Add Cursor At Pos']           = 'g<Space>'
+let g:VM_maps['Add Cursor At Word']          = 'g<CR>'
+let g:VM_maps['Start Regex Search']          = 'g/'
+let g:VM_maps['Select All']                  = '<A-a>'
+let g:VM_maps['Add Cursor Down']             = '<A-S-j>'
+let g:VM_maps['Add Cursor Up']               = '<A-S-k>'
+ 
+let g:VM_maps['Visual All']                  = '<A-S-a>'
+let g:VM_maps['Visual Add']                  = '<A-a>'
+let g:VM_maps['Visual Find']                 = '<C-f>'
+let g:VM_maps['Visual Cursors']              = '<C-c>'
+let g:VM_maps['Visual Star']                 = '*'
+let g:VM_maps['Visual Hash']                 = '#'
+let g:VM_maps['Visual Subtract']             = '<C-s>'
+ 
+let g:VM_maps['Select l']                    = '<A-S-l>'
+let g:VM_maps['Select h']                    = '<A-S-h>'
+let g:VM_maps['Select w']                    = '<A-S-w>'
+let g:VM_maps['Select b']                    = '<A-S-b>'
+ 
+let g:VM_maps['Switch Mode']                 = '<Tab>'
+let g:VM_maps['Toggle Block']                = '<BS>'
+let g:VM_maps['Toggle Only This Region']     = '<CR>'
+ 
+let g:VM_maps['Find I Word']                 = 's]'
+let g:VM_maps['Find A Word']                 = 's['
+let g:VM_maps['Find I Whole Word']           = 's}'
+let g:VM_maps['Find A Subword']              = 's]'
+let g:VM_maps['Find A Whole Subword']        = 's['
+
+let g:VM_maps['Find Next']                   = ']'
+let g:VM_maps['Find Prev']                   = '['
+let g:VM_maps['Goto Next']                   = '}'
+let g:VM_maps['Goto Prev']                   = '{'
+let g:VM_maps['Seek Next']                   = '<C-f>'
+let g:VM_maps['Seek Prev']                   = '<C-b>'
+let g:VM_maps['Invert Direction']            = 'o'
+let g:VM_maps['Remove Region']               = 'Q'
+let g:VM_maps['Find Operator']               = 'm'
+
+let g:VM_maps['Tools Menu']                  = '<leader>x'
+let g:VM_maps['Show Registers']              = '<leader>"'
+let g:VM_maps['Case Setting']                = '<C-c>'
+let g:VM_maps['Toggle Whole Word']           = '<C-w>'
+let g:VM_maps['Case Conversion Menu']        = '<leader>c'
+let g:VM_maps['Search Menu']                 = '<leader>S'
+let g:VM_maps['Rewrite Last Search']         = '<leader>r'
+let g:VM_maps['Toggle Multiline']            = 'M'
+ 
+let g:VM_maps['Surround']                    = 'S'
+let g:VM_maps['Merge Regions']               = '<leader>m'
+let g:VM_maps['Transpose']                   = '<leader>t'
+let g:VM_maps['Duplicate']                   = '<leader>d'
+let g:VM_maps['Align']                       = '<leader>a'
+let g:VM_maps['Split Regions']               = '<leader>s'
+ 
+let g:VM_maps['Run Normal']                  = 'zz'
+let g:VM_maps['Run Last Normal']             = 'Z'
+let g:VM_maps['Run Visual']                  = 'zv'
+let g:VM_maps['Run Last Visual']             = '<M-z>'
+let g:VM_maps['Run Ex']                      = 'zx'
+ 
+let g:VM_maps['D']                           = 'D'
+let g:VM_maps['Y']                           = 'Y'
+let g:VM_maps['x']                           = 'x'
+let g:VM_maps['X']                           = 'X'
+let g:VM_maps['J']                           = 'J'
+let g:VM_maps['~']                           = '~'
+let g:VM_maps['Del']                         = '<del>'
+let g:VM_maps['Dot']                         = '.'
+let g:VM_maps['Increase']                    = '+'
+let g:VM_maps['Decrease']                    = '-'
+let g:VM_maps['a']                           = 'a'
+let g:VM_maps['A']                           = 'A'
+let g:VM_maps['i']                           = 'i'
+let g:VM_maps['I']                           = 'I'
+let g:VM_maps['o']                           = '<leader>o'
+let g:VM_maps['O']                           = '<leader>O'
+let g:VM_maps['c']                           = 'c'
+let g:VM_maps['C']                           = 'C'
+let g:VM_maps['Yank']                        = 'y'
+let g:VM_maps['Delete']                      = 'd'
+let g:VM_maps['Replace']                     = 'r'
+let g:VM_maps['Replace Pattern']             = 'R'
+let g:VM_maps['p Paste Regions']             = 'p'
+let g:VM_maps['P Paste Regions']             = 'P'
+let g:VM_maps['p Paste Normal']              = '<leader>p'
+let g:VM_maps['P Paste Normal']              = '<leader>P'
+" }}}3
+ 
 " yankround {{{3
 if dein#tap('yankround.vim')
   let g:yankround_max_history   = 1000
@@ -2208,9 +2301,6 @@ if dein#tap('yankround.vim')
     nmap p <Plug>(yankround-p)
     xmap p <Plug>(yankround-p)
     nmap P <Plug>(yankround-P)
-
-    nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "(ctrlp)"
-    nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : "(ctrln)"
   endfunction
 
   AutoCmd VimEnter * call Hook_on_vimenter_event_yankround()
@@ -2548,7 +2638,7 @@ if dein#tap('lightline.vim')
 
   function! Lightline_keymap() abort
     return !has_key(s:lightline_ft_to_mode_hash, &filetype) ?
-    \ 'Map [' . keymaps#get_current_keymap_name() . ']' :
+    \ 'Map [' . g:keymap . ']' :
     \ ''
   endfunction
 endif
@@ -2867,110 +2957,92 @@ nnoremap <silent> <Leader><C-w> :WinResizerStartResize<CR>
 
 " Correct Interference {{{1
 
-" Multiple Cursor & lexima {{{2
-function! Correct_interference_multiple_cursor_before() abort
-  let b:deoplete_disable_auto_complete = 1
-  " call ncm2#lock('vim-multiple-cursors')
-  call Clear_lexima()
-endfunction
-
-function! Correct_interference_multiple_cursor_after() abort
-  let b:deoplete_disable_auto_complete = 0
-  " call ncm2#unlock('vim-multiple-cursors')
-  call Resetting_lexima()
-endfunction
-" }}}2
-
 " Mapping <Esc><Esc> {{{2
-function! EscEscReset() abort
+function! EscEscReset(...) abort
   AnzuClearSearchStatus
-  KeyMapSet Default
+  call g:Set_default_keymap()
   highlight CursorColumn ctermfg=none ctermbg=235
   highlight CursorLine   ctermfg=none ctermbg=235
 endfunction
 nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> call EscEscReset()<CR>
+augroup esc_esc_reset
+  autocmd!
+  autocmd VimEnter * call timer_start(500, function('EscEscReset'))
+augroup END
 " }}}
 
 " keymaps {{{
-if dein#tap('vim-keymaps')
-  let g:keymaps_unmap_keys = 0
 
-  nnoremap <silent> ;q :<C-u>KeyMapSet QuickFix<CR>
-  nnoremap <silent> ;l :<C-u>KeyMapSet LocationList<CR>
-  nnoremap <silent> ;d :<C-u>KeyMapSet Denite<CR>
+function! Set_default_keymap() abort
+  let g:keymap = 'Default'
+  call lightline#update()
 
-  let g:keymaps = [
-  \ {
-  \   'name': 'Empty',
-  \   'keymap': {},
-  \ },
-  \ ]
+  nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "(ctrlp)"
+  nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : "(ctrln)"
+  nnoremap <silent> (ctrlp) :<C-u>Denite miniyank<CR>
+  nmap     <silent> (ctrln) <Plug>(VM-Find-Under)
 
-  let g:default_mapping = {
-  \ 'name': 'Default',
-  \ 'keymap': {
-  \   'nmap <silent> <expr>': {
-  \     '<C-p>': 'yankround#is_active() ? "\<Plug>(yankround-prev)" : "(ctrlp)"',
-  \     '<C-n>': 'yankround#is_active() ? "\<Plug>(yankround-next)" : "(ctrln)"',
-  \   },
-  \ },
-  \ }
+  map  <silent> ; <Plug>(easymotion-next)
+  map  <silent> , <Plug>(easymotion-prev)
+endfunction
 
-  let g:quickfix_mapping = {
-  \ 'name': 'QuickFix',
-  \ 'keymap': {
-  \   'nnoremap <silent>': {
-  \     '<C-p>': ':<C-u>cprev<CR>',
-  \     '<C-n>': ':<C-u>cnext<CR>',
-  \   },
-  \ },
-  \ }
+function! Set_quickfix_keymap() abort
+  let g:keymap = 'QuickFix'
+  call lightline#update()
 
-  let g:location_list_mapping = {
-  \ 'name': 'LocationList',
-  \ 'keymap': {
-  \   'nnoremap <silent>': {
-  \     '<C-p>': ':<C-u>lprev<CR>',
-  \     '<C-n>': ':<C-u>lnext<CR>',
-  \   },
-  \ },
-  \ }
+  nnoremap <silent> (ctrlp) :<C-u>cprev<CR>
+  nnoremap <silent> (ctrln) :<C-u>cnext<CR>
+endfunction
 
-  let g:denite_mapping = {
-  \ 'name': 'Denite',
-  \ 'keymap': {
-  \   'nnoremap <silent>': {
-  \     '<C-p>': ':<C-u>Denite -resume -immediately -select=-1<CR>',
-  \     '<C-n>': ':<C-u>Denite -resume -immediately -select=+1<CR>',
-  \   },
-  \ },
-  \ }
+function! Set_locationlist_keymap() abort
+  let g:keymap = 'LocationList'
+  call lightline#update()
 
-  call extend(g:keymaps, [g:default_mapping])
-  call extend(g:keymaps, [g:quickfix_mapping])
-  call extend(g:keymaps, [g:location_list_mapping])
-  call extend(g:keymaps, [g:denite_mapping])
+  nnoremap <silent> (ctrlp) :<C-u>lprev<CR>
+  nnoremap <silent> (ctrln) :<C-u>lnext<CR>
+endfunction
 
-  AutoCmd VimEnter * KeyMapSet Default
-  AutoCmd FileType qf
-  \ if getwininfo(win_getid())[0].loclist |
-  \   highlight CursorColumn ctermfg=none ctermbg=235 |
-  \   highlight CursorLine   ctermfg=none ctermbg=235 |
-  \   execute 'KeyMapSet Default' |
-  \   execute 'KeyMapSet LocationList' |
-  \ elseif getwininfo(win_getid())[0].quickfix |
-  \   highlight CursorColumn ctermfg=none ctermbg=235 |
-  \   highlight CursorLine   ctermfg=none ctermbg=235 |
-  \   execute 'KeyMapSet Default' |
-  \   execute 'KeyMapSet QuickFix' |
-  \ endif
+function! Set_denite_keymap() abort
+  let g:keymap = 'Denite'
+  call lightline#update()
 
-  " AutoCmd FileType denite |
-  " \   highlight CursorColumn ctermfg=none ctermbg=236 |
-  " \   highlight CursorLine   ctermfg=none ctermbg=236 |
-  " \   execute 'KeyMapSet Default' |
-  " \   execute 'KeyMapSet Denite'
-endif
+  nnoremap <silent> (ctrlp) :<C-u>Denite -resume -immediately -select=-1<CR>
+  nnoremap <silent> (ctrln) :<C-u>Denite -resume -immediately -select=+1<CR>
+endfunction
+
+function! Set_visual_multi_keymap() abort
+  let g:keymap = 'VisualMulti'
+  call lightline#update()
+
+  unmap ;
+  unmap ,
+  call vm#themes#init()
+  call vm#plugs#init()
+  call vm#maps#default()
+  nmap <silent> (ctrln) <Plug>(VM-Find-Under)
+  xmap <silent> (ctrln) <Plug>(VM-Find-Subword-Under)
+  nnoremap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "(ctrlp)"
+  nnoremap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : "(ctrln)"
+endfunction
+
+nnoremap <silent> <Leader>kq :call Set_quickfix_keymap()<CR>
+nnoremap <silent> <Leader>kl :call Set_locationlist_keymap()<CR>
+nnoremap <silent> <Leader>kd :call Set_denite_keymap()<CR>
+nnoremap <silent> <Leader>km :call Set_visual_multi_keymap()<CR>
+
+AutoCmd BufEnter * call Set_default_keymap()
+AutoCmd FileType qf
+\ if getwininfo(win_getid())[0].loclist |
+\   highlight CursorColumn ctermfg=none ctermbg=235 |
+\   highlight CursorLine   ctermfg=none ctermbg=235 |
+\   call Set_default_keymap()      |
+\   call Set_locationlist_keymap() |
+\ elseif getwininfo(win_getid())[0].quickfix |
+\   highlight CursorColumn ctermfg=none ctermbg=235 |
+\   highlight CursorLine   ctermfg=none ctermbg=235 |
+\   call Set_default_keymap()  |
+\   call Set_quickfix_keymap() |
+\ endif
 " }}}
 
 " }}}1
@@ -2989,17 +3061,18 @@ AutoCmd ColorScheme * highlight Search       ctermfg=68   ctermbg=232
 AutoCmd ColorScheme * highlight Todo         ctermfg=229  ctermbg=none
 AutoCmd ColorScheme * highlight Visual       ctermfg=159  ctermbg=23
 
-AutoCmd ColorScheme * highlight link ParenMatch         MatchParen
-AutoCmd ColorScheme * highlight DeniteLine              ctermfg=111  ctermbg=236
-AutoCmd ColorScheme * highlight deniteSource_grepLineNR ctermfg=247  ctermbg=none
-AutoCmd ColorScheme * highlight deniteSource_grepFile   ctermfg=6    ctermbg=none
 AutoCmd ColorScheme * highlight ALEError                ctermfg=0    ctermbg=203
 AutoCmd ColorScheme * highlight ALEWarning              ctermfg=0    ctermbg=229
-AutoCmd ColorScheme * highlight CleverFDefaultLabel     ctermfg=9    ctermbg=236  cterm=underline,bold
-AutoCmd ColorScheme * highlight Sneak                   ctermfg=132  ctermbg=236  cterm=underline,bold
 AutoCmd ColorScheme * highlight BrighTestHighlight      ctermfg=none ctermbg=none cterm=underline
+AutoCmd ColorScheme * highlight CleverFDefaultLabel     ctermfg=9    ctermbg=236  cterm=underline,bold
+AutoCmd ColorScheme * highlight DeniteLine              ctermfg=111  ctermbg=236
+AutoCmd ColorScheme * highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold
 AutoCmd ColorScheme * highlight HighlightedyankRegion   ctermfg=1    ctermbg=none
+AutoCmd ColorScheme * highlight MatchParen              ctermfg=247  ctermbg=none
+AutoCmd ColorScheme * highlight MatchWord               ctermfg=none ctermbg=none cterm=underline,bold
 AutoCmd ColorScheme * highlight YankRoundRegion         ctermfg=209  ctermbg=237
+AutoCmd ColorScheme * highlight deniteSource_grepFile   ctermfg=6    ctermbg=none
+AutoCmd ColorScheme * highlight deniteSource_grepLineNR ctermfg=247  ctermbg=none
 
 " Fix lightline
 AutoCmd ColorScheme * highlight StatusLine   ctermfg=0 ctermbg=7
