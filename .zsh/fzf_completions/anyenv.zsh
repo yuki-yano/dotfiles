@@ -1,4 +1,4 @@
-#! /usr/bin/zsh
+#!/usr/bin/zsh
 
 function _fzf-anyenv-completion() {
   local tokens cmd1 cmd2 cmd3

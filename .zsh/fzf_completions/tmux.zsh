@@ -1,4 +1,4 @@
-#! /usr/bin/zsh
+#!/usr/bin/zsh
 
 function _fzf-tmux-completion() {
   local tokens cmd1 cmd2 cmd3 cmd4

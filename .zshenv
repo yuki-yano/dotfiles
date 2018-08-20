@@ -1,4 +1,4 @@
-#! /usr/local/bin/zsh
+#!/usr/local/bin/zsh
 
 # profile
 # zmodload zsh/zprof && zprof
