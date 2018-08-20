@@ -188,6 +188,7 @@ abbreviations=(
 "grm"    "git rm"
 "gs"     "git status --short --branch"
 "gb"     "git branch"
+"gbd"    "git branch -d"
 "gd"     "git dsf"
 "gdw"    "git dsf --color-words"
 "gdc"    "git dsf --cached"
