@@ -867,10 +867,16 @@ if [[ ! -f ~/.zsh/zgen/zgen.zsh.zwc ]] || [[ ~/.zsh/zgen/zgen.zsh -nt ~/.zsh/zge
 fi
 
 # fzf_completions
-for f in $(find ~/.zsh/fzf_completions/ -name "*.zsh")
-do
-  if [[ ! -f "$f.zwc" ]] || [[ $f -nt "$f.zwc" ]]; then
-    zcompile "$f"
+for f in $(find ~/.zsh/fzf_completions/ -name "*.zsh"); do
+  if [[ ! -f "${f}.zwc" ]] || [[ $f -nt "${f}.zwc" ]]; then
+    zcompile "${f}"
+  fi
+done
+
+# misc
+for f in $(find ~/.zsh/misc/ -name "*.zsh"); do
+  if [[ ! -f "${f}.zwc" ]] || [[ $f -nt "${f}.zwc" ]]; then
+    zcompile "${f}"
   fi
 done
 # }}}
