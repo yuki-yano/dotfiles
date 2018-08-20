@@ -208,7 +208,8 @@ abbreviations=(
 "tl"     "tmux list-sessions"
 "ta"     "tmux attach-session"
 "ts"     "tmux swap-pane -t"
-"cheats" "cheat --shell"
+"ch"     "cheat"
+"chs"    "cheat --shell"
 )
 
 function _magic-abbrev-expand-and-accept-line() {
