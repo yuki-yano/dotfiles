@@ -4,46 +4,51 @@
 " License: MIT License
 " Last Change: 2017-05-09T18:04:32+0900.
 " =============================================================================
-let s:base03  = ['#002b36', 233]
-let s:base02  = ['#073642', 236]
-let s:base01  = ['#586e75', 238]
-let s:base00  = ['#657b83', 241]
-let s:base0   = ['#839496', 244]
-let s:base1   = ['#93a1a1', 248]
-let s:base2   = ['#eee8d5', 251]
-let s:base3   = ['#fdf6e3', 255]
-let s:yellow  = ['#b58900', 136]
-let s:orange  = ['#cb4b16', 172]
-let s:red     = ['#dc322f', 52 ]
-let s:magenta = ['#d33682', 168]
-let s:blue    = ['#268bd2', 110]
-let s:cyan    = ['#2aa198', 24 ]
-let s:green   = ['#859900', 64 ]
+let s:base03     = ['#002b36', 233]
+let s:base02     = ['#073642', 236]
+let s:base01     = ['#586e75', 238]
+let s:base00     = ['#657b83', 241]
+let s:base0      = ['#839496', 244]
+let s:base1      = ['#93a1a1', 248]
+let s:base2      = ['#eee8d5', 251]
+let s:base3      = ['#fdf6e3', 255]
+let s:yellow     = ['#b58900', 136]
+let s:orange     = ['#cb4b16', 172]
+let s:red        = ['#dc322f', 52 ]
+let s:magenta    = ['#d33682', 168]
+let s:blue       = ['#268bd2', 110]
+let s:cyan       = ['#2aa198', 24 ]
+let s:green      = ['#859900', 64 ]
+let s:blue_green = ['#00AFAF', 37 ]
 
 let s:bold = 'bold'
 
 let s:normal = [
-\ [s:base3,  s:cyan  ],
-\ [s:orange, s:base02],
-\ [s:blue,   s:base03],
+\ [s:base3,      s:cyan  ],
+\ [s:blue_green, s:base02],
+\ [s:orange,     s:base03],
+\ [s:blue,       s:base03],
 \ ]
 
 let s:insert = [
-\ [s:base3,  s:yellow],
-\ [s:orange, s:base02],
-\ [s:blue,   s:base03],
+\ [s:base3,      s:yellow],
+\ [s:blue_green, s:base02],
+\ [s:orange,     s:base02],
+\ [s:blue,       s:base03],
 \ ]
 
 let s:visual = [
-\ [s:base3,  s:green ],
-\ [s:orange, s:base02],
-\ [s:blue,   s:base03],
+\ [s:base3,      s:green ],
+\ [s:blue_green, s:base02],
+\ [s:orange,     s:base02],
+\ [s:blue,       s:base03],
 \ ]
 
 let s:replace = [
-\ [s:base3,  s:magenta],
-\ [s:orange, s:base02 ],
-\ [s:blue,   s:base03 ],
+\ [s:base3,      s:magenta],
+\ [s:blue_green, s:base02 ],
+\ [s:orange,     s:base02 ],
+\ [s:blue,       s:base03 ],
 \ ]
 
 let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}

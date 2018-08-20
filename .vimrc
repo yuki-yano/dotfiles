@@ -2382,7 +2382,8 @@ if dein#tap('lightline.vim')
   \ 'colorscheme': 'iceberg_yano',
   \ 'active': {
   \   'left': [
-  \     ['mode', 'paste'],
+  \     ['mode', 'spell', 'paste'],
+  \     ['visual_multi'],
   \     ['denite', 'filepath', 'filename', 'anzu'],
   \     ['keymap'],
   \    ],
@@ -2393,7 +2394,7 @@ if dein#tap('lightline.vim')
   \   ],
   \ },
   \ 'inactive': {
-  \   'left': [['mode'], [], ['filepath', 'filename', 'keymap']],
+  \   'left': [['mode'], [], [], ['filepath', 'filename', 'keymap']],
   \   'right': [[], ['filetype', 'fileencoding', 'fileformat']],
   \ },
   \ 'tabline': {
@@ -2405,7 +2406,9 @@ if dein#tap('lightline.vim')
   \   'inactive': ['tabwinnum', 'filename'],
   \ },
   \ 'component': {
-  \   'paste': "%{&paste ? 'PASTE' : ''}",
+  \   'spell':        "%{&spell ? 'SPELL' : ''}",
+  \   'paste':        "%{&paste ? 'PASTE' : ''}",
+  \   'visual_multi': "%{exists('b:VM_Selection') && len(b:VM_Selection) ? 'Visual Multi' : ''}",
   \  },
   \ 'component_function': {
   \   'mode':         'Lightline_mode',
@@ -2430,8 +2433,9 @@ if dein#tap('lightline.vim')
   \   'keymap':       'Lightline_is_visible()',
   \ },
   \ 'component_function_visible_condition': {
-  \   'paste':    '&paste',
-  \   'spell':    '&spell',
+  \   'spell':        '&spell',
+  \   'paste':        '&paste',
+  \   'visual_multi': "exists('b:VM_Selection') && len(b:VM_Selection)",
   \ },
   \ 'component_type': {
   \   'linter_errors':   'error',
