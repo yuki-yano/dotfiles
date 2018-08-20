@@ -192,13 +192,14 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-textobj-user')
   call dein#add('kana/vim-operator-user')
 
-  call dein#add('kana/vim-textobj-entire',   {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['ie', 'ae']}})
-  call dein#add('kana/vim-textobj-fold',     {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['iz', 'az']}})
-  call dein#add('kana/vim-textobj-function', {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['if', 'af', 'iF', 'aF']}})
-  call dein#add('kana/vim-textobj-indent',   {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['ai', 'ii', 'aI',  'iI']}})
-  call dein#add('kana/vim-textobj-line',     {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['al', 'il']}})
-  call dein#add('mattn/vim-textobj-url',     {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['au', 'iu']}})
-  call dein#add('rhysd/vim-textobj-ruby',    {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['ar', 'ir']}, 'on_ft': 'ruby'})
+  call dein#add('kana/vim-textobj-entire',         {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['ie', 'ae']}})
+  call dein#add('kana/vim-textobj-fold',           {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['iz', 'az']}})
+  call dein#add('kana/vim-textobj-function',       {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['if', 'af', 'iF', 'aF']}})
+  call dein#add('kana/vim-textobj-indent',         {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['ai', 'ii', 'aI',  'iI']}})
+  call dein#add('kana/vim-textobj-line',           {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['al', 'il']}})
+  call dein#add('machakann/vim-textobj-delimited', {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['id', 'ad', 'iD', 'aD']}})
+  call dein#add('mattn/vim-textobj-url',           {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['au', 'iu']}})
+  call dein#add('rhysd/vim-textobj-ruby',          {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['ar', 'ir']}, 'on_ft': 'ruby'})
 
   call dein#add('haya14busa/vim-textobj-function-syntax', {'lazy': 1, 'on_source': 'vim-textobj-function'})
 
@@ -1942,6 +1943,16 @@ map <silent> <Leader>k <Plug>(edgemotion-k)
 " }}}3
 
 " expand-region {{{3
+" ad: delimited
+" ib: sandwich
+let g:expand_region_text_objects = {
+\ 'iw' : 0,
+\ 'iW' : 0,
+\ 'iu' : 0,
+\ 'ad' : 0,
+\ 'ib' : 1,
+\ }
+
 vmap v <Plug>(expand_region_expand)
 vmap V <Plug>(expand_region_shrink)
 " }}}3
