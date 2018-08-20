@@ -2415,8 +2415,6 @@ if dein#tap('lightline.vim')
   \   'lineinfo':     'Lightline_lineinfo',
   \   'fileencoding': 'Lightline_fileencoding',
   \   'fileformat':   'Lightline_fileformat',
-  \   'branch':       'gina#component#repo#preset',
-  \   'gitstatus':    'Lightline_git_status',
   \   'anzu':         'anzu#search_status',
   \   'denite':       'Lightline_denite',
   \   'keymap':       'Lightline_keymap',
@@ -2614,22 +2612,6 @@ if dein#tap('lightline.vim')
 
   function! Lightline_ale_ok() abort
     return count(g:ale_filetypes, &filetype) ? lightline#ale#ok() : ''
-  endfunction
-
-  function! Lightline_git_status() abort
-    if gina#component#repo#branch() ==# ''
-      return ''
-    else
-      let l:staged     = gina#component#status#staged()
-      let l:unstaged   = gina#component#status#unstaged()
-      let l:conflicted = gina#component#status#conflicted()
-      return printf(
-      \ 'S: %s, U: %s, C: %s',
-      \ l:staged ==# '' ? 0 : l:staged,
-      \ l:unstaged ==# '' ? 0 : l:unstaged,
-      \ l:conflicted ==# '' ? 0 : l:conflicted,
-      \ )
-    endif
   endfunction
 
   function! Lightline_denite() abort
