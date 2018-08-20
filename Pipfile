@@ -5,6 +5,7 @@ awscli
 flake8
 isort
 jedi
+json2yaml
 mypy
 neovim
 neovim-remote
