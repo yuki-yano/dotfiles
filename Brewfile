@@ -11,8 +11,6 @@ install mas
 
 ## Shell
 install bash
-install fzf
-install peco
 install rxvt-unicode
 install tmux --with-utf8proc
 install zsh --disable-etcdir
@@ -62,38 +60,27 @@ install redis
 install sqlite
 
 ## Utils
-install ag
 install asciinema
 install autoconf
 install automake
-install ccat
 install cmake
 install coreutils
 install ctags
 install ctop
 install curl
 install direnv
-install docker-clean
-install docker-completion
-install docker-compose-completion
 install dos2unix
 install eugenmayer/dockersync/unox
-install exa
-install fpp
 install gawk
 install global --with-pygments --with-ctags
 install gnu-sed
 install gpatch
 install gpg2
 install graphviz
-install gron
-install jq
-install jvgrep
 install nkf
 install pandoc
 install parallel
 install reattach-to-user-namespace
-install ripgrep
 install rlwrap
 install rsync
 install tldr
@@ -105,9 +92,7 @@ install wget
 install wine
 
 ## VCS
-install ghq
 install git
-install hub
 install mercurial
 install subversion
 install tig
