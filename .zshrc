@@ -201,6 +201,7 @@ abbreviations=(
 "gst"    "git stash"
 "gstp"   "git stash pop"
 "gq"     "git qsave"
+"gca"    "git cancel"
 "g"      "rg"
 "dco"    "docker-compose"
 "t"      "tmuximum"
