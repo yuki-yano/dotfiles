@@ -1,6 +1,6 @@
 # zplugin {{{
 
-if [[ ! -d $ZPLG_HOME ]]; then
+if [[ ! -d $ZPLG_HOME/bin ]]; then
   if whence git > /dev/null; then
     git clone --depth 10 https://github.com/zdharma/zplugin.git $ZPLG_HOME/bin
   fi
