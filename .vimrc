@@ -244,13 +244,14 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Appearance {{{3
+  " call dein#add('itchyny/vim-parenmatch')
   call dein#add('AndrewRadev/linediff.vim',       {'lazy': 1, 'on_cmd': ['Linediff', 'LinediffReset']})
   call dein#add('LeafCage/foldCC.vim')
   call dein#add('Shougo/echodoc.vim')
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
+  call dein#add('andymass/vim-matchup')
   call dein#add('itchyny/lightline.vim')
   call dein#add('itchyny/vim-highlighturl')
-  call dein#add('itchyny/vim-parenmatch')
   call dein#add('luochen1990/rainbow')
   call dein#add('machakann/vim-highlightedyank')
   call dein#add('maximbaz/lightline-ale')
@@ -2357,11 +2358,6 @@ if dein#tap('vim-highlightedyank')
   "
   " call timer_start(g:highlightedyank_highlight_duration, function('s:highlight_yank_enter'))
 endif
-" }}}3
-
-
-" hl_matchit {{{3
-let g:hl_matchit_enable_on_vim_startup = 1
 " }}}3
 
 " indent-line {{{3
