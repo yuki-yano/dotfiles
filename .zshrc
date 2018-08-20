@@ -107,6 +107,9 @@ zplugin light k4rthik/git-cal
 zplugin ice lucid wait"2" depth"1" as"program" mv"docker-clean -> ${ZPFX}/bin/docker-clean"
 zplugin light ZZROTDesign/docker-clean
 
+zplugin ice from"gh-r" as"program" bpick"*darwin*" mv"vegeta -> ${ZPFX}/bin/vegeta"
+zplugin light tsenart/vegeta
+
 zplugin ice lucid depth"1" wait'[[ -n ${ZLAST_COMMANDS[(r)extr*]} ]]'
 zplugin snippet OMZ::plugins/extract/extract.plugin.zsh
 
