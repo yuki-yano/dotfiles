@@ -95,7 +95,7 @@ zplugin light pocke/recc
 zplugin ice lucid wait'0' depth"1" as"program" atclone'go build -o ptmux' atpull'%atclone' mv"ptmux -> ${ZPFX}/bin/memo"
 zplugin light pocke/ptmux
 
-zplugin ice lucid wait"2" depth"1" as"program"
+zplugin ice wait"2" depth"1" lucid as"program" pick"bin/git-dsf"
 zplugin light zdharma/zsh-diff-so-fancy
 
 zplugin ice lucid wait"2" depth"1" as"program" src"git-sync.sh"
