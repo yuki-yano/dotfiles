@@ -456,6 +456,13 @@ vnoremap <Leader>r "sy:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><L
 nnoremap <silent> sc :<C-u>call system("pbcopy", @") <Bar> echo "Copied \" register to OS clipboard"<CR>
 nnoremap <silent> sp :<C-u>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>
 vnoremap <silent> sp :<C-u>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>gv
+
+"" Toggle
+nnoremap <silent> <Leader>th :<C-u>ToggleHighlight<CR>
+nnoremap <silent> <Leader>ts :<C-u>setlocal<Space>spell!<CR>
+nnoremap <silent> <Leader>tq :<C-u>ToggleQuickfix<CR>
+nnoremap <silent> <Leader>tq :<C-u>ToggleQuickfix<CR>
+nnoremap <silent> <Leader>tl :<C-u>ToggleLocationList<CR>
 " }}}2
 
 " Set Options {{{2
@@ -664,7 +671,6 @@ function! s:toggle_quickfix()
 endfunction
 
 command! ToggleQuickfix call <SID>toggle_quickfix()
-nnoremap <silent> <Leader>q :ToggleQuickfix<CR>
 " }}}2
 
 " ToggleLocationList {{{2
@@ -678,7 +684,6 @@ function! s:toggle_location_list()
 endfunction
 
 command! ToggleLocationList call <SID>toggle_location_list()
-nnoremap <silent> <Leader>l :ToggleLocationList<CR>
 " }}}2
 
 " ins-completion menu {{{2
@@ -981,6 +986,10 @@ let g:ale_change_sign_column_color = 1
 let g:ale_lint_on_text_changed     = 'never'
 let g:ale_lint_on_insert_leave     = 0
 let g:ale_echo_msg_format          = '[%linter%] %s'
+
+nnoremap <silent> <Leader>ta :<C-u>ALEToggle
+
+AutoCmd FileType zsh ALEDisableBuffer
 " }}}3
 
 " autoformat {{{3
@@ -2358,7 +2367,7 @@ let g:hl_matchit_enable_on_vim_startup = 1
 " indent-line {{{3
 let g:indentLine_enabled         = 0
 let g:indentLine_fileTypeExclude = ['json']
-nnoremap <silent> <Leader>i :<C-u>:IndentLinesToggle<CR>
+nnoremap <silent> <Leader>ti :<C-u>:IndentLinesToggle<CR>
 " }}}3
 
 " lightline {{{3
