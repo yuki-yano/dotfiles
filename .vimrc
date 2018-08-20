@@ -2078,6 +2078,11 @@ if dein#tap('lexima.vim')
     \ { 'filetype': 'vim', 'char': '{', 'at': '^".*{\%#$', 'input': '{{', 'input_after': '<CR>" }}}', 'priority': 10, },
     \ ]
 
+    "" shell
+    let l:rules += [
+    \ { 'filetype': ['sh', 'zsh'], 'char': '[', 'at': '\[\%#\]', 'input': '[<Space>', 'input_after': '<Space>]', 'priority': 10 },
+    \ ]
+
     for l:rule in l:rules
       call lexima#add_rule(l:rule)
     endfor
