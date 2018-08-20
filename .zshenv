@@ -107,6 +107,13 @@ path=(~/.go/bin(N-/) ~/.ghg/bin(N-/) $path)
 
 # rust
 path=(~/.cargo/bin(N-/) $path)
+if [[ ! -d $HOME/.cargo ]]; then
+  echo ">>>Install rustup \n"
+  yes 1 | curl https://sh.rustup.rs -sSf | sh
+  echo ">>>Install Completed \n"
+  rustup install stable
+  rustup default stable
+fi
 
 # llvm
 path=(/usr/local/opt/llvm/bin(N-/) $path)
