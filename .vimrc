@@ -788,25 +788,6 @@ command! HelpEdit call <SID>option_to_edit()
 command! HelpView call <SID>option_to_view()
 " }}}2
 
-" Accelerate {{{2
-function! s:accelerate() abort
-  :IndentLinesDisable
-  :RainbowToggleOff
-  :BrightestDisable
-  :ALEDisable
-endfunction
-
-function! s:disable_accelerate() abort
-  :IndentLinesEnable
-  :RainbowToggleOn
-  :BrightestEnable
-  :ALEEnable
-endfunction
-
-command! Accelerate        call <SID>accelerate()
-command! DisableAccelerate call <SID>disable_accelerate()
-" }}}2
-
 " VimShowHlGroup {{{2
 command! ShowHlGroup echo synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name')
 " }}}2
@@ -951,12 +932,7 @@ AutoCmd FileType git     nnoremap <silent> <buffer> q :<C-u>quit<CR>
 " altercmd {{{3
 if dein#tap('vim-altercmd')
   call altercmd#load()
-
-  AlterCommand! <cmdwin> hi            ToggleHighlight
-  AlterCommand! <cmdwin> sp            setlocal<Space>spell!
   AlterCommand! <cmdwin> show[hlgroup] ShowHlGroup
-  AlterCommand! <cmdwin> acc[elarate]  Accelerate
-  AlterCommand! <cmdwin> dacc[elarate] DisableAccelerate
 endif
 " }}}3
 
@@ -1660,8 +1636,8 @@ let g:committia_hooks                  = {}
 " }}}3
 
 " git-gutter {{{3
-AlterCommand! <cmdwin> gah GitGutterStageHunk
-AlterCommand! <cmdwin> grh GitGutterUndoHunk
+AlterCommand! <cmdwin> ga GitGutterStageHunk
+AlterCommand! <cmdwin> gr GitGutterUndoHunk
 
 let g:gitgutter_map_keys = 0
 nmap gn <Plug>GitGutterNextHunk
