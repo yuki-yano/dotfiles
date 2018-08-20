@@ -405,12 +405,12 @@ alias -g RCB='origin/$(git rev-parse --abbrev-ref HEAD)'
 # }}}
 
 # fzf {{{
-source ~/.zsh/fzf_completions/git.zsh
-source ~/.zsh/fzf_completions/anyenv.zsh
-source ~/.zsh/fzf_completions/tmux.zsh
+for f in $(find ~/.zsh/fzf_completions/ -name "*.zsh"); do
+  source "${f}"
+done
 
 function fzf-direct-completion() {
-  local tokens cmd
+  local tokens cmd lastcmd
   setopt localoptions noshwordsplit
 
   if [[ $BUFFER[-1] == $FZF_COMPLETION_TRIGGER ]]; then
@@ -425,6 +425,7 @@ function fzf-direct-completion() {
 
   tokens=(${(z)BUFFER})
   cmd=${tokens[1]}
+  lastcmd=${tokens[-1]}
 
   if [[ $cmd == "git" ]]; then
     zle fzf-git-completion
@@ -432,6 +433,8 @@ function fzf-direct-completion() {
     zle fzf-anyenv-completion
   elif [[ $cmd == "tmux" ]]; then
     zle fzf-tmux-completion
+  elif [[ $lastcmd == "rspec" || $lastcmd == "grspec" ]]; then
+    zle fzf-rspec-completion
   else
     zle expand-or-complete
   fi
@@ -466,9 +469,14 @@ function f() {
 }
 
 # Global Alias
-alias -g  B='$(git branch -a | fzf-branch | fzf --multi --preview="git fzflog {}" --prompt "All Branches>" | sed -e "s/^\*\s*//g")'
+
+## Git
+alias -g  B='$(git branch -a | fzf-branch | fzf --multi --preview="git fzflog {}" --prompt "All Branches>"    | sed -e "s/^\*\s*//g")'
 alias -g RB='$(git branch -r | fzf-branch | fzf --multi --preview="git fzflog {}" --prompt "Remote Branches>" | sed -e "s/^\*\s*//g")'
 alias -g LB='$(git branch    | fzf-branch | fzf --multi --preview="git fzflog {}" --prompt "Local Branches>"  | sed -e "s/^\*\s*//g")'
+
+## RSpec
+alias -g RS='$(git status --short | fzf-git-rspec | fzf --multi --preview="git diff --color=always {}" --prompt "Changed RSpec>")'
 
 # }}}
 
