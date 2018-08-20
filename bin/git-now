@@ -4,77 +4,83 @@ PREFIX="from now"
 MESSAGE="[${PREFIX}] `date +\"%Y/%m/%d %T\"`"
 
 get_amend() {
-    if [ -z `git log --pretty=oneline -1 | cut -d " " -f 2- | grep "^\[${PREFIX}]"` ]
-    then
-        return 1
-    fi
-
-    local added_files=`git diff --name-only --cached`
-    for f1 in `git diff --name-only HEAD^ HEAD`
-    do
-        for f2 in $added_files
-        do
-            if [ $f1 == $f2 ]
-            then
-                return 1
-            fi
-        done
-    done
-    echo "--amend"
+  if [ -z `git log --pretty=oneline --no-color -1 | cut -d " " -f 2- | grep "^\[${PREFIX}]"` ]
+  then
     return 1
+  fi
+
+  local added_files=`git diff --name-only --cached`
+  for f1 in `git diff --name-only HEAD^ HEAD`
+  do
+    for f2 in $added_files
+    do
+      if [ $f1 == $f2 ]
+      then
+        return 1
+      fi
+    done
+  done
+  echo "--amend"
+  return 1
 }
 
 if [ $# -eq 0 ]
 then
-    git add -u
-    git commit -m "${MESSAGE}"
+  git add -u
+  git commit -m "${MESSAGE}"
 elif [ $1 == "--compact" ]
 then
-    git add -A
-    AMEND=`get_amend`
-    git commit $AMEND -m "${MESSAGE}"
+  git add -A
+  AMEND=`get_amend`
+  git commit $AMEND -m "${MESSAGE}"
 elif [ $1 == "--recent" ]
 then
-    git add -A
-    if [ -z "`git log --since=1.minute`" ]
-    then
-        git commit -m "${MESSAGE}"
-    else
-        git commit --amend -m "${MESSAGE}"
-    fi
+  git add -A
+  if [ -z "`git log --since=1.minute`" ]
+  then
+    git commit -m "${MESSAGE}"
+  else
+    git commit --amend -m "${MESSAGE}"
+  fi
 elif [ $1 == "--fixup" ]
 then
-    FIRST_NOW_COMMIT=`git log --pretty=oneline --grep="${PREFIX}" | tail -n 1 | cut -d " " -f 1`
-    git reset ${FIRST_NOW_COMMIT}
-    git add -A
-    if [ $# -eq 2 ]
-    then
-        git commit --amend -m "$2"
-    else
-        git commit --amend
-    fi
+  WORKING_BRANCH=`git branch -l | grep "*" | cut -d " " -f 2`
+  if [ $WORKING_BRANCH == "master" ]
+  then
+    FIRST_NOW_COMMIT=`git log --pretty=oneline --no-color --grep="${PREFIX}" | tail -n 1 | cut -d " " -f 1`
+  else
+    FIRST_NOW_COMMIT=`git log master.. --pretty=oneline --no-color --grep="${PREFIX}" | tail -n 1 | cut -d " " -f 1`
+  fi
+  git reset ${FIRST_NOW_COMMIT}
+  git add -A
+  if [ $# -eq 2 ]
+  then
+    git commit --amend -m "$2"
+  else
+    git commit --amend
+  fi
 elif [ $1 != "--rebase" ]
 then
-    if [ $1 != "--all" ]
-    then
-        git add $@
-    else
-        git add -u
-        git add .
-    fi
-    printf "${MESSAGE}\n\n%s" "`git diff --cached`" | git commit -F -
+  if [ $1 != "--all" ]
+  then
+    git add $@
+  else
+    git add -u
+    git add .
+  fi
+  printf "${MESSAGE}\n\n%s" "`git diff --cached`" | git commit -F -
 else
-    FIRST_NOW_COMMIT=`git log --pretty=oneline --grep="${PREFIX}" | tail -n 1 | cut -d " " -f 1`
-    INITIAL_COMMIT=`git log --pretty=oneline | tail -n 1 | cut -d " " -f 1`
+  FIRST_NOW_COMMIT=`git log master.. --pretty=oneline --no-color --grep="${PREFIX}" | tail -n 1 | cut -d " " -f 1`
+  INITIAL_COMMIT=`git log master.. --pretty=oneline --no-color | tail -n 1 | cut -d " " -f 1`
 
-    if [ ${FIRST_NOW_COMMIT} != ${INITIAL_COMMIT} ]
-    then
-        git rebase -i ${FIRST_NOW_COMMIT}^
-    else
-        WORKING_BRANCH=`git branch -l | grep "*" | cut -d " " -f 2`
+  if [ ${FIRST_NOW_COMMIT} != ${INITIAL_COMMIT} ]
+  then
+    git rebase -i ${FIRST_NOW_COMMIT}^
+  else
+    WORKING_BRANCH=`git branch -l | grep "*" | cut -d " " -f 2`
 
-        git checkout ${FIRST_NOW_COMMIT}
-        git commit --amend
-        git rebase --onto HEAD ${FIRST_NOW_COMMIT} ${WORKING_BRANCH}
-    fi
+    git checkout ${FIRST_NOW_COMMIT}
+    git commit --amend
+    git rebase --onto HEAD ${FIRST_NOW_COMMIT} ${WORKING_BRANCH}
+  fi
 fi
