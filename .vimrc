@@ -229,7 +229,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('junegunn/vim-easy-align',       {'lazy': 1, 'on_cmd': 'EasyAlign'})
   call dein#add('machakann/vim-swap',            {'lazy': 1, 'on_cmd': '<Plug>'})
   call dein#add('mg979/vim-visual-multi',        {'rev': 'test'})
-  call dein#add('mileszs/ack.vim',               {'lazy': 1, 'on_cmd': 'Ack'})
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',          {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/accelerated-jk',          {'lazy': 1, 'on_map': '<Plug>'})
@@ -241,6 +240,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tpope/vim-repeat')
   call dein#add('tpope/vim-speeddating',         {'lazy': 1, 'on_map': {'n': '<Plug>'}})
   call dein#add('vim-scripts/Align',             {'lazy': 1, 'on_cmd': 'Align'})
+  call dein#add('wincent/ferret')
   " }}}3
 
   " Appearance {{{3
@@ -1777,13 +1777,6 @@ if dein#tap('accelerated-jk')
 endif
 " }}}3
 
-" ack {{{3
-AlterCommand! <cmdwin> ag  Ack!
-AlterCommand! <cmdwin> ack Ack!
-
-let g:ackprg = 'ag --vimgrep'
-" }}}3
-
 " ctrlsf {{{3
 AlterCommand! <cmdwin> grep CtrlSF<Space>-R
 AlterCommand! <cmdwin> csu  CtrlSFUpdate
@@ -1946,6 +1939,15 @@ let g:expand_region_text_objects = {
 
 vmap v <Plug>(expand_region_expand)
 vmap V <Plug>(expand_region_shrink)
+" }}}3
+
+" ferret {{{3
+AlterCommand! <cmdwin> rg  Ack<Space>--smart-case
+AlterCommand! <cmdwin> ack Ack<Space>--smart-case
+
+let g:FerretMap      = 0
+let g:FerretHlsearch = 1
+let g:FerretAutojump = 0
 " }}}3
 
 " jplus {{{3
