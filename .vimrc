@@ -227,6 +227,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('haya14busa/vim-edgemotion',     {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-metarepeat',     {'lazy': 1, 'on_map': ['go', 'g.', '<Plug>']})
   call dein#add('junegunn/vim-easy-align',       {'lazy': 1, 'on_cmd': 'EasyAlign'})
+  call dein#add('machakann/vim-swap',            {'lazy': 1, 'on_cmd': '<Plug>'})
   call dein#add('mg979/vim-visual-multi',        {'rev': 'test'})
   call dein#add('mileszs/ack.vim',               {'lazy': 1, 'on_cmd': 'Ack'})
   call dein#add('osyo-manga/vim-anzu')
@@ -2168,6 +2169,14 @@ let g:splitjoin_join_mapping = ''
 
 " nnoremap <silent> <Leader>j :SplitjoinJoin<CR>
 " nnoremap <silent> <Leader>s :SplitjoinSplit<CR>
+" }}}3
+
+" swap {{{3
+let g:swap_no_default_key_mappings = 1
+nmap g< <Plug>(swap-prev)
+nmap g> <Plug>(swap-next)
+" nmap gs <Plug>(swap-interactive)
+" xmap gs <Plug>(swap-interactive)
 " }}}3
 
 " switch {{{3
