@@ -1242,7 +1242,7 @@ if dein#tap('unite.vim')
   let g:unite_force_overwrite_statusline = 0
   let g:unite_source_rec_max_cache_files = 10000
   let g:unite_enable_auto_select         = 0
-  let g:unite_data_directory             = expand("~/.cache/vim/unite")
+  let g:unite_data_directory             = expand('~/.cache/vim/unite')
 
   "" keymap
   function! s:unite_settings()
@@ -1279,8 +1279,8 @@ endif
 " }}}3
 
 " neomru {{{3
-let g:neomru#file_mru_path       = expand("~/.cache/vim/neomru/file")
-let g:neomru#dictionary_mru_path = expand("~/.cache/vim/neomru/dictionary")
+let g:neomru#file_mru_path       = expand('~/.cache/vim/neomru/file')
+let g:neomru#dictionary_mru_path = expand('~/.cache/vim/neomru/dictionary')
 " }}}3
 
 " fzf {{{3
@@ -1732,7 +1732,7 @@ endif
 
 " vimfiler {{{3
 let g:vimfiler_safe_mode_by_default = 0
-let g:vimfiler_data_directory = expand("~/.cache/vim/vimfiler")
+let g:vimfiler_data_directory = expand('~/.cache/vim/vimfiler')
 let g:vimfiler_execute_file_list    = {'jpg': 'open', 'jpeg': 'open', 'gif': 'open', 'png': 'open'}
 let g:vimfiler_enable_auto_cd       = 1
 let g:vimfiler_ignore_pattern       = '^\%(.git\|.DS_Store\)$'
@@ -2208,7 +2208,7 @@ let g:VM_maps['Start Regex Search']          = 'g/'
 let g:VM_maps['Select All']                  = '<A-a>'
 let g:VM_maps['Add Cursor Down']             = '<A-S-j>'
 let g:VM_maps['Add Cursor Up']               = '<A-S-k>'
- 
+
 let g:VM_maps['Visual All']                  = '<A-S-a>'
 let g:VM_maps['Visual Add']                  = '<A-a>'
 let g:VM_maps['Visual Find']                 = '<C-f>'
@@ -2216,16 +2216,16 @@ let g:VM_maps['Visual Cursors']              = '<C-c>'
 let g:VM_maps['Visual Star']                 = '*'
 let g:VM_maps['Visual Hash']                 = '#'
 let g:VM_maps['Visual Subtract']             = '<C-s>'
- 
+
 let g:VM_maps['Select l']                    = '<A-S-l>'
 let g:VM_maps['Select h']                    = '<A-S-h>'
 let g:VM_maps['Select w']                    = '<A-S-w>'
 let g:VM_maps['Select b']                    = '<A-S-b>'
- 
+
 let g:VM_maps['Switch Mode']                 = '<Tab>'
 let g:VM_maps['Toggle Block']                = '<BS>'
 let g:VM_maps['Toggle Only This Region']     = '<CR>'
- 
+
 let g:VM_maps['Find I Word']                 = 's]'
 let g:VM_maps['Find A Word']                 = 's['
 let g:VM_maps['Find I Whole Word']           = 's}'
@@ -2250,20 +2250,20 @@ let g:VM_maps['Case Conversion Menu']        = '<leader>c'
 let g:VM_maps['Search Menu']                 = '<leader>S'
 let g:VM_maps['Rewrite Last Search']         = '<leader>r'
 let g:VM_maps['Toggle Multiline']            = 'M'
- 
+
 let g:VM_maps['Surround']                    = 'S'
 let g:VM_maps['Merge Regions']               = '<leader>m'
 let g:VM_maps['Transpose']                   = '<leader>t'
 let g:VM_maps['Duplicate']                   = '<leader>d'
 let g:VM_maps['Align']                       = '<leader>a'
 let g:VM_maps['Split Regions']               = '<leader>s'
- 
+
 let g:VM_maps['Run Normal']                  = 'zz'
 let g:VM_maps['Run Last Normal']             = 'Z'
 let g:VM_maps['Run Visual']                  = 'zv'
 let g:VM_maps['Run Last Visual']             = '<M-z>'
 let g:VM_maps['Run Ex']                      = 'zx'
- 
+
 let g:VM_maps['D']                           = 'D'
 let g:VM_maps['Y']                           = 'Y'
 let g:VM_maps['x']                           = 'x'
@@ -2291,7 +2291,7 @@ let g:VM_maps['P Paste Regions']             = 'P'
 let g:VM_maps['p Paste Normal']              = '<leader>p'
 let g:VM_maps['P Paste Normal']              = '<leader>P'
 " }}}3
- 
+
 " yankround {{{3
 if dein#tap('yankround.vim')
   let g:yankround_max_history   = 1000
@@ -2873,7 +2873,7 @@ nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
 
 " miniyank {{{3
 let g:miniyank_maxitems = 100
-let g:miniyank_filename = expand("~/.cache/vim/miniyank.mpack")
+let g:miniyank_filename = expand('~/.cache/vim/miniyank.mpack')
 " }}}3
 
 " open-browser {{{3
