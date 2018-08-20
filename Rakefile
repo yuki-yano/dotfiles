@@ -23,6 +23,7 @@ DOTFILES_SRCS = %w[
   .railsrc
   .rdebugrc
   .rgignore
+  .ripgreprc
   .stylelintrc
   .textlintrc
   .tigrc

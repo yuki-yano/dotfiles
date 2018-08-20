@@ -31,6 +31,9 @@ export XDG_CONFIG_HOME=$HOME/.config
 # gtags
 export GTAGSLABEL=pygments
 
+# ripgrep
+RIPGREP_CONFIG_PATH=$HOME/.ripgreprc
+
 # homebrew
 alias brew='env PATH=${PATH/${HOME}\/\.pyenv\/shims:/} brew'
 
