@@ -900,6 +900,14 @@ AutoCmd FileType vim set keywordprg=:help
 AutoCmd FileType sh,bash,zsh set keywordprg=man
 " }}}2
 
+" Set quit {{{2
+AutoCmd FileType help    nnoremap <silent> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType man     nnoremap <silent> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType qf      nnoremap <silent> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType diff    nnoremap <silent> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType git     nnoremap <silent> <buffer> q :<C-u>quit<CR>
+" }}}2
+
 " }}}1
 
 " Command Line Window {{{1
@@ -921,14 +929,6 @@ function! s:init_cmdwin() abort
   " nnoremap <silent> <buffer> dd :<C-u>rviminfo<CR>:call histdel(getcmdwintype(), line('.') - line('$'))<CR>:wviminfo!<CR>dd
   startinsert!
 endfunction
-" }}}1
-
-" set quit {{{1
-AutoCmd FileType help    nnoremap <silent> <buffer> q :<C-u>quit<CR>
-AutoCmd FileType man     nnoremap <silent> <buffer> q :<C-u>quit<CR>
-AutoCmd FileType qf      nnoremap <silent> <buffer> q :<C-u>quit<CR>
-AutoCmd FileType diff    nnoremap <silent> <buffer> q :<C-u>quit<CR>
-AutoCmd FileType git     nnoremap <silent> <buffer> q :<C-u>quit<CR>
 " }}}1
 
 " Plugin Settings {{{1
