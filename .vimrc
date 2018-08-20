@@ -2153,8 +2153,8 @@ endif
 let g:splitjoin_split_mapping = ''
 let g:splitjoin_join_mapping = ''
 
-" nnoremap <silent> <Leader>j :SplitjoinJoin<CR>
-" nnoremap <silent> <Leader>s :SplitjoinSplit<CR>
+nnoremap <silent> <Leader>J :SplitjoinJoin<CR>
+nnoremap <silent> <Leader>S :SplitjoinSplit<CR>
 " }}}3
 
 " swap {{{3
