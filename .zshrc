@@ -86,13 +86,13 @@ zplugin light peco/peco
 zplugin ice lucid wait"0" depth"1" as"program" src"tmuximum.plugin.zsh" atload"set_tmuximum" pick"tmuximum"
 zplugin light yuki-ycino/tmuximum
 
-zplugin ice lucid wait'0' depth"1" as"program" atclone'go build -o memo' atpull'%atclone' src="misc/completion.zsh" mv"memo -> ${ZPFX}/bin/memo"
+zplugin ice from"gh-r" as"program" bpick"*darwin_amd*" mv"memo -> ${ZPFX}/bin/memo"
 zplugin light mattn/memo
 
-zplugin ice lucid wait'0' depth"1" as"program" atclone'go build -o recc' atpull'%atclone' mv"recc -> ${ZPFX}/bin/memo"
+zplugin ice lucid wait'0' depth"1" as"program" atclone'go build -o recc && mv recc ${ZPFX}/bin/recc' atpull'%atclone'
 zplugin light pocke/recc
 
-zplugin ice lucid wait'0' depth"1" as"program" atclone'go build -o ptmux' atpull'%atclone' mv"ptmux -> ${ZPFX}/bin/memo"
+zplugin ice lucid wait'0' depth"1" as"program" atclone'go build -o ptmux && mv ptmux ${ZPFX}/bin/ptmux' atpull'%atclone'
 zplugin light pocke/ptmux
 
 zplugin ice wait"2" depth"1" lucid as"program" pick"bin/git-dsf"
