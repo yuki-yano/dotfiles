@@ -101,6 +101,9 @@ zplugin light zdharma/zsh-diff-so-fancy
 zplugin ice lucid wait"2" depth"1" as"program" src"git-sync.sh"
 zplugin light caarlos0/zsh-git-sync
 
+zplugin ice lucid wait"2" depth"1" as"program" atclone'perl Makefile.PL PREFIX=$ZPFX' atpull'%atclone' make'install' pick"$ZPFX/bin/git-cal"
+zplugin light k4rthik/git-cal
+
 zplugin ice lucid wait"2" depth"1" as"program" mv"docker-clean -> ${ZPFX}/bin/docker-clean"
 zplugin light ZZROTDesign/docker-clean
 
