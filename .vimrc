@@ -156,7 +156,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('hewes/unite-gtags')
   call dein#add('Shougo/neomru.vim')
 
-  call dein#local('/usr/local/opt/', {}, ['fzf'])
+  call dein#add('junegunn/fzf', {'build': './install --bin', 'merged': 0})
   call dein#add('junegunn/fzf.vim')
   call dein#add('yuki-ycino/fzf-preview.vim',
   \ {'lazy': 1,
