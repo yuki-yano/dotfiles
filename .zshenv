@@ -42,6 +42,9 @@ RIPGREP_CONFIG_PATH=$HOME/.ripgreprc
 # homebrew
 alias brew='env PATH=${PATH/${HOME}\/\.pyenv\/shims:/} brew'
 
+# ruby
+alias grspec='rspec'
+
 # rbenv
 path=(~/.rbenv/shims(N-/) $path)
 export RBENV_SHELL=zsh
