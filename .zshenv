@@ -12,7 +12,7 @@ export VISUAL=nvim
 export MANPAGER='nvim -c MANPAGER -'
 alias c=ccat
 
-# path_helperを実行しないようにする
+# Disable path_helper
 # show: http://qiita.com/t-takaai/items/8574ff312f2caa5177c2
 setopt no_global_rcs
 
@@ -48,7 +48,7 @@ export RBENV_SHELL=zsh
 function rbenv() {
   local command
   command="$1"
-  if [ "$#" -gt 0 ]; then
+  if [[ "$#" -gt 0 ]]; then
     shift
   fi
 
@@ -71,7 +71,7 @@ export PYTHON_CONFIGURE_OPTS='--enable-framework'
 pyenv() {
   local command
   command="$1"
-  if [ "$#" -gt 0 ]; then
+  if [[ "$#" -gt 0 ]]; then
     shift
   fi
 
@@ -89,7 +89,7 @@ export NODENV_SHELL=zsh
 nodenv() {
   local command
   command="$1"
-  if [ "$#" -gt 0 ]; then
+  if [[ "$#" -gt 0 ]]; then
     shift
   fi
 
@@ -203,6 +203,6 @@ alias -g C='| pbcopy'
 path=(~/dotfiles/bin(N-/) $path)
 
 # config
-[ -f ~/.config/nicovideo-dump.zsh ] && source "${XDG_CONFIG_HOME}/nicovideo-dump.zsh"
+[[ -f ~/.config/nicovideo-dump.zsh ]] && source "${XDG_CONFIG_HOME}/nicovideo-dump.zsh"
 
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:
