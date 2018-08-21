@@ -419,7 +419,7 @@ function fzf-direct-completion() {
   local tokens cmd lastcmd
   setopt localoptions noshwordsplit
 
-  if [[ $BUFFER[-1] == $FZF_COMPLETION_TRIGGER ]]; then
+  if [[ $BUFFER[-1] == $FZF_COMPLETION_TRIGGER && $BUFFER[-2] == " " ]]; then
     zle fzf-completion
     return
   fi
