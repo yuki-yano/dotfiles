@@ -122,7 +122,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
     " call dein#add('blueyed/vim-auto-programming', {'rev': 'neovim'})
     " call dein#add('fishbullet/deoplete-ruby',   {'lazy': 1, 'on_ft': ['ruby', 'eruby']})
-    call dein#add('autozimu/LanguageClient-neovim', {'lazy': 1, 'on_ft': ['typescript', 'ruby'], 'rev': 'next', 'build': 'bash install.sh'})
+    call dein#add('autozimu/LanguageClient-neovim', {'rev': 'next', 'build': 'bash install.sh'})
     call dein#add('carlitux/deoplete-ternjs',       {'lazy': 1, 'on_ft': 'javascript'})
     call dein#add('machakann/vim-Verdin',           {'lazy': 1, 'on_ft': 'vim'})
     call dein#add('wokalski/autocomplete-flow',     {'lazy': 1, 'on_ft': 'javascript'})
@@ -1597,7 +1597,6 @@ endif
 " LanguageClient {{{3
 let g:LanguageClient_autoStart = 1
 let g:LanguageClient_serverCommands = {
-\ 'typescript': ['javascript-typescript-stdio'],
 \ 'ruby': [ 'solargraph',  'stdio' ],
 \ }
 " }}}3
