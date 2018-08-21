@@ -1991,47 +1991,53 @@ if dein#tap('lexima.vim')
 
     "" Parenthesis
     let l:rules += [
-    \ { 'char': '(',    'at': '(\%#)', 'input': '<Del>',     },
-    \ { 'char': '(',    'at': '(\%#',                        },
-    \ { 'char': '<BS>', 'at': '(\%#)', 'input': '<BS><Del>', },
+    \ { 'char': '(',     'at': '(\%#)', 'input': '<Del>',     },
+    \ { 'char': '(',     'at': '(\%#',                        },
+    \ { 'char': '<BS>',  'at': '(\%#)', 'input': '<BS><Del>', },
+    \ { 'char': '<TAB>', 'at': '\%#)',  'input': '<Right>'    },
     \ ]
 
     "" Brace
     let l:rules += [
-    \ { 'char': '{',    'at': '{\%#}', 'input': '<Del>',     },
-    \ { 'char': '{',    'at': '{\%#',                        },
-    \ { 'char': '<BS>', 'at': '{\%#}', 'input': '<BS><Del>', },
+    \ { 'char': '{',     'at': '{\%#}', 'input': '<Del>',     },
+    \ { 'char': '{',     'at': '{\%#',                        },
+    \ { 'char': '<BS>',  'at': '{\%#}', 'input': '<BS><Del>', },
+    \ { 'char': '<TAB>', 'at': '\%#}',  'input': '<Right>'    },
     \ ]
 
     "" Bracket
     let l:rules += [
-    \ { 'char': '[',    'at': '\[\%#\]', 'input': '<Del>',     },
-    \ { 'char': '[',    'at': '\[\%#',                         },
-    \ { 'char': '<BS>', 'at': '\[\%#\]', 'input': '<BS><Del>', },
+    \ { 'char': '[',     'at': '\[\%#\]', 'input': '<Del>',     },
+    \ { 'char': '[',     'at': '\[\%#',                         },
+    \ { 'char': '<BS>',  'at': '\[\%#\]', 'input': '<BS><Del>', },
+    \ { 'char': '<TAB>', 'at': '\%#\]',   'input': '<Right>'    },
     \ ]
 
     "" Sinble Quote
     let l:rules += [
-    \ { 'char': "'",    'at': "'\\%#'", 'input': '<Del>', },
-    \ { 'char': "'",    'at': "'\\%#",                    },
-    \ { 'char': "'",    'at': "''\\%#",                   },
-    \ { 'char': '<BS>', 'at': "'\\%#'", 'input': '<Del>', },
+    \ { 'char': "'",     'at': "'\\%#'", 'input': '<Del>',  },
+    \ { 'char': "'",     'at': "'\\%#",                     },
+    \ { 'char': "'",     'at': "''\\%#",                    },
+    \ { 'char': '<BS>',  'at': "'\\%#'", 'input': '<Del>',  },
+    \ { 'char': '<TAB>', 'at': "\\%#'",  'input': '<Right>' },
     \ ]
 
     "" Double Quote
     let l:rules += [
-    \ { 'char': '"',    'at': '"\%#"', 'input': '<Del>', },
-    \ { 'char': '"',    'at': '"\%#',                    },
-    \ { 'char': '"',    'at': '""\%#',                   },
-    \ { 'char': '<BS>', 'at': '"\%#"', 'input': '<Del>', },
+    \ { 'char': '"',     'at': '"\%#"', 'input': '<Del>',  },
+    \ { 'char': '"',     'at': '"\%#',                     },
+    \ { 'char': '"',     'at': '""\%#',                    },
+    \ { 'char': '<BS>',  'at': '"\%#"', 'input': '<Del>',  },
+    \ { 'char': '<TAB>', 'at': '\%#"',  'input': '<Right>' },
     \ ]
 
     "" Back Quote
     let l:rules += [
-    \ { 'char': '`',    'at': '`\%#`', 'input': '<Del>', },
-    \ { 'char': '`',    'at': '`\%#',                    },
-    \ { 'char': '`',    'at': '``\%#',                   },
-    \ { 'char': '<BS>', 'at': '`\%#`', 'input': '<Del>', },
+    \ { 'char': '`',     'at': '`\%#`', 'input': '<Del>',  },
+    \ { 'char': '`',     'at': '`\%#',                     },
+    \ { 'char': '`',     'at': '``\%#',                    },
+    \ { 'char': '<BS>',  'at': '`\%#`', 'input': '<Del>',  },
+    \ { 'char': '<TAB>', 'at': '\%#`',  'input': '<Right>' },
     \ ]
 
     "" ruby
