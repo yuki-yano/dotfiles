@@ -202,6 +202,7 @@ abbreviations=(
 "gdw"    "git dsf --color-words"
 "gdc"    "git dsf --cached"
 "gdcw"   "git dsf --cached --color-words"
+"gmv"    "git mv"
 "gco"    "git checkout"
 "gcof"   "git checkout --"
 "gfo"    "git forget"
