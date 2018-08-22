@@ -114,8 +114,8 @@ if [[ ! -d $HOME/.cargo ]]; then
   echo ">>>Install rustup \n"
   yes 1 | curl https://sh.rustup.rs -sSf | sh
   echo ">>>Install Completed \n"
-  rustup install stable
-  rustup default stable
+  rustup install nightly
+  rustup default nightly
 fi
 
 # llvm
