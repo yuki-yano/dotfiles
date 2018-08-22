@@ -66,7 +66,6 @@ install automake
 install cmake
 install coreutils
 install ctags
-install ctop
 install curl
 install direnv
 install dos2unix
