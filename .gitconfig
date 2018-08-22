@@ -65,7 +65,7 @@
   cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
 
 [diff-so-fancy]
-  markEmptyLines = false
+  markEmptyLines = true
   stripLeadingSymbols = true
 
 [mergetool "Kaleidoscope"]
