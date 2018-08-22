@@ -69,7 +69,7 @@ zplugin light mafredri/zsh-async
 zplugin ice lucid wait"0" depth"1" blockf
 zplugin light zsh-users/zsh-completions
 
-zplugin ice lucid depth"1" wait'[[ -n ${ZLAST_COMMANDS[(r)rbe*]} ]] || [[ -n ${ZLAST_COMMANDS[(r)pye*]} ]] || [[ -n ${ZLAST_COMMANDS[(r)node*]} ]]'
+zplugin ice lucid wait'0' depth"1"
 zplugin light 39e/zsh-completions-anyenv
 
 # fuzzy finder
@@ -113,14 +113,14 @@ zplugin light ZZROTDesign/docker-clean
 zplugin ice from"gh-r" as"program" bpick"*darwin*" mv"vegeta -> ${ZPFX}/bin/vegeta"
 zplugin light tsenart/vegeta
 
-zplugin ice lucid depth"1" wait'[[ -n ${ZLAST_COMMANDS[(r)extr*]} ]]'
+zplugin ice lucid wait"2" depth"1"
 zplugin snippet OMZ::plugins/extract/extract.plugin.zsh
 
-zplugin ice lucid depth"1" wait'[[ -n ${ZLAST_COMMANDS[(r)genc*]} ]]'
+zplugin ice lucid wait"2" depth"1"
 zplugin light RobSis/zsh-completion-generator
 
 # util
-zplugin ice lucid depth"1" wait"2"
+zplugin ice lucid wait"2" depth"1"
 zplugin light yukiycino-dotfiles/fancy-ctrl-z
 
 zplugin ice lucid wait"2"
