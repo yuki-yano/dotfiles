@@ -1,5 +1,4 @@
 SRC_DIR        = File.dirname(File.expand_path(__FILE__))
-VIMPERATOR_DIR = File.join(SRC_DIR, '.vimperator')
 ZPLUGIN_DIR    = File.join(ENV['HOME'], '.zplugin')
 ZGEN_DIR       = File.join(ENV['HOME'], '.zsh/zgen')
 DOTFILES_SRCS = %w[
@@ -14,11 +13,8 @@ DOTFILES_SRCS = %w[
   .gemrc
   .gitattributes_global
   .gitconfig
-  .githudrc
   .gitignore_global
   .globalrc
-  .gvimrc
-  .ideavimrc
   .pryrc
   .railsrc
   .rdebugrc
@@ -29,14 +25,11 @@ DOTFILES_SRCS = %w[
   .tigrc
   .tmux.conf
   .vim
-  .vimperator
-  .vimperatorrc
   .vimrc
   .zsh
   .zshenv
   .zshrc
 ].freeze
-OSX_SCRIPTS = FileList['osx/**/*.sh']
 
 namespace :dotfiles do
   desc 'Install dotfiles'
@@ -88,34 +81,24 @@ namespace :zsh do
 end
 
 namespace :gem do
+  desc 'Install gem'
+  task install: 'GemGlobal' do
+    packages = File.readlines('GemGlobal').map(&:chomp).join(' ')
+    sh 'rbenv rehash'
+    sh "gem install #{packages}"
+  end
+
   desc 'Uninstall gem'
   task :uninstall do
     sh 'rbenv rehash'
     sh 'gem uninstall --all --ignore-dependencies --executables $(gem list | grep -v "default" | awk "{print $1}")'
-  end
-end
-
-namespace :bundle do
-  desc 'Install bundle'
-  task install: 'Gemfile' do
-    sh 'rbenv rehash'
-    sh 'yes | gem update'
-    File.delete('Gemfile.lock') if File.exist?('Gemfile.lock')
-    sh 'gem install bundler && bundle install'
-  end
-
-  desc 'Uninstall bundle install gems'
-  task uninstall: 'Gemfile' do
-    sh 'rbenv rehash'
-    sh 'gem uninstall --all --ignore-dependencies --executables --user-install --force'
-    sh 'gem install bundler'
-    File.delete('Gemfile.lock') if File.exist?('Gemfile.lock')
+    sh 'gem install rake bundler'
   end
 end
 
 namespace :pip do
   desc 'Install pip'
-  task install: 'Pipfile' do
+  task install: 'PipGlobal' do
     sh 'pyenv rehash'
     sh 'pip  install setuptools'
     sh 'pip2 install setuptools'
@@ -126,78 +109,42 @@ namespace :pip do
     sh 'pip  list --outdated --format=legacy | cut -d" " -f1 | xargs pip2 install --upgrade'
     sh 'pip2 list --outdated --format=legacy | cut -d" " -f1 | xargs pip2 install --upgrade'
     sh 'pip3 list --outdated --format=legacy | cut -d" " -f1 | xargs pip3 install --upgrade'
-    File.readlines('Pipfile').map(&:chomp).each do |package|
+    File.readlines('PipGlobal').map(&:chomp).each do |package|
       system "pip  install #{package} --upgrade"
       system "pip2 install #{package} --upgrade"
       system "pip3 install #{package} --upgrade"
     end
   end
+
+  desc 'Install pip'
+  task :uninstall do
+    pip2file = '/tmp/piplist2.txt'
+    pip3file = '/tmp/piplist3.txt'
+    sh 'pyenv rehash'
+    system "pip2 freeze > #{pip2file} && test -f #{pip2file} && yes | pip2 uninstall -r #{pip2file} && rm #{pip2file}"
+    system "pip3 freeze > #{pip3file} && test -f #{pip3file} && yes | pip3 uninstall -r #{pip3file} && rm #{pip3file}"
+  end
 end
 
-namespace :yarn do
+namespace :npm do
   desc 'Install node modules'
-  task install: 'package.json' do
+  task install: 'NpmGlobal' do
+    packages = File.readlines('NpmGlobal').map(&:chomp).join(' ')
     sh 'nodenv rehash'
-    sh 'rm -rf node_modules yarn.lock && yarn cache clean'
-    sh 'yarn install'
+    sh "yarn global add #{packages}"
   end
 
   desc 'Uninstall node modules'
-  task uninstall: 'package.json' do
+  task :uninstall do
     sh 'nodenv rehash'
-    sh 'rm -rf node_modules yarn.lock && yarn cache clean'
+    sh "rm -rf #{`yarn global dir`}"
+  end
+
+  desc 'Upgrade node modules'
+  task :upgrade do
+    sh 'yarn global upgrade'
   end
 end
-
-# namespace :vimperator do
-#   desc 'Install vimperator plugins'
-#   task install: 'Vimperatorfile' do
-#     # vimperator-plugins
-#     File.readlines('Vimperatorfile').map(&:chomp).each do |plugin|
-#       src  = "~/.vimperator/vimperator-plugins/#{plugin}"
-#       dest = "~/.vimperator/plugin/#{plugin}"
-#       sh "ln -sfn #{src} #{dest}"
-#     end
-#
-#     # local plugins
-#     FileList['.vimperator/local-plugins/*'].each do |plugin|
-#       src = "~/#{plugin}"
-#       dest = "~/.vimperator/plugin/#{File.basename(plugin)}"
-#       sh "ln -sfn #{src} #{dest}"
-#     end
-#   end
-#
-#   desc 'Uninstall vimperator plugins'
-#   task :uninstall do
-#     FileList['.vimperator/plugin/*'].each do |plugin|
-#       sh "rm ~/#{plugin}"
-#     end
-#   end
-# end
-
-# namespace :osx do
-#   desc 'Setup OSX preferences'
-#   task setup: OSX_SCRIPTS do |t|
-#     t.prerequisites.each do |prereq|
-#       system 'bash', prereq
-#     end
-#
-#     karabiner
-#     src = File.join(SRC_DIR, 'osx', 'karabiner', 'private.xml')
-#     dest = File.join(ENV['HOME'], 'Library', 'Application\ Support', 'Karabiner', 'private.xml')
-#     sh "ln -sfn #{src} #{dest}"
-#
-#     BetterTouchTool
-#     src = File.join(ENV['HOME'], 'Dropbox', 'settings', 'BetterTouchTool')
-#     dest = File.join(ENV['HOME'], 'Library', 'Application\ Support', 'BetterTouchTool')
-#     sh "ln -sfn #{src} #{dest}"
-#
-#     Witch
-#     src = File.join(ENV['HOME'], 'Dropbox', 'settings', 'Witch')
-#     dest = File.join(ENV['HOME'], 'Library', 'Application\ Support', 'Witch')
-#     sh "ln -sfn #{src} #{dest}"
-#   end
-# end
 
 namespace :brew do
   desc 'Install homebrew packages'

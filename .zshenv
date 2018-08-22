@@ -19,7 +19,7 @@ setopt no_global_rcs
 typeset -U path fpath
 
 # default path
-path=(~/dotfiles/node_modules/.bin(N-/) /usr/local/bin(N-/) /usr/bin(N-/) /bin(N-/) /sbin(N-/) /usr/sbin(N-/) /usr/X11/bin(N-/))
+path=(~/.config/yarn/global/node_modules/.bin(N-/) /usr/local/bin(N-/) /usr/bin(N-/) /bin(N-/) /sbin(N-/) /usr/sbin(N-/) /usr/X11/bin(N-/))
 fpath=(~/.zsh/completions(N-/) $fpath)
 
 # zplugin

@@ -1,0 +1,16 @@
+@vue/cli
+electron
+electron-open-url
+firebase-tools
+fixjson
+gtop
+htmlhint
+jsonlint
+neovim
+npm-check-updates
+placehold-cli
+stylefmt
+tern
+typescript
+vtop
+vue-language-server

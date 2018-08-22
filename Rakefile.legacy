@@ -1,0 +1,75 @@
+DOTFILES_SRCS = %w[
+  .vimperator
+  .vimperatorrc
+].freeze
+VIMPERATOR_DIR = File.join(SRC_DIR, '.vimperator')
+OSX_SCRIPTS = FileList['osx/**/*.sh']
+
+# namespace :bundle do
+#   desc 'Install bundle'
+#   task install: 'Gemfile' do
+#     sh 'rbenv rehash'
+#     sh 'yes | gem update'
+#     File.delete('Gemfile.lock') if File.exist?('Gemfile.lock')
+#     sh 'gem install bundler && bundle install'
+#   end
+#
+#   desc 'Uninstall bundle install gems'
+#   task uninstall: 'Gemfile' do
+#     sh 'rbenv rehash'
+#     sh 'gem uninstall --all --ignore-dependencies --executables --user-install --force'
+#     sh 'gem install bundler'
+#     File.delete('Gemfile.lock') if File.exist?('Gemfile.lock')
+#   end
+# end
+
+# namespace :vimperator do
+#   desc 'Install vimperator plugins'
+#   task install: 'Vimperatorfile' do
+#     # vimperator-plugins
+#     File.readlines('Vimperatorfile').map(&:chomp).each do |plugin|
+#       src  = "~/.vimperator/vimperator-plugins/#{plugin}"
+#       dest = "~/.vimperator/plugin/#{plugin}"
+#       sh "ln -sfn #{src} #{dest}"
+#     end
+#
+#     # local plugins
+#     FileList['.vimperator/local-plugins/*'].each do |plugin|
+#       src = "~/#{plugin}"
+#       dest = "~/.vimperator/plugin/#{File.basename(plugin)}"
+#       sh "ln -sfn #{src} #{dest}"
+#     end
+#   end
+#
+#   desc 'Uninstall vimperator plugins'
+#   task :uninstall do
+#     FileList['.vimperator/plugin/*'].each do |plugin|
+#       sh "rm ~/#{plugin}"
+#     end
+#   end
+# end
+
+# namespace :osx do
+#   desc 'Setup OSX preferences'
+#   task setup: OSX_SCRIPTS do |t|
+#     t.prerequisites.each do |prereq|
+#       system 'bash', prereq
+#     end
+#
+#     karabiner
+#     src = File.join(SRC_DIR, 'osx', 'karabiner', 'private.xml')
+#     dest = File.join(ENV['HOME'], 'Library', 'Application\ Support', 'Karabiner', 'private.xml')
+#     sh "ln -sfn #{src} #{dest}"
+#
+#     BetterTouchTool
+#     src = File.join(ENV['HOME'], 'Dropbox', 'settings', 'BetterTouchTool')
+#     dest = File.join(ENV['HOME'], 'Library', 'Application\ Support', 'BetterTouchTool')
+#     sh "ln -sfn #{src} #{dest}"
+#
+#     Witch
+#     src = File.join(ENV['HOME'], 'Dropbox', 'settings', 'Witch')
+#     dest = File.join(ENV['HOME'], 'Library', 'Application\ Support', 'Witch')
+#     sh "ln -sfn #{src} #{dest}"
+#   end
+# end
+
