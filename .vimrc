@@ -180,28 +180,24 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " textobj & operator {{{3
-  call dein#add('machakann/vim-sandwich', {
-  \ 'lazy': 1,
-  \ 'on_map': {
-  \    'nv': ['sa', 'sr', 'sd'],
-  \    'o': ['ib', 'is', 'ab', 'as']
-  \ },
-  \ 'hook_source': 'call Hook_on_post_source_sandwich()'
-  \ })
+  call dein#add('machakann/vim-sandwich')
 
   call dein#add('kana/vim-textobj-user')
   call dein#add('kana/vim-operator-user')
 
-  call dein#add('kana/vim-textobj-entire',         {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['ie', 'ae']}})
-  call dein#add('kana/vim-textobj-fold',           {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['iz', 'az']}})
-  call dein#add('kana/vim-textobj-function',       {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['if', 'af', 'iF', 'aF']}})
-  call dein#add('kana/vim-textobj-indent',         {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['ai', 'ii', 'aI',  'iI']}})
-  call dein#add('kana/vim-textobj-line',           {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['al', 'il']}})
-  call dein#add('machakann/vim-textobj-delimited', {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['id', 'ad', 'iD', 'aD']}})
-  call dein#add('mattn/vim-textobj-url',           {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['au', 'iu']}})
-  call dein#add('rhysd/vim-textobj-ruby',          {'lazy': 1, 'depends': 'vim-textobj-user', 'on_map': {'ox': ['ar', 'ir']}, 'on_ft': 'ruby'})
-
-  call dein#add('haya14busa/vim-textobj-function-syntax', {'lazy': 1, 'on_source': 'vim-textobj-function'})
+  call dein#add('kana/vim-textobj-entire') " ie ae
+  call dein#add('kana/vim-textobj-fold') " iz az
+  call dein#add('kana/vim-textobj-function') " if af
+  call dein#add('kana/vim-textobj-indent') " ai ii
+  call dein#add('kana/vim-textobj-line') " al il
+  call dein#add('lucapette/vim-textobj-underscore') " i_ a_
+  call dein#add('machakann/vim-textobj-delimited') " id ad
+  call dein#add('mattn/vim-textobj-url') " au iu
+  call dein#add('rhysd/vim-textobj-ruby') " ar ir
+  call dein#add('sgur/vim-textobj-parameter') " i, a,
+  call dein#add('thinca/vim-textobj-comment') " ic ac
+  call dein#add('yuki-ycino/vim-textobj-dash') " i- a-
+  call dein#add('yuki-ycino/vim-textobj-slash') " i/ a/
 
   call dein#add('kana/vim-operator-replace',      {'lazy': 1, 'depends': 'vim-operator-user', 'on_map': '<Plug>'})
   call dein#add('mopp/vim-operator-convert-case', {'lazy': 1, 'depends': 'vim-operator-user', 'on_map': '<Plug>'})
@@ -1767,19 +1763,6 @@ AutoCmd Filetype vaffle call <SID>customize_vaffle_mappings()
 
 " }}}2
 
-" textobj {{{2
-
-" textobj-delimited {{{3
-let g:textobj_delimited_patterns = [
-\ ['\m/', '\m\%(/[-.[:alnum:]_~]\+\)\+', 10],
-\ ['\m\\', '\m\a:\%(\\[^\\/?:*"<>|]\+\)\+\ze\%(''[^a-z]\|$\)', 10],
-\ ['[#_.-]', '\<\%([#_.-]\k\+\|\k\+[#_.-]\)\%(\k*[#_.-]\?\)*\>'],
-\ ['\C\ze[A-Z]', '\C\<[A-Z]\?\k\+[A-Z]\%(\k*[A-Z]\?\)*\>'],
-\ [', *', '\m\%(, *\)\?\%([^,[\]{}]\+, *\)\+\%([^,[\]{}]\+\)\?']
-\ ]
-" }}}3
-
-" }}}2
 " Edit & Move & Search {{{2
 
 " accelerated-jk {{{3
@@ -1938,14 +1921,35 @@ map <silent> <Leader>j <Plug>(edgemotion-j)
 map <silent> <Leader>k <Plug>(edgemotion-k)
 " }}}3
 
-" expand-region {{{3
-" ad: delimited
-" ib: sandwich
 let g:expand_region_text_objects = {
-\ 'iw' : 0,
-\ 'iW' : 0,
-\ 'ad' : 0,
-\ 'ib' : 1,
+\ 'iw': 0,
+\ 'iW': 0,
+\ 'ad': 0,
+\ 'i"': 0,
+\ "i'": 0,
+\ "i(": 1,
+\ "i{": 1,
+\ "i[": 1,
+\ "i<": 1,
+\ 'a"': 0,
+\ "a'": 0,
+\ "a(": 1,
+\ "a{": 1,
+\ "a[": 1,
+\ "a<": 1,
+\ 'il': 0,
+\ 'al': 0,
+\ 'ii': 1,
+\ 'ai': 1,
+\ 'if': 0,
+\ 'af': 0,
+\ 'iz': 1,
+\ 'az': 1,
+\ }
+
+let g:expand_region_text_objects_ruby = {
+\ 'ir' :0,
+\ 'ar' :0,
 \ }
 
 vmap v <Plug>(expand_region_expand)
@@ -2132,39 +2136,58 @@ AutoCmd FileType qf nnoremap <silent> <buffer> r :<C-u>Qfreplace<CR>
 
 " sandwich {{{3
 if dein#tap('vim-sandwich')
-  function! Hook_on_post_source_sandwich() abort
-    let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
-    let g:sandwich#recipes += [
-    \ {'buns': ['\/', '\/']},
-    \ {'buns': ['_', '_']},
-    \ {'buns': ['`', '`']},
-    \ {
-    \   '__filetype__': 'ruby',
-    \   'buns':     ['#{', '}'],
-    \   'input':    ['#'],
-    \   'filetype': ['ruby', 'eruby'],
-    \ },
-    \ {
-    \   '__filetype__': 'ruby',
-    \   'buns':     ['-> () {', '}'],
-    \   'input':    ['->'],
-    \   'kind':     ['add'],
-    \   'filetype': ['ruby', 'eruby'],
-    \ },
-    \ {
-    \   '__filetype__': 'eruby',
-    \   'buns':     ['<% ', ' %>'],
-    \   'input':    ['%'],
-    \   'filetype': ['eruby'],
-    \ },
-    \ {
-    \   '__filetype__': 'eruby',
-    \   'buns':     ['<%= ', ' %>'],
-    \   'input':    ['='],
-    \   'filetype': ['eruby'],
-    \ },
-    \ ]
-  endfunction
+  let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
+  let g:sandwich#recipes += [
+  \ {
+  \   'buns':         ['_', '_'],
+  \   'quoteescape':  1,
+  \   'expand_range': 0,
+  \   'nesting':      1,
+  \   'linewise':     0,
+  \   'match_syntax': 1,
+  \ },
+  \ {
+  \   'buns':         ['-', '-'],
+  \   'quoteescape':  1,
+  \   'expand_range': 0,
+  \   'nesting':      1,
+  \   'linewise':     0,
+  \   'match_syntax': 1,
+  \ },
+  \ {
+  \   'buns':         ['/', '/'],
+  \   'quoteescape':  1,
+  \   'expand_range': 0,
+  \   'nesting':      0,
+  \   'linewise':     0,
+  \   'match_syntax': 1,
+  \ },
+  \ {
+  \   '__filetype__': 'ruby',
+  \   'buns':     ['#{', '}'],
+  \   'input':    ['#'],
+  \   'filetype': ['ruby', 'eruby'],
+  \ },
+  \ {
+  \   '__filetype__': 'ruby',
+  \   'buns':     ['-> () {', '}'],
+  \   'input':    ['->'],
+  \   'kind':     ['add'],
+  \   'filetype': ['ruby', 'eruby'],
+  \ },
+  \ {
+  \   '__filetype__': 'eruby',
+  \   'buns':     ['<% ', ' %>'],
+  \   'input':    ['%'],
+  \   'filetype': ['eruby'],
+  \ },
+  \ {
+  \   '__filetype__': 'eruby',
+  \   'buns':     ['<%= ', ' %>'],
+  \   'input':    ['='],
+  \   'filetype': ['eruby'],
+  \ },
+  \ ]
 endif
 " }}}3
 
@@ -2872,7 +2895,7 @@ nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
 " }}}3
 
 " miniyank {{{3
-let g:miniyank_maxitems = 100
+let g:miniyank_maxitems = 2000
 let g:miniyank_filename = expand('~/.cache/vim/miniyank.mpack')
 " }}}3
 
