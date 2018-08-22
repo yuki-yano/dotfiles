@@ -1123,7 +1123,7 @@ AutoCmd FileType vue syntax sync fromstart
 
 " }}}2
 
-" Completion & Fuzzy Finder & vimfiler {{{2
+" Completion & Fuzzy Finder {{{2
 
 " Denite & Unite {{{3
 
@@ -1767,6 +1767,19 @@ AutoCmd Filetype vaffle call <SID>customize_vaffle_mappings()
 
 " }}}2
 
+" textobj {{{2
+
+" textobj-delimited {{{3
+let g:textobj_delimited_patterns = [
+\ ['\m/', '\m\%(/[-.[:alnum:]_~]\+\)\+', 10],
+\ ['\m\\', '\m\a:\%(\\[^\\/?:*"<>|]\+\)\+\ze\%(''[^a-z]\|$\)', 10],
+\ ['[#_.-]', '\<\%([#_.-]\k\+\|\k\+[#_.-]\)\%(\k*[#_.-]\?\)*\>'],
+\ ['\C\ze[A-Z]', '\C\<[A-Z]\?\k\+[A-Z]\%(\k*[A-Z]\?\)*\>'],
+\ [', *', '\m\%(, *\)\?\%([^,[\]{}]\+, *\)\+\%([^,[\]{}]\+\)\?']
+\ ]
+" }}}3
+
+" }}}2
 " Edit & Move & Search {{{2
 
 " accelerated-jk {{{3
@@ -1931,7 +1944,6 @@ map <silent> <Leader>k <Plug>(edgemotion-k)
 let g:expand_region_text_objects = {
 \ 'iw' : 0,
 \ 'iW' : 0,
-\ 'iu' : 0,
 \ 'ad' : 0,
 \ 'ib' : 1,
 \ }
