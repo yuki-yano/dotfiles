@@ -5,10 +5,12 @@ firebase-tools
 fixjson
 gtop
 htmlhint
+javascript-typescript-langserver
 jsonlint
 neovim
 npm-check-updates
 placehold-cli
+prettier
 stylefmt
 tern
 typescript
