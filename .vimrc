@@ -399,6 +399,7 @@ noremap <expr> <C-b> max([winheight(0) - 2, 1]) . "\<C-u>" . (line('w0') <= 1 ? 
 
 "" Automatically indent with i
 nnoremap <expr> i len(getline('.')) ? "i" : "cc"
+nnoremap <expr> A len(getline('.')) ? "A" : "cc"
 
 " Ignore registers
 nnoremap x "_x
@@ -435,7 +436,7 @@ vnoremap > >gv|
 nnoremap gt :<C-u>tablast <Bar> tabedit<CR>
 nnoremap gd :<C-u>tabclose<CR>
 nnoremap gh :<C-u>tabprevious<CR>
-nnoremap gl :<C-u>tabNext<CR>
+nnoremap gl :<C-u>tabnext<CR>
 
 "" resize
 nnoremap <Left>  :vertical resize -1<CR>
@@ -832,7 +833,7 @@ AutoCmd FileType sh         setlocal iskeyword+=$ iskeyword+=-
 AutoCmd FileType zsh        setlocal iskeyword+=$
 " }}}3
 
-" Set Filetype {{{3
+" Set FileType {{{3
 AutoCmd BufNewFile,BufRead             *.js set filetype=javascript
 AutoCmd BufNewFile,BufRead            *.erb set filetype=eruby
 AutoCmd BufNewFile,BufRead           *.cson set filetype=coffee
@@ -847,7 +848,7 @@ AutoCmd BufNewFile,BufRead      Vagrantfile set filetype=ruby
 AutoCmd BufNewFile,BufRead       Schemafile set filetype=ruby
 AutoCmd BufNewFile,BufRead .gitconfig.local set filetype=gitconfig
 
-" Reassign Filetype
+" Reassign FileType
 AutoCmd BufWritePost *
 \ if &filetype ==# '' && exists('b:ftdetect') |
 \  unlet! b:ftdetect |
@@ -1809,7 +1810,7 @@ function! s:customize_vaffle_mappings() abort
   nmap <silent> <buffer> <nowait> v       <Plug>(vaffle-open-selected-vsplit)
 endfunction
 
-AutoCmd Filetype vaffle call <SID>customize_vaffle_mappings()
+AutoCmd FileType vaffle call <SID>customize_vaffle_mappings()
 " }}}3
 
 " }}}2
