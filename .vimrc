@@ -3126,8 +3126,8 @@ AutoCmd FileType qf
 syntax enable
 
 " Highlight {{{2
-AutoCmd ColorScheme * highlight CursorColumn ctermfg=none ctermbg=235
-AutoCmd ColorScheme * highlight CursorLine   ctermfg=none ctermbg=235
+AutoCmd ColorScheme * highlight CursorColumn ctermfg=none ctermbg=236
+AutoCmd ColorScheme * highlight CursorLine   ctermfg=none ctermbg=236
 AutoCmd ColorScheme * highlight CursorLineNr ctermfg=253  ctermbg=none
 AutoCmd ColorScheme * highlight LineNr       ctermfg=241  ctermbg=none
 AutoCmd ColorScheme * highlight NonText      ctermfg=60   ctermbg=none
@@ -3137,13 +3137,15 @@ AutoCmd ColorScheme * highlight Visual       ctermfg=159  ctermbg=23
 
 AutoCmd ColorScheme * highlight ALEError                ctermfg=0    ctermbg=203
 AutoCmd ColorScheme * highlight ALEWarning              ctermfg=0    ctermbg=229
-AutoCmd ColorScheme * highlight BrighTestHighlight      ctermfg=none ctermbg=none cterm=underline
+AutoCmd ColorScheme * highlight BrighTestHighlight      ctermfg=none ctermbg=238
 AutoCmd ColorScheme * highlight CleverFDefaultLabel     ctermfg=9    ctermbg=236  cterm=underline,bold
 AutoCmd ColorScheme * highlight DeniteLine              ctermfg=111  ctermbg=236
 AutoCmd ColorScheme * highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold
 AutoCmd ColorScheme * highlight HighlightedyankRegion   ctermfg=1    ctermbg=none
-AutoCmd ColorScheme * highlight MatchParen              ctermfg=247  ctermbg=none
-AutoCmd ColorScheme * highlight MatchWord               ctermfg=none ctermbg=none cterm=underline,bold
+AutoCmd ColorScheme * highlight MatchParen              ctermfg=none ctermbg=none cterm=underline
+AutoCmd ColorScheme * highlight MatchParenCur           ctermfg=none ctermbg=none cterm=bold
+AutoCmd ColorScheme * highlight MatchWord               ctermfg=none ctermbg=none cterm=underline
+AutoCmd ColorScheme * highlight MatchWordCur            ctermfg=none ctermbg=none cterm=bold
 AutoCmd ColorScheme * highlight YankRoundRegion         ctermfg=209  ctermbg=237
 AutoCmd ColorScheme * highlight deniteSource_grepFile   ctermfg=6    ctermbg=none
 AutoCmd ColorScheme * highlight deniteSource_grepLineNR ctermfg=247  ctermbg=none
