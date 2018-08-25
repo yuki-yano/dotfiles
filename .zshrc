@@ -217,6 +217,7 @@ abbreviations=(
 "gq"     "git qsave"
 "gca"    "git cancel"
 "gbr"    "git browse-remote"
+"be"     "bundle exec"
 "dco"    "docker-compose"
 "t"      "tmuximum"
 "tl"     "tmux list-sessions"
