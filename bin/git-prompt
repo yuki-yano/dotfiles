@@ -29,7 +29,7 @@ PREHASH_SYMBOL=":"
 
 # Defaut Tmux format strings for Git bar components.
 # Can be redefined here, or preferably in tmux-gitbar.conf
-if [[ $1 == "zsh" ]]; then
+zsh_fmt() {
   BRANCH_FMT="%F{white}"
   UPSTREAM_FMT="%F{cyan}"
   REMOTE_FMT="%F{cyan}"
@@ -44,7 +44,9 @@ if [[ $1 == "zsh" ]]; then
   RESET_FMT="%b%F{white}"
 
   BRANCH_UPSTREAM_DELIMITER="%F{5}->%f"
-else
+}
+
+tmux_fmt() {
   BRANCH_FMT="#[fg=white]"
   UPSTREAM_FMT="#[fg=cyan]"
   REMOTE_FMT="#[fg=cyan]"
@@ -59,7 +61,7 @@ else
   RESET_FMT="#[fg=default]"
 
   BRANCH_UPSTREAM_DELIMITER="#[fg=colour5]->#[fg=default]"
-fi
+}
 
 # Delimiter between symbol and numeric value
 FLAGS_DELIMITER_FMT=" "
@@ -287,9 +289,20 @@ update_gitbar() {
     read_git_info
 
     # append Git status to current status string
-    local status_string
+    local status_string project
+
+    zsh_fmt
     status_string="$(do_interpolation "#{git_branch}${BRANCH_UPSTREAM_DELIMITER}#{git_upstream} #{git_remote}#{git_flags}")"
     echo "$status_string"
+
+    if [[ ! -d "/tmp/git-prompt" ]]; then
+      mkdir /tmp/git-prompt
+    fi
+
+    tmux_fmt
+    project="$(basename $(pwd))"
+    status_string="$(do_interpolation "#{git_branch}${BRANCH_UPSTREAM_DELIMITER}#{git_upstream} #{git_remote}#{git_flags}")"
+    echo "$status_string" > "/tmp/git-prompt/${project}"
 
   else
     find_git_repo
@@ -301,11 +314,8 @@ update_gitbar() {
 }
 
 main() {
-  if [[ $# -eq 2 ]]; then
-    cd $2
-  fi
   find_readlink
   update_gitbar
 }
 
-main "$@"
+main

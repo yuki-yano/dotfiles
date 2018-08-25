@@ -555,7 +555,7 @@ PROMPT='
 ${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
 
 function update_git_prompt() {
-  GIT_STATUS=$(git-prompt zsh)
+  GIT_STATUS=$(git-prompt)
 }
 add-zsh-hook precmd update_git_prompt
 
