@@ -158,17 +158,6 @@ alias p='popd'
 alias y='yes'
 
 # git
-alias ga='git add'
-alias gaa='git add --all'
-alias gs='git status --short --branch'
-alias gb='git branch'
-alias gd='git diff'
-alias gdw='git diff --color-words'
-alias gdc='git diff --cached'
-alias gdcw='git diff --cached --color-words'
-alias gco='git checkout'
-alias gci='git commit'
-alias gst='git stash'
 alias agit='nvim +Agit'
 alias gitt='gittower .'
 
