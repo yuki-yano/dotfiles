@@ -11,6 +11,7 @@ neovim
 npm-check-updates
 placehold-cli
 prettier
+speed-test
 stylefmt
 tern
 typescript
