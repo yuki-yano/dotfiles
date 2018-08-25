@@ -1364,15 +1364,18 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   let g:deoplete#keyword_patterns        = {}
   let g:deoplete#keyword_patterns._      = '[a-zA-Z_]\k*'
 
-  let g:neosnippet#data_directory = expand("~/.cache/vim/neosnippet")
+  let g:neosnippet#data_directory = expand('~/.cache/vim/neosnippet')
 
   " Keymap
   inoremap <silent> <expr> <BS>  deoplete#smart_close_popup() . "\<C-h>"
   inoremap <silent> <expr> <C-h> deoplete#smart_close_popup() . "\<C-h>"
   inoremap <silent> <expr> <C-g> deoplete#undo_completion()
-  inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<C-n>" : deoplete#mappings#manual_complete()
-  function s:check_back_space() abort
-    return !(col('.') - 1) || getline('.')[(col('.') - 1) - 1]  =~# '\s'
+
+  inoremap <expr> <C-n> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : deoplete#mappings#manual_complete()
+
+  function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~ '\s'
   endfunction
 
   " Togle neosnippet
