@@ -160,8 +160,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   call dein#add('junegunn/fzf', {'build': './install --bin', 'merged': 0})
   call dein#add('junegunn/fzf.vim')
-  call dein#add('yuki-ycino/fzf-preview.vim',
-  \ {'lazy': 1,
+  call dein#add('yuki-ycino/fzf-preview.vim', {
+  \ 'lazy': 1,
   \ 'on_cmd': [
   \ 'ProjectFilesPreview',
   \ 'GitFilesPreview',
@@ -306,7 +306,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " develop {{{3
   call dein#add('haya14busa/vim-debugger', {'lazy': 1, 'on_func': 'debugger#init'})
   call dein#add('thinca/vim-editvar',      {'lazy': 1, 'on_cmd': 'Editvar', 'on_func': 'editvar#open'})
-  call dein#add('thinca/vim-prettyprint',  {'lazy': 1, 'on_cmd': ['PrettyPrint', 'PP'], 'on_func': ['PrettyPrint', 'PP']})
+  call dein#add('thinca/vim-prettyprint')
   call dein#add('tweekmonster/exception.vim')
   call dein#add('vim-jp/vital.vim',        {'lazy': 1, 'on_cmd': 'Vitalize'})
   " }}}3
@@ -1998,11 +1998,6 @@ let g:expand_region_text_objects = {
 \ 'az': 1,
 \ }
 
-let g:expand_region_text_objects_ruby = {
-\ 'ir' :0,
-\ 'ar' :0,
-\ }
-
 vmap v <Plug>(expand_region_expand)
 vmap V <Plug>(expand_region_shrink)
 " }}}3
@@ -2716,11 +2711,6 @@ if dein#tap('lightline.vim')
     \ ''
   endfunction
 endif
-" }}}3
-
-" parenmatch {{{3
-let g:loaded_matchparen = 1
-let g:parenmatch_highlight = 0
 " }}}3
 
 " quickhl {{{3
