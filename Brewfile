@@ -21,29 +21,29 @@ install neovim
 install railwaycat/emacsmacport/emacs-mac
 
 ## Languages
+# install go-delve/delve/delve
 install ansible
 install boost
 install flow
 install gcc
 install go
-# install go-delve/delve/delve
+install hadolint # Haskell
+install haskell-stack
 install lua
 install node
-install olafurpg/scalafmt/scalafmt --HEAD
 install nodenv
 install openssl
-install pyenv
 install pipenv
+install pyenv
 install python
 install python@2
 install rbenv
 install readline
 install ruby
 install ruby-build
-install rustup-init
 install sbt
 install scala
-install shellcheck
+install shellcheck # Haskell
 install source-highlight
 install yarn
 
