@@ -86,7 +86,7 @@ zplugin light peco/peco
 zplugin ice lucid wait"0" depth"1" as"program" src"tmuximum.plugin.zsh" atload"set_tmuximum" pick"tmuximum"
 zplugin light yuki-ycino/tmuximum
 
-zplugin ice from"gh-r" as"program" bpick"*darwin_amd*" mv"memo -> ${ZPFX}/bin/memo"
+zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd*" mv"memo -> ${ZPFX}/bin/memo"
 zplugin light mattn/memo
 
 zplugin ice lucid wait'0' depth"1" as"program" atclone'go build -o recc && mv recc ${ZPFX}/bin/recc' atpull'%atclone'
@@ -95,7 +95,7 @@ zplugin light pocke/recc
 zplugin ice lucid wait'0' depth"1" as"program" atclone'go build -o ptmux && mv ptmux ${ZPFX}/bin/ptmux' atpull'%atclone'
 zplugin light pocke/ptmux
 
-zplugin ice wait"2" depth"1" lucid as"program" pick"bin/git-dsf"
+zplugin ice lucid wait"2" depth"1" lucid as"program" pick"bin/git-dsf"
 zplugin light zdharma/zsh-diff-so-fancy
 
 zplugin ice lucid wait"2" depth"1" as"program" src"git-sync.sh"
@@ -104,14 +104,17 @@ zplugin light caarlos0/zsh-git-sync
 zplugin ice lucid wait"2" depth"1" as"program" atclone'perl Makefile.PL PREFIX=$ZPFX' atpull'%atclone' make'install' pick"$ZPFX/bin/git-cal"
 zplugin light k4rthik/git-cal
 
-zplugin ice from"gh-r" as"program" bpick"*darwin*" mv"ctop* -> ${ZPFX}/bin/ctop"
+zplugin ice lucid wait"2" from"gh-r" as"program" bpick"*darwin*" mv"ctop* -> ${ZPFX}/bin/ctop"
 zplugin light bcicen/ctop
 
 zplugin ice lucid wait"2" depth"1" as"program" mv"docker-clean -> ${ZPFX}/bin/docker-clean"
 zplugin light ZZROTDesign/docker-clean
 
-zplugin ice from"gh-r" as"program" bpick"*darwin*" mv"vegeta -> ${ZPFX}/bin/vegeta"
+zplugin ice lucid wait"2" from"gh-r" as"program" bpick"*darwin*" mv"vegeta -> ${ZPFX}/bin/vegeta"
 zplugin light tsenart/vegeta
+
+zplugin ice lucid wait'2' from"gh-r" as"program" bpick"*darwin*" atinit"test ! -f ${ZPFX}/bin/shfmt && chmod +x shmft* && mv shfmt* ${ZPFX}/bin/shfmt"
+zplugin light mvdan/sh
 
 zplugin ice lucid wait"2" depth"1"
 zplugin snippet OMZ::plugins/extract/extract.plugin.zsh
