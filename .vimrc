@@ -2,6 +2,7 @@
 let g:ale_filetypes = [
 \ 'javascript',
 \ 'typescript',
+\ 'typescriptreact',
 \ 'vue',
 \ 'ruby',
 \ 'eruby',
@@ -54,7 +55,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Language {{{3
   " call dein#add('Quramy/tsuquyomi',                       {'lazy': 1, 'on_ft': 'typescript'})
   " call dein#add('pocke/iro.vim',                          {'lazy': 1, 'on_ft': 'ruby'})
-  call dein#add('HerringtonDarkholme/yats.vim',           {'lazy': 1, 'on_ft': ['typescript', 'vue']})
+  call dein#add('HerringtonDarkholme/yats.vim',           {'lazy': 1, 'on_ft': ['typescript', 'typescriptreact', 'vue']})
   call dein#add('MaxMEllon/vim-jsx-pretty',               {'lazy': 1, 'on_ft': ['javascript', 'vue']})
   call dein#add('SpaceVim/gtags.vim')
   call dein#add('Vimjas/vim-python-pep8-indent',          {'lazy': 1, 'on_ft': 'python'})
@@ -68,19 +69,19 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('fatih/vim-go',                           {'lazy': 1, 'on_ft': 'go'})
   call dein#add('hail2u/vim-css3-syntax',                 {'lazy': 1, 'on_ft': ['css', 'vue']})
   call dein#add('hashivim/vim-terraform',                 {'lazy': 1, 'on_ft': 'terraform'})
-  call dein#add('heavenshell/vim-jsdoc',                  {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'vue'], 'on_cmd': 'JsDoc'})
+  call dein#add('heavenshell/vim-jsdoc',                  {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescriptreact', 'vue'], 'on_cmd': 'JsDoc'})
   call dein#add('itspriddle/vim-marked',                  {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('jparise/vim-graphql',                    {'lazy': 1, 'on_ft': 'graphql'})
   call dein#add('kchmck/vim-coffee-script',               {'lazy': 1, 'on_ft': 'coffee'})
   call dein#add('keith/tmux.vim',                         {'lazy': 1, 'on_ft': 'tmux'})
   call dein#add('mattn/emmet-vim',                        {'lazy': 1, 'on_ft': ['html', 'eruby', 'javascript', 'vue']})
-  call dein#add('mhartington/nvim-typescript',            {'lazy': 1, 'on_ft': ['typescript', 'vue'], 'build': './install.sh'})
+  call dein#add('mhartington/nvim-typescript',            {'lazy': 1, 'on_ft': ['typescript', 'typescriptreact', 'vue'], 'build': './install.sh'})
   call dein#add('noprompt/vim-yardoc',                    {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('othree/csscomplete.vim',                 {'lazy': 1, 'on_ft': ['css', 'sass', 'scss', 'vue']})
   call dein#add('othree/es.next.syntax.vim',              {'lazy': 1, 'on_ft': ['javascript', 'vue']})
   call dein#add('othree/html5.vim',                       {'lazy': 1, 'on_ft': ['html', 'markdown', 'eruby']})
   call dein#add('othree/javascript-libraries-syntax.vim', {'lazy': 1, 'on_ft': 'javascript'})
-  call dein#add('othree/jspc.vim',                        {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'vue']})
+  call dein#add('othree/jspc.vim',                        {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescriptreact', 'vue']})
   call dein#add('othree/yajs.vim',                        {'lazy': 1, 'on_ft': ['javascript', 'vue']})
   call dein#add('pearofducks/ansible-vim',                {'lazy': 1, 'on_ft': ['ansible', 'ansible_templete', 'ansible_hosts']})
   call dein#add('plasticboy/vim-markdown',                {'lazy': 1, 'on_ft': 'markdown'})
@@ -804,22 +805,23 @@ command! ShowHlGroup echo synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), '
 " FileType {{{2
 
 " Intent {{{3
-AutoCmd FileType javascript setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType typescript setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType vue        setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType ruby       setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType eruby      setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType python     setlocal expandtab   shiftwidth=4 softtabstop=4 tabstop=4
-AutoCmd FileType go         setlocal noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
-AutoCmd FileType rust       setlocal expandtab   shiftwidth=4 softtabstop=4 tabstop=4
-AutoCmd FileType json       setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType markdown   setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType html       setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType css        setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType scss       setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType vim        setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType sh         setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType zsh        setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType javascript      setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType typescript      setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType typescriptreact setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType vue             setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType ruby            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType eruby           setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType python          setlocal expandtab   shiftwidth=4 softtabstop=4 tabstop=4
+AutoCmd FileType go              setlocal noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
+AutoCmd FileType rust            setlocal expandtab   shiftwidth=4 softtabstop=4 tabstop=4
+AutoCmd FileType json            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType markdown        setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType html            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType css             setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType scss            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType vim             setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType sh              setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType zsh             setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 " }}}3
 
 " iskeyword {{{3
@@ -859,17 +861,19 @@ AutoCmd BufWritePost *
 " Completion {{{3
 set completefunc=autoprogramming#complete
 
-AutoCmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-AutoCmd FileType typescript setlocal omnifunc=tsuquyomi#complete
-AutoCmd FileType ruby       setlocal omnifunc=rubycomplete#Complete
-AutoCmd FileType html,eruby setlocal omnifunc=htmlcomplete#CompleteTags
-AutoCmd FileType python     setlocal omnifunc=pythoncomplete#Complete
-AutoCmd FileType css        setlocal omnifunc=csscomplete#CompleteCSS
-AutoCmd FileType scss       setlocal omnifunc=csscomplete#CompleteCSS
+AutoCmd FileType javascript      setlocal omnifunc=javascriptcomplete#CompleteJS
+AutoCmd FileType typescript      setlocal omnifunc=tsuquyomi#complete
+AutoCmd FileType typescriptreact setlocal omnifunc=tsuquyomi#complete
+AutoCmd FileType ruby            setlocal omnifunc=rubycomplete#Complete
+AutoCmd FileType html,eruby      setlocal omnifunc=htmlcomplete#CompleteTags
+AutoCmd FileType python          setlocal omnifunc=pythoncomplete#Complete
+AutoCmd FileType css             setlocal omnifunc=csscomplete#CompleteCSS
+AutoCmd FileType scss            setlocal omnifunc=csscomplete#CompleteCSS
 
-AutoCmd FileType javascript setlocal dictionary=~/dotfiles/.vim/dict/javascript.dict
-AutoCmd FileType typescript setlocal dictionary=~/dotfiles/.vim/dict/javascript.dict
-AutoCmd FileType ruby,eruby setlocal dictionary=~/dotfiles/.vim/dict/ruby.dict
+AutoCmd FileType javascript      setlocal dictionary=~/dotfiles/.vim/dict/javascript.dict
+AutoCmd FileType typescript      setlocal dictionary=~/dotfiles/.vim/dict/javascript.dict
+AutoCmd FileType typescriptreact setlocal dictionary=~/dotfiles/.vim/dict/javascript.dict
+AutoCmd FileType ruby,eruby      setlocal dictionary=~/dotfiles/.vim/dict/ruby.dict
 " }}}3
 
 
@@ -901,11 +905,11 @@ AutoCmd FileType sh,bash,zsh set keywordprg=man
 " }}}2
 
 " Set quit {{{2
-AutoCmd FileType help    nnoremap <silent> <buffer> q :<C-u>quit<CR>
-AutoCmd FileType man     nnoremap <silent> <buffer> q :<C-u>quit<CR>
-AutoCmd FileType qf      nnoremap <silent> <buffer> q :<C-u>quit<CR>
-AutoCmd FileType diff    nnoremap <silent> <buffer> q :<C-u>quit<CR>
-AutoCmd FileType git     nnoremap <silent> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType help nnoremap <silent> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType man  nnoremap <silent> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType qf   nnoremap <silent> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType diff nnoremap <silent> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType git  nnoremap <silent> <buffer> q :<C-u>quit<CR>
 " }}}2
 
 " }}}1
@@ -957,25 +961,26 @@ AlterCommand! <cmdwin> reca[che] Dein<Space>recache-runtimepath
 
 " ALE {{{3
 let g:ale_linters = {
-\ 'javascript': ['eslint', 'flow', 'prettier'],
-\ 'typescript': ['tsserver', 'eslint', 'tslint', 'prettier'],
-\ 'vue':        ['vls', 'eslint', 'tslint', 'prettier'],
-\ 'ruby':       ['rubocop'],
-\ 'eruby':      ['erubi'],
-\ 'python':     ['autopep8', 'flake8', 'isort', 'mypy', 'yapf'],
-\ 'go':         ['gofmt', 'goimports', 'go vet', 'golint'],
-\ 'rust':       ['rls', 'rustc', 'rustfmt'],
-\ 'json':       ['fixjson', 'prettier', 'jsonlint', 'jq'],
-\ 'yaml':       ['prettier'],
-\ 'graphql':    ['prettier'],
-\ 'html':       ['htmlhint'],
-\ 'css':        ['prettier', 'stylelint'],
-\ 'scss':       ['prettier', 'stylelint'],
-\ 'dockerfile': ['hadolint'],
-\ 'vim':        ['vint'],
-\ 'sh':         ['shellcheck', 'shfmt'],
-\ 'bash':       ['shellcheck', 'shfmt'],
-\ 'zsh':        ['shellcheck'],
+\ 'javascript':      ['eslint', 'flow', 'prettier'],
+\ 'typescript':      ['tsserver', 'eslint', 'tslint', 'prettier'],
+\ 'typescriptreact': ['tsserver', 'eslint', 'tslint', 'prettier'],
+\ 'vue':             ['vls', 'eslint', 'tslint', 'prettier'],
+\ 'ruby':            ['rubocop'],
+\ 'eruby':           ['erubi'],
+\ 'python':          ['autopep8', 'flake8', 'isort', 'mypy', 'yapf'],
+\ 'go':              ['gofmt', 'goimports', 'go vet', 'golint'],
+\ 'rust':            ['rls', 'rustc', 'rustfmt'],
+\ 'json':            ['fixjson', 'prettier', 'jsonlint', 'jq'],
+\ 'yaml':            ['prettier'],
+\ 'graphql':         ['prettier'],
+\ 'html':            ['htmlhint'],
+\ 'css':             ['prettier', 'stylelint'],
+\ 'scss':            ['prettier', 'stylelint'],
+\ 'dockerfile':      ['hadolint'],
+\ 'vim':             ['vint'],
+\ 'sh':              ['shellcheck', 'shfmt'],
+\ 'bash':            ['shellcheck', 'shfmt'],
+\ 'zsh':             ['shellcheck'],
 \ }
 let g:ale_ruby_rubocop_executable = 'bundle'
 
@@ -1028,6 +1033,9 @@ let g:formatters_javascript = ['prettier']
 
 " TypeScript
 let g:formatters_typescript = ['prettier']
+
+" TSX
+let g:formatters_typescriptreact = ['prettier']
 
 " Vue
 let g:formatters_vue = ['htmlbeautifier', 'prettier']
@@ -1421,12 +1429,12 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
 
   " Sources
   call deoplete#custom#source('LanguageClient', 'rank', 1100)
+  call deoplete#custom#source('typescript',     'rank', 1100)
   call deoplete#custom#source('neosnippet',     'rank', 1000)
   call deoplete#custom#source('around',         'rank',  900)
   call deoplete#custom#source('buffer',         'rank',  900)
   call deoplete#custom#source('gtags',          'rank',  800)
   call deoplete#custom#source('omni',           'rank',  700)
-  call deoplete#custom#source('typescript',     'rank',  700)
   call deoplete#custom#source('tern',           'rank',  700)
   call deoplete#custom#source('flow',           'rank',  700)
   call deoplete#custom#source('jedi',           'rank',  700)
@@ -1491,73 +1499,77 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   function! Deoplete_set_sources() abort
     if exists('g:deoplete_enable_neosnippet') && g:deoplete_enable_neosnippet
       let l:deoplete_sources = {}
-      let l:deoplete_sources._          = ['neosnippet']
-      let l:deoplete_sources.javascript = ['neosnippet']
-      let l:deoplete_sources.typescript = ['neosnippet']
-      let l:deoplete_sources.vue        = ['neosnippet']
-      let l:deoplete_sources.ruby       = ['neosnippet']
-      let l:deoplete_sources.eruby      = ['neosnippet']
-      let l:deoplete_sources.python     = ['neosnippet']
-      let l:deoplete_sources.go         = ['neosnippet']
-      let l:deoplete_sources.rust       = ['neosnippet']
-      let l:deoplete_sources.markdown   = ['neosnippet']
-      let l:deoplete_sources.html       = ['neosnippet']
-      let l:deoplete_sources.xml        = ['neosnippet']
-      let l:deoplete_sources.css        = ['neosnippet']
-      let l:deoplete_sources.scss       = ['neosnippet']
-      let l:deoplete_sources.vim        = ['neosnippet']
-      let l:deoplete_sources.zsh        = ['neosnippet']
+      let l:deoplete_sources._               = ['neosnippet']
+      let l:deoplete_sources.javascript      = ['neosnippet']
+      let l:deoplete_sources.typescript      = ['neosnippet']
+      let l:deoplete_sources.typescriptreact = ['neosnippet']
+      let l:deoplete_sources.vue             = ['neosnippet']
+      let l:deoplete_sources.ruby            = ['neosnippet']
+      let l:deoplete_sources.eruby           = ['neosnippet']
+      let l:deoplete_sources.python          = ['neosnippet']
+      let l:deoplete_sources.go              = ['neosnippet']
+      let l:deoplete_sources.rust            = ['neosnippet']
+      let l:deoplete_sources.markdown        = ['neosnippet']
+      let l:deoplete_sources.html            = ['neosnippet']
+      let l:deoplete_sources.xml             = ['neosnippet']
+      let l:deoplete_sources.css             = ['neosnippet']
+      let l:deoplete_sources.scss            = ['neosnippet']
+      let l:deoplete_sources.vim             = ['neosnippet']
+      let l:deoplete_sources.zsh             = ['neosnippet']
     else
       let l:deoplete_default_sources = ['gtags', 'tag', 'around', 'buffer', 'omni', 'member', 'syntax', 'file', 'dictionary', 'look', 'tmux-complete']
 
       let l:deoplete_sources = {}
-      let l:deoplete_sources._          = l:deoplete_default_sources
-      let l:deoplete_sources.javascript = l:deoplete_default_sources + ['LanguageClient', 'ternjs', 'flow']
-      let l:deoplete_sources.typescript = l:deoplete_default_sources + ['LanguageClient']
-      let l:deoplete_sources.vue        = l:deoplete_default_sources + ['LanguageClient']
-      let l:deoplete_sources.ruby       = l:deoplete_default_sources + ['LanguageClient']
-      let l:deoplete_sources.eruby      = l:deoplete_default_sources
-      let l:deoplete_sources.python     = l:deoplete_default_sources + ['jedi']
-      let l:deoplete_sources.go         = l:deoplete_default_sources + ['go']
-      let l:deoplete_sources.rust       = l:deoplete_default_sources
-      let l:deoplete_sources.markdown   = l:deoplete_default_sources + ['emoji']
-      let l:deoplete_sources.html       = l:deoplete_default_sources
-      let l:deoplete_sources.xml        = l:deoplete_default_sources
-      let l:deoplete_sources.css        = l:deoplete_default_sources
-      let l:deoplete_sources.scss       = l:deoplete_default_sources
-      let l:deoplete_sources.vim        = l:deoplete_default_sources + ['vim']
-      let l:deoplete_sources.zsh        = l:deoplete_default_sources
+      let l:deoplete_sources._               = l:deoplete_default_sources
+      let l:deoplete_sources.javascript      = l:deoplete_default_sources + ['LanguageClient', 'ternjs', 'flow']
+      let l:deoplete_sources.typescript      = l:deoplete_default_sources + ['typescript']
+      let l:deoplete_sources.typescriptreact = l:deoplete_default_sources + ['typescript']
+      let l:deoplete_sources.vue             = l:deoplete_default_sources + ['LanguageClient']
+      let l:deoplete_sources.ruby            = l:deoplete_default_sources + ['LanguageClient']
+      let l:deoplete_sources.eruby           = l:deoplete_default_sources
+      let l:deoplete_sources.python          = l:deoplete_default_sources + ['jedi']
+      let l:deoplete_sources.go              = l:deoplete_default_sources + ['go']
+      let l:deoplete_sources.rust            = l:deoplete_default_sources
+      let l:deoplete_sources.markdown        = l:deoplete_default_sources + ['emoji']
+      let l:deoplete_sources.html            = l:deoplete_default_sources
+      let l:deoplete_sources.xml             = l:deoplete_default_sources
+      let l:deoplete_sources.css             = l:deoplete_default_sources
+      let l:deoplete_sources.scss            = l:deoplete_default_sources
+      let l:deoplete_sources.vim             = l:deoplete_default_sources + ['vim']
+      let l:deoplete_sources.zsh             = l:deoplete_default_sources
     endif
 
     call deoplete#custom#option('sources', l:deoplete_sources)
   endfunction
   AutoCmd VimEnter * call Deoplete_set_sources()
 
-  let g:deoplete#omni#input_patterns            = {}
-  let g:deoplete#omni#input_patterns._          = ''
-  let g:deoplete#omni#input_patterns.javascript = ['\w+', '[^. \t0-9]\.([a-zA-Z_]\w*)?']
-  let g:deoplete#omni#input_patterns.typescript = ['\w+', '[^. \t0-9]\.([a-zA-Z_]\w*)?']
-  let g:deoplete#omni#input_patterns.vue        = ['\w+', '[^. \t0-9]\.([a-zA-Z_]\w*)?', '<[^>]*\s[[:alnum:]-]*', '\w+[):;]?\s+\w*', '[@!]']
-  let g:deoplete#omni#input_patterns.ruby       = ['\w+', '[^. *\t]\.\w*', '[a-zA-Z_]\w*::']
-  let g:deoplete#omni#input_patterns.eruby      = ['\w+', '[^. *\t]\.\w*', '[a-zA-Z_]\w*::', '<', '<[^>]*\s[[:alnum:]-]*']
-  let g:deoplete#omni#input_patterns.python     = ['\w+', '[^. *\t]\.\h\w*\','\h\w*::']
-  let g:deoplete#omni#input_patterns.html       = ['<', '<[^>]*\s[[:alnum:]-]*']
-  let g:deoplete#omni#input_patterns.xml        = ['<', '<[^>]*\s[[:alnum:]-]*']
-  let g:deoplete#omni#input_patterns.css        = ['\w+', '\w+[):;]?\s+\w*', '[@!]']
-  let g:deoplete#omni#input_patterns.scss       = ['\w+', '\w+[):;]?\s+\w*', '[@!]']
+  let g:deoplete#omni#input_patterns                 = {}
+  let g:deoplete#omni#input_patterns._               = ''
+  let g:deoplete#omni#input_patterns.javascript      = ['\w+', '[^. \t0-9]\.([a-zA-Z_]\w*)?']
+  let g:deoplete#omni#input_patterns.typescript      = ['\w+', '[^. \t0-9]\.([a-zA-Z_]\w*)?']
+  let g:deoplete#omni#input_patterns.typescriptreact = ['\w+', '[^. \t0-9]\.([a-zA-Z_]\w*)?', '<', '<[^>]*\s[[:alnum:]-]*']
+  let g:deoplete#omni#input_patterns.vue             = ['\w+', '[^. \t0-9]\.([a-zA-Z_]\w*)?', '<[^>]*\s[[:alnum:]-]*', '\w+[):;]?\s+\w*', '[@!]']
+  let g:deoplete#omni#input_patterns.ruby            = ['\w+', '[^. *\t]\.\w*', '[a-zA-Z_]\w*::']
+  let g:deoplete#omni#input_patterns.eruby           = ['\w+', '[^. *\t]\.\w*', '[a-zA-Z_]\w*::', '<', '<[^>]*\s[[:alnum:]-]*']
+  let g:deoplete#omni#input_patterns.python          = ['\w+', '[^. *\t]\.\h\w*\','\h\w*::']
+  let g:deoplete#omni#input_patterns.html            = ['<', '<[^>]*\s[[:alnum:]-]*']
+  let g:deoplete#omni#input_patterns.xml             = ['<', '<[^>]*\s[[:alnum:]-]*']
+  let g:deoplete#omni#input_patterns.css             = ['\w+', '\w+[):;]?\s+\w*', '[@!]']
+  let g:deoplete#omni#input_patterns.scss            = ['\w+', '\w+[):;]?\s+\w*', '[@!]']
 
-  let g:deoplete#omni#functions            = {}
-  let g:deoplete#omni#functions.javascript = ['javascriptcomplete#CompleteJS']
-  let g:deoplete#omni#functions.typescript = ['javascriptcomplete#CompleteJS']
-  let g:deoplete#omni#functions.vue        = ['javascriptcomplete#CompleteJS', 'htmlcomplete#CompleteTags', 'csscomplete#CompleteCSS']
-  let g:deoplete#omni#functions.ruby       = ['rubycomplete#Complete']
-  let g:deoplete#omni#functions.eruby      = ['rubycomplete#Complete', 'htmlcomplete#CompleteTags']
-  let g:deoplete#omni#functions.python     = ['pythoncomplete#Complete']
-  let g:deoplete#omni#functions.html       = ['htmlcomplete#CompleteTags']
-  let g:deoplete#omni#functions.xml        = ['htmlcomplete#CompleteTags']
-  let g:deoplete#omni#functions.css        = ['csscomplete#CompleteCSS']
-  let g:deoplete#omni#functions.scss       = ['csscomplete#CompleteCSS']
-  let g:deoplete#omni#functions.vim        = ['Verdin#omnifunc']
+  let g:deoplete#omni#functions                 = {}
+  let g:deoplete#omni#functions.javascript      = ['javascriptcomplete#CompleteJS']
+  let g:deoplete#omni#functions.typescript      = ['javascriptcomplete#CompleteJS']
+  let g:deoplete#omni#functions.typescriptreact = ['javascriptcomplete#CompleteJS']
+  let g:deoplete#omni#functions.vue             = ['javascriptcomplete#CompleteJS', 'htmlcomplete#CompleteTags', 'csscomplete#CompleteCSS']
+  let g:deoplete#omni#functions.ruby            = ['rubycomplete#Complete']
+  let g:deoplete#omni#functions.eruby           = ['rubycomplete#Complete', 'htmlcomplete#CompleteTags']
+  let g:deoplete#omni#functions.python          = ['pythoncomplete#Complete']
+  let g:deoplete#omni#functions.html            = ['htmlcomplete#CompleteTags']
+  let g:deoplete#omni#functions.xml             = ['htmlcomplete#CompleteTags']
+  let g:deoplete#omni#functions.css             = ['csscomplete#CompleteCSS']
+  let g:deoplete#omni#functions.scss            = ['csscomplete#CompleteCSS']
+  let g:deoplete#omni#functions.vim             = ['Verdin#omnifunc']
 endif
 " }}}3
 
@@ -1622,12 +1634,11 @@ endif
 let g:LanguageClient_autoStart = 1
 " let g:LanguageClient_diagnosticsEnable = 0
 let g:LanguageClient_serverCommands = {
-\ 'javascript': ['javascript-typescript-stdio'],
-\ 'typescript': ['javascript-typescript-stdio'],
-\ 'vue': ['vls'],
-\ 'ruby': ['solargraph', 'stdio'],
-\ 'html': [],
-\ 'css': [],
+\ 'javascript':      ['javascript-typescript-stdio'],
+\ 'vue':             ['vls'],
+\ 'ruby':            ['solargraph', 'stdio'],
+\ 'html':            [],
+\ 'css':             [],
 \ }
 
 let g:LanguageClient_diagnosticsDisplay = {
