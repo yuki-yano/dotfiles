@@ -1833,6 +1833,17 @@ if dein#tap('accelerated-jk')
 endif
 " }}}3
 
+" anzu & asterisk {{{3
+if dein#tap('vim-anzu') && dein#tap('vim-asterisk')
+  map n  <Plug>(anzu-n)zzzv
+  map N  <Plug>(anzu-N)zzzv
+  map *  <Plug>(asterisk-z*)
+  map #  <Plug>(asterisk-z#)
+  map g* <Plug>(asterisk-gz*)
+  map g# <Plug>(asterisk-gz#)
+endif
+" }}}3
+
 " ctrlsf {{{3
 AlterCommand! <cmdwin> grep CtrlSF<Space>-R
 AlterCommand! <cmdwin> csu  CtrlSFUpdate
@@ -1865,17 +1876,6 @@ let g:ctrlsf_mapping = {
 let g:ctrlsf_populate_qflist = 1
 let g:ctrlsf_position        = 'right'
 let g:ctrlsf_winsize         = '30%'
-" }}}3
-
-" anzu & asterisk & search-pulse {{{3
-if dein#tap('vim-anzu') && dein#tap('vim-asterisk')
-  map n  <Plug>(anzu-n)zzzv
-  map N  <Plug>(anzu-N)zzzv
-  map *  <Plug>(asterisk-z*)
-  map #  <Plug>(asterisk-z#)
-  map g* <Plug>(asterisk-gz*)
-  map g# <Plug>(asterisk-gz#)
-endif
 " }}}3
 
 " easy-align {{{3
