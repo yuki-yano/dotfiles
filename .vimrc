@@ -1000,6 +1000,12 @@ AutoCmd FileType zsh ALEDisableBuffer
 " autoformat {{{3
 function! s:autoformat_all() abort
   let l:formatter_global_var_name = 'g:formatters_' . &filetype
+
+  if !exists(l:formatter_global_var_name)
+    Autoformat
+    return
+  endif
+
   let l:formatter_buffer_var_name = 'b:formatters_' . &filetype
   execute 'let l:formatters = ' . l:formatter_global_var_name
 
