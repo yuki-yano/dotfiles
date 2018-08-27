@@ -2176,6 +2176,8 @@ if dein#tap('lexima.vim')
     call Hook_on_post_source_lexima()
   endfunction
 endif
+
+AutoCmd FileType typescript,typescriptreact let b:lexima_disabled = 1
 " }}}3
 
 " operator-convert-case {{{3
