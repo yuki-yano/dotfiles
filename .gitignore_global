@@ -45,3 +45,6 @@ GTAGS
 !.keep
 !.gitkeep
 git-worktrees/*
+
+# VSCode
+.vscode
