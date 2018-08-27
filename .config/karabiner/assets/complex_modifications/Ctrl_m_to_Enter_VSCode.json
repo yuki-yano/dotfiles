@@ -1,0 +1,30 @@
+{
+  "title": "VSCode Keybind",
+  "rules": [
+    {
+      "description": "Ctrl-m to Enter for VSCode",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": {
+            "key_code": "m",
+            "modifiers": {
+              "mandatory": ["control"]
+            }
+          },
+          "to": [
+            {
+              "key_code": "return_or_enter"
+            }
+          ],
+          "conditions": [
+            {
+              "type": "frontmost_application_if",
+              "bundle_identifiers": ["^com\\.microsoft\\.VSCode$"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
