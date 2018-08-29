@@ -1439,7 +1439,6 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   call deoplete#custom#source('flow',           'rank',  700)
   call deoplete#custom#source('jedi',           'rank',  700)
   call deoplete#custom#source('go',             'rank',  700)
-  call deoplete#custom#source('emoji',          'rank',  700)
   call deoplete#custom#source('vim',            'rank',  700)
   call deoplete#custom#source('syntax',         'rank',  600)
   call deoplete#custom#source('file',           'rank',  600)
@@ -1468,7 +1467,6 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   call deoplete#custom#source('flow',           'mark', '[flow]')
   call deoplete#custom#source('jedi',           'mark', '[jedi]')
   call deoplete#custom#source('go',             'mark', '[go]')
-  call deoplete#custom#source('emoji',          'mark', '[emoji]')
   call deoplete#custom#source('vim',            'mark', '[vim]')
   call deoplete#custom#source('tmux-complete',  'mark', '[tmux]')
 
@@ -1484,7 +1482,6 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   call deoplete#custom#source('flow',           'max_candidates', 10)
   call deoplete#custom#source('jedi',           'max_candidates', 10)
   call deoplete#custom#source('go',             'max_candidates', 10)
-  call deoplete#custom#source('emoji',          'max_candidates', 10)
   call deoplete#custom#source('vim',            'max_candidates', 10)
   call deoplete#custom#source('syntax',         'max_candidates', 10)
   call deoplete#custom#source('file',           'max_candidates', 10)
@@ -1530,7 +1527,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
       let l:deoplete_sources.python          = l:deoplete_default_sources + ['jedi']
       let l:deoplete_sources.go              = l:deoplete_default_sources + ['go']
       let l:deoplete_sources.rust            = l:deoplete_default_sources
-      let l:deoplete_sources.markdown        = l:deoplete_default_sources + ['emoji']
+      let l:deoplete_sources.markdown        = l:deoplete_default_sources
       let l:deoplete_sources.html            = l:deoplete_default_sources
       let l:deoplete_sources.xml             = l:deoplete_default_sources
       let l:deoplete_sources.css             = l:deoplete_default_sources
