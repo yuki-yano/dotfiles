@@ -1969,6 +1969,8 @@ if dein#tap('vim-easymotion') && dein#tap('clever-f.vim')
 
   nmap <silent> S         <Plug>(easymotion-overwin-f2)
   nmap <silent> ss        <Plug>(easymotion-bd-f2)
+  omap <silent> ss        <Plug>(easymotion-bd-f2)
+  xmap <silent> ss        <Plug>(easymotion-bd-f2)
   omap <silent> f         <Plug>(easymotion-fl)
   omap <silent> t         <Plug>(easymotion-tl)
   omap <silent> F         <Plug>(easymotion-Fl)
