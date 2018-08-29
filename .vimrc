@@ -2216,9 +2216,30 @@ if dein#tap('lexima.vim')
     call lexima#set_default_rules()
     call Hook_on_post_source_lexima()
   endfunction
+
+  function! Prehook_lexima(char) abort
+    let b:deoplete_disable_auto_complete = 1
+    return lexima#insmode#_default_prehook(a:char)
+  endfunction
+
+  function! Posthook_lexima(char) abort
+    call lexima#insmode#_default_posthook(a:char)
+    let b:deoplete_disable_auto_complete = 0
+    return ''
+  endfunction
+
+  function! Set_prehook_and_posthook_lexima() abort
+    let l:dict = lexima#insmode#get_rules()
+    for key in keys(lexima#insmode#get_rules())
+      let l:dict[key]['prehook']  = function('Prehook_lexima')
+      let l:dict[key]['posthook'] = function('Posthook_lexima')
+    endfor
+  endfunction
+
+  AutoCmd InsertEnter * call Set_prehook_and_posthook_lexima()
 endif
 
-AutoCmd FileType typescript,typescriptreact let b:lexima_disabled = 1
+" AutoCmd FileType typescript,typescriptreact let b:lexima_disabled = 1
 " }}}3
 
 " operator-convert-case {{{3
