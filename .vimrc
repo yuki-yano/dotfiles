@@ -1541,7 +1541,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   AutoCmd VimEnter * call Deoplete_set_sources()
 
   let g:deoplete#omni#input_patterns                 = {}
-  let g:deoplete#omni#input_patterns._               = ''
+  let g:deoplete#omni#input_patterns._               = []
   let g:deoplete#omni#input_patterns.javascript      = ['\w+', '[^. \t0-9]\.([a-zA-Z_]\w*)?']
   let g:deoplete#omni#input_patterns.typescript      = ['\w+', '[^. \t0-9]\.([a-zA-Z_]\w*)?']
   let g:deoplete#omni#input_patterns.typescriptreact = ['\w+', '[^. \t0-9]\.([a-zA-Z_]\w*)?', '<', '<[^>]*\s[[:alnum:]-]*']
@@ -1559,14 +1559,18 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   let g:deoplete#omni#functions.typescript      = ['javascriptcomplete#CompleteJS']
   let g:deoplete#omni#functions.typescriptreact = ['javascriptcomplete#CompleteJS']
   let g:deoplete#omni#functions.vue             = ['javascriptcomplete#CompleteJS', 'htmlcomplete#CompleteTags', 'csscomplete#CompleteCSS']
-  let g:deoplete#omni#functions.ruby            = ['rubycomplete#Complete']
-  let g:deoplete#omni#functions.eruby           = ['rubycomplete#Complete', 'htmlcomplete#CompleteTags']
+  let g:deoplete#omni#functions.ruby            = []
+  let g:deoplete#omni#functions.eruby           = ['htmlcomplete#CompleteTags']
   let g:deoplete#omni#functions.python          = ['pythoncomplete#Complete']
+  let g:deoplete#omni#functions.go              = []
+  let g:deoplete#omni#functions.rust            = []
+  let g:deoplete#omni#functions.markdown        = []
   let g:deoplete#omni#functions.html            = ['htmlcomplete#CompleteTags']
   let g:deoplete#omni#functions.xml             = ['htmlcomplete#CompleteTags']
   let g:deoplete#omni#functions.css             = ['csscomplete#CompleteCSS']
   let g:deoplete#omni#functions.scss            = ['csscomplete#CompleteCSS']
   let g:deoplete#omni#functions.vim             = ['Verdin#omnifunc']
+  let g:deoplete#omni#functions.zsh             = []
 endif
 " }}}3
 
