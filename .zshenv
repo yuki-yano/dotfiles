@@ -10,7 +10,6 @@ export LANG=ja_JP.UTF-8
 export EDITOR=nvim
 export VISUAL=nvim
 export MANPAGER='nvim -c MANPAGER -'
-alias c=ccat
 
 # Disable path_helper
 # show: http://qiita.com/t-takaai/items/8574ff312f2caa5177c2

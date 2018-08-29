@@ -25,8 +25,14 @@ zplugin light yukiycino-dotfiles/zsh-show-buffer-stack
 zplugin ice from"gh-r" as"program" bpick"*darwin*" mv"*darwin*/ccat -> ${ZPFX}/bin/ccat"
 zplugin light jingweno/ccat
 
+zplugin ice from"gh-r" as"program" bpick"*darwin*" mv"*darwin*/bat -> ${ZPFX}/bin/bat"
+zplugin light sharkdp/bat
+
 zplugin ice from"gh-r" as"program" bpick"*macos*" mv"exa-macos-x86_64 -> ${ZPFX}/bin/exa"
 zplugin light ogham/exa
+
+zplugin ice from"gh-r" as"program" bpick"*darwin*" mv"*darwin*/fd -> ${ZPFX}/bin/fd"
+zplugin light sharkdp/fd
 
 zplugin ice from"gh-r" as"program" bpick"*apple-darwin*" mv"ripgrep*/rg -> ${ZPFX}/bin/rg"
 zplugin light BurntSushi/ripgrep
@@ -113,7 +119,7 @@ zplugin light ZZROTDesign/docker-clean
 zplugin ice lucid wait"2" from"gh-r" as"program" bpick"*darwin*" mv"vegeta -> ${ZPFX}/bin/vegeta"
 zplugin light tsenart/vegeta
 
-zplugin ice lucid wait'2' from"gh-r" as"program" bpick"*darwin*" atinit"test ! -f ${ZPFX}/bin/shfmt && chmod +x shmft* && mv shfmt* ${ZPFX}/bin/shfmt"
+zplugin ice lucid wait'2' from"gh-r" as"program" bpick"*darwin*" atinit"test ! -f ${ZPFX}/bin/shfmt && chmod +x shfmt* && mv shfmt* ${ZPFX}/bin/shfmt"
 zplugin light mvdan/sh
 
 zplugin ice lucid wait"2" depth"1"
@@ -133,7 +139,7 @@ zplugin snippet 'https://github.com/knu/zsh-git-escape-magic/blob/master/git-esc
 # zplugin light yukiycino-dotfiles/cdd
 # }}}
 
-# async
+# zsh-async {{{
 function set_async() {
 #   async_init
 #
@@ -167,8 +173,9 @@ function set_async() {
 #   kick_tmux_dir_worker
 }
 # current_dir=$(pwd)
+# }}}
 
-# fast-syntax-highlighting
+# fast-syntax-highlighting {{{
 function set_fast_theme() {
   FAST_HIGHLIGHT_STYLES[alias]='fg=blue'
   FAST_HIGHLIGHT_STYLES[suffix-alias]='fg=blue'
@@ -186,8 +193,9 @@ function set_fast_theme() {
   bindkey -M vicmd 'k'  history-search-backward
   bindkey -M vicmd 'j'  history-search-forward
 }
+# }}}
 
-# abbreviations
+# abbreviations {{{
 typeset -A abbreviations
 
 abbreviations=(
@@ -232,22 +240,26 @@ function _magic-abbrev-expand-and-accept-line() {
   zle accept-line
 }
 zle -N magic-abbrev-expand-and-accept-line _magic-abbrev-expand-and-accept-line
+# }}}
 
-# extra-abbrev
+# extra-abbrev {{{
 EXTRA_ABBREV=(
   "gci" "git commit -m '_|_'"
 )
+# }}}
 
-# show-buffer-stack
+# show-buffer-stack {{{
 add-zsh-hook precmd check-buffer-stack
+# }}}
 
-# autosuggestions
+# autosuggestions {{{
 function set_autosuggest() {
   ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(magic-abbrev-expand-and-accept-line magic-abbrev-expand-and-fzf-direct-completion $ZSH_AUTOSUGGEST_CLEAR_WIDGETS)
   _zsh_autosuggest_start
 }
+# }}}
 
-# exa
+# exa alias {{{
 if whence exa > /dev/null; then
   alias ls="exa"
   alias ll="exa -lh  --git"
@@ -261,15 +273,35 @@ else
   alias ll='ls -lh'
   alias la='ls -alh'
 fi
+# }}}
 
+# bat & ccat {{{
+if whence bat > /dev/null; then
+  alias le='bat  --theme zenburn'
+  alias bat='bat --theme zenburn'
+  alias c='bat --paging never --theme zenburn --style changes'
+elif whence ccat > /dev/null; then
+  alias c=ccat
+else
+  alias c=cat
+fi
+
+if whence ccat > /dev/null; then
+  alias cc=ccat
+fi
+# }}}
+
+# tmuximum {{{
 function set_tmuximum() {
   bindkey -M viins '^[t' tmuximum
   bindkey -M vicmd '^[t' tmuximum
   bindkey -M vivis '^[t' tmuximum
 }
+# }}}
 
-# cdd
+# cdd {{{
 # chpwd_functions+=_cdd_chpwd
+# }}}
 
 # }}}
 
