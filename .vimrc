@@ -1353,6 +1353,7 @@ nnoremap <silent> <leader>gf :FzfOpenGf<CR>
 AlterCommand! <cmdwin> fg[rep] ProjectGrepPreview
 
 let g:fzf_preview_filelist_command = 'rg --files --hidden --follow --glob "!.git/*"'
+let g:fzf_preview_command          = 'bat --color always --theme zenburn --paging never {}'
 
 nnoremap <silent> <Leader>p :<C-u>ProjectFilesPreview<CR>
 nnoremap <silent> <Leader>g :<C-u>GitFilesPreview<CR>
