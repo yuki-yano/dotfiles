@@ -2090,53 +2090,59 @@ if dein#tap('lexima.vim')
 
     "" Parenthesis
     let l:rules += [
-    \ { 'char': '(',     'at': '(\%#)', 'input': '<Del>',     },
-    \ { 'char': '(',     'at': '(\%#',                        },
-    \ { 'char': '<BS>',  'at': '(\%#)', 'input': '<BS><Del>', },
-    \ { 'char': '<TAB>', 'at': '\%#)',  'input': '<Right>'    },
+    \ { 'char': '(',     'at': '(\%#)', 'input': '<Del>',      },
+    \ { 'char': '(',     'at': '(\%#',                         },
+    \ { 'char': '<C-h>', 'at': '(\%#)', 'input': '<BS><Del>',  },
+    \ { 'char': '<BS>',  'at': '(\%#)', 'input': '<BS><Del>',  },
+    \ { 'char': '<TAB>', 'at': '\%#)',  'input': '<Right>',    },
     \ ]
 
     "" Brace
     let l:rules += [
     \ { 'char': '{',     'at': '{\%#}', 'input': '<Del>',     },
     \ { 'char': '{',     'at': '{\%#',                        },
+    \ { 'char': '<C-h>', 'at': '{\%#}', 'input': '<BS><Del>', },
     \ { 'char': '<BS>',  'at': '{\%#}', 'input': '<BS><Del>', },
-    \ { 'char': '<TAB>', 'at': '\%#}',  'input': '<Right>'    },
+    \ { 'char': '<TAB>', 'at': '\%#}',  'input': '<Right>',   },
     \ ]
 
     "" Bracket
     let l:rules += [
     \ { 'char': '[',     'at': '\[\%#\]', 'input': '<Del>',     },
     \ { 'char': '[',     'at': '\[\%#',                         },
+    \ { 'char': '<C-h>', 'at': '\[\%#\]', 'input': '<BS><Del>', },
     \ { 'char': '<BS>',  'at': '\[\%#\]', 'input': '<BS><Del>', },
-    \ { 'char': '<TAB>', 'at': '\%#\]',   'input': '<Right>'    },
+    \ { 'char': '<TAB>', 'at': '\%#\]',   'input': '<Right>',   },
     \ ]
 
     "" Sinble Quote
     let l:rules += [
-    \ { 'char': "'",     'at': "'\\%#'", 'input': '<Del>',  },
-    \ { 'char': "'",     'at': "'\\%#",                     },
-    \ { 'char': "'",     'at': "''\\%#",                    },
-    \ { 'char': '<BS>',  'at': "'\\%#'", 'input': '<Del>',  },
-    \ { 'char': '<TAB>', 'at': "\\%#'",  'input': '<Right>' },
+    \ { 'char': "'",     'at': "'\\%#'", 'input': '<Del>',     },
+    \ { 'char': "'",     'at': "'\\%#",                        },
+    \ { 'char': "'",     'at': "''\\%#",                       },
+    \ { 'char': '<C-h>', 'at': "'\\%#'", 'input': '<BS><Del>', },
+    \ { 'char': '<BS>',  'at': "'\\%#'", 'input': '<BS><Del>', },
+    \ { 'char': '<TAB>', 'at': "\\%#'",  'input': '<Right>',   },
     \ ]
 
     "" Double Quote
     let l:rules += [
-    \ { 'char': '"',     'at': '"\%#"', 'input': '<Del>',  },
-    \ { 'char': '"',     'at': '"\%#',                     },
-    \ { 'char': '"',     'at': '""\%#',                    },
-    \ { 'char': '<BS>',  'at': '"\%#"', 'input': '<Del>',  },
-    \ { 'char': '<TAB>', 'at': '\%#"',  'input': '<Right>' },
+    \ { 'char': '"',     'at': '"\%#"', 'input': '<Del>',     },
+    \ { 'char': '"',     'at': '"\%#',                        },
+    \ { 'char': '"',     'at': '""\%#',                       },
+    \ { 'char': '<C-h>', 'at': '"\%#"', 'input': '<BS><Del>', },
+    \ { 'char': '<BS>',  'at': '"\%#"', 'input': '<BS><Del>', },
+    \ { 'char': '<TAB>', 'at': '\%#"',  'input': '<Right>',   },
     \ ]
 
     "" Back Quote
     let l:rules += [
-    \ { 'char': '`',     'at': '`\%#`', 'input': '<Del>',  },
-    \ { 'char': '`',     'at': '`\%#',                     },
-    \ { 'char': '`',     'at': '``\%#',                    },
-    \ { 'char': '<BS>',  'at': '`\%#`', 'input': '<Del>',  },
-    \ { 'char': '<TAB>', 'at': '\%#`',  'input': '<Right>' },
+    \ { 'char': '`',     'at': '`\%#`', 'input': '<Del>',     },
+    \ { 'char': '`',     'at': '`\%#',                        },
+    \ { 'char': '`',     'at': '``\%#',                       },
+    \ { 'char': '<C-h>', 'at': '`\%#`', 'input': '<BS><Del>', },
+    \ { 'char': '<BS>',  'at': '`\%#`', 'input': '<BS><Del>', },
+    \ { 'char': '<TAB>', 'at': '\%#`',  'input': '<Right>',   },
     \ ]
 
     "" ruby
@@ -2149,12 +2155,14 @@ if dein#tap('lexima.vim')
 
     "" eruby
     let l:rules += [
-    \ { 'filetype': 'eruby', 'char': '%',    'at': '<\%#',         'input': '%<Space>',                        'input_after': '<Space>%>',                 },
-    \ { 'filetype': 'eruby', 'char': '=',    'at': '<%\%#',        'input': '=<Space>',                        'input_after': '<Space>%>',                 },
-    \ { 'filetype': 'eruby', 'char': '=',    'at': '<%\s\%#\s%>',  'input': '<Left>=',                                                                     },
-    \ { 'filetype': 'eruby', 'char': '=',    'at': '<%\%#.\+%>',                                                                           'priority': 10, },
-    \ { 'filetype': 'eruby', 'char': '<BS>', 'at': '<%\s\%#\s%>',  'input': '<BS><BS><BS><Del><Del><Del>',                                                 },
-    \ { 'filetype': 'eruby', 'char': '<BS>', 'at': '<%=\s\%#\s%>', 'input': '<BS><BS><BS><BS><Del><Del><Del>',                                             },
+    \ { 'filetype': 'eruby', 'char': '%',     'at': '<\%#',         'input': '%<Space>',                        'input_after': '<Space>%>',                 },
+    \ { 'filetype': 'eruby', 'char': '=',     'at': '<%\%#',        'input': '=<Space>',                        'input_after': '<Space>%>',                 },
+    \ { 'filetype': 'eruby', 'char': '=',     'at': '<%\s\%#\s%>',  'input': '<Left>=',                                                                     },
+    \ { 'filetype': 'eruby', 'char': '=',     'at': '<%\%#.\+%>',                                                                           'priority': 10, },
+    \ { 'filetype': 'eruby', 'char': '<C-h>', 'at': '<%\s\%#\s%>',  'input': '<BS><BS><BS><Del><Del><Del>',                                                 },
+    \ { 'filetype': 'eruby', 'char': '<BS>',  'at': '<%\s\%#\s%>',  'input': '<BS><BS><BS><Del><Del><Del>',                                                 },
+    \ { 'filetype': 'eruby', 'char': '<C-h>', 'at': '<%=\s\%#\s%>', 'input': '<BS><BS><BS><BS><Del><Del><Del>',                                             },
+    \ { 'filetype': 'eruby', 'char': '<BS>',  'at': '<%=\s\%#\s%>', 'input': '<BS><BS><BS><BS><Del><Del><Del>',                                             },
     \ ]
 
     "" markdown
@@ -2162,7 +2170,9 @@ if dein#tap('lexima.vim')
     \ { 'filetype': 'markdown', 'char': '`',     'at': '``\%#',                                                       'input_after': '<CR><CR>```', 'priority': 10, },
     \ { 'filetype': 'markdown', 'char': '#',     'at': '^\%#\%(#\)\@!',    'input': '# '                                                                            },
     \ { 'filetype': 'markdown', 'char': '#',     'at': '#\s\%#',           'input': '<BS># ',                                                                       },
+    \ { 'filetype': 'markdown', 'char': '<C-h>', 'at': '^#\s\%#',          'input': '<BS><BS>'                                                                      },
     \ { 'filetype': 'markdown', 'char': '<BS>',  'at': '^#\s\%#',          'input': '<BS><BS>'                                                                      },
+    \ { 'filetype': 'markdown', 'char': '<C-h>', 'at': '##\s\%#',          'input': '<BS><BS> ',                                                                    },
     \ { 'filetype': 'markdown', 'char': '<BS>',  'at': '##\s\%#',          'input': '<BS><BS> ',                                                                    },
     \ { 'filetype': 'markdown', 'char': '+',     'at': '^\s*\%#',          'input': '+ ',                                                                           },
     \ { 'filetype': 'markdown', 'char': '-',     'at': '^\s*\%#',          'input': '- ',                                                                           },
@@ -2170,9 +2180,13 @@ if dein#tap('lexima.vim')
     \ { 'filetype': 'markdown', 'char': '-',     'at': '^\s*- \%#',        'input': '<Left><Left><Tab><Del>+<Right>',                                               },
     \ { 'filetype': 'markdown', 'char': '-',     'at': '^\s*+ \%#',        'input': '<Left><Left><Tab><Del>*<Right>',                                               },
     \ { 'filetype': 'markdown', 'char': '-',     'at': '^\s*\* \%#',       'input': '<Left><Left><Tab><Del>-<Right>',                                               },
+    \ { 'filetype': 'markdown', 'char': '<C-h>', 'at': '^\s*- \%#',        'input': '<BS><BS><BS>* ',                                                               },
     \ { 'filetype': 'markdown', 'char': '<BS>',  'at': '^\s*- \%#',        'input': '<BS><BS><BS>* ',                                                               },
+    \ { 'filetype': 'markdown', 'char': '<C-h>', 'at': '^\s*+ \%#',        'input': '<BS><BS><BS>- ',                                                               },
     \ { 'filetype': 'markdown', 'char': '<BS>',  'at': '^\s*+ \%#',        'input': '<BS><BS><BS>- ',                                                               },
+    \ { 'filetype': 'markdown', 'char': '<C-h>', 'at': '^\s*\* \%#',       'input': '<BS><BS><BS>+ ',                                                               },
     \ { 'filetype': 'markdown', 'char': '<BS>',  'at': '^\s*\* \%#',       'input': '<BS><BS><BS>+ ',                                                               },
+    \ { 'filetype': 'markdown', 'char': '<C-h>', 'at': '^\(-\|+\|*\) \%#', 'input': '<C-w>',                                                                        },
     \ { 'filetype': 'markdown', 'char': '<BS>',  'at': '^\(-\|+\|*\) \%#', 'input': '<C-w>',                                                                        },
     \ { 'filetype': 'markdown', 'char': '>',     'at': '^\s*\%#',          'input': '> ',                                                                           },
     \ ]
