@@ -480,7 +480,8 @@ if has('nvim')
 
   set inccommand=nosplit
 
-  AutoCmd CursorHold * rshada | wshada
+  AutoCmd CursorHold   * rshada | wshada
+  AutoCmd TextYankPost * rshada | wshada
 
   AutoCmd FocusGained * checktime
 
