@@ -3062,8 +3062,6 @@ nnoremap <silent> <Leader><C-w> :WinResizerStartResize<CR>
 function! EscEscReset(...) abort
   AnzuClearSearchStatus
   call g:Set_default_keymap()
-  highlight CursorColumn ctermfg=none ctermbg=235
-  highlight CursorLine   ctermfg=none ctermbg=235
 endfunction
 nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> call EscEscReset()<CR>
 augroup esc_esc_reset
@@ -3153,8 +3151,8 @@ AutoCmd FileType qf
 syntax enable
 
 " Highlight {{{2
-AutoCmd ColorScheme * highlight CursorColumn ctermfg=none ctermbg=236
-AutoCmd ColorScheme * highlight CursorLine   ctermfg=none ctermbg=236
+AutoCmd ColorScheme * highlight CursorColumn ctermfg=none ctermbg=17
+AutoCmd ColorScheme * highlight CursorLine   ctermfg=none ctermbg=17
 AutoCmd ColorScheme * highlight CursorLineNr ctermfg=253  ctermbg=none
 AutoCmd ColorScheme * highlight LineNr       ctermfg=241  ctermbg=none
 AutoCmd ColorScheme * highlight NonText      ctermfg=60   ctermbg=none
@@ -3164,7 +3162,7 @@ AutoCmd ColorScheme * highlight Visual       ctermfg=159  ctermbg=23
 
 AutoCmd ColorScheme * highlight ALEError                ctermfg=0    ctermbg=203
 AutoCmd ColorScheme * highlight ALEWarning              ctermfg=0    ctermbg=229
-AutoCmd ColorScheme * highlight BrighTestHighlight      ctermfg=none ctermbg=238
+AutoCmd ColorScheme * highlight BrighTestHighlight      ctermfg=30   ctermbg=none
 AutoCmd ColorScheme * highlight CleverFDefaultLabel     ctermfg=9    ctermbg=236  cterm=underline,bold
 AutoCmd ColorScheme * highlight DeniteLine              ctermfg=111  ctermbg=236
 AutoCmd ColorScheme * highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold
