@@ -276,18 +276,15 @@ fi
 # }}}
 
 # bat & ccat {{{
-if whence bat > /dev/null; then
-  alias le='bat  --theme zenburn'
-  alias bat='bat --theme zenburn'
-  alias c='bat --paging never --theme zenburn --style changes'
-elif whence ccat > /dev/null; then
+if whence ccat > /dev/null; then
   alias c=ccat
 else
   alias c=cat
 fi
 
-if whence ccat > /dev/null; then
-  alias cc=ccat
+if whence bat > /dev/null; then
+  alias bat='bat --theme zenburn'
+  alias b='bat --paging never --theme zenburn --style changes'
 fi
 # }}}
 
