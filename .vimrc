@@ -1544,156 +1544,149 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   let g:deoplete#omni#functions['zsh']        = []
 
   " smartinput
-  function! Smartinput_set_rules() abort
-    call smartinput#map_to_trigger('i', '<Space>', '<Space>', '<Space>')
-    call smartinput#map_to_trigger('i', '<Bar>', '<Bar>', '<Bar>')
-    call smartinput#map_to_trigger('i', '%', '%', '%')
-    call smartinput#map_to_trigger('i', '=', '=', '=')
-    call smartinput#map_to_trigger('i', '#', '#', '#')
-    call smartinput#map_to_trigger('i', '+', '+', '+')
-    call smartinput#map_to_trigger('i', '-', '-', '-')
-    call smartinput#map_to_trigger('i', '*', '*', '*')
-    call smartinput#map_to_trigger('i', '>', '>', '>')
-    call smartinput#map_to_trigger('i', '<Plug>(smartinput_BS)', '<BS>', '<BS>')
-    call smartinput#map_to_trigger('i', '<Plug>(smartinput_C-h)', '<BS>', '<C-h>')
-    call smartinput#map_to_trigger('i', '<Plug>(smartinput_CR)', '<Enter>', '<Enter>')
+  call smartinput#map_to_trigger('i', '<Space>', '<Space>', '<Space>')
+  call smartinput#map_to_trigger('i', '<Tab>', '<Tab>', '<Tab>')
+  call smartinput#map_to_trigger('i', '<S-Tab>', '<S-Tab>', '<S-Tab>')
+  call smartinput#map_to_trigger('i', '<Bar>', '<Bar>', '<Bar>')
+  call smartinput#map_to_trigger('i', '%', '%', '%')
+  call smartinput#map_to_trigger('i', '=', '=', '=')
+  call smartinput#map_to_trigger('i', '#', '#', '#')
+  call smartinput#map_to_trigger('i', '-', '-', '-')
+  call smartinput#map_to_trigger('i', '>', '>', '>')
+  call smartinput#map_to_trigger('i', '<Plug>(smartinput_BS)', '<BS>', '<BS>')
+  call smartinput#map_to_trigger('i', '<Plug>(smartinput_C-h)', '<BS>', '<C-h>')
+  call smartinput#map_to_trigger('i', '<Plug>(smartinput_CR)', '<Enter>', '<Enter>')
 
-    let l:rules = []
+  let s:rules = []
 
-    "" Ampersand
-    " let l:rules += [
-    " \ {'char': '&',                        'input': '&& '},
-    " \ {'char': '&',     'at': '\S\%#',     'input': ' && '},
-    " \ {'char': '&',     'at': '\s\%#',     'input': '&& '},
-    " \ {'char': '&',     'at': '&&\s\%#',   'input': '<BS><BS>'},
-    " \ {'char': '&',     'at': '&\%#',      'priority': 10},
-    " \ {'char': '<BS>', 'at': '\s&&\s\%#', 'input': '<BS><BS><BS><BS>'},
-    " \ {'char': '<BS>', 'at': '&&\s\%#',   'input': '<BS><BS><BS>'},
-    " \ {'char': '<BS>', 'at': '&&\%#',     'input': '<BS><BS>'},
-    " \ ]
+  "" Ampersand
+  " let s:rules += [
+  " \ {'char': '&',                        'input': '&& '},
+  " \ {'char': '&',     'at': '\S\%#',     'input': ' && '},
+  " \ {'char': '&',     'at': '\s\%#',     'input': '&& '},
+  " \ {'char': '&',     'at': '&&\s\%#',   'input': '<BS><BS>'},
+  " \ {'char': '&',     'at': '&\%#',      'priority': 10},
+  " \ {'char': '<BS>', 'at': '\s&&\s\%#', 'input': '<BS><BS><BS><BS>'},
+  " \ {'char': '<BS>', 'at': '&&\s\%#',   'input': '<BS><BS><BS>'},
+  " \ {'char': '<BS>', 'at': '&&\%#',     'input': '<BS><BS>'},
+  " \ ]
 
-    "" Bar
-    " let l:rules += [
-    " \ {'char': '<Bar>',                    'input': '|| '},
-    " \ {'char': '<Bar>', 'at': '\S\%#',     'input': ' || '},
-    " \ {'char': '<Bar>', 'at': '\s\%#',     'input': '|| '},
-    " \ {'char': '<Bar>', 'at': '||\s\%#',   'input': '<BS><BS><BS><BS>|'},
-    " \ {'char': '<Bar>', 'at': '|\%#',      'input': '<Bar>', 'priority': 10},
-    " \ {'char': '<BS>', 'at': '\s||\s\%#', 'input': '<BS><BS><BS><BS>'},
-    " \ {'char': '<BS>', 'at': '||\s\%#',   'input': '<BS><BS><BS>'},
-    " \ {'char': '<BS>', 'at': '||\%#',     'input': '<BS><BS>'},
-    " \ ]
+  "" Bar
+  " let s:rules += [
+  " \ {'char': '<Bar>',                    'input': '|| '},
+  " \ {'char': '<Bar>', 'at': '\S\%#',     'input': ' || '},
+  " \ {'char': '<Bar>', 'at': '\s\%#',     'input': '|| '},
+  " \ {'char': '<Bar>', 'at': '||\s\%#',   'input': '<BS><BS><BS><BS>|'},
+  " \ {'char': '<Bar>', 'at': '|\%#',      'input': '<Bar>', 'priority': 10},
+  " \ {'char': '<BS>', 'at': '\s||\s\%#', 'input': '<BS><BS><BS><BS>'},
+  " \ {'char': '<BS>', 'at': '||\s\%#',   'input': '<BS><BS><BS>'},
+  " \ {'char': '<BS>', 'at': '||\%#',     'input': '<BS><BS>'},
+  " \ ]
 
-    "" Parenthesis
-    let l:rules += [
-    \ { 'char': '(',       'at': '(\%#)',     'input': '<Del>',                },
-    \ { 'char': '(',       'at': '(\%#',      'input': '('                     },
-    \ { 'char': '<BS>',    'at': '(\%#)',     'input': '<BS><Del>',            },
-    \ { 'char': '<TAB>',   'at': '\%#)',      'input': '<Right>',              },
-    \ { 'char': '<Space>', 'at': '(\%#)',     'input': '<Space><Space><Left>', },
-    \ { 'char': '<BS>',    'at': '(\s\%#\s)', 'input': '<Del><BS>',            },
-    \ ]
+  "" Parenthesis
+  let s:rules += [
+  \ { 'char': '(',       'at': '(\%#)',     'input': '<Del>',                },
+  \ { 'char': '(',       'at': '(\%#',      'input': '('                     },
+  \ { 'char': '<BS>',    'at': '(\%#)',     'input': '<BS><Del>',            },
+  \ { 'char': '<TAB>',   'at': '\%#)',      'input': '<Right>',              },
+  \ { 'char': '<Space>', 'at': '(\%#)',     'input': '<Space><Space><Left>', },
+  \ { 'char': '<BS>',    'at': '(\s\%#\s)', 'input': '<Del><BS>',            },
+  \ ]
 
-    "" Brace
-    let l:rules += [
-    \ { 'char': '{',       'at': '{\%#}',     'input': '<Del>',                },
-    \ { 'char': '{',       'at': '{\%#',      'input': '{'                     },
-    \ { 'char': '<BS>',    'at': '{\%#}',     'input': '<BS><Del>',            },
-    \ { 'char': '<TAB>',   'at': '\%#}',      'input': '<Right>',              },
-    \ { 'char': '<Space>', 'at': '{\%#}',     'input': '<Space><Space><Left>', },
-    \ { 'char': '<BS>',    'at': '{\s\%#\s}', 'input': '<Del><BS>',            },
-    \ ]
+  "" Brace
+  let s:rules += [
+  \ { 'char': '{',       'at': '{\%#}',     'input': '<Del>',                },
+  \ { 'char': '{',       'at': '{\%#',      'input': '{'                     },
+  \ { 'char': '<BS>',    'at': '{\%#}',     'input': '<BS><Del>',            },
+  \ { 'char': '<TAB>',   'at': '\%#}',      'input': '<Right>',              },
+  \ { 'char': '<Space>', 'at': '{\%#}',     'input': '<Space><Space><Left>', },
+  \ { 'char': '<BS>',    'at': '{\s\%#\s}', 'input': '<Del><BS>',            },
+  \ ]
 
-    "" Bracket
-    let l:rules += [
-    \ { 'char': '[',       'at': '\[\%#\]',     'input': '<Del>',                },
-    \ { 'char': '[',       'at': '\[\%#',       'input': '['                     },
-    \ { 'char': '<BS>',    'at': '\[\%#\]',     'input': '<BS><Del>',            },
-    \ { 'char': '<TAB>',   'at': '\%#\]',       'input': '<Right>',              },
-    \ { 'char': '<Space>', 'at': '\[\%#\]',     'input': '<Space><Space><Left>', },
-    \ { 'char': '<BS>',    'at': '\[\s\%#\s\]', 'input': '<Del><BS>',            },
-    \ ]
+  "" Bracket
+  let s:rules += [
+  \ { 'char': '[',       'at': '\[\%#\]',     'input': '<Del>',                },
+  \ { 'char': '[',       'at': '\[\%#',       'input': '['                     },
+  \ { 'char': '<BS>',    'at': '\[\%#\]',     'input': '<BS><Del>',            },
+  \ { 'char': '<TAB>',   'at': '\%#\]',       'input': '<Right>',              },
+  \ { 'char': '<Space>', 'at': '\[\%#\]',     'input': '<Space><Space><Left>', },
+  \ { 'char': '<BS>',    'at': '\[\s\%#\s\]', 'input': '<Del><BS>',            },
+  \ ]
 
-    "" Sinble Quote
-    let l:rules += [
-    \ { 'char': "'",     'at': "'\\%#'", 'input': '<Del>',     },
-    \ { 'char': "'",     'at': "'\\%#",  'input': "'"          },
-    \ { 'char': "'",     'at': "''\\%#", 'input': "'"          },
-    \ { 'char': '<BS>',  'at': "'\\%#'", 'input': '<BS><Del>', },
-    \ { 'char': '<TAB>', 'at': "\\%#'",  'input': '<Right>',   },
-    \ ]
+  "" Sinble Quote
+  let s:rules += [
+  \ { 'char': "'",     'at': "'\\%#'", 'input': '<Del>',     },
+  \ { 'char': "'",     'at': "'\\%#",  'input': "'"          },
+  \ { 'char': "'",     'at': "''\\%#", 'input': "'"          },
+  \ { 'char': '<BS>',  'at': "'\\%#'", 'input': '<BS><Del>', },
+  \ { 'char': '<TAB>', 'at': "\\%#'",  'input': '<Right>',   },
+  \ ]
 
-    "" Double Quote
-    let l:rules += [
-    \ { 'char': '"',     'at': '"\%#"', 'input': '<Del>',     },
-    \ { 'char': '"',     'at': '"\%#',  'input': '"'          },
-    \ { 'char': '"',     'at': '""\%#', 'input': '"'          },
-    \ { 'char': '<BS>',  'at': '"\%#"', 'input': '<BS><Del>', },
-    \ { 'char': '<TAB>', 'at': '\%#"',  'input': '<Right>',   },
-    \ ]
+  "" Double Quote
+  let s:rules += [
+  \ { 'char': '"',     'at': '"\%#"', 'input': '<Del>',     },
+  \ { 'char': '"',     'at': '"\%#',  'input': '"'          },
+  \ { 'char': '"',     'at': '""\%#', 'input': '"'          },
+  \ { 'char': '<BS>',  'at': '"\%#"', 'input': '<BS><Del>', },
+  \ { 'char': '<TAB>', 'at': '\%#"',  'input': '<Right>',   },
+  \ ]
 
-    "" Back Quote
-    let l:rules += [
-    \ { 'char': '`',     'at': '`\%#`', 'input': '<Del>',     },
-    \ { 'char': '`',     'at': '`\%#',  'input': '`'          },
-    \ { 'char': '`',     'at': '``\%#', 'input': '`'          },
-    \ { 'char': '<BS>',  'at': '`\%#`', 'input': '<BS><Del>', },
-    \ { 'char': '<TAB>', 'at': '\%#`',  'input': '<Right>',   },
-    \ ]
+  "" Back Quote
+  let s:rules += [
+  \ { 'char': '`',     'at': '`\%#`', 'input': '<Del>',     },
+  \ { 'char': '`',     'at': '`\%#',  'input': '`'          },
+  \ { 'char': '`',     'at': '``\%#', 'input': '`'          },
+  \ { 'char': '<BS>',  'at': '`\%#`', 'input': '<BS><Del>', },
+  \ { 'char': '<TAB>', 'at': '\%#`',  'input': '<Right>',   },
+  \ ]
 
-    "" ruby
-    let l:rules += [
-    \ { 'filetype': ['ruby', 'eruby'], 'char': '<Bar>', 'at': 'do\%#',     'input': '<Space><Bar><Bar><CR>end<Up><End><Left>', },
-    \ { 'filetype': ['ruby', 'eruby'], 'char': '<Bar>', 'at': 'do\s\%#',   'input': '<Bar><Bar><CR>end<Up><End><Left>',        },
-    \ { 'filetype': ['ruby', 'eruby'], 'char': '<Bar>', 'at': '{\%#}',     'input': '<Space><Bar><Bar><Space><Left><Left>',    },
-    \ { 'filetype': ['ruby', 'eruby'], 'char': '<Bar>', 'at': '{\s\%#\s}', 'input': '<Bar><Bar><Space><Left><Left>',           },
-    \ ]
+  "" ruby
+  let s:rules += [
+  \ { 'filetype': ['ruby', 'eruby'], 'char': '<Bar>', 'at': 'do\%#',     'input': '<Space><Bar><Bar><CR>end<Up><End><Left>', },
+  \ { 'filetype': ['ruby', 'eruby'], 'char': '<Bar>', 'at': 'do\s\%#',   'input': '<Bar><Bar><CR>end<Up><End><Left>',        },
+  \ { 'filetype': ['ruby', 'eruby'], 'char': '<Bar>', 'at': '{\%#}',     'input': '<Space><Bar><Bar><Space><Left><Left>',    },
+  \ { 'filetype': ['ruby', 'eruby'], 'char': '<Bar>', 'at': '{\s\%#\s}', 'input': '<Bar><Bar><Space><Left><Left>',           },
+  \ ]
 
-    "" eruby
-    let l:rules += [
-    \ { 'filetype': ['eruby'], 'char': '%',     'at': '<\%#',         'input': '%<Space><Space>%><Left><Left><Left>', },
-    \ { 'filetype': ['eruby'], 'char': '=',     'at': '<%\%#',        'input': '=<Space><Space>%><Left><Left><Left>', },
-    \ { 'filetype': ['eruby'], 'char': '=',     'at': '<%\%#.\+%>',   'input': '=',                                   },
-    \ { 'filetype': ['eruby'], 'char': '=',     'at': '<%\s\%#\s%>',  'input': '<Left>=',                             },
-    \ { 'filetype': ['eruby'], 'char': '<BS>',  'at': '<%\s\%#\s%>',  'input': '<BS><BS><BS><Del><Del><Del>',         },
-    \ { 'filetype': ['eruby'], 'char': '<BS>',  'at': '<%=\s\%#\s%>', 'input': '<BS><BS><BS><BS><Del><Del><Del>',     },
-    \ ]
+  "" eruby
+  let s:rules += [
+  \ { 'filetype': ['eruby'], 'char': '%',     'at': '<\%#',         'input': '%<Space><Space>%><Left><Left><Left>', },
+  \ { 'filetype': ['eruby'], 'char': '=',     'at': '<%\%#',        'input': '=<Space><Space>%><Left><Left><Left>', },
+  \ { 'filetype': ['eruby'], 'char': '=',     'at': '<%\%#.\+%>',   'input': '=',                                   },
+  \ { 'filetype': ['eruby'], 'char': '=',     'at': '<%\s\%#\s%>',  'input': '<Left>=',                             },
+  \ { 'filetype': ['eruby'], 'char': '<BS>',  'at': '<%\s\%#\s%>',  'input': '<BS><BS><BS><Del><Del><Del>',         },
+  \ { 'filetype': ['eruby'], 'char': '<BS>',  'at': '<%=\s\%#\s%>', 'input': '<BS><BS><BS><BS><Del><Del><Del>',     },
+  \ ]
 
-    "" markdown
-    let l:rules += [
-    \ { 'filetype': ['markdown'], 'char': '`',     'at': '``\%#',            'input': '`<CR><CR>```<Up><Up>',           },
-    \ { 'filetype': ['markdown'], 'char': '#',     'at': '^\%#\%(#\)\@!',    'input': '# '                              },
-    \ { 'filetype': ['markdown'], 'char': '#',     'at': '#\s\%#',           'input': '<BS># ',                         },
-    \ { 'filetype': ['markdown'], 'char': '<BS>',  'at': '^#\s\%#',          'input': '<BS><BS>'                        },
-    \ { 'filetype': ['markdown'], 'char': '<BS>',  'at': '##\s\%#',          'input': '<BS><BS> ',                      },
-    \ { 'filetype': ['markdown'], 'char': '+',     'at': '^\s*\%#',          'input': '+ ',                             },
-    \ { 'filetype': ['markdown'], 'char': '-',     'at': '^\s*\%#',          'input': '- ',                             },
-    \ { 'filetype': ['markdown'], 'char': '*',     'at': '^\s*\%#',          'input': '* ',                             },
-    \ { 'filetype': ['markdown'], 'char': '-',     'at': '^\s*- \%#',        'input': '<Left><Left><Tab><Del>+<Right>', },
-    \ { 'filetype': ['markdown'], 'char': '-',     'at': '^\s*+ \%#',        'input': '<Left><Left><Tab><Del>*<Right>', },
-    \ { 'filetype': ['markdown'], 'char': '-',     'at': '^\s*\* \%#',       'input': '<Left><Left><Tab><Del>-<Right>', },
-    \ { 'filetype': ['markdown'], 'char': '<BS>',  'at': '^\s*- \%#',        'input': '<BS><BS><BS>* ',                 },
-    \ { 'filetype': ['markdown'], 'char': '<BS>',  'at': '^\s*+ \%#',        'input': '<BS><BS><BS>- ',                 },
-    \ { 'filetype': ['markdown'], 'char': '<BS>',  'at': '^\s*\* \%#',       'input': '<BS><BS><BS>+ ',                 },
-    \ { 'filetype': ['markdown'], 'char': '<BS>',  'at': '^\(-\|+\|*\) \%#', 'input': '<C-w>',                          },
-    \ { 'filetype': ['markdown'], 'char': '>',     'at': '^\s*\%#',          'input': '> ',                             },
-    \ ]
+  "" markdown
+  let s:rules += [
+  \ { 'filetype': ['markdown'], 'char': '`',       'at': '``\%#',         'input': '`<CR><CR>```<Up><Up>',           },
+  \ { 'filetype': ['markdown'], 'char': '#',       'at': '^\%#\%(#\)\@!', 'input': '#<Space>'                        },
+  \ { 'filetype': ['markdown'], 'char': '#',       'at': '#\s\%#',        'input': '<BS>#<Space>',                   },
+  \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '^#\s\%#',       'input': '<BS><BS>'                        },
+  \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '##\s\%#',       'input': '<BS><BS><Space>',                },
+  \ { 'filetype': ['markdown'], 'char': '-',       'at': '^\s*\%#',       'input': '-<Space>',                       },
+  \ { 'filetype': ['markdown'], 'char': '-',       'at': '^\s*- \%#',     'input': '<Left><Left><Tab><Del>-<Right>', },
+  \ { 'filetype': ['markdown'], 'char': '<Tab>',   'at': '^\s*- \%#',     'input': '<Left><Left><Tab><Del>-<Right>', },
+  \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '^\s*- \%#',     'input': '<BS><BS><BS>-<Space>',           },
+  \ { 'filetype': ['markdown'], 'char': '<S-Tab>', 'at': '^\s*- \%#',     'input': '<BS><BS><BS>-<Space>',           },
+  \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '^- \%#',        'input': '<C-w>',                          },
+  \ { 'filetype': ['markdown'], 'char': '>',       'at': '^\s*\%#',       'input': '><Space>',                       },
+  \ ]
 
-    "" vim
-    let l:rules += [
-    \ { 'filetype': ['vim'], 'char': '{', 'at': '^".*{\%#$', 'input': '{{<CR><CR>" }}}<Up><Up>'},
-    \ ]
+  "" vim
+  let s:rules += [
+  \ { 'filetype': ['vim'], 'char': '{', 'at': '^".*{\%#$', 'input': '{{<CR><CR>"<Space>}}}<Up><Up>'},
+  \ ]
 
-    "" shell
-    let l:rules += [
-    \ { 'filetype': ['sh', 'zsh'], 'char': '[', 'at': '\[\%#\]', 'input': '[<Space><Space>]<Left><Left>'},
-    \ ]
+  "" shell
+  let s:rules += [
+  \ { 'filetype': ['sh', 'zsh'], 'char': '[', 'at': '\[\%#\]', 'input': '[<Space><Space>]<Left><Left>'},
+  \ ]
 
-    for l:rule in l:rules
-      call smartinput#define_rule(l:rule)
-    endfor
-  endfunction
-  AutoCmd VimEnter * call Smartinput_set_rules()
+  for s:rule in s:rules
+    call smartinput#define_rule(s:rule)
+  endfor
 endif
 " }}}3
 
