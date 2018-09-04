@@ -1386,22 +1386,18 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   endfunction
 
   " Togle neosnippet
-  inoremap <silent> <C-s> <Esc>:call Toggle_deoplete_neosnippet()<CR>a
-
-  function Toggle_deoplete_neosnippet() abort
-    call deoplete#smart_close_popup()
-    if !exists('g:deoplete_enable_neosnippet')
-      let g:deoplete_enable_neosnippet = 1
-    else
-      let g:deoplete_enable_neosnippet = g:deoplete_enable_neosnippet ? 0 : 1
-    endif
-
-    call Deoplete_set_sources()
-  endfunction
-
-  "" disable & enable
-  inoremap <silent> <expr> <C-c> pumvisible() ? deoplete#custom#buffer_option('auto_complete', v:false) : "\<C-c>"
-  AutoCmd InsertLeave * call deoplete#custom#buffer_option('auto_complete', v:true)
+  " inoremap <silent> <C-s> <Esc>:call Toggle_deoplete_neosnippet()<CR>a
+  "
+  " function Toggle_deoplete_neosnippet() abort
+  "   call deoplete#smart_close_popup()
+  "   if !exists('g:deoplete_enable_neosnippet')
+  "     let g:deoplete_enable_neosnippet = 1
+  "   else
+  "     let g:deoplete_enable_neosnippet = g:deoplete_enable_neosnippet ? 0 : 1
+  "   endif
+  "
+  "   call Deoplete_set_sources()
+  " endfunction
 
   "" neosnippet
   imap <silent> <C-k> <Plug>(neosnippet_expand_or_jump)
@@ -1421,9 +1417,9 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   \ ])
 
   " Sources
-  call deoplete#custom#source('LanguageClient', 'rank', 1100)
-  call deoplete#custom#source('typescript',     'rank', 1100)
-  call deoplete#custom#source('neosnippet',     'rank', 1000)
+  call deoplete#custom#source('neosnippet',     'rank', 1100)
+  call deoplete#custom#source('LanguageClient', 'rank', 1000)
+  call deoplete#custom#source('typescript',     'rank', 1000)
   call deoplete#custom#source('around',         'rank',  900)
   call deoplete#custom#source('buffer',         'rank',  900)
   call deoplete#custom#source('gtags',          'rank',  800)
@@ -1441,8 +1437,8 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   call deoplete#custom#source('dictionary',     'rank',  200)
   call deoplete#custom#source('look',           'rank',  100)
 
-  call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
   call deoplete#custom#source('neosnippet',     'mark', '[snippet]')
+  call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
   call deoplete#custom#source('around',         'mark', '[around]')
   call deoplete#custom#source('buffer',         'mark', '[buffer]')
   call deoplete#custom#source('gtags',          'mark', '[gtags]')
@@ -1454,8 +1450,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   call deoplete#custom#source('dictionary',     'mark', '[dict]')
   call deoplete#custom#source('look',           'mark', '[look]')
 
-  call deoplete#custom#source('typescript',     'mark', '[ts]')
-
+  call deoplete#custom#source('typescript',     'mark', '[typescript]')
   call deoplete#custom#source('tern',           'mark', '[tern]')
   call deoplete#custom#source('flow',           'mark', '[flow]')
   call deoplete#custom#source('jedi',           'mark', '[jedi]')
@@ -1464,8 +1459,8 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   call deoplete#custom#source('tmux-complete',  'mark', '[tmux]')
 
   " max_candidates
+  call deoplete#custom#source('neosnippet',     'max_candidates', 3)
   call deoplete#custom#source('LanguageClient', 'max_candidates', 10)
-  call deoplete#custom#source('neosnippet',     'max_candidates', 10)
   call deoplete#custom#source('around',         'max_candidates', 10)
   call deoplete#custom#source('buffer',         'max_candidates', 10)
   call deoplete#custom#source('gtags',          'max_candidates', 10)
@@ -1486,52 +1481,26 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
 
   " call deoplete#custom#source('ruby', 'input_pattern', ['\.[a-zA-Z0-9_?!]+', '[a-zA-Z]\w*::\w*'])
 
-  function! Deoplete_set_sources() abort
-    if exists('g:deoplete_enable_neosnippet') && g:deoplete_enable_neosnippet
-      let l:deoplete_sources = {}
-      let l:deoplete_sources['_']              = ['neosnippet']
-      let l:deoplete_sources['javascript']     = ['neosnippet']
-      let l:deoplete_sources['typescript']     = ['neosnippet']
-      let l:deoplete_sources['typescript.tsx'] = ['neosnippet']
-      let l:deoplete_sources['vue']            = ['neosnippet']
-      let l:deoplete_sources['ruby']           = ['neosnippet']
-      let l:deoplete_sources['eruby']          = ['neosnippet']
-      let l:deoplete_sources['python']         = ['neosnippet']
-      let l:deoplete_sources['go']             = ['neosnippet']
-      let l:deoplete_sources['rust']           = ['neosnippet']
-      let l:deoplete_sources['markdown']       = ['neosnippet']
-      let l:deoplete_sources['html']           = ['neosnippet']
-      let l:deoplete_sources['xml']            = ['neosnippet']
-      let l:deoplete_sources['css']            = ['neosnippet']
-      let l:deoplete_sources['scss']           = ['neosnippet']
-      let l:deoplete_sources['vim']            = ['neosnippet']
-      let l:deoplete_sources['zsh']            = ['neosnippet']
-    else
-      let l:deoplete_default_sources = ['gtags', 'tag', 'around', 'buffer', 'omni', 'member', 'syntax', 'file', 'dictionary', 'look', 'tmux-complete']
-
-      let l:deoplete_sources                   = {}
-      let l:deoplete_sources['_']              = l:deoplete_default_sources
-      let l:deoplete_sources['javascript']     = l:deoplete_default_sources + ['LanguageClient', 'ternjs', 'flow']
-      let l:deoplete_sources['typescript']     = l:deoplete_default_sources + ['typescript']
-      let l:deoplete_sources['typescript.tsx'] = l:deoplete_default_sources + ['typescript']
-      let l:deoplete_sources['vue']            = l:deoplete_default_sources + ['LanguageClient']
-      let l:deoplete_sources['ruby']           = l:deoplete_default_sources + ['LanguageClient']
-      let l:deoplete_sources['eruby']          = l:deoplete_default_sources
-      let l:deoplete_sources['python']         = l:deoplete_default_sources + ['jedi']
-      let l:deoplete_sources['go']             = l:deoplete_default_sources + ['go']
-      let l:deoplete_sources['rust']           = l:deoplete_default_sources
-      let l:deoplete_sources['markdown']       = l:deoplete_default_sources
-      let l:deoplete_sources['html']           = l:deoplete_default_sources
-      let l:deoplete_sources['xml']            = l:deoplete_default_sources
-      let l:deoplete_sources['css']            = l:deoplete_default_sources
-      let l:deoplete_sources['scss']           = l:deoplete_default_sources
-      let l:deoplete_sources['vim']            = l:deoplete_default_sources + ['vim']
-      let l:deoplete_sources['zsh']            = l:deoplete_default_sources
-    endif
-
-    call deoplete#custom#option('sources', l:deoplete_sources)
-  endfunction
-  AutoCmd VimEnter * call Deoplete_set_sources()
+  let s:deoplete_default_sources = ['neosnippet', 'gtags', 'tag', 'around', 'buffer', 'omni', 'member', 'syntax', 'file', 'dictionary', 'look', 'tmux-complete']
+  let s:deoplete_sources                   = {}
+  let s:deoplete_sources['_']              = s:deoplete_default_sources
+  let s:deoplete_sources['javascript']     = s:deoplete_default_sources + ['LanguageClient', 'ternjs', 'flow']
+  let s:deoplete_sources['typescript']     = s:deoplete_default_sources + ['typescript']
+  let s:deoplete_sources['typescript.tsx'] = s:deoplete_default_sources + ['typescript']
+  let s:deoplete_sources['vue']            = s:deoplete_default_sources + ['LanguageClient']
+  let s:deoplete_sources['ruby']           = s:deoplete_default_sources + ['LanguageClient']
+  let s:deoplete_sources['eruby']          = s:deoplete_default_sources
+  let s:deoplete_sources['python']         = s:deoplete_default_sources + ['jedi']
+  let s:deoplete_sources['go']             = s:deoplete_default_sources + ['go']
+  let s:deoplete_sources['rust']           = s:deoplete_default_sources
+  let s:deoplete_sources['markdown']       = s:deoplete_default_sources
+  let s:deoplete_sources['html']           = s:deoplete_default_sources
+  let s:deoplete_sources['xml']            = s:deoplete_default_sources
+  let s:deoplete_sources['css']            = s:deoplete_default_sources
+  let s:deoplete_sources['scss']           = s:deoplete_default_sources
+  let s:deoplete_sources['vim']            = s:deoplete_default_sources + ['vim']
+  let s:deoplete_sources['zsh']            = s:deoplete_default_sources
+  call deoplete#custom#option('sources', s:deoplete_sources)
 
   let g:deoplete#omni#input_patterns                   = {}
   let g:deoplete#omni#input_patterns['_']              = []
