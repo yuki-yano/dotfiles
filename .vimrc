@@ -272,6 +272,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Shougo/junkfile.vim')
   call dein#add('SpaceVim/gtags.vim')
   call dein#add('aiya000/aho-bakaup.vim')
+  call dein#add('junegunn/vim-peekaboo')
   call dein#add('bfredl/nvim-miniyank')
   call dein#add('bogado/file-line')
   call dein#add('dhruvasagar/vim-table-mode',          {'lazy': 1, 'on_cmd': 'TableModeToggle'})
@@ -729,23 +730,6 @@ function! s:hint_i_ctrl_x() abort
 endfunction
 
 inoremap <expr> <C-x> <SID>hint_i_ctrl_x()
-" }}}2
-
-" Mark & Register {{{2
-function! s:hint_cmd_output(prefix, cmd) abort
-  redir => l:str
-  :execute a:cmd
-  redir END
-  echo l:str
-  return a:prefix . nr2char(getchar())
-endfunction
-
-nnoremap <expr> m  <SID>hint_cmd_output('m', 'marks')
-nnoremap <expr> `  <SID>hint_cmd_output('`', 'marks')
-nnoremap <expr> '  <SID>hint_cmd_output("'", 'marks')
-nnoremap <expr> "  <SID>hint_cmd_output('"', 'registers')
-" nnoremap <expr> q  <SID>hint_cmd_output('q', 'registers')
-" nnoremap <expr> @  <SID>hint_cmd_output('@', 'registers')
 " }}}2
 
 " MoveToNewTab {{{2
@@ -2998,6 +2982,10 @@ vmap gx <Plug>(openbrowser-smart-search)
 " open-googletranslate {{{3
 let g:opengoogletranslate#openbrowsercmd = 'electron-open --without-focus'
 command! -range Trans <line1>,<line2>OpenGoogleTranslate
+" }}}3
+
+" peekaboo {{{3
+let g:peekaboo_window = 'botright 30new'
 " }}}3
 
 " quickrun {{{
