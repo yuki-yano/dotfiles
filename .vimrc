@@ -256,7 +256,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mhinz/vim-startify')
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('osyo-manga/vim-brightest')
-  call dein#add('t9md/vim-choosewin',             {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('t9md/vim-choosewin')
   call dein#add('t9md/vim-quickhl',               {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-zenspace')
   " }}}3
@@ -298,7 +298,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tyru/capture.vim',                    {'lazy': 1, 'on_cmd': 'Capture'})
   call dein#add('tyru/open-browser.vim',               {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('tyru/vim-altercmd')
-  call dein#add('wesQ3/vim-windowswap',                {'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#DoWindowSwap']})
   call dein#add('yssl/QFEnter')
   " }}}3
 
@@ -2397,8 +2396,22 @@ let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'help',
 " }}}3
 
 " choosewin {{{3
-let g:choosewin_tabline_replace = 0
-nnoremap <silent> <C-q> :<C-u>ChooseWin<CR>
+let g:choosewin_overlay_enable          = 1
+let g:choosewin_overlay_clear_multibyte = 1
+let g:choosewin_blink_on_land           = 0
+let g:choosewin_statusline_replace      = 0
+let g:choosewin_tabline_replace         = 0
+
+let g:choosewin_color_overlay = {
+\ 'gui': ['DodgerBlue3', 'DodgerBlue3' ],
+\ 'cterm': [ 25, 25 ]
+\ }
+let g:choosewin_color_overlay_current = {
+\ 'gui': ['firebrick1', 'firebrick1' ],
+\ 'cterm': [ 124, 124 ]
+\ }
+
+nnoremap <silent> <C-w><C-w> :<C-u>ChooseWin<CR>
 " }}}3
 
 " brightest {{{3
@@ -2992,11 +3005,6 @@ let g:tagbar_status_func = 'Tagbar_status_func'
 
 " undotree {{{3
 nnoremap <silent> <Leader>u :<C-u>UndotreeToggle<CR>
-" }}}3
-
-" windowswap {{{3
-let g:windowswap_map_keys = 0
-nnoremap <silent> <C-w><C-w> :call WindowSwap#EasyWindowSwap()<CR>
 " }}}3
 
 " winresizer {{{3
