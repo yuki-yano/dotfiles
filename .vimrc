@@ -370,10 +370,10 @@ command! -nargs=* AutoCmd autocmd MyVimrc <args>
 "---------------------------------------------------------------------------"
 
 "" Leader
-noremap <Leader>      <Nop>
-noremap <LocalLeader> <Nop>
 let g:mapleader = "\<Space>"
 let g:maplocalleader = '\'
+noremap <Leader>      <Nop>
+noremap <LocalLeader> <Nop>
 
 "" BackSpace
 imap <C-h> <BS>
