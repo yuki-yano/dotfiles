@@ -276,6 +276,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('dhruvasagar/vim-table-mode',          {'lazy': 1, 'on_cmd': 'TableModeToggle'})
   call dein#add('dietsche/vim-lastplace')
   call dein#add('haya14busa/vim-open-googletranslate', {'lazy': 1, 'on_cmd': 'OpenGoogleTranslate'})
+  call dein#add('hecal3/vim-leader-guide')
   call dein#add('janko-m/vim-test',                    {'lazy': 1, 'on_cmd': ['TestNearest','TestFile','TestSuite','TestLast','TestVisit']})
   call dein#add('junegunn/vim-peekaboo')
   call dein#add('kana/vim-niceblock',                  {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
@@ -2961,6 +2962,17 @@ command! JunkfileDaily call junkfile#open_immediately(strftime('%Y-%m-%d.md'))
 let g:junkfile#directory = '~/.config/junkfile/_posts'
 " }}}3
 
+" leader-guide {{{3
+let g:lmap = {}
+call leaderGuide#register_prefix_descriptions('<Space>', 'g:lmap')
+call leaderGuide#register_prefix_descriptions('g', 'g:lmap')
+call leaderGuide#register_prefix_descriptions('s', 'g:lmap')
+
+nnoremap <silent> <Leader> :<C-u>LeaderGuide '<Space>'<CR>
+vnoremap <silent> <Leader> :<C-u>LeaderGuideVisual '<Space>'<CR>
+nnoremap <silent> s        :<C-u>LeaderGuide 's'<CR>
+vnoremap <silent> s        :<C-u>LeaderGuideVisual 's'<CR>
+" }}}3
 
 " maximizer {{{3
 nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
