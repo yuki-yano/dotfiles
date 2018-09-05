@@ -2425,7 +2425,7 @@ AlterCommand! <cmdwin> br[ight] BrightestToggle
 let g:brightest#enable_on_CursorHold        = 1
 let g:brightest#enable_highlight_all_window = 1
 let g:brightest#highlight = {'group': 'BrighTestHighlight'}
-let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat']
+" let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat']
 " }}}3
 
 " fastfold {{{3
