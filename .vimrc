@@ -194,10 +194,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-textobj-indent') " ai ii
   call dein#add('kana/vim-textobj-line') " al il
   call dein#add('lucapette/vim-textobj-underscore') " i_ a_
+  call dein#add('machakann/vim-swap') " i, a,
   call dein#add('machakann/vim-textobj-delimited') " id ad
   call dein#add('mattn/vim-textobj-url') " au iu
   call dein#add('rhysd/vim-textobj-ruby') " ar ir
-  call dein#add('sgur/vim-textobj-parameter') " i, a,
   call dein#add('thinca/vim-textobj-comment') " ic ac
   call dein#add('yuki-ycino/vim-textobj-dash') " i- a-
   call dein#add('yuki-ycino/vim-textobj-slash') " i/ a/
@@ -227,7 +227,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('haya14busa/vim-metarepeat',     {'lazy': 1, 'on_map': ['go', 'g.', '<Plug>']})
   call dein#add('junegunn/vim-easy-align',       {'lazy': 1, 'on_cmd': 'EasyAlign'})
   call dein#add('kana/vim-smartinput')
-  call dein#add('machakann/vim-swap',            {'lazy': 1, 'on_cmd': '<Plug>'})
   call dein#add('mg979/vim-visual-multi',        {'rev': 'test'})
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',          {'lazy': 1, 'on_map': '<Plug>'})
@@ -2248,10 +2247,11 @@ nnoremap <silent> <Leader>S :SplitjoinSplit<CR>
 
 " swap {{{3
 let g:swap_no_default_key_mappings = 1
+
 nmap g< <Plug>(swap-prev)
 nmap g> <Plug>(swap-next)
-" nmap gs <Plug>(swap-interactive)
-" xmap gs <Plug>(swap-interactive)
+nmap gs <Plug>(swap-interactive)
+xmap gs <Plug>(swap-interactive)
 " }}}3
 
 " switch {{{3
