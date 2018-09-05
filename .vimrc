@@ -1119,11 +1119,6 @@ let g:rubycomplete_include_object_space = 1
 let g:rustfmt_autosave = 1
 " }}}3
 
-" typescript {{{3
-AutoCmd BufEnter *.ts,*.tsx call nvim_typescript#DefaultKeyMap()
-AutoCmd BufEnter *.ts,*.tsx call TSOnBufEnter()
-" }}}3
-
 " vim {{{3
 let g:vimsyntax_noerror = 1
 let g:vim_indent_cont   = 0
