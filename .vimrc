@@ -3114,8 +3114,8 @@ AutoCmd FileType qf
 syntax enable
 
 " Highlight {{{2
-AutoCmd ColorScheme * highlight CursorColumn ctermfg=none ctermbg=17
-AutoCmd ColorScheme * highlight CursorLine   ctermfg=none ctermbg=17
+AutoCmd ColorScheme * highlight CursorColumn ctermfg=none ctermbg=236
+AutoCmd ColorScheme * highlight CursorLine   ctermfg=none ctermbg=236
 AutoCmd ColorScheme * highlight CursorLineNr ctermfg=253  ctermbg=none
 AutoCmd ColorScheme * highlight LineNr       ctermfg=241  ctermbg=none
 AutoCmd ColorScheme * highlight NonText      ctermfg=60   ctermbg=none
