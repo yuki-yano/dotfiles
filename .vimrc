@@ -316,6 +316,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Library {{{3
   call dein#add('Shougo/vimproc.vim', {'build': 'make'})
+  call dein#add('nixprime/cpsm',      {'build': 'env PY3=ON ./install.sh'})
   call dein#add('vim-scripts/L9')
   call dein#add('vim-scripts/cecutil')
   " }}}3
@@ -459,13 +460,6 @@ vnoremap <Leader>r "sy:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><L
 nnoremap <silent> sc :<C-u>call system("pbcopy", @") <Bar> echo "Copied \" register to OS clipboard"<CR>
 nnoremap <silent> sp :<C-u>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>
 vnoremap <silent> sp :<C-u>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>gv
-
-"" Toggle
-nnoremap <silent> <Leader>th :<C-u>ToggleHighlight<CR>
-nnoremap <silent> <Leader>ts :<C-u>setlocal<Space>spell!<CR>
-nnoremap <silent> <Leader>tq :<C-u>ToggleQuickfix<CR>
-nnoremap <silent> <Leader>tq :<C-u>ToggleQuickfix<CR>
-nnoremap <silent> <Leader>tl :<C-u>ToggleLocationList<CR>
 " }}}2
 
 " Set Options {{{2
@@ -983,8 +977,6 @@ let g:ale_lint_on_text_changed     = 'never'
 let g:ale_lint_on_insert_leave     = 0
 let g:ale_echo_msg_format          = '[%linter%] %s'
 
-nnoremap <silent> <Leader>ta :<C-u>ALEToggle
-
 AutoCmd FileType vue let b:ale_linter_aliases = ['vue', 'typescript'] | let b:ale_linters = g:ale_linters['vue']
 AutoCmd FileType zsh ALEDisableBuffer
 " }}}3
@@ -1188,10 +1180,11 @@ if dein#tap('denite.nvim')
   call denite#custom#map('insert', '<C-k>', '<denite:delete_char_after_caret>',        'noremap')
 
   "" option
-  call denite#custom#source('_',        'matchers', ['matcher/fuzzy'])
+  call denite#custom#source('_',        'matchers', ['matcher/cpsm'])
   call denite#custom#source('file_mru', 'matchers', ['matcher/fuzzy', 'matcher/project_files'])
   call denite#custom#source('line',     'matchers', ['matcher/regexp'])
   call denite#custom#source('grep',     'matchers', ['matcher/regexp'])
+  call denite#custom#source('menu',     'matchers', ['matcher/cpsm'])
 
   call denite#custom#source('file_mru', 'converters', ['converter/relative_abbr'])
   call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
@@ -1204,17 +1197,17 @@ if dein#tap('denite.nvim')
   \  '*.min.*'
   \ ])
 
-  call denite#custom#var('file_rec', 'command', [ 'rg', '--files', '--glob', '!.git', ''])
-  call denite#custom#var('grep', 'command', ['rg'])
-  call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])
-  call denite#custom#var('grep', 'recursive_opts', [])
-  call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
-  call denite#custom#var('grep', 'separator', ['--'])
-  call denite#custom#var('grep', 'final_opts', [])
+  call denite#custom#var('file_rec', 'command',        [ 'rg',       '--files', '--glob', '!.git', ''])
+  call denite#custom#var('grep',     'command',        ['rg'])
+  call denite#custom#var('grep',     'default_opts',   ['--vimgrep', '--no-heading'])
+  call denite#custom#var('grep',     'recursive_opts', [])
+  call denite#custom#var('grep',     'pattern_opt',    ['--regexp'])
+  call denite#custom#var('grep',     'separator',      ['--'])
+  call denite#custom#var('grep',     'final_opts',     [])
 
   "" file & buffer
-  " nnoremap <silent> <Leader>p :<C-u>Denite file_rec -direction=topleft -mode=insert<CR>
-  " nnoremap <silent> <Leader>b :<C-u>Denite buffer -direction=topleft -mode=insert<CR>
+  " nnoremap <silent> <Leader>p :<C-u>Denite file/rec -direction=topleft -mode=insert<CR>
+  " nnoremap <silent> <Leader>b :<C-u>Denite buffer   -direction=topleft -mode=insert<CR>
   " nnoremap <silent> <Leader>m :<C-u>Denite file_mru -direction=topleft -mode=insert<CR>
 
   "" grep
@@ -1241,6 +1234,21 @@ if dein#tap('denite.nvim')
 
   "" resume
   nnoremap <silent> <Leader><C-r> :<C-u>Denite -resume<CR>
+
+  "" menu
+  let s:menus = {}
+
+  let s:menus.toggle = { 'description': 'Toggle Command' }
+  let s:menus.toggle.command_candidates = [
+  \ ['Toggle Quickfix:     [ToggleQuickfix]',     'ToggleQuickfix'    ],
+  \ ['Toggle LocationList: [ToggleLocationList]', 'ToggleLocationList'],
+  \ ['Toggle Highlight:    [ToggleHighlight]',    'ToggleHighlight'   ],
+  \ ['Toggle Spell:        [setlocal spell!]',    'setlocal spell!'   ],
+  \ ['Toggle ALE:          [ALEToggle]',          'ALEToggle'         ],
+  \ ]
+  call denite#custom#var('menu', 'menus', s:menus)
+
+  nnoremap <silent> <Leader>t :<C-u>Denite menu:toggle<CR>
 endif
 
 " AlterCommand! <cmdwin> u[nite] Unite
