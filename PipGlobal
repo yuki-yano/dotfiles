@@ -9,11 +9,13 @@ json2yaml
 mypy
 neovim
 neovim-remote
+pathlib
 ptpython
 pygments-style-solarized
 sexpdata
 solargraph-utils.py
 sqlparse
+typing
 vim-vint
 websocket-client
 yapf
