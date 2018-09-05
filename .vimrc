@@ -663,6 +663,7 @@ function! s:toggle_quickfix()
 endfunction
 
 command! ToggleQuickfix call <SID>toggle_quickfix()
+nnoremap <silent> <Leader>q :<C-u>ToggleQuickfix<CR>
 " }}}2
 
 " ToggleLocationList {{{2
@@ -676,6 +677,7 @@ function! s:toggle_location_list()
 endfunction
 
 command! ToggleLocationList call <SID>toggle_location_list()
+nnoremap <silent> <Leader>l :<C-u>ToggleLocationList<CR>
 " }}}2
 
 " ins-completion menu {{{2
@@ -1229,11 +1231,10 @@ if dein#tap('denite.nvim')
 
   let s:menus.toggle = { 'description': 'Toggle Command' }
   let s:menus.toggle.command_candidates = [
-  \ ['Toggle Quickfix:     [ToggleQuickfix]',     'ToggleQuickfix'    ],
-  \ ['Toggle LocationList: [ToggleLocationList]', 'ToggleLocationList'],
-  \ ['Toggle Highlight:    [ToggleHighlight]',    'ToggleHighlight'   ],
-  \ ['Toggle Spell:        [setlocal spell!]',    'setlocal spell!'   ],
-  \ ['Toggle ALE:          [ALEToggle]',          'ALEToggle'         ],
+  \ ['Toggle IndentLine    [IndentLinesToggle]',  'IndentLinesToggle' ],
+  \ ['Toggle Highlight     [ToggleHighlight]',    'ToggleHighlight'   ],
+  \ ['Toggle Spell         [setlocal spell!]',    'setlocal spell!'   ],
+  \ ['Toggle ALE           [ALEToggle]',          'ALEToggle'         ],
   \ ]
   call denite#custom#var('menu', 'menus', s:menus)
 
@@ -2462,7 +2463,6 @@ endif
 " indent-line {{{3
 let g:indentLine_enabled         = 0
 let g:indentLine_fileTypeExclude = ['json']
-nnoremap <silent> <Leader>ti :<C-u>:IndentLinesToggle<CR>
 " }}}3
 
 " lightline {{{3
