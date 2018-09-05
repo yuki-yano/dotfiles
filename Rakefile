@@ -116,7 +116,7 @@ namespace :pip do
     end
   end
 
-  desc 'Install pip'
+  desc 'Uninstall pip'
   task :uninstall do
     pip2file = '/tmp/piplist2.txt'
     pip3file = '/tmp/piplist3.txt'
