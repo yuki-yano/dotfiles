@@ -2259,6 +2259,8 @@ nnoremap <silent> - :<C-u>Switch<CR>
 " }}}3
 
 " tcomment {{{3
+let g:tcomment_maps = 0
+
 noremap <silent> <Leader>cc :TComment<CR>
 " }}}3
 
