@@ -1322,24 +1322,24 @@ let g:neomru#dictionary_mru_path = expand('~/.cache/vim/neomru/dictionary')
 " nnoremap <silent> <Leader>h :<C-u>FzfDeleteHistory<CR>
 
 " Open File at Cursor
-function! s:fzf_open_gf()
-  let s:file_path = tolower(expand('<cfile>'))
-
-  if s:file_path ==# ''
-    echo '[Error] <cfile> return empty string.'
-    return 0
-  endif
-
-  call fzf#run({
-  \ 'source': 'rg --files --hidden --follow --glob "!.git/*"',
-  \ 'sink': 'e',
-  \ 'options': '-x --multi --prompt="CursorFiles>" --query=' . shellescape(s:file_path),
-  \ 'window': 'top split new'})
-  execute 'resize' float2nr(0.3 * &lines)
-endfunction
-
-command! FzfOpenGf call s:fzf_open_gf()
-nnoremap <silent> <leader>gf :FzfOpenGf<CR>
+" function! s:fzf_open_gf()
+"   let s:file_path = tolower(expand('<cfile>'))
+"
+"   if s:file_path ==# ''
+"     echo '[Error] <cfile> return empty string.'
+"     return 0
+"   endif
+"
+"   call fzf#run({
+"   \ 'source': 'rg --files --hidden --follow --glob "!.git/*"',
+"   \ 'sink': 'e',
+"   \ 'options': '-x --multi --prompt="CursorFiles>" --query=' . shellescape(s:file_path),
+"   \ 'window': 'top split new'})
+"   execute 'resize' float2nr(0.3 * &lines)
+" endfunction
+"
+" command! FzfOpenGf call s:fzf_open_gf()
+" nnoremap <silent> <leader>gf :FzfOpenGf<CR>
 " }}}3
 
 " fzf-preview {{{3
