@@ -988,6 +988,7 @@ function! s:autoformat_all() abort
   endif
 
   let l:formatter_buffer_var_name = 'b:formatters_' . &filetype
+  let l:formatters = []
   execute 'let l:formatters = ' . l:formatter_global_var_name
 
   for l:formatter in l:formatters
@@ -1381,7 +1382,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
 
   function! s:check_back_space() abort
     let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~ '\s'
+    return !col || getline('.')[col - 1]  =~# '\s'
   endfunction
 
   " Togle neosnippet
@@ -2118,16 +2119,16 @@ let g:expand_region_text_objects = {
 \ 'ad': 0,
 \ 'i"': 0,
 \ "i'": 0,
-\ "i(": 1,
-\ "i{": 1,
-\ "i[": 1,
-\ "i<": 1,
+\ 'i(': 1,
+\ 'i{': 1,
+\ 'i[': 1,
+\ 'i<': 1,
 \ 'a"': 0,
 \ "a'": 0,
-\ "a(": 1,
-\ "a{": 1,
-\ "a[": 1,
-\ "a<": 1,
+\ 'a(': 1,
+\ 'a{': 1,
+\ 'a[': 1,
+\ 'a<': 1,
 \ 'il': 0,
 \ 'al': 0,
 \ 'ii': 1,
