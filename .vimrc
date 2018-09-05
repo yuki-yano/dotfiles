@@ -267,6 +267,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Util {{{3
   " call dein#add('thinca/vim-quickrun',                 {'lazy': 1, 'on_cmd': 'QuickRun'})
+  call dein#add('MattesGroeger/vim-bookmarks')
   call dein#add('Shougo/junkfile.vim')
   call dein#add('SpaceVim/gtags.vim')
   call dein#add('aiya000/aho-bakaup.vim')
@@ -2893,6 +2894,37 @@ let g:automatic_config = [
 \ },
 \ ]
 " }}}
+
+" bookmarks {{{3
+let g:bookmark_no_default_key_mappings = 1
+let g:bookmark_sign                    = '*'
+let g:bookmark_annotation_sign         = '='
+let g:bookmark_save_per_working_dir    = 1
+let g:bookmark_auto_save               = 1
+
+nnoremap <silent> mm       :<C-u>BookmarkToggle<CR>
+nnoremap <silent> mi       :<C-u>BookmarkAnnotate<CR>
+nnoremap <silent> mn       :<C-u>BookmarkNext<CR>
+nnoremap <silent> mp       :<C-u>BookmarkPrev<CR>
+nnoremap <silent> m/       :<C-u>BookmarkShowAll<CR>
+nnoremap <silent> m<Space> :<C-u>BookmarkClear<CR>
+nnoremap <silent> mx       :<C-u>BookmarkClearAll<CR>
+
+function! g:BMWorkDirFileLocation()
+  let l:filename = 'vim-bookmarks'
+  let l:location = ''
+  if isdirectory('.git')
+    let l:location = getcwd().'/.git'
+  else
+    let l:location = finddir('.git', '.;')
+  endif
+  if len(l:location) > 0
+    return l:location . '/' . l:filename
+  else
+    return getcwd() . '/.' . l:filename
+  endif
+endfunction
+" }}}3
 
 " bufkill {{{3
 let g:BufKillCreateMappings = 0
