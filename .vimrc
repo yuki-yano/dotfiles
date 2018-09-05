@@ -2260,9 +2260,8 @@ noremap <silent> <Leader>cc :TComment<CR>
 " }}}3
 
 " visual-multi {{{3
-let g:VM_leader = '\'
-
-let g:VM_default_mappings           = 1
+let g:VM_leader                     = '\'
+let g:VM_default_mappings           = 0
 let g:VM_sublime_mappings           = 0
 let g:VM_mouse_mappings             = 0
 let g:VM_extended_mappings          = 0
@@ -2275,6 +2274,8 @@ let g:VM_dynamic_synmaxcol          = 20
 let g:VM_disable_syntax_in_imode    = 0
 let g:VM_exit_on_1_cursor_left      = 0
 let g:VM_manual_infoline            = 0
+
+nmap <silent> (ctrln) <Plug>(VM-Find-Under)
 
 let g:VM_maps = {}
 "
@@ -2460,7 +2461,6 @@ if dein#tap('lightline.vim')
   \     ['mode', 'spell', 'paste'],
   \     ['visual_multi'],
   \     ['denite', 'filepath', 'filename', 'anzu'],
-  \     ['keymap'],
   \    ],
   \   'right': [
   \     ['lineinfo'],
@@ -2469,7 +2469,7 @@ if dein#tap('lightline.vim')
   \   ],
   \ },
   \ 'inactive': {
-  \   'left': [['mode'], [], [], ['filepath', 'filename', 'keymap']],
+  \   'left': [['mode'], [], [], ['filepath', 'filename']],
   \   'right': [[], ['filetype', 'fileencoding', 'fileformat']],
   \ },
   \ 'tabline': {
@@ -2495,7 +2495,6 @@ if dein#tap('lightline.vim')
   \   'fileformat':   'Lightline_fileformat',
   \   'anzu':         'anzu#search_status',
   \   'denite':       'Lightline_denite',
-  \   'keymap':       'Lightline_keymap',
   \ },
   \ 'tab_component_function': {
   \   'tabwinnum':   'Lightline_tab_win_num',
@@ -2505,7 +2504,6 @@ if dein#tap('lightline.vim')
   \   'lineinfo':     'Lightline_is_visible()',
   \   'fileencoding': 'Lightline_is_visible()',
   \   'fileformat':   'Lightline_is_visible()',
-  \   'keymap':       'Lightline_is_visible()',
   \ },
   \ 'component_function_visible_condition': {
   \   'spell':        '&spell',
@@ -2695,12 +2693,6 @@ if dein#tap('lightline.vim')
 
   function! Lightline_denite() abort
     return (&filetype !=# 'denite') ? '' : (substitute(denite#get_status_mode(), '[- ]', '', 'g'))
-  endfunction
-
-  function! Lightline_keymap() abort
-    return !has_key(s:lightline_ft_to_mode_hash, &filetype) ?
-    \ 'Map [' . g:keymap . ']' :
-    \ ''
   endfunction
 endif
 " }}}3
@@ -3020,84 +3012,41 @@ nnoremap <silent> <Leader><C-w> :WinResizerStartResize<CR>
 " Mapping <Esc><Esc> {{{2
 function! EscEscReset(...) abort
   AnzuClearSearchStatus
-  call g:Set_default_keymap()
+  call Set_default_keymap()
 endfunction
 nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> call EscEscReset()<CR>
 augroup esc_esc_reset
   autocmd!
-  autocmd VimEnter * call timer_start(500, function('EscEscReset'))
 augroup END
 " }}}
 
 " keymaps {{{
-
 function! Set_default_keymap() abort
-  let g:keymap = 'Default'
+  " let g:keymap = 'Default'
   call lightline#update()
-
-  nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "(ctrlp)"
-  nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : "(ctrln)"
-  nnoremap <silent> (ctrlp) :<C-u>Denite miniyank<CR>
-  nmap     <silent> (ctrln) <Plug>(VM-Find-Under)
-
-  map  <silent> ; <Plug>(easymotion-next)
-  map  <silent> , <Plug>(easymotion-prev)
 endfunction
 
 function! Set_quickfix_keymap() abort
-  let g:keymap = 'QuickFix'
+  " let g:keymap = 'QuickFix'
   call lightline#update()
 
-  nnoremap <silent> (ctrlp) :<C-u>cprev<CR>
-  nnoremap <silent> (ctrln) :<C-u>cnext<CR>
+  nnoremap <silent> cp :<C-u>cprev<CR>
+  nnoremap <silent> cn :<C-u>cnext<CR>
 endfunction
 
 function! Set_locationlist_keymap() abort
-  let g:keymap = 'LocationList'
+  " let g:keymap = 'LocationList'
   call lightline#update()
 
-  nnoremap <silent> (ctrlp) :<C-u>lprev<CR>
-  nnoremap <silent> (ctrln) :<C-u>lnext<CR>
+  nnoremap <silent> cp :<C-u>lprev<CR>
+  nnoremap <silent> cn :<C-u>lnext<CR>
 endfunction
 
-function! Set_denite_keymap() abort
-  let g:keymap = 'Denite'
-  call lightline#update()
-
-  nnoremap <silent> (ctrlp) :<C-u>Denite -resume -immediately -select=-1<CR>
-  nnoremap <silent> (ctrln) :<C-u>Denite -resume -immediately -select=+1<CR>
-endfunction
-
-function! Set_visual_multi_keymap() abort
-  let g:keymap = 'VisualMulti'
-  call lightline#update()
-
-  unmap ;
-  unmap ,
-  call vm#themes#init()
-  call vm#plugs#init()
-  call vm#maps#default()
-  nmap <silent> (ctrln) <Plug>(VM-Find-Under)
-  xmap <silent> (ctrln) <Plug>(VM-Find-Subword-Under)
-  nnoremap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "(ctrlp)"
-  nnoremap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : "(ctrln)"
-endfunction
-
-nnoremap <silent> <Leader>kq :call Set_quickfix_keymap()<CR>
-nnoremap <silent> <Leader>kl :call Set_locationlist_keymap()<CR>
-nnoremap <silent> <Leader>kd :call Set_denite_keymap()<CR>
-nnoremap <silent> <Leader>km :call Set_visual_multi_keymap()<CR>
-
-AutoCmd BufEnter * call Set_default_keymap()
 AutoCmd FileType qf
 \ if getwininfo(win_getid())[0].loclist |
-\   highlight CursorColumn ctermfg=none ctermbg=235 |
-\   highlight CursorLine   ctermfg=none ctermbg=235 |
 \   call Set_default_keymap()      |
 \   call Set_locationlist_keymap() |
 \ elseif getwininfo(win_getid())[0].quickfix |
-\   highlight CursorColumn ctermfg=none ctermbg=235 |
-\   highlight CursorLine   ctermfg=none ctermbg=235 |
 \   call Set_default_keymap()  |
 \   call Set_quickfix_keymap() |
 \ endif
