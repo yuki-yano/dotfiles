@@ -2382,14 +2382,13 @@ let g:VM_maps['P Paste Normal']              = '<leader>P'
 if dein#tap('yankround.vim')
   let g:yankround_max_history   = 1000
   let g:yankround_use_region_hl = 1
+  let g:yankround_dir           = '~/.cache/vim/yankround'
 
-  function! Hook_on_vimenter_event_yankround() abort
-    nmap p <Plug>(yankround-p)
-    xmap p <Plug>(yankround-p)
-    nmap P <Plug>(yankround-P)
-  endfunction
-
-  AutoCmd VimEnter * call Hook_on_vimenter_event_yankround()
+  nmap p <Plug>(yankround-p)
+  xmap p <Plug>(yankround-p)
+  nmap P <Plug>(yankround-P)
+  nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "(ctrlp)"
+  nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : "(ctrln)"
 endif
 " }}}3
 
