@@ -223,7 +223,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('h1mesuke/vim-alignta',          {'lazy': 1, 'on_cmd': 'Alignta'})
   call dein#add('haya14busa/incsearch.vim')
   call dein#add('haya14busa/vim-asterisk',       {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('haya14busa/vim-edgemotion',     {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('haya14busa/vim-edgemotion')
   call dein#add('haya14busa/vim-metarepeat',     {'lazy': 1, 'on_map': ['go', 'g.', '<Plug>']})
   call dein#add('junegunn/vim-easy-align',       {'lazy': 1, 'on_cmd': 'EasyAlign'})
   call dein#add('kana/vim-smartinput')
@@ -280,6 +280,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('janko-m/vim-test',                    {'lazy': 1, 'on_cmd': ['TestNearest','TestFile','TestSuite','TestLast','TestVisit']})
   call dein#add('junegunn/vim-peekaboo')
   call dein#add('kana/vim-niceblock',                  {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
+  call dein#add('kana/vim-submode')
   call dein#add('konfekt/fastfold')
   call dein#add('lambdalisue/session.vim',             {'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
   call dein#add('lambdalisue/vim-manpager',            {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER']})
@@ -2109,11 +2110,6 @@ if dein#tap('vim-easymotion') && dein#tap('clever-f.vim')
 endif
 " }}}3
 
-" edgemotion {{{3
-map <silent> <Leader>j <Plug>(edgemotion-j)
-map <silent> <Leader>k <Plug>(edgemotion-k)
-" }}}3
-
 let g:expand_region_text_objects = {
 \ 'iw': 0,
 \ 'iW': 0,
@@ -2968,6 +2964,23 @@ AlterCommand! <cmdwin> sc[ratch] Scratch
 AutoCmd FileType scratch nnoremap <silent> <buffer> q :<C-u>quit<CR>
 
 let g:scratch_no_mappings = 1
+" }}}3
+
+" submode {{{3
+if dein#tap('vim-submode')
+  let g:submode_timeout = 5
+
+  "" jump
+  call submode#enter_with('jump', 'n', '', 'g;', 'g;')
+  call submode#map('jump', 'n', '', ';', 'g;')
+
+  "" edgemotion
+  call submode#enter_with('edgemotion', 'nx', 'e', '<Leader>j', 'edgemotion#move(1)')
+  call submode#enter_with('edgemotion', 'nx', 'e', '<Leader>k', 'edgemotion#move(0)')
+  call submode#map('edgemotion', 'nx', 'e', 'j', 'edgemotion#move(1)')
+  call submode#map('edgemotion', 'nx', 'e', 'k', 'edgemotion#move(0)')
+endif
+
 " }}}3
 
 " tagbar {{{3
