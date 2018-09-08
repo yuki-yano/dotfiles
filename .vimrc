@@ -1852,7 +1852,7 @@ endif
 
 " vimfiler {{{3
 let g:vimfiler_safe_mode_by_default = 0
-let g:vimfiler_data_directory = expand('~/.cache/vim/vimfiler')
+let g:vimfiler_data_directory       = expand('~/.cache/vim/vimfiler')
 let g:vimfiler_execute_file_list    = {'jpg': 'open', 'jpeg': 'open', 'gif': 'open', 'png': 'open'}
 let g:vimfiler_enable_auto_cd       = 1
 let g:vimfiler_ignore_pattern       = '^\%(.git\|.DS_Store\)$'
