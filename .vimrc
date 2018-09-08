@@ -630,7 +630,7 @@ function! s:leave() abort
   augroup END
 endfunction
 
-call timer_start(s:highlight_cursor_wait, function('s:enter'))
+AutoCmd VimEnter * call timer_start(s:highlight_cursor_wait, function('s:enter'))
 " }}}2
 
 " Auto mkdir {{{2
