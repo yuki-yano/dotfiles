@@ -373,6 +373,9 @@ let g:maplocalleader = '\'
 noremap <Leader>      <Nop>
 noremap <LocalLeader> <Nop>
 
+"" Disable mark
+noremap m <Nop>
+
 "" BackSpace
 imap <C-h> <BS>
 cmap <C-h> <BS>
