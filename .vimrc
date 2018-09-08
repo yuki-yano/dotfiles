@@ -481,7 +481,7 @@ if has('nvim')
   AutoCmd TermOpen * set nonumber | set norelativenumber
 
   " block cursor for insert
-  set guicursor=
+  " set guicursor=
 endif
 
 "" Appearance
