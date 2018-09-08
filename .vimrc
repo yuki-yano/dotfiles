@@ -846,8 +846,6 @@ AutoCmd FileType html,eruby call <SID>map_html_keys()
 
 " vim {{{2
 AutoCmd FileType vim setlocal keywordprg=:help
-AutoCmd FileType ruby       setlocal omnifunc=rubycomplete#Complete
-AutoCmd FileType ruby       setlocal omnifunc=rubycomplete#Complete
 " }}}2
 
 " shell {{{2
