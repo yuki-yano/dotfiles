@@ -266,7 +266,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Util {{{3
-  " call dein#add('thinca/vim-quickrun',                 {'lazy': 1, 'on_cmd': 'QuickRun'})
   call dein#add('MattesGroeger/vim-bookmarks')
   call dein#add('Shougo/junkfile.vim')
   call dein#add('SpaceVim/gtags.vim')
@@ -294,6 +293,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('qpkorr/vim-bufkill')
   call dein#add('simeji/winresizer',                   {'lazy': 1, 'on_cmd': 'WinResizerStartResize'})
   call dein#add('szw/vim-maximizer',                   {'lazy': 1, 'on_cmd': 'MaximizerToggle'})
+  call dein#add('thinca/vim-quickrun',                 {'lazy': 1, 'on_cmd': 'QuickRun'})
   call dein#add('tpope/vim-dispatch',                  {'lazy': 1, 'on_cmd': ['Dispatch', 'Focus', 'Start']})
   call dein#add('tweekmonster/startuptime.vim',        {'lazy': 1, 'on_cmd': 'StartupTime'})
   call dein#add('tyru/capture.vim',                    {'lazy': 1, 'on_cmd': 'Capture'})
@@ -2724,7 +2724,9 @@ let g:bakaup_backup_dir  = expand('~/.cache/vim/backup')
 
 let g:automatic_config = [
 \ {
-\   'match': { 'filetype': 'help' },
+\   'match': {
+\     'filetype': 'help',
+\   },
 \ },
 \ {
 \   'match': {
@@ -2743,7 +2745,9 @@ let g:automatic_config = [
 \   },
 \ },
 \ {
-\   'match': { 'filetype': 'diff' },
+\   'match': {
+\     'filetype': 'diff',
+\   },
 \   'set': {
 \     'move': 'right',
 \   },
@@ -2755,37 +2759,51 @@ let g:automatic_config = [
 \   },
 \ },
 \ {
-\   'match': { 'filetype': 'git' },
+\   'match': {
+\     'filetype': 'git',
+\   },
 \ },
 \ {
-\   'match': { 'filetype': 'gina-status' },
+\   'match': {
+\     'filetype': 'gina-status',
+\   },
 \   'set': {
 \     'move': 'topleft',
 \     'height': '20%',
 \   },
 \ },
 \ {
-\   'match': { 'filetype': 'gina-commit' },
+\   'match': {
+\     'filetype': 'gina-commit',
+\   },
 \   'set': {
 \     'move': 'topleft',
 \     'height': '25%',
 \   },
 \ },
 \ {
-\   'match': { 'filetype': 'gina-branch' },
+\   'match': {
+\     'filetype': 'gina-branch',
+\   },
 \   'set': {
 \     'move': 'topleft',
 \     'height': '30%',
 \   },
 \ },
 \ {
-\   'match': { 'filetype': 'gina-log' },
+\   'match': {
+\     'filetype': 'gina-log',
+\   },
 \ },
 \ {
-\   'match': { 'filetype': 'gina-reflog' },
+\   'match': {
+\     'filetype': 'gina-reflog',
+\   },
 \ },
 \ {
-\   'match': { 'filetype': 'gina-grep' },
+\   'match': {
+\     'filetype': 'gina-grep',
+\   },
 \   'set': {
 \     'move': 'right',
 \   },
@@ -2806,6 +2824,14 @@ let g:automatic_config = [
 \     'autocmds': ['FileType'],
 \   },
 \ },
+\ {
+\   'match': {
+\     'bufname' : '\[quickrun output\]',
+\   },
+\   'set': {
+\     'height' : 10,
+\   },
+\ }
 \ ]
 " }}}
 
@@ -2905,18 +2931,22 @@ let g:peekaboo_window = 'botright 30new'
 " }}}3
 
 " quickrun {{{3
-" AlterCommand! <cmdwin> qrun QuickRun
-"
-" let g:quickrun_config = {
-" \ '_' : {
-" \   'runner': 'vimproc',
-" \   'runner/vimproc/updatetime': 40,
-" \   'outputter': 'error',
-" \   'outputter/error/success': 'buffer',
-" \   'outputter/error/error': 'quickfix',
-" \ }
-" \ }
-" let g:quickrun_no_default_key_mappings = 1
+let g:quickrun_no_default_key_mappings = 1
+let g:quickrun_config = {
+\ '_': {
+\   'runner': 'vimproc',
+\   'runner/vimproc/updatetime': 50,
+\   'outputter': 'error',
+\   'outputter/error/success': 'buffer',
+\   'outputter/error/error': 'quickfix',
+\   'outputter/buffer/split': ':botright 10sp',
+\   'outputter/buffer/close_on_empty': 1,
+\ }
+\ }
+
+nnoremap \r :<C-u>QuickRun -mode n<CR>
+vnoremap \r :<C-u>QuickRun -mode v<CR>
+nnoremap <silent> <expr> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() : "\<C-c>"
 " }}}3
 
 " session {{{3
