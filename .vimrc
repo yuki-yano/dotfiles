@@ -3037,13 +3037,11 @@ nnoremap <silent> <Leader><C-w> :WinResizerStartResize<CR>
 
 " Mapping <Esc><Esc> {{{2
 function! EscEscReset(...) abort
+  nohlsearch
   AnzuClearSearchStatus
   call Set_default_keymap()
 endfunction
-nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> call EscEscReset()<CR>
-augroup esc_esc_reset
-  autocmd!
-augroup END
+nnoremap <silent> <Esc><Esc> :call EscEscReset()<CR>
 " }}}
 
 " keymaps {{{
