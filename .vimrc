@@ -1375,9 +1375,9 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   let g:neosnippet#data_directory = expand('~/.cache/vim/neosnippet')
 
   " Keymap
-  imap <silent> <expr> <BS>  deoplete#smart_close_popup() . "\<Plug>(smartinput_BS)"
-  imap <silent> <expr> <C-h> deoplete#smart_close_popup() . "\<Plug>(smartinput_C-h)"
-  imap <silent> <expr> <CR>  deoplete#smart_close_popup() . "\<Plug>(smartinput_CR)"
+  imap <silent> <expr> <BS>  pumvisible() ? "\<BS>" : deoplete#smart_close_popup() . "\<Plug>(smartinput_BS)"
+  imap <silent> <expr> <C-h> pumvisible() ? "\<BS>" : deoplete#smart_close_popup() . "\<Plug>(smartinput_C-h)"
+  imap <silent> <expr> <CR>  pumvisible() ? "\<CR>" : deoplete#smart_close_popup() . "\<Plug>(smartinput_CR)"
   inoremap <silent> <expr> <C-g> deoplete#undo_completion()
 
   inoremap <expr> <C-n> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : deoplete#mappings#manual_complete()
