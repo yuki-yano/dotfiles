@@ -294,12 +294,9 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('qpkorr/vim-bufkill')
   call dein#add('simeji/winresizer',                   {'lazy': 1, 'on_cmd': 'WinResizerStartResize'})
   call dein#add('szw/vim-maximizer',                   {'lazy': 1, 'on_cmd': 'MaximizerToggle'})
-  call dein#add('thinca/vim-localrc')
-  call dein#add('thinca/vim-ref',                      {'lazy': 1, 'on_cmd': 'Ref'})
   call dein#add('tpope/vim-dispatch',                  {'lazy': 1, 'on_cmd': ['Dispatch', 'Focus', 'Start']})
   call dein#add('tweekmonster/startuptime.vim',        {'lazy': 1, 'on_cmd': 'StartupTime'})
   call dein#add('tyru/capture.vim',                    {'lazy': 1, 'on_cmd': 'Capture'})
-  call dein#add('tyru/open-browser.vim',               {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('tyru/vim-altercmd')
   call dein#add('yssl/QFEnter')
   " }}}3
@@ -486,50 +483,51 @@ endif
 
 "" Appearance
 set belloff=all
+set cmdheight=2
+set concealcursor=nc
 set conceallevel=2
-set concealcursor=niv
-set diffopt=filler,icase,vertical
+set diffopt=filler,vertical
 set display=lastline
 set helplang=ja
 set hidden
-set hlsearch | nohlsearch
+set hlsearch
 set laststatus=2
 set list listchars=tab:^\ ,trail:_,eol:$,extends:>,precedes:<
+set matchpairs+=<:>
 set matchtime=1
-set nocursorline
 set number
-set previewheight=18
 set pumheight=25
 set scrolloff=5
-set showmatch
 set showtabline=2
 set spellcapcheck=
 set spelllang=en,cjk
-set synmaxcol=300
+set synmaxcol=160
 set virtualedit=all
-set matchpairs& matchpairs+=<:>
 
 "" Indent
-set nostartofline
 set autoindent
 set backspace=indent,eol,start
 set breakindent
 set expandtab
-set shiftwidth=4
+set formatoptions+=jBn
+set formatoptions-=ro
+set nostartofline
+set shiftwidth=2
 set smartindent
-set tabstop=4
-
-AutoCmd FileType * setlocal formatoptions-=ro
-AutoCmd FileType * setlocal formatoptions+=jBn
+set tabstop=2
 
 "" viminfo
-set viminfo='1000
+set viminfo='1000,:1000
 
 "" Search & Complete
-set completeopt=menu,menuone,noinsert,noselect
 set ignorecase
 set regexpengine=2
 set smartcase
+
+"" Completion
+set completeopt=menu,menuone,noinsert,noselect
+
+"" Command
 set wildignorecase
 set wildmenu
 set wildmode=longest:full,full
@@ -540,13 +538,7 @@ set foldcolumn=1
 set foldenable
 set foldmethod=manual
 
-"" history
-set history=1000
-set undodir=~/.vim_undo
-set undofile
-
 "" FileType
-set autoread
 set viewoptions=cursor,folds
 set suffixesadd=.js,.ts,.rb
 
@@ -557,7 +549,7 @@ AutoCmd InsertLeave * if &l:diff | diffupdate | endif
 set undofile
 set undodir=~/.cache/vim/undo/
 
-"" Swap File
+"" Swap
 set swapfile
 set directory=~/.cache/vim/swap/
 AutoCmd SwapExists * let v:swapchoice = 'o'
@@ -582,8 +574,8 @@ endif
 AutoCmd InsertLeave * setlocal nopaste
 
 "" Misc
+set autoread
 set updatetime=500
-set langnoremap
 
 "" Turn off default plugins.
 let g:loaded_gzip              = 1
@@ -739,19 +731,8 @@ function! s:move_to_new_tab()
   tabnext
 endfunction
 
-nnoremap <silent> gm :<C-u>tablast <Bar> call <SID>move_to_new_tab()<CR>
-" }}}2
-
-" Preserve {{{2
-function! s:preserve(command)
-  let l:lastsearch = @/
-  let l:view = winsaveview()
-  execute a:command
-  let @/ = l:lastsearch
-  call winrestview(l:view)
-endfunction
-
-command! -complete=command -nargs=* Preserve call <SID>preserve(<q-args>)
+command! MoveToNewTab call <SID>move_to_new_tab()
+nnoremap <silent> gm :<C-u>MoveToNewTab<CR>
 " }}}2
 
 " HelpEdit & HelpView {{{2
@@ -804,42 +785,32 @@ AutoCmd FileType zsh            setlocal expandtab   shiftwidth=2 softtabstop=2 
 " }}}3
 
 " iskeyword {{{3
-AutoCmd FileType javascript setlocal iskeyword+=$ iskeyword+=? iskeyword+=/
-AutoCmd FileType vue        setlocal iskeyword+=$ iskeyword+=& iskeyword+=- iskeyword+=? iskeyword-=/
-AutoCmd FileType ruby       setlocal iskeyword+=@ iskeyword+=! iskeyword+=? iskeyword+=&
-AutoCmd FileType html       setlocal iskeyword+=-
-AutoCmd FileType css        setlocal iskeyword+=-
-AutoCmd FileType scss       setlocal iskeyword+=$ iskeyword+=& iskeyword+=-
-AutoCmd FileType sh         setlocal iskeyword+=$ iskeyword+=-
-AutoCmd FileType zsh        setlocal iskeyword+=$
+AutoCmd FileType vue  setlocal iskeyword+=$ iskeyword+=& iskeyword+=- iskeyword+=? iskeyword-=/
+AutoCmd FileType ruby setlocal iskeyword+=@ iskeyword+=! iskeyword+=? iskeyword+=&
+AutoCmd FileType html setlocal iskeyword+=-
+AutoCmd FileType css  setlocal iskeyword+=- iskeyword+=#
+AutoCmd FileType scss setlocal iskeyword+=- iskeyword+=# iskeyword+=$
+AutoCmd FileType vim  setlocal iskeyword+=-
+AutoCmd FileType sh   setlocal iskeyword+=$ iskeyword+=-
+AutoCmd FileType zsh  setlocal iskeyword+=$ iskeyword+=-
 " }}}3
 
 " Set FileType {{{3
-AutoCmd BufNewFile,BufRead             *.js set filetype=javascript
-AutoCmd BufNewFile,BufRead            *.erb set filetype=eruby
-AutoCmd BufNewFile,BufRead           *.cson set filetype=coffee
-AutoCmd BufNewFile,BufRead         .babelrc set filetype=json
-AutoCmd BufNewFile,BufRead        .eslintrc set filetype=json
-AutoCmd BufNewFile,BufRead     .stylelintrc set filetype=json
-AutoCmd BufNewFile,BufRead      .prettierrc set filetype=json
-AutoCmd BufNewFile,BufRead    .tern-project set filetype=json
-AutoCmd BufNewFile,BufRead           .pryrc set filetype=ruby
-AutoCmd BufNewFile,BufRead          Gemfile set filetype=ruby
-AutoCmd BufNewFile,BufRead      Vagrantfile set filetype=ruby
-AutoCmd BufNewFile,BufRead       Schemafile set filetype=ruby
+AutoCmd BufNewFile,BufRead *.js             set filetype=javascript
+AutoCmd BufNewFile,BufRead *.erb            set filetype=eruby
+AutoCmd BufNewFile,BufRead *.cson           set filetype=coffee
+AutoCmd BufNewFile,BufRead .babelrc         set filetype=json
+AutoCmd BufNewFile,BufRead .eslintrc        set filetype=json
+AutoCmd BufNewFile,BufRead .stylelintrc     set filetype=json
+AutoCmd BufNewFile,BufRead .prettierrc      set filetype=json
+AutoCmd BufNewFile,BufRead .tern-project    set filetype=json
+AutoCmd BufNewFile,BufRead .pryrc           set filetype=ruby
+AutoCmd BufNewFile,BufRead Gemfile          set filetype=ruby
+AutoCmd BufNewFile,BufRead Vagrantfile      set filetype=ruby
+AutoCmd BufNewFile,BufRead Schemafile       set filetype=ruby
 AutoCmd BufNewFile,BufRead .gitconfig.local set filetype=gitconfig
 
-" Reassign FileType
-AutoCmd BufWritePost *
-\ if &filetype ==# '' && exists('b:ftdetect') |
-\  unlet! b:ftdetect |
-\  filetype detect |
-\ endif
-" }}}3
-
 " Completion {{{3
-set completefunc=autoprogramming#complete
-
 AutoCmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 AutoCmd FileType ruby       setlocal omnifunc=rubycomplete#Complete
 AutoCmd FileType html,eruby setlocal omnifunc=htmlcomplete#CompleteTags
@@ -853,11 +824,9 @@ AutoCmd FileType typescript.tsx setlocal dictionary=~/dotfiles/.vim/dict/javascr
 AutoCmd FileType ruby,eruby     setlocal dictionary=~/dotfiles/.vim/dict/ruby.dict
 " }}}3
 
-
 " }}}2
 
 " HTML & eruby {{{2
-AutoCmd FileType html,eruby call <SID>map_html_keys()
 function! s:map_html_keys()
   inoremap <silent> <buffer> \\ \
   inoremap <silent> <buffer> \& &amp;
@@ -868,24 +837,25 @@ function! s:map_html_keys()
   inoremap <silent> <buffer> \` &#8216;
   inoremap <silent> <buffer> \' &#8217;
   inoremap <silent> <buffer> \" &#8221;
-
-  let b:match_words .= ',{:},(:)'
 endfunction
+AutoCmd FileType html,eruby call <SID>map_html_keys()
 " }}}2
 
 " vim {{{2
-AutoCmd FileType vim set keywordprg=:help
+AutoCmd FileType vim setlocal keywordprg=:help
+AutoCmd FileType ruby       setlocal omnifunc=rubycomplete#Complete
+AutoCmd FileType ruby       setlocal omnifunc=rubycomplete#Complete
 " }}}2
 
 " shell {{{2
-AutoCmd FileType sh,bash,zsh set keywordprg=man
+AutoCmd FileType sh,bash,zsh,man setlocal keywordprg=man
 " }}}2
 
 " Set quit {{{2
 AutoCmd FileType help nnoremap <silent> <buffer> q :<C-u>quit<CR>
-AutoCmd FileType man  nnoremap <silent> <buffer> q :<C-u>quit<CR>
 AutoCmd FileType qf   nnoremap <silent> <buffer> q :<C-u>quit<CR>
 AutoCmd FileType diff nnoremap <silent> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType man  nnoremap <silent> <buffer> q :<C-u>quit<CR>
 AutoCmd FileType git  nnoremap <silent> <buffer> q :<C-u>quit<CR>
 " }}}2
 
@@ -903,7 +873,7 @@ AutoCmd CmdwinEnter * call <SID>init_cmdwin()
 
 function! s:init_cmdwin() abort
   set number | set norelativenumber
-  nnoremap <silent> <buffer> q :<C-u>quit<CR>
+  nnoremap <buffer> <silent> q :<C-u>quit<CR>
   inoremap <buffer> <C-c> <C-c>
   inoremap <buffer> <C-c> <Esc>l<C-c>
 
@@ -1001,7 +971,6 @@ function! s:autoformat_all() abort
   execute 'unlet ' . l:formatter_buffer_var_name
 endfunction
 command! AutoformatAll call <SID>autoformat_all()
-
 noremap <Leader>a :<C-u>AutoformatAll<CR>
 
 " html formatter
@@ -1051,7 +1020,6 @@ let g:formatters_markdown = ['prettier']
 " }}}3
 
 " echodoc {{{3
-set cmdheight=2
 let g:echodoc_enable_at_startup = 1
 " }}}3
 
@@ -1134,7 +1102,6 @@ AutoCmd FileType vue syntax sync fromstart
 " Completion & Fuzzy Finder {{{2
 
 " Denite & Unite {{{3
-
 AlterCommand! <cmdwin> d[enite] Denite
 AlterCommand! <cmdwin> dr       Denite<Space>-resume
 
@@ -1192,7 +1159,7 @@ if dein#tap('denite.nvim')
   \  '*.min.*'
   \ ])
 
-  call denite#custom#var('file_rec', 'command',        [ 'rg',       '--files', '--glob', '!.git', ''])
+  call denite#custom#var('file_rec', 'command',        [ 'rg', '--files', '--glob', '!.git', ''])
   call denite#custom#var('grep',     'command',        ['rg'])
   call denite#custom#var('grep',     'default_opts',   ['--vimgrep', '--no-heading'])
   call denite#custom#var('grep',     'recursive_opts', [])
@@ -1232,7 +1199,6 @@ if dein#tap('denite.nvim')
 
   "" menu
   let s:menus = {}
-
   let s:menus.toggle = { 'description': 'Toggle Command' }
   let s:menus.toggle.command_candidates = [
   \ ['Toggle IndentLine    [IndentLinesToggle]',  'IndentLinesToggle' ],
@@ -1241,7 +1207,6 @@ if dein#tap('denite.nvim')
   \ ['Toggle ALE           [ALEToggle]',          'ALEToggle'         ],
   \ ]
   call denite#custom#var('menu', 'menus', s:menus)
-
   nnoremap <silent> <Leader>t :<C-u>Denite menu:toggle<CR>
 endif
 
@@ -1295,51 +1260,51 @@ let g:neomru#dictionary_mru_path = expand('~/.cache/vim/neomru/dictionary')
 
 " fzf {{{3
 " Delete History
-" function! s:fzf_delete_history() abort
-"   call fzf#run({
-"   \ 'source': <SID>command_history(),
-"   \ 'options': '--multi --prompt="DeleteHistory>"',
-"   \ 'sink': function('<SID>delete_history'),
-"   \ 'window': 'top split new'
-"   \ })
-"   execute 'resize' float2nr(0.3 * &lines)
-" endfunction
-"
-" function! s:command_history() abort
-"   let l:out = ''
-"   redir => l:out
-"   silent! history
-"   redir END
-"
-"   return map(reverse(split(l:out, '\n')), "substitute(substitute(v:val, '\^\>', '', ''), '\^\\\s\\\+', '', '')")
-" endfunction
-"
-" function! s:delete_history(command) abort
-"   call histdel(':', str2nr(get(split(a:command, '  '), 0)))
-"   wviminfo
-" endfunction
-"
-" command! FzfDeleteHistory call s:fzf_delete_history()
+function! s:fzf_delete_history() abort
+  call fzf#run({
+  \ 'source': <SID>command_history(),
+  \ 'options': '--multi --prompt="DeleteHistory>"',
+  \ 'sink': function('<SID>delete_history'),
+  \ 'window': 'top split new'
+  \ })
+  execute 'resize' float2nr(0.3 * &lines)
+endfunction
+
+function! s:command_history() abort
+  let l:out = ''
+  redir => l:out
+  silent! history
+  redir END
+
+  return map(reverse(split(l:out, '\n')), "substitute(substitute(v:val, '\^\>', '', ''), '\^\\\s\\\+', '', '')")
+endfunction
+
+function! s:delete_history(command) abort
+  call histdel(':', str2nr(get(split(a:command, '  '), 0)))
+  wviminfo
+endfunction
+
+command! FzfDeleteHistory call s:fzf_delete_history()
 " nnoremap <silent> <Leader>h :<C-u>FzfDeleteHistory<CR>
 
 " Open File at Cursor
-" function! s:fzf_open_gf()
-"   let s:file_path = tolower(expand('<cfile>'))
-"
-"   if s:file_path ==# ''
-"     echo '[Error] <cfile> return empty string.'
-"     return 0
-"   endif
-"
-"   call fzf#run({
-"   \ 'source': 'rg --files --hidden --follow --glob "!.git/*"',
-"   \ 'sink': 'e',
-"   \ 'options': '-x --multi --prompt="CursorFiles>" --query=' . shellescape(s:file_path),
-"   \ 'window': 'top split new'})
-"   execute 'resize' float2nr(0.3 * &lines)
-" endfunction
-"
-" command! FzfOpenGf call s:fzf_open_gf()
+function! s:fzf_open_gf()
+  let s:file_path = tolower(expand('<cfile>'))
+
+  if s:file_path ==# ''
+    echo '[Error] <cfile> return empty string.'
+    return 0
+  endif
+
+  call fzf#run({
+  \ 'source': 'rg --files --hidden --follow --glob "!.git/*"',
+  \ 'sink': 'e',
+  \ 'options': '-x --multi --prompt="CursorFiles>" --query=' . shellescape(s:file_path),
+  \ 'window': 'top split new'})
+  execute 'resize' float2nr(0.3 * &lines)
+endfunction
+
+command! FzfOpenGf call s:fzf_open_gf()
 " nnoremap <silent> <leader>gf :FzfOpenGf<CR>
 " }}}3
 
@@ -1405,9 +1370,6 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   imap <silent> <C-k> <Plug>(neosnippet_expand_or_jump)
   smap <silent> <C-k> <Plug>(neosnippet_expand_or_jump)
   xmap <silent> <C-k> <Plug>(neosnippet_expand_target)
-  imap <silent> <Tab> <Plug>(neosnippet_expand_or_jump)
-  smap <silent> <Tab> <Plug>(neosnippet_expand_or_jump)
-  xmap <silent> <Tab> <Plug>(neosnippet_expand_target)
 
   call deoplete#custom#source('_', 'converters', [
   \ 'converter_remove_paren',
@@ -1481,8 +1443,6 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   call deoplete#custom#source('dictionary',     'max_candidates', 10)
   call deoplete#custom#source('look',           'max_candidates', 10)
 
-  " call deoplete#custom#source('ruby', 'input_pattern', ['\.[a-zA-Z0-9_?!]+', '[a-zA-Z]\w*::\w*'])
-
   let s:deoplete_default_sources = ['neosnippet', 'gtags', 'tag', 'around', 'buffer', 'omni', 'member', 'syntax', 'file', 'dictionary', 'look', 'tmux-complete']
   let s:deoplete_sources                   = {}
   let s:deoplete_sources['_']              = s:deoplete_default_sources
@@ -1539,17 +1499,17 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
 
   " smartinput
   call smartinput#map_to_trigger('i', '<Space>', '<Space>', '<Space>')
-  call smartinput#map_to_trigger('i', '<Tab>', '<Tab>', '<Tab>')
+  call smartinput#map_to_trigger('i', '<Tab>',   '<Tab>',   '<Tab>')
   call smartinput#map_to_trigger('i', '<S-Tab>', '<S-Tab>', '<S-Tab>')
-  call smartinput#map_to_trigger('i', '<Bar>', '<Bar>', '<Bar>')
+  call smartinput#map_to_trigger('i', '<Bar>',   '<Bar>',   '<Bar>')
   call smartinput#map_to_trigger('i', '%', '%', '%')
   call smartinput#map_to_trigger('i', '=', '=', '=')
   call smartinput#map_to_trigger('i', '#', '#', '#')
   call smartinput#map_to_trigger('i', '-', '-', '-')
   call smartinput#map_to_trigger('i', '>', '>', '>')
-  call smartinput#map_to_trigger('i', '<Plug>(smartinput_BS)', '<BS>', '<BS>')
-  call smartinput#map_to_trigger('i', '<Plug>(smartinput_C-h)', '<BS>', '<C-h>')
-  call smartinput#map_to_trigger('i', '<Plug>(smartinput_CR)', '<Enter>', '<Enter>')
+  call smartinput#map_to_trigger('i', '<Plug>(smartinput_BS)',  '<BS>',    '<BS>')
+  call smartinput#map_to_trigger('i', '<Plug>(smartinput_C-h)', '<BS>',    '<C-h>')
+  call smartinput#map_to_trigger('i', '<Plug>(smartinput_CR)',  '<Enter>', '<Enter>')
 
   let s:rules = []
 
@@ -1922,7 +1882,6 @@ AutoCmd FileType vimfiler call s:vimfiler_settings()
 
 " vaffle {{{3
 AlterCommand! <cmdwin> va[fle] Vaffle
-AutoCmd FileType vaffle  nnoremap <silent> <buffer> q :<C-u>quit<CR>
 
 let g:loaded_netrw = 1
 let g:loaded_netrwPlugin = 1
@@ -1934,6 +1893,8 @@ command! VaffleExplorerCurrent vertical topleft vsplit +Vaffle\ %:h | vertical r
 
 " nnoremap <silent> <Leader>e :VaffleExplorer<CR>
 " nnoremap <silent> <Leader>E :VaffleExplorerCurrent<CR>
+
+AutoCmd FileType vaffle nnoremap <silent> <buffer> q :<C-u>quit<CR>
 
 function! s:customize_vaffle_mappings() abort
   nmap <silent> <buffer> <nowait> <Space> <Plug>(vaffle-toggle-current)
@@ -1967,12 +1928,6 @@ if dein#tap('vim-anzu') && dein#tap('vim-asterisk') && dein#tap('incsearch.vim')
   map #  <Plug>(asterisk-z#)
   map g* <Plug>(asterisk-gz*)
   map g# <Plug>(asterisk-gz#)
-
-  function! s:incsearch_keymap()
-    IncSearchNoreMap <C-d> <Over>(incsearch-scroll-f)
-    IncSearchNoreMap <C-u> <Over>(incsearch-scroll-b)
-  endfunction
-  AutoCmd VimEnter * call s:incsearch_keymap()
 endif
 " }}}3
 
@@ -2098,7 +2053,7 @@ if dein#tap('vim-easymotion') && dein#tap('clever-f.vim')
 
   " sneak
   " let g:sneak#prompt = 'Search by Sneak (2 characters) >'
-  "
+
   " nmap <silent> ss <Plug>Sneak_s
   " nmap <silent> sS <Plug>Sneak_S
   " nmap <silent> ;  <Plug>Sneak_;
@@ -2140,6 +2095,11 @@ vmap v <Plug>(expand_region_expand)
 vmap V <Plug>(expand_region_shrink)
 " }}}3
 
+" edgemotion {{{3
+xmap <silent> <Leader>j <Plug>(edgemotion-j)
+xmap <silent> <Leader>k <Plug>(edgemotion-k)
+" }}}3
+
 " ferret {{{3
 AlterCommand! <cmdwin> rg  Ack<Space>--smart-case
 AlterCommand! <cmdwin> ack Ack<Space>--smart-case
@@ -2159,7 +2119,7 @@ endif
 " }}}3
 
 " operator-convert-case {{{3
-nmap <silent> <Leader>cc <Plug>(operator-convert-case-loop)
+nmap <silent> <Leader>cl <Plug>(operator-convert-case-loop)
 " }}}3
 
 " operator-replace {{{3
@@ -2566,8 +2526,10 @@ if dein#tap('lightline.vim')
 
   function! Lightline_mode() abort
     let l:win = getwininfo(win_getid())[0]
-    return Lightline_special_mode() ==# '' ?
-    \ lightline#mode() : ''
+    return exists('g:VM') && g:VM.is_active ? '' :
+    \ l:win.loclist ? '' :
+    \ l:win.quickfix ? '' :
+    \ get(s:lightline_ft_to_mode_hash, &filetype, lightline#mode())
   endfunction
 
   function! Lightline_special_mode() abort
@@ -2615,27 +2577,24 @@ if dein#tap('lightline.vim')
 
   function! Lightline_lineinfo() abort
     return !count(s:lightline_ignore_right_ft, &filetype) ?
-    \        printf('%d:%d | %d lines [%d%%]',line('.'), col('.'), line('$'), float2nr((1.0 * line('.')) / line('$') * 100.0)) :
-    \        ''
+    \ printf('%d:%d | %d lines [%d%%]',line('.'), col('.'), line('$'), float2nr((1.0 * line('.')) / line('$') * 100.0)) :
+    \ ''
   endfunction
 
   function! Lightline_fileencoding() abort
     return !count(s:lightline_ignore_right_ft, &filetype) ?
-    \         strlen(&fileencoding) ?
-    \           &fileencoding :
-    \           &encoding :
-    \         ''
+    \ strlen(&fileencoding) ?
+    \   &fileencoding :
+    \   &encoding :
+    \ ''
   endfunction
 
   function! Lightline_fileformat() abort
     return !count(s:lightline_ignore_right_ft, &filetype) ?
-    \         &fileformat :
-    \        ''
+    \ &fileformat :
+    \ ''
   endfunction
 
-  "%{(strlen(&fileencoding) ? &fileencoding : &encoding)}",
-  "%{}",
-  "
   function! Lightline_tab_win_num(n) abort
     return a:n . ':' . len(tabpagebuflist(a:n))
   endfunction
@@ -2664,7 +2623,7 @@ if dein#tap('lightline.vim')
     else
       return ''
     endif
-  endfun
+  endfunction
 endif
 " }}}3
 
@@ -2702,7 +2661,6 @@ let g:startify_commands = [
 \ ['Git Diff Cached',       'Gina diff --cached'],
 \ ['Git Commit',            'Gina commit'],
 \ ]
-
 " }}}3
 
 " rainbow {{{3
@@ -2842,6 +2800,10 @@ let g:automatic_config = [
 \     'filetype': 'scratch',
 \     'autocmds': ['FileType'],
 \   },
+\   'set': {
+\     'move': 'topleft',
+\     'height': '30%',
+\   },
 \ },
 \ {
 \   'match': {
@@ -2938,12 +2900,6 @@ let g:miniyank_maxitems = 2000
 let g:miniyank_filename = expand('~/.cache/vim/miniyank.mpack')
 " }}}3
 
-" open-browser {{{3
-let g:netrw_nogx = 1
-nmap gx <Plug>(openbrowser-smart-search)
-vmap gx <Plug>(openbrowser-smart-search)
-" }}}3
-"
 " open-googletranslate {{{3
 let g:opengoogletranslate#openbrowsercmd = 'electron-open --without-focus'
 command! -range Trans <line1>,<line2>OpenGoogleTranslate
@@ -2953,7 +2909,7 @@ command! -range Trans <line1>,<line2>OpenGoogleTranslate
 let g:peekaboo_window = 'botright 30new'
 " }}}3
 
-" quickrun {{{
+" quickrun {{{3
 " AlterCommand! <cmdwin> qrun QuickRun
 "
 " let g:quickrun_config = {
@@ -2966,16 +2922,6 @@ let g:peekaboo_window = 'botright 30new'
 " \ }
 " \ }
 " let g:quickrun_no_default_key_mappings = 1
-" }}}
-
-" ref {{{3
-AlterCommand! <cmdwin> alc Ref<Space>webdict<Space>alc
-
-let g:ref_source_webdict_sites = {
-\ 'alc' : {
-\   'url' : 'http://eow.alc.co.jp/%s/UTF-8/'
-\   }
-\ }
 " }}}3
 
 " session {{{3
@@ -2999,10 +2945,12 @@ if dein#tap('vim-submode')
   call submode#map('jump', 'n', '', ';', 'g;')
 
   "" edgemotion
-  call submode#enter_with('edgemotion', 'nx', 'e', '<Leader>j', 'edgemotion#move(1)')
-  call submode#enter_with('edgemotion', 'nx', 'e', '<Leader>k', 'edgemotion#move(0)')
-  call submode#map('edgemotion', 'nx', 'e', 'j', 'edgemotion#move(1)')
-  call submode#map('edgemotion', 'nx', 'e', 'k', 'edgemotion#move(0)')
+  call submode#enter_with('edgemotion', 'n', 'e', '<Leader>j', 'edgemotion#move(1)')
+  call submode#enter_with('edgemotion', 'n', 'e', '<Leader>k', 'edgemotion#move(0)')
+  call submode#map('edgemotion', 'n', 'e', 'j',         'edgemotion#move(1)')
+  call submode#map('edgemotion', 'n', 'e', 'k',         'edgemotion#move(0)')
+  call submode#map('edgemotion', 'n', 'e', '<Leader>j', 'edgemotion#move(1)')
+  call submode#map('edgemotion', 'n', 'e', '<Leader>k', 'edgemotion#move(0)')
 endif
 
 " }}}3
@@ -3036,12 +2984,7 @@ nnoremap <silent> <Leader><C-w> :WinResizerStartResize<CR>
 " Correct Interference {{{1
 
 " Mapping <Esc><Esc> {{{2
-function! EscEscReset(...) abort
-  nohlsearch
-  AnzuClearSearchStatus
-  call Set_default_keymap()
-endfunction
-nnoremap <silent> <Esc><Esc> :call EscEscReset()<CR>
+nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus <Bar> call Set_default_keymap()<CR>
 " }}}
 
 " keymaps {{{
