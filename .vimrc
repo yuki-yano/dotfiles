@@ -2338,12 +2338,12 @@ let g:choosewin_statusline_replace      = 0
 let g:choosewin_tabline_replace         = 0
 
 let g:choosewin_color_overlay = {
-\ 'gui': ['DodgerBlue3', 'DodgerBlue3' ],
-\ 'cterm': [ 25, 25 ]
+\ 'gui': ['Blue', 'Blue' ],
+\ 'cterm': [4, 4]
 \ }
 let g:choosewin_color_overlay_current = {
-\ 'gui': ['firebrick1', 'firebrick1' ],
-\ 'cterm': [ 124, 124 ]
+\ 'gui': ['Red', 'Red' ],
+\ 'cterm': [1, 1]
 \ }
 
 nnoremap <silent> <C-w><C-w> :<C-u>ChooseWin<CR>
