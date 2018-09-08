@@ -596,9 +596,9 @@ add-zsh-hook precmd update_git_prompt
 # }
 
 function prompt_update_vim_prompt() {
-  VIM_NORMAL="%{$GREEN%}-- NORMAL --%{$DEFAULT%}"
+  VIM_NORMAL="%{$CYAN%}-- NORMAL --%{$DEFAULT%}"
   VIM_INSERT="%{$YELLOW%}-- INSERT --%{$DEFAULT%}"
-  VIM_VISUAL="%{$CYAN%}-- VISUAL --%{$DEFAULT%}"
+  VIM_VISUAL="%{$GREEN%}-- VISUAL --%{$DEFAULT%}"
   VIM_PROMPT="${${${KEYMAP/vicmd/$VIM_NORMAL}/(main|viins)/$VIM_INSERT}/(vivis)/$VIM_VISUAL}"
   zle reset-prompt
 }
