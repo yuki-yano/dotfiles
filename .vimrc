@@ -2406,8 +2406,9 @@ if dein#tap('lightline.vim')
   \ 'active': {
   \   'left': [
   \     ['mode', 'spell', 'paste'],
-  \     ['visual_multi'],
-  \     ['denite', 'filepath', 'filename', 'anzu'],
+  \     ['special_mode', 'anzu', 'vm_regions'],
+  \     ['denite', 'filepath', 'filename'],
+  \     [],
   \    ],
   \   'right': [
   \     ['lineinfo'],
@@ -2416,7 +2417,7 @@ if dein#tap('lightline.vim')
   \   ],
   \ },
   \ 'inactive': {
-  \   'left': [['mode'], [], [], ['filepath', 'filename']],
+  \   'left': [['mode'], ['special_mode'], [], ['filepath', 'filename']],
   \   'right': [[], ['filetype', 'fileencoding', 'fileformat']],
   \ },
   \ 'tabline': {
@@ -2430,10 +2431,10 @@ if dein#tap('lightline.vim')
   \ 'component': {
   \   'spell':        "%{&spell ? 'SPELL' : ''}",
   \   'paste':        "%{&paste ? 'PASTE' : ''}",
-  \   'visual_multi': "%{exists('b:VM_Selection') && len(b:VM_Selection) ? 'Visual Multi' : ''}",
   \  },
   \ 'component_function': {
   \   'mode':         'Lightline_mode',
+  \   'special_mode': 'Lightline_special_mode',
   \   'filepath':     'Lightline_filepath',
   \   'filename':     'Lightline_filename',
   \   'filetype':     'Lightline_filetype',
@@ -2442,20 +2443,23 @@ if dein#tap('lightline.vim')
   \   'fileformat':   'Lightline_fileformat',
   \   'anzu':         'anzu#search_status',
   \   'denite':       'Lightline_denite',
+  \   'vm_regions':   'Lightline_vm_regions',
   \ },
   \ 'tab_component_function': {
   \   'tabwinnum':   'Lightline_tab_win_num',
   \ },
   \ 'component_visible_condition': {
+  \   'special_mode': "%{Lightline_special_mode() !=# ''}",
   \   'filepath':     'Lightline_is_visible()',
   \   'lineinfo':     'Lightline_is_visible()',
   \   'fileencoding': 'Lightline_is_visible()',
   \   'fileformat':   'Lightline_is_visible()',
+  \   'anzu':         "%{anzu#search_status !=# ''}",
+  \   'vm_regions':   "%{Lightline_vm_regions() !=# ''}",
   \ },
   \ 'component_function_visible_condition': {
-  \   'spell':        '&spell',
-  \   'paste':        '&paste',
-  \   'visual_multi': "exists('b:VM_Selection') && len(b:VM_Selection)",
+  \   'spell': '&spell',
+  \   'paste': '&paste',
   \ },
   \ 'component_type': {
   \   'linter_errors':   'error',
@@ -2562,7 +2566,17 @@ if dein#tap('lightline.vim')
 
   function! Lightline_mode() abort
     let l:win = getwininfo(win_getid())[0]
-    return l:win.loclist ? 'Location List' : l:win.quickfix ? 'QuickFix' : get(s:lightline_ft_to_mode_hash, &filetype, lightline#mode())
+    return Lightline_special_mode() ==# '' ?
+    \ lightline#mode() : ''
+  endfunction
+
+  function! Lightline_special_mode() abort
+    let l:win = getwininfo(win_getid())[0]
+    return exists('g:VM') && g:VM.is_active ? 'VISUAL MULTI' :
+    \ l:win.loclist ? 'Location List' :
+    \ l:win.quickfix ? 'QuickFix' :
+    \ anzu#search_status() !=# '' ? 'Anzu' :
+    \ get(s:lightline_ft_to_mode_hash, &filetype, '')
   endfunction
 
   function! Lightline_filepath() abort
@@ -2641,6 +2655,16 @@ if dein#tap('lightline.vim')
   function! Lightline_denite() abort
     return (&filetype !=# 'denite') ? '' : (substitute(denite#get_status_mode(), '[- ]', '', 'g'))
   endfunction
+
+  function! Lightline_vm_regions() abort
+    if exists('g:VM') && g:VM.is_active
+      let l:index = b:VM_Selection.Vars.index + 1
+      let l:max   = len(b:VM_Selection.Regions)
+      return '(' . l:index . '/' . l:max . ')'
+    else
+      return ''
+    endif
+  endfun
 endif
 " }}}3
 
