@@ -2542,7 +2542,8 @@ if dein#tap('lightline.vim')
     return exists('g:VM') && g:VM.is_active ? '' :
     \ l:win.loclist ? '' :
     \ l:win.quickfix ? '' :
-    \ get(s:lightline_ft_to_mode_hash, &filetype, lightline#mode())
+    \ has_key(s:lightline_ft_to_mode_hash, &filetype) ? '' :
+    \ lightline#mode()
   endfunction
 
   function! Lightline_special_mode() abort
