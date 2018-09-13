@@ -189,18 +189,15 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-operator-user')
 
   call dein#add('kana/vim-textobj-entire') " ie ae
-  call dein#add('kana/vim-textobj-fold') " iz az
   call dein#add('kana/vim-textobj-function') " if af
   call dein#add('kana/vim-textobj-indent') " ai ii
   call dein#add('kana/vim-textobj-line') " al il
-  call dein#add('lucapette/vim-textobj-underscore') " i_ a_
   call dein#add('machakann/vim-swap') " i, a,
   call dein#add('machakann/vim-textobj-delimited') " id ad
   call dein#add('mattn/vim-textobj-url') " au iu
   call dein#add('rhysd/vim-textobj-ruby') " ar ir
+  call dein#add('thinca/vim-textobj-between') " i{char} a{char}
   call dein#add('thinca/vim-textobj-comment') " ic ac
-  call dein#add('yuki-ycino/vim-textobj-dash') " i- a-
-  call dein#add('yuki-ycino/vim-textobj-slash') " i/ a/
 
   call dein#add('kana/vim-operator-replace',      {'lazy': 1, 'depends': 'vim-operator-user', 'on_map': '<Plug>'})
   call dein#add('mopp/vim-operator-convert-case', {'lazy': 1, 'depends': 'vim-operator-user', 'on_map': '<Plug>'})
@@ -1900,6 +1897,33 @@ AutoCmd FileType vaffle call <SID>customize_vaffle_mappings()
 
 " }}}2
 
+" textobj & operator {{{2
+
+" operator-replace {{{3
+map _ <Plug>(operator-replace)
+" }}}3
+
+" textobj-between {{{3
+let g:textobj_between_no_default_key_mappings = 1
+
+omap i/ <Plug>(textobj-between-i)/
+omap a/ <Plug>(textobj-between-a)/
+xmap i/ <Plug>(textobj-between-i)/
+xmap a/ <Plug>(textobj-between-a)/
+
+omap i_ <Plug>(textobj-between-i)_
+omap a_ <Plug>(textobj-between-a)_
+xmap i_ <Plug>(textobj-between-i)_
+xmap a_ <Plug>(textobj-between-a)_
+
+omap i- <Plug>(textobj-between-i)-
+omap a- <Plug>(textobj-between-a)-
+xmap i- <Plug>(textobj-between-i)-
+xmap a- <Plug>(textobj-between-a)-
+" }}}3
+
+" }}}2
+
 " Edit & Move & Search {{{2
 
 " accelerated-jk {{{3
@@ -2113,10 +2137,6 @@ endif
 
 " operator-convert-case {{{3
 nmap <silent> <Leader>cl <Plug>(operator-convert-case-loop)
-" }}}3
-
-" operator-replace {{{3
-map _ <Plug>(operator-replace)
 " }}}3
 
 " qfreplace {{{3
