@@ -1620,7 +1620,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
 
   "" vim
   let s:rules += [
-  \ { 'filetype': ['vim'], 'char': '{', 'at': '^".*{\%#$', 'input': '{{<CR><CR>"<Space>}}}<Up><Up>'},
+  \ { 'filetype': ['vim'], 'char': '{', 'at': '^".*{\%#$', 'input': '{{<CR><CR>"<Space>}}}<Up><Up><End>'},
   \ ]
 
   "" shell
