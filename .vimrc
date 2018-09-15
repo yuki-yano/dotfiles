@@ -2550,20 +2550,22 @@ if dein#tap('lightline.vim')
 
   function! Lightline_mode() abort
     let l:win = getwininfo(win_getid())[0]
-    return exists('g:VM') && g:VM.is_active ? '' :
+    return has_key(s:lightline_ft_to_mode_hash, &filetype) ? '' :
     \ l:win.loclist ? '' :
     \ l:win.quickfix ? '' :
-    \ has_key(s:lightline_ft_to_mode_hash, &filetype) ? '' :
     \ lightline#mode()
   endfunction
 
   function! Lightline_special_mode() abort
+    let l:special_mode = get(s:lightline_ft_to_mode_hash, &filetype, '')
     let l:win = getwininfo(win_getid())[0]
-    return exists('g:VM') && g:VM.is_active ? 'VISUAL MULTI' :
+    return l:special_mode !=# '' ? l:special_mode :
+    \ exists('g:VM') && g:VM.is_active ? 'VISUAL MULTI' :
+    \ anzu#search_status() !=# '' ? 'Anzu' :
+    \ Lightline_mode() !=# '' ? '' :
     \ l:win.loclist ? 'Location List' :
     \ l:win.quickfix ? 'QuickFix' :
-    \ anzu#search_status() !=# '' ? 'Anzu' :
-    \ get(s:lightline_ft_to_mode_hash, &filetype, '')
+    \ ''
   endfunction
 
   function! Lightline_filepath() abort
