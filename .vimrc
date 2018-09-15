@@ -188,6 +188,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-textobj-user')
   call dein#add('kana/vim-operator-user')
 
+  call dein#add('AndrewRadev/sideways.vim') " ia aa
   call dein#add('kana/vim-textobj-entire') " ie ae
   call dein#add('kana/vim-textobj-function') " if af
   call dein#add('kana/vim-textobj-indent') " ai ii
@@ -2199,6 +2200,15 @@ if dein#tap('vim-sandwich')
   \ },
   \ ]
 endif
+" }}}3
+
+" sideways {{{3
+nnoremap <silent> <nowait> < :SidewaysLeft<CR>
+nnoremap <silent> <nowait> > :SidewaysRight<CR>
+omap aa <Plug>SidewaysArgumentTextobjA
+xmap aa <Plug>SidewaysArgumentTextobjA
+omap ia <Plug>SidewaysArgumentTextobjI
+xmap ia <Plug>SidewaysArgumentTextobjI
 " }}}3
 
 " skk {{{3
