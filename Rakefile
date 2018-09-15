@@ -1,6 +1,6 @@
-SRC_DIR        = File.dirname(File.expand_path(__FILE__))
-ZPLUGIN_DIR    = File.join(ENV['HOME'], '.zplugin')
-ZGEN_DIR       = File.join(ENV['HOME'], '.zsh/zgen')
+SRC_DIR       = File.dirname(File.expand_path(__FILE__))
+ZPLUGIN_DIR   = File.join(ENV['HOME'], '.zplugin')
+ZGEN_DIR      = File.join(ENV['HOME'], '.zsh/zgen')
 DOTFILES_SRCS = %w[
   .Xdefaults
   .agignore
