@@ -2082,6 +2082,7 @@ if dein#tap('vim-easymotion') && dein#tap('clever-f.vim')
 endif
 " }}}3
 
+" expand-region {{{3
 let g:expand_region_text_objects = {
 \ 'iw': 0,
 \ 'iW': 0,
