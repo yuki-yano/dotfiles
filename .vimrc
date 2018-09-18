@@ -2836,6 +2836,9 @@ let g:automatic_config = [
 \   'match': {
 \     'filetype': 'gina-log',
 \   },
+\   'set': {
+\     'move': 'right',
+\   },
 \ },
 \ {
 \   'match': {
