@@ -446,6 +446,16 @@ nnoremap <Down>  :resize +1<CR>
 "" Macro
 nnoremap Q @q
 
+"" Multiple Cursors in 500 bytes of Vimscript!
+"" http://www.kevinli.co/posts/2017-01-19-multiple-cursors-in-500-bytes-of-vimscript/
+let g:mc = "y/\\V\<C-r>=escape(@\", '/')\<CR>\<CR>"
+
+nnoremap cn *``cgn
+nnoremap cN *``cgN
+
+vnoremap <expr> cn g:mc . "``cgn"
+vnoremap <expr> cN g:mc . "``cgN"
+
 "" regexp
 nnoremap <Leader>R "syiw:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
 nnoremap <Leader>r :%s/\v//g<Left><Left><Left>
@@ -3045,35 +3055,35 @@ nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus <Bar> 
 " }}}
 
 " keymaps {{{
-function! Set_default_keymap() abort
-  " let g:keymap = 'Default'
-  call lightline#update()
-endfunction
-
-function! Set_quickfix_keymap() abort
-  " let g:keymap = 'QuickFix'
-  call lightline#update()
-
-  nnoremap <silent> cp :<C-u>cprev<CR>
-  nnoremap <silent> cn :<C-u>cnext<CR>
-endfunction
-
-function! Set_locationlist_keymap() abort
-  " let g:keymap = 'LocationList'
-  call lightline#update()
-
-  nnoremap <silent> cp :<C-u>lprev<CR>
-  nnoremap <silent> cn :<C-u>lnext<CR>
-endfunction
-
-AutoCmd FileType qf
-\ if getwininfo(win_getid())[0].loclist |
-\   call Set_default_keymap()      |
-\   call Set_locationlist_keymap() |
-\ elseif getwininfo(win_getid())[0].quickfix |
-\   call Set_default_keymap()  |
-\   call Set_quickfix_keymap() |
-\ endif
+" function! Set_default_keymap() abort
+"   let g:keymap = 'Default'
+"   call lightline#update()
+" endfunction
+"
+" function! Set_quickfix_keymap() abort
+"   let g:keymap = 'QuickFix'
+"   call lightline#update()
+"
+"   nnoremap <silent> cp :<C-u>cprev<CR>
+"   nnoremap <silent> cn :<C-u>cnext<CR>
+" endfunction
+"
+" function! Set_locationlist_keymap() abort
+"   let g:keymap = 'LocationList'
+"   call lightline#update()
+"
+"   nnoremap <silent> cp :<C-u>lprev<CR>
+"   nnoremap <silent> cn :<C-u>lnext<CR>
+" endfunction
+"
+" AutoCmd FileType qf
+" \ if getwininfo(win_getid())[0].loclist |
+" \   call Set_default_keymap()      |
+" \   call Set_locationlist_keymap() |
+" \ elseif getwininfo(win_getid())[0].quickfix |
+" \   call Set_default_keymap()  |
+" \   call Set_quickfix_keymap() |
+" \ endif
 " }}}
 
 " }}}1
