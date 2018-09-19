@@ -128,6 +128,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('autozimu/LanguageClient-neovim', {'rev': 'next', 'build': 'bash install.sh'})
     call dein#add('carlitux/deoplete-ternjs',       {'lazy': 1, 'on_ft': 'javascript'})
     call dein#add('machakann/vim-Verdin',           {'lazy': 1, 'on_ft': 'vim'})
+    call dein#add('takkii/Bignyanco',               {'lazy': 1, 'on_ft': 'ruby'})
     call dein#add('wokalski/autocomplete-flow',     {'lazy': 1, 'on_ft': 'javascript'})
     call dein#add('zchee/deoplete-jedi',            {'lazy': 1, 'on_ft': 'python'})
 
@@ -1395,6 +1396,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   call deoplete#custom#source('flow',           'rank',  700)
   call deoplete#custom#source('jedi',           'rank',  700)
   call deoplete#custom#source('go',             'rank',  700)
+  call deoplete#custom#source('Bignyanco',      'rank',  650)
   call deoplete#custom#source('syntax',         'rank',  600)
   call deoplete#custom#source('file',           'rank',  600)
   call deoplete#custom#source('tag',            'rank',  500)
@@ -1416,34 +1418,36 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   call deoplete#custom#source('dictionary',     'mark', '[dict]')
   call deoplete#custom#source('look',           'mark', '[look]')
 
-  call deoplete#custom#source('typescript',     'mark', '[TS]')
+  call deoplete#custom#source('typescript',     'mark', '[TypeScript]')
   call deoplete#custom#source('tern',           'mark', '[tern]')
-  call deoplete#custom#source('flow',           'mark', '[flow]')
+  call deoplete#custom#source('flow',           'mark', '[Flow]')
+  call deoplete#custom#source('Bignyanco',      'mark', '[NeoDict]')
   call deoplete#custom#source('jedi',           'mark', '[jedi]')
-  call deoplete#custom#source('go',             'mark', '[go]')
+  call deoplete#custom#source('go',             'mark', '[Go]')
   call deoplete#custom#source('vim',            'mark', '[vim]')
   call deoplete#custom#source('tmux-complete',  'mark', '[tmux]')
 
   " max_candidates
   call deoplete#custom#source('neosnippet',     'max_candidates', 3)
-  call deoplete#custom#source('LanguageClient', 'max_candidates', 10)
-  call deoplete#custom#source('typescript',     'max_candidates', 10)
-  call deoplete#custom#source('vim',            'max_candidates', 10)
-  call deoplete#custom#source('around',         'max_candidates', 10)
-  call deoplete#custom#source('buffer',         'max_candidates', 10)
-  call deoplete#custom#source('gtags',          'max_candidates', 10)
-  call deoplete#custom#source('omni',           'max_candidates', 10)
-  call deoplete#custom#source('tern',           'max_candidates', 10)
-  call deoplete#custom#source('flow',           'max_candidates', 10)
-  call deoplete#custom#source('jedi',           'max_candidates', 10)
-  call deoplete#custom#source('go',             'max_candidates', 10)
-  call deoplete#custom#source('syntax',         'max_candidates', 10)
-  call deoplete#custom#source('file',           'max_candidates', 10)
-  call deoplete#custom#source('tag',            'max_candidates', 10)
-  call deoplete#custom#source('member',         'max_candidates', 10)
-  call deoplete#custom#source('tmux-complete',  'max_candidates', 10)
-  call deoplete#custom#source('dictionary',     'max_candidates', 10)
-  call deoplete#custom#source('look',           'max_candidates', 10)
+  call deoplete#custom#source('LanguageClient', 'max_candidates', 5)
+  call deoplete#custom#source('typescript',     'max_candidates', 5)
+  call deoplete#custom#source('vim',            'max_candidates', 5)
+  call deoplete#custom#source('around',         'max_candidates', 5)
+  call deoplete#custom#source('buffer',         'max_candidates', 5)
+  call deoplete#custom#source('gtags',          'max_candidates', 5)
+  call deoplete#custom#source('omni',           'max_candidates', 5)
+  call deoplete#custom#source('tern',           'max_candidates', 5)
+  call deoplete#custom#source('flow',           'max_candidates', 5)
+  call deoplete#custom#source('Bignyanco',      'max_candidates', 5)
+  call deoplete#custom#source('jedi',           'max_candidates', 5)
+  call deoplete#custom#source('go',             'max_candidates', 5)
+  call deoplete#custom#source('syntax',         'max_candidates', 5)
+  call deoplete#custom#source('file',           'max_candidates', 5)
+  call deoplete#custom#source('tag',            'max_candidates', 5)
+  call deoplete#custom#source('member',         'max_candidates', 5)
+  call deoplete#custom#source('tmux-complete',  'max_candidates', 5)
+  call deoplete#custom#source('dictionary',     'max_candidates', 5)
+  call deoplete#custom#source('look',           'max_candidates', 5)
 
   let s:deoplete_default_sources = ['neosnippet', 'gtags', 'tag', 'around', 'buffer', 'omni', 'member', 'syntax', 'file', 'dictionary', 'look', 'tmux-complete']
   let s:deoplete_sources                   = {}
@@ -1452,8 +1456,8 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   let s:deoplete_sources['typescript']     = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['typescript.tsx'] = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['vue']            = s:deoplete_default_sources + ['LanguageClient']
-  let s:deoplete_sources['ruby']           = s:deoplete_default_sources + ['LanguageClient']
-  let s:deoplete_sources['eruby']          = s:deoplete_default_sources
+  let s:deoplete_sources['ruby']           = s:deoplete_default_sources + ['LanguageClient', 'Bignyanco']
+  let s:deoplete_sources['eruby']          = s:deoplete_default_sources + ['Bignyanco']
   let s:deoplete_sources['python']         = s:deoplete_default_sources + ['jedi']
   let s:deoplete_sources['go']             = s:deoplete_default_sources + ['go']
   let s:deoplete_sources['rust']           = s:deoplete_default_sources
