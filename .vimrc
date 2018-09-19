@@ -520,12 +520,13 @@ set autoindent
 set backspace=indent,eol,start
 set breakindent
 set expandtab
-set formatoptions+=jBn
-set formatoptions-=ro
 set nostartofline
 set shiftwidth=2
 set smartindent
 set tabstop=2
+
+AutoCmd FileType * setlocal formatoptions-=ro
+AutoCmd FileType * setlocal formatoptions+=jBn
 
 "" viminfo
 set viminfo='1000,:1000
