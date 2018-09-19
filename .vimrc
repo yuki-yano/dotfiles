@@ -3060,7 +3060,8 @@ nnoremap <silent> <Leader><C-w> :WinResizerStartResize<CR>
 " Correct Interference {{{1
 
 " Mapping <Esc><Esc> {{{2
-nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus <Bar> call Set_default_keymap()<CR>
+" nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus <Bar> call Set_default_keymap()<CR>
+nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus<CR>
 " }}}
 
 " keymaps {{{
