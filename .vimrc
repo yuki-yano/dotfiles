@@ -1315,6 +1315,7 @@ command! FzfOpenGf call s:fzf_open_gf()
 AlterCommand! <cmdwin> fg[rep] ProjectGrepPreview
 
 let g:fzf_preview_filelist_command = 'rg --files --hidden --follow --glob "!.git/*"'
+let g:fzf_preview_grep_preview_cmd = 'preview_fzf_grep'
 
 nnoremap <silent> <Leader>p :<C-u>ProjectFilesPreview<CR>
 nnoremap <silent> <Leader>g :<C-u>GitFilesPreview<CR>
