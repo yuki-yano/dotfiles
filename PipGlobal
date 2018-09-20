@@ -13,7 +13,6 @@ pathlib
 ptpython
 pygments-style-solarized
 sexpdata
-solargraph-utils.py
 sqlparse
 typing
 vim-vint
