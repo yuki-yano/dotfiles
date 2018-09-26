@@ -33,6 +33,7 @@ function _fzf-git-completion() {
                   case "$cmd5" in
                     '')
                       _fzf_complete_git_reset_file
+                      return
                   esac
                   ;;
               esac
@@ -45,6 +46,7 @@ function _fzf-git-completion() {
               case "$cmd5" in
                 '')
                   _fzf_complete_git_reset_file
+                  return
               esac
               ;;
             [a-zA-Z]* )
