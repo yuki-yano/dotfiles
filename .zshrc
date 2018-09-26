@@ -881,7 +881,7 @@ function env_rehash() {
 
 # Loading fzf {{{
 
-source ~/.zsh/misc/fzf_completion.zsh
+source /usr/local/opt/fzf/shell/completion.zsh
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 export FZF_DEFAULT_OPTS='--reverse'
 export FZF_COMPLETION_TRIGGER=';'
@@ -908,15 +908,13 @@ if [[ ! -f ~/.zsh/zgen/zgen.zsh.zwc ]] || [[ ~/.zsh/zgen/zgen.zsh -nt ~/.zsh/zge
   zcompile  ~/.zsh/zgen/zgen.zsh
 fi
 
+# fzf
+if [[ ! -f /usr/local/opt/fzf/shell/completion.zsh ]] || [[ /usr/local/opt/fzf/shell/completion.zsh -nt /usr/local/opt/fzf/shell/completion.zsh.zwc ]]; then
+  zcompile /usr/local/opt/fzf/shell/completion.zsh
+fi
+
 # fzf_completions
 for f in $(find ~/.zsh/fzf_completions/ -name "*.zsh"); do
-  if [[ ! -f "${f}.zwc" ]] || [[ $f -nt "${f}.zwc" ]]; then
-    zcompile "${f}"
-  fi
-done
-
-# misc
-for f in $(find ~/.zsh/misc/ -name "*.zsh"); do
   if [[ ! -f "${f}.zwc" ]] || [[ $f -nt "${f}.zwc" ]]; then
     zcompile "${f}"
   fi
