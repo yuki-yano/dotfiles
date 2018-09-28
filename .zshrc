@@ -21,42 +21,6 @@ zplugin light b4b4r07/zsh-vimode-visual
 zplugin light yukiycino-dotfiles/zsh-abbreviations
 zplugin light yukiycino-dotfiles/zsh-extra-abbrev
 zplugin light yukiycino-dotfiles/zsh-show-buffer-stack
-
-zplugin ice from"gh-r" as"program" bpick"*darwin*" mv"*darwin*/ccat -> ${ZPFX}/bin/ccat"
-zplugin light jingweno/ccat
-
-zplugin ice from"gh-r" as"program" bpick"*darwin*" mv"*darwin*/bat -> ${ZPFX}/bin/bat"
-zplugin light sharkdp/bat
-
-zplugin ice from"gh-r" as"program" bpick"*macos*" mv"exa-macos-x86_64 -> ${ZPFX}/bin/exa"
-zplugin light ogham/exa
-
-zplugin ice from"gh-r" as"program" bpick"*darwin*" mv"*darwin*/fd -> ${ZPFX}/bin/fd"
-zplugin light sharkdp/fd
-
-zplugin ice from"gh-r" as"program" bpick"*apple-darwin*" mv"ripgrep*/rg -> ${ZPFX}/bin/rg"
-zplugin light BurntSushi/ripgrep
-
-zplugin ice as"program" depth"1" atclone'./build.sh && mv ag ${ZPFX}/bin/ag' atpull'%atclone'
-zplugin light ggreer/the_silver_searcher
-
-zplugin ice as"program" depth"1" atclone'perl Makefile.PL; make' atpull'%atclone' pick"tmuximum"
-zplugin light beyondgrep/ack2
-
-zplugin ice from"gh-r" as"program" bpick"*darwin_amd*" mv"*darwin*/ghq -> ${ZPFX}/bin/ghq"
-zplugin light motemen/ghq
-
-zplugin ice as"program" depth"1" make"prefix=$ZPFX install" atpull'%atclone'
-zplugin light jonas/tig
-
-zplugin ice from"gh-r" as"program" bpick"*darwin*" mv"*darwin*/bin/hub -> ${ZPFX}/bin/hub"
-zplugin light github/hub
-
-zplugin ice from"gh-r" as"program" bpick"*osx*" mv"jq-osx-amd64 -> ${ZPFX}/bin/jq"
-zplugin light stedolan/jq
-
-zplugin ice from"gh-r" as"program" bpick"*darwin-amd64*" mv"gron -> ${ZPFX}/bin/gron"
-zplugin light tomnomnom/gron
 # }}}
 
 # async loading {{{
@@ -75,7 +39,7 @@ zplugin light mafredri/zsh-async
 zplugin ice lucid wait"0" depth"1" blockf
 zplugin light zsh-users/zsh-completions
 
-zplugin ice lucid wait'0' depth"1"
+zplugin ice lucid wait"0" depth"1"
 zplugin light 39e/zsh-completions-anyenv
 
 # fuzzy finder
@@ -89,50 +53,89 @@ zplugin ice lucid wait"0" from"gh-r" as"program" mv"peco_darwin_amd64/peco -> ${
 zplugin light peco/peco
 
 # command
+zplugin ice from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/ccat -> ${ZPFX}/bin/ccat"
+zplugin light jingweno/ccat
+
+zplugin ice from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/bat -> ${ZPFX}/bin/bat"
+zplugin light sharkdp/bat
+
+zplugin ice from"gh-r" wait"0" as"program" bpick"*macos*" mv"exa-macos-x86_64 -> ${ZPFX}/bin/exa"
+zplugin light ogham/exa
+
+zplugin ice from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/fd -> ${ZPFX}/bin/fd"
+zplugin light sharkdp/fd
+
+zplugin ice from"gh-r" wait"0" as"program" bpick"*apple-darwin*" mv"ripgrep*/rg -> ${ZPFX}/bin/rg"
+zplugin light BurntSushi/ripgrep
+
+zplugin ice as"program" wait"0" depth"1" atclone'./build.sh && mv ag ${ZPFX}/bin/ag' atpull'%atclone'
+zplugin light ggreer/the_silver_searcher
+
+zplugin ice as"program" wait"0" depth"1" atclone'perl Makefile.PL; make' atpull'%atclone' pick"ack"
+zplugin light beyondgrep/ack2
+
+zplugin ice from"gh-r" wait"0" as"program" bpick"*darwin_amd*" mv"*darwin*/ghq -> ${ZPFX}/bin/ghq"
+zplugin light motemen/ghq
+
+zplugin ice as"program" wait"0" depth"1" make"prefix=$ZPFX install" atpull'%atclone'
+zplugin light jonas/tig
+
+zplugin ice from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/bin/hub -> ${ZPFX}/bin/hub"
+zplugin light github/hub
+
+zplugin ice from"gh-r" wait"0" as"program" bpick"*osx*" mv"jq-osx-amd64 -> ${ZPFX}/bin/jq"
+zplugin light stedolan/jq
+
+zplugin ice from"gh-r" wait"0" as"program" bpick"*darwin-amd64*" mv"gron -> ${ZPFX}/bin/gron"
+zplugin light tomnomnom/gron
+
 zplugin ice lucid wait"0" depth"1" as"program" src"tmuximum.plugin.zsh" atload"set_tmuximum" pick"tmuximum"
 zplugin light yuki-ycino/tmuximum
 
 zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd*" mv"memo -> ${ZPFX}/bin/memo"
 zplugin light mattn/memo
 
-zplugin ice lucid wait'0' depth"1" as"program" atclone'go build -o recc && mv recc ${ZPFX}/bin/recc' atpull'%atclone'
+zplugin ice lucid wait"0" depth"1" as"program" atclone'go build -o recc && mv recc ${ZPFX}/bin/recc' atpull'%atclone'
 zplugin light pocke/recc
 
-zplugin ice lucid wait'0' depth"1" as"program" atclone'go build -o ptmux && mv ptmux ${ZPFX}/bin/ptmux' atpull'%atclone'
+zplugin ice lucid wait"0" depth"1" as"program" atclone'go build -o ptmux && mv ptmux ${ZPFX}/bin/ptmux' atpull'%atclone'
 zplugin light pocke/ptmux
 
-zplugin ice lucid wait"2" depth"1" lucid as"program" pick"bin/git-dsf"
+zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd*" mv"ghkw*/ghkw -> ${ZPFX}/bin/ghkw"
+zplugin light kyoshidajp/ghkw
+
+zplugin ice lucid wait"0" depth"1" lucid as"program" pick"bin/git-dsf"
 zplugin light zdharma/zsh-diff-so-fancy
 
-zplugin ice lucid wait"2" depth"1" as"program" src"git-sync.sh"
+zplugin ice lucid wait"0" depth"1" as"program" src"git-sync.sh"
 zplugin light caarlos0/zsh-git-sync
 
-zplugin ice lucid wait"2" depth"1" as"program" atclone'perl Makefile.PL PREFIX=$ZPFX' atpull'%atclone' make'install' pick"$ZPFX/bin/git-cal"
+zplugin ice lucid wait"0" depth"1" as"program" atclone'perl Makefile.PL PREFIX=$ZPFX' atpull'%atclone' make'install' pick"$ZPFX/bin/git-cal"
 zplugin light k4rthik/git-cal
 
-zplugin ice lucid wait"2" from"gh-r" as"program" bpick"*darwin*" mv"ctop* -> ${ZPFX}/bin/ctop"
+zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin*" mv"ctop* -> ${ZPFX}/bin/ctop"
 zplugin light bcicen/ctop
 
-zplugin ice lucid wait"2" depth"1" as"program" mv"docker-clean -> ${ZPFX}/bin/docker-clean"
+zplugin ice lucid wait"0" depth"1" as"program" mv"docker-clean -> ${ZPFX}/bin/docker-clean"
 zplugin light ZZROTDesign/docker-clean
 
-zplugin ice lucid wait"2" from"gh-r" as"program" bpick"*darwin*" mv"vegeta -> ${ZPFX}/bin/vegeta"
+zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin*" mv"vegeta -> ${ZPFX}/bin/vegeta"
 zplugin light tsenart/vegeta
 
-zplugin ice lucid wait'2' from"gh-r" as"program" bpick"*darwin*" atinit"test ! -f ${ZPFX}/bin/shfmt && chmod +x shfmt* && mv shfmt* ${ZPFX}/bin/shfmt"
+zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin*" atinit"test ! -f ${ZPFX}/bin/shfmt && chmod +x shfmt* && mv shfmt* ${ZPFX}/bin/shfmt"
 zplugin light mvdan/sh
 
-zplugin ice lucid wait"2" depth"1"
+zplugin ice lucid wait"0" depth"1"
 zplugin snippet OMZ::plugins/extract/extract.plugin.zsh
 
-zplugin ice lucid wait"2" depth"1"
+zplugin ice lucid wait"0" depth"1"
 zplugin light RobSis/zsh-completion-generator
 
 # util
-zplugin ice lucid wait"2" depth"1"
+zplugin ice lucid wait"0" depth"1"
 zplugin light yukiycino-dotfiles/fancy-ctrl-z
 
-zplugin ice lucid wait"2"
+zplugin ice lucid wait"0"
 zplugin snippet 'https://github.com/knu/zsh-git-escape-magic/blob/master/git-escape-magic'
 
 # zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cdd*]} ]]'
