@@ -53,40 +53,40 @@ zplugin ice lucid wait"0" from"gh-r" as"program" mv"peco_darwin_amd64/peco -> ${
 zplugin light peco/peco
 
 # command
-zplugin ice from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/ccat -> ${ZPFX}/bin/ccat"
+zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/ccat -> ${ZPFX}/bin/ccat"
 zplugin light jingweno/ccat
 
-zplugin ice from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/bat -> ${ZPFX}/bin/bat"
+zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/bat -> ${ZPFX}/bin/bat"
 zplugin light sharkdp/bat
 
-zplugin ice from"gh-r" wait"0" as"program" bpick"*macos*" mv"exa-macos-x86_64 -> ${ZPFX}/bin/exa"
+zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*macos*" mv"exa-macos-x86_64 -> ${ZPFX}/bin/exa"
 zplugin light ogham/exa
 
-zplugin ice from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/fd -> ${ZPFX}/bin/fd"
+zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/fd -> ${ZPFX}/bin/fd"
 zplugin light sharkdp/fd
 
-zplugin ice from"gh-r" wait"0" as"program" bpick"*apple-darwin*" mv"ripgrep*/rg -> ${ZPFX}/bin/rg"
+zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*apple-darwin*" mv"ripgrep*/rg -> ${ZPFX}/bin/rg"
 zplugin light BurntSushi/ripgrep
 
-zplugin ice as"program" wait"0" depth"1" atclone'./build.sh && mv ag ${ZPFX}/bin/ag' atpull'%atclone'
+zplugin ice lucid as"program" wait"0" depth"1" atclone'./build.sh && mv ag ${ZPFX}/bin/ag' atpull'%atclone'
 zplugin light ggreer/the_silver_searcher
 
-zplugin ice as"program" wait"0" depth"1" atclone'perl Makefile.PL; make' atpull'%atclone' pick"ack"
+zplugin ice lucid as"program" wait"0" depth"1" atclone'perl Makefile.PL; make' atpull'%atclone' pick"ack"
 zplugin light beyondgrep/ack2
 
-zplugin ice from"gh-r" wait"0" as"program" bpick"*darwin_amd*" mv"*darwin*/ghq -> ${ZPFX}/bin/ghq"
+zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin_amd*" mv"*darwin*/ghq -> ${ZPFX}/bin/ghq"
 zplugin light motemen/ghq
 
-zplugin ice as"program" wait"0" depth"1" make"prefix=$ZPFX install" atpull'%atclone'
+zplugin ice lucid as"program" wait"0" depth"1" make"prefix=$ZPFX install" atpull'%atclone'
 zplugin light jonas/tig
 
-zplugin ice from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/bin/hub -> ${ZPFX}/bin/hub"
+zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/bin/hub -> ${ZPFX}/bin/hub"
 zplugin light github/hub
 
-zplugin ice from"gh-r" wait"0" as"program" bpick"*osx*" mv"jq-osx-amd64 -> ${ZPFX}/bin/jq"
+zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*osx*" mv"jq-osx-amd64 -> ${ZPFX}/bin/jq"
 zplugin light stedolan/jq
 
-zplugin ice from"gh-r" wait"0" as"program" bpick"*darwin-amd64*" mv"gron -> ${ZPFX}/bin/gron"
+zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin-amd64*" mv"gron -> ${ZPFX}/bin/gron"
 zplugin light tomnomnom/gron
 
 zplugin ice lucid wait"0" depth"1" as"program" src"tmuximum.plugin.zsh" atload"set_tmuximum" pick"tmuximum"
