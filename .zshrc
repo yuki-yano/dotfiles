@@ -884,7 +884,7 @@ function env_rehash() {
 
 # Loading fzf {{{
 
-source /usr/local/opt/fzf/shell/completion.zsh
+source ~/.zplugin/plugins/junegunn---fzf/shell/completion.zsh
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 export FZF_DEFAULT_OPTS='--reverse'
 export FZF_COMPLETION_TRIGGER=';'
@@ -906,14 +906,20 @@ if [[ ! -f ~/.zshrc.zwc ]] || [[ "$(readlink ~/.zshrc)" -nt ~/.zshrc.zwc ]]; the
   zcompile ~/.zshrc
 fi
 
-# zgen
-if [[ ! -f ~/.zsh/zgen/zgen.zsh.zwc ]] || [[ ~/.zsh/zgen/zgen.zsh -nt ~/.zsh/zgen/zgen.zsh.zwc ]]; then
-  zcompile  ~/.zsh/zgen/zgen.zsh
+# zplugin
+if [[ ! -f ~/.zplugin/bin/zplugin.zsh ]] || [[ ~/.zplugin/bin/zplugin.zsh -nt ~/.zplugin/bin/zplugin.zsh.zwc ]]; then
+  zcompile ~/.zplugin/bin/zplugin.zsh
 fi
 
+
+# zgen
+# if [[ ! -f ~/.zsh/zgen/zgen.zsh.zwc ]] || [[ ~/.zsh/zgen/zgen.zsh -nt ~/.zsh/zgen/zgen.zsh.zwc ]]; then
+#   zcompile  ~/.zsh/zgen/zgen.zsh
+# fi
+
 # fzf
-if [[ ! -f /usr/local/opt/fzf/shell/completion.zsh ]] || [[ /usr/local/opt/fzf/shell/completion.zsh -nt /usr/local/opt/fzf/shell/completion.zsh.zwc ]]; then
-  zcompile /usr/local/opt/fzf/shell/completion.zsh
+if [[ ! -f ~/.zplugin/plugins/junegunn---fzf/shell/completion.zsh ]] || [[ ~/.zplugin/plugins/junegunn---fzf/shell/completion.zsh -nt ~/.zplugin/plugins/junegunn---fzf/shell/completion.zsh.zwc ]]; then
+  zcompile ~/.zplugin/plugins/junegunn---fzf/shell/completion.zsh
 fi
 
 # fzf_completions
