@@ -144,36 +144,18 @@ zplugin snippet 'https://github.com/knu/zsh-git-escape-magic/blob/master/git-esc
 
 # zsh-async {{{
 function set_async() {
-#   async_init
-#
-#   Async update git prompt
-#   async_start_worker git_prompt_worker -n
-#   function git_prompt_callback() {
-#     GIT_STATUS=$(git-prompt zsh)
-#     async_stop_worker async_start_worker
-#     async_unregister_callback async_start_worker
-#   }
-#   function kick_git_prompt_worker() {
-#     async_job git_prompt_worker true
-#   }
-#   async_register_callback git_prompt_worker git_prompt_callback
-#   add-zsh-hook precmd kick_git_prompt_worker
-#   cd $current_dir; kick_git_prompt_worker
-#
-#   Update tmux window title to directory name
-#   async_start_worker tmux_dir_worker -n
-#   function set_current_dir_to_tmux() {
-#     tmux rename-window "${PWD:t} " > /dev/null
-#   }
-#   function kick_tmux_dir_worker() {
-#     if [[ ! -z ${TMUX} ]]; then
-#       async_flush_jobs tmux_dir_worker
-#       async_job tmux_dir_worker true
-#     fi
-#   }
-#   async_register_callback tmux_dir_worker set_current_dir_to_tmux
-#   add-zsh-hook chpwd kick_tmux_dir_worker
-#   kick_tmux_dir_worker
+  async_init
+  async_start_worker git_prompt_worker -n
+  function git_prompt_callback() {
+    GIT_STATUS=$(git-prompt zsh)
+    zle reset-prompt
+  }
+  function kick_git_prompt_worker() {
+    async_job git_prompt_worker true
+  }
+  async_register_callback git_prompt_worker git_prompt_callback
+  add-zsh-hook precmd kick_git_prompt_worker
+  cd $current_dir; kick_git_prompt_worker
 }
 # current_dir=$(pwd)
 # }}}
@@ -588,10 +570,10 @@ PROMPT='
 %F{blue}%~%f $GIT_STATUS
 ${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
 
-function update_git_prompt() {
-  GIT_STATUS=$(git-prompt)
-}
-add-zsh-hook precmd update_git_prompt
+# function update_git_prompt() {
+#   GIT_STATUS=$(git-prompt)
+# }
+# add-zsh-hook precmd update_git_prompt
 
 # TMOUT=1
 # TRAPALRM() {
