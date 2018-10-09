@@ -1457,7 +1457,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   let s:deoplete_sources['typescript']     = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['typescript.tsx'] = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['vue']            = s:deoplete_default_sources + ['LanguageClient']
-  let s:deoplete_sources['ruby']           = s:deoplete_default_sources + ['LanguageClient', 'Bignyanco']
+  let s:deoplete_sources['ruby']           = s:deoplete_default_sources + ['Bignyanco']
   let s:deoplete_sources['eruby']          = s:deoplete_default_sources + ['Bignyanco']
   let s:deoplete_sources['python']         = s:deoplete_default_sources + ['jedi']
   let s:deoplete_sources['go']             = s:deoplete_default_sources + ['go']
@@ -1714,7 +1714,6 @@ let g:LanguageClient_autoStart = 1
 let g:LanguageClient_serverCommands = {
 \ 'javascript':      ['javascript-typescript-stdio'],
 \ 'vue':             ['vls'],
-\ 'ruby':            ['solargraph', 'stdio'],
 \ 'html':            [],
 \ 'css':             [],
 \ }
