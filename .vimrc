@@ -59,6 +59,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('MaxMEllon/vim-jsx-pretty',               {'lazy': 1, 'on_ft': ['javascript', 'vue']})
   call dein#add('SpaceVim/gtags.vim')
   call dein#add('Vimjas/vim-python-pep8-indent',          {'lazy': 1, 'on_ft': 'python'})
+  call dein#add('aklt/plantuml-syntax',                   {'lazy': 1, 'on_ft': 'plantuml'})
   call dein#add('ap/vim-css-color',                       {'lazy': 1, 'on_ft': ['css', 'sass', 'scss', 'vue']})
   call dein#add('cakebaker/scss-syntax.vim',              {'lazy': 1, 'on_ft': ['sass', 'scss', 'vue']})
   call dein#add('cespare/vim-toml',                       {'lazy': 1, 'on_ft': 'toml'})
@@ -1084,6 +1085,11 @@ let g:vim_markdown_new_list_item_indent = 2
 
 " marked {{{3
 AlterCommand! <cmdwin> mark[ed] MarkedOpen
+" }}}3
+
+" plantuml {{{3
+AlterCommand! <cmdwin> uml OpenUml
+command! OpenUml :!open -a /Applications/Google\ Chrome.app %
 " }}}3
 
 " rust {{{3
