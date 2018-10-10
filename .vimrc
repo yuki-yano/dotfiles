@@ -3041,12 +3041,12 @@ if dein#tap('vim-submode')
   call submode#map('jump', 'n', '', ';', 'g;')
 
   "" edgemotion
-  call submode#enter_with('edgemotion', 'n', 'e', '<Leader>j', 'edgemotion#move(1)')
-  call submode#enter_with('edgemotion', 'n', 'e', '<Leader>k', 'edgemotion#move(0)')
-  call submode#map('edgemotion', 'n', 'e', 'j',         'edgemotion#move(1)')
-  call submode#map('edgemotion', 'n', 'e', 'k',         'edgemotion#move(0)')
-  call submode#map('edgemotion', 'n', 'e', '<Leader>j', 'edgemotion#move(1)')
-  call submode#map('edgemotion', 'n', 'e', '<Leader>k', 'edgemotion#move(0)')
+  call submode#enter_with('edgemotion-j', 'n', 'e', '<Leader>j', 'edgemotion#move(1)')
+  call submode#enter_with('edgemotion-k', 'n', 'e', '<Leader>k', 'edgemotion#move(0)')
+  call submode#map('edgemotion-j', 'n', 'e', 'j',         'edgemotion#move(1)')
+  call submode#map('edgemotion-k', 'n', 'e', 'k',         'edgemotion#move(0)')
+  call submode#map('edgemotion-j', 'n', 'e', '<Leader>j', 'edgemotion#move(1)')
+  call submode#map('edgemotion-k', 'n', 'e', '<Leader>k', 'edgemotion#move(0)')
 endif
 
 " }}}3
