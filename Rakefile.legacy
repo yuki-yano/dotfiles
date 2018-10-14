@@ -73,3 +73,11 @@ OSX_SCRIPTS = FileList['osx/**/*.sh']
 #   end
 # end
 
+# namespace :go do
+#   desc 'Install Go packages'
+#   task install: 'Gofile' do
+#     File.readlines('Gofile').map(&:chomp).each do |package|
+#       sh "go get #{package}"
+#     end
+#   end
+# end

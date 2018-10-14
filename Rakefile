@@ -170,15 +170,6 @@ namespace :brew do
   end
 end
 
-namespace :go do
-  desc 'Install Go packages'
-  task install: 'Gofile' do
-    File.readlines('Gofile').map(&:chomp).each do |package|
-      sh "go get #{package}"
-    end
-  end
-end
-
 namespace :mas do
   desc 'Install AppStore packages'
   task install: 'Masfile' do
