@@ -2,53 +2,6 @@
   "title": "Settings related to IME",
   "rules": [
     {
-      "description": "Switch IME when command key is pressed",
-      "manipulators": [
-        {
-          "type": "basic",
-          "from": {
-            "key_code": "left_command",
-            "modifiers": {
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "left_command"
-            }
-          ],
-          "to_if_alone": [
-            {
-              "key_code": "japanese_eisuu"
-            }
-          ]
-        },
-        {
-          "type": "basic",
-          "from": {
-            "key_code": "right_command",
-            "modifiers": {
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "right_command"
-            }
-          ],
-          "to_if_alone": [
-            {
-              "key_code": "japanese_kana"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "description": "Press ESC to enter Japanese input as English characters",
       "manipulators": [
         {
@@ -56,17 +9,15 @@
           "from": {
             "key_code": "escape",
             "modifiers": {
-              "optional": [
-                "any"
-              ]
+              "optional": ["any"]
             }
           },
           "to": [
             {
-              "key_code": "japanese_eisuu"
+              "key_code": "escape"
             },
             {
-              "key_code": "escape"
+              "key_code": "japanese_eisuu"
             }
           ]
         },
@@ -75,17 +26,15 @@
           "from": {
             "key_code": "open_bracket",
             "modifiers": {
-              "mandatory": [
-                "left_control"
-              ]
+              "mandatory": ["left_control"]
             }
           },
           "to": [
             {
-              "key_code": "japanese_eisuu"
+              "key_code": "escape"
             },
             {
-              "key_code": "escape"
+              "key_code": "japanese_eisuu"
             }
           ]
         }
