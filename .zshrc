@@ -98,9 +98,6 @@ zplugin light mattn/memo
 zplugin ice lucid wait"0" depth"1" as"program" atclone'go build -o recc && mv recc ${ZPFX}/bin/recc' atpull'%atclone'
 zplugin light pocke/recc
 
-zplugin ice lucid wait"0" depth"1" as"program" atclone'go build -o ptmux && mv ptmux ${ZPFX}/bin/ptmux' atpull'%atclone'
-zplugin light pocke/ptmux
-
 zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd*" mv"ghkw*/ghkw -> ${ZPFX}/bin/ghkw"
 zplugin light kyoshidajp/ghkw
 
