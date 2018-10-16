@@ -76,6 +76,7 @@ install gnu-sed
 install gpatch
 install gpg2
 install graphviz
+install ncdu
 install nkf
 install pandoc
 install parallel
