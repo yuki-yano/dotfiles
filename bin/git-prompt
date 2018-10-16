@@ -224,6 +224,7 @@ read_git_info() {
   else
     git_remote="$(replace_branch_symbols ${git_status_fields[1]}) "
   fi
+
   git_upstream="${git_status_fields[2]}"
   git_num_staged="${git_status_fields[3]}"
   git_num_conflicts="${git_status_fields[4]}"
@@ -269,7 +270,7 @@ do_interpolation() {
   deleted=$(chk_gitvar 'deleted' '-ne 0' "${DELETED_FMT}${DELETED_SYMBOL}${SYMBOL_DELIMITER_FMT}${git_num_deleted}${RESET_FMT}${FLAGS_DELIMITER_FMT}")
   stage_deleted=$(chk_gitvar 'stage_deleted' '-ne 0' "${STAGE_DELETED_FMT}${STAGE_DELETED_SYMBOL}${SYMBOL_DELIMITER_FMT}${git_num_stage_deleted}${RESET_FMT}${FLAGS_DELIMITER_FMT}")
 
-  dirty_flags=$(chk_gitvar 'clean' '-eq 0' "${staged}${stage_deleted}${conflicts}${changed}${deleted}${stashed}${untracked}")
+  dirty_flags=$(chk_gitvar 'clean' '-eq 0' "${staged}${conflicts}${changed}${stashed}${untracked}${deleted}${stage_deleted}")
 
   flags="${SPLIT_DELIMITER_FMT}${clean_flag}${dirty_flags}"
 
