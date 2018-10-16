@@ -62,8 +62,17 @@ zplugin light sharkdp/bat
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*macos*" mv"exa-macos-x86_64 -> ${ZPFX}/bin/exa"
 zplugin light ogham/exa
 
+zplugin ice lucid from"gh-r" as"program" bpick"*apple*" mv"rip -> ${ZPFX}/bin/rip" ver"0.11.3"
+zplugin light nivekuil/rip
+
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/fd -> ${ZPFX}/bin/fd"
 zplugin light sharkdp/fd
+
+zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"httpstat-darwin* -> ${ZPFX}/bin/httpstat"
+zplugin light davecheney/httpstat
+
+zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"dust -> ${ZPFX}/bin/dust"
+zplugin light bootandy/dust
 
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*apple-darwin*" mv"ripgrep*/rg -> ${ZPFX}/bin/rg"
 zplugin light BurntSushi/ripgrep
@@ -88,6 +97,9 @@ zplugin light stedolan/jq
 
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin-amd64*" mv"gron -> ${ZPFX}/bin/gron"
 zplugin light tomnomnom/gron
+
+zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"tokei -> ${ZPFX}/bin/tokei"
+zplugin light Aaronepower/tokei
 
 zplugin ice lucid wait"0" depth"1" as"program" src"tmuximum.plugin.zsh" atload"set_tmuximum" pick"tmuximum"
 zplugin light yuki-ycino/tmuximum
@@ -269,6 +281,24 @@ fi
 if whence bat > /dev/null; then
   alias bat='bat --theme zenburn'
   alias b='bat --paging never --theme zenburn --style changes'
+fi
+# }}}
+
+# rip {{{
+if whence rip > /dev/null; then
+  alias rm=rip
+fi
+# }}}
+
+# du {{{
+if whence dust > /dev/null; then
+  alias du=dust
+fi
+# }}}
+
+# httpstat {{{
+if whence httpstat > /dev/null; then
+  alias curl=httpstat
 fi
 # }}}
 
