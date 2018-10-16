@@ -2366,7 +2366,7 @@ let g:choosewin_color_overlay_current = {
 \ 'cterm': [1, 1]
 \ }
 
-nnoremap <silent> <C-w><C-w> :<C-u>ChooseWin<CR>
+nnoremap <silent> <C-q> :<C-u>ChooseWin<CR>
 " }}}3
 
 " brightest {{{3
