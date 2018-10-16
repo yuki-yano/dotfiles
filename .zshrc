@@ -62,9 +62,6 @@ zplugin light sharkdp/bat
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*macos*" mv"exa-macos-x86_64 -> ${ZPFX}/bin/exa"
 zplugin light ogham/exa
 
-zplugin ice lucid from"gh-r" as"program" bpick"*apple*" mv"rip -> ${ZPFX}/bin/rip" ver"0.11.3"
-zplugin light nivekuil/rip
-
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/fd -> ${ZPFX}/bin/fd"
 zplugin light sharkdp/fd
 
@@ -281,12 +278,6 @@ fi
 if whence bat > /dev/null; then
   alias bat='bat --theme zenburn'
   alias b='bat --paging never --theme zenburn --style changes'
-fi
-# }}}
-
-# rip {{{
-if whence rip > /dev/null; then
-  alias rm=rip
 fi
 # }}}
 
