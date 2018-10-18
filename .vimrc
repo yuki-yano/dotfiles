@@ -1626,20 +1626,20 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   \ ]
 
   "" markdown
-  let s:rules += [
-  \ { 'filetype': ['markdown'], 'char': '`',       'at': '``\%#',         'input': '`<CR><CR>```<Up><Up>',           },
-  \ { 'filetype': ['markdown'], 'char': '#',       'at': '^\%#\%(#\)\@!', 'input': '#<Space>'                        },
-  \ { 'filetype': ['markdown'], 'char': '#',       'at': '#\s\%#',        'input': '<BS>#<Space>',                   },
-  \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '^#\s\%#',       'input': '<BS><BS>'                        },
-  \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '##\s\%#',       'input': '<BS><BS><Space>',                },
-  \ { 'filetype': ['markdown'], 'char': '-',       'at': '^\s*\%#',       'input': '-<Space>',                       },
-  \ { 'filetype': ['markdown'], 'char': '-',       'at': '^\s*- \%#',     'input': '<Left><Left><Tab><Del>-<Right>', },
-  \ { 'filetype': ['markdown'], 'char': '<Tab>',   'at': '^\s*- \%#',     'input': '<Left><Left><Tab><Del>-<Right>', },
-  \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '^\s*- \%#',     'input': '<BS><BS><BS>-<Space>',           },
-  \ { 'filetype': ['markdown'], 'char': '<S-Tab>', 'at': '^\s*- \%#',     'input': '<BS><BS><BS>-<Space>',           },
-  \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '^- \%#',        'input': '<C-w>',                          },
-  \ { 'filetype': ['markdown'], 'char': '>',       'at': '^\s*\%#',       'input': '><Space>',                       },
-  \ ]
+  " let s:rules += [
+  " \ { 'filetype': ['markdown'], 'char': '`',       'at': '``\%#',         'input': '`<CR><CR>```<Up><Up>',           },
+  " \ { 'filetype': ['markdown'], 'char': '#',       'at': '^\%#\%(#\)\@!', 'input': '#<Space>'                        },
+  " \ { 'filetype': ['markdown'], 'char': '#',       'at': '#\s\%#',        'input': '<BS>#<Space>',                   },
+  " \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '^#\s\%#',       'input': '<BS><BS>'                        },
+  " \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '##\s\%#',       'input': '<BS><BS><Space>',                },
+  " \ { 'filetype': ['markdown'], 'char': '-',       'at': '^\s*\%#',       'input': '-<Space>',                       },
+  " \ { 'filetype': ['markdown'], 'char': '-',       'at': '^\s*- \%#',     'input': '<Left><Left><Tab><Del>-<Right>', },
+  " \ { 'filetype': ['markdown'], 'char': '<Tab>',   'at': '^\s*- \%#',     'input': '<Left><Left><Tab><Del>-<Right>', },
+  " \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '^\s*- \%#',     'input': '<BS><BS><BS>-<Space>',           },
+  " \ { 'filetype': ['markdown'], 'char': '<S-Tab>', 'at': '^\s*- \%#',     'input': '<BS><BS><BS>-<Space>',           },
+  " \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '^- \%#',        'input': '<C-w>',                          },
+  " \ { 'filetype': ['markdown'], 'char': '>',       'at': '^\s*\%#',       'input': '><Space>',                       },
+  " \ ]
 
   "" vim
   let s:rules += [
