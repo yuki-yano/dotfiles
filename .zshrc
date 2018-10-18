@@ -582,10 +582,10 @@ function peco-nico-bgm() {
 # PROMPT='${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
 
 # Command Buffer Stack
-RPROMPT='${COMMAND_BUFFER_STACK} [%{$MAGENTA%}${RUBY_VERSION}%{$DEFAULT%} %{$BLUE%}${NODE_VERSION}%{$DEFAULT%} %{$GREEN%}${PYTHON_VERSION}%{$DEFAULT%}]'
+RPROMPT='${COMMAND_BUFFER_STACK}'
 
 PROMPT='
-%F{blue}%~%f $GIT_STATUS
+%F{blue}%~%f $GIT_STATUS  [%{$MAGENTA%}${RUBY_VERSION}%{$DEFAULT%} %{$BLUE%}${NODE_VERSION}%{$DEFAULT%} %{$GREEN%}${PYTHON_VERSION}%{$DEFAULT%}]
 ${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
 
 # function update_git_prompt() {
@@ -628,32 +628,24 @@ function venv_name () {
 add-zsh-hook precmd venv_name
 
 function detect_ruby_version() {
-  which rbenv > /dev/null 2>&1
-
-  if [[ -f $(pwd)/.ruby-version ]]; then
-    RUBY_VERSION="ruby-$(rbenv version-name)"
-  else
-    RUBY_VERSION=
+  if which rbenv > /dev/null 2>&1; then
+    RUBY_VERSION="Ruby-$(rbenv version-name)"
   fi
 }
 add-zsh-hook precmd detect_ruby_version
 
 function detect_node_version() {
-  which nodenv > /dev/null 2>&1
-
-  if [[ -f $(pwd)/.node-version ]]; then
-    NODE_VERSION="node-$(nodenv version-name)"
-  else
-    NODE_VERSION=
+  if which nodenv > /dev/null 2>&1; then
+    NODE_VERSION="Node-$(nodenv version-name)"
   fi
 }
 add-zsh-hook precmd detect_node_version
 
 function detect_python_version() {
   if [[ -n "$VIRTUAL_ENV" ]]; then
-    PYTHON_VERSION="$(python -V)"
+    PYTHON_VERSION="Python-venv"
   else
-    PYTHON_VERSION=
+    PYTHON_VERSION="Python-$(pyenv version-name)"
   fi
 }
 add-zsh-hook precmd detect_python_version
