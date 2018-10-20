@@ -98,8 +98,11 @@ zplugin light tomnomnom/gron
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"tokei -> ${ZPFX}/bin/tokei"
 zplugin light Aaronepower/tokei
 
-zplugin ice lucid wait"0" depth"1" as"program" src"tmuximum.plugin.zsh" atload"set_tmuximum" pick"tmuximum"
-zplugin light yuki-ycino/tmuximum
+zplugin ice lucid wait"0" depth"1" as"program" src"tms.plugin.zsh" pick"tms"
+zplugin light yuki-ycino/tms
+
+zplugin ice lucid wait"0" depth"1" as"program" src"tmk.plugin.zsh" pick"tmk"
+zplugin light yuki-ycino/tmk
 
 zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd*" mv"memo -> ${ZPFX}/bin/memo"
 zplugin light mattn/memo
@@ -218,7 +221,8 @@ abbreviations=(
 "gbr"    "git browse-remote"
 "be"     "bundle exec"
 "dco"    "docker-compose"
-"t"      "tmuximum"
+"t"      "tms"
+"tk"     "tmk"
 "tl"     "tmux list-sessions"
 "ta"     "tmux attach-session"
 "ts"     "tmux swap-pane -t"
@@ -291,14 +295,6 @@ fi
 if whence httpstat > /dev/null; then
   alias curl=httpstat
 fi
-# }}}
-
-# tmuximum {{{
-function set_tmuximum() {
-  bindkey -M viins '^[t' tmuximum
-  bindkey -M vicmd '^[t' tmuximum
-  bindkey -M vivis '^[t' tmuximum
-}
 # }}}
 
 # cdd {{{
