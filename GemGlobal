@@ -7,7 +7,6 @@ neovim
 pry
 pry-byebug
 pry-doc
-rb-readline
 refe2
 rubocop
 solargraph
