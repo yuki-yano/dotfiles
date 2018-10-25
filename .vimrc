@@ -85,12 +85,13 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('othree/jspc.vim',                        {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescript.tsx', 'vue']})
   call dein#add('othree/yajs.vim',                        {'lazy': 1, 'on_ft': ['javascript', 'vue']})
   call dein#add('pearofducks/ansible-vim',                {'lazy': 1, 'on_ft': ['ansible', 'ansible_templete', 'ansible_hosts']})
-  call dein#add('plasticboy/vim-markdown',                {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('posva/vim-vue',                          {'lazy': 1, 'on_ft': 'vue'})
+  call dein#add('rhysd/vim-gfm-syntax',                   {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('rust-lang/rust.vim',                     {'lazy': 1, 'on_ft': 'rust'})
   call dein#add('slim-template/vim-slim',                 {'lazy': 1, 'on_ft': 'slim'})
   call dein#add('stephpy/vim-yaml',                       {'lazy': 1, 'on_ft': 'yaml'})
   call dein#add('tell-k/vim-autopep8',                    {'lazy': 1, 'on_ft': 'python'})
+  call dein#add('tpope/vim-markdown',                     {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('tpope/vim-rails',                        {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('vim-ruby/vim-ruby',                      {'lazy': 1, 'on_ft': ['ruby', 'eruby']})
   " }}}3
@@ -1075,14 +1076,6 @@ let g:jsdoc_enable_es6         = 1
 let g:vim_json_syntax_conceal = 0
 " }}}3
 
-" markdown {{{3
-let g:vim_markdown_folding_disabled     = 1
-let g:vim_markdown_conceal              = 0
-let g:vim_markdown_frontmatter          = 1
-let g:vim_markdown_json_frontmatter     = 1
-let g:vim_markdown_new_list_item_indent = 2
-" }}}3
-
 " marked {{{3
 AlterCommand! <cmdwin> mark[ed] MarkedOpen
 " }}}3
@@ -1626,20 +1619,19 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   \ ]
 
   "" markdown
-  " let s:rules += [
-  " \ { 'filetype': ['markdown'], 'char': '`',       'at': '``\%#',         'input': '`<CR><CR>```<Up><Up>',           },
-  " \ { 'filetype': ['markdown'], 'char': '#',       'at': '^\%#\%(#\)\@!', 'input': '#<Space>'                        },
-  " \ { 'filetype': ['markdown'], 'char': '#',       'at': '#\s\%#',        'input': '<BS>#<Space>',                   },
-  " \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '^#\s\%#',       'input': '<BS><BS>'                        },
-  " \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '##\s\%#',       'input': '<BS><BS><Space>',                },
-  " \ { 'filetype': ['markdown'], 'char': '-',       'at': '^\s*\%#',       'input': '-<Space>',                       },
-  " \ { 'filetype': ['markdown'], 'char': '-',       'at': '^\s*- \%#',     'input': '<Left><Left><Tab><Del>-<Right>', },
-  " \ { 'filetype': ['markdown'], 'char': '<Tab>',   'at': '^\s*- \%#',     'input': '<Left><Left><Tab><Del>-<Right>', },
-  " \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '^\s*- \%#',     'input': '<BS><BS><BS>-<Space>',           },
-  " \ { 'filetype': ['markdown'], 'char': '<S-Tab>', 'at': '^\s*- \%#',     'input': '<BS><BS><BS>-<Space>',           },
-  " \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '^- \%#',        'input': '<C-w>',                          },
-  " \ { 'filetype': ['markdown'], 'char': '>',       'at': '^\s*\%#',       'input': '><Space>',                       },
-  " \ ]
+  let s:rules += [
+  \ { 'filetype': ['markdown'], 'char': '`',       'at': '``\%#',         'input': '`<CR><CR>```<Up><Up>',           },
+  \ { 'filetype': ['markdown'], 'char': '#',       'at': '^\%#\%(#\)\@!', 'input': '#<Space>'                        },
+  \ { 'filetype': ['markdown'], 'char': '#',       'at': '#\s\%#',        'input': '<BS>#<Space>',                   },
+  \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '^#\s\%#',       'input': '<BS><BS>'                        },
+  \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '##\s\%#',       'input': '<BS><BS><Space>',                },
+  \ { 'filetype': ['markdown'], 'char': '-',       'at': '^\s*\%#',       'input': '-<Space>',                       },
+  \ { 'filetype': ['markdown'], 'char': '<Tab>',   'at': '^\s*- \%#',     'input': '<Left><Left><Tab><Del>-<Right>', },
+  \ { 'filetype': ['markdown'], 'char': '<S-Tab>', 'at': '^\s*- \%#',     'input': '<BS><BS><BS>-<Space>',           },
+  \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '^- \%#',        'input': '<C-w><BS>',                      },
+  \ { 'filetype': ['markdown'], 'char': '<BS>',    'at': '^\s*- \%#',     'input': '<C-w><C-w><BS>',                 },
+  \ { 'filetype': ['markdown'], 'char': '<CR>',    'at': '^\s*- \w.*\%#', 'input': '<CR>-<Space>',                   },
+  \ ]
 
   "" vim
   let s:rules += [
