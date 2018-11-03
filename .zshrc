@@ -726,21 +726,6 @@ zle -N zed-page-down _zed_page_down
 
 # Bindkey {{{
 
-function _magic-abbrev-expand-and-fzf-direct-completion() {
-  local buf
-  buf="$BUFFER"
-  zle magic-abbrev-expand
-
-  if [[ $buf != $BUFFER ]]; then
-    BUFFER="$BUFFER "
-    CURSOR=$#BUFFER
-    zle reset-prompt
-  fi
-
-  zle fzf-direct-completion
-}
-zle -N magic-abbrev-expand-and-fzf-direct-completion _magic-abbrev-expand-and-fzf-direct-completion
-
 # Default bind
 # bindkey -e
 bindkey -v
@@ -748,7 +733,7 @@ bindkey -v
 # Wait for next key input for 0.15 seconds (Default 0.4s)
 KEYTIMEOUT=15
 
-bindkey -M viins '^i'  magic-abbrev-expand-and-fzf-direct-completion
+bindkey -M viins '^i'  fzf-direct-completion
 bindkey -M viins ' '   magic-abbrev-expand-and-space
 bindkey -M viins '^x ' no-magic-abbrev-expand
 bindkey -M viins '^ '  extra-abbrev
