@@ -305,6 +305,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " develop {{{3
   call dein#add('haya14busa/vim-debugger', {'lazy': 1, 'on_func': 'debugger#init'})
+  call dein#add('rbtnn/vimconsole.vim')
   call dein#add('thinca/vim-editvar',      {'lazy': 1, 'on_cmd': 'Editvar', 'on_func': 'editvar#open'})
   call dein#add('thinca/vim-prettyprint')
   call dein#add('tweekmonster/exception.vim')
@@ -3090,6 +3091,14 @@ nnoremap <silent> <Leader>u :<C-u>UndotreeToggle<CR>
 
 " winresizer {{{3
 nnoremap <silent> <Leader><C-w> :WinResizerStartResize<CR>
+" }}}3
+
+" }}}2
+
+" Develop {{{2
+
+" console {{{3
+AlterCommand! <cmdwin> console VimConsoleToggle
 " }}}3
 
 " }}}2
