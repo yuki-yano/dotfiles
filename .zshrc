@@ -291,12 +291,6 @@ if whence dust > /dev/null; then
 fi
 # }}}
 
-# httpstat {{{
-if whence httpstat > /dev/null; then
-  alias curl=httpstat
-fi
-# }}}
-
 # cdd {{{
 chpwd_functions+=_cdd_chpwd
 # }}}
