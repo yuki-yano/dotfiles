@@ -1210,6 +1210,7 @@ if dein#tap('denite.nvim')
   \ ['Toggle Spell             [setlocal spell!]',         'setlocal spell!'         ],
   \ ['Toggle ALE               [ALEToggle]',               'ALEToggle'               ],
   \ ['Toggle ComfortableMotion [ToggleComfortableMotion]', 'ToggleComfortableMotion' ],
+  \ ['Toggle TableMode         [TableMode]',               'TableModeToggle'         ],
   \ ]
   call denite#custom#var('menu', 'menus', s:menus)
   nnoremap <silent> <Leader>t :<C-u>Denite menu:toggle<CR>
