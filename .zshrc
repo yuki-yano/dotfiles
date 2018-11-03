@@ -256,7 +256,9 @@ function set_autosuggest() {
 }
 # }}}
 
-# exa alias {{{
+# alias {{{
+
+# exa {{{
 if whence exa > /dev/null; then
   alias ls="exa"
   alias ll="exa -lh  --git"
@@ -289,6 +291,14 @@ fi
 if whence dust > /dev/null; then
   alias du=dust
 fi
+# }}}
+
+# hub {{{
+if whence hub > /dev/null; then
+  alias git=hub
+fi
+# }}}
+
 # }}}
 
 # cdd {{{
