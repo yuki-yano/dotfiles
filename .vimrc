@@ -2711,6 +2711,10 @@ if dein#tap('lightline.vim')
 endif
 " }}}3
 
+" matchup {{{3
+let g:matchup_matchparen_status_offscreen = 0
+" }}}3
+
 " quickhl {{{3
 nmap <Leader>m <Plug>(quickhl-manual-this)
 xmap <Leader>m <Plug>(quickhl-manual-this)
