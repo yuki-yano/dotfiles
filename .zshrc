@@ -113,9 +113,6 @@ zplugin light pocke/recc
 zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd*" mv"ghkw*/ghkw -> ${ZPFX}/bin/ghkw"
 zplugin light kyoshidajp/ghkw
 
-zplugin ice lucid wait"0" depth"1" lucid as"program" pick"bin/git-dsf"
-zplugin light zdharma/zsh-diff-so-fancy
-
 zplugin ice lucid wait"0" depth"1" as"program" src"git-sync.sh"
 zplugin light caarlos0/zsh-git-sync
 
@@ -203,10 +200,10 @@ abbreviations=(
 "gs"     "git status --short --branch"
 "gb"     "git branch"
 "gbd"    "git branch -d"
-"gd"     "git dsf"
-"gdw"    "git dsf --color-words"
-"gdc"    "git dsf --cached"
-"gdcw"   "git dsf --cached --color-words"
+"gd"     "git diff"
+"gdw"    "git diff --color-words"
+"gdc"    "git diff --cached"
+"gdcw"   "git diff --cached --color-words"
 "gmv"    "git mv"
 "gco"    "git checkout"
 "gcof"   "git checkout --"
