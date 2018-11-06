@@ -826,6 +826,7 @@ AutoCmd BufNewFile,BufRead Gemfile          set filetype=ruby
 AutoCmd BufNewFile,BufRead Vagrantfile      set filetype=ruby
 AutoCmd BufNewFile,BufRead Schemafile       set filetype=ruby
 AutoCmd BufNewFile,BufRead .gitconfig.local set filetype=gitconfig
+" }}}3
 
 " Completion {{{3
 AutoCmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
