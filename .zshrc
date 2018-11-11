@@ -89,6 +89,9 @@ zplugin light jonas/tig
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/bin/hub -> ${ZPFX}/bin/hub"
 zplugin light github/hub
 
+zplugin ice lucid wait"0" as"program" depth"1" pick"gibo" mv"gibo -> ${ZPFX}/bin/gibo" mv" -> ${ZPFX}/bin/gibo"
+zplugin light simonwhitaker/gibo
+
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*osx*" mv"jq-osx-amd64 -> ${ZPFX}/bin/jq"
 zplugin light stedolan/jq
 
