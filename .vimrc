@@ -939,7 +939,7 @@ let g:ale_linters = {
 \ 'json':           ['fixjson', 'prettier', 'jsonlint', 'jq'],
 \ 'yaml':           ['prettier'],
 \ 'graphql':        ['prettier'],
-\ 'html':           ['htmlhint'],
+\ 'html':           ['prettier'],
 \ 'css':            ['prettier', 'stylelint'],
 \ 'scss':           ['prettier', 'stylelint'],
 \ 'dockerfile':     ['hadolint'],
@@ -1018,6 +1018,9 @@ let g:formatters_go = ['gofmt2', 'goimports']
 
 " Rust
 let g:formatters_rust = ['rustfmt']
+
+" HTML
+let g:formatters_html = ['prettier']
 
 " CSS
 let g:formatters_css = ['prettier']
