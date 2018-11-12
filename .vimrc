@@ -2475,7 +2475,7 @@ if dein#tap('lightline.vim')
   \   'right': [
   \     ['lineinfo'],
   \     ['filetype', 'fileencoding', 'fileformat'],
-  \     ['linter_errors', 'linter_warnings', 'linter_ok', 'linter_unload'],
+  \     ['linter_errors', 'linter_warnings', 'linter_ok', 'linter_checking', 'linter_disable'],
   \   ],
   \ },
   \ 'inactive': {
@@ -2527,11 +2527,15 @@ if dein#tap('lightline.vim')
   \   'linter_errors':   'error',
   \   'linter_warnings': 'warning',
   \   'linter_ok':       'ok',
+  \   'linter_checking': 'checking',
+  \   'linter_disable':  'disable',
   \ },
   \ 'component_expand': {
   \   'linter_errors':   'Lightline_ale_errors',
   \   'linter_warnings': 'Lightline_ale_warnings',
   \   'linter_ok':       'Lightline_ale_ok',
+  \   'linter_checking': 'Lightline_ale_checking',
+  \   'linter_disable':  'Lightline_ale_disable',
   \ },
   \ 'enable': {
   \   'statusline': 1,
@@ -2539,9 +2543,11 @@ if dein#tap('lightline.vim')
   \ },
   \ }
 
+  " lightline-ale
   let g:lightline#ale#indicator_errors   = 'E'
   let g:lightline#ale#indicator_warnings = 'W'
   let g:lightline#ale#indicator_ok       = 'OK'
+  let g:lightline#ale#indicator_checking = 'Linting'
 
   " Disable lineinfo, fileencoding and fileformat
   let s:lightline_ignore_right_ft = [
@@ -2714,6 +2720,14 @@ if dein#tap('lightline.vim')
 
   function! Lightline_ale_ok() abort
     return count(g:ale_filetypes, &filetype) ? lightline#ale#ok() : ''
+  endfunction
+
+  function! Lightline_ale_checking() abort
+    return count(g:ale_filetypes, &filetype) ? lightline#ale#checking() : ''
+  endfunction
+
+  function! Lightline_ale_disable() abort
+    return count(g:ale_filetypes, &filetype) ? '' : 'Linter Disable'
   endfunction
 
   function! Lightline_denite() abort

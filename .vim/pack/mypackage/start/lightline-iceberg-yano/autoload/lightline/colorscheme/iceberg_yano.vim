@@ -83,20 +83,30 @@ let s:p.tabline.middle  = [[s:base1,  s:base02]]
 let s:ale = [
 \ [s:base3, s:red,    s:bold],
 \ [s:base3, s:yellow, s:bold],
+\ [s:base3, s:cyan,   s:bold],
 \ [s:base3, s:green,  s:bold],
+\ [s:base3, s:base00, s:bold],
 \ ]
 
-let s:p.normal.error    = s:ale[0:0]
-let s:p.insert.error    = s:ale[0:0]
-let s:p.replace.error   = s:ale[0:0]
-let s:p.visual.error    = s:ale[0:0]
-let s:p.normal.warning  = s:ale[1:1]
-let s:p.insert.warning  = s:ale[1:1]
-let s:p.replace.warning = s:ale[1:1]
-let s:p.visual.warning  = s:ale[1:1]
-let s:p.normal.ok       = s:ale[2:2]
-let s:p.insert.ok       = s:ale[2:2]
-let s:p.replace.ok      = s:ale[2:2]
-let s:p.visual.ok       = s:ale[2:2]
+let s:p.normal.error     = s:ale[0:0]
+let s:p.insert.error     = s:ale[0:0]
+let s:p.replace.error    = s:ale[0:0]
+let s:p.visual.error     = s:ale[0:0]
+let s:p.normal.warning   = s:ale[1:1]
+let s:p.insert.warning   = s:ale[1:1]
+let s:p.replace.warning  = s:ale[1:1]
+let s:p.visual.warning   = s:ale[1:1]
+let s:p.normal.ok        = s:ale[2:2]
+let s:p.insert.ok        = s:ale[2:2]
+let s:p.replace.ok       = s:ale[2:2]
+let s:p.visual.ok        = s:ale[2:2]
+let s:p.normal.checking  = s:ale[3:3]
+let s:p.insert.checking  = s:ale[3:3]
+let s:p.replace.checking = s:ale[3:3]
+let s:p.visual.checking  = s:ale[3:3]
+let s:p.normal.disable   = s:ale[4:4]
+let s:p.insert.disable   = s:ale[4:4]
+let s:p.replace.disable  = s:ale[4:4]
+let s:p.visual.disable   = s:ale[4:4]
 
 let g:lightline#colorscheme#iceberg_yano#palette = lightline#colorscheme#flatten(s:p)
