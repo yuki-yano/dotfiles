@@ -1096,6 +1096,10 @@ let g:vim_json_syntax_conceal = 0
 AlterCommand! <cmdwin> mark[ed] MarkedOpen
 " }}}3
 
+" nvim-typescript {{{3
+let g:nvim_typescript#diagnostics_enable = 0
+" }}}3
+
 " plantuml {{{3
 AlterCommand! <cmdwin> uml OpenUml
 command! OpenUml :!open -a /Applications/Google\ Chrome.app %
