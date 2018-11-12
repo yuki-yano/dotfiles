@@ -671,7 +671,7 @@ function! s:toggle_quickfix()
   cclose
   if l:_ == winnr('$')
     botright copen
-    call g:Set_quickfix_keymap()
+    " call g:Set_quickfix_keymap()
   endif
 endfunction
 
@@ -685,7 +685,7 @@ function! s:toggle_location_list()
   lclose
   if l:_ == winnr('$')
     botright lopen
-    call g:Set_locationlist_keymap()
+    " call g:Set_locationlist_keymap()
   endif
 endfunction
 
