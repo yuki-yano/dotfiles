@@ -132,6 +132,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('machakann/vim-Verdin',           {'lazy': 1, 'on_ft': 'vim'})
     call dein#add('takkii/Bignyanco',               {'lazy': 1, 'on_ft': 'ruby'})
     call dein#add('wokalski/autocomplete-flow',     {'lazy': 1, 'on_ft': 'javascript'})
+    call dein#add('zchee/deoplete-go',              {'lazy': 1, 'on_ft': 'go', 'build': 'make'})
     call dein#add('zchee/deoplete-jedi',            {'lazy': 1, 'on_ft': 'python'})
 
     " call dein#add('ncm2/ncm2')
@@ -1014,7 +1015,7 @@ let g:formatters_eruby = ['htmlbeautifier']
 let g:formatters_python = ['autopep8', 'yapf']
 
 " Go
-let g:formatters_go = ['gofmt2', 'goimports']
+let g:formatters_go = ['gofmt_2', 'goimports']
 
 " Rust
 let g:formatters_rust = ['rustfmt']
@@ -1049,15 +1050,24 @@ let g:gen_tags#gtags_auto_gen = 1
 " }}}3
 
 " go {{{3
-let g:go_fmt_command = 'goimports'
+let g:go_def_mapping_enabled = 0
+let g:go_fmt_command         = 'goimports'
+let g:go_term_enabled        = 1
+let g:go_auto_type_info      = 1
 
 let g:go_highlight_functions         = 1
 let g:go_highlight_methods           = 1
 let g:go_highlight_structs           = 1
-let g:go_highlight_interfaces        = 1
 let g:go_highlight_operators         = 1
 let g:go_highlight_build_constraints = 1
-let g:go_addtags_transform           = 'camelcase'
+
+AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>r <Plug>(go-run)
+AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>b <Plug>(go-build)
+AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>t <Plug>(go-test)
+AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>s <Plug>(go-def-split)
+AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>v <Plug>(go-def-vertical)
+AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>t <Plug>(go-def-tab)
+AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>d <Plug>(go-doc)
 " }}}3
 
 " html5 {{{3
@@ -1391,10 +1401,18 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   \ 'converter_auto_delimiter',
   \ ])
 
+  " deoplete-go
+  let g:deoplete#sources#go#gocode_binary   = $GOPATH . '/bin/gocode'
+  let g:deoplete#sources#go#sort_class      = ['package', 'func', 'type', 'var', 'const']
+  let g:deoplete#sources#go#source_importer = 1
+  let g:deoplete#sources#go#align_class     = 1
+  let g:deoplete#sources#go#package_dot     = 1
+
   " Sources
   call deoplete#custom#source('neosnippet',     'rank', 1200)
   call deoplete#custom#source('LanguageClient', 'rank', 1100)
   call deoplete#custom#source('typescript',     'rank', 1100)
+  call deoplete#custom#source('go',             'rank', 1100)
   call deoplete#custom#source('vim',            'rank', 1100)
   call deoplete#custom#source('around',         'rank', 1000)
   call deoplete#custom#source('buffer',         'rank', 1000)
@@ -1403,7 +1421,6 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   call deoplete#custom#source('tern',           'rank',  800)
   call deoplete#custom#source('flow',           'rank',  800)
   call deoplete#custom#source('jedi',           'rank',  800)
-  call deoplete#custom#source('go',             'rank',  800)
   call deoplete#custom#source('Bignyanco',      'rank',  700)
   call deoplete#custom#source('syntax',         'rank',  600)
   call deoplete#custom#source('file',           'rank',  600)
@@ -3044,8 +3061,8 @@ let g:quickrun_config = {
 \ }
 \ }
 
-nnoremap \r :<C-u>QuickRun -mode n<CR>
-vnoremap \r :<C-u>QuickRun -mode v<CR>
+nnoremap <LocalLeader>r :<C-u>QuickRun -mode n<CR>
+vnoremap <LocalLeader>r :<C-u>QuickRun -mode v<CR>
 nnoremap <silent> <expr> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() : "\<C-c>"
 " }}}3
 
