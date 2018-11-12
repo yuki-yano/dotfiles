@@ -538,6 +538,13 @@ function peco-history-selection() {
 }
 zle -N peco-history-selection
 
+function peco-snippet-selection() {
+  BUFFER=$(\grep -v "^#" ~/.config/snippets | \grep -v "^\s*$" | peco --query "$BUFFER")
+  CURSOR=$#BUFFER
+  zle reset-prompt
+}
+zle -N peco-snippet-selection
+
 function peco-process-selection() {
   local pids
   pids=$(\ps -u $USER -o 'pid,stat,%cpu,%mem,cputime,command' | peco | awk '{ print $1 }' | tr '\n' ' ' )
@@ -794,6 +801,12 @@ bindkey -M menuselect '^h' undo
 bindkey -M viins '^r'   peco-history-selection
 bindkey -M vicmd '^r'   peco-history-selection
 bindkey -M vivis '^r'   peco-history-selection
+bindkey -M viins '^xs'  peco-snippet-selection
+bindkey -M vicmd '^xs'  peco-snippet-selection
+bindkey -M vivis '^xs'  peco-snippet-selection
+bindkey -M viins '^x^s' peco-snippet-selection
+bindkey -M vicmd '^x^s' peco-snippet-selection
+bindkey -M vivis '^x^s' peco-snippet-selection
 bindkey -M viins '^xk'  peco-process-selection
 bindkey -M vicmd '^xk'  peco-process-selection
 bindkey -M vivis '^xk'  peco-process-selection

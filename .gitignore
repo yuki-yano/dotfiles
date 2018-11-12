@@ -46,6 +46,7 @@
 !/.config/memo/config.toml
 !/.config/nvim
 !/.config/peco/
+!/.config/snippets
 
 # Application
 /osx/alfred/Alfred.alfredpreferences/clipboard

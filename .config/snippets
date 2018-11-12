@@ -1,0 +1,5 @@
+# Node
+yarn init -y; git init; gibo dump Node > .gitignore; yarn add typescript -D; yarn tsc --init
+
+# Rails
+bundle exec rails new . --api --skip-yarn --skip-action-mailer --skip-active-storage --skip-action-cable --skip-sprockets --skip-spring --skip-listen --skip-coffee --skip-javascript --skip-turbolinks --skip-test --skip-system-test
