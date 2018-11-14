@@ -225,7 +225,7 @@ abbreviations=(
 "tk"     "tmk"
 "tl"     "tmux list-sessions"
 "ta"     "tmux attach-session"
-"ts"     "tmux swap-pane -t"
+"tw"     "tmux swap-pane -t"
 "b"      "brew"
 "bu"     "brew update"
 "ch"     "cheat"
