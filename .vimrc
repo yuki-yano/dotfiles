@@ -2661,17 +2661,20 @@ if dein#tap('lightline.vim')
       return ''
     endif
 
-    let l:path            = expand('%:p:~:h')
-    let l:not_home_prefix = match(l:path, '^/') != -1 ? '/' : ''
-    let l:dirs            = split(l:path, '/')
-    let l:last_dir        = remove(l:dirs, -1)
-    call map(l:dirs, 'v:val[0]')
+    let l:path = fnamemodify(expand('%'), ':p:.:h')
+    return l:path ==# '.' ? '' : l:path
 
-    return len(l:dirs) ? l:not_home_prefix . join(l:dirs, '/') . '/' . l:last_dir : l:last_dir
+    " let l:path            = fnamemodify(expand('%'), ':p:~:h')
+    " let l:not_home_prefix = match(l:path, '^/') != -1 ? '/' : ''
+    " let l:dirs            = split(l:path, '/')
+    " let l:last_dir        = remove(l:dirs, -1)
+    " call map(l:dirs, 'v:val[0]')
+    "
+    " return len(l:dirs) ? l:not_home_prefix . join(l:dirs, '/') . '/' . l:last_dir : l:last_dir
   endfunction
 
   function! Lightline_filename() abort
-    let l:filename = expand('%:t')
+    let l:filename = fnamemodify(expand('%'), ':t')
 
     if count(s:lightline_ignore_filename_ft, &filetype)
       return ''
