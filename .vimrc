@@ -962,6 +962,7 @@ let g:ale_change_sign_column_color = 1
 let g:ale_lint_on_text_changed     = 'never'
 let g:ale_lint_on_insert_leave     = 0
 let g:ale_echo_msg_format          = '[%linter%] %s'
+let g:ale_virtualtext_cursor       = 1
 
 AutoCmd FileType vue let b:ale_linter_aliases = ['vue', 'typescript'] | let b:ale_linters = g:ale_linters['vue']
 AutoCmd FileType zsh ALEDisableBuffer
