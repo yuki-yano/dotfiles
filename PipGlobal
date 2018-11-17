@@ -1,7 +1,6 @@
 Pygments
 autoflake
 autopep8
-awscli
 flake8
 isort
 jedi

@@ -48,6 +48,7 @@ install source-highlight
 install yarn
 
 ## Service
+install awscli
 install heroku-toolbelt
 install packer
 install terraform
