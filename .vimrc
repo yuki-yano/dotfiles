@@ -200,6 +200,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('machakann/vim-swap') " i, a,
   call dein#add('machakann/vim-textobj-delimited') " id ad
   call dein#add('mattn/vim-textobj-url') " iu au
+  call dein#add('osyo-manga/vim-textobj-multiblock') " ib ab
   call dein#add('rhysd/vim-textobj-ruby') " irr arr iro aro irl arl irc arc ird ard
   call dein#add('thinca/vim-textobj-between') " i{char} a{char}
   call dein#add('thinca/vim-textobj-comment') " ic ac
