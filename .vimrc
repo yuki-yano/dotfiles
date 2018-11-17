@@ -1041,7 +1041,8 @@ let g:formatters_markdown = ['prettier']
 " }}}3
 
 " echodoc {{{3
-let g:echodoc_enable_at_startup = 1
+let g:echodoc#enable_at_startup = 1
+let g:echodoc#type              = 'virtual'
 " }}}3
 
 " gen_tags {{{3
