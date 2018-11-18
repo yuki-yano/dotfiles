@@ -1416,12 +1416,12 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   let g:deoplete#sources#go#package_dot     = 1
 
   " Sources
-  call deoplete#custom#source('neosnippet',     'rank', 1200)
-  call deoplete#custom#source('LanguageClient', 'rank', 1100)
-  call deoplete#custom#source('typescript',     'rank', 1100)
-  call deoplete#custom#source('go',             'rank', 1100)
-  call deoplete#custom#source('vim',            'rank', 1100)
-  call deoplete#custom#source('around',         'rank', 1000)
+  call deoplete#custom#source('neosnippet',     'rank', 1300)
+  call deoplete#custom#source('LanguageClient', 'rank', 1200)
+  call deoplete#custom#source('typescript',     'rank', 1200)
+  call deoplete#custom#source('go',             'rank', 1200)
+  call deoplete#custom#source('vim',            'rank', 1200)
+  call deoplete#custom#source('around',         'rank', 1100)
   call deoplete#custom#source('buffer',         'rank', 1000)
   call deoplete#custom#source('gtags',          'rank',  900)
   call deoplete#custom#source('omni',           'rank',  800)
