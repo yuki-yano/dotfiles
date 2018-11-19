@@ -39,9 +39,6 @@ zplugin light mafredri/zsh-async
 zplugin ice lucid wait"0" depth"1" blockf
 zplugin light zsh-users/zsh-completions
 
-zplugin ice lucid wait"0" depth"1"
-zplugin light 39e/zsh-completions-anyenv
-
 # fuzzy finder
 zplugin ice lucid wait"0" from"gh-r" as"program" mv"fzf -> ${ZPFX}/bin/fzf"
 zplugin light junegunn/fzf-bin
