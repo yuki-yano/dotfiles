@@ -48,7 +48,7 @@ install yarn
 
 ## Service
 install awscli
-install heroku-toolbelt
+install heroku/brew/heroku
 install packer
 install terraform
 
