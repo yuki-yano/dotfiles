@@ -16,7 +16,7 @@ install zsh --disable-etcdir
 
 ## Editor
 install vim --with-lua
-install neovim
+install neovim --HEAD
 install railwaycat/emacsmacport/emacs-mac
 
 ## Languages
