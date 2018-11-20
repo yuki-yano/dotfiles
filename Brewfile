@@ -11,7 +11,6 @@ install mas
 
 ## Shell
 install bash
-install rxvt-unicode
 install tmux --with-utf8proc
 install zsh --disable-etcdir
 
