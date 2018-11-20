@@ -1742,7 +1742,6 @@ endif
 let g:LanguageClient_autoStart = 1
 " let g:LanguageClient_diagnosticsEnable = 0
 let g:LanguageClient_serverCommands = {
-\ 'javascript':      ['javascript-typescript-stdio'],
 \ 'vue':             ['vls'],
 \ 'html':            [],
 \ 'css':             [],
