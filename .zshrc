@@ -143,9 +143,6 @@ zplugin light yukiycino-dotfiles/fancy-ctrl-z
 
 zplugin ice lucid wait"0"
 zplugin snippet 'https://github.com/knu/zsh-git-escape-magic/blob/master/git-escape-magic'
-
-zplugin ice lucid wait'[[ -n ${ZLAST_COMMANDS[(r)cdd*]} ]]'
-zplugin light yukiycino-dotfiles/cdd
 # }}}
 
 # zsh-async {{{
