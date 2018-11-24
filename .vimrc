@@ -3079,13 +3079,15 @@ let g:junkfile#directory = '~/.config/junkfile/_posts'
 " leader-guide {{{3
 let g:lmap = {}
 call leaderGuide#register_prefix_descriptions('<Space>', 'g:lmap')
-call leaderGuide#register_prefix_descriptions('g', 'g:lmap')
-call leaderGuide#register_prefix_descriptions('s', 'g:lmap')
+call leaderGuide#register_prefix_descriptions('\',       'g:lmap')
+call leaderGuide#register_prefix_descriptions('s',       'g:lmap')
 
-nnoremap <silent> <Leader> :<C-u>LeaderGuide '<Space>'<CR>
-vnoremap <silent> <Leader> :<C-u>LeaderGuideVisual '<Space>'<CR>
-nnoremap <silent> s        :<C-u>LeaderGuide 's'<CR>
-vnoremap <silent> s        :<C-u>LeaderGuideVisual 's'<CR>
+nnoremap <silent> <Leader>      :<C-u>LeaderGuide '<Space>'<CR>
+vnoremap <silent> <Leader>      :<C-u>LeaderGuideVisual '<Space>'<CR>
+nnoremap <silent> <LocalLeader> :<C-u>LeaderGuide '\'<CR>
+vnoremap <silent> <LocalLeader> :<C-u>LeaderGuideVisual '\'<CR>
+nnoremap <silent> s             :<C-u>LeaderGuide 's'<CR>
+vnoremap <silent> s             :<C-u>LeaderGuideVisual 's'<CR>
 " }}}3
 
 " maximizer {{{3
