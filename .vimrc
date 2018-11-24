@@ -835,7 +835,7 @@ AutoCmd BufNewFile,BufRead .gitconfig.local set filetype=gitconfig
 " Completion {{{3
 AutoCmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 AutoCmd FileType ruby       setlocal omnifunc=rubycomplete#Complete
-AutoCmd FileType html,eruby setlocal omnifunc=htmlcomplete#CompleteTags
+AutoCmd FileType html,eruby setlocal omnifunc=
 AutoCmd FileType python     setlocal omnifunc=pythoncomplete#Complete
 AutoCmd FileType css        setlocal omnifunc=csscomplete#CompleteCSS
 AutoCmd FileType scss       setlocal omnifunc=csscomplete#CompleteCSS
@@ -1522,8 +1522,8 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   let g:deoplete#omni#input_patterns['ruby']           = ['\w+', '[^. *\t]\.\w*', '[a-zA-Z_]\w*::']
   let g:deoplete#omni#input_patterns['eruby']          = ['\w+', '[^. *\t]\.\w*', '[a-zA-Z_]\w*::', '<', '<[^>]*\s[[:alnum:]-]*']
   let g:deoplete#omni#input_patterns['python']         = ['\w+', '[^. *\t]\.\h\w*\','\h\w*::']
-  let g:deoplete#omni#input_patterns['html']           = ['<', '<[^>]*\s[[:alnum:]-]*']
-  let g:deoplete#omni#input_patterns['xml']            = ['<', '<[^>]*\s[[:alnum:]-]*']
+  let g:deoplete#omni#input_patterns['html']           = []
+  let g:deoplete#omni#input_patterns['xml']            = []
   let g:deoplete#omni#input_patterns['css']            = ['\w+', '\w+[):;]?\s+\w*', '[@!]']
   let g:deoplete#omni#input_patterns['scss']           = ['\w+', '\w+[):;]?\s+\w*', '[@!]']
 
@@ -1531,14 +1531,14 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   let g:deoplete#omni#functions['javascript'] = ['javascriptcomplete#CompleteJS']
   let g:deoplete#omni#functions['typescript'] = ['javascriptcomplete#CompleteJS']
   let g:deoplete#omni#functions['tsx']        = ['javascriptcomplete#CompleteJS']
-  let g:deoplete#omni#functions['vue']        = ['javascriptcomplete#CompleteJS', 'htmlcomplete#CompleteTags', 'csscomplete#CompleteCSS']
-  let g:deoplete#omni#functions['eruby']      = ['htmlcomplete#CompleteTags']
+  let g:deoplete#omni#functions['vue']        = ['javascriptcomplete#CompleteJS', 'csscomplete#CompleteCSS']
+  let g:deoplete#omni#functions['eruby']      = []
   let g:deoplete#omni#functions['python']     = ['pythoncomplete#Complete']
   let g:deoplete#omni#functions['go']         = []
   let g:deoplete#omni#functions['rust']       = []
   let g:deoplete#omni#functions['markdown']   = []
-  let g:deoplete#omni#functions['html']       = ['htmlcomplete#CompleteTags']
-  let g:deoplete#omni#functions['xml']        = ['htmlcomplete#CompleteTags']
+  let g:deoplete#omni#functions['html']       = []
+  let g:deoplete#omni#functions['xml']        = []
   let g:deoplete#omni#functions['css']        = ['csscomplete#CompleteCSS']
   let g:deoplete#omni#functions['scss']       = ['csscomplete#CompleteCSS']
   let g:deoplete#omni#functions['vim']        = ['Verdin#omnifunc']
