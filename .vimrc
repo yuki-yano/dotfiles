@@ -1216,7 +1216,10 @@ if dein#tap('denite.nvim')
   " nnoremap <silent> <Leader>o :<C-u>Denite outline<CR>
 
   "" jump
-  nnoremap <silent> <Leader><C-o> :<C-u>Denite jump change -auto-preview<CR>
+  nnoremap <silent> <Leader><C-o> :<C-u>Denite jump -auto-preview<CR>
+
+  "" change
+  nnoremap <silent> <Leader>; :<C-u>Denite change -auto-preview<CR>
 
   "" ctags & gtags
   nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context<CR>
