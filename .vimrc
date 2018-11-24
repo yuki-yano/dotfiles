@@ -1099,6 +1099,16 @@ AlterCommand! <cmdwin> mark[ed] MarkedOpen
 
 " nvim-typescript {{{3
 let g:nvim_typescript#diagnostics_enable = 0
+
+function s:set_ts_mappings() abort
+  nnoremap <silent> <buffer> K              :<C-u>TSDefPreview<CR>
+  nnoremap <silent> <buffer> gK             :<C-u>TSTypeDef<CR>
+  nnoremap <silent> <buffer> <LocalLeader>p :<C-u>TSRefs<CR>
+  nnoremap <silent> <buffer> <LocalLeader>r :<C-u>TSRename<CR>
+  nnoremap <silent> <buffer> <LocalLeader>o :<C-u>Denite TSDocumentSymbol -auto-preview<CR>
+endfunction
+
+AutoCmd FileType typescript,typescript.tsx call s:set_ts_mappings()
 " }}}3
 
 " plantuml {{{3
