@@ -1066,13 +1066,9 @@ let g:go_highlight_structs           = 1
 let g:go_highlight_operators         = 1
 let g:go_highlight_build_constraints = 1
 
-AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>r <Plug>(go-run)
+AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>q <Plug>(go-run)
 AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>b <Plug>(go-build)
 AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>t <Plug>(go-test)
-AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>s <Plug>(go-def-split)
-AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>v <Plug>(go-def-vertical)
-AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>t <Plug>(go-def-tab)
-AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>d <Plug>(go-doc)
 " }}}3
 
 " html5 {{{3
@@ -1501,7 +1497,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   let s:deoplete_sources['ruby']           = s:deoplete_default_sources + ['Bignyanco']
   let s:deoplete_sources['eruby']          = s:deoplete_default_sources + ['Bignyanco']
   let s:deoplete_sources['python']         = s:deoplete_default_sources + ['jedi']
-  let s:deoplete_sources['go']             = s:deoplete_default_sources + ['go']
+  let s:deoplete_sources['go']             = s:deoplete_default_sources + ['LanguageClient', 'go']
   let s:deoplete_sources['rust']           = s:deoplete_default_sources
   let s:deoplete_sources['markdown']       = s:deoplete_default_sources
   let s:deoplete_sources['html']           = s:deoplete_default_sources
@@ -1749,11 +1745,14 @@ endif
 
 " LanguageClient {{{3
 let g:LanguageClient_autoStart = 1
-" let g:LanguageClient_diagnosticsEnable = 0
+let g:LanguageClient_diagnosticsEnable = 0
 let g:LanguageClient_serverCommands = {
-\ 'vue':             ['vls'],
-\ 'html':            [],
-\ 'css':             [],
+\ 'typescript':     ['javascript-typescript-stdio'],
+\ 'typescript.tsx': ['javascript-typescript-stdio'],
+\ 'vue':            [],
+\ 'go':             ['go-langserver', '-mode', 'stdio'],
+\ 'html':           [],
+\ 'css':            [],
 \ }
 
 let g:LanguageClient_diagnosticsDisplay = {
@@ -1782,6 +1781,17 @@ let g:LanguageClient_diagnosticsDisplay = {
 \   'signTexthl': 'ALEInfoSign',
 \ },
 \ }
+
+function s:set_lsp_mappings() abort
+  nnoremap <silent> <buffer> K              :<C-u>call LanguageClient#textDocument_definition({'gotoCmd': 'split'})<CR>
+  nnoremap <silent> <buffer> gK             :<C-u>call LanguageClient#textDocument_typeDefinition({'gotoCmd': 'split'})<CR>
+  nnoremap <silent> <buffer> <LocalLeader>r :<C-u>call LanguageClient#textDocument_rename()<CR>
+  nnoremap <silent> <buffer> <LocalLeader>p :<C-u>Denite references -auto-preview<CR>
+  nnoremap <silent> <buffer> <LocalLeader>o :<C-u>Denite documentSymbol -auto-preview<CR>
+  nnoremap <silent> <buffer> <LocalLeader>m :<C-u>call LanguageClient_contextMenu()<CR>
+endfunction
+
+AutoCmd FileType go call s:set_lsp_mappings()
 " }}}3
 
 " Verdin {{{3
@@ -3093,8 +3103,8 @@ let g:quickrun_config = {
 \ }
 \ }
 
-nnoremap <LocalLeader>r :<C-u>QuickRun -mode n<CR>
-vnoremap <LocalLeader>r :<C-u>QuickRun -mode v<CR>
+nnoremap <LocalLeader>q :<C-u>QuickRun -mode n<CR>
+vnoremap <LocalLeader>q :<C-u>QuickRun -mode v<CR>
 nnoremap <silent> <expr> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() : "\<C-c>"
 " }}}3
 
