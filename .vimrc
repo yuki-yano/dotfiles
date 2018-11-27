@@ -305,6 +305,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tweekmonster/startuptime.vim',        {'lazy': 1, 'on_cmd': 'StartupTime'})
   call dein#add('tyru/capture.vim',                    {'lazy': 1, 'on_cmd': 'Capture'})
   call dein#add('tyru/vim-altercmd')
+  call dein#add('wesQ3/vim-windowswap',                {'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#DoWindowSwap']})
   call dein#add('yssl/QFEnter')
   " }}}3
 
@@ -3174,6 +3175,11 @@ let g:tagbar_status_func = 'Tagbar_status_func'
 
 " undotree {{{3
 nnoremap <silent> <Leader>u :<C-u>UndotreeToggle<CR>
+" }}}3
+
+" windowswap {{{3
+let g:windowswap_map_keys = 0
+nnoremap <silent> <C-w><C-w> :call WindowSwap#EasyWindowSwap()<CR>
 " }}}3
 
 " winresizer {{{3
