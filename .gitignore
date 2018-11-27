@@ -10,7 +10,8 @@
 /.vim/viminfo
 /.vim/sessions
 /.vim/view
-/.vim/backup/
+/.vim/backup
+/.vim/spell
 
 # Emacs
 /.emacs.d/ac-comphist.dat
