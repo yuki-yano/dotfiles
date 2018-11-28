@@ -2543,6 +2543,10 @@ if dein#tap('vim-highlightedyank')
 endif
 " }}}3
 
+" highlighturl {{{3
+let g:highlighturl_guifg = '#00D7D7'
+" }}}3
+
 " indent-line {{{3
 let g:indentLine_enabled         = 0
 let g:indentLine_fileTypeExclude = ['json']
