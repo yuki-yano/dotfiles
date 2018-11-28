@@ -107,7 +107,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('airblade/vim-rooter',           {'lazy': 1, 'on_cmd': 'Rooter'})
   call dein#add('cohama/agit.vim',               {'lazy': 1, 'on_cmd': ['Agit', 'AgitFile', 'AgitGit', 'AgitDiff']})
   call dein#add('hotwatermorning/auto-git-diff', {'lazy': 1, 'on_ft': 'gitrebase'})
-  call dein#add('lambdalisue/gina.vim',          {'lazy': 1, 'on_cmd': 'Gina', 'hook_source': 'call Hook_on_post_source_gina()'})
+  call dein#add('lambdalisue/gina.vim')
   call dein#add('lambdalisue/vim-unified-diff')
   call dein#add('rhysd/committia.vim',           {'lazy': 1, 'on_ft': 'gitcommit'})
   call dein#add('rhysd/conflict-marker.vim')
@@ -444,10 +444,10 @@ vnoremap < <gv
 vnoremap > >gv|
 
 "" Tab
-nnoremap gt :<C-u>tablast <Bar> tabedit<CR>
-nnoremap gd :<C-u>tabclose<CR>
-nnoremap gh :<C-u>tabprevious<CR>
-nnoremap gl :<C-u>tabnext<CR>
+nnoremap <silent> gt :<C-u>tablast <Bar> tabedit<CR>
+nnoremap <silent> gd :<C-u>tabclose<CR>
+nnoremap <silent> gh :<C-u>tabprevious<CR>
+nnoremap <silent> gl :<C-u>tabnext<CR>
 
 "" resize
 nnoremap <Left>  :vertical resize -1<CR>
@@ -2571,15 +2571,15 @@ if dein#tap('lightline.vim')
   \ },
   \ 'tabline': {
   \   'left':  [['tabs']],
-  \   'right': [],
+  \   'right': [['git_status'], ['branch']],
   \ },
   \ 'tab': {
   \   'active':   ['tabwinnum', 'filename'],
   \   'inactive': ['tabwinnum', 'filename'],
   \ },
   \ 'component': {
-  \   'spell':        "%{&spell ? 'SPELL' : ''}",
-  \   'paste':        "%{&paste ? 'PASTE' : ''}",
+  \   'spell': "%{&spell ? 'SPELL' : ''}",
+  \   'paste': "%{&paste ? 'PASTE' : ''}",
   \  },
   \ 'component_function': {
   \   'mode':         'Lightline_mode',
@@ -2590,12 +2590,14 @@ if dein#tap('lightline.vim')
   \   'lineinfo':     'Lightline_lineinfo',
   \   'fileencoding': 'Lightline_fileencoding',
   \   'fileformat':   'Lightline_fileformat',
+  \   'branch':       'gina#component#repo#preset',
+  \   'git_status':   'Lightline_git_status',
   \   'anzu':         'anzu#search_status',
   \   'denite':       'Lightline_denite',
   \   'vm_regions':   'Lightline_vm_regions',
   \ },
   \ 'tab_component_function': {
-  \   'tabwinnum':   'Lightline_tab_win_num',
+  \   'tabwinnum': 'Lightline_tab_win_num',
   \ },
   \ 'component_visible_condition': {
   \   'special_mode': "%{Lightline_special_mode() !=# ''}",
@@ -2832,6 +2834,25 @@ if dein#tap('lightline.vim')
     else
       return ''
     endif
+  endfunction
+
+  function Lightline_git_status() abort
+    if gina#component#repo#preset() ==# ''
+      return ''
+    endif
+
+    let l:staged     = gina#component#status#staged()
+    let l:unstaged   = gina#component#status#unstaged()
+    let l:conflicted = gina#component#status#conflicted()
+    let l:untracked  = system('git status --short 2>/dev/null | grep "?" | wc -l | tr -d "\n" | sed "s/ //g"')
+
+    return printf(
+    \ 'S: %s, U: %s, C: %s, ?: %s',
+    \ l:staged     ==# '' ? '0' : l:staged,
+    \ l:unstaged   ==# '' ? '0' : l:unstaged,
+    \ l:conflicted ==# '' ? '0' : l:conflicted,
+    \ l:untracked  ==# '' ? '0' : l:untracked,
+    \)
   endfunction
 endif
 " }}}3

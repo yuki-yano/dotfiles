@@ -73,12 +73,11 @@ let s:p.visual.middle   = [[s:base1,  s:base03]]
 
 let s:p.tabline.left = [[s:blue,  s:base02]]
 let s:p.tabline.right = [
-\ [s:base1, s:base01],
-\ [s:base2, s:base01],
-\ [s:blue,  s:base01],
+\ [s:base3, s:base02],
+\ [s:blue,  s:base03],
 \ ]
 let s:p.tabline.tabsel  = [[s:orange, s:base03]]
-let s:p.tabline.middle  = [[s:base1,  s:base02]]
+let s:p.tabline.middle  = [[s:base1,  s:base03]]
 
 let s:ale = [
 \ [s:base3, s:red,    s:bold],
