@@ -52,6 +52,7 @@ cask install sublime-text
 cask install tower
 cask install tripmode
 cask install vagrant
+cask install vimr
 cask install virtualbox
 cask install visual-studio-code
 cask install vivaldi

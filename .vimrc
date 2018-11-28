@@ -502,6 +502,24 @@ if has('nvim')
 
   " block cursor for insert
   " set guicursor=
+
+  " Set neovim embedded terminal colors
+  let g:terminal_color_0  = '#1e2132'
+  let g:terminal_color_1  = '#e27878'
+  let g:terminal_color_2  = '#b4be82'
+  let g:terminal_color_3  = '#e2a478'
+  let g:terminal_color_4  = '#84a0c6'
+  let g:terminal_color_5  = '#a093c7'
+  let g:terminal_color_6  = '#89b8c2'
+  let g:terminal_color_7  = '#c6c8d1'
+  let g:terminal_color_8  = '#6b7089'
+  let g:terminal_color_9  = '#e98989'
+  let g:terminal_color_10 = '#c0ca8e'
+  let g:terminal_color_11 = '#e9b189'
+  let g:terminal_color_12 = '#91acd1'
+  let g:terminal_color_13 = '#ada0d3'
+  let g:terminal_color_14 = '#95c4ce'
+  let g:terminal_color_15 = '#d2d4de'
 endif
 
 "" Appearance
@@ -3270,33 +3288,33 @@ nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus<CR>
 syntax enable
 
 " Highlight {{{2
-AutoCmd ColorScheme * highlight CursorColumn ctermfg=none ctermbg=236
-AutoCmd ColorScheme * highlight CursorLine   ctermfg=none ctermbg=236
-AutoCmd ColorScheme * highlight CursorLineNr ctermfg=253  ctermbg=none
-AutoCmd ColorScheme * highlight LineNr       ctermfg=241  ctermbg=none
-AutoCmd ColorScheme * highlight NonText      ctermfg=60   ctermbg=none
-AutoCmd ColorScheme * highlight Search       ctermfg=68   ctermbg=232
-AutoCmd ColorScheme * highlight Todo         ctermfg=229  ctermbg=none
-AutoCmd ColorScheme * highlight Visual       ctermfg=159  ctermbg=23
+AutoCmd ColorScheme * highlight CursorColumn ctermfg=none ctermbg=236  guifg=none    guibg=#303030
+AutoCmd ColorScheme * highlight CursorLine   ctermfg=none ctermbg=236  guifg=none    guibg=#303030
+AutoCmd ColorScheme * highlight CursorLineNr ctermfg=253  ctermbg=none guifg=#DADADA guibg=none
+AutoCmd ColorScheme * highlight LineNr       ctermfg=241  ctermbg=none guifg=#252525 guibg=none
+AutoCmd ColorScheme * highlight NonText      ctermfg=60   ctermbg=none guifg=#5F5F87 guibg=none
+AutoCmd ColorScheme * highlight Search       ctermfg=68   ctermbg=232  guifg=#5F87D7 guibg=#080808
+AutoCmd ColorScheme * highlight Todo         ctermfg=229  ctermbg=none guifg=#FFFFAF guibg=none
+AutoCmd ColorScheme * highlight Visual       ctermfg=159  ctermbg=23   guifg=#AFFFFF guibg=#005F5F
 
-AutoCmd ColorScheme * highlight ALEError                ctermfg=0    ctermbg=203
-AutoCmd ColorScheme * highlight ALEWarning              ctermfg=0    ctermbg=229
-AutoCmd ColorScheme * highlight BrighTestHighlight      ctermfg=30   ctermbg=none
-AutoCmd ColorScheme * highlight CleverFDefaultLabel     ctermfg=9    ctermbg=236  cterm=underline,bold
-AutoCmd ColorScheme * highlight DeniteLine              ctermfg=111  ctermbg=236
-AutoCmd ColorScheme * highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold
-AutoCmd ColorScheme * highlight HighlightedyankRegion   ctermfg=1    ctermbg=none
-AutoCmd ColorScheme * highlight MatchParen              ctermfg=none ctermbg=none cterm=underline
-AutoCmd ColorScheme * highlight MatchParenCur           ctermfg=none ctermbg=none cterm=bold
-AutoCmd ColorScheme * highlight MatchWord               ctermfg=none ctermbg=none cterm=underline
-AutoCmd ColorScheme * highlight MatchWordCur            ctermfg=none ctermbg=none cterm=bold
-AutoCmd ColorScheme * highlight YankRoundRegion         ctermfg=209  ctermbg=237
-AutoCmd ColorScheme * highlight deniteSource_grepFile   ctermfg=6    ctermbg=none
-AutoCmd ColorScheme * highlight deniteSource_grepLineNR ctermfg=247  ctermbg=none
+AutoCmd ColorScheme * highlight ALEError                ctermfg=0    ctermbg=203                       guifg=#1E2132 guibg=#FF5F5F
+AutoCmd ColorScheme * highlight ALEWarning              ctermfg=0    ctermbg=229                       guifg=#1E2132 guibg=#FFFFAF
+AutoCmd ColorScheme * highlight BrighTestHighlight      ctermfg=30   ctermbg=none                      guifg=#008787 guibg=none
+AutoCmd ColorScheme * highlight CleverFDefaultLabel     ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,none
+AutoCmd ColorScheme * highlight DeniteLine              ctermfg=111  ctermbg=236                       guifg=#87AFFF guibg=#303030
+AutoCmd ColorScheme * highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,none
+AutoCmd ColorScheme * highlight HighlightedyankRegion   ctermfg=1    ctermbg=none                      guifg=#E27878 guibg=none
+AutoCmd ColorScheme * highlight MatchParen              ctermfg=none ctermbg=none cterm=underline      guifg=none    guibg=none    gui=underline
+AutoCmd ColorScheme * highlight MatchParenCur           ctermfg=none ctermbg=none cterm=bold           guifg=none    guibg=none    gui=bold
+AutoCmd ColorScheme * highlight MatchWord               ctermfg=none ctermbg=none cterm=underline      guifg=none    guibg=none    gui=underline
+AutoCmd ColorScheme * highlight MatchWordCur            ctermfg=none ctermbg=none cterm=bold           guifg=none    guibg=none    gui=bold
+AutoCmd ColorScheme * highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
+AutoCmd ColorScheme * highlight deniteSource_grepFile   ctermfg=6    ctermbg=none                      guifg=#89B8C2 guibg=none
+AutoCmd ColorScheme * highlight deniteSource_grepLineNR ctermfg=247  ctermbg=none                      guifg=#9E9E9E guibg=none
 
 " Fix lightline
-AutoCmd ColorScheme * highlight StatusLine   ctermfg=0 ctermbg=7
-AutoCmd ColorScheme * highlight StatusLineNC ctermfg=0 ctermbg=7
+" AutoCmd ColorScheme * highlight StatusLine   ctermfg=0 ctermbg=none guifg=#1E2132 guibg=#C6C8D1
+" AutoCmd ColorScheme * highlight StatusLineNC ctermfg=0 ctermbg=none guifg=#1E2132 guibg=#C6C8D1
 " }}}2
 
 " iceberg {{{2
