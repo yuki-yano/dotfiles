@@ -50,7 +50,7 @@
   tool = Kaleidoscope
 
 [rebase]
-	autostash = true
+  autostash = true
 
 [help]
   autocorrect = -1
