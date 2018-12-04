@@ -123,6 +123,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('Shougo/neosnippet')
     call dein#add('Shougo/neosnippet-snippets')
     call dein#add('jsfaint/gen_tags.vim')
+    call dein#add('tbodt/deoplete-tabnine', {'build': 'bash install.sh'})
     call dein#add('thalesmello/webcomplete.vim')
     call dein#add('ujihisa/neco-look')
     call dein#add('wellle/tmux-complete.vim')
@@ -1454,11 +1455,12 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
 
   " Sources
   " call deoplete#custom#source('lsp',            'rank', 1200)
-  call deoplete#custom#source('neosnippet',     'rank', 1300)
-  call deoplete#custom#source('LanguageClient', 'rank', 1200)
-  call deoplete#custom#source('typescript',     'rank', 1200)
-  call deoplete#custom#source('go',             'rank', 1200)
-  call deoplete#custom#source('vim',            'rank', 1200)
+  " call deoplete#custom#source('LanguageClient', 'rank', 1300)
+  call deoplete#custom#source('neosnippet',     'rank', 1400)
+  call deoplete#custom#source('typescript',     'rank', 1300)
+  call deoplete#custom#source('go',             'rank', 1300)
+  call deoplete#custom#source('vim',            'rank', 1300)
+  call deoplete#custom#source('tabnine',        'rank', 1200)
   call deoplete#custom#source('around',         'rank', 1100)
   call deoplete#custom#source('buffer',         'rank', 1000)
   call deoplete#custom#source('gtags',          'rank',  900)
@@ -1477,7 +1479,8 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   call deoplete#custom#source('look',           'rank',  100)
 
   " call deoplete#custom#source('lsp',            'mark', '[lsp]')
-  call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
+  " call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
+  call deoplete#custom#source('tabnine',        'mark', '[tabnine]')
   call deoplete#custom#source('around',         'mark', '[around]')
   call deoplete#custom#source('buffer',         'mark', '[buffer]')
   call deoplete#custom#source('dictionary',     'mark', '[dict]')
@@ -1502,8 +1505,9 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
 
   " max_candidates
   " call deoplete#custom#source('lsp',            'max_candidates', 5)
+  " call deoplete#custom#source('LanguageClient', 'max_candidates', 5)
   call deoplete#custom#source('neosnippet',     'max_candidates', 3)
-  call deoplete#custom#source('LanguageClient', 'max_candidates', 5)
+  call deoplete#custom#source('tabnine',        'max_candidates', 5)
   call deoplete#custom#source('typescript',     'max_candidates', 5)
   call deoplete#custom#source('vim',            'max_candidates', 5)
   call deoplete#custom#source('around',         'max_candidates', 5)
@@ -1524,7 +1528,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   call deoplete#custom#source('dictionary',     'max_candidates', 5)
   call deoplete#custom#source('look',           'max_candidates', 5)
 
-  let s:deoplete_default_sources = ['neosnippet', 'gtags', 'tag', 'around', 'buffer', 'omni', 'member', 'syntax', 'file', 'dictionary', 'look', 'tmux-complete', 'webcomplete']
+  let s:deoplete_default_sources = ['neosnippet', 'tabnine', 'gtags', 'tag', 'around', 'buffer', 'omni', 'member', 'syntax', 'file', 'dictionary', 'look', 'tmux-complete', 'webcomplete']
   let s:deoplete_sources                   = {}
   let s:deoplete_sources['_']              = s:deoplete_default_sources
   let s:deoplete_sources['javascript']     = s:deoplete_default_sources + ['ternjs', 'flow']
