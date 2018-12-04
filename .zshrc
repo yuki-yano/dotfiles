@@ -18,7 +18,7 @@ source $ZPLG_HOME/bin/zplugin.zsh
 
 # sync loading {{{
 zplugin light b4b4r07/zsh-vimode-visual
-zplugin light yukiycino-dotfiles/zsh-abbreviations
+zplugin light yukiycino-dotfiles/zsh-abbrev-alias
 zplugin light yukiycino-dotfiles/zsh-extra-abbrev
 zplugin light yukiycino-dotfiles/zsh-show-buffer-stack
 # }}}
@@ -183,51 +183,41 @@ function set_fast_theme() {
 }
 # }}}
 
-# abbreviations {{{
-typeset -A abbreviations
+# abbrev-alias {{{
 
-abbreviations=(
-"ga"     "git add"
-"gaa"    "git add --all"
-"gre"    "git reset"
-"gref"   "git reset --"
-"gun"    "git unstage"
-"grec"   "git recover"
-"grm"    "git rm"
-"gs"     "git status --short --branch"
-"gb"     "git branch"
-"gbd"    "git branch -d"
-"gd"     "git diff"
-"gdw"    "git diff --color-words"
-"gdc"    "git diff --cached"
-"gdcw"   "git diff --cached --color-words"
-"gmv"    "git mv"
-"gco"    "git checkout"
-"gcof"   "git checkout --"
-"gfo"    "git forget"
-"gci"    "git commit"
-"gcia"   "git commit --amend --no-edit"
-"gp"     "git push"
-"gst"    "git stash"
-"gstp"   "git stash pop"
-"gq"     "git qsave"
-"gca"    "git cancel"
-"gbr"    "git browse-remote"
-"be"     "bundle exec"
-"dco"    "docker-compose"
-"t"      "tms"
-"tk"     "tmk"
-"tl"     "tmux list-sessions"
-"ta"     "tmux attach-session"
-"tw"     "tmux swap-pane -t"
-"b"      "brew"
-"bu"     "brew update"
-"ch"     "cheat"
-"chs"    "cheat --shell"
-)
+if which abbrev-alias > /dev/null 2>&1; then
+  abbrev-alias g="git"
+  abbrev-alias gs="git status --short --branch"
+  abbrev-alias ga="git add"
+  abbrev-alias gaa="git add --all"
+  abbrev-alias gre="git reset"
+  abbrev-alias gref="git reset --"
+  abbrev-alias gun="git unstage"
+  abbrev-alias grec="git recover"
+  abbrev-alias grm="git rm"
+  abbrev-alias gb="git branch"
+  abbrev-alias gd="git diff"
+  abbrev-alias gdw="git diff --color-words"
+  abbrev-alias gdc="git diff --cached"
+  abbrev-alias gdcw="git diff --cached --color-words"
+  abbrev-alias gco="git checkout"
+  abbrev-alias gcof="git checkout --"
+  abbrev-alias gci="git commit"
+  abbrev-alias gst="git stash"
+  abbrev-alias gstp="git stash pop"
+  abbrev-alias gq="git qsave"
+  abbrev-alias gbr="git browse-remote"
+  abbrev-alias be="bundle exec"
+  abbrev-alias dco="docker-compose"
+  abbrev-alias t="tms"
+  abbrev-alias tk="tmk"
+  abbrev-alias tw="tmux swap-pane -t"
+  abbrev-alias ch="cheat"
+  abbrev-alias chs="cheat --shell"
+fi
 
 function _magic-abbrev-expand-and-accept-line() {
-  zle magic-abbrev-expand
+  zle __abbrev_alias::magic_abbrev_expand
   zle accept-line
 }
 zle -N magic-abbrev-expand-and-accept-line _magic-abbrev-expand-and-accept-line
@@ -741,8 +731,8 @@ bindkey -v
 KEYTIMEOUT=15
 
 bindkey -M viins '^i'  fzf-direct-completion
-bindkey -M viins ' '   magic-abbrev-expand-and-space
-bindkey -M viins '^x ' no-magic-abbrev-expand
+bindkey -M viins ' '   __abbrev_alias::magic_abbrev_expand_and_space
+bindkey -M viins '^x ' __abbrev_alias::no_magic_abbrev_expand
 bindkey -M viins '^ '  extra-abbrev
 bindkey -M viins '^m'  magic-abbrev-expand-and-accept-line
 bindkey -M viins '^]'  insert-last-word
