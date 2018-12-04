@@ -74,9 +74,6 @@ zplugin light bootandy/dust
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*apple-darwin*" mv"ripgrep*/rg -> ${ZPFX}/bin/rg"
 zplugin light BurntSushi/ripgrep
 
-zplugin ice lucid as"program" wait"0" depth"1" atclone'./build.sh && mv ag ${ZPFX}/bin/ag' atpull'%atclone'
-zplugin light ggreer/the_silver_searcher
-
 zplugin ice lucid as"program" wait"0" depth"1" atclone'perl Makefile.PL; make' atpull'%atclone' pick"ack"
 zplugin light beyondgrep/ack2
 

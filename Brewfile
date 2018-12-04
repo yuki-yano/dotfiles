@@ -60,6 +60,7 @@ install redis
 install sqlite
 
 ## Utils
+install ag
 install asciinema
 install autoconf
 install automake
