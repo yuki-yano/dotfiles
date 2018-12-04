@@ -56,6 +56,9 @@ zplugin light jingweno/ccat
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/bat -> ${ZPFX}/bin/bat"
 zplugin light sharkdp/bat
 
+zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"peep -> ${ZPFX}/bin/peep"
+zplugin light ryochack/peep
+
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*macos*" mv"exa-macos-x86_64 -> ${ZPFX}/bin/exa"
 zplugin light ogham/exa
 
@@ -278,6 +281,12 @@ fi
 if whence bat > /dev/null; then
   alias bat='bat --theme zenburn'
   alias b='bat --paging never --theme zenburn --style changes'
+fi
+# }}}
+
+# peep {{{
+if whence peep > /dev/null; then
+  alias l=peep
 fi
 # }}}
 
