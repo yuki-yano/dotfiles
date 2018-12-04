@@ -89,7 +89,7 @@ common-ctags-maps:\
 	:langmap=Fortran\:.f.for.ftn.f77.f90.f95:\
 	:langmap=HTML\:.htm.html:\
 	:langmap=Java\:.java:\
-	:langmap=JavaScript\:.js:\
+	:langmap=JavaScript\:.js.jsx:\
 	:langmap=Lisp\:.cl.clisp.el.l.lisp.lsp:\
 	:langmap=Lua\:.lua:\
 # Make	[Mm]akefile GNUmakefile			(out of support)
