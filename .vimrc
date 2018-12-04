@@ -987,7 +987,7 @@ let g:ale_change_sign_column_color = 1
 let g:ale_lint_on_text_changed     = 'never'
 let g:ale_lint_on_insert_leave     = 0
 let g:ale_echo_msg_format          = '[%linter%] %s'
-let g:ale_virtualtext_cursor       = 1
+" let g:ale_virtualtext_cursor       = 1
 
 AutoCmd FileType vue let b:ale_linter_aliases = ['vue', 'typescript'] | let b:ale_linters = g:ale_linters['vue']
 AutoCmd FileType zsh ALEDisableBuffer
@@ -1067,7 +1067,7 @@ let g:formatters_markdown = ['prettier']
 
 " echodoc {{{3
 let g:echodoc#enable_at_startup = 1
-let g:echodoc#type              = 'virtual'
+" let g:echodoc#type              = 'virtual'
 " }}}3
 
 " gen_tags {{{3
