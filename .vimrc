@@ -129,7 +129,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
     " call dein#add('blueyed/vim-auto-programming', {'rev': 'neovim'})
     " call dein#add('fishbullet/deoplete-ruby',   {'lazy': 1, 'on_ft': ['ruby', 'eruby']})
-    call dein#add('Shougo/deoplete-lsp')
     call dein#add('autozimu/LanguageClient-neovim', {'rev': 'next', 'build': 'bash install.sh'})
     call dein#add('carlitux/deoplete-ternjs',       {'lazy': 1, 'on_ft': 'javascript'})
     call dein#add('machakann/vim-Verdin',           {'lazy': 1, 'on_ft': 'vim'})
@@ -1386,30 +1385,24 @@ vnoremap          <Enter>         "sy:ProjectGrepPreview<Space><C-r>=substitute(
 
 " deoplete.nvim && neosnippet.vim && vim-smartinput {{{3
 if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinput')
-  " Variables
-  let g:deoplete#enable_at_startup          = 1
-  let g:deoplete#enable_smart_case          = &smartcase
-  let g:deoplete#enable_ignore_case         = &ignorecase
-  let g:deoplete#enable_camel_case          = 1
-  let g:deoplete#enable_on_insert_enter     = 0
-  let g:deoplete#auto_complete_delay        = 50
-  let g:deoplete#enable_refresh_always      = 1
-  let g:deoplete#auto_complete_start_length = 2
-
-  let g:deoplete#skip_chars              = ['(', ')', '<', '>']
-  let g:deoplete#file#enable_buffer_path = 1
-  let g:deoplete#keyword_patterns        = {}
-  let g:deoplete#keyword_patterns._      = '[a-zA-Z_]\k*'
-
+  " Default Settings
+  let g:deoplete#enable_at_startup = 1
   let g:neosnippet#data_directory = expand('~/.cache/vim/neosnippet')
+
+  call deoplete#custom#option({
+  \ 'auto_complete_delay': 50,
+  \ 'min_pattern_length': 2,
+  \ 'camel_case': v:true,
+  \ 'skip_chars': ['(', ')', '<', '>'],
+  \ })
 
   " Keymap
   imap <silent> <expr> <BS>  pumvisible() ? "\<BS>" : deoplete#smart_close_popup() . "\<Plug>(smartinput_BS)"
   imap <silent> <expr> <C-h> pumvisible() ? "\<BS>" : deoplete#smart_close_popup() . "\<Plug>(smartinput_C-h)"
   imap <silent> <expr> <CR>  pumvisible() ? "\<CR>" : deoplete#smart_close_popup() . "\<Plug>(smartinput_CR)"
-  inoremap <silent> <expr> <C-g> deoplete#undo_completion()
 
-  inoremap <expr> <C-n> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : deoplete#mappings#manual_complete()
+  inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : deoplete#mappings#manual_complete()
+  inoremap <silent> <expr> <C-g> pumvisible() ? deoplete#smart_close_popup() : "\<C-g>"
 
   function! s:check_back_space() abort
     let col = col('.') - 1
@@ -1444,11 +1437,6 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   \ 'converter_auto_delimiter',
   \ ])
 
-  " deoplete-lsp
-  " call lsp#server#add('javascript', ['javascript-typescript-stdio'])
-  " call lsp#server#add('ruby',       ['solargraph', 'studio'])
-  " call lsp#server#add('python',     ['pyls'])
-
   " deoplete-go
   let g:deoplete#sources#go#gocode_binary   = $GOPATH . '/bin/gocode'
   let g:deoplete#sources#go#sort_class      = ['package', 'func', 'type', 'var', 'const']
@@ -1457,7 +1445,6 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   let g:deoplete#sources#go#package_dot     = 1
 
   " Sources
-  " call deoplete#custom#source('lsp',            'rank', 1200)
   " call deoplete#custom#source('LanguageClient', 'rank', 1300)
   call deoplete#custom#source('neosnippet',     'rank', 1400)
   call deoplete#custom#source('typescript',     'rank', 1300)
@@ -1481,9 +1468,8 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   call deoplete#custom#source('dictionary',     'rank',  200)
   call deoplete#custom#source('look',           'rank',  100)
 
-  " call deoplete#custom#source('lsp',            'mark', '[lsp]')
   " call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
-  call deoplete#custom#source('tabnine',        'mark', '[tabnine]')
+  call deoplete#custom#source('tabnine',        'mark', '[TN]')
   call deoplete#custom#source('around',         'mark', '[around]')
   call deoplete#custom#source('buffer',         'mark', '[buffer]')
   call deoplete#custom#source('dictionary',     'mark', '[dict]')
@@ -1498,16 +1484,15 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   call deoplete#custom#source('tmux-complete',  'mark', '[tmux]')
   call deoplete#custom#source('webcomplete',    'mark', '[web]')
 
-  call deoplete#custom#source('typescript',    'mark', '[TypeScript]')
+  call deoplete#custom#source('typescript',    'mark', '[TS]')
   call deoplete#custom#source('tern',          'mark', '[tern]')
   call deoplete#custom#source('flow',          'mark', '[Flow]')
-  call deoplete#custom#source('Bignyanco',     'mark', '[NeoDict]')
+  call deoplete#custom#source('Bignyanco',     'mark', '[Ruby]')
   call deoplete#custom#source('jedi',          'mark', '[jedi]')
   call deoplete#custom#source('go',            'mark', '[Go]')
   call deoplete#custom#source('vim',           'mark', '[vim]')
 
   " max_candidates
-  " call deoplete#custom#source('lsp',            'max_candidates', 5)
   " call deoplete#custom#source('LanguageClient', 'max_candidates', 5)
   call deoplete#custom#source('neosnippet',     'max_candidates', 3)
   call deoplete#custom#source('tabnine',        'max_candidates', 5)
@@ -1531,7 +1516,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   call deoplete#custom#source('dictionary',     'max_candidates', 5)
   call deoplete#custom#source('look',           'max_candidates', 5)
 
-  let s:deoplete_default_sources = ['neosnippet', 'tabnine', 'gtags', 'tag', 'around', 'buffer', 'omni', 'member', 'syntax', 'file', 'dictionary', 'look', 'tmux-complete', 'webcomplete']
+  let s:deoplete_default_sources = ['tabnine', 'gtags', 'tag', 'around', 'buffer', 'omni', 'member', 'syntax', 'file', 'dictionary', 'look', 'tmux-complete', 'webcomplete']
   let s:deoplete_sources                   = {}
   let s:deoplete_sources['_']              = s:deoplete_default_sources
   let s:deoplete_sources['javascript']     = s:deoplete_default_sources + ['ternjs', 'flow']
@@ -1552,37 +1537,40 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   let s:deoplete_sources['zsh']            = s:deoplete_default_sources
   call deoplete#custom#option('sources', s:deoplete_sources)
 
-  let g:deoplete#omni#input_patterns                   = {}
-  let g:deoplete#omni#input_patterns['_']              = []
-  let g:deoplete#omni#input_patterns['javascript']     = ['\w+', '[^. \t0-9]\.([a-zA-Z_]\w*)?']
-  let g:deoplete#omni#input_patterns['typescript']     = ['(\.|::)\w*']
-  let g:deoplete#omni#input_patterns['typescript.tsx'] = ['(\.|::)\w*']
-  let g:deoplete#omni#input_patterns['tsx']            = ['(\.|::)\w*']
-  let g:deoplete#omni#input_patterns['vue']            = ['\w+', '[^. \t0-9]\.([a-zA-Z_]\w*)?', '<[^>]*\s[[:alnum:]-]*', '\w+[):;]?\s+\w*', '[@!]']
-  let g:deoplete#omni#input_patterns['ruby']           = ['\w+', '[^. *\t]\.\w*', '[a-zA-Z_]\w*::']
-  let g:deoplete#omni#input_patterns['eruby']          = ['\w+', '[^. *\t]\.\w*', '[a-zA-Z_]\w*::', '<', '<[^>]*\s[[:alnum:]-]*']
-  let g:deoplete#omni#input_patterns['python']         = ['\w+', '[^. *\t]\.\h\w*\','\h\w*::']
-  let g:deoplete#omni#input_patterns['html']           = []
-  let g:deoplete#omni#input_patterns['xml']            = []
-  let g:deoplete#omni#input_patterns['css']            = ['\w+', '\w+[):;]?\s+\w*', '[@!]']
-  let g:deoplete#omni#input_patterns['scss']           = ['\w+', '\w+[):;]?\s+\w*', '[@!]']
+  let s:deoplete_omni_input_patterns                   = {}
+  let s:deoplete_omni_input_patterns['_']              = []
+  let s:deoplete_omni_input_patterns['javascript']     = ['\w+', '[^. \t0-9]\.([a-zA-Z_]\w*)?']
+  let s:deoplete_omni_input_patterns['typescript']     = ['(\.|::)\w*']
+  let s:deoplete_omni_input_patterns['typescript.tsx'] = ['(\.|::)\w*']
+  let s:deoplete_omni_input_patterns['tsx']            = ['(\.|::)\w*']
+  let s:deoplete_omni_input_patterns['vue']            = ['\w+', '[^. \t0-9]\.([a-zA-Z_]\w*)?', '<[^>]*\s[[:alnum:]-]*', '\w+[):;]?\s+\w*', '[@!]']
+  let s:deoplete_omni_input_patterns['ruby']           = ['\w+', '[^. *\t]\.\w*', '[a-zA-Z_]\w*::']
+  let s:deoplete_omni_input_patterns['eruby']          = ['\w+', '[^. *\t]\.\w*', '[a-zA-Z_]\w*::', '<', '<[^>]*\s[[:alnum:]-]*']
+  let s:deoplete_omni_input_patterns['python']         = ['\w+', '[^. *\t]\.\h\w*\','\h\w*::']
+  let s:deoplete_omni_input_patterns['html']           = []
+  let s:deoplete_omni_input_patterns['xml']            = []
+  let s:deoplete_omni_input_patterns['css']            = ['\w+', '\w+[):;]?\s+\w*', '[@!]']
+  let s:deoplete_omni_input_patterns['scss']           = ['\w+', '\w+[):;]?\s+\w*', '[@!]']
+  call deoplete#custom#var('omni', 'input_patterns', s:deoplete_omni_input_patterns)
 
-  let g:deoplete#omni#functions               = {}
-  let g:deoplete#omni#functions['javascript'] = ['javascriptcomplete#CompleteJS']
-  let g:deoplete#omni#functions['typescript'] = ['javascriptcomplete#CompleteJS']
-  let g:deoplete#omni#functions['tsx']        = ['javascriptcomplete#CompleteJS']
-  let g:deoplete#omni#functions['vue']        = ['javascriptcomplete#CompleteJS', 'csscomplete#CompleteCSS']
-  let g:deoplete#omni#functions['eruby']      = []
-  let g:deoplete#omni#functions['python']     = ['pythoncomplete#Complete']
-  let g:deoplete#omni#functions['go']         = []
-  let g:deoplete#omni#functions['rust']       = []
-  let g:deoplete#omni#functions['markdown']   = []
-  let g:deoplete#omni#functions['html']       = []
-  let g:deoplete#omni#functions['xml']        = []
-  let g:deoplete#omni#functions['css']        = ['csscomplete#CompleteCSS']
-  let g:deoplete#omni#functions['scss']       = ['csscomplete#CompleteCSS']
-  let g:deoplete#omni#functions['vim']        = ['Verdin#omnifunc']
-  let g:deoplete#omni#functions['zsh']        = []
+  let s:deoplete_omni_functions                   = {}
+  let s:deoplete_omni_functions['javascript']     = ['javascriptcomplete#CompleteJS']
+  let s:deoplete_omni_functions['typescript']     = ['javascriptcomplete#CompleteJS']
+  let s:deoplete_omni_functions['typescript.tsx'] = ['javascriptcomplete#CompleteJS']
+  let s:deoplete_omni_functions['vue']            = ['javascriptcomplete#CompleteJS', 'csscomplete#CompleteCSS']
+  let s:deoplete_omni_functions['ruby']           = []
+  let s:deoplete_omni_functions['eruby']          = []
+  let s:deoplete_omni_functions['python']         = ['pythoncomplete#Complete']
+  let s:deoplete_omni_functions['go']             = []
+  let s:deoplete_omni_functions['rust']           = []
+  let s:deoplete_omni_functions['markdown']       = []
+  let s:deoplete_omni_functions['html']           = []
+  let s:deoplete_omni_functions['xml']            = []
+  let s:deoplete_omni_functions['css']            = ['csscomplete#CompleteCSS']
+  let s:deoplete_omni_functions['scss']           = ['csscomplete#CompleteCSS']
+  let s:deoplete_omni_functions['vim']            = ['Verdin#omnifunc']
+  let s:deoplete_omni_functions['zsh']            = []
+  call deoplete#custom#source('omni', 'functions', s:deoplete_omni_functions)
 
   " smartinput
   call smartinput#map_to_trigger('i', '<Space>', '<Space>', '<Space>')
