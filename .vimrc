@@ -537,7 +537,7 @@ set list listchars=tab:^\ ,trail:_,eol:$,extends:>,precedes:<
 set matchpairs+=<:>
 set matchtime=1
 set number
-set pumheight=25
+set pumheight=40
 set scrolloff=5
 set showtabline=2
 set spellcapcheck=
