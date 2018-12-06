@@ -1424,6 +1424,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
   " endfunction
 
   "" neosnippet
+  inoremap <silent> <expr> <C-s> pumvisible() ? deoplete#smart_close_popup() : deoplete#manual_complete(['neosnippet'])
   imap <silent> <C-k> <Plug>(neosnippet_expand_or_jump)
   smap <silent> <C-k> <Plug>(neosnippet_expand_or_jump)
   xmap <silent> <C-k> <Plug>(neosnippet_expand_target)
