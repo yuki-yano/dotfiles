@@ -1243,7 +1243,7 @@ if dein#tap('denite.nvim')
   nnoremap <silent> <Leader>; :<C-u>Denite change -auto-preview<CR>
 
   "" ctags & gtags
-  nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context<CR>
+  nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context tag -auto-preview<CR>
   " nnoremap <silent> <Leader><Leader><C-]> :<C-u>DeniteCursorWord gtags_grep<CR>
 
   "" yank
