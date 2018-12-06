@@ -2655,7 +2655,6 @@ if dein#tap('lightline.vim')
   \ 'gina-blame',
   \ ]
 
-
   let s:lightline_ft_to_mode_hash = {
   \ 'help':        'Help',
   \ 'diff':        'Diff',
