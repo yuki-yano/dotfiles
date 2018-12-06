@@ -914,6 +914,7 @@ AutoCmd CmdwinEnter * call <SID>init_cmdwin()
 
 function! s:init_cmdwin() abort
   set number | set norelativenumber
+  nnoremap <buffer> <Enter> <Enter>
   nnoremap <buffer> <silent> q :<C-u>quit<CR>
   inoremap <buffer> <C-c> <C-c>
   inoremap <buffer> <C-c> <Esc>l<C-c>
@@ -1373,11 +1374,14 @@ AlterCommand! <cmdwin> fg[rep] ProjectGrepPreview
 let g:fzf_preview_filelist_command = 'rg --files --hidden --follow --glob "!.git/*"'
 let g:fzf_preview_grep_preview_cmd = 'preview_fzf_grep'
 
-nnoremap <silent> <Leader>p :<C-u>ProjectFilesPreview<CR>
-nnoremap <silent> <Leader>g :<C-u>GitFilesPreview<CR>
-nnoremap <silent> <Leader>b :<C-u>BuffersPreview<CR>
-nnoremap <silent> <Leader>o :<C-u>ProjectMruFilesPreview<CR>
-nnoremap <silent> <Leader>O :<C-u>MruFilesPreview<CR>
+nnoremap <silent> <Leader>p       :<C-u>ProjectFilesPreview<CR>
+nnoremap <silent> <Leader>g       :<C-u>GitFilesPreview<CR>
+nnoremap <silent> <Leader>b       :<C-u>BuffersPreview<CR>
+nnoremap <silent> <Leader>o       :<C-u>ProjectMruFilesPreview<CR>
+nnoremap <silent> <Leader>O       :<C-u>MruFilesPreview<CR>
+nnoremap          <Enter>         :<C-u>ProjectGrepPreview<Space>
+nnoremap          <Leader><Enter> "syiw:ProjectGrepPreview<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR><CR>
+vnoremap          <Enter>         "sy:ProjectGrepPreview<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR><CR>
 " }}}3
 
 " deoplete.nvim && neosnippet.vim && vim-smartinput {{{3
@@ -2089,7 +2093,7 @@ let g:ctrlsf_winsize         = '30%'
 " }}}3
 
 " easy-align {{{3
-vnoremap <Enter> :EasyAlign<CR>
+vnoremap ga :EasyAlign<CR>
 
 let g:easy_align_delimiters = {
 \ '>': {
