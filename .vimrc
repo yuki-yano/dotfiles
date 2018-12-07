@@ -301,6 +301,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('simeji/winresizer',                   {'lazy': 1, 'on_cmd': 'WinResizerStartResize'})
   call dein#add('szw/vim-maximizer',                   {'lazy': 1, 'on_cmd': 'MaximizerToggle'})
   call dein#add('thinca/vim-quickrun',                 {'lazy': 1, 'on_cmd': 'QuickRun'})
+  call dein#add('thinca/vim-ref')
   call dein#add('tpope/vim-dispatch',                  {'lazy': 1, 'on_cmd': ['Dispatch', 'Focus', 'Start']})
   call dein#add('tweekmonster/startuptime.vim',        {'lazy': 1, 'on_cmd': 'StartupTime'})
   call dein#add('tyru/capture.vim',                    {'lazy': 1, 'on_cmd': 'Capture'})
@@ -1495,7 +1496,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet') && dein#tap('vim-smartinp
 
   " max_candidates
   " call deoplete#custom#source('LanguageClient', 'max_candidates', 5)
-  call deoplete#custom#source('neosnippet',     'max_candidates', 3)
+  call deoplete#custom#source('neosnippet',     'max_candidates', 10)
   call deoplete#custom#source('tabnine',        'max_candidates', 5)
   call deoplete#custom#source('typescript',     'max_candidates', 5)
   call deoplete#custom#source('vim',            'max_candidates', 5)
