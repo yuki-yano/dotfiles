@@ -2225,6 +2225,8 @@ vmap V <Plug>(expand_region_shrink)
 " }}}3
 
 " edgemotion {{{3
+nmap <silent> <Leader>j <Plug>(edgemotion-j)
+nmap <silent> <Leader>k <Plug>(edgemotion-k)
 xmap <silent> <Leader>j <Plug>(edgemotion-j)
 xmap <silent> <Leader>k <Plug>(edgemotion-k)
 " }}}3
