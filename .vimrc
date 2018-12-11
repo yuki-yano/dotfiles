@@ -161,9 +161,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Shougo/denite.nvim')
   call dein#add('Shougo/unite.vim')
 
-  call dein#add('ozelentok/denite-gtags')
-  call dein#add('hewes/unite-gtags')
   call dein#add('Shougo/neomru.vim')
+  call dein#add('hewes/unite-gtags')
+  call dein#add('neoclide/denite-extra')
+  call dein#add('ozelentok/denite-gtags')
 
   call dein#add('junegunn/fzf', {'build': './install --bin', 'merged': 0})
   call dein#add('junegunn/fzf.vim')
@@ -1232,6 +1233,10 @@ if dein#tap('denite.nvim')
   nnoremap <silent> <Leader>*         :<C-u>DeniteCursorWord line<CR>
   nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep -post-action=open<CR>
   nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep -post-action=open<CR>
+
+  "" quickfix & locationlist
+  nnoremap <silent> <Leader><Leader>q :<C-u>Denite quickfix -auto-preview<CR>
+  nnoremap <silent> <Leader><Leader>l :<C-u>Denite location_list -auto-preview<CR>
 
   "" outline
   " nnoremap <silent> <Leader>o :<C-u>Denite outline<CR>
