@@ -273,6 +273,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Util {{{3
+  " call dein#add('kana/vim-submode')
   call dein#add('MattesGroeger/vim-bookmarks')
   call dein#add('Shougo/junkfile.vim')
   call dein#add('SpaceVim/gtags.vim')
@@ -286,7 +287,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('janko-m/vim-test',                    {'lazy': 1, 'on_cmd': ['TestNearest','TestFile','TestSuite','TestLast','TestVisit']})
   call dein#add('junegunn/vim-peekaboo')
   call dein#add('kana/vim-niceblock',                  {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
-  call dein#add('kana/vim-submode')
   call dein#add('konfekt/fastfold')
   call dein#add('lambdalisue/session.vim',             {'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
   call dein#add('lambdalisue/vim-manpager',            {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER']})
@@ -3204,21 +3204,21 @@ let g:scratch_no_mappings = 1
 " }}}3
 
 " submode {{{3
-if dein#tap('vim-submode')
-  let g:submode_timeout = 5
-
-  "" jump
-  call submode#enter_with('jump', 'n', '', 'g;', 'g;')
-  call submode#map('jump', 'n', '', ';', 'g;')
-
-  "" edgemotion
-  call submode#enter_with('edgemotion-j', 'n', 'e', '<Leader>j', 'edgemotion#move(1)')
-  call submode#enter_with('edgemotion-k', 'n', 'e', '<Leader>k', 'edgemotion#move(0)')
-  call submode#map('edgemotion-j', 'n', 'e', 'j',         'edgemotion#move(1)')
-  call submode#map('edgemotion-k', 'n', 'e', 'k',         'edgemotion#move(0)')
-  call submode#map('edgemotion-j', 'n', 'e', '<Leader>j', 'edgemotion#move(1)')
-  call submode#map('edgemotion-k', 'n', 'e', '<Leader>k', 'edgemotion#move(0)')
-endif
+" if dein#tap('vim-submode')
+"   let g:submode_timeout = 5
+"
+"   "" jump
+"   call submode#enter_with('jump', 'n', '', 'g;', 'g;')
+"   call submode#map('jump', 'n', '', ';', 'g;')
+"
+"   "" edgemotion
+"   call submode#enter_with('edgemotion-j', 'n', 'e', '<Leader>j', 'edgemotion#move(1)')
+"   call submode#enter_with('edgemotion-k', 'n', 'e', '<Leader>k', 'edgemotion#move(0)')
+"   call submode#map('edgemotion-j', 'n', 'e', 'j',         'edgemotion#move(1)')
+"   call submode#map('edgemotion-k', 'n', 'e', 'k',         'edgemotion#move(0)')
+"   call submode#map('edgemotion-j', 'n', 'e', '<Leader>j', 'edgemotion#move(1)')
+"   call submode#map('edgemotion-k', 'n', 'e', '<Leader>k', 'edgemotion#move(0)')
+" endif
 
 " }}}3
 
