@@ -543,7 +543,7 @@ set scrolloff=5
 set showtabline=2
 set spellcapcheck=
 set spelllang=en,cjk
-set synmaxcol=160
+set synmaxcol=300
 set virtualedit=all
 
 "" Indent
