@@ -1067,6 +1067,11 @@ let g:formatters_graphql = ['prettier']
 let g:formatters_markdown = ['prettier']
 " }}}3
 
+" closetag {{{3
+let g:closetag_filetypes       = 'html,eruby'
+let g:closetag_xhtml_filetypes = 'javascript,typescript.tsx,vue'
+" }}}3
+
 " echodoc {{{3
 let g:echodoc#enable_at_startup = 1
 " let g:echodoc#type              = 'virtual'
