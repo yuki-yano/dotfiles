@@ -17,13 +17,23 @@ draw_bold_text_with_bright_colors: true
 
 font:
   normal:
-    family: Ricty
+    family: SF Mono Square
+    style: Regular
   bold:
-    family: Ricty
+    family: SF Mono Square
+    style: Bold
   italic:
-    family: Ricty
+    family: SF Mono Square
+    style: Italic
 
-  size: 16.0
+  size: 18.0
+
+  # normal:
+  #   family: Ricty
+  # bold:
+  #   family: Ricty
+  # italic:
+  #   family: Ricty
 
   # normal:
   #   family: Monaco
