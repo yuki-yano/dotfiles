@@ -19,7 +19,6 @@ let g:ale_filetypes = [
 \ 'vim',
 \ 'sh',
 \ 'bash',
-\ 'zsh',
 \ ]
 " }}}1
 
@@ -63,7 +62,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('ap/vim-css-color',                       {'lazy': 1, 'on_ft': ['css', 'sass', 'scss', 'vue']})
   call dein#add('cakebaker/scss-syntax.vim',              {'lazy': 1, 'on_ft': ['sass', 'scss', 'vue']})
   call dein#add('cespare/vim-toml',                       {'lazy': 1, 'on_ft': 'toml'})
-  call dein#add('chrisbra/vim-zsh',                       {'lazy': 1, 'on_ft': 'zsh'})
   call dein#add('davidhalter/jedi-vim',                   {'lazy': 1, 'on_ft': 'python'})
   call dein#add('ekalinin/Dockerfile.vim',                {'lazy': 1, 'on_ft': 'Dockerfile'})
   call dein#add('elzr/vim-json',                          {'lazy': 1, 'on_ft': 'json'})
@@ -81,15 +79,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('othree/csscomplete.vim',                 {'lazy': 1, 'on_ft': ['css', 'sass', 'scss', 'vue']})
   call dein#add('othree/es.next.syntax.vim',              {'lazy': 1, 'on_ft': ['javascript', 'vue']})
   call dein#add('othree/html5.vim',                       {'lazy': 1, 'on_ft': ['html', 'markdown', 'eruby']})
-  call dein#add('othree/javascript-libraries-syntax.vim', {'lazy': 1, 'on_ft': 'javascript'})
-  call dein#add('othree/jspc.vim',                        {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescript.tsx', 'vue']})
   call dein#add('othree/yajs.vim',                        {'lazy': 1, 'on_ft': ['javascript', 'vue']})
   call dein#add('pearofducks/ansible-vim',                {'lazy': 1, 'on_ft': ['ansible', 'ansible_templete', 'ansible_hosts']})
   call dein#add('posva/vim-vue',                          {'lazy': 1, 'on_ft': 'vue'})
   call dein#add('rhysd/vim-gfm-syntax',                   {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('rust-lang/rust.vim',                     {'lazy': 1, 'on_ft': 'rust'})
   call dein#add('slim-template/vim-slim',                 {'lazy': 1, 'on_ft': 'slim'})
-  call dein#add('stephpy/vim-yaml',                       {'lazy': 1, 'on_ft': 'yaml'})
   call dein#add('tell-k/vim-autopep8',                    {'lazy': 1, 'on_ft': 'python'})
   call dein#add('tpope/vim-markdown',                     {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('tpope/vim-rails',                        {'lazy': 1, 'on_ft': 'ruby'})
@@ -974,7 +969,6 @@ let g:ale_linters = {
 \ 'vim':            ['vint'],
 \ 'sh':             ['shellcheck', 'shfmt'],
 \ 'bash':           ['shellcheck', 'shfmt'],
-\ 'zsh':            ['shellcheck'],
 \ }
 let g:ale_ruby_rubocop_executable = 'bundle'
 
@@ -992,7 +986,6 @@ let g:ale_echo_msg_format          = '[%linter%] %s'
 " let g:ale_virtualtext_cursor       = 1
 
 AutoCmd FileType vue let b:ale_linter_aliases = ['vue', 'typescript'] | let b:ale_linters = g:ale_linters['vue']
-AutoCmd FileType zsh ALEDisableBuffer
 " }}}3
 
 " autoformat {{{3
@@ -1105,10 +1098,6 @@ let g:html5_event_handler_attributes_complete = 1
 let g:html5_rdfa_attributes_complete          = 1
 let g:html5_microdata_attributes_complete     = 1
 let g:html5_aria_attributes_complete          = 1
-" }}}3
-
-" javascript-libraries-syntax {{{3
-let g:used_javascript_libs = 'jquery,react,vue'
 " }}}3
 
 " jsdoc {{{3
