@@ -10,7 +10,7 @@ window:
     x: 0
     y: 0
 
-  decorations: true
+  decorations: full
 tabspaces: 2
 
 draw_bold_text_with_bright_colors: true
@@ -52,13 +52,9 @@ font:
     x: 0
     y: 0
 
-  scale_with_dpi: true
-
   use_thin_strokes: true
 
 render_timer: false
-
-custom_cursor_colors: false
 
 colors:
   primary:
@@ -102,16 +98,17 @@ mouse:
   double_click: { threshold: 300 }
   triple_click: { threshold: 300 }
 
-  faux_scrollback_lines: 1
+  faux_scrolling_lines: 1
+
+  hide_when_typing: false
 
 selection:
   semantic_escape_chars: ",│`|:\"' ()[]{}<>"
 
 dynamic_title: true
 
-hide_cursor_when_typing: false
-
-cursor_style: Block
+cursor:
+  style: Block
 
 live_config_reload: true
 
