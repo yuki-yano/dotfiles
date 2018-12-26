@@ -36,7 +36,7 @@ signals=( ▂▅▇)
 # Get the wifi information and then set it to an info array
 info=( $(eval "$airport_path" --getinfo | grep -E "^ *(agrCtlRSSI|state|lastTxRate|SSID):" | awk '{print $2}') )
 if [[ ${#info[@]} -eq 0 ]]; then
-    echo "#[fg=red]offline#[DEFAULT]"
+    echo "#[fg=red]offline"
     exit 1
 fi
 
@@ -58,8 +58,8 @@ do
 done
 
 if [ "$rate" = 0 ]; then
-    echo "no_wifi"
+    echo "#[ft=red]no_wifi"
     exit 1
 fi
 
-echo -e "#[fg=colour108]${ssid} ${rate}Mbps ${signal}#[DEFAULT]"
+echo -e "#[fg=white]${ssid} #[fg=colour108]${rate}Mbps ${signal}"

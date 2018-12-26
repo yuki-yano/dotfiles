@@ -30,4 +30,4 @@ elif [[ $cpu_load_status == 'high' ]]; then
   echo -n '#[fg=red]'
 fi
 
-echo "${percentage}%#[DEFAULT]"
+echo "${percentage}"

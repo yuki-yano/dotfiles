@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+puts `tmux list-sessions`.split("\n").map { |line|
+  if line.include?('attached')
+    "#[bold][#{line.split(':').first}]#[nobold]"
+  else
+    line.split(':').first
+  end
+}.join(' ')

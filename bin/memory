@@ -53,4 +53,4 @@ mem_used=$(printf "%.1f%s" "$mem_used" "G")
 # mem_view="${mem_view//'#{mem.free}'/$(printf "$size_format" "$mem_free" "$size_unit")}"
 mem_total=$(printf "%.1f%s" "$mem_total" 'G')
 
-echo "$mem_pused ($mem_used/$mem_total)#[DEFAULT]"
+echo "$mem_pused ($mem_used/$mem_total)"

@@ -51,8 +51,6 @@ PERCENTAGE="$(pmset -g ps | grep -E -o '[0-9]+%' | tr -d %)"
 METER=$(get_meter "$PERCENTAGE")
 CHARGE_ICON=$(get_icon "$PERCENTAGE")
 
-echo -n '#[bg=colour237]'
-
 if ! is_charging; then
   echo -n '#[fg=blue]'
 else

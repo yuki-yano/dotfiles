@@ -13,4 +13,4 @@ elif [[ "$swap" -gt 4 ]] && [[ "$swap" -le 8 ]]; then
 elif [[ "$swap" -gt 8 ]]; then
   echo -n '#[fg=red]'
 fi
-echo "${swap}GB#[DEFAULT]"
+echo "${swap}GB"
