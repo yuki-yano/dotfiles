@@ -51,10 +51,17 @@ let s:replace = [
 \ [s:blue,       s:base03 ],
 \ ]
 
+let s:inactive = [
+\ [s:blue_green, s:base02],
+\ [s:blue_green, s:base02],
+\ [s:orange,     s:base02],
+\ [s:blue,       s:base03],
+\ ]
+
 let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
 
 let s:p.normal.left   = s:normal[0:3]
-let s:p.inactive.left = s:normal[0:3]
+let s:p.inactive.left = s:inactive[0:3]
 let s:p.insert.left   = s:insert[0:3]
 let s:p.replace.left  = s:replace[0:3]
 let s:p.visual.left   = s:visual[0:3]
@@ -73,17 +80,17 @@ let s:p.visual.middle   = [[s:base1,  s:base03]]
 
 let s:p.tabline.left = [[s:blue,  s:base02]]
 let s:p.tabline.right = [
-\ [s:base3, s:base02],
-\ [s:blue,  s:base03],
+\ [s:base2, s:base03],
+\ [s:base2, s:base02],
 \ ]
 let s:p.tabline.tabsel  = [[s:orange, s:base03]]
-let s:p.tabline.middle  = [[s:base1,  s:base03]]
+let s:p.tabline.middle  = [[s:base1,  s:base01]]
 
 let s:ale = [
 \ [s:base3, s:red,    s:bold],
 \ [s:base3, s:yellow, s:bold],
-\ [s:base3, s:cyan,   s:bold],
 \ [s:base3, s:green,  s:bold],
+\ [s:base3, s:cyan,   s:bold],
 \ [s:base3, s:base00, s:bold],
 \ ]
 

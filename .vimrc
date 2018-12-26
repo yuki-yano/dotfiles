@@ -973,7 +973,6 @@ let g:ale_linters = {
 let g:ale_ruby_rubocop_executable = 'bundle'
 
 let g:ale_linter_aliases = {
-\ 'vue'  : 'css',
 \ 'eruby': 'html',
 \ }
 
@@ -985,7 +984,11 @@ let g:ale_lint_on_insert_leave     = 0
 let g:ale_echo_msg_format          = '[%linter%] %s'
 " let g:ale_virtualtext_cursor       = 1
 
-AutoCmd FileType vue let b:ale_linter_aliases = ['vue', 'typescript'] | let b:ale_linters = g:ale_linters['vue']
+let g:ale_sign_error         = ''
+let g:ale_sign_warning       = ''
+let g:ale_sign_info          = ''
+let g:ale_sign_style_error   = ''
+let g:ale_sign_style_warning = ''
 " }}}3
 
 " autoformat {{{3
@@ -2739,7 +2742,7 @@ if dein#tap('lightline.vim')
   \   ],
   \ },
   \ 'inactive': {
-  \   'left': [['mode'], ['special_mode'], [], ['filepath', 'filename']],
+  \   'left': [[], ['special_mode'], [], ['filepath', 'filename']],
   \   'right': [[], ['filetype', 'fileencoding', 'fileformat']],
   \ },
   \ 'tabline': {
@@ -2763,7 +2766,7 @@ if dein#tap('lightline.vim')
   \   'lineinfo':     'Lightline_lineinfo',
   \   'fileencoding': 'Lightline_fileencoding',
   \   'fileformat':   'Lightline_fileformat',
-  \   'branch':       'gina#component#repo#preset',
+  \   'branch':       'Lightline_git_branch',
   \   'git_status':   'Lightline_git_status',
   \   'anzu':         'anzu#search_status',
   \   'denite':       'Lightline_denite',
@@ -2803,13 +2806,15 @@ if dein#tap('lightline.vim')
   \   'statusline': 1,
   \   'tabline':    1,
   \ },
+  \ 'separator': { 'left': '', 'right': '' },
+  \ 'subseparator': { 'left': '', 'right': '' }
   \ }
 
   " lightline-ale
-  let g:lightline#ale#indicator_errors   = 'E'
-  let g:lightline#ale#indicator_warnings = 'W'
-  let g:lightline#ale#indicator_ok       = 'OK'
-  let g:lightline#ale#indicator_checking = 'Linting'
+  let g:lightline#ale#indicator_errors   = ' '
+  let g:lightline#ale#indicator_warnings = ' '
+  let g:lightline#ale#indicator_ok       = ' '
+  let g:lightline#ale#indicator_checking = ' '
 
   " Disable lineinfo, fileencoding and fileformat
   let s:lightline_ignore_right_ft = [
@@ -2895,9 +2900,9 @@ if dein#tap('lightline.vim')
 
   function! Lightline_mode() abort
     let l:win = getwininfo(win_getid())[0]
-    return has_key(s:lightline_ft_to_mode_hash, &filetype) ? '' :
-    \ l:win.loclist ? '' :
-    \ l:win.quickfix ? '' :
+    return has_key(s:lightline_ft_to_mode_hash, &filetype) ? ' ' :
+    \ l:win.loclist ? ' ' :
+    \ l:win.quickfix ? ' ' :
     \ lightline#mode()
   endfunction
 
@@ -2952,7 +2957,7 @@ if dein#tap('lightline.vim')
 
   function! Lightline_lineinfo() abort
     return !count(s:lightline_ignore_right_ft, &filetype) ?
-    \ printf('%d:%d | %d lines [%d%%]',line('.'), col('.'), line('$'), float2nr((1.0 * line('.')) / line('$') * 100.0)) :
+    \ printf(' %3d:%2d / %d lines [%d%%]',line('.'), col('.'), line('$'), float2nr((1.0 * line('.')) / line('$') * 100.0)) :
     \ ''
   endfunction
 
@@ -2991,7 +2996,8 @@ if dein#tap('lightline.vim')
   endfunction
 
   function! Lightline_ale_disable() abort
-    return count(g:ale_filetypes, &filetype) ? '' : 'Linter Disable'
+    " return count(g:ale_filetypes, &filetype) ? '' : 'Linter Disable'
+    return count(g:ale_filetypes, &filetype) ? '' : ''
   endfunction
 
   function! Lightline_denite() abort
@@ -3008,7 +3014,15 @@ if dein#tap('lightline.vim')
     endif
   endfunction
 
-  function Lightline_git_status() abort
+  function! Lightline_git_branch() abort
+    if gina#component#repo#preset() ==# ''
+      return ''
+    else
+      return '  ' . gina#component#repo#preset()
+    endif
+  endfunction
+
+  function! Lightline_git_status() abort
     if gina#component#repo#preset() ==# ''
       return ''
     endif
