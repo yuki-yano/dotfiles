@@ -113,6 +113,9 @@ zplugin light pocke/recc
 zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd*" mv"ghkw*/ghkw -> ${ZPFX}/bin/ghkw"
 zplugin light kyoshidajp/ghkw
 
+zplugin ice lucid wait"0" depth"1" lucid as"program" pick"bin/git-dsf"
+zplugin light zdharma/zsh-diff-so-fancy
+
 zplugin ice lucid wait"0" depth"1" as"program" src"git-sync.sh"
 zplugin light caarlos0/zsh-git-sync
 

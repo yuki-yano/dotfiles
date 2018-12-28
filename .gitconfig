@@ -22,9 +22,9 @@
   fzflog  = !git plog --graph --color=always 2>/dev/null
 
 [pager]
-  log  = diff-highlight | less
-  show = diff-highlight | less
-  diff = diff-highlight | less
+  log  = diff-so-fancy | less
+  show = diff-so-fancy | less
+  diff = diff-so-fancy | less
 
 [interactive]
   diffFilter = diff-highlight
@@ -63,6 +63,10 @@
 
 [difftool "nvimdiff"]
   cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
+
+[diff-so-fancy]
+  markEmptyLines = true
+  stripLeadingSymbols = true
 
 [mergetool "Kaleidoscope"]
   cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
