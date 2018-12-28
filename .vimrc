@@ -951,8 +951,8 @@ AlterCommand! <cmdwin> reca[che] Dein<Space>recache-runtimepath
 " ALE {{{3
 let g:ale_linters = {
 \ 'javascript':     ['eslint', 'flow', 'prettier'],
-\ 'typescript':     ['tsserver', 'eslint', 'tslint', 'prettier'],
-\ 'typescript.tsx': ['tsserver', 'eslint', 'tslint', 'prettier'],
+\ 'typescript':     ['tsserver', 'tslint', 'prettier'],
+\ 'typescript.tsx': ['tsserver', 'tslint', 'prettier'],
 \ 'vue':            ['vls', 'eslint', 'tslint', 'prettier'],
 \ 'ruby':           ['rubocop'],
 \ 'eruby':          ['erubi'],
