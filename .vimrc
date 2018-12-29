@@ -3410,6 +3410,10 @@ let g:scratch_no_mappings = 1
 
 " }}}3
 
+" table-mode {{{3
+let g:table_mode_corner='|'
+" }}}3
+
 " tagbar {{{3
 AlterCommand! <cmdwin> tag TagbarOpen<Space>j
 
