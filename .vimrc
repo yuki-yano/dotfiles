@@ -1408,6 +1408,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
 
   inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : deoplete#mappings#manual_complete()
   inoremap <silent> <expr> <C-g> pumvisible() ? deoplete#smart_close_popup() : "\<C-g>"
+  inoremap <silent> <expr> <C-l> deoplete#refresh()
 
   function! s:check_back_space() abort
     let col = col('.') - 1
