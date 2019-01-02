@@ -3502,7 +3502,7 @@ syntax enable
 AutoCmd ColorScheme * highlight CursorColumn ctermfg=none ctermbg=236  guifg=none    guibg=#303030
 AutoCmd ColorScheme * highlight CursorLine   ctermfg=none ctermbg=236  guifg=none    guibg=#303030
 AutoCmd ColorScheme * highlight CursorLineNr ctermfg=253  ctermbg=none guifg=#DADADA guibg=none
-AutoCmd ColorScheme * highlight LineNr       ctermfg=241  ctermbg=none guifg=#252525 guibg=none
+AutoCmd ColorScheme * highlight LineNr       ctermfg=241  ctermbg=none guifg=#626262 guibg=none
 AutoCmd ColorScheme * highlight NonText      ctermfg=60   ctermbg=none guifg=#5F5F87 guibg=none
 AutoCmd ColorScheme * highlight Search       ctermfg=68   ctermbg=232  guifg=#5F87D7 guibg=#080808
 AutoCmd ColorScheme * highlight Todo         ctermfg=229  ctermbg=none guifg=#FFFFAF guibg=none
