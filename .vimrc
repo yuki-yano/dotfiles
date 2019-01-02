@@ -1394,7 +1394,6 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   let g:neosnippet#data_directory = expand('~/.cache/vim/neosnippet')
 
   call deoplete#custom#option({
-  \ 'auto_complete_delay': 50,
   \ 'min_pattern_length': 2,
   \ 'camel_case': v:true,
   \ 'skip_chars': ['(', ')', '<', '>'],
