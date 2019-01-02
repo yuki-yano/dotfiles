@@ -52,13 +52,13 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Language {{{3
+  " call dein#add('HerringtonDarkholme/yats.vim',           {'lazy': 1, 'on_ft': ['typescript', 'typescript.tsx', 'vue']})
   " call dein#add('Quramy/tsuquyomi',                       {'lazy': 1, 'on_ft': 'typescript'})
   " call dein#add('pocke/iro.vim',                          {'lazy': 1, 'on_ft': 'ruby'})
-  call dein#add('HerringtonDarkholme/yats.vim',           {'lazy': 1, 'on_ft': ['typescript', 'typescript.tsx', 'vue']})
   call dein#add('MaxMEllon/vim-jsx-pretty',               {'lazy': 1, 'on_ft': ['javascript', 'vue']})
   call dein#add('Vimjas/vim-python-pep8-indent',          {'lazy': 1, 'on_ft': 'python'})
   call dein#add('aklt/plantuml-syntax',                   {'lazy': 1, 'on_ft': 'plantuml'})
-  call dein#add('alvan/vim-closetag',                     {'lazy': 1, 'on_ft': ['html', 'eruby', 'javascript', 'typescript.tsx', 'vue']})
+  call dein#add('alvan/vim-closetag',                     {'lazy': 1, 'on_ft': ['html', 'eruby', 'javascript', 'typescript', 'typescript.tsx', 'vue']})
   call dein#add('ap/vim-css-color',                       {'lazy': 1, 'on_ft': ['css', 'sass', 'scss', 'vue']})
   call dein#add('cakebaker/scss-syntax.vim',              {'lazy': 1, 'on_ft': ['sass', 'scss', 'vue']})
   call dein#add('cespare/vim-toml',                       {'lazy': 1, 'on_ft': 'toml'})
@@ -73,7 +73,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('jparise/vim-graphql',                    {'lazy': 1, 'on_ft': 'graphql'})
   call dein#add('kchmck/vim-coffee-script',               {'lazy': 1, 'on_ft': 'coffee'})
   call dein#add('keith/tmux.vim',                         {'lazy': 1, 'on_ft': 'tmux'})
-  call dein#add('mattn/emmet-vim',                        {'lazy': 1, 'on_ft': ['html', 'eruby', 'javascript', 'typescript.tsx', 'vue']})
+  call dein#add('leafgarland/typescript-vim',             {'lazy': 1, 'on_ft': ['typescript']})
+  call dein#add('mattn/emmet-vim',                        {'lazy': 1, 'on_ft': ['html', 'eruby', 'javascript', 'typescript', 'typescript.tsx', 'vue']})
   call dein#add('mhartington/nvim-typescript',            {'lazy': 1, 'on_ft': ['typescript', 'typescript.tsx', 'vue'], 'build': './install.sh'})
   call dein#add('noprompt/vim-yardoc',                    {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('othree/csscomplete.vim',                 {'lazy': 1, 'on_ft': ['css', 'sass', 'scss', 'vue']})
@@ -1065,7 +1066,7 @@ let g:formatters_markdown = ['prettier']
 
 " closetag {{{3
 let g:closetag_filetypes       = 'html,eruby'
-let g:closetag_xhtml_filetypes = 'javascript,typescript.tsx,vue'
+let g:closetag_xhtml_filetypes = 'javascript,typescript,typescript.tsx,vue'
 " }}}3
 
 " echodoc {{{3
