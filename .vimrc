@@ -3512,15 +3512,17 @@ AutoCmd ColorScheme * highlight Visual       ctermfg=159  ctermbg=23   guifg=#AF
 AutoCmd ColorScheme * highlight ALEError                ctermfg=0    ctermbg=203                       guifg=#1E2132 guibg=#FF5F5F
 AutoCmd ColorScheme * highlight ALEWarning              ctermfg=0    ctermbg=229                       guifg=#1E2132 guibg=#FFFFAF
 AutoCmd ColorScheme * highlight BrighTestHighlight      ctermfg=30   ctermbg=none                      guifg=#008787 guibg=none
-AutoCmd ColorScheme * highlight CleverFDefaultLabel     ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,none
+AutoCmd ColorScheme * highlight CleverFDefaultLabel     ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
 AutoCmd ColorScheme * highlight DeniteLine              ctermfg=111  ctermbg=236                       guifg=#87AFFF guibg=#303030
-AutoCmd ColorScheme * highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,none
+AutoCmd ColorScheme * highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
+AutoCmd ColorScheme * highlight ExtraWhiteSpace         ctermfg=none ctermbg=1                         guifg=none    guibg=#E98989
 AutoCmd ColorScheme * highlight HighlightedyankRegion   ctermfg=1    ctermbg=none                      guifg=#E27878 guibg=none
 AutoCmd ColorScheme * highlight MatchParen              ctermfg=none ctermbg=none cterm=underline      guifg=none    guibg=none    gui=underline
 AutoCmd ColorScheme * highlight MatchParenCur           ctermfg=none ctermbg=none cterm=bold           guifg=none    guibg=none    gui=bold
 AutoCmd ColorScheme * highlight MatchWord               ctermfg=none ctermbg=none cterm=underline      guifg=none    guibg=none    gui=underline
 AutoCmd ColorScheme * highlight MatchWordCur            ctermfg=none ctermbg=none cterm=bold           guifg=none    guibg=none    gui=bold
 AutoCmd ColorScheme * highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
+AutoCmd ColorScheme * highlight ZenSpace                ctermfg=none ctermbg=1                         guifg=none    guibg=#E98989
 AutoCmd ColorScheme * highlight deniteSource_grepFile   ctermfg=6    ctermbg=none                      guifg=#89B8C2 guibg=none
 AutoCmd ColorScheme * highlight deniteSource_grepLineNR ctermfg=247  ctermbg=none                      guifg=#9E9E9E guibg=none
 
