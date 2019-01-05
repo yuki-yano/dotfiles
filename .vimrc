@@ -3085,10 +3085,11 @@ let g:startify_commands = [
 " }}}3
 
 " rainbow {{{3
-let g:rainbow_active = 1
-let g:rainbow_conf = {}
-let g:rainbow_conf.ctermfgs = ['darkred', 'darkcyan', 'darkblue', 'darkmagenta']
-let g:rainbow_conf.operator = '_,_'
+let g:rainbow_active           = 1
+let g:rainbow_conf             = {}
+let g:rainbow_conf.ctermfgs    = ['darkred', 'darkgreen', 'darkblue', 'darkmagenta']
+let g:rainbow_conf.guifgs      = ['#E98989', '#C0CA8E', '#91ACD1', '#ADA0D3']
+let g:rainbow_conf.operator    = '_,_'
 let g:rainbow_conf.parentheses = ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold']
 
 let g:rainbow_conf.separately = {
