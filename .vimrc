@@ -2578,8 +2578,8 @@ xmap <silent> <C-n>   <Plug>(VM-Find-Subword-Under)
 
 let g:VM_maps = {}
 "
-" let g:VM_maps['Find Under']         = '<C-n>'
-" let g:VM_maps['Find Subword Under'] = '<C-n>'
+let g:VM_maps['Find Under']         = ''
+let g:VM_maps['Find Subword Under'] = ''
 let g:VM_maps['Skip Region']        = '<C-s>'
 let g:VM_maps['Remove Region']      = '<C-q>'
 let g:VM_maps['Start Regex Search'] = 'g/'
