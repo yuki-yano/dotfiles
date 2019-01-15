@@ -92,6 +92,9 @@ zplugin light simonwhitaker/gibo
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*osx*" mv"jq-osx-amd64 -> ${ZPFX}/bin/jq"
 zplugin light stedolan/jq
 
+zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*macos*" mv"yj-macos -> ${ZPFX}/bin/yj"
+zplugin light sclevine/yj
+
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin-amd64*" mv"gron -> ${ZPFX}/bin/gron"
 zplugin light tomnomnom/gron
 
