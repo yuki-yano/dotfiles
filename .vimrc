@@ -1921,33 +1921,6 @@ let g:LanguageClient_serverCommands = {
 \ 'css':            [],
 \ }
 
-let g:LanguageClient_diagnosticsDisplay = {
-\ 1: {
-\   'name': 'Error',
-\   'texthl': '',
-\   'signText': 'E',
-\   'signTexthl': 'ALEErrorSign',
-\ },
-\ 2: {
-\   'name': 'Warning',
-\   'texthl': '',
-\   'signText': 'W',
-\   'signTexthl': 'ALEWarningSign',
-\ },
-\ 3: {
-\   'name': 'Information',
-\   'texthl': '',
-\   'signText': 'I',
-\   'signTexthl': 'ALEInfoSign',
-\ },
-\ 4: {
-\   'name': 'Hint',
-\   'texthl': '',
-\   'signText': 'I',
-\   'signTexthl': 'ALEInfoSign',
-\ },
-\ }
-
 function s:set_lsp_mappings() abort
   nnoremap <silent> <buffer> K              :<C-u>call LanguageClient#textDocument_definition({'gotoCmd': 'split'})<CR>
   nnoremap <silent> <buffer> gK             :<C-u>call LanguageClient#textDocument_typeDefinition({'gotoCmd': 'split'})<CR>
