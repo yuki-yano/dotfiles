@@ -123,10 +123,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('ujihisa/neco-look')
     call dein#add('wellle/tmux-complete.vim')
 
+    " call dein#add('zchee/deoplete-go',              {'lazy': 1, 'on_ft': 'go', 'build': 'make'})
     call dein#add('autozimu/LanguageClient-neovim', {'rev': 'next', 'build': 'bash install.sh'})
     call dein#add('machakann/vim-Verdin',           {'lazy': 1, 'on_ft': 'vim'})
     call dein#add('wokalski/autocomplete-flow',     {'lazy': 1, 'on_ft': 'javascript'})
-    call dein#add('zchee/deoplete-go',              {'lazy': 1, 'on_ft': 'go', 'build': 'make'})
     call dein#add('zchee/deoplete-jedi',            {'lazy': 1, 'on_ft': 'python'})
 
     " call dein#add('ncm2/ncm2')
@@ -244,12 +244,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('itchyny/vim-parenmatch')
   call dein#add('AndrewRadev/linediff.vim',       {'lazy': 1, 'on_cmd': ['Linediff', 'LinediffReset']})
   call dein#add('LeafCage/foldCC.vim')
-  call dein#add('kamykn/spelunker.vim')
   call dein#add('Shougo/echodoc.vim')
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
   call dein#add('andymass/vim-matchup')
   call dein#add('itchyny/lightline.vim')
   call dein#add('itchyny/vim-highlighturl')
+  call dein#add('kamykn/spelunker.vim')
   call dein#add('luochen1990/rainbow')
   call dein#add('machakann/vim-highlightedyank')
   call dein#add('maximbaz/lightline-ale')
@@ -314,8 +314,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Library {{{3
+  " call dein#add('nixprime/cpsm',      {'build': 'env PY3=ON ./install.sh'})
   call dein#add('Shougo/vimproc.vim', {'build': 'make'})
-  call dein#add('nixprime/cpsm',      {'build': 'env PY3=ON ./install.sh'})
   call dein#add('vim-scripts/L9')
   " }}}3
 
@@ -1179,11 +1179,11 @@ if dein#tap('denite.nvim')
   call denite#custom#map('insert', '<C-k>', '<denite:delete_char_after_caret>',        'noremap')
 
   "" option
-  call denite#custom#source('_',        'matchers', ['matcher/cpsm'])
+  call denite#custom#source('_',        'matchers', ['matcher/regexp'])
   call denite#custom#source('file_mru', 'matchers', ['matcher/fuzzy', 'matcher/project_files'])
   call denite#custom#source('line',     'matchers', ['matcher/regexp'])
   call denite#custom#source('grep',     'matchers', ['matcher/regexp'])
-  call denite#custom#source('menu',     'matchers', ['matcher/cpsm'])
+  call denite#custom#source('menu',     'matchers', ['matcher/regexp'])
 
   call denite#custom#source('file_mru', 'converters', ['converter/relative_abbr'])
   call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
