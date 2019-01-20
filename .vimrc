@@ -2272,6 +2272,9 @@ if dein#tap('vim-easymotion') && dein#tap('clever-f.vim')
   let g:EasyMotion_space_jump_first = 1
   let g:EasyMotion_prompt           = 'Search by EasyMotion ({n} character(s)) > '
 
+  nmap <silent> S  <Plug>(easymotion-bd-f2)
+  omap <silent> S  <Plug>(easymotion-bd-f2)
+  xmap <silent> S  <Plug>(easymotion-bd-f2)
   nmap <silent> ss <Plug>(easymotion-overwin-f2)
   omap <silent> ss <Plug>(easymotion-bd-f2)
   xmap <silent> ss <Plug>(easymotion-bd-f2)
