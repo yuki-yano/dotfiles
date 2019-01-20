@@ -196,7 +196,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('machakann/vim-textobj-delimited') " id ad
   call dein#add('mattn/vim-textobj-url') " iu au
   call dein#add('osyo-manga/vim-textobj-multiblock') " ib ab
-  call dein#add('rhysd/vim-textobj-ruby') " irr arr iro aro irl arl irc arc ird ard
+  call dein#add('rhysd/vim-textobj-ruby') " ir ar
   call dein#add('thinca/vim-textobj-between') " i{char} a{char}
   call dein#add('thinca/vim-textobj-comment') " ic ac
 
@@ -2148,10 +2148,6 @@ xmap i- <Plug>(textobj-between-i)-
 xmap a- <Plug>(textobj-between-a)-
 " }}}3
 
-" textobj-ruby {{{3
-let g:textobj_ruby_more_mappings = 1
-" }}}3
-
 " }}}2
 
 " Edit & Move & Search {{{2
@@ -2330,24 +2326,18 @@ let g:expand_region_text_objects = {
 \ }
 
 let g:expand_region_text_objects_ruby = {
-\ 'iw':  0,
-\ 'iW':  0,
-\ 'ad':  0,
-\ 'ib':  1,
-\ 'ab':  1,
-\ 'il':  0,
-\ 'al':  0,
-\ 'ii':  0,
-\ 'ai':  0,
-\ 'ird': 0,
-\ 'ard': 0,
-\ 'irc': 0,
-\ 'arc': 0,
-\ 'irl': 0,
-\ 'arl': 0,
-\ 'iro': 0,
-\ 'aro': 0,
-\ 'ie':  0,
+\ 'iw': 0,
+\ 'iW': 0,
+\ 'ad': 0,
+\ 'ib': 1,
+\ 'ab': 1,
+\ 'il': 0,
+\ 'al': 0,
+\ 'ii': 0,
+\ 'ai': 0,
+\ 'ir': 0,
+\ 'ar': 0,
+\ 'ie': 0,
 \ }
 
 vmap v <Plug>(expand_region_expand)
