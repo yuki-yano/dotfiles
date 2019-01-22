@@ -3,15 +3,10 @@ let g:ale_filetypes = [
 \ 'javascript',
 \ 'typescript',
 \ 'typescript.tsx',
-\ 'vue',
 \ 'ruby',
 \ 'eruby',
-\ 'python',
-\ 'go',
-\ 'rust',
 \ 'json',
 \ 'yaml',
-\ 'graphql',
 \ 'html',
 \ 'css',
 \ 'scss',
@@ -52,44 +47,15 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Language {{{3
-  " call dein#add('HerringtonDarkholme/yats.vim',           {'lazy': 1, 'on_ft': ['typescript', 'typescript.tsx', 'vue']})
-  " call dein#add('Quramy/tsuquyomi',                       {'lazy': 1, 'on_ft': 'typescript'})
-  " call dein#add('pocke/iro.vim',                          {'lazy': 1, 'on_ft': 'ruby'})
-  call dein#add('MaxMEllon/vim-jsx-pretty',               {'lazy': 1, 'on_ft': ['javascript', 'vue']})
-  call dein#add('Vimjas/vim-python-pep8-indent',          {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('aklt/plantuml-syntax',                   {'lazy': 1, 'on_ft': 'plantuml'})
-  call dein#add('alvan/vim-closetag',                     {'lazy': 1, 'on_ft': ['html', 'eruby', 'javascript', 'typescript', 'typescript.tsx', 'vue']})
-  call dein#add('ap/vim-css-color',                       {'lazy': 1, 'on_ft': ['css', 'sass', 'scss', 'vue']})
-  call dein#add('cakebaker/scss-syntax.vim',              {'lazy': 1, 'on_ft': ['sass', 'scss', 'vue']})
-  call dein#add('cespare/vim-toml',                       {'lazy': 1, 'on_ft': 'toml'})
-  call dein#add('davidhalter/jedi-vim',                   {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('ekalinin/Dockerfile.vim',                {'lazy': 1, 'on_ft': 'Dockerfile'})
-  call dein#add('elzr/vim-json',                          {'lazy': 1, 'on_ft': 'json'})
-  call dein#add('fatih/vim-go',                           {'lazy': 1, 'on_ft': 'go'})
-  call dein#add('hail2u/vim-css3-syntax',                 {'lazy': 1, 'on_ft': ['css', 'vue']})
-  call dein#add('hashivim/vim-terraform',                 {'lazy': 1, 'on_ft': 'terraform'})
-  call dein#add('heavenshell/vim-jsdoc',                  {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescript.tsx', 'vue'], 'on_cmd': 'JsDoc'})
-  call dein#add('itspriddle/vim-marked',                  {'lazy': 1, 'on_ft': 'markdown'})
-  call dein#add('jparise/vim-graphql',                    {'lazy': 1, 'on_ft': 'graphql'})
-  call dein#add('kchmck/vim-coffee-script',               {'lazy': 1, 'on_ft': 'coffee'})
-  call dein#add('keith/tmux.vim',                         {'lazy': 1, 'on_ft': 'tmux'})
-  call dein#add('leafgarland/typescript-vim',             {'lazy': 1, 'on_ft': ['typescript']})
-  call dein#add('mattn/emmet-vim',                        {'lazy': 1, 'on_ft': ['html', 'eruby', 'javascript', 'typescript', 'typescript.tsx', 'vue']})
-  call dein#add('mhartington/nvim-typescript',            {'lazy': 1, 'on_ft': ['typescript', 'typescript.tsx', 'vue'], 'build': './install.sh'})
-  call dein#add('noprompt/vim-yardoc',                    {'lazy': 1, 'on_ft': 'ruby'})
-  call dein#add('othree/csscomplete.vim',                 {'lazy': 1, 'on_ft': ['css', 'sass', 'scss', 'vue']})
-  call dein#add('othree/es.next.syntax.vim',              {'lazy': 1, 'on_ft': ['javascript', 'vue']})
-  call dein#add('othree/html5.vim',                       {'lazy': 1, 'on_ft': ['html', 'markdown', 'eruby']})
-  call dein#add('othree/yajs.vim',                        {'lazy': 1, 'on_ft': ['javascript', 'vue']})
-  call dein#add('pearofducks/ansible-vim',                {'lazy': 1, 'on_ft': ['ansible', 'ansible_templete', 'ansible_hosts']})
-  call dein#add('posva/vim-vue',                          {'lazy': 1, 'on_ft': 'vue'})
-  call dein#add('rhysd/vim-gfm-syntax',                   {'lazy': 1, 'on_ft': 'markdown'})
-  call dein#add('rust-lang/rust.vim',                     {'lazy': 1, 'on_ft': 'rust'})
-  call dein#add('slim-template/vim-slim',                 {'lazy': 1, 'on_ft': 'slim'})
-  call dein#add('tell-k/vim-autopep8',                    {'lazy': 1, 'on_ft': 'python'})
-  call dein#add('tpope/vim-markdown',                     {'lazy': 1, 'on_ft': 'markdown'})
-  call dein#add('tpope/vim-rails',                        {'lazy': 1, 'on_ft': 'ruby'})
-  call dein#add('vim-ruby/vim-ruby',                      {'lazy': 1, 'on_ft': ['ruby', 'eruby']})
+  call dein#add('MaxMEllon/vim-jsx-pretty',    {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('elzr/vim-json',               {'lazy': 1, 'on_ft': 'json'})
+  call dein#add('itspriddle/vim-marked',       {'lazy': 1, 'on_ft': 'markdown'})
+  call dein#add('leafgarland/typescript-vim',  {'lazy': 1, 'on_ft': 'typescript'})
+  call dein#add('mhartington/nvim-typescript', {'lazy': 1, 'on_ft': ['typescript', 'typescript.tsx'], 'build': './install.sh'})
+  call dein#add('othree/csscomplete.vim',      {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
+  call dein#add('othree/yajs.vim',             {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('slim-template/vim-slim',      {'lazy': 1, 'on_ft': 'slim'})
+  call dein#add('tpope/vim-endwise',           {'lazy': 1, 'on_ft': 'ruby'})
   " }}}3
 
   " ALE {{{
@@ -923,31 +889,17 @@ AlterCommand! <cmdwin> reca[che] Dein<Space>recache-runtimepath
 
 " ALE {{{3
 let g:ale_linters = {
-\ 'javascript':     ['eslint', 'flow', 'prettier'],
-\ 'typescript':     ['tsserver', 'tslint', 'prettier'],
-\ 'typescript.tsx': ['tsserver', 'tslint', 'prettier'],
-\ 'vue':            ['vls', 'eslint', 'tslint', 'prettier'],
+\ 'javascript':     ['eslint', 'flow'],
+\ 'typescript':     ['tsserver', 'tslint'],
+\ 'typescript.tsx': ['tsserver', 'tslint'],
 \ 'ruby':           ['rubocop'],
-\ 'eruby':          ['erubi'],
-\ 'python':         ['autopep8', 'flake8', 'isort', 'mypy', 'yapf'],
-\ 'go':             ['gofmt', 'goimports', 'go vet', 'golint'],
-\ 'rust':           ['rls', 'rustc', 'rustfmt'],
-\ 'json':           ['fixjson', 'prettier', 'jsonlint', 'jq'],
-\ 'yaml':           ['prettier'],
-\ 'graphql':        ['prettier'],
-\ 'html':           ['prettier'],
-\ 'css':            ['prettier', 'stylelint'],
-\ 'scss':           ['prettier', 'stylelint'],
+\ 'json':           ['jsonlint'],
 \ 'dockerfile':     ['hadolint'],
 \ 'vim':            ['vint'],
-\ 'sh':             ['shellcheck', 'shfmt'],
-\ 'bash':           ['shellcheck', 'shfmt'],
+\ 'sh':             ['shellcheck'],
+\ 'bash':           ['shellcheck'],
 \ }
 let g:ale_ruby_rubocop_executable = 'bundle'
-
-let g:ale_linter_aliases = {
-\ 'eruby': 'html',
-\ }
 
 let g:ale_set_highlights           = 0
 let g:ale_sign_column_always       = 1
@@ -955,7 +907,7 @@ let g:ale_change_sign_column_color = 1
 let g:ale_lint_on_text_changed     = 'never'
 let g:ale_lint_on_insert_leave     = 0
 let g:ale_echo_msg_format          = '[%linter%] %s'
-" let g:ale_virtualtext_cursor       = 1
+let g:ale_virtualtext_cursor       = 1
 
 let g:ale_sign_error         = ''
 let g:ale_sign_warning       = ''
@@ -996,26 +948,11 @@ let g:formatters_javascript = ['prettier']
 " TypeScript
 let g:formatters_typescript = ['prettier']
 
-" TSX
-let g:formatters_tsx = ['prettier']
-
-" Vue
-let g:formatters_vue = ['htmlbeautifier', 'prettier']
-
 " Ruby
 let g:formatters_ruby = ['rubocop']
 
 " eruby
 let g:formatters_eruby = ['htmlbeautifier']
-
-" Python
-let g:formatters_python = ['autopep8', 'yapf']
-
-" Go
-let g:formatters_go = ['gofmt_2', 'goimports']
-
-" Rust
-let g:formatters_rust = ['rustfmt']
 
 " HTML
 let g:formatters_html = ['prettier']
@@ -1036,11 +973,6 @@ let g:formatters_graphql = ['prettier']
 let g:formatters_markdown = ['prettier']
 " }}}3
 
-" closetag {{{3
-let g:closetag_filetypes       = 'html,eruby'
-let g:closetag_xhtml_filetypes = 'javascript,typescript,typescript.tsx,vue'
-" }}}3
-
 " echodoc {{{3
 let g:echodoc#enable_at_startup = 1
 " let g:echodoc#type              = 'virtual'
@@ -1050,37 +982,6 @@ let g:echodoc#enable_at_startup = 1
 let g:gen_tags#use_cache_dir  = 0
 let g:gen_tags#ctags_auto_gen = 1
 let g:gen_tags#gtags_auto_gen = 1
-" }}}3
-
-" go {{{3
-let g:go_def_mapping_enabled = 0
-let g:go_fmt_command         = 'goimports'
-let g:go_term_enabled        = 1
-let g:go_auto_type_info      = 1
-
-let g:go_highlight_functions         = 1
-let g:go_highlight_methods           = 1
-let g:go_highlight_structs           = 1
-let g:go_highlight_operators         = 1
-let g:go_highlight_build_constraints = 1
-
-AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>q <Plug>(go-run)
-AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>b <Plug>(go-build)
-AutoCmd FileType go nmap <silent> <buffer> <LocalLeader>t <Plug>(go-test)
-" }}}3
-
-" html5 {{{3
-let g:html5_event_handler_attributes_complete = 1
-let g:html5_rdfa_attributes_complete          = 1
-let g:html5_microdata_attributes_complete     = 1
-let g:html5_aria_attributes_complete          = 1
-" }}}3
-
-" jsdoc {{{3
-let g:jsdoc_allow_input_prompt = 1
-let g:jsdoc_input_description  = 1
-let g:jsdoc_underscore_private = 1
-let g:jsdoc_enable_es6         = 1
 " }}}3
 
 " json {{{3
@@ -1107,24 +1008,10 @@ endfunction
 AutoCmd FileType typescript,typescript.tsx call s:set_ts_mappings()
 " }}}3
 
-" plantuml {{{3
-AlterCommand! <cmdwin> uml OpenUml
-command! OpenUml :!open -a /Applications/Google\ Chrome.app %
-" }}}3
-
-" rust {{{3
-let g:rustfmt_autosave = 1
-" }}}3
-
 " vim {{{3
 let g:vimsyntax_noerror = 1
 let g:vim_indent_cont   = 0
 " }}}3
-
-" vue {{{
-let g:vue_disable_pre_processors = 1
-AutoCmd FileType vue syntax sync fromstart
-" }}}
 
 " }}}2
 
