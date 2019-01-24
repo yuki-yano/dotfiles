@@ -65,13 +65,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Git {{{3
   call dein#add('ToruIwashita/git-switcher.vim', {'lazy': 1, 'on_cmd': ['Gsw', 'GswSave', 'GswLoad']})
   call dein#add('airblade/vim-gitgutter')
-  call dein#add('airblade/vim-rooter',           {'lazy': 1, 'on_cmd': 'Rooter'})
-  call dein#add('cohama/agit.vim',               {'lazy': 1, 'on_cmd': ['Agit', 'AgitFile', 'AgitGit', 'AgitDiff']})
   call dein#add('hotwatermorning/auto-git-diff', {'lazy': 1, 'on_ft': 'gitrebase'})
-  call dein#add('lambdalisue/vim-unified-diff')
-  call dein#add('rhysd/committia.vim',           {'lazy': 1, 'on_ft': 'gitcommit'})
   call dein#add('lambdalisue/gina.vim',          {'lazy': 1, 'on_cmd': 'Gina', 'hook_post_source': 'call Hook_on_post_source_gina()'})
-  call dein#add('rhysd/conflict-marker.vim')
   " }}}3
 
   " Completion {{{3
@@ -1584,41 +1579,6 @@ let g:Verdin#cooperativemode = 1
 " }}}2
 
 " Git {{{2
-
-" agit {{{3
-AlterCommand! <cmdwin> agit       Agit
-AlterCommand! <cmdwin> agitf[ile] AgitFile
-
-let g:agit_preset_views = {
-\ 'default': [
-\   {'name': 'log'},
-\   {
-\     'name':   'stat',
-\     'layout': 'botright vnew'
-\   },
-\   {
-\     'name':   'diff',
-\     'layout': 'belowright {winheight(".") * 3 / 4}new'
-\   },
-\ ],
-\ 'file': [
-\   {'name': 'filelog'},
-\   {
-\    'name':   'stat',
-\    'layout': 'botright vnew'
-\   },
-\   {
-\     'name':   'diff',
-\     'layout': 'belowright {winheight(".") * 3 / 4}new'
-\   },
-\ ],
-\ }
-" }}}3
-
-" committia {{{3
-let g:committia_open_only_vim_starting = 0
-let g:committia_hooks                  = {}
-" }}}3
 
 " git-gutter {{{3
 AlterCommand! <cmdwin> ga GitGutterStageHunk
