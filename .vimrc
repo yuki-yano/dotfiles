@@ -102,11 +102,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Fuzzy Finder {{{3
   call dein#add('Shougo/denite.nvim')
-  call dein#add('Shougo/unite.vim')
 
   call dein#add('Shougo/neomru.vim')
-  call dein#add('hewes/unite-gtags')
-  call dein#add('neoclide/denite-extra')
   call dein#add('ozelentok/denite-gtags')
 
   call dein#add('junegunn/fzf', {'build': './install --bin', 'merged': 0})
@@ -1008,7 +1005,7 @@ let g:vim_indent_cont   = 0
 
 " Completion & Fuzzy Finder {{{2
 
-" Denite & Unite {{{3
+" Denite {{{3
 AlterCommand! <cmdwin> d[enite] Denite
 AlterCommand! <cmdwin> dr       Denite<Space>-resume
 
@@ -1085,13 +1082,6 @@ if dein#tap('denite.nvim')
   nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep -post-action=open<CR>
   nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep -post-action=open<CR>
 
-  "" quickfix & locationlist
-  nnoremap <silent> <Leader><Leader>q :<C-u>Denite quickfix -auto-preview<CR>
-  nnoremap <silent> <Leader><Leader>l :<C-u>Denite location_list -auto-preview<CR>
-
-  "" outline
-  " nnoremap <silent> <Leader>o :<C-u>Denite outline<CR>
-
   "" jump
   nnoremap <silent> <Leader><C-o> :<C-u>Denite jump -auto-preview<CR>
 
@@ -1100,16 +1090,9 @@ if dein#tap('denite.nvim')
 
   "" ctags & gtags
   nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context tag -auto-preview<CR>
-  " nnoremap <silent> <Leader><Leader><C-]> :<C-u>DeniteCursorWord gtags_grep<CR>
 
   "" yank
   nnoremap <silent> (ctrlp) :<C-u>Denite miniyank<CR>
-
-  "" neosnippet
-  nnoremap <silent> <C-s> :<C-u>Denite neosnippet<CR>
-
-  "" resume
-  nnoremap <silent> <Leader><C-r> :<C-u>Denite -resume<CR>
 
   "" menu
   let s:menus = {}
@@ -1119,54 +1102,12 @@ if dein#tap('denite.nvim')
   \ ['Toggle Highlight         [ToggleHighlight]',         'ToggleHighlight'         ],
   \ ['Toggle Spell             [setlocal spell!]',         'setlocal spell!'         ],
   \ ['Toggle ALE               [ALEToggle]',               'ALEToggle'               ],
-  \ ['Toggle ComfortableMotion [ToggleComfortableMotion]', 'ToggleComfortableMotion' ],
   \ ['Toggle TableMode         [TableMode]',               'TableModeToggle'         ],
   \ ]
   call denite#custom#var('menu', 'menus', s:menus)
   nnoremap <silent> <Leader>t :<C-u>Denite menu:toggle<CR>
 endif
 
-" AlterCommand! <cmdwin> u[nite] Unite
-
-if dein#tap('unite.vim')
-  " Unite
-  let g:unite_force_overwrite_statusline = 0
-  let g:unite_source_rec_max_cache_files = 10000
-  let g:unite_enable_auto_select         = 0
-  let g:unite_data_directory             = expand('~/.cache/vim/unite')
-
-  "" keymap
-  function! s:unite_settings()
-    nnoremap <silent> <buffer> <C-n>      j
-    nnoremap <silent> <buffer> <C-p>      k
-    nnoremap <silent> <buffer> <C-j>      <C-w>j
-    nnoremap <silent> <buffer> <C-k>      <C-w>k
-    nmap     <silent> <buffer> p          <Plug>(unite_smart_preview)
-    nnoremap <silent> <buffer> <Esc><Esc> q
-    inoremap <silent> <buffer> <Esc><Esc> <Esc>q
-    imap     <silent> <buffer> <C-w>      <Plug>(unite_delete_backward_path)
-  endfunction
-
-  AutoCmd FileType unite call <SID>unite_settings()
-
-  " gtags
-  " nnoremap <silent> <Leader><C-]> :<C-u>UniteWithCursorWord gtags/context -direction=botright -no-quit<CR>
-
-  " grep
-  let g:unite_source_grep_command = 'rg'
-  let g:unite_source_grep_default_opts = '--vimgrep --hidden'
-  let g:unite_source_grep_recursive_opt = ''
-  "
-  call unite#custom_source('line', 'sorters', 'sorter_reverse')
-  call unite#custom_source('grep', 'sorters', 'sorter_reverse')
-  " nnoremap <silent> <Leader>/          :<C-u>Unite line -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  " nnoremap <silent> <Leader>*          :<C-u>UniteWithCursorWord line -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  " nnoremap <silent> <Leader><Leader>/  :<C-u>Unite grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
-  " nnoremap <silent> <Leader><Leader>*  :<C-u>UniteWithCursorWord grep -direction=botright -buffer-name=search-buffer -no-quit<CR>
-
-  " yank
-  " nnoremap <silent> <Leader><Leader>p :<C-u>Unite yankround<CR>
-endif
 " }}}3
 
 " neomru {{{3
