@@ -195,7 +195,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mhinz/vim-startify')
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('osyo-manga/vim-brightest')
-  call dein#add('t9md/vim-choosewin')
   call dein#add('t9md/vim-quickhl',               {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-zenspace')
   call dein#add('yuttie/comfortable-motion.vim')
@@ -2026,25 +2025,6 @@ endif
 
 " better-whitespace {{{3
 let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'help', 'gitcommit', 'gitrebase', 'denite', 'tagbar', 'ctrlsf', 'leaderGuide']
-" }}}3
-
-" choosewin {{{3
-let g:choosewin_overlay_enable          = 1
-let g:choosewin_overlay_clear_multibyte = 1
-let g:choosewin_blink_on_land           = 0
-let g:choosewin_statusline_replace      = 0
-let g:choosewin_tabline_replace         = 0
-
-let g:choosewin_color_overlay = {
-\ 'gui': ['Blue', 'Blue' ],
-\ 'cterm': [4, 4]
-\ }
-let g:choosewin_color_overlay_current = {
-\ 'gui': ['Red', 'Red' ],
-\ 'cterm': [1, 1]
-\ }
-
-nnoremap <silent> <C-q> :<C-u>ChooseWin<CR>
 " }}}3
 
 " comfortable-motion {{{3
