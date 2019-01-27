@@ -226,7 +226,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('osyo-manga/vim-gift')
   call dein#add('pocke/vim-automatic',                 {'depends': 'vim-gift'})
   call dein#add('qpkorr/vim-bufkill')
-  call dein#add('szw/vim-maximizer',                   {'lazy': 1, 'on_cmd': 'MaximizerToggle'})
   call dein#add('thinca/vim-ref')
   call dein#add('tpope/vim-dispatch',                  {'lazy': 1, 'on_cmd': ['Dispatch', 'Focus', 'Start']})
   call dein#add('tweekmonster/startuptime.vim',        {'lazy': 1, 'on_cmd': 'StartupTime'})
@@ -2626,10 +2625,6 @@ let g:junkfile#directory = '~/.config/junkfile/_posts'
 " vnoremap <silent> <LocalLeader> :<C-u>LeaderGuideVisual '\'<CR>
 " nnoremap <silent> s             :<C-u>LeaderGuide 's'<CR>
 " vnoremap <silent> s             :<C-u>LeaderGuideVisual 's'<CR>
-" }}}3
-
-" maximizer {{{3
-nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
 " }}}3
 
 " miniyank {{{3
