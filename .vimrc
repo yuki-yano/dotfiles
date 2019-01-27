@@ -225,7 +225,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('pocke/vim-automatic',                 {'depends': 'vim-gift'})
   call dein#add('qpkorr/vim-bufkill')
   call dein#add('thinca/vim-ref')
-  call dein#add('tpope/vim-dispatch',                  {'lazy': 1, 'on_cmd': ['Dispatch', 'Focus', 'Start']})
   call dein#add('tweekmonster/startuptime.vim',        {'lazy': 1, 'on_cmd': 'StartupTime'})
   call dein#add('tyru/capture.vim',                    {'lazy': 1, 'on_cmd': 'Capture'})
   call dein#add('tyru/vim-altercmd')
@@ -2590,15 +2589,6 @@ AutoCmd FileType git    nnoremap <silent> <buffer> <Leader>d :BW<CR>
 " capture {{{3
 AlterCommand! <cmdwin> cap[ture] Capture
 AutoCmd FileType capture nnoremap <silent> <buffer> q :<C-u>quit<CR>
-" }}}3
-
-" dispatch {{{3
-AlterCommand! <cmdwin> dis[patch] Dispatch
-AlterCommand! <cmdwin> fo[cus]    Focus
-AlterCommand! <cmdwin> st[art]    Start
-
-AlterCommand! <cmdwin> stree      Start!<Space>stree
-AlterCommand! <cmdwin> fork       Start!<Space>fork
 " }}}3
 
 " miniyank {{{3
