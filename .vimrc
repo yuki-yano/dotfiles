@@ -1939,31 +1939,6 @@ endif
 " let g:skk_large_jisyo = expand('~/.config/nvim/dict/SKK-JISYO.L')
 " }}}3
 
-" spelunker {{{3
-if dein#tap('spelunker.vim')
-  nmap zl  <Plug>(spelunker-correct-from-list)
-  nmap zL  <Plug>(spelunker-correct-all-from-list)
-  nmap zc  <Plug>(spelunker-correct)
-  nmap zC  <Plug>(spelunker-correct-all)
-  nmap zg  <Plug>(add-spelunker-good-nmap)
-  nmap zug <Plug>(undo-spelunker-good-nmap)
-  nmap zG  <Plug>(add-temporary-spelunker-good-nmap)
-  nmap zUG <Plug>(undo-temporary-spelunker-good-nmap)
-  nmap zw  <Plug>(add-spell-bad-nmap)
-  nmap zuw <Plug>(undo-spelunker-bad-nmap)
-  nmap zW  <Plug>(add-temporary-spelunker-bad-nmap)
-  nmap zUW <Plug>(undo-temporary-spelunker-bad-nmap)
-  vmap zg  <Plug>(add-spelunker-good)
-  vmap zug <Plug>(undo-spelunker-good)
-  vmap zG  <Plug>(add-temporary-spelunker-good)
-  vmap zUG <Plug>(undo-temporary-spelunker-good)
-  vmap zw  <Plug>(add-spelunker-bad)
-  vmap zuw <Plug>(undo-spelunker-bad)
-  vmap zW  <Plug>(add-temporary-spelunker-bad)
-  vmap zUW <Plug>(undo-temporary-spelunker-bad)
-endif
-" }}}3
-
 " splitjoin {{{3
 let g:splitjoin_split_mapping = ''
 let g:splitjoin_join_mapping = ''
