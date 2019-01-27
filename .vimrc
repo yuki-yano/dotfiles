@@ -204,7 +204,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Util {{{3
-  " call dein#add('kana/vim-submode')
   " call dein#add('hecal3/vim-leader-guide')
   call dein#add('MattesGroeger/vim-bookmarks')
   call dein#add('Shougo/junkfile.vim')
@@ -2671,25 +2670,6 @@ AlterCommand! <cmdwin> sc[ratch] Scratch
 AutoCmd FileType scratch nnoremap <silent> <buffer> q :<C-u>quit<CR>
 
 let g:scratch_no_mappings = 1
-" }}}3
-
-" submode {{{3
-" if dein#tap('vim-submode')
-"   let g:submode_timeout = 5
-"
-"   "" jump
-"   call submode#enter_with('jump', 'n', '', 'g;', 'g;')
-"   call submode#map('jump', 'n', '', ';', 'g;')
-"
-"   "" edgemotion
-"   call submode#enter_with('edgemotion-j', 'n', 'e', '<Leader>j', 'edgemotion#move(1)')
-"   call submode#enter_with('edgemotion-k', 'n', 'e', '<Leader>k', 'edgemotion#move(0)')
-"   call submode#map('edgemotion-j', 'n', 'e', 'j',         'edgemotion#move(1)')
-"   call submode#map('edgemotion-k', 'n', 'e', 'k',         'edgemotion#move(0)')
-"   call submode#map('edgemotion-j', 'n', 'e', '<Leader>j', 'edgemotion#move(1)')
-"   call submode#map('edgemotion-k', 'n', 'e', '<Leader>k', 'edgemotion#move(0)')
-" endif
-
 " }}}3
 
 " table-mode {{{3
