@@ -197,7 +197,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('osyo-manga/vim-brightest')
   call dein#add('t9md/vim-quickhl',               {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-zenspace')
-  call dein#add('yuttie/comfortable-motion.vim')
   " }}}3
 
   " tmux {{{3
@@ -2024,31 +2023,6 @@ endif
 
 " better-whitespace {{{3
 let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'help', 'gitcommit', 'gitrebase', 'denite', 'tagbar', 'ctrlsf', 'leaderGuide']
-" }}}3
-
-" comfortable-motion {{{3
-let g:comfortable_motion_no_default_key_mappings = 1
-let g:comfortable_motion_enable = 0
-
-function! s:toggle_comfortable_motion()
-  if exists('g:comfortable_motion_enable') && g:comfortable_motion_enable == 1
-    let g:comfortable_motion_enable = 0
-
-    nunmap <C-d>
-    nunmap <C-u>
-    nunmap <C-f>
-    nunmap <C-b>
-  else
-    let g:comfortable_motion_enable = 1
-
-    nnoremap <silent> <C-d> :call comfortable_motion#flick(100)<CR>
-    nnoremap <silent> <C-u> :call comfortable_motion#flick(-100)<CR>
-    nnoremap <silent> <C-f> :call comfortable_motion#flick(200)<CR>
-    nnoremap <silent> <C-b> :call comfortable_motion#flick(-200)<CR>
-  endif
-endfunction
-
-command! ToggleComfortableMotion call <SID>toggle_comfortable_motion()
 " }}}3
 
 " brightest {{{3
