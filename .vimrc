@@ -135,20 +135,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-textobj-user')
   call dein#add('kana/vim-operator-user')
 
-  call dein#add('AndrewRadev/sideways.vim') " ia aa
   call dein#add('kana/vim-textobj-entire') " ie ae
-  call dein#add('kana/vim-textobj-function') " if af
-  call dein#add('kana/vim-textobj-indent') " ai ii
   call dein#add('kana/vim-textobj-line') " al il
-  call dein#add('machakann/vim-swap') " i, a,
-  call dein#add('machakann/vim-textobj-delimited') " id ad
-  call dein#add('mattn/vim-textobj-url') " iu au
   call dein#add('osyo-manga/vim-textobj-multiblock') " ib ab
   call dein#add('rhysd/vim-textobj-ruby') " ir ar
   call dein#add('thinca/vim-textobj-between') " i{char} a{char}
-  call dein#add('thinca/vim-textobj-comment') " ic ac
 
-  call dein#add('mopp/vim-operator-convert-case',  {'lazy': 1, 'depends': 'vim-operator-user', 'on_map': '<Plug>'})
   call dein#add('yuki-ycino/vim-operator-replace', {'lazy': 1, 'depends': 'vim-operator-user', 'on_map': '<Plug>'})
   " }}}3
 
@@ -1836,30 +1828,17 @@ endif
 " expand-region {{{3
 let g:expand_region_text_objects = {
 \ 'iw': 0,
-\ 'iW': 0,
-\ 'ad': 0,
 \ 'ib': 1,
 \ 'ab': 1,
 \ 'il': 0,
-\ 'al': 0,
-\ 'ii': 1,
-\ 'ai': 1,
-\ 'if': 1,
-\ 'af': 1,
-\ 'iz': 1,
-\ 'az': 1,
+\ 'ie': 0,
 \ }
 
 let g:expand_region_text_objects_ruby = {
 \ 'iw': 0,
-\ 'iW': 0,
-\ 'ad': 0,
 \ 'ib': 1,
 \ 'ab': 1,
 \ 'il': 0,
-\ 'al': 0,
-\ 'ii': 0,
-\ 'ai': 0,
 \ 'ir': 0,
 \ 'ar': 0,
 \ 'ie': 0,
@@ -1892,10 +1871,6 @@ if dein#tap('vim-jplus')
   nmap gJ <Plug>(jplus-input)
   vmap gJ <Plug>(jplus-input)
 endif
-" }}}3
-
-" operator-convert-case {{{3
-nmap <silent> <Leader>cl <Plug>(operator-convert-case-loop)
 " }}}3
 
 " qfreplace {{{3
@@ -1959,15 +1934,6 @@ if dein#tap('vim-sandwich')
 endif
 " }}}3
 
-" sideways {{{3
-nnoremap <silent> <nowait> < :SidewaysLeft<CR>
-nnoremap <silent> <nowait> > :SidewaysRight<CR>
-omap aa <Plug>SidewaysArgumentTextobjA
-xmap aa <Plug>SidewaysArgumentTextobjA
-omap ia <Plug>SidewaysArgumentTextobjI
-xmap ia <Plug>SidewaysArgumentTextobjI
-" }}}3
-
 " skk {{{3
 " let g:skk_control_j_key = ''
 " let g:skk_large_jisyo = expand('~/.config/nvim/dict/SKK-JISYO.L')
@@ -2004,15 +1970,6 @@ let g:splitjoin_join_mapping = ''
 
 nnoremap <silent> <Leader>J :SplitjoinJoin<CR>
 nnoremap <silent> <Leader>S :SplitjoinSplit<CR>
-" }}}3
-
-" swap {{{3
-let g:swap_no_default_key_mappings = 1
-
-nmap g< <Plug>(swap-prev)
-nmap g> <Plug>(swap-next)
-nmap gs <Plug>(swap-interactive)
-xmap gs <Plug>(swap-interactive)
 " }}}3
 
 " switch {{{3
