@@ -124,8 +124,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " filer {{{3
-  call dein#add('Shougo/vimfiler')
-  call dein#add('cocopon/vaffle.vim')
+  call dein#add('Shougo/defx.nvim')
   " }}}3
 
   " textobj & operator {{{3
@@ -1515,54 +1514,33 @@ endif
 
 " filer {{{2
 
-" vimfiler {{{3
-let g:vimfiler_safe_mode_by_default = 0
-let g:vimfiler_data_directory       = expand('~/.cache/vim/vimfiler')
-let g:vimfiler_execute_file_list    = {'jpg': 'open', 'jpeg': 'open', 'gif': 'open', 'png': 'open'}
-let g:vimfiler_enable_auto_cd       = 1
-let g:vimfiler_ignore_pattern       = '^\%(.git\|.DS_Store\)$'
-let g:vimfiler_trashbox_directory   = '~/.Trash'
+" defx {{{3
+nnoremap <silent> <Leader>e :Defx -search=`expand('%:p') -split=vertical -winwidth=40 -direction=topleft<CR>
+nnoremap <silent> <Leader>E :Defx `expand('%:p:h')` -search=`expand('%:p')` -split=vertical -winwidth=40 -direction=topleft<CR>
 
-if dein#tap('lightline.vim')
-  nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -simple <Bar> call lightline#update()<CR>
-  nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -simple -find <Bar> call lightline#update()<CR>
-else
-  nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -simple<CR>
-  nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -simple -find<CR>
-endif
-
-function! s:vimfiler_settings()
-  nmap     <silent> <buffer> R     <Plug>(vimfiler_redraw_screen)
-  nnoremap <silent> <buffer> <C-l> <C-w>l
-  nnoremap <silent> <buffer> <C-j> <C-w>j
+function! s:defx_settings() abort
+  nnoremap <silent><buffer><expr> j       line('.') == line('$') ? 'gg' : 'j'
+  nnoremap <silent><buffer><expr> k       line('.') == 1 ? 'G' : 'k'
+  nnoremap <silent><buffer><expr> <CR>    defx#do_action('drop')
+  nnoremap <silent><buffer><expr> h       defx#do_action('cd', ['..'])
+  nnoremap <silent><buffer><expr> l       defx#do_action('open')
+  nnoremap <silent><buffer><expr> v       defx#do_action('open', 'vertical', 'botright', 'vsplit')
+  nnoremap <silent><buffer><expr> <Space> defx#do_action('toggle_select') . 'j'
+  nnoremap <silent><buffer><expr> N       defx#do_action('new_file')
+  nnoremap <silent><buffer><expr> K       defx#do_action('new_directory')
+  nnoremap <silent><buffer><expr> m       defx#do_action('move')
+  nnoremap <silent><buffer><expr> d       defx#do_action('remove')
+  nnoremap <silent><buffer><expr> r       defx#do_action('rename')
+  nnoremap <silent><buffer><expr> y       defx#do_action('copy')
+  nnoremap <silent><buffer><expr> p       defx#do_action('paste')
+  nnoremap <silent><buffer><expr> .       defx#do_action('toggle_ignored_files')
+  nnoremap <silent><buffer><expr> q       defx#do_action('quit')
+  nnoremap <silent><buffer><expr> R       defx#do_action('redraw')
+  nnoremap <silent><buffer><expr> <C-g>   defx#do_action('print')
+  nnoremap <silent><buffer><expr> cd      defx#do_action('change_vim_cwd')
 endfunction
 
-AutoCmd FileType vimfiler call s:vimfiler_settings()
-" }}}3
-
-" vaffle {{{3
-AlterCommand! <cmdwin> va[fle] Vaffle
-
-let g:loaded_netrw = 1
-let g:loaded_netrwPlugin = 1
-let g:vaffle_open_selected_split_position = ''
-let g:vaffle_open_selected_vsplit_position = ''
-
-command! VaffleExplorer vertical topleft vsplit +Vaffle | vertical resize 35 | setlocal winfixwidth
-command! VaffleExplorerCurrent vertical topleft vsplit +Vaffle\ %:h | vertical resize 35 | setlocal winfixwidth
-
-" nnoremap <silent> <Leader>e :VaffleExplorer<CR>
-" nnoremap <silent> <Leader>E :VaffleExplorerCurrent<CR>
-
-AutoCmd FileType vaffle nnoremap <silent> <buffer> q :<C-u>quit<CR>
-
-function! s:customize_vaffle_mappings() abort
-  nmap <silent> <buffer> <nowait> <Space> <Plug>(vaffle-toggle-current)
-  nmap <silent> <buffer> <nowait> s       <Plug>(vaffle-open-selected-split)
-  nmap <silent> <buffer> <nowait> v       <Plug>(vaffle-open-selected-vsplit)
-endfunction
-
-AutoCmd FileType vaffle call <SID>customize_vaffle_mappings()
+AutoCmd FileType defx call s:defx_settings()
 " }}}3
 
 " }}}2
@@ -2094,8 +2072,6 @@ if dein#tap('lightline.vim')
 
   let s:lightline_ignore_modifiable_ft = [
   \ 'qf',
-  \ 'vimfiler',
-  \ 'vaffle',
   \ 'gina-status',
   \ 'gina-branch',
   \ 'gina-log',
