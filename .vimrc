@@ -205,7 +205,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Util {{{3
   call dein#add('MattesGroeger/vim-bookmarks')
-  call dein#add('Shougo/junkfile.vim')
   call dein#add('SpaceVim/gtags.vim')
   call dein#add('aiya000/aho-bakaup.vim')
   call dein#add('bfredl/nvim-miniyank')
@@ -2600,16 +2599,6 @@ AlterCommand! <cmdwin> st[art]    Start
 
 AlterCommand! <cmdwin> stree      Start!<Space>stree
 AlterCommand! <cmdwin> fork       Start!<Space>fork
-" }}}3
-
-" junkfile {{{3
-AlterCommand! <cmdwin> jnote  JunkfileNote
-AlterCommand! <cmdwin> jdaily JunkfileDaily
-AlterCommand! <cmdwin> junk   Unite<Space>junkfile/new<Space>junkfile<Space>-start-insert
-
-command! -nargs=1 JunkfileNote call junkfile#open(strftime('%Y-%m-%d_') . <q-args>, '.md')
-command! JunkfileDaily call junkfile#open_immediately(strftime('%Y-%m-%d.md'))
-let g:junkfile#directory = '~/.config/junkfile/_posts'
 " }}}3
 
 " miniyank {{{3
