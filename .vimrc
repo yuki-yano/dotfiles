@@ -147,8 +147,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Edit & Move & Search {{{3
   " call dein#add('terryma/vim-multiple-cursors')
   " call dein#add('vimtaku/vim-mlh',           {'lazy': 1, 'on_event': 'InsertEnter'})
-  call dein#add('AndrewRadev/splitjoin.vim',     {'lazy': 1, 'on_cmd': ['SplitjoinJoin', 'SplitjoinSplit']})
-  call dein#add('AndrewRadev/switch.vim',        {'lazy': 1, 'on_cmd': 'Switch'})
   call dein#add('Chiel92/vim-autoformat')
   call dein#add('LeafCage/yankround.vim')
   call dein#add('chrisbra/NrrwRgn',              {'lazy': 1, 'on_cmd': ['NR', 'NW', 'WidenRegion', 'NRV', 'NUD', 'NRP', 'NRM', 'NRS', 'NRN', 'NRL']})
@@ -1899,19 +1897,6 @@ if dein#tap('vim-sandwich')
   \ },
   \ ]
 endif
-" }}}3
-
-" splitjoin {{{3
-let g:splitjoin_split_mapping = ''
-let g:splitjoin_join_mapping = ''
-
-nnoremap <silent> <Leader>J :SplitjoinJoin<CR>
-nnoremap <silent> <Leader>S :SplitjoinSplit<CR>
-" }}}3
-
-" switch {{{3
-let g:switch_mapping = ''
-nnoremap <silent> - :<C-u>Switch<CR>
 " }}}3
 
 " tcomment {{{3
