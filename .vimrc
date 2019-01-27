@@ -196,7 +196,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('dietsche/vim-lastplace')
   call dein#add('kana/vim-niceblock',                  {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
   call dein#add('lambdalisue/session.vim',             {'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
-  call dein#add('majutsushi/tagbar',                   {'lazy': 1, 'on_cmd': ['TagbarOpen', 'TagbarToggle']})
   call dein#add('mattn/webapi-vim')
   call dein#add('mbbill/undotree',                     {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
   call dein#add('mtth/scratch.vim',                    {'lazy': 1, 'on_cmd': ['Scratch', 'ScratchInsert', 'ScratchPreview', 'ScratchSelection']})
@@ -1926,7 +1925,7 @@ endif
 " Appearance {{{2
 
 " better-whitespace {{{3
-let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'help', 'gitcommit', 'gitrebase', 'denite', 'tagbar', 'ctrlsf']
+let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'help', 'gitcommit', 'gitrebase', 'denite', 'ctrlsf']
 " }}}3
 
 " brightest {{{3
@@ -2072,7 +2071,6 @@ if dein#tap('lightline.vim')
   \ 'diff',
   \ 'fzf',
   \ 'denite',
-  \ 'tagbar',
   \ 'capture',
   \ 'gina-status',
   \ 'gina-branch',
@@ -2086,7 +2084,6 @@ if dein#tap('lightline.vim')
   \ 'diff':        'Diff',
   \ 'fzf':         'FZF',
   \ 'denite':      'Denite',
-  \ 'tagbar':      'TagBar',
   \ 'capture':     'Capture',
   \ 'gina-status': 'Git Status',
   \ 'gina-branch': 'Git Branch',
@@ -2099,7 +2096,6 @@ if dein#tap('lightline.vim')
   \ 'qf',
   \ 'vimfiler',
   \ 'vaffle',
-  \ 'tagbar',
   \ 'gina-status',
   \ 'gina-branch',
   \ 'gina-log',
@@ -2111,7 +2107,6 @@ if dein#tap('lightline.vim')
   \ 'qf',
   \ 'fzf',
   \ 'denite',
-  \ 'tagbar',
   \ 'gina-status',
   \ 'gina-branch',
   \ 'gina-log',
@@ -2320,7 +2315,6 @@ let g:rainbow_conf.separately = {
 \ 'gina-commit' : 0,
 \ 'gina-reflog' : 0,
 \ 'gina-blame'  : 0,
-\ 'tagbar'      : 0,
 \ 'capture'     : 0,
 \ 'ctrlsf'      : 0,
 \ }
@@ -2473,20 +2467,6 @@ let g:scratch_no_mappings = 1
 
 " table-mode {{{3
 let g:table_mode_corner='|'
-" }}}3
-
-" tagbar {{{3
-AlterCommand! <cmdwin> tag TagbarOpen<Space>j
-
-let g:tagbar_autoshowtag = 1
-let g:tagbar_autofocus   = 1
-let g:tagbar_sort        = 0
-
-function! Tagbar_status_func(current, sort, fname, ...) abort
-  let g:lightline.fname = a:fname
-  return lightline#statusline(0)
-endfunction
-let g:tagbar_status_func = 'Tagbar_status_func'
 " }}}3
 
 " undotree {{{3
