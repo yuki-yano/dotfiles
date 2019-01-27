@@ -217,7 +217,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('janko-m/vim-test',                    {'lazy': 1, 'on_cmd': ['TestNearest','TestFile','TestSuite','TestLast','TestVisit']})
   call dein#add('junegunn/vim-peekaboo')
   call dein#add('kana/vim-niceblock',                  {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
-  call dein#add('konfekt/fastfold')
   call dein#add('lambdalisue/session.vim',             {'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
   call dein#add('lambdalisue/vim-manpager',            {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER']})
   call dein#add('lambdalisue/vim-pager',               {'lazy': 1, 'on_cmd': 'PAGER'})
@@ -2030,13 +2029,6 @@ let g:brightest#enable_on_CursorHold        = 1
 let g:brightest#enable_highlight_all_window = 1
 let g:brightest#highlight = {'group': 'BrighTestHighlight'}
 " let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat']
-" }}}3
-
-" fastfold {{{3
-let g:fastfold_savehook = 1
-let g:fastfold_fold_command_suffixes  = ['x', 'X', 'a', 'A', 'o', 'O', 'c', 'C']
-let g:fastfold_fold_movement_commands = [']z', '[z', 'zj', 'zk']
-nmap zuz <Plug>(FastFoldUpdate)
 " }}}3
 
 " foldCC {{{3
