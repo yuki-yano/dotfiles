@@ -2292,8 +2292,6 @@ if dein#tap('lightline.vim')
   \ 'fzf',
   \ 'denite',
   \ 'unite',
-  \ 'vimfiler',
-  \ 'vaffle',
   \ 'tagbar',
   \ 'capture',
   \ 'gina-status',
@@ -2310,8 +2308,6 @@ if dein#tap('lightline.vim')
   \ 'fzf':         'FZF',
   \ 'denite':      'Denite',
   \ 'unite':       'Unite',
-  \ 'vimfiler':    'VimFiler',
-  \ 'vaffle':      'Vaffle',
   \ 'tagbar':      'TagBar',
   \ 'capture':     'Capture',
   \ 'gina-status': 'Git Status',
@@ -2338,8 +2334,6 @@ if dein#tap('lightline.vim')
   \ 'fzf',
   \ 'denite',
   \ 'unite',
-  \ 'vimfiler',
-  \ 'vaffle',
   \ 'tagbar',
   \ 'gina-status',
   \ 'gina-branch',
@@ -2353,8 +2347,6 @@ if dein#tap('lightline.vim')
   \ 'fzf',
   \ 'denite',
   \ 'unite',
-  \ 'vimfiler',
-  \ 'vaffle',
   \ 'gina-status',
   \ 'gina-branch',
   \ 'gina-log',
@@ -2553,7 +2545,6 @@ let g:rainbow_conf.separately = {
 \ 'diff'        : 0,
 \ 'qf'          : 0,
 \ 'denite'      : 0,
-\ 'vaffle'      : 0,
 \ 'git'         : 0,
 \ 'gitcommit'   : 0,
 \ 'gina-status' : 0,
@@ -2617,12 +2608,6 @@ let g:automatic_config = [
 \   },
 \   'set': {
 \     'move': 'right',
-\   },
-\ },
-\ {
-\   'match': {
-\     'filetype': 'vaffle',
-\     'autocmds': ['FileType'],
 \   },
 \ },
 \ {
@@ -2743,7 +2728,6 @@ nnoremap <silent> <Leader>d :BD<CR>
 AutoCmd FileType help   nnoremap <silent> <buffer> <Leader>d :BW<CR>
 AutoCmd FileType diff   nnoremap <silent> <buffer> <Leader>d :BW<CR>
 AutoCmd FileType git    nnoremap <silent> <buffer> <Leader>d :BW<CR>
-AutoCmd FileType vaffle nnoremap <silent> <buffer> <Leader>d :BW<CR>
 " }}}3
 
 " capture {{{3
