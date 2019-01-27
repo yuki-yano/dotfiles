@@ -229,7 +229,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('osyo-manga/vim-gift')
   call dein#add('pocke/vim-automatic',                 {'depends': 'vim-gift'})
   call dein#add('qpkorr/vim-bufkill')
-  call dein#add('simeji/winresizer',                   {'lazy': 1, 'on_cmd': 'WinResizerStartResize'})
   call dein#add('szw/vim-maximizer',                   {'lazy': 1, 'on_cmd': 'MaximizerToggle'})
   call dein#add('thinca/vim-ref')
   call dein#add('tpope/vim-dispatch',                  {'lazy': 1, 'on_cmd': ['Dispatch', 'Focus', 'Start']})
@@ -2718,10 +2717,6 @@ nnoremap <silent> <Leader>u :<C-u>UndotreeToggle<CR>
 " windowswap {{{3
 let g:windowswap_map_keys = 0
 nnoremap <silent> <C-w><C-w> :call WindowSwap#EasyWindowSwap()<CR>
-" }}}3
-
-" winresizer {{{3
-nnoremap <silent> <Leader><C-w> :WinResizerStartResize<CR>
 " }}}3
 
 " }}}2
