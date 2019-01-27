@@ -232,7 +232,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('qpkorr/vim-bufkill')
   call dein#add('simeji/winresizer',                   {'lazy': 1, 'on_cmd': 'WinResizerStartResize'})
   call dein#add('szw/vim-maximizer',                   {'lazy': 1, 'on_cmd': 'MaximizerToggle'})
-  call dein#add('thinca/vim-quickrun',                 {'lazy': 1, 'on_cmd': 'QuickRun'})
   call dein#add('thinca/vim-ref')
   call dein#add('tpope/vim-dispatch',                  {'lazy': 1, 'on_cmd': ['Dispatch', 'Focus', 'Start']})
   call dein#add('tweekmonster/startuptime.vim',        {'lazy': 1, 'on_cmd': 'StartupTime'})
@@ -2464,7 +2463,6 @@ let g:rainbow_conf.separately = {
 \ 'gina-reflog' : 0,
 \ 'gina-blame'  : 0,
 \ 'tagbar'      : 0,
-\ 'quickrun'    : 0,
 \ 'capture'     : 0,
 \ 'ctrlsf'      : 0,
 \ }
@@ -2590,14 +2588,6 @@ let g:automatic_config = [
 \     'filetype': 'capture',
 \     'autocmds': ['FileType'],
 \   },
-\ },
-\ {
-\   'match': {
-\     'bufname' : '\[quickrun output\]',
-\   },
-\   'set': {
-\     'height' : 10,
-\   },
 \ }
 \ ]
 " }}}
@@ -2696,25 +2686,6 @@ command! -range Trans <line1>,<line2>OpenGoogleTranslate
 
 " peekaboo {{{3
 let g:peekaboo_window = 'botright 30new'
-" }}}3
-
-" quickrun {{{3
-let g:quickrun_no_default_key_mappings = 1
-let g:quickrun_config = {
-\ '_': {
-\   'runner': 'vimproc',
-\   'runner/vimproc/updatetime': 50,
-\   'outputter': 'error',
-\   'outputter/error/success': 'buffer',
-\   'outputter/error/error': 'quickfix',
-\   'outputter/buffer/split': ':botright 10sp',
-\   'outputter/buffer/close_on_empty': 1,
-\ }
-\ }
-
-nnoremap <LocalLeader>q :<C-u>QuickRun -mode n<CR>
-vnoremap <LocalLeader>q :<C-u>QuickRun -mode v<CR>
-nnoremap <silent> <expr> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() : "\<C-c>"
 " }}}3
 
 " session {{{3
