@@ -195,7 +195,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('bogado/file-line')
   call dein#add('dhruvasagar/vim-table-mode',          {'lazy': 1, 'on_cmd': 'TableModeToggle'})
   call dein#add('dietsche/vim-lastplace')
-  call dein#add('haya14busa/vim-open-googletranslate', {'lazy': 1, 'on_cmd': 'OpenGoogleTranslate'})
   call dein#add('kana/vim-niceblock',                  {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
   call dein#add('lambdalisue/session.vim',             {'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
   call dein#add('lambdalisue/vim-manpager',            {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER']})
@@ -2506,11 +2505,6 @@ AutoCmd FileType capture nnoremap <silent> <buffer> q :<C-u>quit<CR>
 " miniyank {{{3
 let g:miniyank_maxitems = 2000
 let g:miniyank_filename = expand('~/.cache/vim/miniyank.mpack')
-" }}}3
-
-" open-googletranslate {{{3
-let g:opengoogletranslate#openbrowsercmd = 'electron-open --without-focus'
-command! -range Trans <line1>,<line2>OpenGoogleTranslate
 " }}}3
 
 " session {{{3

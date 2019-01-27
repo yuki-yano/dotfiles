@@ -1,7 +1,5 @@
 @vue/cli
 create-react-app
-electron
-electron-open-url
 firebase-tools
 fixjson
 gtop
