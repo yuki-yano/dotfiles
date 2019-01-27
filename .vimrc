@@ -215,7 +215,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('dietsche/vim-lastplace')
   call dein#add('haya14busa/vim-open-googletranslate', {'lazy': 1, 'on_cmd': 'OpenGoogleTranslate'})
   call dein#add('janko-m/vim-test',                    {'lazy': 1, 'on_cmd': ['TestNearest','TestFile','TestSuite','TestLast','TestVisit']})
-  call dein#add('junegunn/vim-peekaboo')
   call dein#add('kana/vim-niceblock',                  {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
   call dein#add('lambdalisue/session.vim',             {'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
   call dein#add('lambdalisue/vim-manpager',            {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER']})
@@ -2646,10 +2645,6 @@ let g:miniyank_filename = expand('~/.cache/vim/miniyank.mpack')
 " open-googletranslate {{{3
 let g:opengoogletranslate#openbrowsercmd = 'electron-open --without-focus'
 command! -range Trans <line1>,<line2>OpenGoogleTranslate
-" }}}3
-
-" peekaboo {{{3
-let g:peekaboo_window = 'botright 30new'
 " }}}3
 
 " session {{{3
