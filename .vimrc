@@ -1236,6 +1236,7 @@ if dein#tap('deoplete.nvim')
   let s:deoplete_omni_functions['zsh']            = []
   call deoplete#custom#source('omni', 'functions', s:deoplete_omni_functions)
 endif
+" }}}3
 
 " lexima {{{3
 if dein#tap('lexima.vim')
@@ -1383,8 +1384,6 @@ if dein#tap('lexima.vim')
     endfor
   endfunction
 endif
-" }}}3
-
 " }}}3
 
 " ncm2 {{{3
