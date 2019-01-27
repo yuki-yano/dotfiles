@@ -72,7 +72,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Completion {{{3
   if has('nvim')
     call dein#add('Shougo/deoplete.nvim')
-    call dein#add('autozimu/LanguageClient-neovim', {'rev': 'next', 'build': 'bash install.sh'})
 
     call dein#add('Shougo/context_filetype.vim')
     call dein#add('jsfaint/gen_tags.vim')
@@ -1441,34 +1440,6 @@ endif
 "   \ 'whitelist': ['ruby'],
 "   \ })
 " endif
-" }}}3
-
-" LanguageClient {{{3
-let g:LanguageClient_autoStart = 1
-let g:LanguageClient_diagnosticsEnable = 0
-let g:LanguageClient_serverCommands = {
-\ 'typescript':     ['javascript-typescript-stdio'],
-\ 'typescript.tsx': ['javascript-typescript-stdio'],
-\ 'vue':            [],
-\ 'go':             ['go-langserver', '-mode', 'stdio'],
-\ 'html':           [],
-\ 'css':            [],
-\ }
-
-function s:set_lsp_mappings() abort
-  nnoremap <silent> <buffer> K              :<C-u>call LanguageClient#textDocument_definition({'gotoCmd': 'split'})<CR>
-  nnoremap <silent> <buffer> gK             :<C-u>call LanguageClient#textDocument_typeDefinition({'gotoCmd': 'split'})<CR>
-  nnoremap <silent> <buffer> <LocalLeader>r :<C-u>call LanguageClient#textDocument_rename()<CR>
-  nnoremap <silent> <buffer> <LocalLeader>p :<C-u>Denite references -auto-preview<CR>
-  nnoremap <silent> <buffer> <LocalLeader>o :<C-u>Denite documentSymbol -auto-preview<CR>
-  nnoremap <silent> <buffer> <LocalLeader>m :<C-u>call LanguageClient_contextMenu()<CR>
-endfunction
-
-AutoCmd FileType go call s:set_lsp_mappings()
-" }}}3
-
-" Verdin {{{3
-let g:Verdin#cooperativemode = 1
 " }}}3
 
 " }}}2
