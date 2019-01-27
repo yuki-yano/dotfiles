@@ -145,7 +145,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Edit & Move & Search {{{3
-  " call dein#add('justinmk/vim-sneak')
   " call dein#add('terryma/vim-multiple-cursors')
   " call dein#add('tyru/skk.vim',              {'lazy': 1, 'on_event': 'InsertEnter'})
   " call dein#add('vimtaku/vim-mlh',           {'lazy': 1, 'on_event': 'InsertEnter'})
@@ -1755,7 +1754,7 @@ let g:easy_align_delimiters = {
 \ }
 " }}}3
 
-" easymotion & clever-f & sneak {{{3
+" easymotion & clever-f {{{3
 if dein#tap('vim-easymotion') && dein#tap('clever-f.vim')
   " EasyMotion
   let g:EasyMotion_do_mapping       = 0
@@ -1791,18 +1790,6 @@ if dein#tap('vim-easymotion') && dein#tap('clever-f.vim')
   xmap <silent> F <Plug>(clever-f-F)
   xmap <silent> t <Plug>(clever-f-t)
   xmap <silent> T <Plug>(clever-f-T)
-
-  " sneak
-  " let g:sneak#prompt = 'Search by Sneak (2 characters) >'
-
-  " nmap <silent> ss <Plug>Sneak_s
-  " nmap <silent> sS <Plug>Sneak_S
-  " nmap <silent> ;  <Plug>Sneak_;
-  " nmap <silent> ,  <Plug>Sneak_,
-  " xmap <silent> ss <Plug>Sneak_s
-  " xmap <silent> sS <Plug>Sneak_S
-  " xmap <silent> ;  <Plug>Sneak_;
-  " xmap <silent> ,  <Plug>Sneak_,
 endif
 " }}}3
 
