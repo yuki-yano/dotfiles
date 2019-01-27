@@ -191,7 +191,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mhinz/vim-startify')
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('osyo-manga/vim-brightest')
-  call dein#add('t9md/vim-quickhl',               {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-zenspace')
   " }}}3
 
@@ -2306,13 +2305,6 @@ endif
 
 " matchup {{{3
 let g:matchup_matchparen_status_offscreen = 0
-" }}}3
-
-" quickhl {{{3
-nmap <Leader>m <Plug>(quickhl-manual-this)
-xmap <Leader>m <Plug>(quickhl-manual-this)
-nmap <Leader>M <Plug>(quickhl-manual-reset)
-xmap <Leader>M <Plug>(quickhl-manual-reset)
 " }}}3
 
 " startify {{{3
