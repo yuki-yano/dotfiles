@@ -196,8 +196,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('dietsche/vim-lastplace')
   call dein#add('kana/vim-niceblock',                  {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
   call dein#add('lambdalisue/session.vim',             {'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
-  call dein#add('lambdalisue/vim-manpager',            {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER']})
-  call dein#add('lambdalisue/vim-pager',               {'lazy': 1, 'on_cmd': 'PAGER'})
   call dein#add('majutsushi/tagbar',                   {'lazy': 1, 'on_cmd': ['TagbarOpen', 'TagbarToggle']})
   call dein#add('mattn/webapi-vim')
   call dein#add('mbbill/undotree',                     {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
@@ -2072,7 +2070,6 @@ if dein#tap('lightline.vim')
   let s:lightline_ignore_right_ft = [
   \ 'help',
   \ 'diff',
-  \ 'man',
   \ 'fzf',
   \ 'denite',
   \ 'tagbar',
@@ -2087,7 +2084,6 @@ if dein#tap('lightline.vim')
   let s:lightline_ft_to_mode_hash = {
   \ 'help':        'Help',
   \ 'diff':        'Diff',
-  \ 'man':         'Man',
   \ 'fzf':         'FZF',
   \ 'denite':      'Denite',
   \ 'tagbar':      'TagBar',
@@ -2356,16 +2352,6 @@ let g:automatic_config = [
 \ {
 \   'match': {
 \     'filetype': 'help',
-\   },
-\ },
-\ {
-\   'match': {
-\     'filetype': 'man',
-\     'autocmds': ['FileType'],
-\   },
-\   'set': {
-\     'move': 'right',
-\     'width': '35%',
 \   },
 \ },
 \ {
