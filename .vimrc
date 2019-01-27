@@ -236,8 +236,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Library {{{3
-  " call dein#add('nixprime/cpsm',      {'build': 'env PY3=ON ./install.sh'})
-  call dein#add('Shougo/vimproc.vim', {'build': 'make'})
   call dein#add('vim-scripts/L9')
   " }}}3
 
