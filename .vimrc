@@ -204,7 +204,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Util {{{3
-  " call dein#add('hecal3/vim-leader-guide')
   call dein#add('MattesGroeger/vim-bookmarks')
   call dein#add('Shougo/junkfile.vim')
   call dein#add('SpaceVim/gtags.vim')
@@ -2012,7 +2011,7 @@ endif
 " Appearance {{{2
 
 " better-whitespace {{{3
-let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'help', 'gitcommit', 'gitrebase', 'denite', 'tagbar', 'ctrlsf', 'leaderGuide']
+let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'help', 'gitcommit', 'gitrebase', 'denite', 'tagbar', 'ctrlsf']
 " }}}3
 
 " brightest {{{3
@@ -2611,20 +2610,6 @@ AlterCommand! <cmdwin> junk   Unite<Space>junkfile/new<Space>junkfile<Space>-sta
 command! -nargs=1 JunkfileNote call junkfile#open(strftime('%Y-%m-%d_') . <q-args>, '.md')
 command! JunkfileDaily call junkfile#open_immediately(strftime('%Y-%m-%d.md'))
 let g:junkfile#directory = '~/.config/junkfile/_posts'
-" }}}3
-
-" leader-guide {{{3
-" let g:lmap = {}
-" call leaderGuide#register_prefix_descriptions('<Space>', 'g:lmap')
-" call leaderGuide#register_prefix_descriptions('\',       'g:lmap')
-" call leaderGuide#register_prefix_descriptions('s',       'g:lmap')
-"
-" nnoremap <silent> <Leader>      :<C-u>LeaderGuide '<Space>'<CR>
-" vnoremap <silent> <Leader>      :<C-u>LeaderGuideVisual '<Space>'<CR>
-" nnoremap <silent> <LocalLeader> :<C-u>LeaderGuide '\'<CR>
-" vnoremap <silent> <LocalLeader> :<C-u>LeaderGuideVisual '\'<CR>
-" nnoremap <silent> s             :<C-u>LeaderGuide 's'<CR>
-" vnoremap <silent> s             :<C-u>LeaderGuideVisual 's'<CR>
 " }}}3
 
 " miniyank {{{3
