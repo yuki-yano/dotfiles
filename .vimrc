@@ -2314,7 +2314,7 @@ if dein#tap('lightline.vim')
   \ },
   \ 'tabline': {
   \   'left':  [['tabs']],
-  \   'right': [['git_status'], ['branch']],
+  \   'right': [],
   \ },
   \ 'tab': {
   \   'active':   ['tabwinnum', 'filename'],
@@ -2333,8 +2333,6 @@ if dein#tap('lightline.vim')
   \   'lineinfo':     'Lightline_lineinfo',
   \   'fileencoding': 'Lightline_fileencoding',
   \   'fileformat':   'Lightline_fileformat',
-  \   'branch':       'Lightline_git_branch',
-  \   'git_status':   'Lightline_git_status',
   \   'anzu':         'anzu#search_status',
   \   'denite':       'Lightline_denite',
   \   'vm_regions':   'Lightline_vm_regions',
@@ -2579,33 +2577,6 @@ if dein#tap('lightline.vim')
     else
       return ''
     endif
-  endfunction
-
-  function! Lightline_git_branch() abort
-    if gina#component#repo#preset() ==# ''
-      return ''
-    else
-      return '  ' . gina#component#repo#preset()
-    endif
-  endfunction
-
-  function! Lightline_git_status() abort
-    if gina#component#repo#preset() ==# ''
-      return ''
-    endif
-
-    let l:staged     = gina#component#status#staged()
-    let l:unstaged   = gina#component#status#unstaged()
-    let l:conflicted = gina#component#status#conflicted()
-    let l:untracked  = system('git status --short 2>/dev/null | grep "?" | wc -l | tr -d "\n" | sed "s/ //g"')
-
-    return printf(
-    \ 'S: %s, U: %s, C: %s, ?: %s',
-    \ l:staged     ==# '' ? '0' : l:staged,
-    \ l:unstaged   ==# '' ? '0' : l:unstaged,
-    \ l:conflicted ==# '' ? '0' : l:conflicted,
-    \ l:untracked  ==# '' ? '0' : l:untracked,
-    \)
   endfunction
 endif
 " }}}3
