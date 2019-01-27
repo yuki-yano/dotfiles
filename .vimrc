@@ -146,7 +146,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Edit & Move & Search {{{3
   " call dein#add('terryma/vim-multiple-cursors')
-  " call dein#add('tyru/skk.vim',              {'lazy': 1, 'on_event': 'InsertEnter'})
   " call dein#add('vimtaku/vim-mlh',           {'lazy': 1, 'on_event': 'InsertEnter'})
   call dein#add('AndrewRadev/splitjoin.vim',     {'lazy': 1, 'on_cmd': ['SplitjoinJoin', 'SplitjoinSplit']})
   call dein#add('AndrewRadev/switch.vim',        {'lazy': 1, 'on_cmd': 'Switch'})
@@ -1900,11 +1899,6 @@ if dein#tap('vim-sandwich')
   \ },
   \ ]
 endif
-" }}}3
-
-" skk {{{3
-" let g:skk_control_j_key = ''
-" let g:skk_large_jisyo = expand('~/.config/nvim/dict/SKK-JISYO.L')
 " }}}3
 
 " splitjoin {{{3
