@@ -2310,14 +2310,6 @@ let g:bakaup_backup_dir  = expand('~/.cache/vim/backup')
 " }}}3
 
 " automatic {{{
-" function! s:automatic_win_init(config, context)
-"   nnoremap <silent> <buffer> q :<C-u>q<CR>
-" endfunction
-"
-" let g:automatic_default_set_config = {
-" \ 'apply': function('<SID>automatic_win_init'),
-" \ }
-
 let g:automatic_config = [
 \ {
 \   'match': {
