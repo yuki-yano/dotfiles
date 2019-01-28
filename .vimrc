@@ -130,7 +130,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('cohama/lexima.vim',             {'lazy': 1, 'on_event': 'InsertEnter', 'hook_post_source': 'call Hook_on_post_source_lexima()'})
   call dein#add('dyng/ctrlsf.vim',               {'lazy': 1, 'on_cmd': ['CtrlSF', 'CtrlSFUpdate', 'CtrlSFOpen', 'CtrlSFToggle']})
   call dein#add('easymotion/vim-easymotion')
-  call dein#add('haya14busa/incsearch.vim')
   call dein#add('haya14busa/vim-asterisk',       {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-edgemotion')
   call dein#add('haya14busa/vim-metarepeat',     {'lazy': 1, 'on_map': ['go', 'g.', '<Plug>']})
@@ -1506,12 +1505,8 @@ if dein#tap('accelerated-jk')
 endif
 " }}}3
 
-" anzu & asterisk & incsearch {{{3
-if dein#tap('vim-anzu') && dein#tap('vim-asterisk') && dein#tap('incsearch.vim')
-  let g:incsearch#magic = '\v'
-
-  map /  <Plug>(incsearch-forward)
-  map ?  <Plug>(incsearch-backward)
+" anzu & asterisk {{{3
+if dein#tap('vim-anzu') && dein#tap('vim-asterisk')
   map n  <Plug>(anzu-n)zzzv
   map N  <Plug>(anzu-N)zzzv
   map *  <Plug>(asterisk-z*)
