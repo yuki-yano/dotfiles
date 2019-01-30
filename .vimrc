@@ -1175,41 +1175,13 @@ if dein#tap('deoplete.nvim')
   let s:deoplete_default_sources = ['tabnine', 'omni', 'file', 'tmux-complete', 'webcomplete']
   let s:deoplete_sources                   = {}
   let s:deoplete_sources['_']              = s:deoplete_default_sources
-  let s:deoplete_sources['javascript']     = s:deoplete_default_sources
   let s:deoplete_sources['typescript']     = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['typescript.tsx'] = s:deoplete_default_sources + ['typescript']
-  let s:deoplete_sources['vue']            = s:deoplete_default_sources
-  let s:deoplete_sources['ruby']           = s:deoplete_default_sources
-  let s:deoplete_sources['eruby']          = s:deoplete_default_sources
-  let s:deoplete_sources['python']         = s:deoplete_default_sources
-  let s:deoplete_sources['go']             = s:deoplete_default_sources
-  let s:deoplete_sources['rust']           = s:deoplete_default_sources
-  let s:deoplete_sources['markdown']       = s:deoplete_default_sources
-  let s:deoplete_sources['html']           = s:deoplete_default_sources
-  let s:deoplete_sources['xml']            = s:deoplete_default_sources
-  let s:deoplete_sources['css']            = s:deoplete_default_sources
-  let s:deoplete_sources['scss']           = s:deoplete_default_sources
-  let s:deoplete_sources['vim']            = s:deoplete_default_sources
-  let s:deoplete_sources['zsh']            = s:deoplete_default_sources
   call deoplete#custom#option('sources', s:deoplete_sources)
 
   let s:deoplete_omni_functions                   = {}
-  let s:deoplete_omni_functions['javascript']     = []
-  let s:deoplete_omni_functions['typescript']     = []
-  let s:deoplete_omni_functions['typescript.tsx'] = []
-  let s:deoplete_omni_functions['vue']            = ['csscomplete#CompleteCSS']
-  let s:deoplete_omni_functions['ruby']           = []
-  let s:deoplete_omni_functions['eruby']          = []
-  let s:deoplete_omni_functions['python']         = []
-  let s:deoplete_omni_functions['go']             = []
-  let s:deoplete_omni_functions['rust']           = []
-  let s:deoplete_omni_functions['markdown']       = []
-  let s:deoplete_omni_functions['html']           = []
-  let s:deoplete_omni_functions['xml']            = []
   let s:deoplete_omni_functions['css']            = ['csscomplete#CompleteCSS']
   let s:deoplete_omni_functions['scss']           = ['csscomplete#CompleteCSS']
-  let s:deoplete_omni_functions['vim']            = []
-  let s:deoplete_omni_functions['zsh']            = []
   call deoplete#custom#source('omni', 'functions', s:deoplete_omni_functions)
 endif
 " }}}3
