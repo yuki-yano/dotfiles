@@ -170,7 +170,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Util {{{3
   call dein#add('aiya000/aho-bakaup.vim')
-  call dein#add('bfredl/nvim-miniyank')
   call dein#add('bogado/file-line')
   call dein#add('dhruvasagar/vim-table-mode',          {'lazy': 1, 'on_cmd': 'TableModeToggle'})
   call dein#add('dietsche/vim-lastplace')
@@ -1022,9 +1021,6 @@ if dein#tap('denite.nvim')
   "" ctags & gtags
   nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context tag -auto-preview<CR>
 
-  "" yank
-  nnoremap <silent> (ctrlp) :<C-u>Denite miniyank<CR>
-
   "" menu
   let s:menus = {}
   let s:menus.toggle = { 'description': 'Toggle Command' }
@@ -1047,6 +1043,30 @@ let g:neomru#dictionary_mru_path = expand('~/.cache/vim/neomru/dictionary')
 " }}}3
 
 " fzf {{{3
+" Set default register
+function! s:fzf_set_register()
+  call fzf#run({
+  \ 'source': <SID>get_register_history(),
+  \ 'options': '--with-nth 2.. --prompt="RegisterHistory>"',
+  \ 'sink': function('<SID>register_history_sink'),
+  \ 'window': 'top split new',
+  \ })
+  execute 'resize' float2nr(0.3 * &lines)
+endfunction
+
+function! s:get_register_history()
+  let l:histories = map(copy(g:_yankround_cache), 'split(v:val, "\t", 1)')
+  return map(l:histories, 'v:val[0] . " "  . v:val[1]')
+endfunction
+
+function! s:register_history_sink(line)
+  let l:parts = split(a:line, ' ', 1)
+  call setreg('"', join(l:parts[1:], ' '), l:parts[0])
+endfunction
+
+command! FzfSetRegister call <SID>fzf_set_register()
+nnoremap <silent> (ctrlp) :<C-u>FzfSetRegister<CR>
+
 " Delete History
 function! s:fzf_delete_history() abort
   call fzf#run({
