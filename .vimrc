@@ -127,8 +127,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Chiel92/vim-autoformat')
   call dein#add('LeafCage/yankround.vim')
   call dein#add('cohama/lexima.vim',             {'lazy': 1, 'on_event': 'InsertEnter', 'hook_post_source': 'call Hook_on_post_source_lexima()'})
+  call dein#add('deris/vim-shot-f')
   call dein#add('dyng/ctrlsf.vim',               {'lazy': 1, 'on_cmd': ['CtrlSF', 'CtrlSFUpdate', 'CtrlSFOpen', 'CtrlSFToggle']})
-  call dein#add('easymotion/vim-easymotion')
   call dein#add('haya14busa/vim-asterisk',       {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-edgemotion')
   call dein#add('haya14busa/vim-metarepeat',     {'lazy': 1, 'on_map': ['go', 'g.', '<Plug>']})
@@ -1593,31 +1593,8 @@ let g:easy_align_delimiters = {
 \ }
 " }}}3
 
-" easymotion & clever-f {{{3
-if dein#tap('vim-easymotion') && dein#tap('clever-f.vim')
-  " EasyMotion
-  let g:EasyMotion_do_mapping       = 0
-  let g:EasyMotion_smartcase        = 1
-  let g:EasyMotion_startofline      = 0
-  let g:EasyMotion_keys             = 'HJKLASDFGYUIOPQWERTNMZXCVB'
-  let g:EasyMotion_use_upper        = 1
-  let g:EasyMotion_enter_jump_first = 1
-  let g:EasyMotion_space_jump_first = 1
-  let g:EasyMotion_prompt           = 'Search by EasyMotion ({n} character(s)) > '
-
-  nmap <silent> S  <Plug>(easymotion-bd-f2)
-  omap <silent> S  <Plug>(easymotion-bd-f2)
-  xmap <silent> S  <Plug>(easymotion-bd-f2)
-  nmap <silent> ss <Plug>(easymotion-overwin-f2)
-  omap <silent> ss <Plug>(easymotion-bd-f2)
-  xmap <silent> ss <Plug>(easymotion-bd-f2)
-  nmap <silent> sl <Plug>(easymotion-overwin-line)
-  map  <silent> sl <Plug>(easymotion-bd-jk)
-  omap <silent> f  <Plug>(easymotion-fl)
-  omap <silent> t  <Plug>(easymotion-tl)
-  omap <silent> F  <Plug>(easymotion-Fl)
-  omap <silent> T  <Plug>(easymotion-Tl)
-
+" clever-f & shot-f {{{3
+if dein#tap('vim-shot-f') && dein#tap('clever-f.vim')
   " clever-f
   let g:clever_f_not_overwrites_standard_mappings = 0
 
@@ -1629,6 +1606,14 @@ if dein#tap('vim-easymotion') && dein#tap('clever-f.vim')
   xmap <silent> F <Plug>(clever-f-F)
   xmap <silent> t <Plug>(clever-f-t)
   xmap <silent> T <Plug>(clever-f-T)
+
+  " shot-f
+  let g:shot_f_no_default_key_mappings = 1
+
+  omap f <Plug>(shot-f-f)
+  omap F <Plug>(shot-f-F)
+  omap t <Plug>(shot-f-t)
+  omap T <Plug>(shot-f-T)
 endif
 " }}}3
 
