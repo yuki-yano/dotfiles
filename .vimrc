@@ -1500,10 +1500,10 @@ endif
 if dein#tap('vim-anzu') && dein#tap('vim-asterisk')
   map n  <Plug>(anzu-n)zzzv
   map N  <Plug>(anzu-N)zzzv
-  map *  <Plug>(asterisk-z*)
-  map #  <Plug>(asterisk-z#)
-  map g* <Plug>(asterisk-gz*)
-  map g# <Plug>(asterisk-gz#)
+  map *  <Plug>(asterisk-z*)<Plug>(anzu-update-search-status)
+  map #  <Plug>(asterisk-z#)<Plug>(anzu-update-search-status)
+  map g* <Plug>(asterisk-gz*)<Plug>(anzu-update-search-status)
+  map g# <Plug>(asterisk-gz#)<Plug>(anzu-update-search-status)
 endif
 " }}}3
 
