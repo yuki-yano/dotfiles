@@ -2404,7 +2404,7 @@ AutoCmd ColorScheme * highlight Visual       ctermfg=159  ctermbg=23   guifg=#AF
 
 AutoCmd ColorScheme * highlight ALEError                ctermfg=0    ctermbg=203                       guifg=#1E2132 guibg=#FF5F5F
 AutoCmd ColorScheme * highlight ALEWarning              ctermfg=0    ctermbg=229                       guifg=#1E2132 guibg=#FFFFAF
-AutoCmd ColorScheme * highlight BrighTestHighlight      ctermfg=30   ctermbg=none                      guifg=#008787 guibg=none
+AutoCmd ColorScheme * highlight BrightestHighlight      ctermfg=30   ctermbg=none                      guifg=#008787 guibg=none
 AutoCmd ColorScheme * highlight CleverFDefaultLabel     ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
 AutoCmd ColorScheme * highlight DeniteLine              ctermfg=111  ctermbg=236                       guifg=#87AFFF guibg=#303030
 AutoCmd ColorScheme * highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
