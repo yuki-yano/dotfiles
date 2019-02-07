@@ -148,7 +148,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Appearance {{{3
   call dein#add('LeafCage/foldCC.vim')
-  call dein#add('Shougo/echodoc.vim')
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
   call dein#add('andymass/vim-matchup')
   call dein#add('itchyny/lightline.vim')
@@ -888,11 +887,6 @@ let g:formatters_graphql = ['prettier']
 
 " Markdown
 let g:formatters_markdown = ['prettier']
-" }}}3
-
-" echodoc {{{3
-let g:echodoc#enable_at_startup = 1
-" let g:echodoc#type              = 'virtual'
 " }}}3
 
 " gen_tags {{{3
