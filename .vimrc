@@ -65,7 +65,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Git {{{3
   call dein#add('ToruIwashita/git-switcher.vim', {'lazy': 1, 'on_cmd': ['Gsw', 'GswSave', 'GswLoad']})
   call dein#add('airblade/vim-gitgutter')
-  call dein#add('hotwatermorning/auto-git-diff', {'lazy': 1, 'on_ft': 'gitrebase'})
   call dein#add('lambdalisue/gina.vim',          {'lazy': 1, 'on_cmd': 'Gina', 'hook_post_source': 'call Hook_on_post_source_gina()'})
   " }}}3
 
