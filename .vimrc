@@ -72,7 +72,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   if has('nvim')
     call dein#add('Shougo/deoplete.nvim')
 
-    call dein#add('Shougo/context_filetype.vim')
     call dein#add('jsfaint/gen_tags.vim')
     call dein#add('tbodt/deoplete-tabnine', {'build': 'bash install.sh'})
     call dein#add('thalesmello/webcomplete.vim')
@@ -186,10 +185,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " develop {{{3
   call dein#add('thinca/vim-prettyprint')
-  " }}}3
-
-  " Library {{{3
-  call dein#add('vim-scripts/L9')
   " }}}3
 
   " Color Theme {{{3
