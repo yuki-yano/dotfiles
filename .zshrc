@@ -56,9 +56,6 @@ zplugin light jingweno/ccat
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/bat -> ${ZPFX}/bin/bat"
 zplugin light sharkdp/bat
 
-zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"peep -> ${ZPFX}/bin/peep"
-zplugin light ryochack/peep
-
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*macos*" mv"exa-macos-x86_64 -> ${ZPFX}/bin/exa"
 zplugin light ogham/exa
 
@@ -95,9 +92,6 @@ zplugin light stedolan/jq
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*macos*" mv"yj-macos -> ${ZPFX}/bin/yj"
 zplugin light sclevine/yj
 
-zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin-amd64*" mv"gron -> ${ZPFX}/bin/gron"
-zplugin light tomnomnom/gron
-
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"tokei -> ${ZPFX}/bin/tokei"
 zplugin light Aaronepower/tokei
 
@@ -107,32 +101,17 @@ zplugin light yuki-ycino/tms
 zplugin ice lucid wait"0" depth"1" as"program" src"tmk.plugin.zsh" pick"tmk"
 zplugin light yuki-ycino/tmk
 
-zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd*" mv"memo -> ${ZPFX}/bin/memo"
-zplugin light mattn/memo
-
-zplugin ice lucid wait"0" depth"1" as"program" atclone'go build -o recc && mv recc ${ZPFX}/bin/recc' atpull'%atclone'
-zplugin light pocke/recc
-
 zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd*" mv"ghkw*/ghkw -> ${ZPFX}/bin/ghkw"
 zplugin light kyoshidajp/ghkw
 
 zplugin ice lucid wait"0" depth"1" lucid as"program" pick"bin/git-dsf"
 zplugin light zdharma/zsh-diff-so-fancy
 
-zplugin ice lucid wait"0" depth"1" as"program" src"git-sync.sh"
-zplugin light caarlos0/zsh-git-sync
-
-zplugin ice lucid wait"0" depth"1" as"program" atclone'perl Makefile.PL PREFIX=$ZPFX' atpull'%atclone' make'install' pick"$ZPFX/bin/git-cal"
-zplugin light k4rthik/git-cal
-
 zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin*" mv"ctop* -> ${ZPFX}/bin/ctop"
 zplugin light bcicen/ctop
 
 zplugin ice lucid wait"0" depth"1" as"program" mv"docker-clean -> ${ZPFX}/bin/docker-clean"
 zplugin light ZZROTDesign/docker-clean
-
-zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin*" mv"vegeta -> ${ZPFX}/bin/vegeta"
-zplugin light tsenart/vegeta
 
 zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin*" atinit"test ! -f ${ZPFX}/bin/shfmt && chmod +x shfmt* && mv shfmt* ${ZPFX}/bin/shfmt"
 zplugin light mvdan/sh
