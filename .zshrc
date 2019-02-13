@@ -256,12 +256,6 @@ if whence bat > /dev/null; then
 fi
 # }}}
 
-# peep {{{
-if whence peep > /dev/null; then
-  alias l=peep
-fi
-# }}}
-
 # du {{{
 if whence dust > /dev/null; then
   alias du=dust
