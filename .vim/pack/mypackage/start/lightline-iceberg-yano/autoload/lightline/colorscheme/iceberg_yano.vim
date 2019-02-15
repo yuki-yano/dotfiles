@@ -25,29 +25,29 @@ let s:bold = 'bold'
 
 let s:normal = [
 \ [s:base3,      s:cyan  ],
-\ [s:blue_green, s:base02],
-\ [s:orange,     s:base03],
+\ [s:orange,     s:base02],
+\ [s:blue_green, s:base03],
 \ [s:blue,       s:base03],
 \ ]
 
 let s:insert = [
 \ [s:base3,      s:yellow],
-\ [s:blue_green, s:base02],
 \ [s:orange,     s:base02],
+\ [s:blue_green, s:base02],
 \ [s:blue,       s:base03],
 \ ]
 
 let s:visual = [
 \ [s:base3,      s:green ],
-\ [s:blue_green, s:base02],
 \ [s:orange,     s:base02],
+\ [s:blue_green, s:base02],
 \ [s:blue,       s:base03],
 \ ]
 
 let s:replace = [
 \ [s:base3,      s:magenta],
-\ [s:blue_green, s:base02 ],
-\ [s:orange,     s:base02 ],
+\ [s:orange,     s:base02],
+\ [s:blue_green, s:base02],
 \ [s:blue,       s:base03 ],
 \ ]
 

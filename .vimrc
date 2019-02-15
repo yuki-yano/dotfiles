@@ -1859,8 +1859,8 @@ if dein#tap('lightline.vim')
   \ 'active': {
   \   'left': [
   \     ['mode', 'spell', 'paste'],
-  \     ['special_mode', 'anzu', 'vm_regions'],
   \     ['denite', 'filepath', 'filename'],
+  \     ['special_mode', 'anzu', 'vm_regions'],
   \     [],
   \    ],
   \   'right': [
@@ -2000,16 +2000,12 @@ if dein#tap('lightline.vim')
   \ 'gina-blame',
   \ ]
 
-  function! Lightline_is_visible() abort
-    return 80 < winwidth(0)
+  function! Lightline_is_visible(width) abort
+    return a:width < winwidth(0)
   endfunction
 
   function! Lightline_mode() abort
-    let l:win = getwininfo(win_getid())[0]
-    return has_key(s:lightline_ft_to_mode_hash, &filetype) ? ' ' :
-    \ l:win.loclist ? ' ' :
-    \ l:win.quickfix ? ' ' :
-    \ lightline#mode()
+    return lightline#mode()
   endfunction
 
   function! Lightline_special_mode() abort
@@ -2025,6 +2021,10 @@ if dein#tap('lightline.vim')
   endfunction
 
   function! Lightline_filepath() abort
+    if !Lightline_is_visible(140)
+      return ''
+    endif
+
     if count(s:lightline_ignore_filepath_ft, &filetype) || expand('%:t') ==# '[Command Line]'
       return ''
     endif
@@ -2032,13 +2032,12 @@ if dein#tap('lightline.vim')
     let l:path = fnamemodify(expand('%'), ':p:.:h')
     return l:path ==# '.' ? '' : l:path
 
-    " let l:path            = fnamemodify(expand('%'), ':p:~:h')
-    " let l:not_home_prefix = match(l:path, '^/') != -1 ? '/' : ''
-    " let l:dirs            = split(l:path, '/')
-    " let l:last_dir        = remove(l:dirs, -1)
-    " call map(l:dirs, 'v:val[0]')
-    "
-    " return len(l:dirs) ? l:not_home_prefix . join(l:dirs, '/') . '/' . l:last_dir : l:last_dir
+    let l:not_home_prefix = match(l:path, '^/') != -1 ? '/' : ''
+    let l:dirs            = split(l:path, '/')
+    let l:last_dir        = remove(l:dirs, -1)
+    call map(l:dirs, 'v:val[0]')
+
+    return len(l:dirs) ? l:not_home_prefix . join(l:dirs, '/') . '/' . l:last_dir : l:last_dir
   endfunction
 
   function! Lightline_filename() abort
@@ -2062,12 +2061,20 @@ if dein#tap('lightline.vim')
   endfunction
 
   function! Lightline_lineinfo() abort
+    if !Lightline_is_visible(120)
+      return ''
+    endif
+
     return !count(s:lightline_ignore_right_ft, &filetype) ?
     \ printf(' %3d:%2d / %d lines [%d%%]',line('.'), col('.'), line('$'), float2nr((1.0 * line('.')) / line('$') * 100.0)) :
     \ ''
   endfunction
 
   function! Lightline_fileencoding() abort
+    if !Lightline_is_visible(140)
+      return ''
+    endif
+
     return !count(s:lightline_ignore_right_ft, &filetype) ?
     \ strlen(&fileencoding) ?
     \   &fileencoding :
@@ -2076,6 +2083,10 @@ if dein#tap('lightline.vim')
   endfunction
 
   function! Lightline_fileformat() abort
+    if !Lightline_is_visible(140)
+      return ''
+    endif
+
     return !count(s:lightline_ignore_right_ft, &filetype) ?
     \ &fileformat :
     \ ''
