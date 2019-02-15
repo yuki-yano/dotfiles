@@ -65,7 +65,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Git {{{3
   call dein#add('ToruIwashita/git-switcher.vim', {'lazy': 1, 'on_cmd': ['Gsw', 'GswSave', 'GswLoad']})
   call dein#add('airblade/vim-gitgutter')
-  call dein#add('lambdalisue/gina.vim',          {'lazy': 1, 'on_cmd': 'Gina', 'hook_post_source': 'call Hook_on_post_source_gina()'})
+  call dein#add('lambdalisue/gina.vim',          {'lazy': 1, 'on_cmd': 'Gina', 'on_func': 'gina#core#get', 'hook_post_source': 'call Hook_on_post_source_gina()'})
   " }}}3
 
   " Completion {{{3
@@ -108,7 +108,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " filer {{{3
-  call dein#add('Shougo/defx.nvim')
+  call dein#add('lambdalisue/fila.vim')
   " }}}3
 
   " textobj & operator {{{3
@@ -1436,34 +1436,35 @@ endif
 
 " filer {{{2
 
-" defx {{{3
-nnoremap <silent> <Leader>e :Defx -search=`expand('%:p') -split=vertical -winwidth=40 -direction=topleft<CR>
-nnoremap <silent> <Leader>E :Defx `expand('%:p:h')` -search=`expand('%:p')` -split=vertical -winwidth=40 -direction=topleft<CR>
+" fila {{{3
+let g:fila#viewer#skip_default_mappings = 1
+let g:fila#drawer#width                 = 40
 
-function! s:defx_settings() abort
-  nnoremap <silent> <buffer> <expr> j       line('.') == line('$') ? 'gg' : 'j'
-  nnoremap <silent> <buffer> <expr> k       line('.') == 1 ? 'G' : 'k'
-  nnoremap <silent> <buffer> <expr> <CR>    defx#do_action('drop')
-  nnoremap <silent> <buffer> <expr> h       defx#do_action('cd', ['..'])
-  nnoremap <silent> <buffer> <expr> l       defx#do_action('open')
-  nnoremap <silent> <buffer> <expr> v       defx#do_action('open', 'vertical', 'botright', 'vsplit')
-  nnoremap <silent> <buffer> <expr> <Space> defx#do_action('toggle_select') . 'j'
-  nnoremap <silent> <buffer> <expr> x       defx#do_action('toggle_select') . 'j'
-  nnoremap <silent> <buffer> <expr> N       defx#do_action('new_file')
-  nnoremap <silent> <buffer> <expr> K       defx#do_action('new_directory')
-  nnoremap <silent> <buffer> <expr> m       defx#do_action('move')
-  nnoremap <silent> <buffer> <expr> d       defx#do_action('remove')
-  nnoremap <silent> <buffer> <expr> r       defx#do_action('rename')
-  nnoremap <silent> <buffer> <expr> y       defx#do_action('copy')
-  nnoremap <silent> <buffer> <expr> p       defx#do_action('paste')
-  nnoremap <silent> <buffer> <expr> .       defx#do_action('toggle_ignored_files')
-  nnoremap <silent> <buffer> <expr> q       defx#do_action('quit')
-  nnoremap <silent> <buffer> <expr> R       defx#do_action('redraw')
-  nnoremap <silent> <buffer> <expr> <C-g>   defx#do_action('print')
-  nnoremap <silent> <buffer> <expr> cd      defx#do_action('change_vim_cwd')
+nnoremap <silent> <Leader>e :FilaDrawer <C-r>=gina#core#get().worktree<CR><CR>
+nnoremap <silent> <Leader>E :FilaDrawer<CR>
+
+function! s:fila_settings() abort
+  nmap <buffer> <CR>  <Plug>(fila-action-open-select)
+  nmap <buffer> t     <Plug>(fila-action-expand-or-collapse)
+  nmap <buffer> l     <Plug>(fila-action-enter-or-open)
+  nmap <buffer> h     <Plug>(fila-action-leave)
+  nmap <buffer> .     <Plug>(fila-action-hidden-toggle)
+  nmap <buffer> x     <Plug>(fila-action-mark-toggle)
+  vmap <buffer> x     <Plug>(fila-action-mark-toggle)
+  nmap <buffer> N     <Plug>(fila-action-new-file)
+  nmap <buffer> K     <Plug>(fila-action-new-directory)
+  nmap <buffer> dd    <Plug>(fila-action-delete)
+  nmap <buffer> r     <Plug>(fila-action-move)
+  nmap <buffer> cc    <Plug>(fila-action-copy)
+  nmap <buffer> p     <Plug>(fila-action-paste)
+  nmap <buffer> R     <Plug>(fila-action-reload)
+  nmap <buffer> <C-g> <Plug>(fila-action-echo)
+
+  nnoremap <silent> <buffer> q :<C-u>call fila#drawer#close()<CR>
+  nnoremap <silent> <buffer> Q :<C-u>call fila#drawer#quit()<CR>
 endfunction
 
-AutoCmd FileType defx call s:defx_settings()
+AutoCmd FileType fila call s:fila_settings()
 " }}}3
 
 " }}}2
