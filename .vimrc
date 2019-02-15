@@ -72,11 +72,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   if has('nvim')
     call dein#add('Shougo/deoplete.nvim')
 
-    call dein#add('lighttiger2505/deoplete-vim-lsp')
     call dein#add('prabirshrestha/async.vim')
     call dein#add('prabirshrestha/vim-lsp')
 
+    call dein#add('Shougo/neco-vim')
     call dein#add('jsfaint/gen_tags.vim')
+    call dein#add('lighttiger2505/deoplete-vim-lsp')
     call dein#add('tbodt/deoplete-tabnine', {'build': 'bash install.sh'})
     call dein#add('thalesmello/webcomplete.vim')
     call dein#add('wellle/tmux-complete.vim')
@@ -1158,6 +1159,7 @@ if dein#tap('deoplete.nvim')
   " Sources
   call deoplete#custom#source('lsp',           'rank', 1200)
   call deoplete#custom#source('typescript',    'rank', 1100)
+  call deoplete#custom#source('vim',           'rank', 1100)
   call deoplete#custom#source('tabnine',       'rank', 1000)
   call deoplete#custom#source('omni',          'rank',  400)
   call deoplete#custom#source('file',          'rank',  300)
@@ -1166,7 +1168,8 @@ if dein#tap('deoplete.nvim')
 
   call deoplete#custom#source('lsp',           'mark', '[lsp]')
   call deoplete#custom#source('typescript',    'mark', '[TS]')
-  call deoplete#custom#source('tabnine',       'mark', '[TN]')
+  call deoplete#custom#source('vim',           'mark', '[vim]')
+  call deoplete#custom#source('tabnine',       'mark', '[tabnine]')
   call deoplete#custom#source('file',          'mark', '[file]')
   call deoplete#custom#source('omni',          'mark', '[omni]')
   call deoplete#custom#source('tmux-complete', 'mark', '[tmux]')
@@ -1174,8 +1177,9 @@ if dein#tap('deoplete.nvim')
 
   " max_candidates
   call deoplete#custom#source('lsp',            'max_candidates',  5)
-  call deoplete#custom#source('tabnine',        'max_candidates', 10)
   call deoplete#custom#source('typescript',     'max_candidates',  5)
+  call deoplete#custom#source('vim',            'max_candidates',  5)
+  call deoplete#custom#source('tabnine',        'max_candidates', 10)
   call deoplete#custom#source('omni',           'max_candidates',  5)
   call deoplete#custom#source('file',           'max_candidates',  5)
   call deoplete#custom#source('tmux-complete',  'max_candidates',  5)
@@ -1187,6 +1191,7 @@ if dein#tap('deoplete.nvim')
   let s:deoplete_sources['typescript']     = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['typescript.tsx'] = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['ruby']           = s:deoplete_default_sources + ['lsp']
+  let s:deoplete_sources['vim']            = s:deoplete_default_sources + ['vim']
   call deoplete#custom#option('sources', s:deoplete_sources)
 
   let s:deoplete_omni_functions                   = {}
