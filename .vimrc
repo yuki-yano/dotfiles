@@ -177,7 +177,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-niceblock',                  {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
   call dein#add('lambdalisue/session.vim',             {'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
   call dein#add('mbbill/undotree',                     {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
-  call dein#add('mtth/scratch.vim',                    {'lazy': 1, 'on_cmd': ['Scratch', 'ScratchInsert', 'ScratchPreview', 'ScratchSelection']})
   call dein#add('osyo-manga/vim-gift')
   call dein#add('pocke/vim-automatic',                 {'depends': 'vim-gift'})
   call dein#add('qpkorr/vim-bufkill')
@@ -2324,16 +2323,6 @@ let g:automatic_config = [
 \ },
 \ {
 \   'match': {
-\     'filetype': 'scratch',
-\     'autocmds': ['FileType'],
-\   },
-\   'set': {
-\     'move': 'topleft',
-\     'height': '30%',
-\   },
-\ },
-\ {
-\   'match': {
 \     'filetype': 'capture',
 \     'autocmds': ['FileType'],
 \   },
@@ -2363,13 +2352,6 @@ let g:miniyank_filename = expand('~/.cache/vim/miniyank.mpack')
 " session {{{3
 AlterCommand! <cmdwin> ss SessionSave!
 AlterCommand! <cmdwin> sl SessionOpen
-" }}}3
-
-" scratch {{{3
-AlterCommand! <cmdwin> sc[ratch] Scratch
-AutoCmd FileType scratch nnoremap <silent> <buffer> q :<C-u>quit<CR>
-
-let g:scratch_no_mappings = 1
 " }}}3
 
 " table-mode {{{3
