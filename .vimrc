@@ -120,7 +120,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   call dein#add('kana/vim-textobj-entire') " ie ae
   call dein#add('kana/vim-textobj-line') " al il
-  call dein#add('osyo-manga/vim-textobj-multiblock') " ib ab
   call dein#add('rhysd/vim-textobj-ruby') " ir ar
   call dein#add('thinca/vim-textobj-between') " i{char} a{char}
 
@@ -1635,16 +1634,34 @@ endif
 " expand-region {{{3
 let g:expand_region_text_objects = {
 \ 'iw': 0,
-\ 'ib': 1,
-\ 'ab': 1,
+\ 'i"': 0,
+\ 'a"': 0,
+\ "i'": 0,
+\ "a'": 0,
+\ 'i(': 0,
+\ 'a(': 0,
+\ 'i[': 0,
+\ 'a[': 0,
+\ 'i{': 0,
+\ 'a{': 0,
+\ 'i<': 0,
+\ 'a<': 0,
 \ 'il': 0,
 \ 'ie': 0,
 \ }
 
 let g:expand_region_text_objects_ruby = {
 \ 'iw': 0,
-\ 'ib': 1,
-\ 'ab': 1,
+\ 'i"': 0,
+\ 'a"': 0,
+\ "i'": 0,
+\ "a'": 0,
+\ 'i(': 0,
+\ 'a(': 0,
+\ 'i[': 0,
+\ 'a[': 0,
+\ 'i{': 0,
+\ 'a{': 0,
 \ 'il': 0,
 \ 'ir': 0,
 \ 'ar': 0,
