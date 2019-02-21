@@ -130,7 +130,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('LeafCage/yankround.vim')
   call dein#add('cohama/lexima.vim',             {'lazy': 1, 'on_event': 'InsertEnter', 'hook_post_source': 'call Hook_on_post_source_lexima()'})
   call dein#add('deris/vim-shot-f')
-  call dein#add('dyng/ctrlsf.vim',               {'lazy': 1, 'on_cmd': ['CtrlSF', 'CtrlSFUpdate', 'CtrlSFOpen', 'CtrlSFToggle']})
   call dein#add('haya14busa/vim-asterisk',       {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-edgemotion')
   call dein#add('haya14busa/vim-metarepeat',     {'lazy': 1, 'on_map': ['go', 'g.', '<Plug>']})
@@ -1511,40 +1510,6 @@ if dein#tap('vim-anzu') && dein#tap('vim-asterisk')
   map g* <Plug>(asterisk-gz*)<Plug>(anzu-update-search-status)
   map g# <Plug>(asterisk-gz#)<Plug>(anzu-update-search-status)
 endif
-" }}}3
-
-" ctrlsf {{{3
-AlterCommand! <cmdwin> grep CtrlSF<Space>-R
-AlterCommand! <cmdwin> csu  CtrlSFUpdate
-AlterCommand! <cmdwin> cst  CtrlSFToggle
-AlterCommand! <cmdwin> cso  CtrlSFOpen
-
-let g:ctrlsf_auto_close = {
-\ 'normal' : 0,
-\ 'compact': 0,
-\ }
-
-let g:ctrlsf_mapping = {
-\ 'open': [
-\   '<CR>',
-\   'o',
-\ ],
-\ 'openb':   'O',
-\ 'popenf':  'P',
-\ 'pquit':   'q',
-\ 'popen':   'p',
-\ 'quit':    'q',
-\ 'chgmode': 'M',
-\ 'next':    '<C-n>',
-\ 'prev':    '<C-p>',
-\ 'split':   '',
-\ 'vsplit':  '',
-\ 'stop':    '<C-c>',
-\ }
-
-let g:ctrlsf_populate_qflist = 1
-let g:ctrlsf_position        = 'right'
-let g:ctrlsf_winsize         = '30%'
 " }}}3
 
 " easy-align {{{3
