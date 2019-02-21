@@ -75,6 +75,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('prabirshrestha/async.vim')
     call dein#add('prabirshrestha/vim-lsp')
 
+    call dein#add('Shougo/echodoc.vim')
     call dein#add('Shougo/neco-vim')
     call dein#add('jsfaint/gen_tags.vim')
     call dein#add('lighttiger2505/deoplete-vim-lsp')
@@ -925,6 +926,11 @@ let g:vim_indent_cont   = 0
 " }}}2
 
 " Completion & Fuzzy Finder {{{2
+
+" echodoc {{{3
+let g:echodoc#enable_at_startup = 1
+" let g:echodoc#type              = 'virtual'
+" }}}3
 
 " Denite {{{3
 AlterCommand! <cmdwin> d[enite] Denite
