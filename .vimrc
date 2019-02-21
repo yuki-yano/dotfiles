@@ -39,7 +39,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Dein {{{3
   call dein#add('Shougo/dein.vim')
-  call dein#add('haya14busa/dein-command.vim', {'lazy': 1, 'on_cmd': 'Dein'})
   " }}}3
 
   " Doc {{{3
@@ -789,11 +788,6 @@ endif
 " }}}2
 
 " Plugin Manager {{{2
-
-" Dein {{{3
-AlterCommand! <cmdwin> dein      Dein
-AlterCommand! <cmdwin> reca[che] Dein<Space>recache-runtimepath
-" }}}3
 
 " }}}2
 
