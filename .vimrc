@@ -157,7 +157,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('luochen1990/rainbow')
   call dein#add('machakann/vim-highlightedyank')
   call dein#add('maximbaz/lightline-ale')
-  call dein#add('mhinz/vim-startify')
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('osyo-manga/vim-brightest')
   call dein#add('thinca/vim-zenspace')
@@ -2121,35 +2120,6 @@ endif
 
 " matchup {{{3
 let g:matchup_matchparen_status_offscreen = 0
-" }}}3
-
-" startify {{{3
-let g:startify_custom_header = [
-\ '╦ ╦┌┐┌┬  ┬┌┬┐┬┌┬┐┌─┐┌┬┐  ╔═╗┬  ┬ ┬┌─┐┬┌┐┌  ╦ ╦┌─┐┬─┐┬┌─┌─┐',
-\ '║ ║││││  │││││ │ ├┤  ││  ╠═╝│  │ ││ ┬││││  ║║║│ │├┬┘├┴┐└─┐',
-\ '╚═╝┘└┘┴─┘┴┴ ┴┴ ┴ └─┘─┴┘  ╩  ┴─┘└─┘└─┘┴┘└┘  ╚╩╝└─┘┴└─┴ ┴└─┘',
-\ ]
-
-let g:startify_list_order = [
-\ ['   Project:'],
-\ 'dir',
-\ ['   Recent Files:'],
-\ 'files',
-\ ['   Commands:'],
-\ 'commands'
-\ ]
-let g:startify_change_to_vcs_root = 1
-
-let g:startify_commands = [
-\ ['Check Health',          'checkhealth'],
-\ ['Recache Runtimepath',   'Dein recache-runtimepath'],
-\ ['Update Remote Plugins', 'call dein#remote_plugins()'],
-\ ['Git Status',            'Gina status'],
-\ ['Git Log',               'Gina Log'],
-\ ['Git Diff',              'Gina diff'],
-\ ['Git Diff Cached',       'Gina diff --cached'],
-\ ['Git Commit',            'Gina commit'],
-\ ]
 " }}}3
 
 " rainbow {{{3
