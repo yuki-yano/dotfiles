@@ -238,7 +238,7 @@ command! -nargs=* AutoCmd autocmd MyVimrc <args>
 
 "" Leader
 let g:mapleader = "\<Space>"
-let g:maplocalleader = '\'
+let g:maplocalleader = ','
 noremap <Leader>      <Nop>
 noremap <LocalLeader> <Nop>
 
