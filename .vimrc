@@ -159,7 +159,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('maximbaz/lightline-ale')
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('osyo-manga/vim-brightest')
-  call dein#add('thinca/vim-zenspace')
   " }}}3
 
   " tmux {{{3
