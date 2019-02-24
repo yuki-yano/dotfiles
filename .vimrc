@@ -743,8 +743,8 @@ endif
 " ALE {{{3
 let g:ale_linters = {
 \ 'javascript':     ['eslint', 'flow'],
-\ 'typescript':     ['tsserver', 'tslint'],
-\ 'typescript.tsx': ['tsserver', 'tslint'],
+\ 'typescript':     ['tsserver', 'eslint', 'tslint'],
+\ 'typescript.tsx': ['tsserver', 'eslint', 'tslint'],
 \ 'ruby':           ['rubocop'],
 \ 'json':           ['jsonlint'],
 \ 'dockerfile':     ['hadolint'],
