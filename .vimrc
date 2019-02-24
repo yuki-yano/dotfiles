@@ -291,6 +291,8 @@ cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
 
 "" Indent
+nnoremap < <<
+nnoremap > >>
 vnoremap < <gv
 vnoremap > >gv|
 
