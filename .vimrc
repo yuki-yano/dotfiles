@@ -1120,14 +1120,14 @@ if dein#tap('deoplete.nvim')
   call deoplete#custom#source('webcomplete',   'mark', '[web]')
 
   " max_candidates
-  call deoplete#custom#source('lsp',            'max_candidates',  5)
-  call deoplete#custom#source('typescript',     'max_candidates',  5)
-  call deoplete#custom#source('vim',            'max_candidates',  5)
-  call deoplete#custom#source('tabnine',        'max_candidates', 10)
-  call deoplete#custom#source('omni',           'max_candidates',  5)
-  call deoplete#custom#source('file',           'max_candidates',  5)
-  call deoplete#custom#source('tmux-complete',  'max_candidates',  5)
-  call deoplete#custom#source('webcomplete',    'max_candidates',  5)
+  call deoplete#custom#source('lsp',           'max_candidates',  5)
+  call deoplete#custom#source('typescript',    'max_candidates',  5)
+  call deoplete#custom#source('vim',           'max_candidates',  5)
+  call deoplete#custom#source('tabnine',       'max_candidates', 10)
+  call deoplete#custom#source('omni',          'max_candidates',  5)
+  call deoplete#custom#source('file',          'max_candidates',  5)
+  call deoplete#custom#source('tmux-complete', 'max_candidates',  5)
+  call deoplete#custom#source('webcomplete',   'max_candidates',  5)
 
   let s:deoplete_default_sources = ['tabnine', 'omni', 'file', 'tmux-complete', 'webcomplete']
   let s:deoplete_sources                   = {}
@@ -1138,9 +1138,9 @@ if dein#tap('deoplete.nvim')
   let s:deoplete_sources['vim']            = s:deoplete_default_sources + ['vim']
   call deoplete#custom#option('sources', s:deoplete_sources)
 
-  let s:deoplete_omni_functions                   = {}
-  let s:deoplete_omni_functions['css']            = ['csscomplete#CompleteCSS']
-  let s:deoplete_omni_functions['scss']           = ['csscomplete#CompleteCSS']
+  let s:deoplete_omni_functions         = {}
+  let s:deoplete_omni_functions['css']  = ['csscomplete#CompleteCSS']
+  let s:deoplete_omni_functions['scss'] = ['csscomplete#CompleteCSS']
   call deoplete#custom#source('omni', 'functions', s:deoplete_omni_functions)
 endif
 " }}}3
