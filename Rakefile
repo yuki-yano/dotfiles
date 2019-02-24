@@ -191,6 +191,28 @@ namespace :mas do
   end
 end
 
+namespace :vscode do
+  desc 'Override vscode settings file'
+  task settings: ['.config/vscode/settings.json', '.config/vscode/keybindings.json', '.config/vscode/locale.json'] do
+    config_root = '~/Library/Application\ Support/Code/User'
+    sh "ln -sfn ~/.config/vscode/settings.json #{config_root}/settings.json"
+    sh "ln -sfn ~/.config/vscode/keybindings.json #{config_root}/keybindings.json"
+    sh "ln -sfn ~/.config/vscode/locale.json #{config_root}/locale.json"
+  end
+
+  desc 'Install extensions'
+  task extension: 'Codefile' do
+    File.readlines('Codefile').map(&:chomp).each do |extension|
+      sh "code --install-extension #{extension}"
+    end
+  end
+
+  desc 'Export extensions'
+  task :export_extension do
+    File.write('Codefile', `code --list-extensions`)
+  end
+end
+
 namespace :apm do
   desc 'Install atom packages'
   task install: 'Apmfile' do
