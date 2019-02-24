@@ -170,7 +170,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('aiya000/aho-bakaup.vim')
   call dein#add('bogado/file-line')
   call dein#add('dhruvasagar/vim-table-mode',          {'lazy': 1, 'on_cmd': 'TableModeToggle'})
-  call dein#add('dietsche/vim-lastplace')
   call dein#add('kana/vim-niceblock',                  {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
   call dein#add('lambdalisue/session.vim',             {'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
   call dein#add('osyo-manga/vim-gift')
@@ -506,6 +505,10 @@ AutoCmd WinEnter,BufRead,BufNew,Syntax * silent! call matchadd('Todo', '\(TODO\|
 " }}}1
 
 " Command & Function {{{1
+
+" Move cursor last position {{{2
+AutoCmd BufRead * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g`\"" | endif
+" }}}2
 
 " highlight cursorline and cursorcolumn with timer {{{2
 let s:highlight_cursor_wait = 500
