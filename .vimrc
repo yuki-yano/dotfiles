@@ -46,7 +46,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Language {{{3
-  call dein#add('MaxMEllon/vim-jsx-pretty',    {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('MaxMEllon/vim-jsx-pretty',    {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
   call dein#add('elzr/vim-json',               {'lazy': 1, 'on_ft': 'json'})
   call dein#add('itspriddle/vim-marked',       {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('leafgarland/typescript-vim',  {'lazy': 1, 'on_ft': 'typescript'})
