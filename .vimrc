@@ -1382,13 +1382,13 @@ endif
 
 " fila {{{3
 let g:fila#viewer#skip_default_mappings = 1
-let g:fila#drawer#width                 = 40
+let g:fila#viewer#drawer#width          = 40
 
-nnoremap <silent> <Leader>e :FilaDrawer <C-r>=gina#core#get().worktree<CR><CR>
-nnoremap <silent> <Leader>E :FilaDrawer<CR>
+nnoremap <silent> <Leader>e :Fila -drawer <C-r>=gina#core#get().worktree<CR><CR>
+nnoremap <silent> <Leader>E :Fila -drawer<CR>
 
 function! s:fila_settings() abort
-  nmap <buffer> <CR>  <Plug>(fila-action-open-select)
+  nmap <buffer> <CR>  <Plug>(fila-action-edit-select)
   nmap <buffer> t     <Plug>(fila-action-expand-or-collapse)
   nmap <buffer> l     <Plug>(fila-action-enter-or-open)
   nmap <buffer> h     <Plug>(fila-action-leave)
@@ -1404,8 +1404,8 @@ function! s:fila_settings() abort
   nmap <buffer> R     <Plug>(fila-action-reload)
   nmap <buffer> <C-g> <Plug>(fila-action-echo)
 
-  nnoremap <silent> <buffer> q :<C-u>call fila#drawer#close()<CR>
-  nnoremap <silent> <buffer> Q :<C-u>call fila#drawer#quit()<CR>
+  nnoremap <silent> <buffer> q :<C-u>call fila#viewer#drawer#close()<CR>
+  nnoremap <silent> <buffer> Q :<C-u>call fila#viewer#drawer#quit()<CR>
 endfunction
 
 AutoCmd FileType fila call s:fila_settings()
@@ -1880,6 +1880,7 @@ if dein#tap('lightline.vim')
   \ 'diff',
   \ 'fzf',
   \ 'denite',
+  \ 'fila',
   \ 'capture',
   \ 'gina-status',
   \ 'gina-branch',
@@ -1895,6 +1896,7 @@ if dein#tap('lightline.vim')
   \ 'diff':        'Diff',
   \ 'fzf':         'FZF',
   \ 'denite':      'Denite',
+  \ 'fila':        'Fila',
   \ 'capture':     'Capture',
   \ 'gina-status': 'Git Status',
   \ 'gina-branch': 'Git Branch',
@@ -1919,6 +1921,7 @@ if dein#tap('lightline.vim')
   \ 'qf',
   \ 'fzf',
   \ 'denite',
+  \ 'fila',
   \ 'gina-status',
   \ 'gina-branch',
   \ 'gina-log',
@@ -1932,6 +1935,7 @@ if dein#tap('lightline.vim')
   \ 'qf',
   \ 'fzf',
   \ 'denite',
+  \ 'fila',
   \ 'gina-status',
   \ 'gina-branch',
   \ 'gina-log',
