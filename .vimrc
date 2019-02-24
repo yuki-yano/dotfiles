@@ -363,6 +363,9 @@ if has('nvim')
   let g:terminal_color_13 = '#ada0d3'
   let g:terminal_color_14 = '#95c4ce'
   let g:terminal_color_15 = '#d2d4de'
+
+  set termguicolors
+  set pumblend=20
 endif
 
 "" Appearance
