@@ -263,20 +263,12 @@ nnoremap <silent> <Leader>W :<C-u>update!<CR>
 noremap 0 ^
 noremap ^ 0
 
-"" Smart <C-f> <C-b>
-noremap <expr> <C-f> max([winheight(0) - 2, 1]) . "\<C-d>" . (line('w$') >= line('$') ? "L" : "M")
-noremap <expr> <C-b> max([winheight(0) - 2, 1]) . "\<C-u>" . (line('w0') <= 1 ? "H" : "M")
-
 "" Automatically indent with i and A
 nnoremap <expr> i len(getline('.')) ? "i" : "cc"
 nnoremap <expr> A len(getline('.')) ? "A" : "cc"
 
 " Ignore registers
 nnoremap x "_x
-
-"" Buffer
-nnoremap [b :bprevious<CR>
-nnoremap ]b :bnext<CR>
 
 "" incsearch
 nnoremap / /\v
