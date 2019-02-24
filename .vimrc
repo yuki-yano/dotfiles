@@ -524,7 +524,7 @@ function! s:auto_mkdir(dir, force)
 endfunction
 " }}}2
 
-" ToggleHiglight {{{2
+" ToggleHighLight {{{2
 function! s:toggle_highlight()
   if exists('g:syntax_on')
     syntax off
