@@ -153,7 +153,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Yggdroot/indentLine',            {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
   call dein#add('andymass/vim-matchup')
   call dein#add('itchyny/lightline.vim')
-  call dein#add('itchyny/vim-highlighturl')
   call dein#add('kamykn/spelunker.vim')
   call dein#add('luochen1990/rainbow')
   call dein#add('machakann/vim-highlightedyank')
@@ -1782,10 +1781,6 @@ if dein#tap('vim-highlightedyank')
   "
   " call timer_start(g:highlightedyank_highlight_duration, function('s:highlight_yank_enter'))
 endif
-" }}}3
-
-" highlighturl {{{3
-let g:highlighturl_guifg = '#00D7D7'
 " }}}3
 
 " indent-line {{{3
