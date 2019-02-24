@@ -845,7 +845,7 @@ AlterCommand! <cmdwin> mark[ed] MarkedOpen
 
 " nvim-typescript {{{3
 let g:nvim_typescript#diagnostics_enable = 0
-let g:nvim_typescript#type_info_on_hold = 1
+let g:nvim_typescript#type_info_on_hold  = 1
 let g:nvim_typescript#signature_complete = 1
 
 function s:set_ts_mappings() abort
