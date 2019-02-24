@@ -604,7 +604,11 @@ command! HelpView call <SID>option_to_view()
 " VimShowHlGroup {{{2
 command! ShowHlGroup echo synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name')
 " }}}2
-"
+
+" VSCode {{{2
+command! VSCode execute printf('!code -r "%s"', expand('%'))
+" }}}2
+
 " }}}1
 
 " FileType Settings {{{1
@@ -723,6 +727,8 @@ endfunction
 if dein#tap('vim-altercmd')
   call altercmd#load()
   AlterCommand! <cmdwin> show[hlgroup] ShowHlGroup
+  AlterCommand! <cmdwin> vs[code] VSCode
+  AlterCommand! <cmdwin> co[de]   VSCode
 endif
 " }}}3
 
