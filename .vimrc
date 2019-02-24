@@ -243,7 +243,7 @@ noremap <Leader>      <Nop>
 noremap <LocalLeader> <Nop>
 
 "" Disable mark
-noremap m <Nop>
+nnoremap m <Nop>
 
 "" BackSpace
 imap <C-h> <BS>
