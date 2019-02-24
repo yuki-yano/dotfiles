@@ -1873,10 +1873,6 @@ if dein#tap('lightline.vim')
   \ },
   \ 'component_visible_condition': {
   \   'special_mode': "%{Lightline_special_mode() !=# ''}",
-  \   'filepath':     'Lightline_is_visible()',
-  \   'lineinfo':     'Lightline_is_visible()',
-  \   'fileencoding': 'Lightline_is_visible()',
-  \   'fileformat':   'Lightline_is_visible()',
   \   'anzu':         "%{anzu#search_status !=# ''}",
   \   'vm_regions':   "%{Lightline_vm_regions() !=# ''}",
   \ },
