@@ -74,11 +74,11 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('prabirshrestha/async.vim')
     call dein#add('prabirshrestha/vim-lsp')
 
+    " call dein#add('tbodt/deoplete-tabnine', {'build': 'bash install.sh'})
     call dein#add('Shougo/echodoc.vim')
     call dein#add('Shougo/neco-vim')
     call dein#add('jsfaint/gen_tags.vim')
     call dein#add('lighttiger2505/deoplete-vim-lsp')
-    call dein#add('tbodt/deoplete-tabnine', {'build': 'bash install.sh'})
     call dein#add('thalesmello/webcomplete.vim')
     call dein#add('wellle/tmux-complete.vim')
   endif
@@ -1104,40 +1104,62 @@ if dein#tap('deoplete.nvim')
   \ ])
 
   " Sources
-  call deoplete#custom#source('lsp',           'rank', 1200)
-  call deoplete#custom#source('typescript',    'rank', 1100)
-  call deoplete#custom#source('vim',           'rank', 1100)
-  call deoplete#custom#source('tabnine',       'rank', 1000)
-  call deoplete#custom#source('omni',          'rank',  400)
-  call deoplete#custom#source('file',          'rank',  300)
-  call deoplete#custom#source('tmux-complete', 'rank',  200)
-  call deoplete#custom#source('webcomplete',   'rank',  100)
+  " call deoplete#custom#source('tabnine',       'rank', 1000)
+  " call deoplete#custom#source('tabnine',       'mark', '[tabnine]')
+  " call deoplete#custom#source('tabnine',       'max_candidates', 10)
 
-  call deoplete#custom#source('lsp',           'mark', '[lsp]')
-  call deoplete#custom#source('typescript',    'mark', '[TS]')
-  call deoplete#custom#source('vim',           'mark', '[vim]')
-  call deoplete#custom#source('tabnine',       'mark', '[tabnine]')
-  call deoplete#custom#source('file',          'mark', '[file]')
-  call deoplete#custom#source('omni',          'mark', '[omni]')
+  call deoplete#custom#source('lsp', 'rank', 1200)
+  call deoplete#custom#source('lsp', 'mark', '[lsp]')
+  call deoplete#custom#source('lsp', 'max_candidates', 5)
+
+  call deoplete#custom#source('typescript', 'rank', 1100)
+  call deoplete#custom#source('typescript', 'mark', '[TS]')
+  call deoplete#custom#source('typescript', 'max_candidates', 5)
+
+  call deoplete#custom#source('vim', 'rank', 1100)
+  call deoplete#custom#source('vim', 'mark', '[vim]')
+  call deoplete#custom#source('vim', 'max_candidates', 5)
+
+  call deoplete#custom#source('around', 'rank', 800)
+  call deoplete#custom#source('around', 'mark', '[around]')
+  call deoplete#custom#source('around', 'max_candidates', 5)
+
+  call deoplete#custom#source('buffer', 'rank', 600)
+  call deoplete#custom#source('buffer', 'mark', '[buffer]')
+  call deoplete#custom#source('buffer', 'max_candidates', 5)
+
+  call deoplete#custom#source('tag', 'rank', 500)
+  call deoplete#custom#source('tag', 'mark', '[tag]')
+  call deoplete#custom#source('tag', 'max_candidates', 5)
+
+  call deoplete#custom#source('omni', 'rank', 400)
+  call deoplete#custom#source('omni', 'mark', '[omni]')
+  call deoplete#custom#source('omni', 'max_candidates',5)
+
+  call deoplete#custom#source('file', 'rank', 300)
+  call deoplete#custom#source('file', 'mark', '[file]')
+  call deoplete#custom#source('file', 'max_candidates', 5)
+
+  call deoplete#custom#source('tmux-complete', 'rank', 200)
   call deoplete#custom#source('tmux-complete', 'mark', '[tmux]')
-  call deoplete#custom#source('webcomplete',   'mark', '[web]')
+  call deoplete#custom#source('tmux-complete', 'max_candidates', 5)
 
-  " max_candidates
-  call deoplete#custom#source('lsp',           'max_candidates',  5)
-  call deoplete#custom#source('typescript',    'max_candidates',  5)
-  call deoplete#custom#source('vim',           'max_candidates',  5)
-  call deoplete#custom#source('tabnine',       'max_candidates', 10)
-  call deoplete#custom#source('omni',          'max_candidates',  5)
-  call deoplete#custom#source('file',          'max_candidates',  5)
-  call deoplete#custom#source('tmux-complete', 'max_candidates',  5)
-  call deoplete#custom#source('webcomplete',   'max_candidates',  5)
+  call deoplete#custom#source('webcomplete', 'rank', 100)
+  call deoplete#custom#source('webcomplete', 'mark', '[web]')
+  call deoplete#custom#source('webcomplete', 'max_candidates', 5)
 
-  let s:deoplete_default_sources = ['tabnine', 'omni', 'file', 'tmux-complete', 'webcomplete']
+  call deoplete#custom#source('look', 'rank', 100)
+  call deoplete#custom#source('look', 'mark', '[look]')
+  call deoplete#custom#source('look', 'max_candidates', 5)
+
+  let s:deoplete_default_sources = ['around', 'buffer', 'tag', 'file', 'tmux-complete', 'webcomplete']
   let s:deoplete_sources                   = {}
   let s:deoplete_sources['_']              = s:deoplete_default_sources
   let s:deoplete_sources['typescript']     = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['typescript.tsx'] = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['ruby']           = s:deoplete_default_sources + ['lsp']
+  let s:deoplete_sources['css']            = s:deoplete_default_sources + ['omni']
+  let s:deoplete_sources['scss']           = s:deoplete_default_sources + ['omni']
   let s:deoplete_sources['vim']            = s:deoplete_default_sources + ['vim']
   call deoplete#custom#option('sources', s:deoplete_sources)
 
