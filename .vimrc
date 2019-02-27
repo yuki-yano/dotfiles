@@ -829,6 +829,10 @@ let g:formatters_graphql = ['prettier']
 let g:formatters_markdown = ['prettier']
 " }}}3
 
+" endwise {{{3
+let g:endwise_no_mappings = 1
+" }}}3
+
 " gen_tags {{{3
 let g:gen_tags#use_cache_dir  = 0
 let g:gen_tags#ctags_auto_gen = 1
