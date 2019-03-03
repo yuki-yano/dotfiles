@@ -20,6 +20,7 @@
   qsave   = !git stash && git stash pop
   plog    = log --pretty='format:%C(yellow)%h %C(green)%cd %C(reset)%s %C(red)%d %C(cyan)[%an]' --date=iso
   fzflog  = !git plog --graph --color=always 2>/dev/null
+  openpr  = "!f() { hub browse -- `git log --merges --oneline --reverse --ancestry-path $1...master | grep 'Merge pull request #' | head -n 1 | cut -f5 -d' ' | sed -e 's%#%pull/%'`; }; f"
 
 [pager]
   log  = diff-so-fancy | less
