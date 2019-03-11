@@ -46,15 +46,15 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Language {{{3
-  call dein#add('MaxMEllon/vim-jsx-pretty',    {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
-  call dein#add('elzr/vim-json',               {'lazy': 1, 'on_ft': 'json'})
-  call dein#add('itspriddle/vim-marked',       {'lazy': 1, 'on_ft': 'markdown'})
-  call dein#add('leafgarland/typescript-vim',  {'lazy': 1, 'on_ft': 'typescript'})
-  call dein#add('mhartington/nvim-typescript', {'lazy': 1, 'on_ft': ['typescript', 'typescript.tsx'], 'build': './install.sh'})
-  call dein#add('othree/csscomplete.vim',      {'lazy': 1, 'on_ft': ['css', 'sass', 'scss']})
-  call dein#add('othree/yajs.vim',             {'lazy': 1, 'on_ft': 'javascript'})
-  call dein#add('slim-template/vim-slim',      {'lazy': 1, 'on_ft': 'slim'})
-  call dein#add('tpope/vim-endwise',           {'lazy': 1, 'on_ft': 'ruby'})
+  call dein#add('MaxMEllon/vim-jsx-pretty',                {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
+  call dein#add('elzr/vim-json',                           {'lazy': 1, 'on_ft': 'json'})
+  call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': ['css', 'javascript', 'typescript']})
+  call dein#add('itspriddle/vim-marked',                   {'lazy': 1, 'on_ft': 'markdown'})
+  call dein#add('leafgarland/typescript-vim',              {'lazy': 1, 'on_ft': 'typescript'})
+  call dein#add('mhartington/nvim-typescript',             {'lazy': 1, 'on_ft': ['typescript', 'typescript.tsx'], 'build': './install.sh'})
+  call dein#add('othree/yajs.vim',                         {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
+  call dein#add('tpope/vim-endwise',                       {'lazy': 1, 'on_ft': 'ruby'})
   " }}}3
 
   " ALE {{{
