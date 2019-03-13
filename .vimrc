@@ -110,7 +110,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " filer {{{3
-  call dein#add('lambdalisue/fila.vim')
+  call dein#add('lambdalisue/fila.vim', {'lazy': 1, 'on_cmd': 'Fila'})
   " }}}3
 
   " textobj & operator {{{3
@@ -1424,13 +1424,13 @@ endif
 let g:fila#viewer#skip_default_mappings = 1
 let g:fila#viewer#drawer#width          = 40
 
-nnoremap <silent> <Leader>e :Fila -drawer <C-r>=gina#core#get().worktree<CR><CR>
-nnoremap <silent> <Leader>E :Fila -drawer<CR>
+nnoremap <silent> <Leader>e :<C-u>Fila . -drawer <CR>
+nnoremap <silent> <Leader>E :<C-u>Fila . -drawer -reveal=<C-r>=expand('%')<CR><CR>
 
 function! s:fila_settings() abort
   nmap <buffer> <CR>  <Plug>(fila-action-edit-select)
   nmap <buffer> t     <Plug>(fila-action-expand-or-collapse)
-  nmap <buffer> l     <Plug>(fila-action-enter-or-open)
+  nmap <buffer> l     <Plug>(fila-action-enter-or-edit)
   nmap <buffer> h     <Plug>(fila-action-leave)
   nmap <buffer> .     <Plug>(fila-action-hidden-toggle)
   nmap <buffer> x     <Plug>(fila-action-mark-toggle)
