@@ -74,6 +74,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('prabirshrestha/async.vim')
     call dein#add('prabirshrestha/vim-lsp')
 
+    call dein#add('Shougo/neosnippet')
+
     " call dein#add('tbodt/deoplete-tabnine', {'build': 'bash install.sh'})
     call dein#add('Shougo/echodoc.vim')
     call dein#add('Shougo/neco-vim')
@@ -1183,6 +1185,15 @@ if executable('solargraph')
   \ 'whitelist': ['ruby'],
   \ })
 endif
+" }}}3
+
+" neosnippet {{{3
+let g:neosnippet#disable_runtime_snippets = { '_' : 1 }
+let g:neosnippet#snippets_directory = '~/.vim/snippets'
+
+imap <silent> <C-k> <Plug>(neosnippet_expand_or_jump)
+smap <silent> <C-k> <Plug>(neosnippet_expand_or_jump)
+xmap <silent> <C-k> <Plug>(neosnippet_expand_target)
 " }}}3
 
 " lexima {{{3

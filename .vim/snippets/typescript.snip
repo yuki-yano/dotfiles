@@ -1,0 +1,66 @@
+snippet arrow-function
+alias ar
+options head
+  (${1:#:ARGS}) => {${2}}
+
+snippet map
+options word
+  map((${1:v}) => {
+    ${2}
+  })
+
+snippet react-fc
+alias fc
+options head
+  const ${1:component}: React.FC<${2:Props}> = (${3:props}) => {
+    return <></>
+  }
+
+snippet action
+options head
+  export const ${1:action} = (payload: {${2:#:type}}) => ({
+    type: ${3:ACTION} as typeof ${4:ACTION},
+    payload
+  })
+
+snippet reducer
+options head
+  export const reducer: Reducer<State, Actions> = (state = initialState, action) => {
+    switch (action.type) {
+      case ACTION_1: {
+        return produce(state, draft => {
+        })
+      }
+      case ACTION_2: {
+        return produce(state, draft => {
+        })
+      }
+      default: {
+        const _: never = action
+        const none = (_: any) => _
+        none(_)
+
+        return state
+      }
+    }
+  }
+
+snippet import
+alias im
+options head
+  import { ${1:MEMBERS} } from "${2:PACKAGE}";
+
+snippet import-default
+alias imd
+options head
+  import ${1:DEFAULT_MEMBER} from "${2:PACKAGE}";
+
+snippet console-log
+alias cl
+options head
+  console.log(${1})
+
+snippet console-debug
+alias cd
+options head
+  console.debug(${1})
