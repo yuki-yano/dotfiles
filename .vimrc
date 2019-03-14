@@ -171,6 +171,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('bogado/file-line')
   call dein#add('dhruvasagar/vim-table-mode',   {'lazy': 1, 'on_cmd': 'TableModeToggle'})
   call dein#add('kana/vim-niceblock',           {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
+  call dein#add('lambdalisue/vim-manpager',     {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER']})
+  call dein#add('lambdalisue/vim-pager',        {'lazy': 1, 'on_cmd': 'PAGER'})
   call dein#add('osyo-manga/vim-gift')
   call dein#add('pocke/vim-automatic',          {'depends': 'vim-gift'})
   call dein#add('qpkorr/vim-bufkill')
@@ -1917,6 +1919,7 @@ if dein#tap('lightline.vim')
   let s:lightline_ignore_right_ft = [
   \ 'help',
   \ 'diff',
+  \ 'man',
   \ 'fzf',
   \ 'denite',
   \ 'fila',
@@ -1933,6 +1936,7 @@ if dein#tap('lightline.vim')
   let s:lightline_ft_to_mode_hash = {
   \ 'help':        'Help',
   \ 'diff':        'Diff',
+  \ 'man':         'Man',
   \ 'fzf':         'FZF',
   \ 'denite':      'Denite',
   \ 'fila':        'Fila',
@@ -2175,6 +2179,16 @@ let g:automatic_config = [
 \ {
 \   'match': {
 \     'filetype': 'help',
+\   },
+\ },
+\ {
+\   'match': {
+\     'filetype': 'man',
+\     'autocmds': ['FileType'],
+\   },
+\   'set': {
+\     'move': 'right',
+\     'width': '35%',
 \   },
 \ },
 \ {
