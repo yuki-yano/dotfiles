@@ -171,7 +171,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('bogado/file-line')
   call dein#add('dhruvasagar/vim-table-mode',   {'lazy': 1, 'on_cmd': 'TableModeToggle'})
   call dein#add('kana/vim-niceblock',           {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
-  call dein#add('lambdalisue/session.vim',      {'lazy': 1, 'on_cmd': ['SessionSave', 'SessionOpen', 'SessionRemove', 'SessionList', 'SessionClose']})
   call dein#add('osyo-manga/vim-gift')
   call dein#add('pocke/vim-automatic',          {'depends': 'vim-gift'})
   call dein#add('qpkorr/vim-bufkill')
@@ -2271,11 +2270,6 @@ AutoCmd FileType capture nnoremap <silent> <buffer> q :<C-u>quit<CR>
 " miniyank {{{3
 let g:miniyank_maxitems = 2000
 let g:miniyank_filename = expand('~/.cache/vim/miniyank.mpack')
-" }}}3
-
-" session {{{3
-AlterCommand! <cmdwin> ss SessionSave!
-AlterCommand! <cmdwin> sl SessionOpen
 " }}}3
 
 " table-mode {{{3
