@@ -908,7 +908,7 @@ function env_rehash() {
 
 # Local File {{{
 
-[ -f ~/.zshrc.local ] && source ~/.zshrc.local
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
 # }}}
 
