@@ -856,7 +856,7 @@ let g:nvim_typescript#diagnostics_enable = 0
 let g:nvim_typescript#type_info_on_hold  = 1
 let g:nvim_typescript#signature_complete = 1
 
-function s:set_ts_mappings() abort
+function s:ts_settings() abort
   nnoremap <silent> <buffer> K              :<C-u>TSDefPreview<CR>
   nnoremap <silent> <buffer> gK             :<C-u>TSTypeDef<CR>
   nnoremap <silent> <buffer> <LocalLeader>p :<C-u>TSRefs<CR>
@@ -864,7 +864,7 @@ function s:set_ts_mappings() abort
   nnoremap <silent> <buffer> <LocalLeader>o :<C-u>Denite TSDocumentSymbol -auto-preview<CR>
 endfunction
 
-AutoCmd FileType typescript,typescript.tsx call s:set_ts_mappings()
+AutoCmd FileType typescript,typescript.tsx call s:ts_settings()
 " }}}3
 
 " vim {{{3
