@@ -1758,7 +1758,7 @@ let g:easy_align_delimiters = {
 \ }
 " }}}3
 
-" easymotion & clever-f & sneak & keymaps {{{3
+" easymotion & clever-f & sneak {{{3
 if dein#tap('vim-easymotion') && dein#tap('clever-f.vim') && dein#tap('vim-sneak') && dein#tap('vim-keymaps')
   " EasyMotion
   let g:EasyMotion_do_mapping       = 0
@@ -1782,41 +1782,6 @@ if dein#tap('vim-easymotion') && dein#tap('clever-f.vim') && dein#tap('vim-sneak
 
   " sneak
   let g:sneak#prompt = 'Search by Sneak (2 characters) >'
-  let g:clever_mapping = {
-  \ 'name': 'CleverF',
-  \ 'keymap': {
-  \   'nmap': {
-  \     'f': '<Plug>(clever-f-f)',
-  \     'F': '<Plug>(clever-f-F)',
-  \     ';': '<Plug>(clever-f-f)',
-  \     ',': '<Plug>(clever-f-F)',
-  \   },
-  \   'vmap': {
-  \     'f': '<Plug>(clever-f-f)',
-  \     'F': '<Plug>(clever-f-F)',
-  \     ';': '<Plug>(clever-f-f)',
-  \     ',': '<Plug>(clever-f-F)',
-  \   },
-  \ },
-  \ }
-
-  let g:sneak_mapping = {
-  \ 'name': 'Sneak',
-  \ 'keymap': {
-  \   'nmap': {
-  \     ';':  '<Plug>Sneak_;',
-  \     ',':  '<Plug>Sneak_,',
-  \     'ss': '<Plug>Sneak_;',
-  \     'sS': '<Plug>Sneak_,',
-  \   },
-  \   'vmap': {
-  \     ';':  '<Plug>Sneak_;',
-  \     ',':  '<Plug>Sneak_,',
-  \     'ss': '<Plug>Sneak_;',
-  \     'sS': '<Plug>Sneak_,',
-  \   },
-  \ },
-  \ }
 endif
 " }}}3
 
@@ -2747,106 +2712,150 @@ endfunction
 function! EscEscReset() abort
   AnzuClearSearchStatus
   KeyMapSet Default
+  highlight CursorColumn ctermfg=none ctermbg=235
+  highlight CursorLine   ctermfg=none ctermbg=235
 endfunction
 nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> call EscEscReset()<CR>
 " }}}
 
 " keymaps {{{
-let g:keymaps_unmap_keys = 0
+if dein#tap('vim-keymaps')
+  let g:keymaps_unmap_keys = 0
 
-let g:keymaps = [
-\ {
-\   'name': 'Empty',
-\   'keymap': {},
-\ },
-\ ]
+  let g:keymaps = [
+  \ {
+  \   'name': 'Empty',
+  \   'keymap': {},
+  \ },
+  \ ]
 
-let g:default_mapping = {
-\ 'name': 'Default',
-\ 'keymap': {
-\   'nmap <silent>': {
-\     '<C-r>': '<Plug>(RepeatRedo)',
-\   },
-\   'nnoremap <silent>': {
-\     ';q': ':<C-u>KeyMapSet QuickFix<CR>',
-\     ';l': ':<C-u>KeyMapSet LocationList<CR>',
-\     ';d': ':<C-u>KeyMapSet Denite<CR>',
-\   },
-\   'nmap <silent> <expr>': {
-\     '<C-p>': 'yankround#is_active() ? "\<Plug>(yankround-prev)" : "(ctrlp)"',
-\     '<C-n>': 'yankround#is_active() ? "\<Plug>(yankround-next)" : "(ctrln)"',
-\   },
-\   'nmap': {
-\     'f':  'q:KeyMapSet CleverF<CR><Plug>(clever-f-f)',
-\     'F':  'q:KeyMapSet CleverF<CR><Plug>(clever-f-F)',
-\     't':  'q:KeyMapSet CleverF<CR><Plug>(clever-f-t)',
-\     'T':  'q:KeyMapSet CleverF<CR><Plug>(clever-f-T)',
-\     'ss': 'q:KeyMapSet Sneak<CR><Plug>Sneak_s',
-\     'sS': 'q:KeyMapSet Sneak<CR><Plug>Sneak_S',
-\   },
-\   'vmap': {
-\     'f':  '<Esc>q:KeyMapSet CleverF<CR>gv<Plug>(clever-f-f)',
-\     'F':  '<Esc>q:KeyMapSet CleverF<CR>gv<Plug>(clever-f-F)',
-\     't':  '<Esc>q:KeyMapSet CleverF<CR>gv<Plug>(clever-f-t)',
-\     'T':  '<Esc>q:KeyMapSet CleverF<CR>gv<Plug>(clever-f-T)',
-\     'ss': '<Esc>q:KeyMapSet Sneak<CR>gv<Plug>Sneak_s',
-\     'sS': '<Esc>q:KeyMapSet Sneak<CR>gv<Plug>Sneak_S',
-\   },
-\   'omap': {
-\     'ss': '<Plug>Sneak_s',
-\     'sS': '<Plug>Sneak_S',
-\   },
-\ },
-\ }
+  let g:default_mapping = {
+  \ 'name': 'Default',
+  \ 'keymap': {
+  \   'nnoremap <silent>': {
+  \     ';q': ':<C-u>KeyMapSet QuickFix<CR>',
+  \     ';l': ':<C-u>KeyMapSet LocationList<CR>',
+  \     ';d': ':<C-u>KeyMapSet Denite<CR>',
+  \   },
+  \   'nmap <silent> <expr>': {
+  \     '<C-p>': 'yankround#is_active() ? "\<Plug>(yankround-prev)" : "(ctrlp)"',
+  \     '<C-n>': 'yankround#is_active() ? "\<Plug>(yankround-next)" : "(ctrln)"',
+  \   },
+  \   'nmap <silent>': {
+  \     'f':  ':KeyMapSet CleverF<CR><Plug>(clever-f-f)',
+  \     'F':  ':KeyMapSet CleverF<CR><Plug>(clever-f-F)',
+  \     't':  ':KeyMapSet CleverF<CR><Plug>(clever-f-t)',
+  \     'T':  ':KeyMapSet CleverF<CR><Plug>(clever-f-T)',
+  \     'ss': ':KeyMapSet Sneak<CR><Plug>Sneak_s',
+  \     'sS': ':KeyMapSet Sneak<CR><Plug>Sneak_S',
+  \   },
+  \   'xmap <silent>': {
+  \     'f':  '<Esc>:KeyMapSet CleverF<CR>gv<Plug>(clever-f-f)',
+  \     'F':  '<Esc>:KeyMapSet CleverF<CR>gv<Plug>(clever-f-F)',
+  \     't':  '<Esc>:KeyMapSet CleverF<CR>gv<Plug>(clever-f-t)',
+  \     'T':  '<Esc>:KeyMapSet CleverF<CR>gv<Plug>(clever-f-T)',
+  \     'ss': '<Esc>:KeyMapSet Sneak<CR>gv<Plug>Sneak_s',
+  \     'sS': '<Esc>:KeyMapSet Sneak<CR>gv<Plug>Sneak_S',
+  \   },
+  \   'omap <silent>': {
+  \     'ss': '<Plug>Sneak_s',
+  \     'sS': '<Plug>Sneak_S',
+  \   },
+  \ },
+  \ }
 
-let g:quickfix_mapping = {
-\ 'name': 'QuickFix',
-\ 'keymap': {
-\   'nnoremap <silent>': {
-\     '<C-p>': ':<C-u>cprev<CR>',
-\     '<C-n>': ':<C-u>cnext<CR>',
-\   },
-\ },
-\ }
+  let g:clever_mapping = {
+  \ 'name': 'CleverF',
+  \ 'keymap': {
+  \   'nmap <silent>': {
+  \     'f': '<Plug>(clever-f-f)',
+  \     'F': '<Plug>(clever-f-F)',
+  \     ';': '<Plug>(clever-f-f)',
+  \     ',': '<Plug>(clever-f-F)',
+  \   },
+  \   'xmap <silent>': {
+  \     'f': '<Plug>(clever-f-f)',
+  \     'F': '<Plug>(clever-f-F)',
+  \     ';': '<Plug>(clever-f-f)',
+  \     ',': '<Plug>(clever-f-F)',
+  \   },
+  \ },
+  \ }
 
-let g:location_list_mapping = {
-\ 'name': 'LocationList',
-\ 'nnoremap <silent>': {
-\   'nnoremap <silent>': {
-\     '<C-p>': ':<C-u>lprev<CR>',
-\     '<C-n>': ':<C-u>lnext<CR>',
-\   },
-\ },
-\ }
+  let g:sneak_mapping = {
+  \ 'name': 'Sneak',
+  \ 'keymap': {
+  \   'nmap <silent>': {
+  \     ';':  '<Plug>Sneak_;',
+  \     ',':  '<Plug>Sneak_,',
+  \     'ss': '<Plug>Sneak_;',
+  \     'sS': '<Plug>Sneak_,',
+  \   },
+  \   'xmap <silent>': {
+  \     ';':  '<Plug>Sneak_;',
+  \     ',':  '<Plug>Sneak_,',
+  \     'ss': '<Plug>Sneak_;',
+  \     'sS': '<Plug>Sneak_,',
+  \   },
+  \ },
+  \ }
 
-let g:denite_mapping = {
-\ 'name': 'Denite',
-\ 'keymap': {
-\   'nnoremap <silent>': {
-\     '<C-r>': ':<C-u>Denite -resume<CR>',
-\     '<C-p>': ':<C-u>Denite -resume -immediately -select=-1<CR>',
-\     '<C-n>': ':<C-u>Denite -resume -immediately -select=+1<CR>',
-\   },
-\ },
-\ }
+  let g:quickfix_mapping = {
+  \ 'name': 'QuickFix',
+  \ 'keymap': {
+  \   'nnoremap <silent>': {
+  \     '<C-p>': ':<C-u>cprev<CR>',
+  \     '<C-n>': ':<C-u>cnext<CR>',
+  \   },
+  \ },
+  \ }
 
-call extend(g:keymaps, [g:default_mapping])
-call extend(g:keymaps, [g:clever_mapping])
-call extend(g:keymaps, [g:sneak_mapping])
-call extend(g:keymaps, [g:quickfix_mapping])
-call extend(g:keymaps, [g:location_list_mapping])
-call extend(g:keymaps, [g:denite_mapping])
+  let g:location_list_mapping = {
+  \ 'name': 'LocationList',
+  \ 'keymap': {
+  \   'nnoremap <silent>': {
+  \     '<C-p>': ':<C-u>lprev<CR>',
+  \     '<C-n>': ':<C-u>lnext<CR>',
+  \   },
+  \ },
+  \ }
 
-AutoCmd VimEnter * KeyMapSet Default
-AutoCmd FileType qf
-\ if getwininfo(win_getid())[0].loclist |
-\   execute 'KeyMapSet Default' |
-\   execute 'KeyMapSet LocationList' |
-\ elseif getwininfo(win_getid())[0].quickfix |
-\   execute 'KeyMapSet Default' |
-\   execute 'KeyMapSet QuickFix' |
-\ endif
-AutoCmd FileType denite execute 'KeyMapSet Default' | execute 'KeyMapSet Denite'
+  let g:denite_mapping = {
+  \ 'name': 'Denite',
+  \ 'keymap': {
+  \   'nnoremap <silent>': {
+  \     '<C-p>': ':<C-u>Denite -resume -immediately -select=-1<CR>',
+  \     '<C-n>': ':<C-u>Denite -resume -immediately -select=+1<CR>',
+  \   },
+  \ },
+  \ }
+
+  call extend(g:keymaps, [g:default_mapping])
+  call extend(g:keymaps, [g:clever_mapping])
+  call extend(g:keymaps, [g:sneak_mapping])
+  call extend(g:keymaps, [g:quickfix_mapping])
+  call extend(g:keymaps, [g:location_list_mapping])
+  call extend(g:keymaps, [g:denite_mapping])
+
+  AutoCmd VimEnter * KeyMapSet Default
+  AutoCmd FileType qf
+  \ if getwininfo(win_getid())[0].loclist |
+  \   highlight CursorColumn ctermfg=none ctermbg=235 |
+  \   highlight CursorLine   ctermfg=none ctermbg=235 |
+  \   execute 'KeyMapSet Default' |
+  \   execute 'KeyMapSet LocationList' |
+  \ elseif getwininfo(win_getid())[0].quickfix |
+  \   highlight CursorColumn ctermfg=none ctermbg=235 |
+  \   highlight CursorLine   ctermfg=none ctermbg=235 |
+  \   execute 'KeyMapSet Default' |
+  \   execute 'KeyMapSet QuickFix' |
+  \ endif
+  AutoCmd FileType denite |
+  \   highlight CursorColumn ctermfg=none ctermbg=236 |
+  \   highlight CursorLine   ctermfg=none ctermbg=236 |
+  \ execute 'KeyMapSet Default' |
+  \ execute 'KeyMapSet Denite'
+endif
 " }}}
 
 " }}}1
