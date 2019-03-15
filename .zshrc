@@ -582,7 +582,7 @@ function peco-nico-bgm() {
 # PROMPT='${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
 
 # Command Buffer Stack
-RPROMPT='${COMMAND_BUFFER_STACK}'
+RPROMPT='${COMMAND_BUFFER_STACK} [%{$MAGENTA%}${RUBY_VERSION}%{$DEFAULT%} %{$BLUE%}${NODE_VERSION}%{$DEFAULT%} %{$GREEN%}${PYTHON_VERSION}%{$DEFAULT%}]'
 
 PROMPT='
 %F{blue}%~%f $GIT_STATUS
@@ -625,8 +625,38 @@ function venv_name () {
     PYTHON_VIRTUAL_ENV_STRING="venv:$(basename $VIRTUAL_ENV) "
   fi
 }
-
 add-zsh-hook precmd venv_name
+
+function detect_ruby_version() {
+  which rbenv > /dev/null 2>&1
+
+  if [[ -f $(pwd)/.ruby-version ]]; then
+    RUBY_VERSION="ruby-$(rbenv version-name)"
+  else
+    RUBY_VERSION=
+  fi
+}
+add-zsh-hook precmd detect_ruby_version
+
+function detect_node_version() {
+  which nodenv > /dev/null 2>&1
+
+  if [[ -f $(pwd)/.node-version ]]; then
+    NODE_VERSION="node-$(nodenv version-name)"
+  else
+    NODE_VERSION=
+  fi
+}
+add-zsh-hook precmd detect_node_version
+
+function detect_python_version() {
+  if [[ -n "$VIRTUAL_ENV" ]]; then
+    PYTHON_VERSION="$(python -V)"
+  else
+    PYTHON_VERSION=
+  fi
+}
+add-zsh-hook precmd detect_python_version
 
 # }}}
 
