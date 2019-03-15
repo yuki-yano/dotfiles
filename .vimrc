@@ -1546,7 +1546,7 @@ AlterCommand! <cmdwin> gsl GswLoad
 AlterCommand! <cmdwin> git   Gina
 AlterCommand! <cmdwin> gina  Gina
 AlterCommand! <cmdwin> gs    Gina<Space>status
-AlterCommand! <cmdwin> ga    Gina<Space>patch
+AlterCommand! <cmdwin> gp    Gina<Space>patch
 AlterCommand! <cmdwin> gci   Gina<Space>commit
 AlterCommand! <cmdwin> gd    Gina<Space>diff
 AlterCommand! <cmdwin> gdc   Gina<Space>diff<Space>--cached
