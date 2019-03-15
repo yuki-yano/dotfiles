@@ -2129,7 +2129,9 @@ let g:matchup_matchparen_status_offscreen = 0
 " rainbow {{{3
 let g:rainbow_active           = 1
 let g:rainbow_conf             = {}
+let g:rainbow_conf.cterms      = ['']
 let g:rainbow_conf.ctermfgs    = ['yellow', 'darkred', 'darkgreen', 'darkblue']
+let g:rainbow_conf.guis        = ['']
 let g:rainbow_conf.guifgs      = ['#BD9D0B', '#B3427E', '#5B9C14', '#3E7C94']
 let g:rainbow_conf.operator    = '_,_'
 let g:rainbow_conf.parentheses = ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold']
