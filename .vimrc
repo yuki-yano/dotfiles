@@ -2422,12 +2422,14 @@ let g:startify_list_order = [
 let g:startify_change_to_vcs_root = 1
 
 let g:startify_commands = [
-\ ['git status',        'Gina status'],
-\ ['git log',           'Agit'],
-\ ['git file log',      'AgitFile'],
-\ ['git diff',          'Gina diff'],
-\ ['git diff --cached', 'Gina diff --cached'],
-\ ['git blame',         'Gina blame'],
+\ ['Check Health',          'checkhealth'],
+\ ['Recache Runtimepath',   'Dein recache-runtimepath'],
+\ ['Update Remote Plugins', 'call dein#remote_plugins()'],
+\ ['Git Status',            'Gina status'],
+\ ['Git Log',               'Gina Log'],
+\ ['Git Diff',              'Gina diff'],
+\ ['Git Diff Cached',       'Gina diff --cached'],
+\ ['Git Commit',            'Gina commit'],
 \ ]
 
 " }}}3
