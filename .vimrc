@@ -1187,6 +1187,16 @@ if executable('solargraph')
   \ 'whitelist': ['ruby'],
   \ })
 endif
+
+function! s:lsp_settings() abort
+  nnoremap <silent> <buffer> K                          :<C-u>LspDefinition<CR>
+  nnoremap <silent> <buffer> gK                         :<C-u>LspHover<CR>
+  nnoremap <silent> <buffer> <LocalLeader>p             :<C-u>LspReferences<CR>
+  nnoremap <silent> <buffer> <LocalLeader>r             :<C-u>LspRename<CR>
+  nnoremap <silent> <buffer> <LocalLeader><LocalLeader> :<C-u>LspCodeAction<CR>
+endfunction
+
+AutoCmd FileType ruby call s:lsp_settings()
 " }}}3
 
 " neosnippet {{{3
