@@ -2873,7 +2873,7 @@ AutoCmd ColorScheme * highlight ALEError                ctermfg=0    ctermbg=203
 AutoCmd ColorScheme * highlight ALEWarning              ctermfg=0    ctermbg=229
 AutoCmd ColorScheme * highlight CleverFDefaultLabel     ctermfg=9    ctermbg=236  cterm=underline,bold
 AutoCmd ColorScheme * highlight Sneak                   ctermfg=132  ctermbg=236  cterm=underline,bold
-AutoCmd ColorScheme * highlight BrighTestHighlight      ctermfg=none ctermbg=236  cterm=bold
+AutoCmd ColorScheme * highlight BrighTestHighlight      ctermfg=none ctermbg=none cterm=underline
 AutoCmd ColorScheme * highlight HighlightedyankRegion   ctermfg=1    ctermbg=none
 AutoCmd ColorScheme * highlight YankRoundRegion         ctermfg=209  ctermbg=237
 
