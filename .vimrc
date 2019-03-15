@@ -76,7 +76,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
     call dein#add('Shougo/neosnippet')
 
-    " call dein#add('tbodt/deoplete-tabnine', {'build': 'bash install.sh'})
+    call dein#add('tbodt/deoplete-tabnine', {'build': 'bash install.sh'})
     call dein#add('Shougo/echodoc.vim')
     call dein#add('Shougo/neco-vim')
     call dein#add('jsfaint/gen_tags.vim')
@@ -1111,10 +1111,6 @@ if dein#tap('deoplete.nvim')
   \ ])
 
   " Sources
-  " call deoplete#custom#source('tabnine',       'rank', 1000)
-  " call deoplete#custom#source('tabnine',       'mark', '[tabnine]')
-  " call deoplete#custom#source('tabnine',       'max_candidates', 10)
-
   call deoplete#custom#source('lsp', 'rank', 1200)
   call deoplete#custom#source('lsp', 'mark', '[lsp]')
   call deoplete#custom#source('lsp', 'max_candidates', 5)
@@ -1127,17 +1123,21 @@ if dein#tap('deoplete.nvim')
   call deoplete#custom#source('vim', 'mark', '[vim]')
   call deoplete#custom#source('vim', 'max_candidates', 5)
 
-  call deoplete#custom#source('around', 'rank', 800)
-  call deoplete#custom#source('around', 'mark', '[around]')
-  call deoplete#custom#source('around', 'max_candidates', 5)
+  call deoplete#custom#source('tabnine', 'rank', 1000)
+  call deoplete#custom#source('tabnine', 'mark', '[tabnine]')
+  call deoplete#custom#source('tabnine', 'max_candidates', 10)
 
-  call deoplete#custom#source('buffer', 'rank', 600)
-  call deoplete#custom#source('buffer', 'mark', '[buffer]')
-  call deoplete#custom#source('buffer', 'max_candidates', 5)
+  " call deoplete#custom#source('around', 'rank', 800)
+  " call deoplete#custom#source('around', 'mark', '[around]')
+  " call deoplete#custom#source('around', 'max_candidates', 5)
 
-  call deoplete#custom#source('tag', 'rank', 500)
-  call deoplete#custom#source('tag', 'mark', '[tag]')
-  call deoplete#custom#source('tag', 'max_candidates', 5)
+  " call deoplete#custom#source('buffer', 'rank', 600)
+  " call deoplete#custom#source('buffer', 'mark', '[buffer]')
+  " call deoplete#custom#source('buffer', 'max_candidates', 5)
+
+  " call deoplete#custom#source('tag', 'rank', 500)
+  " call deoplete#custom#source('tag', 'mark', '[tag]')
+  " call deoplete#custom#source('tag', 'max_candidates', 5)
 
   call deoplete#custom#source('omni', 'rank', 400)
   call deoplete#custom#source('omni', 'mark', '[omni]')
@@ -1159,7 +1159,7 @@ if dein#tap('deoplete.nvim')
   call deoplete#custom#source('look', 'mark', '[look]')
   call deoplete#custom#source('look', 'max_candidates', 5)
 
-  let s:deoplete_default_sources = ['around', 'buffer', 'tag', 'file', 'tmux-complete', 'webcomplete']
+  let s:deoplete_default_sources = ['tabnine', 'file', 'tmux-complete', 'webcomplete', 'look']
   let s:deoplete_sources                   = {}
   let s:deoplete_sources['_']              = s:deoplete_default_sources
   let s:deoplete_sources['typescript']     = s:deoplete_default_sources + ['typescript']
