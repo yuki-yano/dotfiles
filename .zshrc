@@ -329,7 +329,7 @@ RED="${fg[red]}"
 GREEN="${fg[green]}"
 YELLOW="${fg[yellow]}"
 BLUE="${fg[blue]}"
-PURPLE="${fg[purple]}"
+MAGENTA="${fg[magenta]}"
 CYAN="${fg[cyan]}"
 WHITE="${fg[white]}"
 
