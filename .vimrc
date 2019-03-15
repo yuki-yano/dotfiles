@@ -257,6 +257,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mattn/webapi-vim')
   call dein#add('mbbill/undotree',                     {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
   call dein#add('mtth/scratch.vim',                    {'lazy': 1, 'on_cmd': ['Scratch', 'ScratchInsert', 'ScratchPreview', 'ScratchSelection']})
+  call dein#add('Shougo/junkfile.vim')
   call dein#add('nonylene/vim-keymaps')
   call dein#add('osyo-manga/vim-gift')
   call dein#add('pocke/vim-automatic',                 {'depends': 'vim-gift'})
@@ -2600,6 +2601,17 @@ AlterCommand! <cmdwin> st[art]    Start
 AlterCommand! <cmdwin> stree      Start!<Space>stree
 AlterCommand! <cmdwin> fork       Start!<Space>fork
 " }}}3
+
+" junkfile {{{3
+AlterCommand! <cmdwin> jnote  JunkfileNote
+AlterCommand! <cmdwin> jdaily JunkfileDaily
+AlterCommand! <cmdwin> junk   Unite<Space>junkfile/new<Space>junkfile<Space>-start-insert
+
+command! -nargs=1 JunkfileNote call junkfile#open(strftime('%Y-%m-%d_') . <q-args>, '.md')
+command! JunkfileDaily call junkfile#open_immediately(strftime('%Y-%m-%d.md'))
+let g:junkfile#directory = '~/.config/junkfile/_posts'
+" }}}3
+
 
 " maximizer {{{3
 nnoremap <silent> <Leader>z :<C-u>MaximizerToggle<CR>
