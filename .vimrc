@@ -370,6 +370,7 @@ if has('nvim')
 
   set termguicolors
   set pumblend=20
+  set wildoptions+=pum
 endif
 
 "" Appearance
