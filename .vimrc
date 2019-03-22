@@ -65,6 +65,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('ToruIwashita/git-switcher.vim', {'lazy': 1, 'on_cmd': ['Gsw', 'GswSave', 'GswLoad']})
   call dein#add('airblade/vim-gitgutter')
   call dein#add('lambdalisue/gina.vim',          {'lazy': 1, 'on_cmd': 'Gina', 'on_func': 'gina#core#get', 'hook_post_source': 'call Hook_on_post_source_gina()'})
+  call dein#add('rhysd/git-messenger.vim',       {'lazy': 1, 'on_cmd': 'GitMessenger', 'on_map': '<Plug>'})
   " }}}3
 
   " Completion {{{3
@@ -1368,6 +1369,11 @@ AlterCommand! <cmdwin> gr GitGutterUndoHunk
 let g:gitgutter_map_keys = 0
 nmap gn <Plug>GitGutterNextHunk
 nmap gp <Plug>GitGutterPrevHunk
+" }}}3
+
+" git-messenger {{{3
+let g:git_messenger_no_default_mappings = v:true
+nmap <Leader>m <Plug>(git-messenger)
 " }}}3
 
 " git-switcher {{{3
