@@ -1076,8 +1076,8 @@ nnoremap <silent> <Leader>b       :<C-u>BuffersPreview<CR>
 nnoremap <silent> <Leader>o       :<C-u>ProjectMruFilesPreview<CR>
 nnoremap <silent> <Leader>O       :<C-u>MruFilesPreview<CR>
 nnoremap          <Enter>         :<C-u>ProjectGrepPreview<Space>
-nnoremap          <Leader><Enter> "syiw:ProjectGrepPreview<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR><CR>
-xnoremap          <Enter>         "sy:ProjectGrepPreview<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR><CR>
+nnoremap          <Leader><Enter> "syiw:ProjectGrepPreview<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR>
+xnoremap          <Enter>         "sy:ProjectGrepPreview<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR>
 " }}}3
 
 " deoplete.nvim {{{3
