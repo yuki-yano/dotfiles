@@ -62,23 +62,14 @@ zplugin light ogham/exa
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/fd -> ${ZPFX}/bin/fd"
 zplugin light sharkdp/fd
 
-zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"httpstat-darwin* -> ${ZPFX}/bin/httpstat"
-zplugin light davecheney/httpstat
-
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"dust -> ${ZPFX}/bin/dust"
 zplugin light bootandy/dust
 
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*apple-darwin*" mv"ripgrep*/rg -> ${ZPFX}/bin/rg"
 zplugin light BurntSushi/ripgrep
 
-zplugin ice lucid as"program" wait"0" depth"1" atclone'perl Makefile.PL; make' atpull'%atclone' pick"ack"
-zplugin light beyondgrep/ack2
-
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin_amd*" mv"*darwin*/ghq -> ${ZPFX}/bin/ghq"
 zplugin light motemen/ghq
-
-zplugin ice lucid as"program" wait"0" depth"1" make"prefix=$ZPFX install" atpull'%atclone'
-zplugin light jonas/tig
 
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/bin/hub -> ${ZPFX}/bin/hub"
 zplugin light github/hub
@@ -100,6 +91,9 @@ zplugin light yuki-ycino/tms
 
 zplugin ice lucid wait"0" depth"1" as"program" src"tmk.plugin.zsh" pick"tmk"
 zplugin light yuki-ycino/tmk
+
+zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd*" mv"memo -> ${ZPFX}/bin/memo"
+zplugin light mattn/memo
 
 zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd*" mv"ghkw*/ghkw -> ${ZPFX}/bin/ghkw"
 zplugin light kyoshidajp/ghkw
