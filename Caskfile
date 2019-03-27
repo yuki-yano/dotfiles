@@ -43,6 +43,7 @@ cask install kitematic
 cask install mplayerx
 cask install paw
 cask install pliim
+cask install react-native-debugger
 cask install scroll-reverser
 cask install sequel-pro
 cask install simplecap
