@@ -32,7 +32,6 @@ install lua
 install node
 install nodenv
 install openssl
-install pipenv
 install pyenv
 install python
 install python@2
@@ -53,7 +52,6 @@ install packer
 install terraform
 
 ## Database
-install mongodb
 install mysql
 install postgresql
 install redis
@@ -69,8 +67,6 @@ install coreutils
 install ctags
 install curl
 install direnv
-install dos2unix
-install eugenmayer/dockersync/unox
 install gawk
 install global --with-pygments --with-ctags
 install gnu-sed
@@ -79,23 +75,17 @@ install gpg2
 install graphviz
 install ncdu
 install nkf
-install pandoc
 install parallel
 install reattach-to-user-namespace
 install rlwrap
 install rsync
-install tldr
 install tree
-install unison
 install w3m
 install watch
 install wget
-install wine
 
 ## VCS
 install git
-install mercurial
-install subversion
 install tig
 
 ## Media
