@@ -454,28 +454,34 @@ zle -N fzf-direct-completion
 
 # Project
 function f() {
-  local dir repository session current_session
-  dir=$(ghq root)/$(ghq list | fzf --prompt='Project >')
+  local project dir repository session current_session
+  project=$(ghq list | fzf --prompt='Project >')
 
-  if [[ $dir != "$(ghq root)/" ]]; then
-    if [[ ! -z ${TMUX} ]]; then
-      repository=${dir##*/}
-      session=${repository//./-}
-      current_session=$(tmux list-sessions | grep 'attached' | cut -d":" -f1)
+  if [[ $project == "" ]]; then
+    return 1
+  elif [[ -d ~/repos/${project} ]]; then
+    dir=~/repos/${project}
+  elif [[ -d ~/.go/src/${project} ]]; then
+    dir=~/.go/src/${project}
+  fi
 
-      if [[ $current_session =~ ^[0-9]+$ ]]; then
-        cd $dir
-        tmux rename-session $session
-      else
-        tmux list-sessions | cut -d":" -f1 | grep $session > /dev/null
-        if [[ $? != 0 ]]; then
-          tmux new-session -d -c $dir -s $session
-        fi
-        tmux switch-client -t $session
-      fi
-    else
+  if [[ ! -z ${TMUX} ]]; then
+    repository=${dir##*/}
+    session=${repository//./-}
+    current_session=$(tmux list-sessions | grep 'attached' | cut -d":" -f1)
+
+    if [[ $current_session =~ ^[0-9]+$ ]]; then
       cd $dir
+      tmux rename-session $session
+    else
+      tmux list-sessions | cut -d":" -f1 | grep -e "^$session\$" > /dev/null
+      if [[ $? != 0 ]]; then
+        tmux new-session -d -c $dir -s $session
+      fi
+      tmux switch-client -t $session
     fi
+  else
+    cd $dir
   fi
 }
 
