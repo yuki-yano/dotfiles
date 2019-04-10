@@ -5,6 +5,7 @@ let g:ale_filetypes = [
 \ 'typescript.tsx',
 \ 'ruby',
 \ 'eruby',
+\ 'go',
 \ 'json',
 \ 'yaml',
 \ 'html',
@@ -48,6 +49,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Language {{{3
   call dein#add('MaxMEllon/vim-jsx-pretty',                {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
   call dein#add('elzr/vim-json',                           {'lazy': 1, 'on_ft': 'json'})
+  call dein#add('fatih/vim-go',                            {'lazy': 1, 'on_ft': 'go'})
   call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': ['css', 'javascript', 'typescript']})
   call dein#add('itspriddle/vim-marked',                   {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('leafgarland/typescript-vim',              {'lazy': 1, 'on_ft': 'typescript'})
@@ -755,6 +757,7 @@ let g:ale_linters = {
 \ 'typescript':     ['tsserver', 'eslint', 'tslint'],
 \ 'typescript.tsx': ['tsserver', 'eslint', 'tslint'],
 \ 'ruby':           ['rubocop'],
+\ 'go':             ['bingo'],
 \ 'json':           ['jsonlint'],
 \ 'dockerfile':     ['hadolint'],
 \ 'vim':            ['vint'],
@@ -776,6 +779,8 @@ let g:ale_sign_warning       = ''
 let g:ale_sign_info          = ''
 let g:ale_sign_style_error   = ''
 let g:ale_sign_style_warning = ''
+
+let g:ale_go_bingo_executable = 'gopls'
 " }}}3
 
 " autoformat {{{3
@@ -843,6 +848,20 @@ let g:endwise_no_mappings = 1
 let g:gen_tags#use_cache_dir  = 0
 let g:gen_tags#ctags_auto_gen = 1
 let g:gen_tags#gtags_auto_gen = 1
+" }}}3
+
+" go {{{3
+let g:go_fmt_command                 = 'goimports'
+let g:go_def_mode                    = 'godef'
+let g:go_def_mapping_enabled         = 0
+let g:go_highlight_functions         = 1
+let g:go_highlight_methods           = 1
+let g:go_highlight_structs           = 1
+let g:go_highlight_operators         = 1
+let g:go_term_enabled                = 1
+let g:go_highlight_build_constraints = 1
+let g:go_template_autocreate         = 0
+let g:go_gocode_unimported_packages  = 1
 " }}}3
 
 " json {{{3
@@ -1168,6 +1187,7 @@ if dein#tap('deoplete.nvim')
   let s:deoplete_sources['typescript']     = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['typescript.tsx'] = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['ruby']           = s:deoplete_default_sources + ['lsp']
+  let s:deoplete_sources['go']             = s:deoplete_default_sources + ['lsp']
   let s:deoplete_sources['css']            = s:deoplete_default_sources + ['omni']
   let s:deoplete_sources['scss']           = s:deoplete_default_sources + ['omni']
   let s:deoplete_sources['vim']            = s:deoplete_default_sources + ['vim']
@@ -1181,12 +1201,22 @@ endif
 " }}}3
 
 " lsp {{{3
+let g:lsp_diagnostics_enabled = 0
+
 if executable('solargraph')
   AutoCmd User lsp_setup call lsp#register_server({
   \ 'name': 'solargraph',
   \ 'cmd': {server_info->[&shell, &shellcmdflag, 'solargraph stdio']},
   \ 'initialization_options': {'diagnostics': 'true'},
   \ 'whitelist': ['ruby'],
+  \ })
+endif
+
+if executable('gopls')
+  AutoCmd User lsp_setup call lsp#register_server({
+  \ 'name': 'go-lang',
+  \ 'cmd': {server_info->['gopls']},
+  \ 'whitelist': ['go'],
   \ })
 endif
 
@@ -1198,7 +1228,7 @@ function! s:lsp_settings() abort
   nnoremap <silent> <buffer> <LocalLeader><LocalLeader> :<C-u>LspCodeAction<CR>
 endfunction
 
-AutoCmd FileType ruby call s:lsp_settings()
+AutoCmd FileType ruby,go call s:lsp_settings()
 " }}}3
 
 " neosnippet {{{3
