@@ -764,7 +764,6 @@ let g:ale_linters = {
 \ 'sh':             ['shellcheck'],
 \ 'bash':           ['shellcheck'],
 \ }
-let g:ale_ruby_rubocop_executable = 'bundle'
 
 let g:ale_set_highlights           = 0
 let g:ale_sign_column_always       = 1
