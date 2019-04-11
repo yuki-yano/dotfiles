@@ -9,6 +9,7 @@ mypy
 neovim
 neovim-remote
 pathlib
+pipenv
 ptpython
 pygments-style-solarized
 sexpdata
