@@ -84,7 +84,7 @@ zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*macos*" mv"yj-macos -> $
 zplugin light sclevine/yj
 
 zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"tokei -> ${ZPFX}/bin/tokei"
-zplugin light Aaronepower/tokei
+zplugin light XAMPPRocky/tokei
 
 zplugin ice lucid wait"0" depth"1" as"program" src"tms.plugin.zsh" pick"tms"
 zplugin light yuki-ycino/tms
