@@ -1,5 +1,6 @@
 @vue/cli
 create-react-app
+expo-cli
 firebase-tools
 fixjson
 gtop
