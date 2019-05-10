@@ -14,6 +14,7 @@ prettier
 speed-test
 stylefmt
 tern
+ts-node
 typescript
 vtop
 vue-language-server
