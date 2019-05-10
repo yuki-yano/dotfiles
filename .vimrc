@@ -506,10 +506,13 @@ AutoCmd BufRead * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g
 " }}}2
 
 " highlight cursorline and cursorcolumn with timer {{{2
+let g:highlight_cursor      = 1
 let s:highlight_cursor_wait = 500
 
 function! s:enter(...) abort
-  setlocal cursorline cursorcolumn
+  if g:highlight_cursor
+    setlocal cursorline cursorcolumn
+  endif
   augroup highlight_cursor
     autocmd!
     autocmd CursorMoved,WinLeave * call s:leave()
@@ -526,6 +529,18 @@ function! s:leave() abort
 endfunction
 
 AutoCmd VimEnter * call timer_start(s:highlight_cursor_wait, function('s:enter'))
+
+function! s:cursor_highlight_toggle()
+  if g:highlight_cursor
+    let g:highlight_cursor = 0
+    setlocal nocursorline nocursorcolumn
+  else
+    let g:highlight_cursor = 1
+    setlocal cursorline cursorcolumn
+  endif
+endfunction
+
+command! CursorHighlightToggle call <SID>cursor_highlight_toggle()
 " }}}2
 
 " Auto mkdir {{{2
@@ -538,7 +553,7 @@ endfunction
 " }}}2
 
 " ToggleHighLight {{{2
-function! s:toggle_highlight()
+function! s:highlight_toggle()
   if exists('g:syntax_on')
     syntax off
   else
@@ -546,7 +561,7 @@ function! s:toggle_highlight()
   endif
 endfunction
 
-command! ToggleHighlight call <SID>toggle_highlight()
+command! HighlightToggle call <SID>highlight_toggle()
 " }}}2
 
 " ToggleQuickfix {{{2
@@ -997,11 +1012,12 @@ if dein#tap('denite.nvim')
   let s:menus = {}
   let s:menus.toggle = { 'description': 'Toggle Command' }
   let s:menus.toggle.command_candidates = [
-  \ ['Toggle IndentLine        [IndentLinesToggle]',       'IndentLinesToggle'       ],
-  \ ['Toggle Highlight         [ToggleHighlight]',         'ToggleHighlight'         ],
-  \ ['Toggle Spell             [setlocal spell!]',         'setlocal spell!'         ],
-  \ ['Toggle ALE               [ALEToggle]',               'ALEToggle'               ],
-  \ ['Toggle TableMode         [TableMode]',               'TableModeToggle'         ],
+  \ ['Toggle CursorHighlight [CursorHighlightToggle]', 'CursorHighlightToggle'],
+  \ ['Toggle IndentLine      [IndentLinesToggle]',     'IndentLinesToggle'    ],
+  \ ['Toggle Highlight       [HighlightToggle]',       'HighlightToggle'      ],
+  \ ['Toggle Spell           [setlocal spell!]',       'setlocal spell!'      ],
+  \ ['Toggle ALE             [ALEToggle]',             'ALEToggle'            ],
+  \ ['Toggle TableMode       [TableMode]',             'TableModeToggle'      ],
   \ ]
   call denite#custom#var('menu', 'menus', s:menus)
   nnoremap <silent> <Leader>t :<C-u>Denite menu:toggle<CR>
