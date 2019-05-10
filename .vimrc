@@ -3,6 +3,7 @@ let g:ale_filetypes = [
 \ 'javascript',
 \ 'typescript',
 \ 'typescript.tsx',
+\ 'vue',
 \ 'ruby',
 \ 'eruby',
 \ 'go',
@@ -55,6 +56,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('leafgarland/typescript-vim',              {'lazy': 1, 'on_ft': 'typescript'})
   call dein#add('mhartington/nvim-typescript',             {'lazy': 1, 'on_ft': ['typescript', 'typescript.tsx'], 'build': './install.sh'})
   call dein#add('othree/yajs.vim',                         {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
   call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
   call dein#add('tpope/vim-endwise',                       {'lazy': 1, 'on_ft': 'ruby'})
   " }}}3
@@ -756,6 +758,7 @@ let g:ale_linters = {
 \ 'javascript':     ['eslint'],
 \ 'typescript':     ['tsserver', 'eslint', 'tslint'],
 \ 'typescript.tsx': ['tsserver', 'eslint', 'tslint'],
+\ 'vue':            ['vls', 'eslint'],
 \ 'ruby':           ['rubocop'],
 \ 'go':             ['bingo'],
 \ 'json':           ['jsonlint'],
@@ -813,6 +816,9 @@ let g:formatters_javascript = ['prettier']
 
 " TypeScript
 let g:formatters_typescript = ['prettier']
+
+" Vue
+let g:formatters_vue = ['prettier']
 
 " Ruby
 let g:formatters_ruby = ['rubocop']
@@ -1185,6 +1191,7 @@ if dein#tap('deoplete.nvim')
   let s:deoplete_sources['_']              = s:deoplete_default_sources
   let s:deoplete_sources['typescript']     = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['typescript.tsx'] = s:deoplete_default_sources + ['typescript']
+  let s:deoplete_sources['vue']            = s:deoplete_default_sources + ['lsp']
   let s:deoplete_sources['ruby']           = s:deoplete_default_sources + ['lsp']
   let s:deoplete_sources['go']             = s:deoplete_default_sources + ['lsp']
   let s:deoplete_sources['css']            = s:deoplete_default_sources + ['omni']
@@ -1215,6 +1222,14 @@ if executable('gopls')
   \ 'name': 'go-lang',
   \ 'cmd': {server_info->['gopls']},
   \ 'whitelist': ['go'],
+  \ })
+endif
+
+if executable('vls')
+  AutoCmd User lsp_setup call lsp#register_server({
+  \ 'name': 'vue-language-server',
+  \ 'cmd': {server_info->['vls']},
+  \ 'whitelist': ['vue'],
   \ })
 endif
 
