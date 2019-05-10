@@ -49,6 +49,7 @@ cask install sequel-pro
 cask install simplecap
 cask install skitch
 cask install sourcetree
+cask install station
 cask install sublime-text
 cask install tower
 cask install tripmode
