@@ -53,8 +53,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('fatih/vim-go',                            {'lazy': 1, 'on_ft': 'go'})
   call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': ['css', 'javascript', 'typescript']})
   call dein#add('itspriddle/vim-marked',                   {'lazy': 1, 'on_ft': 'markdown'})
-  call dein#add('leafgarland/typescript-vim',              {'lazy': 1, 'on_ft': 'typescript'})
-  call dein#add('mhartington/nvim-typescript',             {'lazy': 1, 'on_ft': ['typescript', 'typescript.tsx'], 'build': './install.sh'})
+  call dein#add('leafgarland/typescript-vim',              {'lazy': 1, 'on_ft': ['typescript', 'vue']})
+  call dein#add('mhartington/nvim-typescript',             {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescript.tsx', 'vue'], 'build': './install.sh'})
   call dein#add('othree/yajs.vim',                         {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
   call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
@@ -897,6 +897,8 @@ AlterCommand! <cmdwin> mark[ed] MarkedOpen
 let g:nvim_typescript#diagnostics_enable = 0
 let g:nvim_typescript#type_info_on_hold  = 1
 let g:nvim_typescript#signature_complete = 1
+let g:nvim_typescript#javascript_support = 1
+let g:nvim_typescript#vue_support        = 1
 
 function s:ts_settings() abort
   nnoremap <silent> <buffer> K              :<C-u>TSDefPreview<CR>
@@ -906,12 +908,16 @@ function s:ts_settings() abort
   nnoremap <silent> <buffer> <LocalLeader>o :<C-u>Denite TSDocumentSymbol -auto-preview<CR>
 endfunction
 
-AutoCmd FileType typescript,typescript.tsx call s:ts_settings()
+AutoCmd FileType javascript,typescript,typescript.tsx,vue call s:ts_settings()
 " }}}3
 
 " vim {{{3
 let g:vimsyntax_noerror = 1
 let g:vim_indent_cont   = 0
+" }}}3
+
+" vue {{{3
+AutoCmd FileType vue syntax sync fromstart
 " }}}3
 
 " }}}2
@@ -1210,6 +1216,7 @@ if dein#tap('deoplete.nvim')
   let s:deoplete_default_sources = ['tabnine', 'file', 'tmux-complete', 'webcomplete', 'look']
   let s:deoplete_sources                   = {}
   let s:deoplete_sources['_']              = s:deoplete_default_sources
+  let s:deoplete_sources['javascript']     = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['typescript']     = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['typescript.tsx'] = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['vue']            = s:deoplete_default_sources + ['typescript', 'LanguageClient']
