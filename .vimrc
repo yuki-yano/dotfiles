@@ -75,14 +75,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Completion {{{3
   if has('nvim')
     call dein#add('Shougo/deoplete.nvim')
-    call dein#add('autozimu/LanguageClient-neovim', {'lazy': 1, 'on_ft': ['vue', 'ruby'], 'rev': 'next', 'build': 'bash install.sh'})
-
     call dein#add('prabirshrestha/async.vim')
-    call dein#add('prabirshrestha/vim-lsp', {'lazy': 1, 'on_ft': 'go'})
-
-    call dein#add('Shougo/neosnippet')
+    call dein#add('prabirshrestha/vim-lsp')
+    " call dein#add('autozimu/LanguageClient-neovim', {'lazy': 1, 'on_ft': ['vue', 'ruby'], 'rev': 'next', 'build': 'bash install.sh'})
 
     call dein#add('tbodt/deoplete-tabnine', {'build': 'bash install.sh'})
+
     call dein#add('Shougo/echodoc.vim')
     call dein#add('Shougo/neco-vim')
     call dein#add('jsfaint/gen_tags.vim')
@@ -90,6 +88,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('thalesmello/webcomplete.vim')
     call dein#add('ujihisa/neco-look')
     call dein#add('wellle/tmux-complete.vim')
+
+    call dein#add('Shougo/neosnippet')
   endif
   " }}}3
 
@@ -1173,9 +1173,9 @@ if dein#tap('deoplete.nvim')
   call deoplete#custom#source('lsp', 'mark', '[lsp]')
   call deoplete#custom#source('lsp', 'max_candidates', 8)
 
-  call deoplete#custom#source('LanguageClient', 'rank', 1200)
-  call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
-  call deoplete#custom#source('LanguageClient', 'max_candidates', 8)
+  " call deoplete#custom#source('LanguageClient', 'rank', 1200)
+  " call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
+  " call deoplete#custom#source('LanguageClient', 'max_candidates', 8)
 
   call deoplete#custom#source('vim', 'rank', 1100)
   call deoplete#custom#source('vim', 'mark', '[vim]')
@@ -1218,13 +1218,14 @@ if dein#tap('deoplete.nvim')
   call deoplete#custom#source('look', 'max_candidates', 5)
 
   let s:deoplete_default_sources = ['tabnine', 'file', 'tmux-complete', 'webcomplete', 'look']
+
   let s:deoplete_sources                   = {}
   let s:deoplete_sources['_']              = s:deoplete_default_sources
   let s:deoplete_sources['javascript']     = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['typescript']     = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['typescript.tsx'] = s:deoplete_default_sources + ['typescript']
-  let s:deoplete_sources['vue']            = s:deoplete_default_sources + ['typescript', 'LanguageClient']
-  let s:deoplete_sources['ruby']           = s:deoplete_default_sources + ['LanguageClient']
+  let s:deoplete_sources['vue']            = s:deoplete_default_sources + ['typescript', 'lsp']
+  let s:deoplete_sources['ruby']           = s:deoplete_default_sources + ['lsp']
   let s:deoplete_sources['go']             = s:deoplete_default_sources + ['lsp']
   let s:deoplete_sources['css']            = s:deoplete_default_sources + ['omni']
   let s:deoplete_sources['scss']           = s:deoplete_default_sources + ['omni']
@@ -1239,44 +1240,51 @@ endif
 " }}}3
 
 " LanguageClient {{{3
-let g:LanguageClient_diagnosticsEnable = 0
-let g:LanguageClient_useFloatingHover  = 1
-
-let g:LanguageClient_serverCommands = {
-\ 'vue':         ['vls'],
-\ 'ruby':        ['solargraph', 'stdio'],
-\ }
-
-function! s:language_client_settings() abort
-  nnoremap <silent> <buffer> <LocalLeader>m             :<C-u>call LanguageClient_contextMenu()<CR>
-  nnoremap <silent> <buffer> K                          :<C-u>call LanguageClient#textDocument_definition()<CR>
-  nnoremap <silent> <buffer> gK                         :<C-u>call LanguageClient#textDocument_hover()<CR>
-  nnoremap <silent> <buffer> <LocalLeader>p             :<C-u>call LanguageClient#textDocument_references()<CR>
-  nnoremap <silent> <buffer> <LocalLeader>r             :<C-u>call LanguageClient#textDocument_rename()<CR>
-  nnoremap <silent> <buffer> <LocalLeader><LocalLeader> :<C-u>call LanguageClient#textDocument_codeAction()<CR>
-endfunction
-
-AutoCmd FileType ruby call s:language_client_settings()
+" let g:LanguageClient_diagnosticsEnable = 0
+" let g:LanguageClient_useFloatingHover  = 1
+"
+" let g:LanguageClient_serverCommands = {
+" \ 'ruby': ['solargraph', 'stdio'],
+" \ }
+"
+" function! s:language_client_settings() abort
+"   nnoremap <silent> <buffer> <LocalLeader>m             :<C-u>call LanguageClient_contextMenu()<CR>
+"   nnoremap <silent> <buffer> K                          :<C-u>call LanguageClient#textDocument_definition()<CR>
+"   nnoremap <silent> <buffer> gK                         :<C-u>call LanguageClient#textDocument_hover()<CR>
+"   nnoremap <silent> <buffer> <LocalLeader>p             :<C-u>call LanguageClient#textDocument_references()<CR>
+"   nnoremap <silent> <buffer> <LocalLeader>r             :<C-u>call LanguageClient#textDocument_rename()<CR>
+"   nnoremap <silent> <buffer> <LocalLeader><LocalLeader> :<C-u>call LanguageClient#textDocument_codeAction()<CR>
+" endfunction
+"
+" AutoCmd FileType ruby call s:language_client_settings()
 " }}}3
 
 " lsp {{{3
 let g:lsp_diagnostics_enabled = 0
 
-" if executable('vls')
-"   AutoCmd User lsp_setup call lsp#register_server({
-"   \ 'name': 'vue-language-server',
-"   \ 'cmd': {server_info->['vls']},
-"   \ 'whitelist': ['vue'],
-"   \ })
-" endif
+if executable('vls')
+  AutoCmd User lsp_setup call lsp#register_server({
+  \ 'name': 'vue-language-server',
+  \ 'cmd': {server_info->['vls']},
+  \ 'whitelist': ['vue'],
+  \ 'initialization_options': {
+  \   'config': {
+  \     'html': {},
+  \     'vetur': {
+  \       'validation': {},
+  \      },
+  \   },
+  \ },
+  \ })
+endif
 
-" if executable('solargraph')
-"   AutoCmd User lsp_setup call lsp#register_server({
-"   \ 'name': 'solargraph',
-"   \ 'cmd': {server_info->[&shell, &shellcmdflag, 'solargraph stdio']},
-"   \ 'whitelist': ['ruby'],
-"   \ })
-" endif
+if executable('solargraph')
+  AutoCmd User lsp_setup call lsp#register_server({
+  \ 'name': 'solargraph',
+  \ 'cmd': {server_info->[&shell, &shellcmdflag, 'solargraph stdio']},
+  \ 'whitelist': ['ruby'],
+  \ })
+endif
 
 if executable('gopls')
   AutoCmd User lsp_setup call lsp#register_server({
@@ -1294,7 +1302,7 @@ function! s:lsp_settings() abort
   nnoremap <silent> <buffer> <LocalLeader><LocalLeader> :<C-u>LspCodeAction<CR>
 endfunction
 
-AutoCmd FileType go call s:lsp_settings()
+AutoCmd FileType ruby,go call s:lsp_settings()
 " }}}3
 
 " neosnippet {{{3
