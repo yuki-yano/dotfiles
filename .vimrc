@@ -88,6 +88,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('jsfaint/gen_tags.vim')
     call dein#add('lighttiger2505/deoplete-vim-lsp')
     call dein#add('thalesmello/webcomplete.vim')
+    call dein#add('ujihisa/neco-look')
     call dein#add('wellle/tmux-complete.vim')
   endif
   " }}}3
