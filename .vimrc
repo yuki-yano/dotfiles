@@ -176,6 +176,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Util {{{3
+  call dein#add('aiya000/aho-bakaup.vim')
   call dein#add('bogado/file-line')
   call dein#add('dhruvasagar/vim-table-mode',   {'lazy': 1, 'on_cmd': 'TableModeToggle'})
   call dein#add('kana/vim-niceblock',           {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
@@ -2304,6 +2305,11 @@ let g:zenspace#default_mode = 'on'
 " }}}2
 
 " Util {{{2
+
+" aho-bakaup {{{3
+let g:bakaup_auto_backup = 1
+let g:bakaup_backup_dir  = expand('~/.cache/vim/backup')
+" }}}3
 
 " automatic {{{
 let g:automatic_config = [
