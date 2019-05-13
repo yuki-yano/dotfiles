@@ -182,6 +182,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-niceblock',           {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
   call dein#add('lambdalisue/vim-manpager',     {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER']})
   call dein#add('lambdalisue/vim-pager',        {'lazy': 1, 'on_cmd': 'PAGER'})
+  call dein#add('mbbill/undotree',              {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
   call dein#add('osyo-manga/vim-gift')
   call dein#add('pocke/vim-automatic',          {'depends': 'vim-gift'})
   call dein#add('qpkorr/vim-bufkill')
@@ -2425,6 +2426,10 @@ let g:miniyank_filename = expand('~/.cache/vim/miniyank.mpack')
 
 " table-mode {{{3
 let g:table_mode_corner='|'
+" }}}3
+
+" undotree {{{3
+nnoremap <silent> <Leader>u :<C-u>UndotreeToggle<CR>
 " }}}3
 
 " windowswap {{{3
