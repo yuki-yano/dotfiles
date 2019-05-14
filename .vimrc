@@ -132,6 +132,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('rhysd/vim-textobj-ruby') " ir ar
   call dein#add('thinca/vim-textobj-between') " i{char} a{char}
 
+  call dein#add('mopp/vim-operator-convert-case',  {'lazy': 1, 'depends': 'vim-operator-user', 'on_map': '<Plug>'})
   call dein#add('yuki-ycino/vim-operator-replace', {'lazy': 1, 'depends': 'vim-operator-user', 'on_map': '<Plug>'})
   " }}}3
 
@@ -1587,6 +1588,10 @@ AutoCmd FileType fila call s:fila_settings()
 " }}}2
 
 " textobj & operator {{{2
+
+" operator-convert-case {{{3
+map <Leader>ca <Plug>(operator-convert-case-loop)
+" }}}3
 
 " operator-replace {{{3
 map _ <Plug>(operator-replace)
