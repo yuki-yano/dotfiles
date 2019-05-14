@@ -583,7 +583,7 @@ function! s:toggle_quickfix()
 endfunction
 
 command! ToggleQuickfix call <SID>toggle_quickfix()
-nnoremap <silent> <Leader>q :<C-u>ToggleQuickfix<CR>
+nnoremap <silent> <LocalLeader>q :<C-u>ToggleQuickfix<CR>
 " }}}2
 
 " ToggleLocationList {{{2
@@ -597,7 +597,7 @@ function! s:toggle_location_list()
 endfunction
 
 command! ToggleLocationList call <SID>toggle_location_list()
-nnoremap <silent> <Leader>l :<C-u>ToggleLocationList<CR>
+nnoremap <silent> <LocalLeader>l :<C-u>ToggleLocationList<CR>
 " }}}2
 
 " MoveToNewTab {{{2
