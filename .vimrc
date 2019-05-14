@@ -82,6 +82,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('tbodt/deoplete-tabnine', {'build': 'bash install.sh'})
 
     call dein#add('Shougo/echodoc.vim')
+    call dein#add('Shougo/neco-syntax')
     call dein#add('Shougo/neco-vim')
     call dein#add('jsfaint/gen_tags.vim')
     call dein#add('lighttiger2505/deoplete-vim-lsp')
@@ -1131,8 +1132,8 @@ nnoremap          <Leader><Enter> "syiw:ProjectGrepPreview<Space><C-r>=substitut
 xnoremap          <Enter>         "sy:ProjectGrepPreview<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR>
 " }}}3
 
-" deoplete.nvim {{{3
-if dein#tap('deoplete.nvim')
+" deoplete.nvim & neosnippet {{{3
+if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   " Default Settings
   let g:deoplete#enable_at_startup = 1
 
@@ -1155,6 +1156,14 @@ if dein#tap('deoplete.nvim')
     return !col || getline('.')[col - 1]  =~# '\s'
   endfunction
 
+  " neosnippet
+  let g:neosnippet#disable_runtime_snippets = { '_' : 1 }
+  let g:neosnippet#snippets_directory = '~/.vim/snippets'
+
+  imap <expr> <silent> <C-k> pumvisible() ? "\<Plug>(neosnippet_expand_or_jump)" : deoplete#smart_close_popup() . "\<Plug>(neosnippet_expand_or_jump)"
+  smap <expr> <silent> <C-k> pumvisible() ? "\<Plug>(neosnippet_expand_or_jump)" : deoplete#smart_close_popup() . "\<Plug>(neosnippet_expand_or_jump)"
+  xmap <expr> <silent> <C-k> pumvisible() ? "\<Plug>(neosnippet_expand_or_jump)" : deoplete#smart_close_popup() . "\<Plug>(neosnippet_expand_or_jump)"
+
   call deoplete#custom#source('_', 'converters', [
   \ 'converter_remove_paren',
   \ 'converter_remove_overlap',
@@ -1165,41 +1174,49 @@ if dein#tap('deoplete.nvim')
   \ ])
 
   " Sources
-  call deoplete#custom#source('typescript', 'rank', 1300)
+  call deoplete#custom#source('typescript', 'rank', 1500)
   call deoplete#custom#source('typescript', 'mark', '[TS]')
   call deoplete#custom#source('typescript', 'max_candidates', 8)
 
-  call deoplete#custom#source('lsp', 'rank', 1200)
+  call deoplete#custom#source('lsp', 'rank', 1400)
   call deoplete#custom#source('lsp', 'mark', '[lsp]')
   call deoplete#custom#source('lsp', 'max_candidates', 8)
 
-  " call deoplete#custom#source('LanguageClient', 'rank', 1200)
+  " call deoplete#custom#source('LanguageClient', 'rank', 1400)
   " call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
   " call deoplete#custom#source('LanguageClient', 'max_candidates', 8)
 
-  call deoplete#custom#source('vim', 'rank', 1100)
+  call deoplete#custom#source('vim', 'rank', 1300)
   call deoplete#custom#source('vim', 'mark', '[vim]')
   call deoplete#custom#source('vim', 'max_candidates', 5)
 
-  call deoplete#custom#source('tabnine', 'rank', 1000)
+  call deoplete#custom#source('tabnine', 'rank', 1200)
   call deoplete#custom#source('tabnine', 'mark', '[tabnine]')
   call deoplete#custom#source('tabnine', 'max_candidates', 10)
 
-  " call deoplete#custom#source('around', 'rank', 800)
+  " call deoplete#custom#source('around', 'rank', 1000)
   " call deoplete#custom#source('around', 'mark', '[around]')
   " call deoplete#custom#source('around', 'max_candidates', 5)
 
-  " call deoplete#custom#source('buffer', 'rank', 600)
+  " call deoplete#custom#source('buffer', 'rank', 800)
   " call deoplete#custom#source('buffer', 'mark', '[buffer]')
   " call deoplete#custom#source('buffer', 'max_candidates', 5)
 
-  " call deoplete#custom#source('tag', 'rank', 500)
+  " call deoplete#custom#source('tag', 'rank', 700)
   " call deoplete#custom#source('tag', 'mark', '[tag]')
   " call deoplete#custom#source('tag', 'max_candidates', 5)
 
-  call deoplete#custom#source('omni', 'rank', 400)
+  call deoplete#custom#source('omni', 'rank', 600)
   call deoplete#custom#source('omni', 'mark', '[omni]')
-  call deoplete#custom#source('omni', 'max_candidates',5)
+  call deoplete#custom#source('omni', 'max_candidates', 5)
+
+  call deoplete#custom#source('neosnippet', 'rank', 500)
+  call deoplete#custom#source('neosnippet', 'mark', '[snippet]')
+  call deoplete#custom#source('neosnippet', 'max_candidates', 5)
+
+  call deoplete#custom#source('syntax', 'rank', 400)
+  call deoplete#custom#source('syntax', 'mark', '[syntax]')
+  call deoplete#custom#source('syntax', 'max_candidates', 5)
 
   call deoplete#custom#source('file', 'rank', 300)
   call deoplete#custom#source('file', 'mark', '[file]')
@@ -1217,7 +1234,7 @@ if dein#tap('deoplete.nvim')
   call deoplete#custom#source('look', 'mark', '[look]')
   call deoplete#custom#source('look', 'max_candidates', 5)
 
-  let s:deoplete_default_sources = ['tabnine', 'file', 'tmux-complete', 'webcomplete', 'look']
+  let s:deoplete_default_sources = ['tabnine', 'neosnippet', 'syntax', 'file', 'tmux-complete', 'webcomplete', 'look']
 
   let s:deoplete_sources                   = {}
   let s:deoplete_sources['_']              = s:deoplete_default_sources
@@ -1303,15 +1320,6 @@ function! s:lsp_settings() abort
 endfunction
 
 AutoCmd FileType ruby,go call s:lsp_settings()
-" }}}3
-
-" neosnippet {{{3
-let g:neosnippet#disable_runtime_snippets = { '_' : 1 }
-let g:neosnippet#snippets_directory = '~/.vim/snippets'
-
-imap <silent> <C-k> <Plug>(neosnippet_expand_or_jump)
-smap <silent> <C-k> <Plug>(neosnippet_expand_or_jump)
-xmap <silent> <C-k> <Plug>(neosnippet_expand_target)
 " }}}3
 
 " lexima {{{3
