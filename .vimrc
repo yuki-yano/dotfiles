@@ -257,6 +257,12 @@ let g:maplocalleader = ','
 noremap <Leader>      <Nop>
 noremap <LocalLeader> <Nop>
 
+"" Cursor
+noremap <Leader>l $
+noremap <Leader>h ^
+noremap 0 ^
+noremap ^ 0
+
 "" Disable mark
 nnoremap m <Nop>
 
@@ -273,10 +279,6 @@ noremap s <Nop>
 "" Save
 nnoremap <silent> <Leader>w :<C-u>update<CR>
 nnoremap <silent> <Leader>W :<C-u>update!<CR>
-
-"" Cursor
-noremap 0 ^
-noremap ^ 0
 
 "" Automatically indent with i and A
 nnoremap <expr> i len(getline('.')) ? "i" : "cc"
