@@ -1,22 +1,125 @@
-snippet arrow-function
-alias ar
+snippet if
+abbr if ( ... ) { ... }
 options head
+  if (${1:condition}) {
+    ${0:#:code}
+  }
+
+snippet if-else
+alias ife if2
+abbr if ( ... ) { ... } else { ... }
+options head
+  if (${1:condition}) {
+    ${2:#:code}
+  } else {
+    ${3:#:code}
+  }
+
+snippet for
+abbr for (let v of obj) { ... }
+options head
+  for (let ${1:v} of ${2:object}) {
+    ${0:#:code}
+  }
+
+snippet switch
+abbr switch (obj) case val: { ... break } default: { ... }
+options head
+  switch (${1:object}) {
+    case ${2:val}: {
+      ${1:#:code}
+      break
+    }
+    default: {
+      ${2:#:code}
+    }
+  }
+
+snippet try
+abbr try { ... } catch(e) { ... }
+options head
+  try {
+    ${1:#:code}
+  } catch (${2:e}) {
+    ${3:#:code}
+  } finally {
+    ${4:#:code}
+  }
+
+snippet try-finally
+alias tryf try2
+abbr try { ... } catch(e) { ... } finally { ... }
+options head
+  try {
+    ${1:#:code}
+  } catch (${2:e}) {
+    ${3}
+  }
+
+snippet arrow-function
+alias   arrow ar
+abbr    () => { ... }
+options word
   (${1:#:ARGS}) => {${2}}
 
 snippet map
+abbr    map((v) => { ... })
 options word
   map((${1:v}) => {
     ${2}
   })
 
-snippet react-fc
-alias fc
+snippet type
+abbr type Typ = { ... }
 options head
-  const ${1:component}: React.FC<${2:Props}> = (${3:props}) => {
+  type ${1:Typ} = {
+    ${${2:#:value}}
+  }
+
+snippet interface
+options head
+  interface ${1:Typ} {
+    ${${2:#:value}}
+  }
+
+snippet class
+options head
+  class ${1:Klass} {
+    constructor(${2:#:args}) {
+      super(${3:#:args})
+    }
+  }
+
+snippet react-fc
+alias   fc
+abbr React Functional Component
+options head
+  import React from "react"
+
+  type Props = {
+  }
+
+  const ${1:Component}: React.FC<Props> = (props) => {
     return <></>
   }
 
+snippet react-component
+alias   component
+abbr React Class Component
+options head
+  import React from "react"
+
+  type Props = {
+  }
+
+  class ${1:Component} extends React.Component<Props> {
+    render() {
+      return <></>
+    }
+  }
+
 snippet action
+abbr    redux action
 options head
   export const ${1:action} = (payload: {${2:#:type}}) => ({
     type: ${3:ACTION} as typeof ${4:ACTION},
@@ -24,6 +127,7 @@ options head
   })
 
 snippet reducer
+abbr    redux reducer
 options head
   export const reducer: Reducer<State, Actions> = (state = initialState, action) => {
     switch (action.type) {
@@ -36,9 +140,8 @@ options head
         })
       }
       default: {
-        const _: never = action
-        const none = (_: any) => _
-        none(_)
+        const none = (_: never) => _
+        none(action)
 
         return state
       }
@@ -46,21 +149,35 @@ options head
   }
 
 snippet import
-alias im
+alias   im
 options head
   import { ${1:MEMBERS} } from "${2:PACKAGE}";
 
 snippet import-default
-alias imd
+alias   imd
 options head
   import ${1:DEFAULT_MEMBER} from "${2:PACKAGE}";
 
 snippet console-log
-alias cl
+alias   log
+abbr    console.log
 options head
   console.log(${1})
 
 snippet console-debug
-alias cd
+alias   debug
+abbr    console.debug
 options head
   console.debug(${1})
+
+snippet console-warn
+alias   warn
+abbr    console.warn
+options head
+  console.warn(${1})
+
+snippet console-error
+alias   error
+abbr    console.error
+options head
+  console.error(${1})

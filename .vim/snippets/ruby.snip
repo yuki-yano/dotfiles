@@ -1,0 +1,110 @@
+snippet #!
+abbr    #!/usr/bin/env ruby
+alias   shebang
+options head
+  #!/usr/bin/env ruby
+  ${0}
+
+snippet if
+abbr    if ... end
+options word
+  if ${1:condition}
+    ${2:#:code}
+  end
+
+snippet unless
+abbr    unless ... end
+options word
+  unless ${1:condition}
+    ${2:#:code}
+  end
+
+snippet case
+abbr    case ... when ... else ... end
+options head
+  case ${1:value}
+  when ${2:condition}
+    ${3:#:code}
+  else
+    ${0:#:code}
+  end
+
+snippet def
+abbr    def ... end
+options head
+  def ${1:name}
+    ${2:#:code}
+  end
+
+snippet begin
+abbr    begin ... end
+options head
+  begin
+    ${1:#:code}
+  rescue ${2:StandardError} => ${3:error}
+    ${4:#:code}
+  end
+
+snippet rescue
+alias   res
+abbr    rescue Error => error
+options head
+  rescue ${1:StandardError} => ${2:error}
+    ${0}
+
+snippet block
+alias   bl
+abbr    { |v| ... }
+options word
+  { |${1:#:v}| ${2:#:code} }
+
+snippet do
+abbr    do |v| ... end
+options word
+  do |${1:#:v}|
+    ${2:#:code}
+  end
+
+snippet map
+abbr    map { |v| ... }
+options word
+  map { |${1:v}| ${2:#:code} }
+
+snippet mapdo
+alias   mapd map2
+abbr    map do |v| ... end
+options word
+  map do |${1:#:v}|
+    ${2:#:code}
+  end
+
+
+snippet lambda
+options word
+  -> (${1:#:args}) { ${2:#:code} }
+
+snippet binding-pry
+alias   pry
+abbr    binding.pry
+options head
+  binding.pry
+
+snippet error
+abbr    class Error < StandardError; end
+options head
+  class ${1:ErrorType} < ${1:StandardError}; end
+
+snippet yard-param
+abbr    @param [Type] ...
+options head
+  # @param ${1:NAME} [${2:String}] ${3:#:DESC}
+
+snippet yard-return
+abbr    @return [Type] ...
+options head
+  # @return [${1:String}] ${3:#:DESC}
+
+snippet yard-raise
+abbr    @raise [Type] ...
+options head
+  # @raise [${1:StandardError}] ${3:#:DESC}
