@@ -70,6 +70,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('airblade/vim-gitgutter')
   call dein#add('lambdalisue/gina.vim',          {'lazy': 1, 'on_cmd': 'Gina', 'on_func': 'gina#core#get', 'hook_post_source': 'call Hook_on_post_source_gina()'})
   call dein#add('rhysd/git-messenger.vim',       {'lazy': 1, 'on_cmd': 'GitMessenger', 'on_map': '<Plug>'})
+  call dein#add('tyru/open-browser-github.vim',  {'lazy': 1, 'depends': 'open-browser.vim', 'on_cmd': 'OpenGithubFile'})
   " }}}3
 
   " Completion {{{3
@@ -191,6 +192,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('thinca/vim-localrc')
   call dein#add('tweekmonster/startuptime.vim', {'lazy': 1, 'on_cmd': 'StartupTime'})
   call dein#add('tyru/capture.vim',             {'lazy': 1, 'on_cmd': 'Capture'})
+  call dein#add('tyru/open-browser.vim')
   call dein#add('tyru/vim-altercmd')
   call dein#add('wesQ3/vim-windowswap',         {'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#DoWindowSwap']})
   call dein#add('yssl/QFEnter')
@@ -1548,6 +1550,10 @@ if dein#tap('gina.vim')
     call gina#custom#mapping#nmap('/\%(status\|commit\|branch\|ls\|log\|reflog\|grep\)', 'q', 'ZQ', {'nnoremap': 1, 'silent': 1})
   endfunction
 endif
+" }}}3
+
+" open-browser-github {{{3
+AlterCommand! <cmdwin> github OpenGithubFile
 " }}}3
 
 " }}}2
