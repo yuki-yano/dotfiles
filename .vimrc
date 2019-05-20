@@ -1129,7 +1129,7 @@ let g:fzf_preview_filelist_command = 'rg --files --hidden --follow --glob "!.git
 let g:fzf_preview_grep_preview_cmd = 'preview_fzf_grep'
 
 nnoremap <silent> <Leader>p       :<C-u>ProjectFilesPreview<CR>
-nnoremap <silent> <Leader>g       :<C-u>GitFilesPreview<CR>
+nnoremap <silent> <Leader>gg      :<C-u>GitFilesPreview<CR>
 nnoremap <silent> <Leader>b       :<C-u>BuffersPreview<CR>
 nnoremap <silent> <Leader>o       :<C-u>ProjectMruFilesPreview<CR>
 nnoremap <silent> <Leader>O       :<C-u>MruFilesPreview<CR>
@@ -1491,7 +1491,7 @@ nmap gp <Plug>GitGutterPrevHunk
 
 " git-messenger {{{3
 let g:git_messenger_no_default_mappings = v:true
-nmap <Leader>m <Plug>(git-messenger)
+nmap <Leader>gm <Plug>(git-messenger)
 " }}}3
 
 " git-switcher {{{3
