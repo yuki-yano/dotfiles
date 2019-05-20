@@ -185,6 +185,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-niceblock',           {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
   call dein#add('lambdalisue/vim-manpager',     {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER']})
   call dein#add('lambdalisue/vim-pager',        {'lazy': 1, 'on_cmd': 'PAGER'})
+  call dein#add('majutsushi/tagbar',            {'lazy': 1, 'on_cmd': ['TagbarOpen', 'TagbarToggle']})
   call dein#add('mbbill/undotree',              {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
   call dein#add('osyo-manga/vim-gift')
   call dein#add('pocke/vim-automatic',          {'depends': 'vim-gift'})
@@ -1943,7 +1944,7 @@ endif
 " Appearance {{{2
 
 " better-whitespace {{{3
-let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'help', 'gitcommit', 'gitrebase', 'denite', 'ctrlsf']
+let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'help', 'gitcommit', 'gitrebase', 'denite', 'tagbar']
 " }}}3
 
 " brightest {{{3
@@ -2083,6 +2084,7 @@ if dein#tap('lightline.vim')
   \ 'fzf',
   \ 'denite',
   \ 'fila',
+  \ 'tagbar',
   \ 'capture',
   \ 'gina-status',
   \ 'gina-branch',
@@ -2106,6 +2108,7 @@ if dein#tap('lightline.vim')
   \ 'gina-log':    'Git Log',
   \ 'gina-reflog': 'Git Reflog',
   \ 'gina-blame':  'Git Blame',
+  \ 'tagbar':      'Tagbar',
   \ 'agsv':        'AgsView',
   \ 'agse':        'AgsEdit',
   \ }
@@ -2117,6 +2120,7 @@ if dein#tap('lightline.vim')
   \ 'gina-log',
   \ 'gina-reflog',
   \ 'gina-blame',
+  \ 'tagbar',
   \ 'agsv',
   \ ]
 
@@ -2130,6 +2134,7 @@ if dein#tap('lightline.vim')
   \ 'gina-log',
   \ 'gina-reflog',
   \ 'gina-blame',
+  \ 'tagbar',
   \ 'agsv',
   \ 'agse',
   \ ]
@@ -2144,6 +2149,7 @@ if dein#tap('lightline.vim')
   \ 'gina-log',
   \ 'gina-reflog',
   \ 'gina-blame',
+  \ 'tagbar',
   \ 'agsv',
   \ 'agse',
   \ ]
@@ -2323,6 +2329,7 @@ let g:rainbow_conf.separately = {
 \ 'gina-reflog' : 0,
 \ 'gina-blame'  : 0,
 \ 'capture'     : 0,
+\ 'tagbar'      : 0,
 \ 'agsv'        : 0,
 \ 'agse'        : 0,
 \ }
@@ -2455,6 +2462,20 @@ let g:miniyank_filename = expand('~/.cache/vim/miniyank.mpack')
 
 " table-mode {{{3
 let g:table_mode_corner='|'
+" }}}3
+
+" tagbar {{{3
+AlterCommand! <cmdwin> tag[bar] TagbarOpen<Space>j
+
+let g:tagbar_autoshowtag = 1
+let g:tagbar_autofocus   = 1
+let g:tagbar_sort        = 0
+
+function! Tagbar_status_func(current, sort, fname, ...) abort
+  let g:lightline.fname = a:fname
+  return lightline#statusline(0)
+endfunction
+let g:tagbar_status_func = 'Tagbar_status_func'
 " }}}3
 
 " undotree {{{3
