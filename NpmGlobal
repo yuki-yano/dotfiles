@@ -1,4 +1,5 @@
 @vue/cli
+@vue/cli-init
 create-react-app
 expo-cli
 firebase-tools
