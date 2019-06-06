@@ -955,30 +955,29 @@ if dein#tap('denite.nvim')
   call denite#custom#option('default', 'highlight_mode_insert', 'DeniteLine')
   call denite#custom#option('default', 'statusline', v:false)
 
-  "" keymap
-  call denite#custom#map('normal', 't',     '<denite:do_action:tabopen>',     'noremap')
-  call denite#custom#map('normal', '<C-n>', '<denite:move_to_next_line>',     'noremap')
-  call denite#custom#map('normal', '<C-p>', '<denite:move_to_previous_line>', 'noremap')
-  call denite#custom#map('normal', '<Esc>', '<denite:quit>',                  'noremap')
-  call denite#custom#map('normal', '<C-g>', '<denite:quit>',                  'noremap')
-  call denite#custom#map('normal', '<C-h>', '<denite:wincmd:h>',              'noremap')
-  call denite#custom#map('normal', '<C-j>', '<denite:wincmd:j>',              'noremap')
-  call denite#custom#map('normal', '<C-k>', '<denite:wincmd:k>',              'noremap')
-  call denite#custom#map('normal', '<C-l>', '<denite:wincmd:l>',              'noremap')
-  call denite#custom#map('insert', '<C-n>', '<denite:move_to_next_line>',     'noremap')
-  call denite#custom#map('insert', '<C-p>', '<denite:move_to_previous_line>', 'noremap')
-  call denite#custom#map('insert', '<Esc>', '<denite:enter_mode:normal>',     'noremap')
-  call denite#custom#map('insert', '<C-g>', '<denite:enter_mode:normal>',     'noremap')
+  " Define mappings
+  function! s:denite_settings() abort
+    nnoremap <silent> <expr> <buffer> i       denite#do_map('open_filter_buffer')
+    nnoremap <silent> <expr> <buffer> <CR>    denite#do_map('do_action')
+    nnoremap <silent> <expr> <buffer> <C-g>   denite#do_map('quit')
+    nnoremap <silent> <expr> <buffer> q       denite#do_map('quit')
+    nnoremap <silent> <expr> <buffer> ZQ      denite#do_map('quit')
+    nnoremap <silent>        <buffer> <C-n>   j
+    nnoremap <silent>        <buffer> <C-p>   k
+    nnoremap <silent> <expr> <buffer> <Space> denite#do_map('toggle_select') . 'j'
+    nnoremap <silent> <expr> <buffer> d       denite#do_map('do_action', 'delete')
+    nnoremap <silent> <expr> <buffer> p       denite#do_map('do_action', 'preview')
+  endfunction
 
-  "" Emacs bind
-  call denite#custom#map('insert', '<C-f>', '<denite:move_caret_to_right>',            'noremap')
-  call denite#custom#map('insert', '<C-b>', '<denite:move_caret_to_left>',             'noremap')
-  call denite#custom#map('insert', '<C-a>', '<denite:move_caret_to_head>',             'noremap')
-  call denite#custom#map('insert', '<C-e>', '<denite:move_caret_to_tail>',             'noremap')
-  call denite#custom#map('insert', '<BS>',  '<denite:smart_delete_char_before_caret>', 'noremap')
-  call denite#custom#map('insert', '<C-h>', '<denite:smart_delete_char_before_caret>', 'noremap')
-  call denite#custom#map('insert', '<C-w>', '<denite:delete_word_before_caret>',       'noremap')
-  call denite#custom#map('insert', '<C-k>', '<denite:delete_char_after_caret>',        'noremap')
+  function! s:denite_filter_settings() abort
+    nnoremap <silent> <expr> <buffer> <C-g> denite#do_map('quit')
+    nnoremap <silent> <expr> <buffer> q     denite#do_map('quit')
+    nnoremap <silent> <expr> <buffer> ZQ    denite#do_map('quit')
+    inoremap <silent>        <buffer> <C-g> <Esc>
+  endfunction
+
+  AutoCmd FileType denite        call s:denite_settings()
+  AutoCmd FileType denite-filter call s:denite_filter_settings()
 
   "" option
   call denite#custom#source('_',        'matchers', ['matcher/regexp'])
@@ -1192,6 +1191,10 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   " call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
   " call deoplete#custom#source('LanguageClient', 'max_candidates', 8)
 
+  call deoplete#custom#source('denite', 'rank', 1400)
+  call deoplete#custom#source('denite', 'mark', '[denite]')
+  call deoplete#custom#source('denite', 'max_candidates', 5)
+
   call deoplete#custom#source('vim', 'rank', 1300)
   call deoplete#custom#source('vim', 'mark', '[vim]')
   call deoplete#custom#source('vim', 'max_candidates', 5)
@@ -1253,6 +1256,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   let s:deoplete_sources['css']            = s:deoplete_default_sources + ['omni']
   let s:deoplete_sources['scss']           = s:deoplete_default_sources + ['omni']
   let s:deoplete_sources['vim']            = s:deoplete_default_sources + ['vim']
+  let s:deoplete_sources['denite-filter']  = s:deoplete_default_sources + ['denite']
   call deoplete#custom#option('sources', s:deoplete_sources)
 
   let s:deoplete_omni_functions         = {}
@@ -1997,7 +2001,7 @@ if dein#tap('lightline.vim')
   \ 'active': {
   \   'left': [
   \     ['mode', 'spell', 'paste'],
-  \     ['denite', 'filepath', 'filename'],
+  \     ['filepath', 'filename'],
   \     ['special_mode', 'anzu', 'vm_regions'],
   \     [],
   \    ],
@@ -2033,7 +2037,6 @@ if dein#tap('lightline.vim')
   \   'fileencoding': 'Lightline_fileencoding',
   \   'fileformat':   'Lightline_fileformat',
   \   'anzu':         'anzu#search_status',
-  \   'denite':       'Lightline_denite',
   \   'vm_regions':   'Lightline_vm_regions',
   \ },
   \ 'tab_component_function': {
@@ -2082,7 +2085,6 @@ if dein#tap('lightline.vim')
   \ 'diff',
   \ 'man',
   \ 'fzf',
-  \ 'denite',
   \ 'fila',
   \ 'tagbar',
   \ 'capture',
@@ -2100,7 +2102,6 @@ if dein#tap('lightline.vim')
   \ 'diff':        'Diff',
   \ 'man':         'Man',
   \ 'fzf':         'FZF',
-  \ 'denite':      'Denite',
   \ 'fila':        'Fila',
   \ 'capture':     'Capture',
   \ 'gina-status': 'Git Status',
@@ -2127,7 +2128,6 @@ if dein#tap('lightline.vim')
   let s:lightline_ignore_filename_ft = [
   \ 'qf',
   \ 'fzf',
-  \ 'denite',
   \ 'fila',
   \ 'gina-status',
   \ 'gina-branch',
@@ -2142,7 +2142,6 @@ if dein#tap('lightline.vim')
   let s:lightline_ignore_filepath_ft = [
   \ 'qf',
   \ 'fzf',
-  \ 'denite',
   \ 'fila',
   \ 'gina-status',
   \ 'gina-branch',
@@ -2271,9 +2270,9 @@ if dein#tap('lightline.vim')
     return count(g:ale_filetypes, &filetype) ? '' : ''
   endfunction
 
-  function! Lightline_denite() abort
-    return (&filetype !=# 'denite') ? '' : (substitute(denite#get_status_mode(), '[- ]', '', 'g'))
-  endfunction
+  " function! Lightline_denite() abort
+  "   return (&filetype !=# 'denite') ? '' : (substitute(denite#get_status_mode(), '[- ]', '', 'g'))
+  " endfunction
 
   function! Lightline_vm_regions() abort
     if exists('g:VM') && g:VM.is_active
