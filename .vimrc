@@ -172,6 +172,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('maximbaz/lightline-ale')
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('osyo-manga/vim-brightest')
+  call dein#add('yuttie/comfortable-motion.vim')
   " }}}3
 
   " tmux {{{3
@@ -1031,12 +1032,13 @@ if dein#tap('denite.nvim')
   let s:menus = {}
   let s:menus.toggle = { 'description': 'Toggle Command' }
   let s:menus.toggle.command_candidates = [
-  \ ['Toggle CursorHighlight [CursorHighlightToggle]', 'CursorHighlightToggle'],
-  \ ['Toggle IndentLine      [IndentLinesToggle]',     'IndentLinesToggle'    ],
-  \ ['Toggle Highlight       [HighlightToggle]',       'HighlightToggle'      ],
-  \ ['Toggle Spell           [setlocal spell!]',       'setlocal spell!'      ],
-  \ ['Toggle ALE             [ALEToggle]',             'ALEToggle'            ],
-  \ ['Toggle TableMode       [TableMode]',             'TableModeToggle'      ],
+  \ ['Toggle CursorHighlight   [CursorHighlightToggle]',   'CursorHighlightToggle'  ],
+  \ ['Toggle ComfortableMotion [ComfortableMotionToggle]', 'ToggleComfortableMotion'],
+  \ ['Toggle IndentLine        [IndentLinesToggle]',       'IndentLinesToggle'      ],
+  \ ['Toggle Highlight         [HighlightToggle]',         'HighlightToggle'        ],
+  \ ['Toggle Spell             [setlocal spell!]',         'setlocal spell!'        ],
+  \ ['Toggle ALE               [ALEToggle]',               'ALEToggle'              ],
+  \ ['Toggle TableMode         [TableMode]',               'TableModeToggle'        ],
   \ ]
   call denite#custom#var('menu', 'menus', s:menus)
   nnoremap <silent> <Leader>t :<C-u>Denite menu:toggle<CR>
@@ -1964,6 +1966,32 @@ let g:brightest#enable_highlight_all_window = 1
 let g:brightest#highlight = {'group': 'BrighTestHighlight'}
 " let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat']
 " }}}3
+
+" comfortable-motion {{{3
+let g:comfortable_motion_no_default_key_mappings = 1
+let g:comfortable_motion_enable = 0
+
+function! s:toggle_comfortable_motion()
+  if exists('g:comfortable_motion_enable') && g:comfortable_motion_enable == 1
+    let g:comfortable_motion_enable = 0
+
+    nunmap <C-d>
+    nunmap <C-u>
+    nunmap <C-f>
+    nunmap <C-b>
+  else
+    let g:comfortable_motion_enable = 1
+
+    nnoremap <silent> <C-d> :call comfortable_motion#flick(100)<CR>
+    nnoremap <silent> <C-u> :call comfortable_motion#flick(-100)<CR>
+    nnoremap <silent> <C-f> :call comfortable_motion#flick(200)<CR>
+    nnoremap <silent> <C-b> :call comfortable_motion#flick(-200)<CR>
+  endif
+endfunction
+
+command! ToggleComfortableMotion call <SID>toggle_comfortable_motion()
+" }}}3
+
 
 " foldCC {{{3
 if dein#tap('foldCC.vim')
