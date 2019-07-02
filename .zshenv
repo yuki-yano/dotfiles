@@ -190,7 +190,8 @@ fi
 # pbcopy
 alias -g C='| pbcopy'
 
-#  Finally add the path of dotfiles/bin to the beginning
+#  Finally add the path of ~/bin and ~/dotfiles/bin to the beginning
+path=(~/bin(N-/) $path)
 path=(~/dotfiles/bin(N-/) $path)
 
 # config
