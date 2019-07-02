@@ -54,8 +54,6 @@ font:
 
   use_thin_strokes: true
 
-render_timer: false
-
 colors:
   primary:
     background: '0x252525'
