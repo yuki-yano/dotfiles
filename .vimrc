@@ -755,7 +755,7 @@ function! s:init_cmdwin() abort
   inoremap <buffer> <C-c> <C-c>
   inoremap <buffer> <C-c> <Esc>l<C-c>
 
-  call deoplete#custom#option({'auto_complete': v:false})
+  call deoplete#custom#buffer_option({'auto_complete': v:false})
 
   " nnoremap <silent> <buffer> dd :<C-u>rviminfo<CR>:call histdel(getcmdwintype(), line('.') - line('$'))<CR>:wviminfo!<CR>dd
   startinsert!
