@@ -20,8 +20,6 @@ install neovim --HEAD
 install railwaycat/emacsmacport/emacs-mac
 
 ## Languages
-# install go-delve/delve/delve
-install ansible
 install boost
 install flow
 install gcc
@@ -46,6 +44,7 @@ install source-highlight
 install yarn
 
 ## Service
+install ansible
 install awscli
 install heroku/brew/heroku
 install packer
@@ -73,11 +72,9 @@ install gnu-sed
 install gpatch
 install gpg2
 install graphviz
-install ncdu
 install nkf
 install parallel
 install reattach-to-user-namespace
-install rlwrap
 install rsync
 install tree
 install w3m
