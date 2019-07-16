@@ -1,4 +1,2 @@
 *.py diff=python
 *.rb diff=ruby
-
-yarn.lock binary
