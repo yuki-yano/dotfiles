@@ -46,7 +46,7 @@ zplugin light junegunn/fzf-bin
 zplugin ice lucid wait"0" depth"1" as"program" mv"bin/fzf-tmux -> ${ZPFX}/bin/fzf-tmux"
 zplugin light junegunn/fzf
 
-zplugin ice lucid wait"0" from"gh-r" as"program" mv"peco_darwin_386/peco -> ${ZPFX}/bin/peco"
+zplugin ice lucid wait"0" from"gh-r" as"program" mv"*darwin*/peco -> ${ZPFX}/bin/peco"
 zplugin light peco/peco
 
 # command
