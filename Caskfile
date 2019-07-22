@@ -8,20 +8,21 @@ upgrade
 tap caskroom/cask
 
 ## Casks
-# cask install dropbox
+# cask install bettertouchtool
 # cask install java
+# cask install virtualbox
 # cask install xquartz
 cask install 1password
 cask install alfred
 cask install appcleaner
 cask install atom
 cask install bartender
-cask install bettertouchtool
 cask install charles
 cask install dash
 cask install default-folder-x
 cask install discord
 cask install docker
+cask install dropbox
 cask install duet
 cask install firefox
 cask install flux
@@ -31,6 +32,7 @@ cask install imagealpha
 cask install imageoptim
 cask install iterm2
 cask install jasper
+cask install java
 cask install jetbrains-toolbox
 cask install kaleidoscope
 cask install karabiner-elements
@@ -51,7 +53,6 @@ cask install tower
 cask install tripmode
 cask install vagrant
 cask install vimr
-cask install virtualbox
 cask install visual-studio-code
 cask install vivaldi
 cask install vlc
