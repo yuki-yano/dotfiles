@@ -11,11 +11,11 @@ install mas
 
 ## Shell
 install bash
-install tmux --with-utf8proc
-install zsh --disable-etcdir
+install tmux
+install zsh
 
 ## Editor
-install vim --with-lua
+install vim
 install neovim --HEAD
 install railwaycat/emacsmacport/emacs-mac
 
@@ -37,8 +37,6 @@ install rbenv
 install readline
 install ruby
 install ruby-build
-install sbt
-install scala
 install shellcheck # Haskell
 install source-highlight
 install yarn
@@ -67,7 +65,7 @@ install ctags
 install curl
 install direnv
 install gawk
-install global --with-pygments --with-ctags
+install global
 install gnu-sed
 install gpatch
 install gpg2
