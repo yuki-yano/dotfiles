@@ -41,9 +41,7 @@ options head
   try {
     ${1:#:code}
   } catch (${2:e}) {
-    ${3:#:code}
-  } finally {
-    ${4:#:code}
+    ${3}
   }
 
 snippet try-finally
@@ -53,7 +51,9 @@ options head
   try {
     ${1:#:code}
   } catch (${2:e}) {
-    ${3}
+    ${3:#:code}
+  } finally {
+    ${4:#:code}
   }
 
 snippet arrow-function
