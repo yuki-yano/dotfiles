@@ -120,6 +120,9 @@ if [[ ! -d $HOME/.cargo ]]; then
   rustup default nightly
 fi
 
+# java
+export JAVA_HOME=$(/usr/libexec/java_home -v "12")
+
 # llvm
 path=(/usr/local/opt/llvm/bin(N-/) $path)
 
