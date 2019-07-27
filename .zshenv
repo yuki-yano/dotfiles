@@ -21,6 +21,9 @@ typeset -U path fpath
 path=(~/.config/yarn/global/node_modules/.bin(N-/) /usr/local/bin(N-/) /usr/bin(N-/) /bin(N-/) /sbin(N-/) /usr/sbin(N-/) /usr/X11/bin(N-/))
 fpath=(~/.zsh/completions(N-/) $fpath)
 
+# library path
+export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/
+
 # zplugin
 ZPLG_HOME=$HOME/.zplugin
 ZPFX=$ZPLG_HOME/polaris
