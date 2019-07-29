@@ -181,6 +181,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Util {{{3
+  call dein#add('AndrewRadev/linediff.vim',     {'lazy': 1, 'on_cmd': 'Linediff'})
   call dein#add('aiya000/aho-bakaup.vim')
   call dein#add('bogado/file-line')
   call dein#add('dhruvasagar/vim-table-mode',   {'lazy': 1, 'on_cmd': 'TableModeToggle'})
@@ -192,6 +193,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('osyo-manga/vim-gift')
   call dein#add('pocke/vim-automatic',          {'depends': 'vim-gift'})
   call dein#add('qpkorr/vim-bufkill')
+  call dein#add('rickhowe/diffchar.vim')
   call dein#add('thinca/vim-localrc')
   call dein#add('tweekmonster/startuptime.vim', {'lazy': 1, 'on_cmd': 'StartupTime'})
   call dein#add('tyru/capture.vim',             {'lazy': 1, 'on_cmd': 'Capture'})
@@ -397,7 +399,7 @@ set belloff=all
 set cmdheight=2
 set concealcursor=nc
 set conceallevel=2
-set diffopt=filler,vertical
+set diffopt=internal,filler,algorithm:histogram,indent-heuristic
 set display=lastline
 set helplang=ja
 set hidden
