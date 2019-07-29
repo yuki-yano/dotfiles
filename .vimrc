@@ -958,7 +958,6 @@ let g:echodoc#enable_at_startup = 1
 
 " Denite {{{3
 AlterCommand! <cmdwin> d[enite] Denite
-AlterCommand! <cmdwin> dr       Denite<Space>-resume
 
 if dein#tap('denite.nvim')
   " Denite
@@ -1021,25 +1020,22 @@ if dein#tap('denite.nvim')
   call denite#custom#var('grep',     'separator',      ['--'])
   call denite#custom#var('grep',     'final_opts',     [])
 
-  "" file & buffer
-  " nnoremap <silent> <Leader>p :<C-u>Denite file/rec -direction=topleft -mode=insert<CR>
-  " nnoremap <silent> <Leader>b :<C-u>Denite buffer   -direction=topleft -mode=insert<CR>
-  " nnoremap <silent> <Leader>m :<C-u>Denite file_mru -direction=topleft -mode=insert<CR>
+  "" line
+  nnoremap <silent> <Leader>/ :<C-u>Denite line -start-filter<CR>
+  nnoremap <silent> <Leader>* :<C-u>DeniteCursorWord line -start-filter<CR>
 
   "" grep
-  nnoremap <silent> <Leader>/         :<C-u>Denite line<CR>
-  nnoremap <silent> <Leader>*         :<C-u>DeniteCursorWord line<CR>
-  nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep -post-action=open<CR>
-  nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep -post-action=open<CR>
+  nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep:::! -start-filter<CR>
+  nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep:::! -start-filter<CR>
 
   "" jump
-  nnoremap <silent> <Leader><C-o> :<C-u>Denite jump -auto-preview<CR>
+  nnoremap <silent> <Leader><C-o> :<C-u>Denite jump<CR>
 
   "" change
-  nnoremap <silent> <Leader>; :<C-u>Denite change -auto-preview<CR>
+  nnoremap <silent> <Leader>; :<C-u>Denite change<CR>
 
   "" ctags & gtags
-  nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context tag -auto-preview<CR>
+  nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context tag<CR>
 
   "" menu
   let s:menus = {}
@@ -1055,6 +1051,9 @@ if dein#tap('denite.nvim')
   \ ]
   call denite#custom#var('menu', 'menus', s:menus)
   nnoremap <silent> <Leader>t :<C-u>Denite menu:toggle<CR>
+
+  "" resume
+  nnoremap <silent> dr :<C-u>Denite -resume<CR>
 endif
 
 " }}}3
