@@ -140,6 +140,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Edit & Move & Search {{{3
   call dein#add('Chiel92/vim-autoformat')
   call dein#add('LeafCage/yankround.vim')
+  call dein#add('MattesGroeger/vim-bookmarks')
   call dein#add('cohama/lexima.vim',         {'lazy': 1, 'on_event': 'InsertEnter', 'hook_post_source': 'call Hook_on_post_source_lexima()'})
   call dein#add('easymotion/vim-easymotion')
   call dein#add('haya14busa/incsearch.vim')
@@ -1674,6 +1675,74 @@ if dein#tap('vim-anzu') && dein#tap('vim-asterisk') && dein#tap('incsearch.vim')
   map g* <Plug>(asterisk-gz*)<Plug>(anzu-update-search-status)
   map g# <Plug>(asterisk-gz#)<Plug>(anzu-update-search-status)
 endif
+" }}}3
+
+" bookmarks {{{3
+let g:bookmark_sign = '>>'
+let g:bookmark_annotation_sign = '##'
+
+function! g:BMBufferFileLocation(file)
+  let l:filename = 'vim-bookmarks'
+  let l:location = ''
+  if isdirectory(fnamemodify(a:file, ':p:h') . '/.git')
+    " Current work dir is git's work tree
+    let l:location = fnamemodify(a:file, ':p:h') . '/.git'
+  else
+    " Look upwards (at parents) for a directory named '.git'
+    let l:location = finddir('.git', fnamemodify(a:file, ':p:h') . '/.;')
+  endif
+  if len(l:location) > 0
+    return simplify(l:location . '/.' . l:filename)
+  else
+    return simplify(fnamemodify(a:file, ':p:h') . '/.' . l:filename)
+  endif
+endfunction
+
+function! s:bookmarks_format_line(line)
+  let l:line = split(a:line, ':')
+  let l:fname = fnamemodify(l:line[0], ':.')
+  let l:lnr = l:line[1]
+  let l:text = l:line[2]
+
+  if l:text ==# 'Annotation'
+    let l:comment = l:line[3]
+  else
+    let l:text = join(l:line[2 : ], ':')
+  endif
+
+  if !filereadable(l:fname)
+    return ''
+  endif
+
+  if l:text !=# 'Annotation'
+    return fname . ':' . lnr . ': ' . text
+  else
+    return fname . ':' . lnr . ': ' . text . ':' . l:comment
+  endif
+endfunction
+
+function! s:fzf_bookmarks_list()
+  let l:list = []
+
+  for l:bookmark in bm#location_list()
+    let l:line = s:bookmarks_format_line(l:bookmark)
+    if l:line !=# ''
+      call add(l:list, l:line)
+    endif
+  endfor
+  return l:list
+endfunction
+
+function! s:fzf_bookmarks()
+  call fzf#run(fzf#wrap({
+  \ 'source':  s:fzf_bookmarks_list(),
+  \ 'options': "--delimiter : --prompt='Bookmarks>' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview --preview 'preview_fzf_bookmark {}'",
+  \ 'window':  'top split new',
+  \ }))
+endfunction
+
+command! FzfBookmarks call s:fzf_bookmarks()
+nnoremap <silent> <Leader>m :<C-u>FzfBookmarks<CR>
 " }}}3
 
 " easy-align {{{3
