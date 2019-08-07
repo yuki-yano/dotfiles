@@ -48,6 +48,7 @@
 !/.config/nvim
 !/.config/peco/
 !/.config/snippets
+!/.config/vscode
 
 # Application
 /osx/alfred/Alfred.alfredpreferences/clipboard

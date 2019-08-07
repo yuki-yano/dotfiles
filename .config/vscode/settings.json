@@ -1,0 +1,57 @@
+{
+    "editor.fontSize": 16,
+    "editor.tabSize": 2,
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.editor.enablePreview": false,
+    "markdown.preview.fontFamily": "'SF Mono Square', -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif",
+    "editor.fontFamily": "'SF Mono Square Regular', Menlo, Monaco, 'Courier New', monospace",
+    "editor.renderWhitespace": "boundary",
+    "editor.renderControlCharacters": true,
+    "editor.minimap.enabled": false,
+    "editor.formatOnSave": true,
+
+    "prettier.eslintIntegration": true,
+    "prettier.semi": false,
+    "prettier.tslintIntegration": true,
+
+    "vim.hlsearch": true,
+    "vim.leader": "<space>",
+    "vim.useSystemClipboard": true,
+    "vim.visualstar": true,
+    "vim.useCtrlKeys": true,
+    "vim.sneak": true,
+
+    "vim.normalModeKeyBindingsNonRecursive": [{
+            "before": [":"],
+            "commands": ["workbench.action.showCommands"]
+        },
+        {
+            "before": ["leader", "w"],
+            "commands": ["workbench.action.files.save"]
+        },
+        {
+            "before": ["K"],
+            "commands": ["editor.action.goToImplementation"]
+        },
+        {
+            "before": ["g", "K"],
+            "commands": ["editor.action.goToDeclaration"]
+        },
+        {
+            "before": ["<C-l>"],
+            "commands": ["workbench.action.nextEditor"]
+        },
+        {
+            "before": ["<C-h>"],
+            "commands": ["workbench.action.previousEditor"]
+        },
+        {
+            "before": ["<C-w>", "<C-l>"],
+            "commands": ["workbench.action.focusNextGroup"]
+        },
+        {
+            "before": ["<C-w>", "<C-h>"],
+            "commands": ["workbench.action.focusPreviousGroup"]
+        }
+    ]
+}
