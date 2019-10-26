@@ -67,6 +67,37 @@ function _fzf-git-completion() {
               ;;
           esac
           ;;
+        diff)
+          case "$cmd3" in
+            '')
+              _fzf_complete_git_branch
+              return
+              ;;
+            --)
+              case "$cmd4" in
+                '')
+                  _fzf_complete_git_add_file
+                  return
+                  ;;
+              esac
+              ;;
+            --cached)
+              case "$cmd4" in
+                '')
+                  _fzf_complete_git_branch
+                  return
+                  ;;
+                --)
+                  case "$cmd5" in
+                    '')
+                      _fzf_complete_git_reset_file
+                      return
+                  esac
+                  ;;
+              esac
+              ;;
+          esac
+          ;;
         branch)
           case "$cmd3" in
             -d|-D|-m|-u)
@@ -160,7 +191,7 @@ function _fzf_complete_git_file() {
 function _fzf_complete_git_add_file() {
   local add_files
   add_files=$(git status --short | awk '{if (substr($0,2,1) !~ / /) print $0}')
-  FZF_COMPLETION_OPTS='--multi --height 80% --prompt "Git Add Files>" --preview "git diff --color=always $(echo {} | awk '\''{if (substr($0,2,1) !~ / /) print $2}'\'')" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview'
+  FZF_COMPLETION_OPTS='--multi --height 80% --prompt "Git Add Files>" --preview "fzf-complete-git-preview {}" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview'
   _fzf_complete '' "$BUFFER" < <(
   echo $add_files
   )
@@ -173,7 +204,7 @@ function _fzf_complete_git_add_file_post() {
 function _fzf_complete_git_reset_file() {
   local reset_files
   reset_files=$(git status --short | awk '{if (substr($0,1,1) ~ /M|A|D/) print $0}')
-  FZF_COMPLETION_OPTS='--multi --height 80% --prompt "Git Reset Files>" --preview "git diff --cached --color=always $(echo {} | awk '\''{if (substr($0,1,1) ~ /M|A|D/) print $2}'\'')" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview'
+  FZF_COMPLETION_OPTS='--multi --height 80% --prompt "Git Reset Files>" --preview "fzf-complete-git-preview {} --cached" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview'
   _fzf_complete '' "$BUFFER" < <(
   echo $reset_files
   )
