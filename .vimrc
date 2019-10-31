@@ -48,16 +48,16 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Language {{{3
-  call dein#add('MaxMEllon/vim-jsx-pretty',                {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
+  call dein#add('MaxMEllon/vim-jsx-pretty',                {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('elzr/vim-json',                           {'lazy': 1, 'on_ft': 'json'})
   call dein#add('fatih/vim-go',                            {'lazy': 1, 'on_ft': 'go'})
-  call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': ['css', 'javascript', 'typescript']})
+  call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': 'css'})
   call dein#add('itspriddle/vim-marked',                   {'lazy': 1, 'on_ft': 'markdown'})
-  call dein#add('leafgarland/typescript-vim',              {'lazy': 1, 'on_ft': ['typescript', 'vue']})
-  call dein#add('mhartington/nvim-typescript',             {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescript.tsx', 'vue'], 'rev': '1e976f', 'build': './install.sh'})
+  call dein#add('leafgarland/typescript-vim',              {'lazy': 1, 'on_ft': ['typescript', 'typescript.tsx']})
+  call dein#add('mhartington/nvim-typescript',             {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescript.tsx', 'vue'], 'build': './install.sh'})
   call dein#add('othree/yajs.vim',                         {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
-  call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': ['javascript', 'typescript']})
+  call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescript.tsx']})
   call dein#add('tpope/vim-endwise',                       {'lazy': 1, 'on_ft': 'ruby'})
   " }}}3
 
@@ -935,6 +935,7 @@ function s:ts_settings() abort
   nnoremap <silent> <buffer> <LocalLeader>o :<C-u>Denite TSDocumentSymbol -auto-preview<CR>
 endfunction
 
+AutoCmd BufNewFile,BufRead *.tsx setlocal filetype=typescript.tsx
 AutoCmd FileType javascript,typescript,typescript.tsx,vue call s:ts_settings()
 " }}}3
 
