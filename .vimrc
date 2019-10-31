@@ -124,6 +124,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " textobj & operator {{{3
   call dein#add('machakann/vim-sandwich')
+  call dein#add('machakann/vim-swap')
 
   call dein#add('kana/vim-textobj-user')
   call dein#add('kana/vim-operator-user')
@@ -1626,6 +1627,13 @@ map <Leader>ca <Plug>(operator-convert-case-loop)
 
 " operator-replace {{{3
 map _ <Plug>(operator-replace)
+" }}}3
+
+" swap {{{3
+omap i, <Plug>(swap-textobject-i)
+xmap i, <Plug>(swap-textobject-i)
+omap a, <Plug>(swap-textobject-a)
+xmap a, <Plug>(swap-textobject-a)
 " }}}3
 
 " textobj-between {{{3
