@@ -400,7 +400,7 @@ set belloff=all
 set cmdheight=2
 set concealcursor=nc
 set conceallevel=2
-set diffopt=internal,filler,algorithm:histogram,indent-heuristic
+set diffopt=internal,filler,algorithm:histogram,indent-heuristic,vertical
 set display=lastline
 set helplang=ja
 set hidden
