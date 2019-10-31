@@ -1512,8 +1512,8 @@ AlterCommand! <cmdwin> ga GitGutterStageHunk
 AlterCommand! <cmdwin> gr GitGutterUndoHunk
 
 let g:gitgutter_map_keys = 0
-nmap gn <Plug>GitGutterNextHunk
-nmap gp <Plug>GitGutterPrevHunk
+nmap gn <Plug>(GitGutterNextHunk)
+nmap gp <Plug>(GitGutterPrevHunk)
 " }}}3
 
 " git-messenger {{{3
