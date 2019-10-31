@@ -1274,7 +1274,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   let s:deoplete_sources['typescript']     = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['typescript.tsx'] = s:deoplete_default_sources + ['typescript']
   let s:deoplete_sources['vue']            = s:deoplete_default_sources + ['typescript', 'lsp']
-  let s:deoplete_sources['ruby']           = s:deoplete_default_sources + ['lsp']
+  let s:deoplete_sources['ruby']           = s:deoplete_default_sources + []
   let s:deoplete_sources['go']             = s:deoplete_default_sources + ['lsp']
   let s:deoplete_sources['css']            = s:deoplete_default_sources + ['omni']
   let s:deoplete_sources['scss']           = s:deoplete_default_sources + ['omni']
