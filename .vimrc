@@ -1624,7 +1624,7 @@ AutoCmd FileType fila call s:fila_settings()
 " textobj & operator {{{2
 
 " operator-convert-case {{{3
-map <Leader>ca <Plug>(operator-convert-case-loop)
+map cy <Plug>(operator-convert-case-loop)
 " }}}3
 
 " operator-replace {{{3
