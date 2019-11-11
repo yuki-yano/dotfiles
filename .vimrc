@@ -62,7 +62,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " ALE {{{
-  call dein#add('w0rp/ale', {'lazy': 1, 'on_ft': g:ale_filetypes})
+  call dein#add('dense-analysis/ale', {'lazy': 1, 'on_ft': g:ale_filetypes})
   " }}}
 
   " Git {{{3
@@ -139,7 +139,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Edit & Move & Search {{{3
-  call dein#add('Chiel92/vim-autoformat')
   call dein#add('LeafCage/yankround.vim')
   call dein#add('MattesGroeger/vim-bookmarks')
   call dein#add('cohama/lexima.vim',         {'lazy': 1, 'on_event': 'InsertEnter', 'hook_post_source': 'call Hook_on_post_source_lexima()'})
@@ -802,6 +801,27 @@ let g:ale_linters = {
 \ 'bash':           ['shellcheck'],
 \ }
 
+function! ALE_htmlbeautifier(buffer) abort
+  return {
+  \ 'command': 'htmlbeautifier --keep-blank-lines 2'
+  \}
+endfunction
+
+let g:ale_fixers = {
+\ '*': ['remove_trailing_lines', 'trim_whitespace'],
+\ 'javascript': ['prettier'],
+\ 'typescript': ['prettier'],
+\ 'vue': ['prettier'],
+\ 'ruby': ['rubocop'],
+\ 'eruby': ['ALE_htmlbeautifier'],
+\ 'html': ['prettier'],
+\ 'css': ['prettier'],
+\ 'scss': ['prettier'],
+\ 'json': ['fixjson', 'prettier'],
+\ 'graphql': ['prettier'],
+\ 'markdown': ['prettier'],
+\}
+
 let g:ale_set_highlights           = 0
 let g:ale_sign_column_always       = 1
 let g:ale_change_sign_column_color = 1
@@ -816,67 +836,10 @@ let g:ale_sign_info          = ''
 let g:ale_sign_style_error   = ''
 let g:ale_sign_style_warning = ''
 
+let g:ale_ruby_rubocop_executable = 'bundle'
 let g:ale_go_bingo_executable = 'gopls'
-" }}}3
 
-" autoformat {{{3
-function! s:autoformat_all() abort
-  let l:formatter_global_var_name = 'g:formatters_' . &filetype
-
-  if !exists(l:formatter_global_var_name)
-    Autoformat
-    return
-  endif
-
-  let l:formatter_buffer_var_name = 'b:formatters_' . &filetype
-  let l:formatters = []
-  execute 'let l:formatters = ' . l:formatter_global_var_name
-
-  for l:formatter in l:formatters
-    execute 'let ' . l:formatter_buffer_var_name . '= ["' . l:formatter . '"]'
-    Autoformat
-  endfor
-
-  execute 'unlet ' . l:formatter_buffer_var_name
-endfunction
-command! AutoformatAll call <SID>autoformat_all()
-noremap <Leader>a :<C-u>AutoformatAll<CR>
-
-" html formatter
-let g:formatdef_htmlbeautifier = '"htmlbeautifier --keep-blank-lines 2"'
-
-" JavaScript
-let g:formatters_javascript = ['prettier']
-
-" TypeScript
-let g:formatters_typescript = ['prettier']
-
-" Vue
-let g:formatters_vue = ['prettier']
-
-" Ruby
-let g:formatters_ruby = ['rubocop']
-
-" eruby
-let g:formatters_eruby = ['htmlbeautifier']
-
-" HTML
-let g:formatters_html = ['prettier']
-
-" CSS
-let g:formatters_css = ['prettier']
-
-" SCSS
-let g:formatters_scss = ['prettier']
-
-" json
-let g:formatters_json = ['fixjson', 'prettier']
-
-" GraphQL
-let g:formatters_graphql = ['prettier']
-
-" Markdown
-let g:formatters_markdown = ['prettier']
+noremap <Leader>a :<C-u>ALEFix<CR>
 " }}}3
 
 " endwise {{{3
@@ -2046,7 +2009,7 @@ endif
 " Appearance {{{2
 
 " better-whitespace {{{3
-let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'help', 'gitcommit', 'gitrebase', 'denite', 'tagbar']
+let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'help', 'gitcommit', 'gitrebase', 'denite', 'tagbar', 'nvimtypescriptpopup']
 " }}}3
 
 " brightest {{{3
