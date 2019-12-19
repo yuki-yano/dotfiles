@@ -9,6 +9,7 @@ htmlhint
 javascript-typescript-langserver
 jsonlint
 neovim
+now
 npm-check-updates
 placehold-cli
 prettier
