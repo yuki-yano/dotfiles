@@ -21,11 +21,9 @@ install railwaycat/emacsmacport/emacs-mac
 
 ## Languages
 install boost
-install flow
 install gcc
 install go
 install hadolint # Haskell
-install haskell-stack
 install lua
 install node
 install nodenv
