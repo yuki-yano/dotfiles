@@ -9,7 +9,13 @@ tap caskroom/cask
 
 ## Casks
 # cask install bettertouchtool
+# cask install duet
+# cask install flux
+# cask install imagealpha
+# cask install imageoptim
 # cask install java
+# cask install kitematic
+# cask install simplecap
 # cask install virtualbox
 # cask install xquartz
 cask install 1password
@@ -23,13 +29,9 @@ cask install default-folder-x
 cask install discord
 cask install docker
 cask install dropbox
-cask install duet
 cask install firefox
-cask install flux
 cask install google-chrome
 cask install hyperswitch
-cask install imagealpha
-cask install imageoptim
 cask install iterm2
 cask install jasper
 cask install java
@@ -38,13 +40,11 @@ cask install kaleidoscope
 cask install karabiner-elements
 cask install keyboard-cleaner
 cask install kindle
-cask install kitematic
 cask install mplayerx
 cask install paw
 cask install react-native-debugger
 cask install scroll-reverser
 cask install sequel-pro
-cask install simplecap
 cask install skitch
 cask install sourcetree
 cask install station
