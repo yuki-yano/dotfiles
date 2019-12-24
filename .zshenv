@@ -121,7 +121,7 @@ if [[ ! -d $HOME/.cargo ]]; then
 fi
 
 # java
-export JAVA_HOME=$(/usr/libexec/java_home -v "12")
+export JAVA_HOME=$(/usr/libexec/java_home -v "13")
 
 # llvm
 path=(/usr/local/opt/llvm/bin(N-/) $path)
