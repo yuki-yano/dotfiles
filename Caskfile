@@ -36,6 +36,7 @@ cask install jetbrains-toolbox
 cask install kaleidoscope
 cask install karabiner-elements
 cask install keyboard-cleaner
+cask install keycastr
 cask install kindle
 cask install mplayerx
 cask install paw
