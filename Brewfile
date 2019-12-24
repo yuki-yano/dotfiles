@@ -83,5 +83,4 @@ install tig
 
 ## Media
 install imagemagick
-install mplayer
 install youtube-dl
