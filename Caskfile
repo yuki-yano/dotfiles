@@ -4,9 +4,6 @@ update
 # Update already-installed formula
 upgrade
 
-# Add Repository
-tap caskroom/cask
-
 ## Casks
 # cask install bettertouchtool
 # cask install duet
