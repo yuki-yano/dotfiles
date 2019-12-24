@@ -16,11 +16,32 @@ fi
 
 source $ZPLG_HOME/bin/zplugin.zsh
 
+# zsh-async command {{{
+function set_async() {
+  async_init
+  async_start_worker git_prompt_worker -n
+  function git_prompt_callback() {
+    GIT_STATUS=$(git-prompt zsh)
+    zle reset-prompt
+  }
+  function kick_git_prompt_worker() {
+    async_job git_prompt_worker true
+  }
+  async_register_callback git_prompt_worker git_prompt_callback
+  add-zsh-hook precmd kick_git_prompt_worker
+  cd $current_dir; kick_git_prompt_worker
+}
+# current_dir=$(pwd)
+# }}}
+
 # sync loading {{{
 zplugin light b4b4r07/zsh-vimode-visual
 zplugin light yukiycino-dotfiles/zsh-abbrev-alias
 zplugin light yukiycino-dotfiles/zsh-extra-abbrev
 zplugin light yukiycino-dotfiles/zsh-show-buffer-stack
+
+zplugin ice lucid atload"set_async"
+zplugin light mafredri/zsh-async
 # }}}
 
 # async loading {{{
@@ -31,9 +52,6 @@ zplugin light zdharma/fast-syntax-highlighting
 
 zplugin ice lucid wait"!0" depth"1" atload'set_autosuggest'
 zplugin light zsh-users/zsh-autosuggestions
-
-zplugin ice lucid wait"0" atload"set_async"
-zplugin light mafredri/zsh-async
 
 # completion
 zplugin ice lucid wait"0" depth"1" blockf
@@ -122,24 +140,6 @@ zplugin light yukiycino-dotfiles/fancy-ctrl-z
 
 zplugin ice lucid wait"0"
 zplugin snippet 'https://github.com/knu/zsh-git-escape-magic/blob/master/git-escape-magic'
-# }}}
-
-# zsh-async {{{
-function set_async() {
-  async_init
-  async_start_worker git_prompt_worker -n
-  function git_prompt_callback() {
-    GIT_STATUS=$(git-prompt zsh)
-    zle reset-prompt
-  }
-  function kick_git_prompt_worker() {
-    async_job git_prompt_worker true
-  }
-  async_register_callback git_prompt_worker git_prompt_callback
-  add-zsh-hook precmd kick_git_prompt_worker
-  cd $current_dir; kick_git_prompt_worker
-}
-# current_dir=$(pwd)
 # }}}
 
 # fast-syntax-highlighting {{{
