@@ -90,8 +90,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('thalesmello/webcomplete.vim')
     call dein#add('ujihisa/neco-look')
     call dein#add('wellle/tmux-complete.vim')
-
-    call dein#add('Shougo/neosnippet')
   endif
   " }}}3
 
@@ -1118,8 +1116,8 @@ nnoremap          <Leader><Enter> "syiw:ProjectGrepPreview<Space><C-r>=substitut
 xnoremap          <Enter>         "sy:ProjectGrepPreview<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR>
 " }}}3
 
-" deoplete.nvim & neosnippet {{{3
-if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
+" deoplete.nvim {{{3
+if dein#tap('deoplete.nvim')
   " Default Settings
   let g:deoplete#enable_at_startup = 1
 
@@ -1144,14 +1142,6 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
 
   " tmux-complete
   let g:tmuxcomplete#trigger = ''
-
-  " neosnippet
-  let g:neosnippet#disable_runtime_snippets = { '_' : 1 }
-  let g:neosnippet#snippets_directory = '~/.vim/snippets'
-
-  imap <expr> <silent> <C-k> pumvisible() ? "\<Plug>(neosnippet_expand_or_jump)" : deoplete#smart_close_popup() . "\<Plug>(neosnippet_expand_or_jump)"
-  smap <expr> <silent> <C-k> pumvisible() ? "\<Plug>(neosnippet_expand_or_jump)" : deoplete#smart_close_popup() . "\<Plug>(neosnippet_expand_or_jump)"
-  xmap <expr> <silent> <C-k> pumvisible() ? "\<Plug>(neosnippet_expand_or_jump)" : deoplete#smart_close_popup() . "\<Plug>(neosnippet_expand_or_jump)"
 
   call deoplete#custom#source('_', 'converters', [
   \ 'converter_remove_paren',
@@ -1204,10 +1194,6 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   call deoplete#custom#source('omni', 'mark', '[omni]')
   call deoplete#custom#source('omni', 'max_candidates', 5)
 
-  call deoplete#custom#source('neosnippet', 'rank', 500)
-  call deoplete#custom#source('neosnippet', 'mark', '[snippet]')
-  call deoplete#custom#source('neosnippet', 'max_candidates', 5)
-
   call deoplete#custom#source('syntax', 'rank', 400)
   call deoplete#custom#source('syntax', 'mark', '[syntax]')
   call deoplete#custom#source('syntax', 'max_candidates', 5)
@@ -1229,7 +1215,7 @@ if dein#tap('deoplete.nvim') && dein#tap('neosnippet')
   call deoplete#custom#source('look', 'mark', '[look]')
   call deoplete#custom#source('look', 'max_candidates', 5)
 
-  let s:deoplete_default_sources = ['tabnine', 'neosnippet', 'syntax', 'file', 'tmux-complete', 'webcomplete', 'look']
+  let s:deoplete_default_sources = ['tabnine', 'syntax', 'file', 'tmux-complete', 'webcomplete', 'look']
 
   let s:deoplete_sources                   = {}
   let s:deoplete_sources['_']              = s:deoplete_default_sources
