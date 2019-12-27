@@ -86,14 +86,13 @@
     "prefix": ["interface"],
     "body": ["interface ${1:Type} {", "\t${2:property}: ${3:type}", "}"]
   },
+  "props": {
+    "prefix": ["props"],
+    "body": ["type Props = {$0}"]
+  },
   "react-fc": {
     "prefix": ["react-fc", "fc"],
     "body": [
-      "import React from \"react\"",
-      "",
-      "type Props = {",
-      "}",
-      "",
       "const ${1:Component}: React.FC<Props> = (props) => {",
       "\treturn <></>",
       "}"
@@ -102,11 +101,6 @@
   "react-class-component": {
     "prefix": ["react-class", "rc"],
     "body": [
-      "import React from \"react\"",
-      "",
-      "type Props = {",
-      "}",
-      "",
       "class ${1:Component} extends React.Component<Props> {",
       "\trender()",
       "\t\treturn <></>",
