@@ -1,0 +1,71 @@
+{
+  "if": {
+    "prefix": ["if"],
+    "body": ["if ${1:condition}", "\t${0:code}", "end"]
+  },
+  "if-else": {
+    "prefix": ["if-else", "ife", "ie"],
+    "body": ["if ${1:condition}", "\t${2:code}", "else", "\t${3:code}", "end"]
+  },
+  "unless": {
+    "prefix": ["unless"],
+    "body": ["unless ${1:condition}", "\t${0:code}", "end"]
+  },
+  "case": {
+    "prefix": ["case"],
+    "body": [
+      "case ${1:value}",
+      "when ${2:condition}",
+      "\t${3:code}",
+      "else",
+      "\t${4:code}",
+      "end"
+    ]
+  },
+  "method": {
+    "prefix": ["def"],
+    "body": ["def ${1:name}", "\t${0:code}", "end"]
+  },
+  "begin": {
+    "prefix": ["begin"],
+    "body": [
+      "begin",
+      "\t${1:code}",
+      "rescue ${2:StandardError} => e",
+      "\t${3:code}",
+      "end"
+    ]
+  },
+  "rescue": {
+    "prefix": ["rescue"],
+    "body": ["rescue ${1:StandardError} => e", "\t${2:code}", "end"]
+  },
+  "block": {
+    "prefix": ["block", "bl"],
+    "body": ["{ |${1:v}| ${2:code} }"]
+  },
+  "do": {
+    "prefix": ["do"],
+    "body": ["do |${1:v}|", "\t${2:code}", "end"]
+  },
+  "map": {
+    "prefix": ["map"],
+    "body": ["map { |${1:v}| ${2:code} }"]
+  },
+  "mapdo": {
+    "prefix": ["mapdo", "mapd"],
+    "body": ["map do |${1:v}|", "\t${2:code}", "end"]
+  },
+  "lambda": {
+    "prefix": ["lambda"],
+    "body": ["-> (${1:params}) { ${2:code} }"]
+  },
+  "error-class": {
+    "prefix": ["error"],
+    "body": ["${1:ErrorClass} < ${2:StandardError}"]
+  },
+  "binding-pry": {
+    "prefix": ["pry"],
+    "body": ["binding.pry"]
+  }
+}
