@@ -41,6 +41,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Dein {{{3
   call dein#add('Shougo/dein.vim')
+  call dein#add('haya14busa/dein-command.vim')
   " }}}3
 
   " Doc {{{3
@@ -780,6 +781,10 @@ endif
 " }}}2
 
 " Plugin Manager {{{2
+
+" dein {{{3
+AlterCommand! <cmdwin> dein Dein
+" }}}
 
 " }}}2
 
