@@ -89,9 +89,9 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('Shougo/neco-vim')
     call dein#add('jsfaint/gen_tags.vim')
     call dein#add('lighttiger2505/deoplete-vim-lsp')
-    call dein#add('thalesmello/webcomplete.vim')
-    call dein#add('ujihisa/neco-look')
-    call dein#add('wellle/tmux-complete.vim')
+
+    call dein#add('hrsh7th/vim-vsnip')
+    call dein#add('hrsh7th/vim-vsnip-integ')
   endif
   " }}}3
 
@@ -1149,10 +1149,20 @@ if dein#tap('deoplete.nvim')
   " tmux-complete
   let g:tmuxcomplete#trigger = ''
 
+  " vsnip
+  imap <expr> <C-Space>   vsnip#available(1)  ? "\<Plug>(vsnip-expand-or-jump)" : "\<C-Space>"
+  smap <expr> <C-Space>   vsnip#available(1)  ? "\<Plug>(vsnip-expand-or-jump)" : "\<C-Space>"
+  xmap <expr> <C-Space>   vsnip#available(1)  ? "\<Plug>(vsnip-expand-or-jump)" : "\<C-Space>"
+  imap <expr> <C-f>       vsnip#available(1)  ? "\<Plug>(vsnip-jump-next)"      : "\<C-f>"
+  smap <expr> <C-f>       vsnip#available(1)  ? "\<Plug>(vsnip-jump-next)"      : "\<C-f>"
+  xmap <expr> <C-f>       vsnip#available(1)  ? "\<Plug>(vsnip-jump-next)"      : "\<C-f>"
+  imap <expr> <C-b>       vsnip#available(-1) ? "\<Plug>(vsnip-jump-prev)"      : "\<C-b>"
+  smap <expr> <C-b>       vsnip#available(-1) ? "\<Plug>(vsnip-jump-prev)"      : "\<C-b>"
+  xmap <expr> <C-b>       vsnip#available(-1) ? "\<Plug>(vsnip-jump-prev)"      : "\<C-b>"
+
   call deoplete#custom#source('_', 'converters', [
   \ 'converter_remove_paren',
   \ 'converter_remove_overlap',
-  \ 'matcher_length',
   \ 'converter_truncate_abbr',
   \ 'converter_truncate_menu',
   \ 'converter_auto_delimiter',
@@ -1200,6 +1210,10 @@ if dein#tap('deoplete.nvim')
   call deoplete#custom#source('omni', 'mark', '[omni]')
   call deoplete#custom#source('omni', 'max_candidates', 5)
 
+  call deoplete#custom#source('vsnip', 'rank', 500)
+  call deoplete#custom#source('vsnip', 'mark', '[vsnip]')
+  call deoplete#custom#source('vsnip', 'max_candidates', 5)
+
   call deoplete#custom#source('syntax', 'rank', 400)
   call deoplete#custom#source('syntax', 'mark', '[syntax]')
   call deoplete#custom#source('syntax', 'max_candidates', 5)
@@ -1221,7 +1235,7 @@ if dein#tap('deoplete.nvim')
   call deoplete#custom#source('look', 'mark', '[look]')
   call deoplete#custom#source('look', 'max_candidates', 5)
 
-  let s:deoplete_default_sources = ['tabnine', 'syntax', 'file', 'tmux-complete', 'webcomplete', 'look']
+  let s:deoplete_default_sources = ['tabnine', 'vsnip', 'syntax', 'file']
 
   let s:deoplete_sources                   = {}
   let s:deoplete_sources['_']              = s:deoplete_default_sources
