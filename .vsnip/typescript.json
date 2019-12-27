@@ -1,0 +1,145 @@
+{
+  "if": {
+    "prefix": ["if"],
+    "body": ["if (${1:condition}) {", "\t${0:code}", "}"]
+  },
+  "if-else": {
+    "prefix": ["if-else", "ife", "ie"],
+    "body": [
+      "if (${1:condition}) {",
+      "\t${2:code}",
+      "} else {",
+      "\t${3:code}",
+      "}"
+    ]
+  },
+  "for": {
+    "prefix": ["for"],
+    "body": ["for (let ${1:v}, of ${2:object}) {", "\t${3:code}", "}"]
+  },
+  "switch": {
+    "prefix": ["switch"],
+    "body": [
+      "switch(${1:key}) {",
+      "\tcase ${2:value}: {",
+      "\t\t${3:code}",
+      "\t\tbreak",
+      "\t}",
+      "",
+      "\tdefault: {",
+      "\t\t${4:code}",
+      "\t}",
+      "}"
+    ]
+  },
+  "try": {
+    "prefix": ["try"],
+    "body": [
+      "try {",
+      "\t${2:code}",
+      "} catch(e: ${1:Error}) {",
+      "\t${3:code}",
+      "}"
+    ]
+  },
+  "try-finally": {
+    "prefix": ["tryf"],
+    "body": [
+      "try {",
+      "\t${2:code}",
+      "} catch(e: ${1:Error}) {",
+      "\t${3:code}",
+      "} finally {",
+      "\t${4:code}",
+      "}"
+    ]
+  },
+  "arrow-function": {
+    "prefix": ["ar", "arrow"],
+    "body": ["(${1:params}) => {${2:code}}"]
+  },
+  "function": {
+    "prefix": ["function", "func"],
+    "body": ["function ${1:name}(${2:params}:${3:type}) {", "\t$0", "}"]
+  },
+  "map": {
+    "prefix": ["map"],
+    "body": ["map((${1:v}) => {", "\t${2:code}", "})"]
+  },
+  "class": {
+    "prefix": ["class"],
+    "body": ["class ${1:Klass} {", "\tconstructor(${3:params}) {", "\t}", "}"]
+  },
+  "import": {
+    "prefix": ["import", "im"],
+    "body": ["import { ${1:object} } from \"${2:module}\""]
+  },
+  "default-import": {
+    "prefix": ["default-import", "dim"],
+    "body": ["import ${1:object} from \"${2:module}\""]
+  },
+  "type": {
+    "prefix": ["type"],
+    "body": ["type ${1:Type} = {", "\t${2:property}: ${3:type}", "}"]
+  },
+  "interface": {
+    "prefix": ["interface"],
+    "body": ["interface ${1:Type} {", "\t${2:property}: ${3:type}", "}"]
+  },
+  "react-fc": {
+    "prefix": ["react-fc", "fc"],
+    "body": [
+      "import React from \"react\"",
+      "",
+      "type Props = {",
+      "}",
+      "",
+      "const ${1:Component}: React.FC<Props> = (props) => {",
+      "\treturn <></>",
+      "}"
+    ]
+  },
+  "react-class-component": {
+    "prefix": ["react-class", "rc"],
+    "body": [
+      "import React from \"react\"",
+      "",
+      "type Props = {",
+      "}",
+      "",
+      "class ${1:Component} extends React.Component<Props> {",
+      "\trender()",
+      "\t\treturn <></>",
+      "\t}",
+      "}"
+    ]
+  },
+  "log": {
+    "prefix": ["log"],
+    "body": ["console.log($0)"]
+  },
+  "debug": {
+    "prefix": ["debug"],
+    "body": ["console.debug($0)"]
+  },
+  "warn": {
+    "prefix": ["warn"],
+    "body": ["console.warn($0)"]
+  },
+  "error": {
+    "prefix": ["error"],
+    "body": ["console.error($0)"]
+  },
+  "trace": {
+    "prefix": ["trace"],
+    "body": ["console.trace($0)"]
+  },
+  "table": {
+    "prefix": ["table"],
+    "body": ["console.table($0)"]
+  },
+  "group": {
+    "prefix": ["group"],
+    "body": ["console.group()", "console.log($0)", "console.groupEnd()"]
+  }
+}

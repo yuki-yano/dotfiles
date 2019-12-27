@@ -26,6 +26,7 @@ DOTFILES_SRCS = %w[
   .tmux.conf
   .vim
   .vimrc
+  .vsnip
   .zsh
   .zshenv
   .zshrc
