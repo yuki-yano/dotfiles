@@ -1,6 +1,7 @@
 " Global Variables {{{1
 let g:ale_filetypes = [
 \ 'javascript',
+\ 'javascriptreact',
 \ 'typescript',
 \ 'typescript.tsx',
 \ 'vue',
