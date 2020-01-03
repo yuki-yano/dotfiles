@@ -60,7 +60,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('othree/yajs.vim',                         {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
   call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescript.tsx']})
-  call dein#add('todesking/ruby_hl_lvar.vim',              {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('tpope/vim-endwise',                       {'lazy': 1, 'on_ft': 'ruby'})
   " }}}3
 
