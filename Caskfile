@@ -39,6 +39,8 @@ cask install keyboard-cleaner
 cask install keycastr
 cask install kindle
 cask install mplayerx
+cask install ngrok
+cask install one-switch
 cask install paw
 cask install react-native-debugger
 cask install scroll-reverser
