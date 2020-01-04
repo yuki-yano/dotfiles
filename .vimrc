@@ -99,6 +99,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Fuzzy Finder {{{3
   call dein#add('Shougo/denite.nvim')
+  call dein#add('Shougo/unite.vim')
 
   call dein#add('Shougo/neomru.vim')
   call dein#add('ozelentok/denite-gtags')
@@ -121,7 +122,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " filer {{{3
-  call dein#add('lambdalisue/fila.vim', {'lazy': 1, 'on_cmd': 'Fila'})
+  call dein#add('Shougo/vimfiler.vim')
   " }}}3
 
   " textobj & operator {{{3
@@ -1559,35 +1560,25 @@ AlterCommand! <cmdwin> github OpenGithubFile
 
 " filer {{{2
 
-" fila {{{3
-let g:fila#viewer#skip_default_mappings = 1
-let g:fila#viewer#drawer#width          = 40
+" vimfiler {{{3
+let g:vimfiler_safe_mode_by_default = 0
+let g:vimfiler_ignore_pattern       = '^\%(.git\|.DS_Store\)$'
 
-nnoremap <silent> <Leader>e :<C-u>Fila . -drawer <CR>
-nnoremap <silent> <Leader>E :<C-u>Fila . -drawer -reveal=<C-r>=expand('%')<CR><CR>
+if dein#tap('lightline.vim')
+  nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple <Bar> call lightline#update()<CR>
+  nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple <Bar> call lightline#update()<CR>
+else
+  nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple<CR>
+  nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple<CR>
+endif
 
-function! s:fila_settings() abort
-  nmap <buffer> <CR>  <Plug>(fila-action-edit-select)
-  nmap <buffer> t     <Plug>(fila-action-expand-or-collapse)
-  nmap <buffer> l     <Plug>(fila-action-enter-or-edit)
-  nmap <buffer> h     <Plug>(fila-action-leave)
-  nmap <buffer> .     <Plug>(fila-action-hidden-toggle)
-  nmap <buffer> x     <Plug>(fila-action-mark-toggle)
-  vmap <buffer> x     <Plug>(fila-action-mark-toggle)
-  nmap <buffer> N     <Plug>(fila-action-new-file)
-  nmap <buffer> K     <Plug>(fila-action-new-directory)
-  nmap <buffer> dd    <Plug>(fila-action-delete)
-  nmap <buffer> r     <Plug>(fila-action-move)
-  nmap <buffer> cc    <Plug>(fila-action-copy)
-  nmap <buffer> p     <Plug>(fila-action-paste)
-  nmap <buffer> R     <Plug>(fila-action-reload)
-  nmap <buffer> <C-g> <Plug>(fila-action-echo)
-
-  nnoremap <silent> <buffer> q :<C-u>call fila#viewer#drawer#close()<CR>
-  nnoremap <silent> <buffer> Q :<C-u>call fila#viewer#drawer#quit()<CR>
+function! s:vimfiler_settings()
+  nmap     <silent> <buffer> R     <Plug>(vimfiler_redraw_screen)
+  nnoremap <silent> <buffer> <C-l> <C-w>l
+  nnoremap <silent> <buffer> <C-j> <C-w>j
 endfunction
 
-AutoCmd FileType fila call s:fila_settings()
+AutoCmd FileType vimfiler call s:vimfiler_settings()
 " }}}3
 
 " }}}2
@@ -2180,7 +2171,7 @@ if dein#tap('lightline.vim')
   \ 'diff',
   \ 'man',
   \ 'fzf',
-  \ 'fila',
+  \ 'vimfiler',
   \ 'tagbar',
   \ 'capture',
   \ 'gina-status',
@@ -2197,7 +2188,7 @@ if dein#tap('lightline.vim')
   \ 'diff':        'Diff',
   \ 'man':         'Man',
   \ 'fzf':         'FZF',
-  \ 'fila':        'Fila',
+  \ 'Vimfiler':    'Vimfiler',
   \ 'capture':     'Capture',
   \ 'gina-status': 'Git Status',
   \ 'gina-branch': 'Git Branch',
@@ -2223,7 +2214,7 @@ if dein#tap('lightline.vim')
   let s:lightline_ignore_filename_ft = [
   \ 'qf',
   \ 'fzf',
-  \ 'fila',
+  \ 'vimfiler',
   \ 'gina-status',
   \ 'gina-branch',
   \ 'gina-log',
@@ -2237,7 +2228,7 @@ if dein#tap('lightline.vim')
   let s:lightline_ignore_filepath_ft = [
   \ 'qf',
   \ 'fzf',
-  \ 'fila',
+  \ 'vimfiler',
   \ 'gina-status',
   \ 'gina-branch',
   \ 'gina-log',
