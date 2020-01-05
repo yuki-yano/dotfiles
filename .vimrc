@@ -648,8 +648,22 @@ command! HelpEdit call <SID>option_to_edit()
 command! HelpView call <SID>option_to_view()
 " }}}2
 
-" VimShowHlGroup {{{2
-command! ShowHlGroup echo synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name')
+" HighlightInfo {{{2
+function! s:get_syn_id(transparent)
+  let synid = synID(line('.'), col('.'), 1)
+  return a:transparent ? synIDtrans(synid) : synid
+endfunction
+
+function! s:get_syn_name(synid)
+  return synIDattr(a:synid, 'name')
+endfunction
+
+function! s:get_highlight_info()
+  execute 'highlight ' . s:get_syn_name(s:get_syn_id(0))
+  execute 'highlight ' . s:get_syn_name(s:get_syn_id(1))
+endfunction
+
+command! HighlightInfo call s:get_highlight_info()
 " }}}2
 
 " VSCode {{{2
