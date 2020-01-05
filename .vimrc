@@ -122,7 +122,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " filer {{{3
-  call dein#add('Shougo/vimfiler.vim')
+  call dein#add('Shougo/defx.nvim')
   " }}}3
 
   " textobj & operator {{{3
@@ -197,6 +197,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('pocke/vim-automatic',          {'depends': 'vim-gift'})
   call dein#add('qpkorr/vim-bufkill')
   call dein#add('rickhowe/diffchar.vim')
+  call dein#add('t9md/vim-choosewin',           {'lazy': 1, 'on_map': {'n': '<Plug>'}})
   call dein#add('thinca/vim-localrc')
   call dein#add('tweekmonster/startuptime.vim', {'lazy': 1, 'on_cmd': 'StartupTime'})
   call dein#add('tyru/capture.vim',             {'lazy': 1, 'on_cmd': 'Capture'})
@@ -1574,25 +1575,54 @@ AlterCommand! <cmdwin> github OpenGithubFile
 
 " filer {{{2
 
-" vimfiler {{{3
-let g:vimfiler_safe_mode_by_default = 0
-let g:vimfiler_ignore_pattern       = '^\%(.git\|.DS_Store\)$'
+" defx {{{3
+let g:defx_git#raw_mode = 1
 
-if dein#tap('lightline.vim')
-  nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple <Bar> call lightline#update()<CR>
-  nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple <Bar> call lightline#update()<CR>
-else
-  nnoremap <silent> <Leader>e :<C-u>VimFilerExplorer -split -winwidth=35 -simple<CR>
-  nnoremap <silent> <Leader>E :<C-u>VimFilerExplorer -find -split -winwidth=35 -simple<CR>
-endif
+nnoremap <silent> <Leader>e :Defx -columns=mark:indent:filename:type -split=vertical -winwidth=40 -direction=topleft<CR>
+nnoremap <silent> <Leader>E :Defx -columns=mark:indent:filename:type -split=vertical -winwidth=40 -direction=topleft -search=`expand('%:p')`<CR>
 
-function! s:vimfiler_settings()
-  nmap     <silent> <buffer> R     <Plug>(vimfiler_redraw_screen)
-  nnoremap <silent> <buffer> <C-l> <C-w>l
-  nnoremap <silent> <buffer> <C-j> <C-w>j
+let g:defx_ignore_filtype = ['denite', 'defx']
+function! DefxChoosewin(context) abort " {{{
+    let l:winnrs = filter(range(1, winnr('$')), 'index(g:defx_ignore_filtype, getwinvar(v:val, "&filetype")) == -1' )
+    for filename in a:context.targets
+        let result = choosewin#start(l:winnrs, {'auto_choose': 1, 'hook_enable': 0})
+        if result == []
+          return 0
+        endif
+        execute 'edit' filename
+    endfor
 endfunction
 
-AutoCmd FileType vimfiler call s:vimfiler_settings()
+function! s:defx_settings() abort
+  nnoremap <silent> <buffer> <expr> <nowait> j       line('.') == line('$') ? 'gg' : 'j'
+  nnoremap <silent> <buffer> <expr> <nowait> k       line('.') == 1 ? 'G' : 'k'
+  nnoremap <silent> <buffer> <expr> <nowait> t       defx#do_action('open_or_close_tree')
+  nnoremap <silent> <buffer> <expr> <nowait> h       defx#do_action('cd', ['..'])
+  nnoremap <silent> <buffer> <expr> <nowait> l       defx#is_directory() ? defx#do_action('open_tree') : 0
+  nnoremap <silent> <buffer> <expr> <nowait> L       defx#do_action('open_tree_recursive')
+  nnoremap <silent> <buffer> <expr> <nowait> .       defx#do_action('toggle_ignored_files')
+  nnoremap <silent> <buffer> <expr> <nowait> ~       defx#do_action('cd')
+
+  nnoremap <silent> <buffer> <expr> <nowait> <CR>    defx#is_directory() ? 0 : defx#do_action('call', 'DefxChoosewin')
+  nnoremap <silent> <buffer> <expr> <nowait> x       defx#do_action('toggle_select') . 'j'
+  nnoremap <silent> <buffer> <expr> <nowait> <Space> defx#do_action('toggle_select') . 'j'
+  nnoremap <silent> <buffer> <expr> <nowait> *       defx#do_action('toggle_select_all')
+  nnoremap <silent> <buffer> <expr> <nowait> N       defx#do_action('new_file')
+  nnoremap <silent> <buffer> <expr> <nowait> N       defx#do_action('new_multiple_files')
+  nnoremap <silent> <buffer> <expr> <nowait> K       defx#do_action('new_directory')
+  nnoremap <silent> <buffer> <expr> <nowait> c       defx#do_action('copy')
+  nnoremap <silent> <buffer> <expr> <nowait> m       defx#do_action('move')
+  nnoremap <silent> <buffer> <expr> <nowait> p       defx#do_action('paste')
+  nnoremap <silent> <buffer> <expr> <nowait> d       defx#do_action('remove')
+  nnoremap <silent> <buffer> <expr> <nowait> r       defx#do_action('rename')
+  nnoremap <silent> <buffer> <expr> <nowait> yy      defx#do_action('yank_path')
+
+  nnoremap <silent> <buffer> <expr> <nowait> q       defx#do_action('quit')
+  nnoremap <silent> <buffer> <expr> <nowait> R       defx#do_action('redraw')
+  nnoremap <silent> <buffer> <expr> <nowait> <C-g>   defx#do_action('print')
+endfunction
+
+AutoCmd FileType defx call s:defx_settings()
 " }}}3
 
 " }}}2
@@ -2185,7 +2215,7 @@ if dein#tap('lightline.vim')
   \ 'diff',
   \ 'man',
   \ 'fzf',
-  \ 'vimfiler',
+  \ 'defx',
   \ 'tagbar',
   \ 'capture',
   \ 'gina-status',
@@ -2202,7 +2232,7 @@ if dein#tap('lightline.vim')
   \ 'diff':        'Diff',
   \ 'man':         'Man',
   \ 'fzf':         'FZF',
-  \ 'Vimfiler':    'Vimfiler',
+  \ 'defx':        'Defx',
   \ 'capture':     'Capture',
   \ 'gina-status': 'Git Status',
   \ 'gina-branch': 'Git Branch',
@@ -2228,7 +2258,7 @@ if dein#tap('lightline.vim')
   let s:lightline_ignore_filename_ft = [
   \ 'qf',
   \ 'fzf',
-  \ 'vimfiler',
+  \ 'defx',
   \ 'gina-status',
   \ 'gina-branch',
   \ 'gina-log',
@@ -2554,6 +2584,25 @@ AlterCommand! <cmdwin> cap[ture] Capture
 AutoCmd FileType capture nnoremap <silent> <buffer> q :<C-u>quit<CR>
 " }}}3
 
+" choosewin {{{3
+let g:choosewin_overlay_enable          = 1
+let g:choosewin_overlay_clear_multibyte = 1
+let g:choosewin_blink_on_land           = 0
+let g:choosewin_statusline_replace      = 0
+let g:choosewin_tabline_replace         = 0
+
+let g:choosewin_color_overlay = {
+\ 'gui': ['#e27878', '#e27878'],
+\ 'cterm': [1, 1]
+\ }
+let g:choosewin_color_overlay_current = {
+\ 'gui': ['#84106c', '#84106c'],
+\ 'cterm': [110, 110]
+\ }
+
+nnoremap <silent> <C-q> :<C-u>ChooseWin<CR>
+" }}}3
+
 " miniyank {{{3
 let g:miniyank_maxitems = 2000
 let g:miniyank_filename = expand('~/.cache/vim/miniyank.mpack')
@@ -2636,31 +2685,38 @@ nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus<CR>
 syntax enable
 
 " Highlight {{{2
-AutoCmd ColorScheme * highlight CursorColumn ctermfg=none ctermbg=236  guifg=none    guibg=#303030
-AutoCmd ColorScheme * highlight CursorLine   ctermfg=none ctermbg=236  guifg=none    guibg=#303030
-AutoCmd ColorScheme * highlight CursorLineNr ctermfg=253  ctermbg=none guifg=#DADADA guibg=none
-AutoCmd ColorScheme * highlight LineNr       ctermfg=241  ctermbg=none guifg=#626262 guibg=none
-AutoCmd ColorScheme * highlight NonText      ctermfg=60   ctermbg=none guifg=#5F5F87 guibg=none
-AutoCmd ColorScheme * highlight Search       ctermfg=68   ctermbg=232  guifg=#5F87D7 guibg=#080808
-AutoCmd ColorScheme * highlight Todo         ctermfg=229  ctermbg=none guifg=#FFFFAF guibg=none
-AutoCmd ColorScheme * highlight Visual       ctermfg=159  ctermbg=23   guifg=#AFFFFF guibg=#005F5F
+AutoCmd ColorScheme * highlight CursorColumn            ctermfg=NONE ctermbg=236                       guifg=NONE    guibg=#303030
+AutoCmd ColorScheme * highlight CursorLine              ctermfg=NONE ctermbg=236                       guifg=NONE    guibg=#303030
+AutoCmd ColorScheme * highlight CursorLineNr            ctermfg=253  ctermbg=NONE                      guifg=#DADADA guibg=NONE
+AutoCmd ColorScheme * highlight LineNr                  ctermfg=241  ctermbg=NONE                      guifg=#626262 guibg=NONE
+AutoCmd ColorScheme * highlight NonText                 ctermfg=60   ctermbg=NONE                      guifg=#5F5F87 guibg=NONE
+AutoCmd ColorScheme * highlight Search                  ctermfg=68   ctermbg=232                       guifg=#5F87D7 guibg=#080808
+AutoCmd ColorScheme * highlight Todo                    ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
+AutoCmd ColorScheme * highlight Visual                  ctermfg=159  ctermbg=23                        guifg=#AFFFFF guibg=#005F5F
 
 AutoCmd ColorScheme * highlight ALEError                ctermfg=0    ctermbg=203                       guifg=#1E2132 guibg=#FF5F5F
 AutoCmd ColorScheme * highlight ALEWarning              ctermfg=0    ctermbg=229                       guifg=#1E2132 guibg=#FFFFAF
-AutoCmd ColorScheme * highlight BrightestHighlight      ctermfg=30   ctermbg=none                      guifg=#008787 guibg=none
+AutoCmd ColorScheme * highlight BrightestHighlight      ctermfg=30   ctermbg=NONE                      guifg=#008787 guibg=NONE
 AutoCmd ColorScheme * highlight CleverFDefaultLabel     ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
 AutoCmd ColorScheme * highlight DeniteLine              ctermfg=111  ctermbg=236                       guifg=#87AFFF guibg=#303030
 AutoCmd ColorScheme * highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
-AutoCmd ColorScheme * highlight ExtraWhiteSpace         ctermfg=none ctermbg=1                         guifg=none    guibg=#E98989
-AutoCmd ColorScheme * highlight HighlightedyankRegion   ctermfg=1    ctermbg=none                      guifg=#E27878 guibg=none
-AutoCmd ColorScheme * highlight MatchParen              ctermfg=none ctermbg=none cterm=underline      guifg=none    guibg=none    gui=underline
-AutoCmd ColorScheme * highlight MatchParenCur           ctermfg=none ctermbg=none cterm=bold           guifg=none    guibg=none    gui=bold
-AutoCmd ColorScheme * highlight MatchWord               ctermfg=none ctermbg=none cterm=underline      guifg=none    guibg=none    gui=underline
-AutoCmd ColorScheme * highlight MatchWordCur            ctermfg=none ctermbg=none cterm=bold           guifg=none    guibg=none    gui=bold
+AutoCmd ColorScheme * highlight ExtraWhiteSpace         ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
+AutoCmd ColorScheme * highlight HighlightedyankRegion   ctermfg=1    ctermbg=NONE                      guifg=#E27878 guibg=NONE
+AutoCmd ColorScheme * highlight MatchParen              ctermfg=NONE ctermbg=NONE cterm=underline      guifg=NONE    guibg=NONE    gui=underline
+AutoCmd ColorScheme * highlight MatchParenCur           ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
+AutoCmd ColorScheme * highlight MatchWord               ctermfg=NONE ctermbg=NONE cterm=underline      guifg=NONE    guibg=NONE    gui=underline
+AutoCmd ColorScheme * highlight MatchWordCur            ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
 AutoCmd ColorScheme * highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
-AutoCmd ColorScheme * highlight ZenSpace                ctermfg=none ctermbg=1                         guifg=none    guibg=#E98989
-AutoCmd ColorScheme * highlight deniteSource_grepFile   ctermfg=6    ctermbg=none                      guifg=#89B8C2 guibg=none
-AutoCmd ColorScheme * highlight deniteSource_grepLineNR ctermfg=247  ctermbg=none                      guifg=#9E9E9E guibg=none
+AutoCmd ColorScheme * highlight ZenSpace                ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
+AutoCmd ColorScheme * highlight deniteSource_grepFile   ctermfg=6    ctermbg=NONE                      guifg=#89B8C2 guibg=NONE
+AutoCmd ColorScheme * highlight deniteSource_grepLineNR ctermfg=247  ctermbg=NONE                      guifg=#9E9E9E guibg=NONE
+
+AutoCmd ColorScheme * highlight Defx_git_1_Untracked    ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme * highlight Defx_git_1_Modified     ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme * highlight Defx_git_1_Staged       ctermfg=2    ctermbg=NONE                      guifg=#b4be82 guibg=NONE
+AutoCmd ColorScheme * highlight Defx_git_1_Deleted      ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme * highlight Defx_git_1_Renamed      ctermfg=2    ctermbg=NONE                      guifg=#b4be82 guibg=NONE
+AutoCmd ColorScheme * highlight Defx_git_1_Unmerged     ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
 
 " Fix lightline
 " AutoCmd ColorScheme * highlight StatusLine   ctermfg=0 ctermbg=none guifg=#1E2132 guibg=#C6C8D1
