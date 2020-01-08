@@ -1,25 +1,3 @@
-" Global Variables {{{1
-let g:ale_filetypes = [
-\ 'javascript',
-\ 'javascriptreact',
-\ 'typescript',
-\ 'typescript.tsx',
-\ 'vue',
-\ 'ruby',
-\ 'eruby',
-\ 'go',
-\ 'json',
-\ 'yaml',
-\ 'html',
-\ 'css',
-\ 'scss',
-\ 'dockerfile',
-\ 'vim',
-\ 'sh',
-\ 'bash',
-\ ]
-" }}}1
-
 " Plugin Manager {{{1
 
 " Install & Load Dein {{{2
@@ -49,52 +27,31 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('vim-jp/vimdoc-ja')
   " }}}3
 
+  " IDE {{{3
+  call dein#add('neoclide/coc.nvim', {'merged':0, 'rev': 'release'})
+  call dein#add('wellle/tmux-complete.vim')
+  " }}}3
+
   " Language {{{3
   call dein#add('MaxMEllon/vim-jsx-pretty',                {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('elzr/vim-json',                           {'lazy': 1, 'on_ft': 'json'})
   call dein#add('fatih/vim-go',                            {'lazy': 1, 'on_ft': 'go'})
   call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': 'css'})
   call dein#add('itspriddle/vim-marked',                   {'lazy': 1, 'on_ft': 'markdown'})
-  call dein#add('leafgarland/typescript-vim',              {'lazy': 1, 'on_ft': ['typescript', 'typescript.tsx']})
-  call dein#add('jparise/vim-graphql',                     {'lazy': 1, 'on_ft': ['graphql', 'javascript', 'typescript', 'typescript.tsx']})
-  call dein#add('mhartington/nvim-typescript',             {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescript.tsx', 'vue'], 'build': './install.sh'})
+  call dein#add('leafgarland/typescript-vim',              {'lazy': 1, 'on_ft': ['typescript', 'typescriptreact', 'typescript.tsx']})
+  call dein#add('jparise/vim-graphql',                     {'lazy': 1, 'on_ft': ['graphql', 'javascript', 'typescript', 'typescriptreact', 'typescript.tsx']})
   call dein#add('othree/yajs.vim',                         {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
-  call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescript.tsx']})
+  call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescriptreact', 'typescript.tsx']})
   call dein#add('rhysd/vim-fixjson',                       {'lazy': 1, 'on_ft': 'json'})
   call dein#add('tpope/vim-endwise',                       {'lazy': 1, 'on_ft': 'ruby'})
   " }}}3
 
-  " ALE {{{
-  call dein#add('dense-analysis/ale', {'lazy': 1, 'on_ft': g:ale_filetypes})
-  " }}}
-
   " Git {{{3
   call dein#add('ToruIwashita/git-switcher.vim', {'lazy': 1, 'on_cmd': ['Gsw', 'GswSave', 'GswLoad']})
-  call dein#add('airblade/vim-gitgutter')
   call dein#add('lambdalisue/gina.vim',          {'lazy': 1, 'on_cmd': 'Gina', 'on_func': 'gina#core#get', 'hook_post_source': 'call Hook_on_post_source_gina()'})
   call dein#add('rhysd/git-messenger.vim',       {'lazy': 1, 'on_cmd': 'GitMessenger', 'on_map': '<Plug>'})
   call dein#add('tyru/open-browser-github.vim',  {'lazy': 1, 'depends': 'open-browser.vim', 'on_cmd': 'OpenGithubFile'})
-  " }}}3
-
-  " Completion {{{3
-  if has('nvim')
-    call dein#add('Shougo/deoplete.nvim')
-    call dein#add('prabirshrestha/async.vim')
-    call dein#add('prabirshrestha/vim-lsp')
-    " call dein#add('autozimu/LanguageClient-neovim', {'lazy': 1, 'on_ft': ['vue', 'ruby'], 'rev': 'next', 'build': 'bash install.sh'})
-
-    call dein#add('tbodt/deoplete-tabnine', {'build': 'bash install.sh'})
-
-    call dein#add('Shougo/echodoc.vim')
-    call dein#add('Shougo/neco-syntax')
-    call dein#add('Shougo/neco-vim')
-    call dein#add('jsfaint/gen_tags.vim')
-    call dein#add('lighttiger2505/deoplete-vim-lsp')
-
-    call dein#add('hrsh7th/vim-vsnip')
-    call dein#add('hrsh7th/vim-vsnip-integ')
-  endif
   " }}}3
 
   " Fuzzy Finder {{{3
@@ -173,7 +130,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kamykn/spelunker.vim')
   call dein#add('luochen1990/rainbow')
   call dein#add('machakann/vim-highlightedyank')
-  call dein#add('maximbaz/lightline-ale')
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('osyo-manga/vim-brightest')
   call dein#add('yuttie/comfortable-motion.vim')
@@ -188,6 +144,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('aiya000/aho-bakaup.vim')
   call dein#add('bogado/file-line')
   call dein#add('dhruvasagar/vim-table-mode',   {'lazy': 1, 'on_cmd': 'TableModeToggle'})
+  call dein#add('jsfaint/gen_tags.vim')
   call dein#add('kana/vim-niceblock',           {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
   call dein#add('lambdalisue/vim-manpager',     {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER']})
   call dein#add('lambdalisue/vim-pager',        {'lazy': 1, 'on_cmd': 'PAGER'})
@@ -270,8 +227,6 @@ noremap <Leader>      <Nop>
 noremap <LocalLeader> <Nop>
 
 "" Cursor
-noremap <Leader>l $
-noremap <Leader>h ^
 noremap 0 ^
 noremap ^ 0
 
@@ -530,6 +485,10 @@ let g:highlight_cursor      = 1
 let s:highlight_cursor_wait = 500
 
 function! s:enter(...) abort
+  if &filetype ==# 'list'
+    return
+  endif
+
   if g:highlight_cursor
     setlocal cursorline cursorcolumn
   endif
@@ -678,23 +637,24 @@ command! VSCode execute printf('!code -r "%s"', expand('%'))
 " FileType {{{2
 
 " Intent {{{3
-AutoCmd FileType javascript     setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType typescript     setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType typescript.tsx setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType vue            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType ruby           setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType eruby          setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType python         setlocal expandtab   shiftwidth=4 softtabstop=4 tabstop=4
-AutoCmd FileType go             setlocal noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
-AutoCmd FileType rust           setlocal expandtab   shiftwidth=4 softtabstop=4 tabstop=4
-AutoCmd FileType json           setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType markdown       setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType html           setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType css            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType scss           setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType vim            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType sh             setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType zsh            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType javascript      setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType typescript      setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType typescriptreact setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType typescript.tsx  setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType vue             setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType ruby            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType eruby           setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType python          setlocal expandtab   shiftwidth=4 softtabstop=4 tabstop=4
+AutoCmd FileType go              setlocal noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
+AutoCmd FileType rust            setlocal expandtab   shiftwidth=4 softtabstop=4 tabstop=4
+AutoCmd FileType json            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType markdown        setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType html            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType css             setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType scss            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType vim             setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType sh              setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType zsh             setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 " }}}3
 
 " iskeyword {{{3
@@ -776,8 +736,6 @@ function! s:init_cmdwin() abort
   inoremap <buffer> <C-c> <C-c>
   inoremap <buffer> <C-c> <Esc>l<C-c>
 
-  call deoplete#custom#buffer_option({'auto_complete': v:false})
-
   " nnoremap <silent> <buffer> dd :<C-u>rviminfo<CR>:call histdel(getcmdwintype(), line('.') - line('$'))<CR>:wviminfo!<CR>dd
   startinsert!
 endfunction
@@ -806,66 +764,104 @@ AlterCommand! <cmdwin> dein Dein
 
 " }}}2
 
-" Language {{{2
+" IDE {{{2
+AlterCommand! <cmdwin> list CocList
 
-" ALE {{{3
-let g:ale_linters = {
-\ 'javascript':     ['eslint'],
-\ 'typescript':     ['tsserver', 'eslint', 'tslint'],
-\ 'typescript.tsx': ['tsserver', 'eslint', 'tslint'],
-\ 'vue':            ['vls', 'eslint'],
-\ 'ruby':           ['rubocop'],
-\ 'go':             ['bingo'],
-\ 'json':           ['jsonlint'],
-\ 'dockerfile':     ['hadolint'],
-\ 'vim':            ['vint'],
-\ 'sh':             ['shellcheck'],
-\ 'bash':           ['shellcheck'],
+let g:coc_global_extensions = [
+\ 'coc-css',
+\ 'coc-docker',
+\ 'coc-eslint',
+\ 'coc-git',
+\ 'coc-go',
+\ 'coc-html',
+\ 'coc-json',
+\ 'coc-lists',
+\ 'coc-prettier',
+\ 'coc-python',
+\ 'coc-snippets',
+\ 'coc-solargraph',
+\ 'coc-tabnine',
+\ 'coc-tsserver',
+\ 'coc-vetur',
+\ 'coc-vimlsp',
+\ 'coc-yaml',
+\ ]
+
+call coc#config('codeLens.enable', v:true)
+
+" completion & snippet
+call coc#config('suggest.minTriggerInputLength', 1)
+call coc#config('suggest.labelMaxLength', 30)
+
+call coc#config('snippets.loadFromExtensions', v:false)
+call coc#config('snippets.textmateSnippetsRoots', ['~/.vsnip'])
+
+let g:coc_snippet_next = '<C-f>'
+let g:coc_snippet_prev = '<C-b>'
+
+" diagnostic
+call coc#config('diagnostic.checkCurrentLine', v:true)
+call coc#config('diagnostic.errorSign', '')
+call coc#config('diagnostic.warningSign', '')
+call coc#config('diagnostic.infoSign', '')
+
+inoremap <silent> <expr> <C-Space> coc#refresh()
+
+" Language
+
+"" TypeScript
+call coc#config('typescript.preferences.importModuleSpecifier', 'relative')
+call coc#config('typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis', v:true)
+call coc#config('eslint.filetypes', ['javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'typescript.tsx'])
+
+"" Ruby
+call coc#config('solargraph.diagnostics', v:true)
+call coc#config('solargraph.formatting', v:true)
+
+" Language Server
+call coc#config('languageserver', {
+\ 'graphql': {
+\   'module': expand('~/repos/github.com/apollographql/apollo-tooling/packages/apollo-language-server/lib/server.js'),
+\   'args': ['--node-ipc'],
+\   'filetypes': ['graphql', 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'typescript.tsx'],
+\   'rootPatterns': ['apollo.config.js']
+\ },
+\ 'efm': {
+\   'command': 'efm-langserver',
+\   'args': [],
+\   'filetypes': ['eruby', 'markdown']
 \ }
+\ })
 
-function! ALE_htmlbeautifier(buffer) abort
-  return {
-  \ 'command': 'htmlbeautifier --keep-blank-lines 2'
-  \}
-endfunction
+" Git
+nmap gp <Plug>(coc-git-prevchunk)
+nmap gn <Plug>(coc-git-nextchunk)
 
-let g:ale_fixers = {
-\ '*': ['remove_trailing_lines', 'trim_whitespace'],
-\ 'javascript': ['prettier'],
-\ 'typescript': ['prettier'],
-\ 'vue': ['prettier'],
-\ 'ruby': ['rubocop'],
-\ 'eruby': ['ALE_htmlbeautifier'],
-\ 'html': ['prettier'],
-\ 'css': ['prettier'],
-\ 'scss': ['prettier'],
-\ 'json': ['fixjson', 'prettier'],
-\ 'graphql': ['prettier'],
-\ 'markdown': ['prettier'],
-\}
+" keymap
+nnoremap K               :call CocAction('doHover')<CR>
+nmap     <LocalLeader>p  <Plug>(coc-diagnostic-prev)
+nmap     <LocalLeader>n  <Plug>(coc-diagnostic-next)
+nmap     <LocalLeader>d  <Plug>(coc-definition)
+nmap     <LocalLeader>t  <Plug>(coc-type-definition)
+nmap     <LocalLeader>i  <Plug>(coc-implementation)
+nmap     <LocalLeader>rf <Plug>(coc-references)
+nmap     <LocalLeader>rn <Plug>(coc-rename)
+nmap     <LocalLeader>a  <Plug>(coc-fix-current)
+nmap     <Leader>a       <Plug>(coc-format)
+xmap     <Leader>a       <Plug>(coc-format-selected)
 
-let g:ale_set_highlights           = 0
-let g:ale_sign_column_always       = 1
-let g:ale_change_sign_column_color = 1
-let g:ale_lint_on_text_changed     = 'never'
-let g:ale_lint_on_insert_leave     = 0
-let g:ale_echo_msg_format          = '[%linter%] %s'
-let g:ale_virtualtext_cursor       = 1
+AutoCmd FileType json nnoremap <buffer> <Leader>a :<C-u>FixJson<CR><Plug>(coc-format)
+AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+" }}}2
 
-let g:ale_sign_error         = ''
-let g:ale_sign_warning       = ''
-let g:ale_sign_info          = ''
-let g:ale_sign_style_error   = ''
-let g:ale_sign_style_warning = ''
-
-let g:ale_ruby_rubocop_executable = 'bundle'
-let g:ale_go_bingo_executable = 'gopls'
-
-noremap <Leader>a :<C-u>ALEFix<CR>
-" }}}3
+" Language {{{2
 
 " endwise {{{3
 let g:endwise_no_mappings = 1
+" }}}3
+
+" fixjson {{{3
+let g:fixjson_fix_on_save = 0
 " }}}3
 
 " gen_tags {{{3
@@ -906,24 +902,9 @@ let g:vim_json_syntax_conceal = 0
 AlterCommand! <cmdwin> mark[ed] MarkedOpen
 " }}}3
 
-" nvim-typescript {{{3
-let g:nvim_typescript#diagnostics_enable = 0
-let g:nvim_typescript#type_info_on_hold  = 1
-let g:nvim_typescript#signature_complete = 1
-let g:nvim_typescript#javascript_support = 1
-let g:nvim_typescript#vue_support        = 1
-
-function s:ts_settings() abort
-  nnoremap <silent> <buffer> K              :<C-u>TSDefPreview<CR>
-  nnoremap <silent> <buffer> gK             :<C-u>TSTypeDef<CR>
-  nnoremap <silent> <buffer> <LocalLeader>p :<C-u>TSRefs<CR>
-  nnoremap <silent> <buffer> <LocalLeader>r :<C-u>TSRename<CR>
-  nnoremap <silent> <buffer> <LocalLeader>o :<C-u>Denite TSDocumentSymbol -auto-preview<CR>
-endfunction
-
+" typescript {{{
 AutoCmd BufNewFile,BufRead *.tsx setlocal filetype=typescript.tsx
-AutoCmd FileType javascript,typescript,typescript.tsx,vue call s:ts_settings()
-" }}}3
+" }}}
 
 " vim {{{3
 let g:vimsyntax_noerror = 1
@@ -937,11 +918,6 @@ AutoCmd FileType vue syntax sync fromstart
 " }}}2
 
 " Completion & Fuzzy Finder {{{2
-
-" echodoc {{{3
-let g:echodoc#enable_at_startup = 1
-" let g:echodoc#type              = 'virtual'
-" }}}3
 
 " Denite {{{3
 AlterCommand! <cmdwin> d[enite] Denite
@@ -1033,7 +1009,6 @@ if dein#tap('denite.nvim')
   \ ['Toggle IndentLine        [IndentLinesToggle]',       'IndentLinesToggle'      ],
   \ ['Toggle Highlight         [HighlightToggle]',         'HighlightToggle'        ],
   \ ['Toggle Spell             [setlocal spell!]',         'setlocal spell!'        ],
-  \ ['Toggle ALE               [ALEToggle]',               'ALEToggle'              ],
   \ ['Toggle TableMode         [TableMode]',               'TableModeToggle'        ],
   \ ]
   call denite#custom#var('menu', 'menus', s:menus)
@@ -1138,208 +1113,6 @@ nnoremap <silent> <Leader>O       :<C-u>MruFilesPreview<CR>
 nnoremap          <Enter>         :<C-u>ProjectGrepPreview<Space>
 nnoremap          <Leader><Enter> "syiw:ProjectGrepPreview<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR>
 xnoremap          <Enter>         "sy:ProjectGrepPreview<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR>
-" }}}3
-
-" deoplete.nvim {{{3
-if dein#tap('deoplete.nvim')
-  " Default Settings
-  let g:deoplete#enable_at_startup = 1
-
-  call deoplete#custom#option({
-  \ 'min_pattern_length': 2,
-  \ 'camel_case': v:true,
-  \ 'skip_chars': ['(', ')', '<', '>'],
-  \ })
-
-  " Keymap
-  inoremap <silent> <expr> <BS>  deoplete#smart_close_popup() . "\<C-h>"
-  inoremap <silent> <expr> <C-h> deoplete#smart_close_popup() . "\<C-h>"
-
-  inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : deoplete#manual_complete()
-  inoremap <silent> <expr> <C-g> pumvisible() ? deoplete#smart_close_popup() : "\<C-g>"
-  inoremap <silent> <expr> <C-l> deoplete#refresh()
-
-  function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~# '\s'
-  endfunction
-
-  " tmux-complete
-  let g:tmuxcomplete#trigger = ''
-
-  " vsnip
-  imap <expr> <C-Space>   vsnip#available(1)  ? "\<Plug>(vsnip-expand-or-jump)" : "\<C-Space>"
-  smap <expr> <C-Space>   vsnip#available(1)  ? "\<Plug>(vsnip-expand-or-jump)" : "\<C-Space>"
-  xmap <expr> <C-Space>   vsnip#available(1)  ? "\<Plug>(vsnip-expand-or-jump)" : "\<C-Space>"
-  imap <expr> <C-f>       vsnip#available(1)  ? "\<Plug>(vsnip-jump-next)"      : "\<C-f>"
-  smap <expr> <C-f>       vsnip#available(1)  ? "\<Plug>(vsnip-jump-next)"      : "\<C-f>"
-  xmap <expr> <C-f>       vsnip#available(1)  ? "\<Plug>(vsnip-jump-next)"      : "\<C-f>"
-  imap <expr> <C-b>       vsnip#available(-1) ? "\<Plug>(vsnip-jump-prev)"      : "\<C-b>"
-  smap <expr> <C-b>       vsnip#available(-1) ? "\<Plug>(vsnip-jump-prev)"      : "\<C-b>"
-  xmap <expr> <C-b>       vsnip#available(-1) ? "\<Plug>(vsnip-jump-prev)"      : "\<C-b>"
-
-  call deoplete#custom#source('_', 'converters', [
-  \ 'converter_remove_paren',
-  \ 'converter_remove_overlap',
-  \ 'converter_truncate_abbr',
-  \ 'converter_truncate_menu',
-  \ 'converter_auto_delimiter',
-  \ ])
-
-  " Sources
-  call deoplete#custom#source('typescript', 'rank', 1500)
-  call deoplete#custom#source('typescript', 'mark', '[TS]')
-  call deoplete#custom#source('typescript', 'max_candidates', 8)
-
-  call deoplete#custom#source('lsp', 'rank', 1400)
-  call deoplete#custom#source('lsp', 'mark', '[lsp]')
-  call deoplete#custom#source('lsp', 'max_candidates', 8)
-
-  " call deoplete#custom#source('LanguageClient', 'rank', 1400)
-  " call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
-  " call deoplete#custom#source('LanguageClient', 'max_candidates', 8)
-
-  call deoplete#custom#source('denite', 'rank', 1400)
-  call deoplete#custom#source('denite', 'mark', '[denite]')
-  call deoplete#custom#source('denite', 'max_candidates', 5)
-
-  call deoplete#custom#source('vim', 'rank', 1300)
-  call deoplete#custom#source('vim', 'mark', '[vim]')
-  call deoplete#custom#source('vim', 'max_candidates', 5)
-
-  call deoplete#custom#source('tabnine', 'rank', 1200)
-  call deoplete#custom#source('tabnine', 'mark', '[tabnine]')
-  call deoplete#custom#source('tabnine', 'max_candidates', 10)
-  call deoplete#custom#source('tabnine', 'dup', v:true)
-
-  " call deoplete#custom#source('around', 'rank', 1000)
-  " call deoplete#custom#source('around', 'mark', '[around]')
-  " call deoplete#custom#source('around', 'max_candidates', 5)
-
-  " call deoplete#custom#source('buffer', 'rank', 800)
-  " call deoplete#custom#source('buffer', 'mark', '[buffer]')
-  " call deoplete#custom#source('buffer', 'max_candidates', 5)
-
-  " call deoplete#custom#source('tag', 'rank', 700)
-  " call deoplete#custom#source('tag', 'mark', '[tag]')
-  " call deoplete#custom#source('tag', 'max_candidates', 5)
-
-  call deoplete#custom#source('omni', 'rank', 600)
-  call deoplete#custom#source('omni', 'mark', '[omni]')
-  call deoplete#custom#source('omni', 'max_candidates', 5)
-
-  call deoplete#custom#source('vsnip', 'rank', 500)
-  call deoplete#custom#source('vsnip', 'mark', '[vsnip]')
-  call deoplete#custom#source('vsnip', 'max_candidates', 5)
-
-  call deoplete#custom#source('syntax', 'rank', 400)
-  call deoplete#custom#source('syntax', 'mark', '[syntax]')
-  call deoplete#custom#source('syntax', 'max_candidates', 5)
-
-  call deoplete#custom#source('file', 'rank', 300)
-  call deoplete#custom#source('file', 'mark', '[file]')
-  call deoplete#custom#source('file', 'max_candidates', 5)
-  call deoplete#custom#source('file', 'dup', v:true)
-
-  call deoplete#custom#source('tmux-complete', 'rank', 200)
-  call deoplete#custom#source('tmux-complete', 'mark', '[tmux]')
-  call deoplete#custom#source('tmux-complete', 'max_candidates', 5)
-
-  call deoplete#custom#source('webcomplete', 'rank', 100)
-  call deoplete#custom#source('webcomplete', 'mark', '[web]')
-  call deoplete#custom#source('webcomplete', 'max_candidates', 5)
-
-  call deoplete#custom#source('look', 'rank', 100)
-  call deoplete#custom#source('look', 'mark', '[look]')
-  call deoplete#custom#source('look', 'max_candidates', 5)
-
-  let s:deoplete_default_sources = ['tabnine', 'vsnip', 'syntax', 'file']
-
-  let s:deoplete_sources                   = {}
-  let s:deoplete_sources['_']              = s:deoplete_default_sources
-  let s:deoplete_sources['javascript']     = s:deoplete_default_sources + ['typescript']
-  let s:deoplete_sources['typescript']     = s:deoplete_default_sources + ['typescript']
-  let s:deoplete_sources['typescript.tsx'] = s:deoplete_default_sources + ['typescript']
-  let s:deoplete_sources['vue']            = s:deoplete_default_sources + ['typescript', 'lsp']
-  let s:deoplete_sources['ruby']           = s:deoplete_default_sources + ['lsp']
-  let s:deoplete_sources['go']             = s:deoplete_default_sources + ['lsp']
-  let s:deoplete_sources['css']            = s:deoplete_default_sources + ['omni']
-  let s:deoplete_sources['scss']           = s:deoplete_default_sources + ['omni']
-  let s:deoplete_sources['vim']            = s:deoplete_default_sources + ['vim']
-  let s:deoplete_sources['denite-filter']  = s:deoplete_default_sources + ['denite']
-  call deoplete#custom#option('sources', s:deoplete_sources)
-
-  let s:deoplete_omni_functions         = {}
-  let s:deoplete_omni_functions['css']  = ['csscomplete#CompleteCSS']
-  let s:deoplete_omni_functions['scss'] = ['csscomplete#CompleteCSS']
-  call deoplete#custom#source('omni', 'functions', s:deoplete_omni_functions)
-endif
-" }}}3
-
-" LanguageClient {{{3
-" let g:LanguageClient_diagnosticsEnable = 0
-" let g:LanguageClient_useFloatingHover  = 1
-"
-" let g:LanguageClient_serverCommands = {
-" \ 'ruby': ['solargraph', 'stdio'],
-" \ }
-"
-" function! s:language_client_settings() abort
-"   nnoremap <silent> <buffer> <LocalLeader>m             :<C-u>call LanguageClient_contextMenu()<CR>
-"   nnoremap <silent> <buffer> K                          :<C-u>call LanguageClient#textDocument_definition()<CR>
-"   nnoremap <silent> <buffer> gK                         :<C-u>call LanguageClient#textDocument_hover()<CR>
-"   nnoremap <silent> <buffer> <LocalLeader>p             :<C-u>call LanguageClient#textDocument_references()<CR>
-"   nnoremap <silent> <buffer> <LocalLeader>r             :<C-u>call LanguageClient#textDocument_rename()<CR>
-"   nnoremap <silent> <buffer> <LocalLeader><LocalLeader> :<C-u>call LanguageClient#textDocument_codeAction()<CR>
-" endfunction
-"
-" AutoCmd FileType ruby call s:language_client_settings()
-" }}}3
-
-" lsp {{{3
-let g:lsp_diagnostics_enabled = 0
-
-if executable('vls')
-  AutoCmd User lsp_setup call lsp#register_server({
-  \ 'name': 'vue-language-server',
-  \ 'cmd': {server_info->['vls']},
-  \ 'whitelist': ['vue'],
-  \ 'initialization_options': {
-  \   'config': {
-  \     'html': {},
-  \     'vetur': {
-  \       'validation': {},
-  \      },
-  \   },
-  \ },
-  \ })
-endif
-
-if executable('solargraph')
-  AutoCmd User lsp_setup call lsp#register_server({
-  \ 'name': 'solargraph',
-  \ 'cmd': {server_info->[&shell, &shellcmdflag, 'solargraph stdio']},
-  \ 'whitelist': ['ruby'],
-  \ })
-endif
-
-if executable('gopls')
-  AutoCmd User lsp_setup call lsp#register_server({
-  \ 'name': 'go-lang',
-  \ 'cmd': {server_info->['gopls']},
-  \ 'whitelist': ['go'],
-  \ })
-endif
-
-function! s:lsp_settings() abort
-  nnoremap <silent> <buffer> K                          :<C-u>LspDefinition<CR>
-  nnoremap <silent> <buffer> gK                         :<C-u>LspHover<CR>
-  nnoremap <silent> <buffer> <LocalLeader>p             :<C-u>LspReferences<CR>
-  nnoremap <silent> <buffer> <LocalLeader>r             :<C-u>LspRename<CR>
-  nnoremap <silent> <buffer> <LocalLeader><LocalLeader> :<C-u>LspCodeAction<CR>
-endfunction
-
-AutoCmd FileType ruby,go call s:lsp_settings()
 " }}}3
 
 " lexima {{{3
@@ -1493,15 +1266,6 @@ endif
 " }}}2
 
 " Git {{{2
-
-" git-gutter {{{3
-AlterCommand! <cmdwin> ga GitGutterStageHunk
-AlterCommand! <cmdwin> gr GitGutterUndoHunk
-
-let g:gitgutter_map_keys = 0
-nmap gn <Plug>(GitGutterNextHunk)
-nmap gp <Plug>(GitGutterPrevHunk)
-" }}}3
 
 " git-messenger {{{3
 let g:git_messenger_no_default_mappings = v:true
@@ -2138,7 +1902,7 @@ if dein#tap('lightline.vim')
   \   'right': [
   \     ['lineinfo'],
   \     ['filetype', 'fileencoding', 'fileformat'],
-  \     ['linter_errors', 'linter_warnings', 'linter_ok', 'linter_checking', 'linter_disable'],
+  \     ['linter_ok', 'linter_informations', 'linter_warnings', 'linter_errors'],
   \   ],
   \ },
   \ 'inactive': {
@@ -2182,18 +1946,16 @@ if dein#tap('lightline.vim')
   \   'paste': '&paste',
   \ },
   \ 'component_type': {
-  \   'linter_errors':   'error',
-  \   'linter_warnings': 'warning',
-  \   'linter_ok':       'ok',
-  \   'linter_checking': 'checking',
-  \   'linter_disable':  'disable',
+  \   'linter_errors':       'error',
+  \   'linter_warnings':     'warning',
+  \   'linter_informations': 'information',
+  \   'linter_ok':           'ok',
   \ },
   \ 'component_expand': {
-  \   'linter_errors':   'Lightline_ale_errors',
-  \   'linter_warnings': 'Lightline_ale_warnings',
-  \   'linter_ok':       'Lightline_ale_ok',
-  \   'linter_checking': 'Lightline_ale_checking',
-  \   'linter_disable':  'Lightline_ale_disable',
+  \   'linter_errors':       'Lightline_coc_errors',
+  \   'linter_warnings':     'Lightline_coc_warnings',
+  \   'linter_informations': 'Lightline_coc_information',
+  \   'linter_ok':           'Lightline_coc_ok',
   \ },
   \ 'enable': {
   \   'statusline': 1,
@@ -2202,12 +1964,6 @@ if dein#tap('lightline.vim')
   \ 'separator': { 'left': '', 'right': '' },
   \ 'subseparator': { 'left': '', 'right': '' }
   \ }
-
-  " lightline-ale
-  let g:lightline#ale#indicator_errors   = ' '
-  let g:lightline#ale#indicator_warnings = ' '
-  let g:lightline#ale#indicator_ok       = ' '
-  let g:lightline#ale#indicator_checking = ' '
 
   " Disable lineinfo, fileencoding and fileformat
   let s:lightline_ignore_right_ft = [
@@ -2338,9 +2094,17 @@ if dein#tap('lightline.vim')
   endfunction
 
   function! Lightline_filetype() abort
-    return !has_key(s:lightline_ft_to_mode_hash, &filetype) ?
-    \ &filetype :
-    \ ''
+    if has_key(s:lightline_ft_to_mode_hash, &filetype)
+      return ''
+    endif
+
+    if &filetype ==? 'qf' && getwininfo(win_getid())[0].loclist
+      return 'LocationList'
+    elseif &filetype ==? 'qf' && getwininfo(win_getid())[0].quickfix
+      return 'QuickFix'
+    else
+      return &filetype
+    endif
   endfunction
 
   function! Lightline_lineinfo() abort
@@ -2379,25 +2143,23 @@ if dein#tap('lightline.vim')
     return a:n . ':' . len(tabpagebuflist(a:n))
   endfunction
 
-  function! Lightline_ale_errors() abort
-    return count(g:ale_filetypes, &filetype) ? lightline#ale#errors() : ''
+  function! Lightline_coc_errors() abort
+    return b:coc_diagnostic_info['error'] != 0 ? ' ' . b:coc_diagnostic_info['error'] : ''
   endfunction
 
-  function! Lightline_ale_warnings() abort
-    return count(g:ale_filetypes, &filetype) ? lightline#ale#warnings() : ''
+  function! Lightline_coc_warnings() abort
+    return b:coc_diagnostic_info['warning'] != 0 ? ' ' . b:coc_diagnostic_info['warning'] : ''
   endfunction
 
-  function! Lightline_ale_ok() abort
-    return count(g:ale_filetypes, &filetype) ? lightline#ale#ok() : ''
+  function! Lightline_coc_information() abort
+    return b:coc_diagnostic_info['information'] != 0 ? ' ' . b:coc_diagnostic_info['information'] : ''
   endfunction
 
-  function! Lightline_ale_checking() abort
-    return count(g:ale_filetypes, &filetype) ? lightline#ale#checking() : ''
-  endfunction
-
-  function! Lightline_ale_disable() abort
-    " return count(g:ale_filetypes, &filetype) ? '' : 'Linter Disable'
-    return count(g:ale_filetypes, &filetype) ? '' : ''
+  function! Lightline_coc_ok() abort
+    return b:coc_diagnostic_info['error'] == 0 &&
+    \ b:coc_diagnostic_info['warning'] == 0 &&
+    \ b:coc_diagnostic_info['information'] == 0 ?
+    \ ' ' : ''
   endfunction
 
   " function! Lightline_denite() abort
@@ -2413,6 +2175,8 @@ if dein#tap('lightline.vim')
       return ''
     endif
   endfunction
+
+  AutoCmd User CocDiagnosticChange call lightline#update()
 endif
 " }}}3
 
@@ -2694,8 +2458,6 @@ AutoCmd ColorScheme * highlight Search                  ctermfg=68   ctermbg=232
 AutoCmd ColorScheme * highlight Todo                    ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
 AutoCmd ColorScheme * highlight Visual                  ctermfg=159  ctermbg=23                        guifg=#AFFFFF guibg=#005F5F
 
-AutoCmd ColorScheme * highlight ALEError                ctermfg=0    ctermbg=203                       guifg=#1E2132 guibg=#FF5F5F
-AutoCmd ColorScheme * highlight ALEWarning              ctermfg=0    ctermbg=229                       guifg=#1E2132 guibg=#FFFFAF
 AutoCmd ColorScheme * highlight BrightestHighlight      ctermfg=30   ctermbg=NONE                      guifg=#008787 guibg=NONE
 AutoCmd ColorScheme * highlight CleverFDefaultLabel     ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
 AutoCmd ColorScheme * highlight DeniteLine              ctermfg=111  ctermbg=236                       guifg=#87AFFF guibg=#303030
@@ -2717,6 +2479,10 @@ AutoCmd ColorScheme * highlight Defx_git_1_Staged       ctermfg=2    ctermbg=NON
 AutoCmd ColorScheme * highlight Defx_git_1_Deleted      ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
 AutoCmd ColorScheme * highlight Defx_git_1_Renamed      ctermfg=2    ctermbg=NONE                      guifg=#b4be82 guibg=NONE
 AutoCmd ColorScheme * highlight Defx_git_1_Unmerged     ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+
+AutoCmd ColorScheme * highlight CocErrorSign            ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
+AutoCmd ColorScheme * highlight CocWarningSign          ctermfg=172  ctermbg=NONE                      guifg=#D78700 guibg=NONE
+AutoCmd ColorScheme * highlight CocInfoSign             ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
 
 " Fix lightline
 " AutoCmd ColorScheme * highlight StatusLine   ctermfg=0 ctermbg=none guifg=#1E2132 guibg=#C6C8D1

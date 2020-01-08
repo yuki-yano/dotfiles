@@ -9,4 +9,5 @@ pry-byebug
 pry-doc
 refe2
 rubocop
+rubocop-rails
 solargraph

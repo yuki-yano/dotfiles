@@ -133,6 +133,9 @@ zplugin snippet OMZ::plugins/extract/extract.plugin.zsh
 
 zplugin ice lucid wait"0" depth"1"
 zplugin light RobSis/zsh-completion-generator
+# Language Server
+zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd64*" mv"efm-langserver -> ${ZPFX}/bin/efm-langserver"
+zplugin light mattn/efm-langserver
 
 # util
 zplugin ice lucid wait"0" depth"1"

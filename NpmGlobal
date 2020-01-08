@@ -7,6 +7,7 @@ gtop
 htmlhint
 javascript-typescript-langserver
 jsonlint
+markdownlint-cli
 neovim
 now
 npm-check-updates
@@ -17,5 +18,6 @@ stylefmt
 tern
 ts-node
 typescript
+vim-language-server
 vtop
 vue-language-server
