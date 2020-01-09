@@ -43,7 +43,8 @@
 /.config/*
 !/.config/alacritty/
 !/.config/junkfile/.keep
-!/.config/karabiner/
+!/.config/karabiner/assets
+!/.config/karabiner/karabiner.json
 !/.config/memo/config.toml
 !/.config/nvim
 !/.config/peco/
