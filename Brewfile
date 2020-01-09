@@ -23,7 +23,6 @@ install railwaycat/emacsmacport/emacs-mac
 install boost
 install gcc
 install go
-install hadolint # Haskell
 install lua
 install node
 install nodenv
