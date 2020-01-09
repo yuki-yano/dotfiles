@@ -9,10 +9,7 @@
     "editor.renderControlCharacters": true,
     "editor.minimap.enabled": false,
     "editor.formatOnSave": true,
-
-    "prettier.eslintIntegration": true,
     "prettier.semi": false,
-    "prettier.tslintIntegration": true,
 
     "vim.hlsearch": true,
     "vim.leader": "<space>",
