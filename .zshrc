@@ -110,12 +110,6 @@ zplugin light yuki-ycino/tms
 zplugin ice lucid wait"0" depth"1" as"program" src"tmk.plugin.zsh" pick"tmk"
 zplugin light yuki-ycino/tmk
 
-zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd*" mv"memo -> ${ZPFX}/bin/memo"
-zplugin light mattn/memo
-
-zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd*" mv"ghkw*/ghkw -> ${ZPFX}/bin/ghkw"
-zplugin light kyoshidajp/ghkw
-
 zplugin ice lucid wait"0" depth"1" lucid as"program" pick"bin/git-dsf"
 zplugin light zdharma/zsh-diff-so-fancy
 
@@ -125,14 +119,6 @@ zplugin light bcicen/ctop
 zplugin ice lucid wait"0" depth"1" as"program" mv"docker-clean -> ${ZPFX}/bin/docker-clean"
 zplugin light ZZROTDesign/docker-clean
 
-zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin*" atinit"test ! -f ${ZPFX}/bin/shfmt && chmod +x shfmt* && mv shfmt* ${ZPFX}/bin/shfmt"
-zplugin light mvdan/sh
-
-zplugin ice lucid wait"0" depth"1"
-zplugin snippet OMZ::plugins/extract/extract.plugin.zsh
-
-zplugin ice lucid wait"0" depth"1"
-zplugin light RobSis/zsh-completion-generator
 # Language Server
 zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd64*" mv"efm-langserver -> ${ZPFX}/bin/efm-langserver"
 zplugin light mattn/efm-langserver
