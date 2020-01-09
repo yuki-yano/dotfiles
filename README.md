@@ -30,7 +30,7 @@ This repository includes a lot of configuration file is used and optimized for m
   - Preferred pip packages
 - GNU global
 
-# Policies
+## Policies
 
 - Write processing in ruby
 - Install with rake task
