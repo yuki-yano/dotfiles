@@ -230,6 +230,8 @@ noremap <LocalLeader> <Nop>
 "" Cursor
 noremap 0 ^
 noremap ^ 0
+noremap <Leader>h ^
+noremap <Leader>l $
 
 "" Disable mark
 nnoremap m <Nop>
