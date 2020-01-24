@@ -790,8 +790,6 @@ let g:coc_global_extensions = [
 \ 'coc-yaml',
 \ ]
 
-call coc#config('codeLens.enable', v:true)
-
 " completion & snippet
 call coc#config('suggest.minTriggerInputLength', 1)
 call coc#config('suggest.labelMaxLength', 30)
@@ -809,6 +807,10 @@ call coc#config('diagnostic.warningSign', '')
 call coc#config('diagnostic.infoSign', '')
 
 inoremap <silent> <expr> <C-Space> coc#refresh()
+
+" util
+call coc#config('coc.preferences.useQuickfixForLocations', v:true)
+call coc#config('codeLens.enable', v:true)
 
 " Language
 
