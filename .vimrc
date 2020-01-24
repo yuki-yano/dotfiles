@@ -29,7 +29,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " IDE {{{3
   call dein#add('neoclide/coc.nvim', {'merged':0, 'rev': 'release'})
-  call dein#add('wellle/tmux-complete.vim')
   " }}}3
 
   " Language {{{3
