@@ -2338,9 +2338,9 @@ let g:automatic_config = [
 let g:BufKillCreateMappings = 0
 nnoremap <silent> <Leader>d :BD<CR>
 
-AutoCmd FileType help   nnoremap <silent> <buffer> <Leader>d :BW<CR>
-AutoCmd FileType diff   nnoremap <silent> <buffer> <Leader>d :BW<CR>
-AutoCmd FileType git    nnoremap <silent> <buffer> <Leader>d :BW<CR>
+AutoCmd FileType help nnoremap <silent> <buffer> <Leader>d :BW<CR>
+AutoCmd FileType diff nnoremap <silent> <buffer> <Leader>d :BW<CR>
+AutoCmd FileType git  nnoremap <silent> <buffer> <Leader>d :BW<CR>
 " }}}3
 
 " capture {{{3
