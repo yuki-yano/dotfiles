@@ -113,12 +113,14 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('osyo-manga/vim-jplus',      {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/accelerated-jk',      {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/clever-f.vim')
+  call dein#add('ronakg/quickr-preview.vim')
   call dein#add('terryma/vim-expand-region', {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-qfreplace',      {'lazy': 1, 'on_cmd': 'Qfreplace'})
   call dein#add('tommcdo/vim-exchange',      {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
   call dein#add('tomtom/tcomment_vim',       {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
   call dein#add('tpope/vim-repeat')
   call dein#add('wincent/ferret')
+  call dein#add('yssl/QFEnter')
   " }}}3
 
   " Appearance {{{3
@@ -1681,8 +1683,22 @@ if dein#tap('vim-jplus')
 endif
 " }}}3
 
-" qfreplace {{{3
-AutoCmd FileType qf nnoremap <silent> <buffer> r :<C-u>Qfreplace<CR>
+" QFEnter {{{3
+let g:qfenter_keymap = {
+\ 'open': ['<CR>']
+\ }
+" }}}3
+
+" quickr-preview {{{3
+let g:quickr_preview_keymaps = 0
+
+
+function! s:quickr_preview_settings() abort
+  nmap <silent> <buffer> <LocalLeader>p <Plug>(quickr_preview)
+  nmap <silent> <buffer> <LocalLeader>q <plug>(quickr_preview_qf_close)
+endfunction
+
+AutoCmd FileType qf call s:quickr_preview_settings()
 " }}}3
 
 " sandwich {{{3
