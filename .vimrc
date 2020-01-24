@@ -793,6 +793,7 @@ let g:coc_global_extensions = [
 " completion & snippet
 call coc#config('suggest.minTriggerInputLength', 1)
 call coc#config('suggest.labelMaxLength', 30)
+call coc#config('tabnine.priority.', 100)
 
 call coc#config('snippets.loadFromExtensions', v:false)
 call coc#config('snippets.textmateSnippetsRoots', ['~/.vsnip'])
