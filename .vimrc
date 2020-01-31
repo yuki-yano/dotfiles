@@ -1871,7 +1871,6 @@ endfunction
 command! ToggleComfortableMotion call <SID>toggle_comfortable_motion()
 " }}}3
 
-
 " foldCC {{{3
 if dein#tap('foldCC.vim')
   set foldtext=FoldCCtext()
