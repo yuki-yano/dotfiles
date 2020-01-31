@@ -1034,7 +1034,7 @@ let g:neomru#dictionary_mru_path = expand('~/.cache/vim/neomru/dictionary')
 function! s:fzf_set_register()
   call fzf#run({
   \ 'source': <SID>get_register_history(),
-  \ 'options': '--with-nth 2.. --prompt="RegisterHistory>"',
+  \ 'options': '--no-sort --with-nth 2.. --prompt="RegisterHistory>"',
   \ 'sink': function('<SID>register_history_sink'),
   \ 'window': 'top split new',
   \ })
