@@ -50,5 +50,6 @@
             "before": ["<C-w>", "<C-h>"],
             "commands": ["workbench.action.focusPreviousGroup"]
         }
-    ]
+    ],
+    "markdown-pdf.displayHeaderFooter": false
 }
