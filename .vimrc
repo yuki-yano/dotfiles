@@ -366,7 +366,7 @@ set helplang=ja
 set hidden
 set hlsearch
 set laststatus=2
-set list listchars=tab:^\ ,trail:_,eol:$,extends:>,precedes:<
+set list listchars=tab:^\ ,trail:_,extends:>,precedes:<
 set matchpairs+=<:>
 set matchtime=1
 set number
