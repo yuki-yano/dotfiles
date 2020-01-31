@@ -78,7 +78,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " filer {{{3
-  call dein#add('Shougo/defx.nvim')
+  call dein#add('lambdalisue/fern.vim')
   " }}}3
 
   " textobj & operator {{{3
@@ -1343,54 +1343,41 @@ AlterCommand! <cmdwin> github OpenGithubFile
 
 " filer {{{2
 
-" defx {{{3
-let g:defx_git#raw_mode = 1
+" fern {{{3
+let g:fern_disable_default_mappings = 1
 
-nnoremap <silent> <Leader>e :Defx -columns=mark:indent:filename:type -split=vertical -winwidth=40 -direction=topleft<CR>
-nnoremap <silent> <Leader>E :Defx -columns=mark:indent:filename:type -split=vertical -winwidth=40 -direction=topleft -search=`expand('%:p')`<CR>
+nnoremap <silent> <Leader>e :<C-u>Fern . -drawer <CR>
+nnoremap <silent> <Leader>E :<C-u>Fern . -drawer -reveal=%<CR>
 
-let g:defx_ignore_filtype = ['denite', 'defx']
-function! DefxChoosewin(context) abort " {{{
-    let l:winnrs = filter(range(1, winnr('$')), 'index(g:defx_ignore_filtype, getwinvar(v:val, "&filetype")) == -1' )
-    for filename in a:context.targets
-        let result = choosewin#start(l:winnrs, {'auto_choose': 1, 'hook_enable': 0})
-        if result == []
-          return 0
-        endif
-        execute 'edit' filename
-    endfor
+function! s:fern_settings() abort
+  nmap <silent> <buffer> <expr> <Plug>(fern-expand-or-collapse) fern#smart#leaf("\<Plug>(fern-action-collapse)", "\<Plug>(fern-action-expand)", "\<Plug>(fern-action-collapse)")
+
+  nmap <silent> <buffer> <nowait> a     <Plug>(fern-choice)
+  nmap <silent> <buffer> <nowait> <CR>  <Plug>(fern-action-open:select)
+  nmap <silent> <buffer> <nowait> t     <Plug>(fern-expand-or-collapse)
+  nmap <silent> <buffer> <nowait> l     <Plug>(fern-open-or-enter)
+  nmap <silent> <buffer> <nowait> h     <Plug>(fern-action-leave)
+  nmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark-toggle)
+  nmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark-toggle)
+  vmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark-toggle)
+  nmap <silent> <buffer> <nowait> N     <Plug>(fern-action-new-file)
+  nmap <silent> <buffer> <nowait> K     <Plug>(fern-action-new-dir)
+  nmap <silent> <buffer> <nowait> d     <Plug>(fern-action-trash)
+  nmap <silent> <buffer> <nowait> r     <Plug>(fern-action-rename)
+  nmap <silent> <buffer> <nowait> c     <Plug>(fern-action-copy)
+  nmap <silent> <buffer> <nowait> m     <Plug>(fern-action-move)
+  nmap <silent> <buffer> <nowait> !     <Plug>(fern-action-hide-toggle)
+  nmap <silent> <buffer> <nowait> <C-g> <Plug>(fern-action-debug)
+  nmap <silent> <buffer> <nowait> ?     <Plug>(fern-action-help)
+  nmap <silent> <buffer> <nowait> <C-c> <Plug>(fern-action-cancel)
+  nmap <silent> <buffer> <nowait> .     <Plug>(fern-repeat)
+  nmap <silent> <buffer> <nowait> R     <Plug>(fern-action-redraw)
+
+  nnoremap <silent> <buffer> <nowait> q :<C-u>quit<CR>
+  nnoremap <silent> <buffer> <nowait> Q :<C-u>bwipe!<CR>
 endfunction
 
-function! s:defx_settings() abort
-  nnoremap <silent> <buffer> <expr> <nowait> j       line('.') == line('$') ? 'gg' : 'j'
-  nnoremap <silent> <buffer> <expr> <nowait> k       line('.') == 1 ? 'G' : 'k'
-  nnoremap <silent> <buffer> <expr> <nowait> t       defx#do_action('open_or_close_tree')
-  nnoremap <silent> <buffer> <expr> <nowait> h       defx#do_action('cd', ['..'])
-  nnoremap <silent> <buffer> <expr> <nowait> l       defx#is_directory() ? defx#do_action('open_tree') : 0
-  nnoremap <silent> <buffer> <expr> <nowait> L       defx#do_action('open_tree_recursive')
-  nnoremap <silent> <buffer> <expr> <nowait> .       defx#do_action('toggle_ignored_files')
-  nnoremap <silent> <buffer> <expr> <nowait> ~       defx#do_action('cd')
-
-  nnoremap <silent> <buffer> <expr> <nowait> <CR>    defx#is_directory() ? 0 : defx#do_action('call', 'DefxChoosewin')
-  nnoremap <silent> <buffer> <expr> <nowait> x       defx#do_action('toggle_select') . 'j'
-  nnoremap <silent> <buffer> <expr> <nowait> <Space> defx#do_action('toggle_select') . 'j'
-  nnoremap <silent> <buffer> <expr> <nowait> *       defx#do_action('toggle_select_all')
-  nnoremap <silent> <buffer> <expr> <nowait> N       defx#do_action('new_file')
-  nnoremap <silent> <buffer> <expr> <nowait> N       defx#do_action('new_multiple_files')
-  nnoremap <silent> <buffer> <expr> <nowait> K       defx#do_action('new_directory')
-  nnoremap <silent> <buffer> <expr> <nowait> c       defx#do_action('copy')
-  nnoremap <silent> <buffer> <expr> <nowait> m       defx#do_action('move')
-  nnoremap <silent> <buffer> <expr> <nowait> p       defx#do_action('paste')
-  nnoremap <silent> <buffer> <expr> <nowait> d       defx#do_action('remove')
-  nnoremap <silent> <buffer> <expr> <nowait> r       defx#do_action('rename')
-  nnoremap <silent> <buffer> <expr> <nowait> yy      defx#do_action('yank_path')
-
-  nnoremap <silent> <buffer> <expr> <nowait> q       defx#do_action('quit')
-  nnoremap <silent> <buffer> <expr> <nowait> R       defx#do_action('redraw')
-  nnoremap <silent> <buffer> <expr> <nowait> <C-g>   defx#do_action('print')
-endfunction
-
-AutoCmd FileType defx call s:defx_settings()
+AutoCmd FileType fern call s:fern_settings()
 " }}}3
 
 " }}}2
@@ -1988,7 +1975,7 @@ if dein#tap('lightline.vim')
   \ 'diff',
   \ 'man',
   \ 'fzf',
-  \ 'defx',
+  \ 'fern',
   \ 'tagbar',
   \ 'capture',
   \ 'gina-status',
@@ -2005,7 +1992,7 @@ if dein#tap('lightline.vim')
   \ 'diff':        'Diff',
   \ 'man':         'Man',
   \ 'fzf':         'FZF',
-  \ 'defx':        'Defx',
+  \ 'fern':        'Fern',
   \ 'capture':     'Capture',
   \ 'gina-status': 'Git Status',
   \ 'gina-branch': 'Git Branch',
@@ -2031,7 +2018,7 @@ if dein#tap('lightline.vim')
   let s:lightline_ignore_filename_ft = [
   \ 'qf',
   \ 'fzf',
-  \ 'defx',
+  \ 'fern',
   \ 'gina-status',
   \ 'gina-branch',
   \ 'gina-log',
@@ -2489,13 +2476,6 @@ AutoCmd ColorScheme * highlight YankRoundRegion         ctermfg=209  ctermbg=237
 AutoCmd ColorScheme * highlight ZenSpace                ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
 AutoCmd ColorScheme * highlight deniteSource_grepFile   ctermfg=6    ctermbg=NONE                      guifg=#89B8C2 guibg=NONE
 AutoCmd ColorScheme * highlight deniteSource_grepLineNR ctermfg=247  ctermbg=NONE                      guifg=#9E9E9E guibg=NONE
-
-AutoCmd ColorScheme * highlight Defx_git_1_Untracked    ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
-AutoCmd ColorScheme * highlight Defx_git_1_Modified     ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
-AutoCmd ColorScheme * highlight Defx_git_1_Staged       ctermfg=2    ctermbg=NONE                      guifg=#b4be82 guibg=NONE
-AutoCmd ColorScheme * highlight Defx_git_1_Deleted      ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
-AutoCmd ColorScheme * highlight Defx_git_1_Renamed      ctermfg=2    ctermbg=NONE                      guifg=#b4be82 guibg=NONE
-AutoCmd ColorScheme * highlight Defx_git_1_Unmerged     ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
 
 AutoCmd ColorScheme * highlight CocErrorSign            ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
 AutoCmd ColorScheme * highlight CocWarningSign          ctermfg=172  ctermbg=NONE                      guifg=#D78700 guibg=NONE
