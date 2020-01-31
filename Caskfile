@@ -34,6 +34,7 @@ cask install jasper
 cask install java
 cask install jetbrains-toolbox
 cask install kaleidoscope
+cask install kap
 cask install karabiner-elements
 cask install keyboard-cleaner
 cask install keycastr
