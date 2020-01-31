@@ -111,6 +111,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mg979/vim-visual-multi',    {'rev': 'test'})
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',      {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('rbtnn/vim-jumptoline',      {'lazy': 1, 'on_cmd': 'JumpToLine'})
   call dein#add('rhysd/accelerated-jk',      {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/clever-f.vim')
   call dein#add('ronakg/quickr-preview.vim')
@@ -1683,6 +1684,12 @@ if dein#tap('vim-jplus')
   vmap J  <Plug>(jplus)
   nmap gJ <Plug>(jplus-input)
   vmap gJ <Plug>(jplus-input)
+endif
+" }}}3
+
+" jumptoline {{{3
+if dein#tap('vim-jumptoline')
+  AutoCmd FileType qf nnoremap <buffer> <CR> :<C-u>JumpToLine<CR>
 endif
 " }}}3
 
