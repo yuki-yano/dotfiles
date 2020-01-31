@@ -120,7 +120,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tomtom/tcomment_vim',       {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
   call dein#add('tpope/vim-repeat')
   call dein#add('wincent/ferret')
-  call dein#add('yssl/QFEnter')
   " }}}3
 
   " Appearance {{{3
@@ -162,7 +161,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tyru/open-browser.vim')
   call dein#add('tyru/vim-altercmd')
   call dein#add('wesQ3/vim-windowswap',         {'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#DoWindowSwap']})
-  call dein#add('yssl/QFEnter')
   " }}}3
 
   " develop {{{3
@@ -1686,12 +1684,6 @@ if dein#tap('vim-jplus')
   nmap gJ <Plug>(jplus-input)
   vmap gJ <Plug>(jplus-input)
 endif
-" }}}3
-
-" QFEnter {{{3
-let g:qfenter_keymap = {
-\ 'open': ['<CR>']
-\ }
 " }}}3
 
 " quickr-preview {{{3
