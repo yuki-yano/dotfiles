@@ -58,7 +58,6 @@ install autoconf
 install automake
 install cmake
 install coreutils
-install ctags
 install curl
 install direnv
 install gawk
@@ -72,6 +71,7 @@ install parallel
 install reattach-to-user-namespace
 install rsync
 install tree
+install universal-ctags/universal-ctags/universal-ctags --HEAD --with-jansson
 install w3m
 install watch
 install wget

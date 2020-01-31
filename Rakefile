@@ -8,7 +8,7 @@ DOTFILES_SRCS = %w[
   .atom
   .bashrc
   .config
-  .ctags
+  .ctags.d
   .dircolors
   .gemrc
   .gitattributes_global
