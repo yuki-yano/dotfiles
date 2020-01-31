@@ -870,7 +870,6 @@ let g:fixjson_fix_on_save = 0
 " }}}3
 
 " gen_tags {{{3
-let g:gen_tags#use_cache_dir  = 0
 let g:gen_tags#ctags_auto_gen = 1
 let g:gen_tags#gtags_auto_gen = 1
 " }}}3
