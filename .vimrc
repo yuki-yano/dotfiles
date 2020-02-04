@@ -42,7 +42,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
   call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescriptreact', 'typescript.tsx']})
   call dein#add('rhysd/vim-fixjson',                       {'lazy': 1, 'on_ft': 'json'})
-  call dein#add('tpope/vim-endwise',                       {'lazy': 1, 'on_ft': 'ruby'})
   " }}}3
 
   " Git {{{3
@@ -860,10 +859,6 @@ AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
 " Language {{{2
 
-" endwise {{{3
-let g:endwise_no_mappings = 1
-" }}}3
-
 " fixjson {{{3
 let g:fixjson_fix_on_save = 0
 " }}}3
@@ -1098,6 +1093,7 @@ xnoremap          <Enter>         "sy:ProjectGrepPreview<Space><C-r>=substitute(
 if dein#tap('lexima.vim')
 
   let g:lexima_map_escape = ''
+  let g:lexima_enable_endwise_rules = 0
 
   function! Hook_on_post_source_lexima() abort
     let s:rules = []
@@ -1161,10 +1157,13 @@ if dein#tap('lexima.vim')
 
     "" ruby
     let s:rules += [
-    \ { 'filetype': ['ruby', 'eruby'], 'char': '<Bar>', 'at': 'do\%#',     'input': '<Space><Bar>', 'input_after': '<Bar><CR>end', },
-    \ { 'filetype': ['ruby', 'eruby'], 'char': '<Bar>', 'at': 'do\s\%#',   'input': '<Bar>',        'input_after': '<Bar><CR>end', },
-    \ { 'filetype': ['ruby', 'eruby'], 'char': '<Bar>', 'at': '{\%#}',     'input': '<Space><Bar>', 'input_after': '<Bar><Space>', },
-    \ { 'filetype': ['ruby', 'eruby'], 'char': '<Bar>', 'at': '{\s\%#\s}', 'input': '<Bar>',        'input_after': '<Bar><Space>', },
+    \ { 'filetype': ['ruby'], 'char': '<CR>',  'at': '^\s*\%(module\|def\|class\|if\|unless\)\s\w\+\((.*)\)\?\%#$', 'input': '<CR>',         'input_after': 'end',          },
+    \ { 'filetype': ['ruby'], 'char': '<CR>',  'at': '^\s*\%(begin\)\s*\%#',                                        'input': '<CR>',         'input_after': 'end',          },
+    \ { 'filetype': ['ruby'], 'char': '<CR>',  'at': '\%(^\s*#.*\)\@<!do\%(\s*|.*|\)\?\s*\%#',                      'input': '<CR>',         'input_after': 'end',          },
+    \ { 'filetype': ['ruby'], 'char': '<Bar>', 'at': 'do\%#',                                                       'input': '<Space><Bar>', 'input_after': '<Bar><CR>end', },
+    \ { 'filetype': ['ruby'], 'char': '<Bar>', 'at': 'do\s\%#',                                                     'input': '<Bar>',        'input_after': '<Bar><CR>end', },
+    \ { 'filetype': ['ruby'], 'char': '<Bar>', 'at': '{\%#}',                                                       'input': '<Space><Bar>', 'input_after': '<Bar><Space>', },
+    \ { 'filetype': ['ruby'], 'char': '<Bar>', 'at': '{\s\%#\s}',                                                   'input': '<Bar>',        'input_after': '<Bar><Space>', },
     \ ]
 
     "" eruby
