@@ -76,8 +76,8 @@
   trustexitcode = true
 
 [ghq]
-  root = ~/repos
   root = ~/.go/src
+  root = ~/repos
 
 [url "git@github.com:"]
   pushInsteadOf = git://github.com/
