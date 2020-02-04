@@ -34,7 +34,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Language {{{3
   call dein#add('MaxMEllon/vim-jsx-pretty',                {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('elzr/vim-json',                           {'lazy': 1, 'on_ft': 'json'})
-  call dein#add('fatih/vim-go',                            {'lazy': 1, 'on_ft': 'go'})
   call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': 'css'})
   call dein#add('itspriddle/vim-marked',                   {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('leafgarland/typescript-vim',              {'lazy': 1, 'on_ft': ['typescript', 'typescriptreact', 'typescript.tsx']})
@@ -834,7 +833,7 @@ call coc#config('languageserver', {
 \ 'efm': {
 \   'command': 'efm-langserver',
 \   'args': [],
-\   'filetypes': ['eruby', 'markdown']
+\   'filetypes': ['go', 'eruby', 'markdown']
 \ }
 \ })
 
@@ -872,30 +871,6 @@ let g:fixjson_fix_on_save = 0
 " gen_tags {{{3
 let g:gen_tags#ctags_auto_gen = 1
 let g:gen_tags#gtags_auto_gen = 1
-" }}}3
-
-" go {{{3
-let g:go_fmt_command                         = 'goimports'
-let g:go_def_mode                            = 'godef'
-let g:go_def_mapping_enabled                 = 0
-let g:go_term_enabled                        = 1
-let g:go_template_autocreate                 = 0
-let g:go_gocode_unimported_packages          = 1
-let g:go_highlight_array_whitespace_error    = 1
-let g:go_highlight_chan_whitespace_error     = 1
-let g:go_highlight_extra_types               = 1
-let g:go_highlight_space_tab_error           = 1
-let g:go_highlight_trailing_whitespace_error = 1
-let g:go_highlight_operators                 = 1
-let g:go_highlight_functions                 = 1
-let g:go_highlight_function_arguments        = 1
-let g:go_highlight_function_calls            = 1
-let g:go_highlight_fields                    = 1
-let g:go_highlight_types                     = 1
-let g:go_highlight_build_constraints         = 1
-let g:go_highlight_generate_tags             = 1
-let g:go_highlight_variable_assignments      = 1
-let g:go_highlight_variable_declarations     = 1
 " }}}3
 
 " json {{{3

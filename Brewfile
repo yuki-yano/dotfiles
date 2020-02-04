@@ -23,6 +23,7 @@ install railwaycat/emacsmacport/emacs-mac
 install boost
 install gcc
 install go
+install golangci/tap/golangci-lint
 install lua
 install node
 install nodenv

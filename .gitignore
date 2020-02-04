@@ -41,6 +41,7 @@
 
 # Config
 /.config/*
+!/.config/efm-langserver
 !/.config/alacritty/
 !/.config/junkfile/.keep
 !/.config/karabiner/assets
