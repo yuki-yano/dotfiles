@@ -36,12 +36,13 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('elzr/vim-json',                           {'lazy': 1, 'on_ft': 'json'})
   call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': 'css'})
   call dein#add('itspriddle/vim-marked',                   {'lazy': 1, 'on_ft': 'markdown'})
-  call dein#add('leafgarland/typescript-vim',              {'lazy': 1, 'on_ft': ['typescript', 'typescriptreact', 'typescript.tsx']})
   call dein#add('jparise/vim-graphql',                     {'lazy': 1, 'on_ft': ['graphql', 'javascript', 'typescript', 'typescriptreact', 'typescript.tsx']})
+  call dein#add('leafgarland/typescript-vim',              {'lazy': 1, 'on_ft': ['typescript', 'typescriptreact', 'typescript.tsx']})
   call dein#add('othree/yajs.vim',                         {'lazy': 1, 'on_ft': 'javascript'})
+  call dein#add('plasticboy/vim-markdown',                 {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
-  call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescriptreact', 'typescript.tsx']})
   call dein#add('rhysd/vim-fixjson',                       {'lazy': 1, 'on_ft': 'json'})
+  call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescriptreact', 'typescript.tsx']})
   " }}}3
 
   " Git {{{3
@@ -870,6 +871,13 @@ let g:gen_tags#gtags_auto_gen = 1
 
 " json {{{3
 let g:vim_json_syntax_conceal = 0
+" }}}3
+
+" markdown {{{3
+let g:vim_markdown_folding_disabled        = 1
+let g:vim_markdown_no_default_key_mappings = 1
+let g:vim_markdown_conceal                 = 0
+let g:vim_markdown_conceal_code_blocks     = 0
 " }}}3
 
 " marked {{{3
