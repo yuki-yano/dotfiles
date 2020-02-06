@@ -97,5 +97,6 @@ install hub
 install tig
 
 ## Media
+install ffmpeg
 install imagemagick
 install youtube-dl
