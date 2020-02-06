@@ -66,6 +66,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " filer {{{3
   call dein#add('lambdalisue/fern.vim')
+
+  call dein#add('lambdalisue/fern-renderer-devicons.vim')
   " }}}3
 
   " textobj & operator {{{3
@@ -120,6 +122,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('machakann/vim-highlightedyank')
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('osyo-manga/vim-brightest')
+  call dein#add('ryanoasis/vim-devicons')
   call dein#add('yuttie/comfortable-motion.vim')
   " }}}3
 
@@ -1315,7 +1318,9 @@ AlterCommand! <cmdwin> github OpenGithubFile
 " filer {{{2
 
 " fern {{{3
-let g:fern_disable_default_mappings = 1
+let g:fern#disable_default_mappings = 1
+let g:fern#drawer_width = 40
+let g:fern#renderer = 'devicons'
 
 nnoremap <silent> <Leader>e :<C-u>Fern . -drawer <CR>
 nnoremap <silent> <Leader>E :<C-u>Fern . -drawer -reveal=%<CR>
@@ -1337,7 +1342,7 @@ function! s:fern_settings() abort
   nmap <silent> <buffer> <nowait> r     <Plug>(fern-action-rename)
   nmap <silent> <buffer> <nowait> c     <Plug>(fern-action-copy)
   nmap <silent> <buffer> <nowait> m     <Plug>(fern-action-move)
-  nmap <silent> <buffer> <nowait> !     <Plug>(fern-action-hide-toggle)
+  nmap <silent> <buffer> <nowait> !     <Plug>(fern-action-hidden-toggle)
   nmap <silent> <buffer> <nowait> <C-g> <Plug>(fern-action-debug)
   nmap <silent> <buffer> <nowait> ?     <Plug>(fern-action-help)
   nmap <silent> <buffer> <nowait> <C-c> <Plug>(fern-action-cancel)
@@ -2078,7 +2083,7 @@ if dein#tap('lightline.vim')
     elseif &filetype ==? 'qf' && getwininfo(win_getid())[0].quickfix
       return 'QuickFix'
     else
-      return &filetype
+      return &filetype . ' ' . WebDevIconsGetFileTypeSymbol()
     endif
   endfunction
 
