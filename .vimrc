@@ -1720,6 +1720,15 @@ if dein#tap('vim-sandwich')
   \   'filetype': ['eruby'],
   \ },
   \ ]
+
+  let g:sandwich#magicchar#f#patterns = [
+  \ {
+  \   'header' : '\<\%(\h\k*\.\)*\h\k*',
+  \   'bra'    : '(',
+  \   'ket'    : ')',
+  \   'footer' : '',
+  \ },
+  \ ]
 endif
 " }}}3
 
