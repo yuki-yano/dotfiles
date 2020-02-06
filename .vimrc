@@ -141,9 +141,9 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('lambdalisue/vim-pager',        {'lazy': 1, 'on_cmd': 'PAGER'})
   call dein#add('majutsushi/tagbar',            {'lazy': 1, 'on_cmd': ['TagbarOpen', 'TagbarToggle']})
   call dein#add('mbbill/undotree',              {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
+  call dein#add('mhinz/vim-sayonara',           {'lazy': 1, 'on_cmd': 'Sayonara'})
   call dein#add('osyo-manga/vim-gift')
   call dein#add('pocke/vim-automatic',          {'depends': 'vim-gift'})
-  call dein#add('qpkorr/vim-bufkill')
   call dein#add('rickhowe/diffchar.vim')
   call dein#add('t9md/vim-choosewin',           {'lazy': 1, 'on_map': {'n': '<Plug>'}})
   call dein#add('thinca/vim-localrc')
@@ -2314,15 +2314,6 @@ let g:automatic_config = [
 \ ]
 " }}}
 
-" bufkill {{{3
-let g:BufKillCreateMappings = 0
-nnoremap <silent> <Leader>d :BD<CR>
-
-AutoCmd FileType help nnoremap <silent> <buffer> <Leader>d :BW<CR>
-AutoCmd FileType diff nnoremap <silent> <buffer> <Leader>d :BW<CR>
-AutoCmd FileType git  nnoremap <silent> <buffer> <Leader>d :BW<CR>
-" }}}3
-
 " capture {{{3
 AlterCommand! <cmdwin> cap[ture] Capture
 AutoCmd FileType capture nnoremap <silent> <buffer> q :<C-u>quit<CR>
@@ -2350,6 +2341,10 @@ nnoremap <silent> <C-q> :<C-u>ChooseWin<CR>
 " miniyank {{{3
 let g:miniyank_maxitems = 2000
 let g:miniyank_filename = expand('~/.cache/vim/miniyank.mpack')
+" }}}3
+
+" sayonara {{{3
+nnoremap <silent> <Leader>d :Sayonara!<CR>
 " }}}3
 
 " table-mode {{{3
