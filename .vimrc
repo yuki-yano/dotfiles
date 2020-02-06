@@ -1652,6 +1652,7 @@ endif
 " jumptoline {{{3
 if dein#tap('vim-jumptoline')
   AutoCmd FileType qf nnoremap <buffer> <CR> :<C-u>JumpToLine<CR>
+  AutoCmd FileType qf nnoremap <buffer> cc   <CR>
 endif
 " }}}3
 
