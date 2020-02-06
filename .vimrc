@@ -2096,7 +2096,7 @@ if dein#tap('lightline.vim')
   endfunction
 
   function! Lightline_lineinfo() abort
-    if !Lightline_is_visible(120)
+    if !Lightline_is_visible(100)
       return ''
     endif
 
@@ -2457,7 +2457,7 @@ AutoCmd ColorScheme * highlight deniteSource_grepFile   ctermfg=6    ctermbg=NON
 AutoCmd ColorScheme * highlight deniteSource_grepLineNR ctermfg=247  ctermbg=NONE                      guifg=#9E9E9E guibg=NONE
 
 AutoCmd ColorScheme * highlight CocErrorSign            ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
-AutoCmd ColorScheme * highlight CocWarningSign          ctermfg=172  ctermbg=NONE                      guifg=#D78700 guibg=NONE
+AutoCmd ColorScheme * highlight CocWarningSign          ctermfg=214  ctermbg=NONE                      guifg=#FFAF00 guibg=NONE
 AutoCmd ColorScheme * highlight CocInfoSign             ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
 
 " Fix lightline
