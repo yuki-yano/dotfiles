@@ -60,19 +60,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('ozelentok/denite-gtags')
 
   call dein#add('junegunn/fzf', {'build': './install --bin', 'merged': 0})
-  call dein#add('yuki-ycino/fzf-preview.vim', {
-  \ 'lazy': 1,
-  \ 'on_cmd': [
-  \ 'ProjectFilesPreview',
-  \ 'GitFilesPreview',
-  \ 'BuffersPreview',
-  \ 'ProjectOldFilesPreview',
-  \ 'ProjectMruFilesPreview',
-  \ 'OldFilesPreview',
-  \ 'MruFilesPreview',
-  \ 'ProjectGrepPreview',
-  \ ],
-  \ })
+  call dein#add('yuki-ycino/fzf-preview.vim')
   " call dein#local('~/repos/github.com/yuki-ycino', {}, ['fzf-preview.vim'])
   " }}}3
 
@@ -1082,19 +1070,20 @@ command! FzfOpenGf call s:fzf_open_gf()
 " }}}3
 
 " fzf-preview {{{3
-AlterCommand! <cmdwin> fg[rep] ProjectGrepPreview
+let g:fzf_preview_command                      = 'bat --color=always --style=grid --theme=ansi-dark {-1}'
+let g:fzf_preview_filelist_command             = "rg --files --hidden --follow -g !'* *'"
+let g:fzf_preview_grep_preview_cmd             = 'preview_fzf_grep'
+let g:fzf_preview_filelist_postprocess_command = 'xargs exa --colour=always'
+let g:fzf_preview_split_key_map                = 'ctrl-s'
+let g:fzf_preview_use_dev_icons                = 1
 
-let g:fzf_preview_filelist_command = 'rg --files --hidden --follow --glob "!.git/*"'
-let g:fzf_preview_grep_preview_cmd = 'preview_fzf_grep'
-
-nnoremap <silent> <Leader>p       :<C-u>ProjectFilesPreview<CR>
-nnoremap <silent> <Leader>gg      :<C-u>GitFilesPreview<CR>
-nnoremap <silent> <Leader>b       :<C-u>BuffersPreview<CR>
-nnoremap <silent> <Leader>o       :<C-u>ProjectMruFilesPreview<CR>
-nnoremap <silent> <Leader>O       :<C-u>MruFilesPreview<CR>
-nnoremap          <Enter>         :<C-u>ProjectGrepPreview<Space>
-nnoremap          <Leader><Enter> "syiw:ProjectGrepPreview<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR>
-xnoremap          <Enter>         "sy:ProjectGrepPreview<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR>
+nnoremap <silent> <Leader>p       :<C-u>FzfPreviewProjectFiles<CR>
+nnoremap <silent> <Leader>gs      :<C-u>FzfPreviewGitStatus<CR>
+nnoremap <silent> <Leader>b       :<C-u>FzfPreviewBuffers<CR>
+nnoremap <silent> <Leader>o       :<C-u>FzfPreviewProjectMruFiles<CR>
+nnoremap          <CR>            :<C-u>FzfPreviewProjectGrep<Space>
+nnoremap          <Leader><CR>    "syiw:FzfPreviewProjectGrep<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR>
+xnoremap          <CR>            "sy:FzfPreviewProjectGrep<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR>
 " }}}3
 
 " lexima {{{3
