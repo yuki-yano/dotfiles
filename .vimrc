@@ -1658,10 +1658,9 @@ endif
 " quickr-preview {{{3
 let g:quickr_preview_keymaps = 0
 
-
 function! s:quickr_preview_settings() abort
-  nmap <silent> <buffer> <LocalLeader>p <Plug>(quickr_preview)
-  nmap <silent> <buffer> <LocalLeader>q <plug>(quickr_preview_qf_close)
+  nmap <silent> <buffer> <Leader><CR> <Plug>(quickr_preview)
+  nmap <silent> <buffer> <Leader>q <plug>(quickr_preview_qf_close)
 endfunction
 
 AutoCmd FileType qf call s:quickr_preview_settings()
