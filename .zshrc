@@ -158,27 +158,17 @@ if which abbrev-alias > /dev/null 2>&1; then
   abbrev-alias gs="git status --short --branch"
   abbrev-alias ga="git add"
   abbrev-alias gaa="git add --all"
-  abbrev-alias gre="git reset"
-  abbrev-alias gref="git reset --"
-  abbrev-alias gun="git unstage"
-  abbrev-alias grec="git recover"
   abbrev-alias grm="git rm"
-  abbrev-alias gb="git branch"
   abbrev-alias gd="git diff"
   abbrev-alias gdw="git diff --color-words"
   abbrev-alias gdc="git diff --cached"
   abbrev-alias gdcw="git diff --cached --color-words"
   abbrev-alias gco="git checkout"
-  abbrev-alias gcof="git checkout --"
   abbrev-alias gci="git commit"
   abbrev-alias gst="git stash"
   abbrev-alias gstp="git stash pop"
-  abbrev-alias gq="git qsave"
-  abbrev-alias gbr="git browse-remote"
-  abbrev-alias be="bundle exec"
-  abbrev-alias dco="docker-compose"
+  abbrev-alias gstd="git stash drop"
   abbrev-alias t="tms"
-  abbrev-alias tk="tmk"
   abbrev-alias tw="tmux swap-pane -t"
   abbrev-alias ch="cheat"
   abbrev-alias chs="cheat --shell"
@@ -398,9 +388,6 @@ function rg() {
     command rg --smart-case --pretty "$@"
   fi
 }
-
-alias -g  CB='$(git rev-parse --abbrev-ref HEAD)'
-alias -g RCB='origin/$(git rev-parse --abbrev-ref HEAD)'
 
 # }}}
 

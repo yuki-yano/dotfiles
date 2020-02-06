@@ -14,15 +14,7 @@
   attributesfile = ~/.gitattributes_global
 
 [alias]
-  forget  = checkout --
-  unstage = reset --
-  cancel  = !git now && git reset --hard HEAD~
-  qsave   = !git stash && git stash pop
-  plog    = log --pretty='format:%C(yellow)%h %C(green)%cd %C(reset)%s %C(red)%d %C(cyan)[%an]' --date=iso
-  fzflog  = !git plog --graph --color=always 2>/dev/null
   openpr  = "!f() { hub browse -- `git log --merges --oneline --reverse --ancestry-path $1...master | grep 'Merge pull request #' | head -n 1 | cut -f5 -d' ' | sed -e 's%#%pull/%'`; }; f"
-  sync = !git checkout master && git fetch -p origin && git merge origin/master && git branch --merged | grep -v master | grep -v '*' | xargs -I % git branch -d %
-  wip = !git add --all && git commit -m 'wip'
 
 [pager]
   log  = diff-so-fancy | less
@@ -50,7 +42,7 @@
   tool = nvimdiff
 
 [merge]
-  tool = Kaleidoscope
+  conflictStyle = diff3
 
 [rebase]
   autostash = true
@@ -70,10 +62,6 @@
 [diff-so-fancy]
   markEmptyLines = true
   stripLeadingSymbols = false
-
-[mergetool "Kaleidoscope"]
-  cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
-  trustexitcode = true
 
 [ghq]
   root = ~/.go/src
