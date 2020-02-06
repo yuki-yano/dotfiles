@@ -155,6 +155,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " develop {{{3
   call dein#add('thinca/vim-prettyprint')
+  call dein#add('vim-jp/vital.vim', {'merged':0})
   " }}}3
 
   " Color Theme {{{3
