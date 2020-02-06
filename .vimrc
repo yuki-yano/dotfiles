@@ -833,8 +833,8 @@ call coc#config('languageserver', {
 \ 'efm': {
 \   'command': 'efm-langserver',
 \   'args': [],
-\   'filetypes': ['go', 'eruby', 'markdown']
-\ }
+\   'filetypes': ['go', 'eruby', 'markdown', 'vim']
+\ },
 \ })
 
 " Git

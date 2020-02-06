@@ -9,7 +9,11 @@ languages:
     format-command: "htmlbeautifier"
 
   markdown:
-    lint-command: 'markdownlint -s'
+    lint-command: "markdownlint -s"
     lint-stdin: true
     lint-formats:
-      - '%f:%l %m'
+      - "%f:%l %m"
+
+  vim:
+    lint-command: "vint -"
+    lint-stdin: true
