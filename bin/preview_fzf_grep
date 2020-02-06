@@ -5,7 +5,7 @@ target = ARGV[0].split(':')[2..-1].join(':')
 
 start = [line_num.to_i - 10, 1].max
 last = line_num.to_i + 100
-result = `ccat --color=always #{file} | gsed -n #{start},#{last}p`
+result = `bat --color=always --style=grid --theme=ansi-dark #{file} | gsed -n #{start},#{last}p`
 
 result.split("\n").each.with_index do |line, index|
   if line_num.to_i - start == index
