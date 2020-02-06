@@ -176,7 +176,7 @@ fi
 
 if whence bat > /dev/null; then
   alias bat='bat --theme zenburn'
-  alias b='bat --paging never --theme zenburn --style changes'
+  alias b='bat --color=always --style=grid --theme=ansi-dark'
 fi
 # }}}
 
