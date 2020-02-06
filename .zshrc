@@ -378,7 +378,7 @@ zle -N fzf-direct-completion
 # Project
 function f() {
   local project dir repository session current_session
-  project=$(ghq list | fzf --prompt='Project >')
+  project=$(ghq list | fzf --prompt='Project >' --preview "glow -s dark {}" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up)
 
   if [[ $project == "" ]]; then
     return 1
