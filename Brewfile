@@ -67,6 +67,7 @@ install direnv
 install dust
 install exa
 install fd
+install findutils
 install gawk
 install global
 install glow
