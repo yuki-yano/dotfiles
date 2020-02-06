@@ -57,20 +57,31 @@ install ag
 install asciinema
 install autoconf
 install automake
+install bat
+install ccat
 install cmake
 install coreutils
+install ctop
 install curl
 install direnv
+install dust
+install exa
+install fd
 install gawk
 install global
+install glow
 install gnu-sed
 install gpatch
 install gpg2
 install graphviz
+install jq
 install nkf
 install parallel
+install peco
 install reattach-to-user-namespace
+install ripgrep
 install rsync
+install tokei
 install tree
 install universal-ctags/universal-ctags/universal-ctags --HEAD --with-jansson
 install w3m
@@ -78,7 +89,11 @@ install watch
 install wget
 
 ## VCS
+install diff-so-fancy
+install ghq
+install gibo
 install git
+install hub
 install tig
 
 ## Media

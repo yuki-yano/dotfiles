@@ -64,60 +64,11 @@ zplugin light junegunn/fzf-bin
 zplugin ice lucid wait"0" depth"1" as"program" mv"bin/fzf-tmux -> ${ZPFX}/bin/fzf-tmux"
 zplugin light junegunn/fzf
 
-zplugin ice lucid wait"0" from"gh-r" as"program" mv"*darwin*/peco -> ${ZPFX}/bin/peco"
-zplugin light peco/peco
-
-# command
-zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/ccat -> ${ZPFX}/bin/ccat"
-zplugin light jingweno/ccat
-
-zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/bat -> ${ZPFX}/bin/bat"
-zplugin light sharkdp/bat
-
-zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*macos*" mv"exa-macos-x86_64 -> ${ZPFX}/bin/exa"
-zplugin light ogham/exa
-
-zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/fd -> ${ZPFX}/bin/fd"
-zplugin light sharkdp/fd
-
-zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"dust -> ${ZPFX}/bin/dust"
-zplugin light bootandy/dust
-
-zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*apple-darwin*" mv"ripgrep*/rg -> ${ZPFX}/bin/rg"
-zplugin light BurntSushi/ripgrep
-
-zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin_amd*" mv"*darwin*/ghq -> ${ZPFX}/bin/ghq"
-zplugin light motemen/ghq
-
-zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"*darwin*/bin/hub -> ${ZPFX}/bin/hub"
-zplugin light github/hub
-
-zplugin ice lucid wait"0" as"program" depth"1" pick"gibo" mv"gibo -> ${ZPFX}/bin/gibo" mv" -> ${ZPFX}/bin/gibo"
-zplugin light simonwhitaker/gibo
-
-zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*osx*" mv"jq-osx-amd64 -> ${ZPFX}/bin/jq"
-zplugin light stedolan/jq
-
-zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*macos*" mv"yj-macos -> ${ZPFX}/bin/yj"
-zplugin light sclevine/yj
-
-zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*darwin*" mv"tokei -> ${ZPFX}/bin/tokei"
-zplugin light XAMPPRocky/tokei
-
 zplugin ice lucid wait"0" depth"1" as"program" src"tms.plugin.zsh" pick"tms"
 zplugin light yuki-ycino/tms
 
 zplugin ice lucid wait"0" depth"1" as"program" src"tmk.plugin.zsh" pick"tmk"
 zplugin light yuki-ycino/tmk
-
-zplugin ice lucid wait"0" depth"1" lucid as"program" pick"bin/git-dsf"
-zplugin light zdharma/zsh-diff-so-fancy
-
-zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin*" mv"ctop* -> ${ZPFX}/bin/ctop"
-zplugin light bcicen/ctop
-
-zplugin ice lucid wait"0" depth"1" as"program" mv"docker-clean -> ${ZPFX}/bin/docker-clean"
-zplugin light ZZROTDesign/docker-clean
 
 # Language Server
 zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd64*" mv"efm-langserver -> ${ZPFX}/bin/efm-langserver"
@@ -241,10 +192,6 @@ if whence hub > /dev/null; then
 fi
 # }}}
 
-# }}}
-
-# cdd {{{
-chpwd_functions+=_cdd_chpwd
 # }}}
 
 # }}}
