@@ -1074,9 +1074,9 @@ command! FzfOpenGf call s:fzf_open_gf()
 
 " fzf-preview {{{3
 let g:fzf_preview_command                      = 'bat --color=always --style=grid --theme=ansi-dark {-1}'
-let g:fzf_preview_filelist_command             = "rg --files --hidden --follow -g !'* *'"
+let g:fzf_preview_filelist_command             = "rg --files --hidden --follow"
 let g:fzf_preview_grep_preview_cmd             = 'preview_fzf_grep'
-let g:fzf_preview_filelist_postprocess_command = 'xargs exa --colour=always'
+let g:fzf_preview_filelist_postprocess_command = 'gxargs -d "\n" exa --color=always'
 let g:fzf_preview_split_key_map                = 'ctrl-s'
 let g:fzf_preview_use_dev_icons                = 1
 
