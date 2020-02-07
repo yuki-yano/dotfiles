@@ -43,6 +43,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
   call dein#add('rhysd/vim-fixjson',                       {'lazy': 1, 'on_ft': 'json'})
   call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescriptreact', 'typescript.tsx']})
+  call dein#add('tpope/vim-rails',                         {'lazy': 1, 'on_ft': 'ruby'})
   " }}}3
 
   " Git {{{3
