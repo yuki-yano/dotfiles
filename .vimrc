@@ -1003,21 +1003,22 @@ let g:neomru#dictionary_mru_path = expand('~/.cache/vim/neomru/dictionary')
 function! s:fzf_set_register()
   call fzf#run({
   \ 'source': <SID>get_register_history(),
-  \ 'options': '--no-sort --with-nth 2.. --prompt="RegisterHistory>"',
+  \ 'options': '--no-sort --with-nth 3.. --prompt="RegisterHistory>" --preview "preview_yankround_register {1}"',
   \ 'sink': function('<SID>register_history_sink'),
-  \ 'window': 'top split new',
+  \ 'window': 'call fzf_preview#window#create_centered_floating_window()',
   \ })
-  execute 'resize' float2nr(0.3 * &lines)
 endfunction
+
+let s:register_preview_command = 'preview_yankround_register {1}'
 
 function! s:get_register_history()
   let l:histories = map(copy(g:_yankround_cache), 'split(v:val, "\t", 1)')
-  return map(l:histories, 'v:val[0] . " "  . v:val[1]')
+  return map(l:histories, 'v:key + 1 . " " . v:val[0] . " "  . v:val[1]')
 endfunction
 
 function! s:register_history_sink(line)
   let l:parts = split(a:line, ' ', 1)
-  call setreg('"', join(l:parts[1:], ' '), l:parts[0])
+  call setreg('"', join(l:parts[2:], ' '), l:parts[0])
 endfunction
 
 command! FzfSetRegister call <SID>fzf_set_register()
@@ -1029,9 +1030,8 @@ function! s:fzf_delete_history() abort
   \ 'source': <SID>command_history(),
   \ 'options': '--multi --prompt="DeleteHistory>"',
   \ 'sink': function('<SID>delete_history'),
-  \ 'window': 'top split new'
+  \ 'window': 'call fzf_preview#window#create_centered_floating_window()'
   \ })
-  execute 'resize' float2nr(0.3 * &lines)
 endfunction
 
 function! s:command_history() abort
@@ -1061,11 +1061,11 @@ function! s:fzf_open_gf()
   endif
 
   call fzf#run({
-  \ 'source': 'rg --files --hidden --follow --glob "!.git/*"',
+  \ 'source': 'rg --files --hidden --follow',
   \ 'sink': 'e',
   \ 'options': '-x --multi --prompt="CursorFiles>" --query=' . shellescape(s:file_path),
-  \ 'window': 'top split new'})
-  execute 'resize' float2nr(0.3 * &lines)
+  \ 'window': 'call fzf_preview#window#create_centered_floating_window()'
+  \ })
 endfunction
 
 command! FzfOpenGf call s:fzf_open_gf()
@@ -1486,7 +1486,7 @@ function! s:fzf_bookmarks()
   call fzf#run(fzf#wrap({
   \ 'source':  s:fzf_bookmarks_list(),
   \ 'options': "--delimiter : --prompt='Bookmarks>' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview --preview 'preview_fzf_bookmark {}'",
-  \ 'window':  'top split new',
+  \ 'window':  'call fzf_preview#window#create_centered_floating_window()',
   \ }))
 endfunction
 
