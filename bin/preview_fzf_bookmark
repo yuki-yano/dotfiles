@@ -6,7 +6,15 @@ target = ARGV[0].split(':')[2..-1].join(':')
 
 start = [line_num.to_i - 10, 1].max
 last = line_num.to_i + 100
-result = `bat --color=always --style=grid --theme=ansi-dark #{file} | gsed -n #{start},#{last}p`
+
+cmd = [
+  'bat --color=always --style=grid --theme=ansi-dark',
+  'ccat --color=always',
+  'cat'
+].find { |c| `which #{c.split(' ').first} 2>/dev/null` != '' }
+sed = %w[gsed sed].find { |c| `which #{c} 2>/dev/null` != '' }
+
+result = `#{cmd} #{file} | #{sed} -n #{start},#{last}p`
 
 result.split("\n").each.with_index do |line, index|
   if line_num.to_i - start == index
