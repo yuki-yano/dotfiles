@@ -1082,6 +1082,7 @@ nnoremap <silent> <Leader>p       :<C-u>FzfPreviewFromResources project_mru git<
 nnoremap <silent> <Leader>gs      :<C-u>FzfPreviewGitStatus<CR>
 nnoremap <silent> <Leader>b       :<C-u>FzfPreviewBuffers<CR>
 nnoremap <silent> <Leader>o       :<C-u>FzfPreviewProjectMruFiles<CR>
+nnoremap <silent> <Leader>m       :<C-u>FzfPreviewBookmarks<CR>
 nnoremap          <CR>            :<C-u>FzfPreviewProjectGrep<Space>
 nnoremap          <Leader><CR>    "syiw:FzfPreviewProjectGrep<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR>
 xnoremap          <CR>            "sy:FzfPreviewProjectGrep<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR>
