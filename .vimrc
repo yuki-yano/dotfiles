@@ -1426,9 +1426,6 @@ endif
 " }}}3
 
 " bookmarks {{{3
-let g:bookmark_sign = '>>'
-let g:bookmark_annotation_sign = '##'
-
 function! g:BMBufferFileLocation(file)
   let l:filename = 'vim-bookmarks'
   let l:location = ''
@@ -1445,52 +1442,6 @@ function! g:BMBufferFileLocation(file)
     return simplify(fnamemodify(a:file, ':p:h') . '/.' . l:filename)
   endif
 endfunction
-
-function! s:bookmarks_format_line(line)
-  let l:line = split(a:line, ':')
-  let l:fname = fnamemodify(l:line[0], ':.')
-  let l:lnr = l:line[1]
-  let l:text = l:line[2]
-
-  if l:text ==# 'Annotation'
-    let l:comment = l:line[3]
-  else
-    let l:text = join(l:line[2 : ], ':')
-  endif
-
-  if !filereadable(l:fname)
-    return ''
-  endif
-
-  if l:text !=# 'Annotation'
-    return fname . ':' . lnr . ': ' . text
-  else
-    return fname . ':' . lnr . ': ' . text . ':' . l:comment
-  endif
-endfunction
-
-function! s:fzf_bookmarks_list()
-  let l:list = []
-
-  for l:bookmark in bm#location_list()
-    let l:line = s:bookmarks_format_line(l:bookmark)
-    if l:line !=# ''
-      call add(l:list, l:line)
-    endif
-  endfor
-  return l:list
-endfunction
-
-function! s:fzf_bookmarks()
-  call fzf#run(fzf#wrap({
-  \ 'source':  s:fzf_bookmarks_list(),
-  \ 'options': "--delimiter : --prompt='Bookmarks>' --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up,?:toggle-preview --preview 'preview_fzf_bookmark {}'",
-  \ 'window':  'call fzf_preview#window#create_centered_floating_window()',
-  \ }))
-endfunction
-
-command! FzfBookmarks call s:fzf_bookmarks()
-nnoremap <silent> <Leader>m :<C-u>FzfBookmarks<CR>
 " }}}3
 
 " easy-align {{{3
