@@ -704,7 +704,6 @@ AutoCmd FileType sh,bash,zsh,man setlocal keywordprg=man
 
 " Set quit {{{2
 AutoCmd FileType help nnoremap <silent> <buffer> q :<C-u>quit<CR>
-AutoCmd FileType qf   nnoremap <silent> <buffer> q :<C-u>quit<CR>
 AutoCmd FileType diff nnoremap <silent> <buffer> q :<C-u>quit<CR>
 AutoCmd FileType man  nnoremap <silent> <buffer> q :<C-u>quit<CR>
 AutoCmd FileType git  nnoremap <silent> <buffer> q :<C-u>quit<CR>
@@ -1610,8 +1609,8 @@ endif
 let g:quickr_preview_keymaps = 0
 
 function! s:quickr_preview_settings() abort
-  nmap <silent> <buffer> <Leader><CR> <Plug>(quickr_preview)
-  nmap <silent> <buffer> <Leader>q <plug>(quickr_preview_qf_close)
+  nmap <silent> <buffer> p <Plug>(quickr_preview)
+  nmap <silent> <buffer> q <Plug>(quickr_preview_qf_close)
 endfunction
 
 AutoCmd FileType qf call s:quickr_preview_settings()
