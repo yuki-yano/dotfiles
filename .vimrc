@@ -724,10 +724,10 @@ AutoCmd CmdwinEnter * call <SID>init_cmdwin()
 
 function! s:init_cmdwin() abort
   set number | set norelativenumber
-  nnoremap <buffer> <Enter> <Enter>
+  nnoremap <buffer> <CR> <CR>
   nnoremap <buffer> <silent> q :<C-u>quit<CR>
-  inoremap <buffer> <C-c> <C-c>
   inoremap <buffer> <C-c> <Esc>l<C-c>
+  let b:coc_suggest_disable = 1
 
   " nnoremap <silent> <buffer> dd :<C-u>rviminfo<CR>:call histdel(getcmdwintype(), line('.') - line('$'))<CR>:wviminfo!<CR>dd
   startinsert!
