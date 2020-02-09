@@ -101,7 +101,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mg979/vim-visual-multi',    {'rev': 'test'})
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',      {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('rbtnn/vim-jumptoline',      {'lazy': 1, 'on_cmd': 'JumpToLine'})
+  call dein#add('rbtnn/vim-jumptoline')
   call dein#add('rhysd/accelerated-jk',      {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/clever-f.vim')
   call dein#add('ronakg/quickr-preview.vim')
@@ -1084,8 +1084,10 @@ nnoremap <silent> <Leader>b       :<C-u>FzfPreviewBuffers<CR>
 nnoremap <silent> <Leader>o       :<C-u>FzfPreviewProjectMruFiles<CR>
 nnoremap <silent> <Leader>m       :<C-u>FzfPreviewBookmarks<CR>
 nnoremap          <CR>            :<C-u>FzfPreviewProjectGrep<Space>
-nnoremap          <Leader><CR>    "syiw:FzfPreviewProjectGrep<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR>
 xnoremap          <CR>            "sy:FzfPreviewProjectGrep<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR>
+
+AutoCmd FileType qf nnoremap <buffer> <CR> :<C-u>FzfPreviewJumpToLine<CR>
+AutoCmd FileType qf nnoremap <buffer> cc   <CR>
 " }}}3
 
 " lexima {{{3
@@ -1596,13 +1598,6 @@ if dein#tap('vim-jplus')
   vmap J  <Plug>(jplus)
   nmap gJ <Plug>(jplus-input)
   vmap gJ <Plug>(jplus-input)
-endif
-" }}}3
-
-" jumptoline {{{3
-if dein#tap('vim-jumptoline')
-  AutoCmd FileType qf nnoremap <buffer> <CR> :<C-u>JumpToLine<CR>
-  AutoCmd FileType qf nnoremap <buffer> cc   <CR>
 endif
 " }}}3
 
