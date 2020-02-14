@@ -750,6 +750,9 @@ done
 
 # Misc {{{
 
+# GitKraken
+alias kraken='open -na "GitKraken" --args -p "$(git rev-parse --show-toplevel)"'
+
 # Loading zpty
 # https://github.com/zchee/deoplete-zsh
 zmodload zsh/zpty
