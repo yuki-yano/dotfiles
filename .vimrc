@@ -49,8 +49,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Git {{{3
   call dein#add('ToruIwashita/git-switcher.vim', {'lazy': 1, 'on_cmd': ['Gsw', 'GswSave', 'GswLoad']})
   call dein#add('lambdalisue/gina.vim',          {'lazy': 1, 'on_cmd': 'Gina', 'on_func': 'gina#core#get', 'hook_post_source': 'call Hook_on_post_source_gina()'})
-  call dein#add('rhysd/git-messenger.vim',       {'lazy': 1, 'on_cmd': 'GitMessenger', 'on_map': '<Plug>'})
-  call dein#add('tyru/open-browser-github.vim',  {'lazy': 1, 'depends': 'open-browser.vim', 'on_cmd': 'OpenGithubFile'})
   " }}}3
 
   " Fuzzy Finder {{{3
@@ -149,7 +147,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('thinca/vim-localrc')
   call dein#add('tweekmonster/startuptime.vim', {'lazy': 1, 'on_cmd': 'StartupTime'})
   call dein#add('tyru/capture.vim',             {'lazy': 1, 'on_cmd': 'Capture'})
-  call dein#add('tyru/open-browser.vim')
   call dein#add('tyru/vim-altercmd')
   call dein#add('wesQ3/vim-windowswap',         {'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#DoWindowSwap']})
   " }}}3
@@ -1246,11 +1243,6 @@ endif
 
 " Git {{{2
 
-" git-messenger {{{3
-let g:git_messenger_no_default_mappings = v:true
-nmap <Leader>gm <Plug>(git-messenger)
-" }}}3
-
 " git-switcher {{{3
 AlterCommand! <cmdwin> gsw Gsw
 AlterCommand! <cmdwin> gss GswSave
@@ -1308,10 +1300,6 @@ if dein#tap('gina.vim')
     call gina#custom#mapping#nmap('/\%(status\|commit\|branch\|ls\|log\|reflog\|grep\)', 'q', 'ZQ', {'nnoremap': 1, 'silent': 1})
   endfunction
 endif
-" }}}3
-
-" open-browser-github {{{3
-AlterCommand! <cmdwin> github OpenGithubFile
 " }}}3
 
 " }}}2
