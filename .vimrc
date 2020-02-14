@@ -1092,7 +1092,11 @@ nnoremap <silent> <Leader>b       :<C-u>FzfPreviewBuffers<CR>
 nnoremap <silent> <Leader>o       :<C-u>FzfPreviewProjectMruFiles<CR>
 nnoremap <silent> <Leader>m       :<C-u>FzfPreviewBookmarks<CR>
 nnoremap          <CR>            :<C-u>FzfPreviewProjectGrep<Space>
-xnoremap          <CR>            "sy:FzfPreviewProjectGrep<Space><C-r>=substitute(@s, '/', '\\/', 'g')<CR>
+xnoremap          <CR>            "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+
+nnoremap <silent> <LocalLeader>b              :<C-u>FzfPreviewBufferTags<CR>
+nnoremap <silent> <LocalLeader><LocalLeader>q :<C-u>FzfPreviewQuickFix<CR>
+nnoremap <silent> <LocalLeader><LocalLeader>l :<C-u>FzfPreviewLocationList<CR>
 
 AutoCmd FileType qf nnoremap <buffer> <CR> :<C-u>FzfPreviewJumpToLine<CR>
 AutoCmd FileType qf nnoremap <buffer> cc   <CR>
