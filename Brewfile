@@ -78,7 +78,6 @@ install graphviz
 install jq
 install nkf
 install parallel
-install peco
 install reattach-to-user-namespace
 install ripgrep
 install rsync

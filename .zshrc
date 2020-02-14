@@ -408,6 +408,49 @@ function f() {
   fi
 }
 
+## History
+function history-selection() {
+  local history
+  history=$(\history -n -r 1 | fzf --no-sort --query="$LBUFFER" --prompt="History> ")
+  if [[ $history != "" ]]; then
+    BUFFER=$history
+    CURSOR=$#BUFFER
+  fi
+  zle reset-prompt
+}
+zle -N history-selection
+
+## Snippet
+function snippet-selection() {
+  local snippet
+  snippet=$(\grep -v "^#" ~/.config/snippets | \grep -v "^\s*$" | fzf --query "$LBUFFER" --prompt="Snippet> ")
+  if [[ $snippet != "" ]]; then
+    BUFFER=$snippet
+    CURSOR=$#BUFFER
+  fi
+  zle reset-prompt
+}
+zle -N snippet-selection
+
+function process-selection() {
+  local pids
+  pids=$(\ps -u $USER -o 'pid,stat,%cpu,%mem,cputime,command' | fzf --multi --prompt="Kill processes" | cut -f1 | tr '\n' ' ' )
+
+  if [[ $pids != "" ]]; then
+    BUFFER="kill $pids"
+    CURSOR=$#BUFFER
+  fi
+  zle reset-prompt
+}
+zle -N process-selection
+
+## GitHub Issues
+function ghi() {
+  local issues
+  issues=$(gh issue list --state open --limit 100 | fzf --multi --preview 'gh issue view -p {1}' | cut -f1)
+  echo $issues | xargs -I{} gh issue view {}
+}
+
 # Global Alias
 
 ## Git
@@ -417,61 +460,6 @@ alias -g LB='$(git branch    | fzf-branch | fzf --multi --preview="git fzflog {}
 
 ## RSpec
 alias -g RS='$(git status --short | fzf-git-rspec | fzf --multi --preview="git diff --color=always {}" --prompt "Changed RSpec>")'
-
-# }}}
-
-# peco {{{
-
-# history
-function peco-history-selection() {
-  BUFFER=$(\history -n -r 1 | peco --query "$BUFFER")
-  CURSOR=$#BUFFER
-  zle reset-prompt
-}
-zle -N peco-history-selection
-
-function peco-snippet-selection() {
-  BUFFER=$(\grep -v "^#" ~/.config/snippets | \grep -v "^\s*$" | peco --query "$BUFFER")
-  CURSOR=$#BUFFER
-  zle reset-prompt
-}
-zle -N peco-snippet-selection
-
-function peco-process-selection() {
-  local pids
-  pids=$(\ps -u $USER -o 'pid,stat,%cpu,%mem,cputime,command' | peco | awk '{ print $1 }' | tr '\n' ' ' )
-
-  if [[ $pids != "" ]]; then
-    BUFFER="kill $pids"
-    CURSOR=$#BUFFER
-  fi
-  zle reset-prompt
-}
-zle -N peco-process-selection
-
-# nicovideo
-function peco-nico-ranking() {
-  ruby -r rss -e 'RSS::Parser.parse("http://www.nicovideo.jp/ranking/fav/daily/all?rss=2.0").channel.items.each {|item| puts item.link + "\t" + item.title}' | peco | while read -r line; do
-    echo "$line"
-    echo "$line" | awk '{print $1}' | nicovideo-dump | mplayer -
-  done
-}
-
-function peco-nico-tag() {
-  TAG=$(url-encode "$*")
-  ruby -r rss -e "RSS::Parser.parse(\"http://www.nicovideo.jp/tag/$TAG?rss=2.0\").channel.items.each {|item| puts item.link + \"\\t\" + item.title}" | peco | while read -r line; do
-    echo "$line"
-    echo "$line" | awk '{print $1}' | nicovideo-dump | mplayer -
-  done
-}
-
-function peco-nico-bgm() {
-  TAG=$(url-encode "作業用BGM $*")
-  ruby -r rss -e "RSS::Parser.parse(\"http://www.nicovideo.jp/tag/$TAG?rss=2.0\").channel.items.each {|item| puts item.link + \"\\t\" + item.title}" | peco | while read -r line; do
-    echo "$line"
-    echo "$line" | awk '{print $1}' | nicovideo-dump | mplayer - -novideo
-  done
-}
 
 # }}}
 
@@ -690,21 +678,21 @@ bindkey -M menuselect '^p' up-line-or-history
 bindkey -M menuselect '^h' undo
 
 # All Mode bind
-bindkey -M viins '^r'   peco-history-selection
-bindkey -M vicmd '^r'   peco-history-selection
-bindkey -M vivis '^r'   peco-history-selection
-bindkey -M viins '^xs'  peco-snippet-selection
-bindkey -M vicmd '^xs'  peco-snippet-selection
-bindkey -M vivis '^xs'  peco-snippet-selection
-bindkey -M viins '^x^s' peco-snippet-selection
-bindkey -M vicmd '^x^s' peco-snippet-selection
-bindkey -M vivis '^x^s' peco-snippet-selection
-bindkey -M viins '^xk'  peco-process-selection
-bindkey -M vicmd '^xk'  peco-process-selection
-bindkey -M vivis '^xk'  peco-process-selection
-bindkey -M viins '^x^k' peco-process-selection
-bindkey -M vicmd '^x^k' peco-process-selection
-bindkey -M vivis '^x^k' peco-process-selection
+bindkey -M viins '^r'   history-selection
+bindkey -M vicmd '^r'   history-selection
+bindkey -M vivis '^r'   history-selection
+bindkey -M viins '^xs'  snippet-selection
+bindkey -M vicmd '^xs'  snippet-selection
+bindkey -M vivis '^xs'  snippet-selection
+bindkey -M viins '^x^s' snippet-selection
+bindkey -M vicmd '^x^s' snippet-selection
+bindkey -M vivis '^x^s' snippet-selection
+bindkey -M viins '^xk'  process-selection
+bindkey -M vicmd '^xk'  process-selection
+bindkey -M vivis '^xk'  process-selection
+bindkey -M viins '^x^k' process-selection
+bindkey -M vicmd '^x^k' process-selection
+bindkey -M vivis '^x^k' process-selection
 
 # Command Line Edit
 zle -N edit-command-line

@@ -7,7 +7,6 @@ This repository includes a lot of configuration file is used and optimized for m
 - zsh
   - zplugin
   - fzf
-  - peco
 - neovim
   - fzf
   - vim-tmux-navigator
