@@ -132,7 +132,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Util {{{3
   call dein#add('AndrewRadev/linediff.vim',     {'lazy': 1, 'on_cmd': 'Linediff'})
   call dein#add('aiya000/aho-bakaup.vim')
-  call dein#add('bogado/file-line')
   call dein#add('dhruvasagar/vim-table-mode',   {'lazy': 1, 'on_cmd': 'TableModeToggle'})
   call dein#add('jsfaint/gen_tags.vim')
   call dein#add('kana/vim-niceblock',           {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
