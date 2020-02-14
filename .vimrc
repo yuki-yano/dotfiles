@@ -710,10 +710,10 @@ AutoCmd FileType git  nnoremap <silent> <buffer> q :<C-u>quit<CR>
 " Command Line Window {{{1
 set cedit=\<C-c>
 
-nnoremap : q:
-xnoremap : q:
-nnoremap q: :
-xnoremap q: :
+" nnoremap : q:
+" xnoremap : q:
+" nnoremap q: :
+" xnoremap q: :
 
 AutoCmd CmdwinEnter * call <SID>init_cmdwin()
 
@@ -722,7 +722,6 @@ function! s:init_cmdwin() abort
   nnoremap <buffer> <CR> <CR>
   nnoremap <buffer> <silent> q :<C-u>quit<CR>
   inoremap <buffer> <C-c> <Esc>l<C-c>
-  let b:coc_suggest_disable = 1
 
   " nnoremap <silent> <buffer> dd :<C-u>rviminfo<CR>:call histdel(getcmdwintype(), line('.') - line('$'))<CR>:wviminfo!<CR>dd
   startinsert!
@@ -736,9 +735,12 @@ endfunction
 " altercmd {{{3
 if dein#tap('vim-altercmd')
   call altercmd#load()
+  AlterCommand!          show[hlgroup] ShowHlGroup
   AlterCommand! <cmdwin> show[hlgroup] ShowHlGroup
-  AlterCommand! <cmdwin> vs[code] VSCode
-  AlterCommand! <cmdwin> co[de]   VSCode
+  AlterCommand!          vs[code]      VSCode
+  AlterCommand! <cmdwin> vs[code]      VSCode
+  AlterCommand!          co[de]        VSCode
+  AlterCommand! <cmdwin> co[de]        VSCode
 endif
 " }}}3
 
@@ -747,12 +749,14 @@ endif
 " Plugin Manager {{{2
 
 " dein {{{3
+AlterCommand!          dein Dein
 AlterCommand! <cmdwin> dein Dein
 " }}}
 
 " }}}2
 
 " IDE {{{2
+AlterCommand!          list CocList
 AlterCommand! <cmdwin> list CocList
 
 let g:coc_global_extensions = [
@@ -880,6 +884,7 @@ let g:vim_markdown_conceal_code_blocks     = 0
 " }}}3
 
 " marked {{{3
+AlterCommand!          mark[ed] MarkedOpen
 AlterCommand! <cmdwin> mark[ed] MarkedOpen
 " }}}3
 
@@ -901,6 +906,7 @@ AutoCmd FileType vue syntax sync fromstart
 " Completion & Fuzzy Finder {{{2
 
 " Denite {{{3
+AlterCommand!          d[enite] Denite
 AlterCommand! <cmdwin> d[enite] Denite
 
 if dein#tap('denite.nvim')
@@ -1259,19 +1265,30 @@ endif
 " Git {{{2
 
 " git-switcher {{{3
+AlterCommand!          gsw Gsw
 AlterCommand! <cmdwin> gsw Gsw
+AlterCommand!          gss GswSave
 AlterCommand! <cmdwin> gss GswSave
+AlterCommand!          gsl GswLoad
 AlterCommand! <cmdwin> gsl GswLoad
 " }}}3
 
 " gina {{{3
+AlterCommand!          git   Gina
 AlterCommand! <cmdwin> git   Gina
+AlterCommand!          gina  Gina
 AlterCommand! <cmdwin> gina  Gina
+AlterCommand!          gs    Gina<Space>status
 AlterCommand! <cmdwin> gs    Gina<Space>status
+AlterCommand!          gp    Gina<Space>patch
 AlterCommand! <cmdwin> gp    Gina<Space>patch
+AlterCommand!          gci   Gina<Space>commit
 AlterCommand! <cmdwin> gci   Gina<Space>commit
+AlterCommand!          gd    Gina<Space>diff
 AlterCommand! <cmdwin> gd    Gina<Space>diff
+AlterCommand!          gdc   Gina<Space>diff<Space>--cached
 AlterCommand! <cmdwin> gdc   Gina<Space>diff<Space>--cached
+AlterCommand!          blame Gina<Space>blame
 AlterCommand! <cmdwin> blame Gina<Space>blame
 
 if dein#tap('gina.vim')
@@ -1410,7 +1427,9 @@ endif
 " }}}3
 
 " ags {{{3
+AlterCommand!          ag  Ags
 AlterCommand! <cmdwin> ag  Ags
+AlterCommand!          age AgsEditSearchResult
 AlterCommand! <cmdwin> age AgsEditSearchResult
 AutoCmd FileType agsv,agse nnoremap <silent> <buffer> q :<C-u>quit<CR>
 " }}}3
@@ -1587,7 +1606,9 @@ xmap <silent> <Leader>k <Plug>(edgemotion-k)
 " }}}3
 
 " ferret {{{3
+AlterCommand!          rg  Ack<Space>--smart-case
 AlterCommand! <cmdwin> rg  Ack<Space>--smart-case
+AlterCommand!          ack Ack<Space>--smart-case
 AlterCommand! <cmdwin> ack Ack<Space>--smart-case
 
 let g:FerretMap      = 0
@@ -1758,6 +1779,7 @@ let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'help',
 " }}}3
 
 " brightest {{{3
+AlterCommand!          br[ight] BrightestToggle
 AlterCommand! <cmdwin> br[ight] BrightestToggle
 
 let g:brightest#enable_on_CursorHold        = 1
@@ -2272,6 +2294,7 @@ let g:automatic_config = [
 " }}}
 
 " capture {{{3
+AlterCommand!          cap[ture] Capture
 AlterCommand! <cmdwin> cap[ture] Capture
 AutoCmd FileType capture nnoremap <silent> <buffer> q :<C-u>quit<CR>
 " }}}3
@@ -2309,6 +2332,7 @@ let g:table_mode_corner='|'
 " }}}3
 
 " tagbar {{{3
+AlterCommand!          tag[bar] TagbarOpen<Space>j
 AlterCommand! <cmdwin> tag[bar] TagbarOpen<Space>j
 
 let g:tagbar_autoshowtag = 1
