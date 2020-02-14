@@ -833,7 +833,7 @@ nmap gp <Plug>(coc-git-prevchunk)
 nmap gn <Plug>(coc-git-nextchunk)
 
 " keymap
-nnoremap K               :call CocAction('doHover')<CR>
+nnoremap K               :call <SID>show_documentation()<CR>
 nmap     <LocalLeader>p  <Plug>(coc-diagnostic-prev)
 nmap     <LocalLeader>n  <Plug>(coc-diagnostic-next)
 nmap     <LocalLeader>d  <Plug>(coc-definition)
@@ -847,6 +847,14 @@ xmap     <Leader>a       <Plug>(coc-format-selected)
 
 AutoCmd FileType json nnoremap <buffer> <Leader>a :<C-u>FixJson<CR><Plug>(coc-format)
 AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+
+function! s:show_documentation()
+  if &filetype == 'vim'
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
 " }}}2
 
 " Language {{{2
