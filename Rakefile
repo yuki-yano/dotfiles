@@ -203,42 +203,6 @@ namespace :vscode do
   end
 end
 
-namespace :apm do
-  desc 'Install atom packages'
-  task install: 'Apmfile' do
-    packages = File.readlines('Apmfile').map(&:chomp).select do |line|
-      !line.empty? && line[0] != '#'
-    end
-    packages = packages.map do |package|
-      package.split('@')[0]
-    end
-
-    installed_packages = `apm list --installed --bare`.split("\n")
-
-    install_packages = packages - installed_packages
-    install_packages.map do |package|
-      sh "apm install #{package}"
-    end
-  end
-
-  desc 'Update atom packages'
-  task update: 'Apmfile' do
-    sh 'apm upgrade'
-  end
-
-  namespace :update do
-    desc 'Update Apmfile'
-    task file: 'Apmfile' do
-      File.write('Apmfile', `apm list --installed --bare`.split("\n").map { |package| package.split('@')[0] }.join("\n"))
-    end
-  end
-
-  desc 'Uninstall atom packages'
-  task :uninstall do
-    sh 'apm uninstall .'
-  end
-end
-
 namespace :coteditor do
   desc 'Integrate command line with citeditor'
   task :install do
