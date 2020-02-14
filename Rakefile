@@ -2,26 +2,15 @@ SRC_DIR       = File.dirname(File.expand_path(__FILE__))
 ZPLUGIN_DIR   = File.join(ENV['HOME'], '.zplugin')
 ZGEN_DIR      = File.join(ENV['HOME'], '.zsh/zgen')
 DOTFILES_SRCS = %w[
-  .Xdefaults
-  .agignore
-  .amethyst
   .atom
   .bashrc
   .config
   .ctags.d
   .dircolors
-  .gemrc
   .gitattributes_global
   .gitconfig
   .gitignore_global
   .globalrc
-  .pryrc
-  .railsrc
-  .rdebugrc
-  .rgignore
-  .ripgreprc
-  .stylelintrc
-  .textlintrc
   .tigrc
   .tmux.conf
   .vim
