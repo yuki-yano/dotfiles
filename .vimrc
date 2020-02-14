@@ -810,6 +810,10 @@ call coc#config('eslint.filetypes', ['javascript', 'javascriptreact', 'typescrip
 call coc#config('solargraph.diagnostics', v:true)
 call coc#config('solargraph.formatting', v:true)
 
+"" Python
+call coc#config('python.jediEnabled', v:false)
+call coc#config('python.linting.flake8Enabled', v:true)
+
 " Language Server
 call coc#config('languageserver', {
 \ 'graphql': {

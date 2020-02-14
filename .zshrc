@@ -754,12 +754,6 @@ done
 # https://github.com/zchee/deoplete-zsh
 zmodload zsh/zpty
 
-# neovim_remote
-function neovim_autocd() {
-  [[ $NVIM_LISTEN_ADDRESS ]] && neovim-autocd
-}
-chpwd_functions+=( neovim_autocd )
-
 # Auto execute rehash when executing anyenv command
 add-zsh-hook preexec env_rehash
 add-zsh-hook precmd  env_rehash
