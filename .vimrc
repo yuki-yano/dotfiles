@@ -1118,6 +1118,7 @@ function! s:open_gina_patch(paths) abort
 endfunction
 let g:fzf_preview_gina_processors = {'': function('s:open_gina_patch')}
 
+AutoCmd FileType fzf let b:highlight_cursor = 0
 AutoCmd FileType qf nnoremap <buffer> <CR> :<C-u>FzfPreviewJumpToLine<CR>
 AutoCmd FileType qf nnoremap <buffer> cc   <CR>
 " }}}3
