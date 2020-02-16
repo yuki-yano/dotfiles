@@ -72,6 +72,7 @@ install gawk
 install global
 install glow
 install gnu-sed
+install gnu-time
 install gpatch
 install gpg2
 install graphviz
