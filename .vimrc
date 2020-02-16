@@ -150,6 +150,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " develop {{{3
+  call dein#add('rbtnn/vim-vimscript_lasterror')
   call dein#add('thinca/vim-prettyprint')
   call dein#add('vim-jp/vital.vim', {'merged':0})
   " }}}3
