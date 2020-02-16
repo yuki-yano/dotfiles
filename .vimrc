@@ -1083,13 +1083,17 @@ command! FzfOpenGf call s:fzf_open_gf()
 " fzf-preview {{{3
 let g:fzf_preview_command                      = 'bat --color=always --style=grid --theme=ansi-dark {-1}'
 let g:fzf_preview_filelist_postprocess_command = 'gxargs -d "\n" exa --color=always'
-let g:fzf_preview_split_key_map                = 'ctrl-s'
 let g:fzf_preview_use_dev_icons                = 1
+
+let g:fzf_preview_custom_default_processors = fzf_preview#resource_processor#get_default_processors()
+call remove(g:fzf_preview_custom_default_processors, 'ctrl-x')
+let g:fzf_preview_custom_default_processors['ctrl-s'] = function('fzf_preview#resource_processor#split')
 
 nnoremap <silent> <Leader>p       :<C-u>FzfPreviewFromResources project_mru git<CR>
 nnoremap <silent> <Leader>gs      :<C-u>FzfPreviewGitStatus<CR>
-nnoremap <silent> <Leader>b       :<C-u>FzfPreviewBuffers<CR>
-nnoremap <silent> <Leader>o       :<C-u>FzfPreviewProjectMruFiles<CR>
+nnoremap <silent> <Leader>ga      :<C-u>FzfPreviewGitStatus -processors=g:fzf_preview_gina_processors<CR>
+nnoremap <silent> <Leader>b       :<C-u>FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
+nnoremap <silent> <Leader>o       :<C-u>FzfPreviewFromResources buffer project_mru<CR>
 nnoremap <silent> <Leader>m       :<C-u>FzfPreviewBookmarks<CR>
 nnoremap          <CR>            :<C-u>FzfPreviewProjectGrep<Space>
 xnoremap          <CR>            "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
@@ -1097,6 +1101,21 @@ xnoremap          <CR>            "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r
 nnoremap <silent> <LocalLeader>b              :<C-u>FzfPreviewBufferTags<CR>
 nnoremap <silent> <LocalLeader><LocalLeader>q :<C-u>FzfPreviewQuickFix<CR>
 nnoremap <silent> <LocalLeader><LocalLeader>l :<C-u>FzfPreviewLocationList<CR>
+
+function! s:buffers_delete_from_paths(paths) abort
+  for path in a:paths
+    execute 'bdelete! ' . path
+  endfor
+endfunction
+let g:fzf_preview_buffer_delete_processors = fzf_preview#resource_processor#get_processors()
+let g:fzf_preview_buffer_delete_processors['ctrl-x'] = function('s:buffers_delete_from_paths')
+
+function! s:open_gina_patch(paths) abort
+  for path in a:paths
+    execute 'silent Gina patch --oneside ' . path
+  endfor
+endfunction
+let g:fzf_preview_gina_processors = {'': function('s:open_gina_patch')}
 
 AutoCmd FileType qf nnoremap <buffer> <CR> :<C-u>FzfPreviewJumpToLine<CR>
 AutoCmd FileType qf nnoremap <buffer> cc   <CR>
