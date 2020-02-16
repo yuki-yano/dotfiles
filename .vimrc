@@ -98,7 +98,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mg979/vim-visual-multi',    {'rev': 'test'})
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',      {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('rbtnn/vim-jumptoline')
   call dein#add('rhysd/accelerated-jk',      {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/clever-f.vim')
   call dein#add('ronakg/quickr-preview.vim')
@@ -1119,8 +1118,6 @@ endfunction
 let g:fzf_preview_gina_processors = {'': function('s:open_gina_patch')}
 
 AutoCmd FileType fzf let b:highlight_cursor = 0
-AutoCmd FileType qf nnoremap <buffer> <CR> :<C-u>FzfPreviewJumpToLine<CR>
-AutoCmd FileType qf nnoremap <buffer> cc   <CR>
 " }}}3
 
 " lexima {{{3
