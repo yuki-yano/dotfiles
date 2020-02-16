@@ -411,7 +411,7 @@ function f() {
 ## History
 function history-selection() {
   local history
-  history=$(\history -n -r 1 | fzf --no-sort --query="$LBUFFER" --prompt="History> ")
+  history=$(\history -n -r 1 | fzf --no-sort --query="'$LBUFFER" --prompt="History> ")
   if [[ $history != "" ]]; then
     BUFFER=$history
     CURSOR=$#BUFFER
