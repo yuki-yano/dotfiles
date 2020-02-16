@@ -94,6 +94,7 @@ install diff-so-fancy
 install ghq
 install gibo
 install git
+install gitnub/gh/gh
 install hub
 install tig
 
