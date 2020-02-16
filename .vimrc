@@ -827,7 +827,7 @@ call coc#config('languageserver', {
 \ 'efm': {
 \   'command': 'efm-langserver',
 \   'args': [],
-\   'filetypes': ['go', 'eruby', 'markdown', 'vim']
+\   'filetypes': ['go', 'eruby', 'json', 'markdown', 'vim']
 \ },
 \ })
 
