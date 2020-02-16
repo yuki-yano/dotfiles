@@ -973,9 +973,6 @@ if dein#tap('denite.nvim')
   nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep:::! -start-filter<CR>
   nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep:::! -start-filter<CR>
 
-  "" jump
-  nnoremap <silent> <Leader><C-o> :<C-u>Denite jump<CR>
-
   "" change
   nnoremap <silent> <Leader>; :<C-u>Denite change<CR>
 
@@ -1090,14 +1087,15 @@ let g:fzf_preview_custom_default_processors = fzf_preview#resource_processor#get
 call remove(g:fzf_preview_custom_default_processors, 'ctrl-x')
 let g:fzf_preview_custom_default_processors['ctrl-s'] = function('fzf_preview#resource_processor#split')
 
-nnoremap <silent> <Leader>p       :<C-u>FzfPreviewFromResources project_mru git<CR>
-nnoremap <silent> <Leader>gs      :<C-u>FzfPreviewGitStatus<CR>
-nnoremap <silent> <Leader>ga      :<C-u>FzfPreviewGitStatus -processors=g:fzf_preview_gina_processors<CR>
-nnoremap <silent> <Leader>b       :<C-u>FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
-nnoremap <silent> <Leader>o       :<C-u>FzfPreviewFromResources buffer project_mru<CR>
-nnoremap <silent> <Leader>m       :<C-u>FzfPreviewBookmarks<CR>
-nnoremap          <CR>            :<C-u>FzfPreviewProjectGrep<Space>
-xnoremap          <CR>            "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+nnoremap <silent> <Leader>p     :<C-u>FzfPreviewFromResources project_mru git<CR>
+nnoremap <silent> <Leader>gs    :<C-u>FzfPreviewGitStatus<CR>
+nnoremap <silent> <Leader>ga    :<C-u>FzfPreviewGitStatus -processors=g:fzf_preview_gina_processors<CR>
+nnoremap <silent> <Leader>b     :<C-u>FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
+nnoremap <silent> <Leader>o     :<C-u>FzfPreviewFromResources buffer project_mru<CR>
+nnoremap <silent> <Leader><C-o> :<C-u>FzfPreviewJumps<CR>
+nnoremap <silent> <Leader>m     :<C-u>FzfPreviewBookmarks<CR>
+nnoremap          <CR>          :<C-u>FzfPreviewProjectGrep<Space>
+xnoremap          <CR>          "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
 
 nnoremap <silent> <LocalLeader>b              :<C-u>FzfPreviewBufferTags<CR>
 nnoremap <silent> <LocalLeader><LocalLeader>q :<C-u>FzfPreviewQuickFix<CR>
