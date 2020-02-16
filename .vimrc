@@ -478,7 +478,7 @@ function! s:enter(...) abort
     return
   endif
 
-  if g:highlight_cursor
+  if g:highlight_cursor && get(b:, 'highlight_cursor', 1)
     setlocal cursorline cursorcolumn
   endif
   augroup highlight_cursor
