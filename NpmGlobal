@@ -3,6 +3,7 @@
 create-react-app
 expo-cli
 firebase-tools
+fixjson
 gtop
 htmlhint
 javascript-typescript-langserver
