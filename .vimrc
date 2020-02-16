@@ -41,7 +41,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('othree/yajs.vim',                         {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('plasticboy/vim-markdown',                 {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
-  call dein#add('rhysd/vim-fixjson',                       {'lazy': 1, 'on_ft': 'json'})
   call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescriptreact', 'typescript.tsx']})
   call dein#add('tpope/vim-rails',                         {'lazy': 1, 'on_ft': 'ruby'})
   " }}}3
@@ -849,7 +848,6 @@ nmap     <LocalLeader>a  <Plug>(coc-fix-current)
 nmap     <Leader>a       <Plug>(coc-format)
 xmap     <Leader>a       <Plug>(coc-format-selected)
 
-AutoCmd FileType json nnoremap <buffer> <Leader>a :<C-u>FixJson<CR><Plug>(coc-format)
 AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
 function! s:show_documentation()
@@ -862,10 +860,6 @@ endfunction
 " }}}2
 
 " Language {{{2
-
-" fixjson {{{3
-let g:fixjson_fix_on_save = 0
-" }}}3
 
 " gen_tags {{{3
 let g:gen_tags#ctags_auto_gen = 1
