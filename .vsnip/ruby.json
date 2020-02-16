@@ -52,8 +52,8 @@
     "prefix": ["map"],
     "body": ["map { |${1:v}| ${2:code} }"]
   },
-  "mapdo": {
-    "prefix": ["mapdo", "mapd"],
+  "mapd": {
+    "prefix": ["mapd"],
     "body": ["map do |${1:v}|", "\t${2:code}", "end"]
   },
   "lambda": {
