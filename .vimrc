@@ -152,7 +152,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " develop {{{3
   call dein#add('rbtnn/vim-vimscript_lasterror')
   call dein#add('thinca/vim-prettyprint')
-  call dein#add('vim-jp/vital.vim', {'merged':0})
+  call dein#add('vim-jp/vital.vim', {'merged': 0})
   " }}}3
 
   " Color Theme {{{3
@@ -852,7 +852,7 @@ xmap     <Leader>a       <Plug>(coc-format-selected)
 AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
 function! s:show_documentation()
-  if &filetype == 'vim'
+  if &filetype ==# 'vim'
     execute 'h '.expand('<cword>')
   else
     call CocAction('doHover')
