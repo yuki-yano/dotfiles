@@ -1089,8 +1089,7 @@ call remove(g:fzf_preview_custom_default_processors, 'ctrl-x')
 let g:fzf_preview_custom_default_processors['ctrl-s'] = function('fzf_preview#resource_processor#split')
 
 nnoremap <silent> <Leader>p     :<C-u>FzfPreviewFromResources project_mru git<CR>
-nnoremap <silent> <Leader>gs    :<C-u>FzfPreviewGitStatus<CR>
-nnoremap <silent> <Leader>ga    :<C-u>FzfPreviewGitStatus -processors=g:fzf_preview_gina_processors<CR>
+nnoremap <silent> <Leader>gs    :<C-u>FzfPreviewGitStatus -processors=g:fzf_preview_gina_processors<CR>
 nnoremap <silent> <Leader>b     :<C-u>FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
 nnoremap <silent> <Leader>o     :<C-u>FzfPreviewFromResources buffer project_mru<CR>
 nnoremap <silent> <Leader><C-o> :<C-u>FzfPreviewJumps<CR>
@@ -1115,7 +1114,8 @@ function! s:open_gina_patch(paths) abort
     execute 'silent Gina patch --oneside ' . path
   endfor
 endfunction
-let g:fzf_preview_gina_processors = {'': function('s:open_gina_patch')}
+let g:fzf_preview_gina_processors = fzf_preview#resource_processor#get_processors()
+let g:fzf_preview_gina_processors['ctrl-a'] = function('s:open_gina_patch')
 
 AutoCmd FileType fzf let b:highlight_cursor = 0
 " }}}3
