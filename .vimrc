@@ -1095,6 +1095,7 @@ nnoremap <silent> <Leader>o     :<C-u>FzfPreviewFromResources buffer project_mru
 nnoremap <silent> <Leader><C-o> :<C-u>FzfPreviewJumps<CR>
 nnoremap <silent> <Leader>m     :<C-u>FzfPreviewBookmarks<CR>
 nnoremap          <CR>          :<C-u>FzfPreviewProjectGrep<Space>
+nnoremap          <Leader><CR>  :<C-u>FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(@/, '\(\\v\<Bar>\\<\<Bar>\\>\)', '', 'g')<CR>"
 xnoremap          <CR>          "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
 
 nnoremap <silent> <LocalLeader>b              :<C-u>FzfPreviewBufferTags<CR>
