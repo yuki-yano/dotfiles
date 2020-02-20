@@ -1523,7 +1523,7 @@ let g:easy_align_delimiters = {
 \ }
 " }}}3
 
-" clever-f & shot-f {{{3
+" easymotion & clever-f {{{3
 if dein#tap('vim-easymotion') && dein#tap('clever-f.vim')
   " EasyMotion
   let g:EasyMotion_do_mapping       = 0
