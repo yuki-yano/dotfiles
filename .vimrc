@@ -146,9 +146,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('wesQ3/vim-windowswap',         {'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#DoWindowSwap']})
   " }}}3
 
-  " develop {{{3
+  " Develop {{{3
   call dein#add('rbtnn/vim-vimscript_lasterror')
   call dein#add('thinca/vim-prettyprint')
+  call dein#add('thinca/vim-quickrun')
   call dein#add('vim-jp/vital.vim', {'merged': 0})
   " }}}3
 
@@ -2328,6 +2329,25 @@ nnoremap <silent> <Leader>u :<C-u>UndotreeToggle<CR>
 " windowswap {{{3
 let g:windowswap_map_keys = 0
 nnoremap <silent> <C-w><C-w> :call WindowSwap#EasyWindowSwap()<CR>
+" }}}3
+
+" }}}2
+
+" Develop {{{2
+
+" quickrun {{{3
+AlterCommand!          r QuickRun
+AlterCommand! <cmdwin> r QuickRun
+
+let g:quickrun_config = {
+\ '_' : {
+\   'outputter' : 'error',
+\   'outputter/error/success' : 'buffer',
+\   'outputter/error/error'   : 'quickfix',
+\   'outputter/buffer/split'  : ':botright 15split',
+\   'outputter/buffer/close_on_empty' : 1,
+\ }
+\ }
 " }}}3
 
 " }}}2
