@@ -69,7 +69,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " textobj & operator {{{3
   call dein#add('machakann/vim-sandwich')
-  call dein#add('machakann/vim-swap')
+  call dein#add('machakann/vim-swap') " g< g> i, a,
 
   call dein#add('kana/vim-textobj-user')
   call dein#add('kana/vim-operator-user')
