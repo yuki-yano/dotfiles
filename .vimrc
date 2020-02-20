@@ -2233,8 +2233,6 @@ let g:rainbow_conf.separately = {
 \ 'gina-blame'  : 0,
 \ 'capture'     : 0,
 \ 'tagbar'      : 0,
-\ 'agsv'        : 0,
-\ 'agse'        : 0,
 \ }
 " }}}3
 
