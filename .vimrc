@@ -137,7 +137,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('lambdalisue/vim-pager',        {'lazy': 1, 'on_cmd': 'PAGER'})
   call dein#add('majutsushi/tagbar',            {'lazy': 1, 'on_cmd': ['TagbarOpen', 'TagbarToggle']})
   call dein#add('mbbill/undotree',              {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
-  call dein#add('mhinz/vim-sayonara',           {'lazy': 1, 'on_cmd': 'Sayonara'})
+  call dein#add('moll/vim-bbye',                {'lazy': 1, 'on_cmd': ['Bdelete', 'Bwipeout']})
   call dein#add('osyo-manga/vim-gift')
   call dein#add('pocke/vim-automatic',          {'depends': 'vim-gift'})
   call dein#add('thinca/vim-localrc')
@@ -2287,6 +2287,10 @@ let g:automatic_config = [
 \ ]
 " }}}
 
+" bbye {{{3
+nnoremap <silent> <Leader>d :Bdelete!<CR>
+" }}}3
+
 " capture {{{3
 AlterCommand!          cap[ture] Capture
 AlterCommand! <cmdwin> cap[ture] Capture
@@ -2296,10 +2300,6 @@ AutoCmd FileType capture nnoremap <silent> <buffer> q :<C-u>quit<CR>
 " miniyank {{{3
 let g:miniyank_maxitems = 2000
 let g:miniyank_filename = expand('~/.cache/vim/miniyank.mpack')
-" }}}3
-
-" sayonara {{{3
-nnoremap <silent> <Leader>d :Sayonara!<CR>
 " }}}3
 
 " table-mode {{{3
