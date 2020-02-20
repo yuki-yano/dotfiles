@@ -53,12 +53,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Fuzzy Finder {{{3
   call dein#add('Shougo/denite.nvim')
-  call dein#add('Shougo/neomru.vim')
   call dein#add('ozelentok/denite-gtags')
 
   call dein#add('junegunn/fzf', {'build': './install --bin', 'merged': 0})
   call dein#add('yuki-ycino/fzf-preview.vim')
   " call dein#local('~/repos/github.com/yuki-ycino', {}, ['fzf-preview.vim'])
+  call dein#add('Shougo/neomru.vim')
   " }}}3
 
   " filer {{{3
