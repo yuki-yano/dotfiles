@@ -138,7 +138,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mhinz/vim-sayonara',           {'lazy': 1, 'on_cmd': 'Sayonara'})
   call dein#add('osyo-manga/vim-gift')
   call dein#add('pocke/vim-automatic',          {'depends': 'vim-gift'})
-  call dein#add('t9md/vim-choosewin',           {'lazy': 1, 'on_map': {'n': '<Plug>'}})
   call dein#add('thinca/vim-localrc')
   call dein#add('tweekmonster/startuptime.vim', {'lazy': 1, 'on_cmd': 'StartupTime'})
   call dein#add('tyru/capture.vim',             {'lazy': 1, 'on_cmd': 'Capture'})
@@ -2294,25 +2293,6 @@ let g:automatic_config = [
 AlterCommand!          cap[ture] Capture
 AlterCommand! <cmdwin> cap[ture] Capture
 AutoCmd FileType capture nnoremap <silent> <buffer> q :<C-u>quit<CR>
-" }}}3
-
-" choosewin {{{3
-let g:choosewin_overlay_enable          = 1
-let g:choosewin_overlay_clear_multibyte = 1
-let g:choosewin_blink_on_land           = 0
-let g:choosewin_statusline_replace      = 0
-let g:choosewin_tabline_replace         = 0
-
-let g:choosewin_color_overlay = {
-\ 'gui': ['#e27878', '#e27878'],
-\ 'cterm': [1, 1]
-\ }
-let g:choosewin_color_overlay_current = {
-\ 'gui': ['#84106c', '#84106c'],
-\ 'cterm': [110, 110]
-\ }
-
-nnoremap <silent> <C-q> :<C-u>ChooseWin<CR>
 " }}}3
 
 " miniyank {{{3
