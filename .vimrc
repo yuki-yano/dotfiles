@@ -104,7 +104,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tommcdo/vim-exchange',      {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
   call dein#add('tomtom/tcomment_vim',       {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
   call dein#add('tpope/vim-repeat')
-  call dein#add('wincent/ferret')
   " }}}3
 
   " Appearance {{{3
@@ -1605,17 +1604,6 @@ nmap <silent> <Leader>j <Plug>(edgemotion-j)
 nmap <silent> <Leader>k <Plug>(edgemotion-k)
 xmap <silent> <Leader>j <Plug>(edgemotion-j)
 xmap <silent> <Leader>k <Plug>(edgemotion-k)
-" }}}3
-
-" ferret {{{3
-AlterCommand!          rg  Ack<Space>--smart-case
-AlterCommand! <cmdwin> rg  Ack<Space>--smart-case
-AlterCommand!          ack Ack<Space>--smart-case
-AlterCommand! <cmdwin> ack Ack<Space>--smart-case
-
-let g:FerretMap      = 0
-let g:FerretHlsearch = 1
-let g:FerretAutojump = 0
 " }}}3
 
 " jplus {{{3
