@@ -53,8 +53,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Fuzzy Finder {{{3
   call dein#add('Shougo/denite.nvim')
-  call dein#add('Shougo/unite.vim')
-
   call dein#add('Shougo/neomru.vim')
   call dein#add('ozelentok/denite-gtags')
 
