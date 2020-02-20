@@ -1133,6 +1133,48 @@ function! s:fzf_preview_settings() abort
   let b:highlight_cursor = 0
 endfunction
 
+command! -nargs=* -complete=customlist,fzf_preview#args#complete_options FzfPreviewBookmarks
+  \ :call fzf_preview#runner#fzf_run(fzf_preview#initializer#initialize('FzfPreviewBookmarks', {}, <f-args>))
+
+function! FzfPreviewBookmarks(additional, args) abort
+  let source = fzf_preview#converter#convert_for_fzf(filter(map(bm#location_list(), {
+  \ _, b -> s:bookmarks_format_line(b)
+  \ }), {
+  \ _, b -> b !=# ''
+  \ }), 1)
+
+  let optional = '--delimiter :'
+  let preview = g:fzf_preview_grep_preview_cmd . ' {}'
+
+  return {
+  \ 'source': source,
+  \ 'sink': function('fzf_preview#handler#handle_grep'),
+  \ 'options': fzf_preview#command#get_command_options('Bookmarks', preview, optional)
+  \ }
+endfunction
+
+function! s:bookmarks_format_line(line) abort
+  let line = split(a:line, ':')
+  let filename = fnamemodify(line[0], ':.')
+  if !filereadable(filename)
+    return ''
+  endif
+
+  let line_number = line[1]
+  let text = line[2]
+
+  if text ==# 'Annotation'
+    let comment = line[3]
+  else
+    let text = join(line[2:], ':')
+  endif
+
+  if text !=# 'Annotation'
+    return filename . ':' . line_number . ':' . text
+  else
+    return filename . ':' . line_number . ':' . text . ':' . comment
+  endif
+endfunction
 " }}}3
 
 " lexima {{{3
