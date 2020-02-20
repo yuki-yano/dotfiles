@@ -1086,6 +1086,7 @@ let g:fzf_preview_use_dev_icons                = 1
 nnoremap <silent> <Leader>p     :<C-u>FzfPreviewFromResources project_mru git<CR>
 nnoremap <silent> <Leader>gs    :<C-u>FzfPreviewGitStatus -processors=g:fzf_preview_gina_processors<CR>
 nnoremap <silent> <Leader>b     :<C-u>FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
+nnoremap <silent> <Leader>B     :<C-u>FzfPreviewAllBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
 nnoremap <silent> <Leader>o     :<C-u>FzfPreviewFromResources buffer project_mru<CR>
 nnoremap <silent> <Leader><C-o> :<C-u>FzfPreviewJumps<CR>
 nnoremap <silent> <Leader>m     :<C-u>FzfPreviewBookmarks<CR>
