@@ -88,7 +88,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('MattesGroeger/vim-bookmarks')
   call dein#add('cohama/lexima.vim',         {'lazy': 1, 'on_event': 'InsertEnter', 'hook_post_source': 'call Hook_on_post_source_lexima()'})
   call dein#add('easymotion/vim-easymotion')
-  call dein#add('gabesoft/vim-ags')
   call dein#add('haya14busa/incsearch.vim')
   call dein#add('haya14busa/vim-asterisk',   {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-edgemotion')
@@ -1438,14 +1437,6 @@ if dein#tap('accelerated-jk')
 endif
 " }}}3
 
-" ags {{{3
-AlterCommand!          ag  Ags
-AlterCommand! <cmdwin> ag  Ags
-AlterCommand!          age AgsEditSearchResult
-AlterCommand! <cmdwin> age AgsEditSearchResult
-AutoCmd FileType agsv,agse nnoremap <silent> <buffer> q :<C-u>quit<CR>
-" }}}3
-
 " anzu & asterisk & incsearch {{{3
 if dein#tap('vim-anzu') && dein#tap('vim-asterisk') && dein#tap('incsearch.vim')
   let g:incsearch#magic = '\v'
@@ -1953,8 +1944,6 @@ if dein#tap('lightline.vim')
   \ 'gina-log',
   \ 'gina-reflog',
   \ 'gina-blame',
-  \ 'agsv',
-  \ 'agse',
   \ ]
 
   let s:lightline_ft_to_mode_hash = {
@@ -1970,8 +1959,6 @@ if dein#tap('lightline.vim')
   \ 'gina-reflog': 'Git Reflog',
   \ 'gina-blame':  'Git Blame',
   \ 'tagbar':      'Tagbar',
-  \ 'agsv':        'AgsView',
-  \ 'agse':        'AgsEdit',
   \ }
 
   let s:lightline_ignore_modifiable_ft = [
@@ -1982,7 +1969,6 @@ if dein#tap('lightline.vim')
   \ 'gina-reflog',
   \ 'gina-blame',
   \ 'tagbar',
-  \ 'agsv',
   \ ]
 
   let s:lightline_ignore_filename_ft = [
@@ -1995,8 +1981,6 @@ if dein#tap('lightline.vim')
   \ 'gina-reflog',
   \ 'gina-blame',
   \ 'tagbar',
-  \ 'agsv',
-  \ 'agse',
   \ ]
 
   let s:lightline_ignore_filepath_ft = [
@@ -2009,8 +1993,6 @@ if dein#tap('lightline.vim')
   \ 'gina-reflog',
   \ 'gina-blame',
   \ 'tagbar',
-  \ 'agsv',
-  \ 'agse',
   \ ]
 
   function! Lightline_is_visible(width) abort
