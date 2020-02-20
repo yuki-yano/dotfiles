@@ -105,6 +105,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tommcdo/vim-exchange',      {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
   call dein#add('tomtom/tcomment_vim',       {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
   call dein#add('tpope/vim-repeat')
+  call dein#add('unblevable/quick-scope')
   " }}}3
 
   " Appearance {{{3
