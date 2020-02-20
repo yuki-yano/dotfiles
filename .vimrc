@@ -94,6 +94,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('haya14busa/vim-metarepeat', {'lazy': 1, 'on_map': ['go', 'g.', '<Plug>']})
   call dein#add('junegunn/vim-easy-align',   {'lazy': 1, 'on_cmd': 'EasyAlign'})
   call dein#add('mg979/vim-visual-multi',    {'rev': 'test'})
+  call dein#add('mhinz/vim-grepper',         {'lazy': 1, 'on_cmd': 'Grepper', 'on_map': '<Plug>'})
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',      {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/accelerated-jk',      {'lazy': 1, 'on_map': '<Plug>'})
@@ -1604,6 +1605,15 @@ nmap <silent> <Leader>j <Plug>(edgemotion-j)
 nmap <silent> <Leader>k <Plug>(edgemotion-k)
 xmap <silent> <Leader>j <Plug>(edgemotion-j)
 xmap <silent> <Leader>k <Plug>(edgemotion-k)
+" }}}3
+
+" grepper {{{3
+AlterCommand!          gr[ep] Grepper
+AlterCommand! <cmdwin> gr[ep] Grepper
+
+let g:grepper = {
+\ 'tools': ['rg', 'git', 'ag'],
+\ }
 " }}}3
 
 " jplus {{{3
