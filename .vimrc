@@ -110,7 +110,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Appearance {{{3
   call dein#add('LeafCage/foldCC.vim')
-  call dein#add('Yggdroot/indentLine', {'lazy': 1, 'on_cmd': 'IndentLinesToggle'})
+  call dein#add('Yggdroot/indentLine')
   call dein#add('andymass/vim-matchup')
   call dein#add('itchyny/lightline.vim')
   call dein#add('kamykn/spelunker.vim')
@@ -1847,7 +1847,6 @@ endif
 " }}}3
 
 " indent-line {{{3
-let g:indentLine_enabled         = 0
 let g:indentLine_fileTypeExclude = ['json']
 " }}}3
 
