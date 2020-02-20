@@ -2223,6 +2223,7 @@ let g:rainbow_conf.separately = {
 \ 'man'         : 0,
 \ 'diff'        : 0,
 \ 'qf'          : 0,
+\ 'fzf'         : 0,
 \ 'denite'      : 0,
 \ 'git'         : 0,
 \ 'gitcommit'   : 0,
