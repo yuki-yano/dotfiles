@@ -1115,7 +1115,7 @@ endfunction
 
 function! s:open_gina_patch(paths) abort
   for path in a:paths
-    execute 'silent Gina patch --oneside ' . path
+    execute 'silent Gina patch ' . path
   endfor
 endfunction
 
