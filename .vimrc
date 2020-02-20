@@ -1604,6 +1604,7 @@ if dein#tap('vim-easymotion') && dein#tap('clever-f.vim')
 
   " clever-f
   let g:clever_f_not_overwrites_standard_mappings = 0
+  let g:clever_f_across_no_line                   = 1
 
   nmap <silent> f <Plug>(clever-f-f)
   nmap <silent> F <Plug>(clever-f-F)
