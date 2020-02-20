@@ -1083,10 +1083,6 @@ let g:fzf_preview_command                      = 'bat --color=always --style=gri
 let g:fzf_preview_filelist_postprocess_command = 'gxargs -d "\n" exa --color=always'
 let g:fzf_preview_use_dev_icons                = 1
 
-let g:fzf_preview_custom_default_processors = fzf_preview#resource_processor#get_default_processors()
-call remove(g:fzf_preview_custom_default_processors, 'ctrl-x')
-let g:fzf_preview_custom_default_processors['ctrl-s'] = function('fzf_preview#resource_processor#split')
-
 nnoremap <silent> <Leader>p     :<C-u>FzfPreviewFromResources project_mru git<CR>
 nnoremap <silent> <Leader>gs    :<C-u>FzfPreviewGitStatus -processors=g:fzf_preview_gina_processors<CR>
 nnoremap <silent> <Leader>b     :<C-u>FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
@@ -1101,23 +1097,42 @@ nnoremap <silent> <LocalLeader>b              :<C-u>FzfPreviewBufferTags<CR>
 nnoremap <silent> <LocalLeader><LocalLeader>q :<C-u>FzfPreviewQuickFix<CR>
 nnoremap <silent> <LocalLeader><LocalLeader>l :<C-u>FzfPreviewLocationList<CR>
 
-function! s:buffers_delete_from_paths(paths) abort
-  for path in a:paths
-    execute 'bdelete! ' . path
+augroup fzf_preview
+  autocmd!
+  autocmd User fzf_preview#initialized call s:fzf_preview_settings()
+augroup END
+
+function! s:buffers_delete_from_lines(lines) abort
+  for line in a:lines
+    let matches = matchlist(line, '^buffer \(\d\+\)$')
+    if len(matches) >= 1
+      execute 'Bdelete! ' . matches[1]
+    else
+      execute 'Bdelete! ' . line
+    endif
   endfor
 endfunction
-let g:fzf_preview_buffer_delete_processors = fzf_preview#resource_processor#get_processors()
-let g:fzf_preview_buffer_delete_processors['ctrl-x'] = function('s:buffers_delete_from_paths')
 
 function! s:open_gina_patch(paths) abort
   for path in a:paths
     execute 'silent Gina patch --oneside ' . path
   endfor
 endfunction
-let g:fzf_preview_gina_processors = fzf_preview#resource_processor#get_processors()
-let g:fzf_preview_gina_processors['ctrl-a'] = function('s:open_gina_patch')
 
-AutoCmd FileType fzf let b:highlight_cursor = 0
+function! s:fzf_preview_settings() abort
+  let g:fzf_preview_custom_default_processors = fzf_preview#resource_processor#get_default_processors()
+  call remove(g:fzf_preview_custom_default_processors, 'ctrl-x')
+  let g:fzf_preview_custom_default_processors['ctrl-s'] = function('fzf_preview#resource_processor#split')
+
+  let g:fzf_preview_buffer_delete_processors = fzf_preview#resource_processor#get_default_processors()
+  let g:fzf_preview_buffer_delete_processors['ctrl-x'] = function('s:buffers_delete_from_lines')
+
+  let g:fzf_preview_gina_processors = fzf_preview#resource_processor#get_processors()
+  let g:fzf_preview_gina_processors['ctrl-a'] = function('s:open_gina_patch')
+
+  let b:highlight_cursor = 0
+endfunction
+
 " }}}3
 
 " lexima {{{3
