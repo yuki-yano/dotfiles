@@ -965,10 +965,6 @@ if dein#tap('denite.nvim')
   call denite#custom#var('grep',     'separator',      ['--'])
   call denite#custom#var('grep',     'final_opts',     [])
 
-  "" line
-  nnoremap <silent> <Leader>/ :<C-u>Denite line -start-filter<CR>
-  nnoremap <silent> <Leader>* :<C-u>DeniteCursorWord line -start-filter<CR>
-
   "" grep
   nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep:::! -start-filter<CR>
   nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep:::! -start-filter<CR>
@@ -1089,6 +1085,7 @@ nnoremap <silent> <Leader>b     :<C-u>FzfPreviewBuffers -processors=g:fzf_previe
 nnoremap <silent> <Leader>B     :<C-u>FzfPreviewAllBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
 nnoremap <silent> <Leader>o     :<C-u>FzfPreviewFromResources buffer project_mru<CR>
 nnoremap <silent> <Leader><C-o> :<C-u>FzfPreviewJumps<CR>
+nnoremap <silent> <Leader>/     :<C-u>FzfPreviewLines -fzf-arg=--no-sort -fzf-arg=--query="'"<CR>
 nnoremap <silent> <Leader>m     :<C-u>FzfPreviewBookmarks<CR>
 nnoremap          <CR>          :<C-u>FzfPreviewProjectGrep<Space>
 nnoremap          <Leader><CR>  :<C-u>FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(@/, '\(\\v\<Bar>\\<\<Bar>\\>\)', '', 'g')<CR>"
