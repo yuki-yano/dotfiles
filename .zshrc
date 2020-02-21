@@ -472,7 +472,7 @@ alias -g RS='$(git status --short | fzf-git-rspec | fzf --multi --preview="git d
 RPROMPT='${COMMAND_BUFFER_STACK}'
 
 PROMPT='
-%F{blue}%~%f $GIT_STATUS  [%{$MAGENTA%}${RUBY_VERSION}%{$DEFAULT%} %{$GREEN%}${PYTHON_VERSION}%{$DEFAULT%} %{$BLUE%}${NODE_VERSION}%{$DEFAULT%}]
+%F{blue}%~%f $GIT_STATUS [%{$MAGENTA%}${RUBY_VERSION}%{$DEFAULT%} %{$GREEN%}${PYTHON_VERSION}%{$DEFAULT%} %{$BLUE%}${NODE_VERSION}%{$DEFAULT%}]
 ${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
 
 # function update_git_prompt() {

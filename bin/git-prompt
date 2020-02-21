@@ -41,6 +41,7 @@ zsh_fmt() {
   UNTRACKED_FMT="%F{red}%B"
   DELETED_FMT="%F{red}%B"
   STAGE_DELETED_FMT="%F{green}%B"
+  REBASING_FMT="%F{red}%B"
   RESET_FMT="%b%F{white}"
 
   BRANCH_UPSTREAM_DELIMITER="%F{5}->%f"
@@ -58,6 +59,7 @@ tmux_fmt() {
   UNTRACKED_FMT="#[fg=red,bold]"
   DELETED_FMT="#[fg=red,bold]"
   STAGE_DELETED_FMT="#[fg=green,bold]"
+  REBASING_FMT="#[fg=red,bold]"
   RESET_FMT="#[fg=default]"
 
   BRANCH_UPSTREAM_DELIMITER="#[fg=colour5]->#[fg=default]"
@@ -272,7 +274,9 @@ do_interpolation() {
 
   dirty_flags=$(chk_gitvar 'clean' '-eq 0' "${staged}${conflicts}${changed}${stashed}${untracked}${deleted}${stage_deleted}")
 
-  flags="${SPLIT_DELIMITER_FMT}${clean_flag}${dirty_flags}"
+  rebase_flag=$((test -d ".git/rebase-merge" || test -d ".git/rebase-apply") && echo "${REBASING_FMT}Rebasing${RESET_FMT}")
+
+  flags="${SPLIT_DELIMITER_FMT}${clean_flag}${dirty_flags}${rebase_flag}"
 
   # Put it all together
   local in="$1"
