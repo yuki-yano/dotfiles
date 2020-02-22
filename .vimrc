@@ -1153,9 +1153,9 @@ function! s:fzf_preview_settings() abort
   let g:fzf_preview_gina_processors['ctrl-a'] = function('s:gina_add')
   let g:fzf_preview_gina_processors['ctrl-r'] = function('s:gina_reset')
   let g:fzf_preview_gina_processors['ctrl-c'] = function('s:gina_patch')
-
-  let b:highlight_cursor = 0
 endfunction
+
+AutoCmd FileType fzf let b:highlight_cursor = 0
 
 command! -nargs=* -complete=customlist,fzf_preview#args#complete_options FzfPreviewBookmarks
   \ :call fzf_preview#runner#fzf_run(fzf_preview#initializer#initialize('FzfPreviewBookmarks', {}, <f-args>))
