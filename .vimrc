@@ -1121,18 +1121,24 @@ function! s:gina_add(paths) abort
   for path in a:paths
     execute 'silent Gina add ' . path
   endfor
+
+  echomsg 'Git add ' . join(a:paths, ', ')
 endfunction
 
 function! s:gina_reset(paths) abort
   for path in a:paths
     execute 'silent Gina reset ' . path
   endfor
+
+  echomsg 'Git reset ' . join(a:paths, ', ')
 endfunction
 
-function! s:open_gina_patch(paths) abort
+function! s:gina_patch(paths) abort
   for path in a:paths
     execute 'silent Gina patch ' . path
   endfor
+
+  echomsg 'Git add --patch ' . join(a:paths, ', ')
 endfunction
 
 function! s:fzf_preview_settings() abort
@@ -1146,7 +1152,7 @@ function! s:fzf_preview_settings() abort
   let g:fzf_preview_gina_processors = fzf_preview#resource_processor#get_processors()
   let g:fzf_preview_gina_processors['ctrl-a'] = function('s:gina_add')
   let g:fzf_preview_gina_processors['ctrl-r'] = function('s:gina_reset')
-  let g:fzf_preview_gina_processors['ctrl-c'] = function('s:open_gina_patch')
+  let g:fzf_preview_gina_processors['ctrl-c'] = function('s:gina_patch')
 
   let b:highlight_cursor = 0
 endfunction
