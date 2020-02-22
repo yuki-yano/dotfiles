@@ -2495,7 +2495,6 @@ AutoCmd ColorScheme * highlight Todo                    ctermfg=229  ctermbg=NON
 AutoCmd ColorScheme * highlight Visual                  ctermfg=159  ctermbg=23                        guifg=#AFFFFF guibg=#005F5F
 
 AutoCmd ColorScheme * highlight BrightestHighlight      ctermfg=30   ctermbg=NONE                      guifg=#008787 guibg=NONE
-AutoCmd ColorScheme * highlight DeniteLine              ctermfg=111  ctermbg=236                       guifg=#87AFFF guibg=#303030
 AutoCmd ColorScheme * highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
 AutoCmd ColorScheme * highlight ExtraWhiteSpace         ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
 AutoCmd ColorScheme * highlight HighlightedyankRegion   ctermfg=1    ctermbg=NONE                      guifg=#E27878 guibg=NONE
@@ -2507,8 +2506,6 @@ AutoCmd ColorScheme * highlight QuickScopePrimary       ctermfg=68   ctermbg=NON
 AutoCmd ColorScheme * highlight QuickScopeSecondary     ctermfg=72   ctermbg=NONE                      guifg=#5FAFAF guibg=NONE
 AutoCmd ColorScheme * highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
 AutoCmd ColorScheme * highlight ZenSpace                ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
-AutoCmd ColorScheme * highlight deniteSource_grepFile   ctermfg=6    ctermbg=NONE                      guifg=#89B8C2 guibg=NONE
-AutoCmd ColorScheme * highlight deniteSource_grepLineNR ctermfg=247  ctermbg=NONE                      guifg=#9E9E9E guibg=NONE
 
 AutoCmd ColorScheme * highlight CocErrorSign            ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
 AutoCmd ColorScheme * highlight CocWarningSign          ctermfg=214  ctermbg=NONE                      guifg=#FFAF00 guibg=NONE
