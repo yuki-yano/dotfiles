@@ -142,6 +142,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('thinca/vim-localrc')
   call dein#add('tyru/capture.vim',             {'lazy': 1, 'on_cmd': 'Capture'})
   call dein#add('tyru/vim-altercmd')
+  call dein#add('voldikss/vim-floaterm')
   call dein#add('wesQ3/vim-windowswap',         {'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#DoWindowSwap']})
   " }}}3
 
@@ -427,6 +428,11 @@ endif
 
 if $TERM ==# 'screen'
   set t_Co=256
+endif
+
+"" Git Editor require neovim-remote
+if has('nvim')
+  let $GIT_EDITOR = 'nvr --remote-wait'
 endif
 
 "" Automatically Disable Paste Mode
@@ -2344,6 +2350,28 @@ AlterCommand! <cmdwin> cap[ture] Capture
 AutoCmd FileType capture nnoremap <silent> <buffer> q :<C-u>quit<CR>
 " }}}3
 
+" floaterm {{{3
+let g:floaterm_width       = 0.8
+let g:floaterm_height      = 0.8
+let g:floaterm_winblend    = 15
+let g:floaterm_position    = 'center'
+let g:floaterm_borderchars = ['─', '│', '─', '│', '╭', '╮', '╯', '╰']
+
+nnoremap <silent> <C-s> :<C-u>FloatermToggle<CR>
+
+AutoCmd FileType floaterm call s:floaterm_settings()
+
+function! s:floaterm_settings() abort
+  tnoremap <silent> <buffer> <C-s> <C-\><C-n>:FloatermToggle<CR>
+  let b:highlight_cursor = 0
+endfunction
+
+AutoCmd FileType gitrebase set winhighlight=Normal:GitRebase
+AutoCmd FileType gitrebase set winblend=10
+AutoCmd FileType gitrebase nnoremap <silent> <buffer> <Leader>d :bdelete!<Space><Bar><Space>close<CR>
+
+" }}}3
+
 " miniyank {{{3
 let g:miniyank_maxitems = 2000
 let g:miniyank_filename = expand('~/.cache/vim/miniyank.mpack')
@@ -2473,6 +2501,8 @@ AutoCmd ColorScheme * highlight CocErrorSign            ctermfg=9    ctermbg=NON
 AutoCmd ColorScheme * highlight CocWarningSign          ctermfg=214  ctermbg=NONE                      guifg=#FFAF00 guibg=NONE
 AutoCmd ColorScheme * highlight CocInfoSign             ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
 
+AutoCmd ColorScheme * highlight FloatermNF              ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#161821
+AutoCmd ColorScheme * highlight GitRebase               ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#1F1F20
 " Fix lightline
 " AutoCmd ColorScheme * highlight StatusLine   ctermfg=0 ctermbg=none guifg=#1E2132 guibg=#C6C8D1
 " AutoCmd ColorScheme * highlight StatusLineNC ctermfg=0 ctermbg=none guifg=#1E2132 guibg=#C6C8D1
