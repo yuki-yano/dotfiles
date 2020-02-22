@@ -1090,6 +1090,7 @@ nnoremap <silent> <Leader>b     :<C-u>FzfPreviewBuffers -processors=g:fzf_previe
 nnoremap <silent> <Leader>B     :<C-u>FzfPreviewAllBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
 nnoremap <silent> <Leader>o     :<C-u>FzfPreviewFromResources buffer project_mru<CR>
 nnoremap <silent> <Leader><C-o> :<C-u>FzfPreviewJumps<CR>
+nnoremap <silent> <Leader>g;    :<C-u>FzfPreviewChanges<CR>
 nnoremap <silent> <Leader>/     :<C-u>FzfPreviewLines -add-fzf-arg=--no-sort -add-fzf-arg=--query="'"<CR>
 nnoremap <silent> <Leader>*     :<C-u>FzfPreviewLines -add-fzf-arg=--no-sort -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
 nnoremap          <CR>          :<C-u>FzfPreviewProjectGrep<Space>
