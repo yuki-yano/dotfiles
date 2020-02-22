@@ -2503,6 +2503,8 @@ AutoCmd ColorScheme * highlight MatchParen              ctermfg=NONE ctermbg=NON
 AutoCmd ColorScheme * highlight MatchParenCur           ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
 AutoCmd ColorScheme * highlight MatchWord               ctermfg=NONE ctermbg=NONE cterm=underline      guifg=NONE    guibg=NONE    gui=underline
 AutoCmd ColorScheme * highlight MatchWordCur            ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
+AutoCmd ColorScheme * highlight QuickScopePrimary       ctermfg=68   ctermbg=NONE                      guifg=#5F87D7 guibg=NONE
+AutoCmd ColorScheme * highlight QuickScopeSecondary     ctermfg=72   ctermbg=NONE                      guifg=#5FAFAF guibg=NONE
 AutoCmd ColorScheme * highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
 AutoCmd ColorScheme * highlight ZenSpace                ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
 AutoCmd ColorScheme * highlight deniteSource_grepFile   ctermfg=6    ctermbg=NONE                      guifg=#89B8C2 guibg=NONE
