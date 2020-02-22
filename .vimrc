@@ -2372,11 +2372,6 @@ AutoCmd FileType gitrebase nnoremap <silent> <buffer> <Leader>d :bdelete!<Space>
 
 " }}}3
 
-" miniyank {{{3
-let g:miniyank_maxitems = 2000
-let g:miniyank_filename = expand('~/.cache/vim/miniyank.mpack')
-" }}}3
-
 " table-mode {{{3
 let g:table_mode_corner='|'
 " }}}3
