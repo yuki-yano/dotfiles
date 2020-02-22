@@ -98,7 +98,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',      {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/accelerated-jk',      {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('rhysd/clever-f.vim')
   call dein#add('ronakg/quickr-preview.vim')
   call dein#add('terryma/vim-expand-region', {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-qfreplace',      {'lazy': 1, 'on_cmd': 'Qfreplace'})
@@ -1579,8 +1578,8 @@ let g:easy_align_delimiters = {
 \ }
 " }}}3
 
-" easymotion & clever-f {{{3
-if dein#tap('vim-easymotion') && dein#tap('clever-f.vim')
+" easymotion {{{3
+if dein#tap('vim-easymotion')
   " EasyMotion
   let g:EasyMotion_do_mapping       = 0
   let g:EasyMotion_smartcase        = 1
@@ -1601,19 +1600,6 @@ if dein#tap('vim-easymotion') && dein#tap('clever-f.vim')
   omap <silent> t  <Plug>(easymotion-tl)
   omap <silent> F  <Plug>(easymotion-Fl)
   omap <silent> T  <Plug>(easymotion-Tl)
-
-  " clever-f
-  let g:clever_f_not_overwrites_standard_mappings = 0
-  let g:clever_f_across_no_line                   = 1
-
-  nmap <silent> f <Plug>(clever-f-f)
-  nmap <silent> F <Plug>(clever-f-F)
-  nmap <silent> t <Plug>(clever-f-t)
-  nmap <silent> T <Plug>(clever-f-T)
-  xmap <silent> f <Plug>(clever-f-f)
-  xmap <silent> F <Plug>(clever-f-F)
-  xmap <silent> t <Plug>(clever-f-t)
-  xmap <silent> T <Plug>(clever-f-T)
 endif
 " }}}3
 
@@ -2465,7 +2451,6 @@ AutoCmd ColorScheme * highlight Todo                    ctermfg=229  ctermbg=NON
 AutoCmd ColorScheme * highlight Visual                  ctermfg=159  ctermbg=23                        guifg=#AFFFFF guibg=#005F5F
 
 AutoCmd ColorScheme * highlight BrightestHighlight      ctermfg=30   ctermbg=NONE                      guifg=#008787 guibg=NONE
-AutoCmd ColorScheme * highlight CleverFDefaultLabel     ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
 AutoCmd ColorScheme * highlight DeniteLine              ctermfg=111  ctermbg=236                       guifg=#87AFFF guibg=#303030
 AutoCmd ColorScheme * highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
 AutoCmd ColorScheme * highlight ExtraWhiteSpace         ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
