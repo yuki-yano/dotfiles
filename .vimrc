@@ -1084,11 +1084,12 @@ nnoremap <silent> <Leader>b     :<C-u>FzfPreviewBuffers -processors=g:fzf_previe
 nnoremap <silent> <Leader>B     :<C-u>FzfPreviewAllBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
 nnoremap <silent> <Leader>o     :<C-u>FzfPreviewFromResources buffer project_mru<CR>
 nnoremap <silent> <Leader><C-o> :<C-u>FzfPreviewJumps<CR>
-nnoremap <silent> <Leader>/     :<C-u>FzfPreviewLines -fzf-arg=--no-sort -fzf-arg=--query="'"<CR>
-nnoremap <silent> <Leader>m     :<C-u>FzfPreviewBookmarks<CR>
+nnoremap <silent> <Leader>/     :<C-u>FzfPreviewLines -add-fzf-arg=--no-sort -add-fzf-arg=--query="'"<CR>
+nnoremap <silent> <Leader>*     :<C-u>FzfPreviewLines -add-fzf-arg=--no-sort -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
 nnoremap          <CR>          :<C-u>FzfPreviewProjectGrep<Space>
 nnoremap          <Leader><CR>  :<C-u>FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(@/, '\(\\v\<Bar>\\<\<Bar>\\>\)', '', 'g')<CR>"
 xnoremap          <CR>          "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+nnoremap <silent> <Leader>m     :<C-u>FzfPreviewBookmarks<CR>
 
 nnoremap <silent> <LocalLeader>b              :<C-u>FzfPreviewBufferTags<CR>
 nnoremap <silent> <LocalLeader><LocalLeader>q :<C-u>FzfPreviewQuickFix<CR>
@@ -1110,6 +1111,18 @@ function! s:buffers_delete_from_lines(lines) abort
   endfor
 endfunction
 
+function! s:gina_add(paths) abort
+  for path in a:paths
+    execute 'silent Gina add ' . path
+  endfor
+endfunction
+
+function! s:gina_reset(paths) abort
+  for path in a:paths
+    execute 'silent Gina reset ' . path
+  endfor
+endfunction
+
 function! s:open_gina_patch(paths) abort
   for path in a:paths
     execute 'silent Gina patch ' . path
@@ -1125,7 +1138,9 @@ function! s:fzf_preview_settings() abort
   let g:fzf_preview_buffer_delete_processors['ctrl-x'] = function('s:buffers_delete_from_lines')
 
   let g:fzf_preview_gina_processors = fzf_preview#resource_processor#get_processors()
-  let g:fzf_preview_gina_processors['ctrl-a'] = function('s:open_gina_patch')
+  let g:fzf_preview_gina_processors['ctrl-a'] = function('s:gina_add')
+  let g:fzf_preview_gina_processors['ctrl-r'] = function('s:gina_reset')
+  let g:fzf_preview_gina_processors['ctrl-c'] = function('s:open_gina_patch')
 
   let b:highlight_cursor = 0
 endfunction
