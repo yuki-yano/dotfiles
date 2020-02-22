@@ -1830,7 +1830,16 @@ endif
 " Appearance {{{2
 
 " better-whitespace {{{3
-let g:better_whitespace_filetypes_blacklist = ['markdown', 'diff', 'qf', 'help', 'gitcommit', 'gitrebase', 'denite', 'tagbar', 'nvimtypescriptpopup']
+let g:better_whitespace_filetypes_blacklist = [
+\ 'markdown',
+\ 'diff',
+\ 'qf',
+\ 'help',
+\ 'gitcommit',
+\ 'gitrebase',
+\ 'denite',
+\ 'tagbar',
+\ ]
 " }}}3
 
 " brightest {{{3
