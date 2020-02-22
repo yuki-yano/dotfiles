@@ -1368,20 +1368,20 @@ AlterCommand! <cmdwin> gsl GswLoad
 " }}}3
 
 " gina {{{3
-AlterCommand!          git   Gina
-AlterCommand! <cmdwin> git   Gina
+AlterCommand!          g[it] Gina
+AlterCommand! <cmdwin> g[it] Gina
 AlterCommand!          gina  Gina
 AlterCommand! <cmdwin> gina  Gina
 AlterCommand!          gs    Gina<Space>status
 AlterCommand! <cmdwin> gs    Gina<Space>status
-AlterCommand!          gp    Gina<Space>patch
-AlterCommand! <cmdwin> gp    Gina<Space>patch
 AlterCommand!          gci   Gina<Space>commit
 AlterCommand! <cmdwin> gci   Gina<Space>commit
 AlterCommand!          gd    Gina<Space>diff
 AlterCommand! <cmdwin> gd    Gina<Space>diff
 AlterCommand!          gdc   Gina<Space>diff<Space>--cached
 AlterCommand! <cmdwin> gdc   Gina<Space>diff<Space>--cached
+AlterCommand!          gco   Gina<Space>checkout
+AlterCommand! <cmdwin> gco   Gina<Space>checkout
 AlterCommand!          blame Gina<Space>blame
 AlterCommand! <cmdwin> blame Gina<Space>blame
 
