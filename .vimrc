@@ -110,6 +110,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Appearance {{{3
   call dein#add('LeafCage/foldCC.vim')
+  call dein#add('RRethy/vim-illuminate')
   call dein#add('Yggdroot/indentLine')
   call dein#add('andymass/vim-matchup')
   call dein#add('itchyny/lightline.vim')
@@ -117,7 +118,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('luochen1990/rainbow')
   call dein#add('machakann/vim-highlightedyank')
   call dein#add('ntpeters/vim-better-whitespace')
-  call dein#add('osyo-manga/vim-brightest')
   call dein#add('ryanoasis/vim-devicons')
   call dein#add('yuttie/comfortable-motion.vim')
   " }}}3
@@ -1855,19 +1855,6 @@ let g:better_whitespace_filetypes_blacklist = [
 \ ]
 " }}}3
 
-" brightest {{{3
-AlterCommand!          br[ight] BrightestToggle
-AlterCommand! <cmdwin> br[ight] BrightestToggle
-
-let g:brightest#enable_on_CursorHold        = 1
-let g:brightest#enable_highlight_all_window = 1
-let g:brightest#highlight = {
-\ 'group': 'BrighTestHighlight',
-\ 'priority': 1
-\ }
-" let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat']
-" }}}3
-
 " comfortable-motion {{{3
 let g:comfortable_motion_no_default_key_mappings = 1
 let g:comfortable_motion_enable = 0
@@ -1920,6 +1907,11 @@ if dein#tap('vim-highlightedyank')
   "
   " call timer_start(g:highlightedyank_highlight_duration, function('s:highlight_yank_enter'))
 endif
+" }}}3
+
+" illuminate {{{3
+let g:Illuminate_delay = 500
+let g:Illuminate_highlightPriority = 0
 " }}}3
 
 " indent-line {{{3
@@ -2521,7 +2513,6 @@ AutoCmd ColorScheme * highlight AnsiColor13 ctermfg=13 guifg=#ADA0D3
 AutoCmd ColorScheme * highlight AnsiColor14 ctermfg=14 guifg=#95C4CE
 AutoCmd ColorScheme * highlight AnsiColor15 ctermfg=15 guifg=#D2D4DE
 
-AutoCmd ColorScheme * highlight BrightestHighlight      ctermfg=72   ctermbg=NONE                      guifg=#5FAF87 guibg=NONE
 AutoCmd ColorScheme * highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
 AutoCmd ColorScheme * highlight ExtraWhiteSpace         ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
 AutoCmd ColorScheme * highlight FloatermNF              ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#161821
@@ -2537,6 +2528,7 @@ AutoCmd ColorScheme * highlight ShotFGraph              ctermfg=209  ctermbg=NON
 AutoCmd ColorScheme * highlight ShotFBlank              ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#E27878 guibg=NONE    gui=underline,bold
 AutoCmd ColorScheme * highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
 AutoCmd ColorScheme * highlight ZenSpace                ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
+AutoCmd ColorScheme * highlight illuminatedWord         ctermfg=72   ctermbg=NONE                      guifg=#5FAF87 guibg=NONE
 
 AutoCmd ColorScheme * highlight CocErrorSign            ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
 AutoCmd ColorScheme * highlight CocWarningSign          ctermfg=214  ctermbg=NONE                      guifg=#FFAF00 guibg=NONE
