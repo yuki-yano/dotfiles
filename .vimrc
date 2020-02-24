@@ -524,8 +524,8 @@ function! s:auto_mkdir(dir, force)
 endfunction
 " }}}2
 
-" ToggleHighLight {{{2
-function! s:highlight_toggle()
+" ToggleSyntaxHighLight {{{2
+function! s:syntax_highlight_toggle()
   if exists('g:syntax_on')
     syntax off
   else
@@ -533,7 +533,7 @@ function! s:highlight_toggle()
   endif
 endfunction
 
-command! HighlightToggle call <SID>highlight_toggle()
+command! SyntaxHighlightToggle call <SID>syntax_highlight_toggle()
 " }}}2
 
 " ToggleQuickfix {{{2
@@ -990,7 +990,7 @@ if dein#tap('denite.nvim')
   \ ['Toggle CursorHighlight   [CursorHighlightToggle]',   'CursorHighlightToggle'  ],
   \ ['Toggle ComfortableMotion [ComfortableMotionToggle]', 'ToggleComfortableMotion'],
   \ ['Toggle IndentLine        [IndentLinesToggle]',       'IndentLinesToggle'      ],
-  \ ['Toggle Highlight         [HighlightToggle]',         'HighlightToggle'        ],
+  \ ['Toggle SyntaxHighlight   [SyntaxHighlightToggle]',   'SyntaxHighlightToggle'  ],
   \ ['Toggle Spell             [setlocal spell!]',         'setlocal spell!'        ],
   \ ['Toggle TableMode         [TableMode]',               'TableModeToggle'        ],
   \ ]
