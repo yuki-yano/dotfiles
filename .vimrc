@@ -739,12 +739,12 @@ endfunction
 " altercmd {{{3
 if dein#tap('vim-altercmd')
   call altercmd#load()
-  AlterCommand!          show[hlgroup] ShowHlGroup
-  AlterCommand! <cmdwin> show[hlgroup] ShowHlGroup
-  AlterCommand!          vs[code]      VSCode
-  AlterCommand! <cmdwin> vs[code]      VSCode
-  AlterCommand!          co[de]        VSCode
-  AlterCommand! <cmdwin> co[de]        VSCode
+  AlterCommand!          high[lightinfo] HighlightInfo
+  AlterCommand! <cmdwin> high[lightinfo] HighlightInfo
+  AlterCommand!          vs[code]        VSCode
+  AlterCommand! <cmdwin> vs[code]        VSCode
+  AlterCommand!          co[de]          VSCode
+  AlterCommand! <cmdwin> co[de]          VSCode
 endif
 " }}}3
 
