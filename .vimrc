@@ -1385,6 +1385,8 @@ AlterCommand!          gdc   Gina<Space>diff<Space>--cached
 AlterCommand! <cmdwin> gdc   Gina<Space>diff<Space>--cached
 AlterCommand!          gco   Gina<Space>checkout
 AlterCommand! <cmdwin> gco   Gina<Space>checkout
+AlterCommand!          log   Gina<Space>log
+AlterCommand! <cmdwin> log   Gina<Space>log
 AlterCommand!          blame Gina<Space>blame
 AlterCommand! <cmdwin> blame Gina<Space>blame
 
