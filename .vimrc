@@ -991,7 +991,6 @@ if dein#tap('denite.nvim')
   \ ['Toggle ComfortableMotion [ComfortableMotionToggle]', 'ToggleComfortableMotion'],
   \ ['Toggle IndentLine        [IndentLinesToggle]',       'IndentLinesToggle'      ],
   \ ['Toggle SyntaxHighlight   [SyntaxHighlightToggle]',   'SyntaxHighlightToggle'  ],
-  \ ['Toggle Spell             [setlocal spell!]',         'setlocal spell!'        ],
   \ ['Toggle TableMode         [TableMode]',               'TableModeToggle'        ],
   \ ]
   call denite#custom#var('menu', 'menus', s:menus)
