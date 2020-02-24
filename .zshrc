@@ -1,8 +1,8 @@
-# zplugin {{{
+# zinit {{{
 
 if [[ ! -d $ZPLG_HOME/bin ]]; then
   if whence git > /dev/null; then
-    git clone --depth 10 https://github.com/zdharma/zplugin.git $ZPLG_HOME/bin
+    git clone --depth 10 https://github.com/zdharma/zinit.git $ZPLG_HOME/bin
   fi
 fi
 
@@ -14,7 +14,7 @@ if [[ ! -d $ZPLG_HOME/misc ]]; then
   mkdir -p $ZPLG_HOME/misc
 fi
 
-source $ZPLG_HOME/bin/zplugin.zsh
+source $ZPLG_HOME/bin/zinit.zsh
 
 # zsh-async command {{{
 function set_async() {
@@ -35,50 +35,50 @@ function set_async() {
 # }}}
 
 # sync loading {{{
-zplugin light yukiycino-dotfiles/zsh-abbrev-alias
-zplugin light yukiycino-dotfiles/zsh-extra-abbrev
-zplugin light yukiycino-dotfiles/zsh-show-buffer-stack
+zinit light yukiycino-dotfiles/zsh-abbrev-alias
+zinit light yukiycino-dotfiles/zsh-extra-abbrev
+zinit light yukiycino-dotfiles/zsh-show-buffer-stack
 
-zplugin ice lucid atload"set_async"
-zplugin light mafredri/zsh-async
+zinit ice lucid atload"set_async"
+zinit light mafredri/zsh-async
 # }}}
 
 # async loading {{{
 
 # PROMPT
-zplugin ice lucid wait"!0" depth"1" atinit"zpcompinit; zpcdreplay" atload"set_fast_theme"
-zplugin light zdharma/fast-syntax-highlighting
+zinit ice lucid wait"!0" depth"1" atinit"zpcompinit; zpcdreplay" atload"set_fast_theme"
+zinit light zdharma/fast-syntax-highlighting
 
-zplugin ice lucid wait"!0" depth"1" atload'set_autosuggest'
-zplugin light zsh-users/zsh-autosuggestions
+zinit ice lucid wait"!0" depth"1" atload'set_autosuggest'
+zinit light zsh-users/zsh-autosuggestions
 
 # completion
-zplugin ice lucid wait"0" depth"1" blockf
-zplugin light zsh-users/zsh-completions
+zinit ice lucid wait"0" depth"1" blockf
+zinit light zsh-users/zsh-completions
 
 # fuzzy finder
-zplugin ice lucid wait"0" from"gh-r" as"program" mv"fzf -> ${ZPFX}/bin/fzf"
-zplugin light junegunn/fzf-bin
+zinit ice lucid wait"0" from"gh-r" as"program" mv"fzf -> ${ZPFX}/bin/fzf"
+zinit light junegunn/fzf-bin
 
-zplugin ice lucid wait"0" depth"1" as"program" mv"bin/fzf-tmux -> ${ZPFX}/bin/fzf-tmux"
-zplugin light junegunn/fzf
+zinit ice lucid wait"0" depth"1" as"program" mv"bin/fzf-tmux -> ${ZPFX}/bin/fzf-tmux"
+zinit light junegunn/fzf
 
-zplugin ice lucid wait"0" depth"1" as"program" src"tms.plugin.zsh" pick"tms"
-zplugin light yuki-ycino/tms
+zinit ice lucid wait"0" depth"1" as"program" src"tms.plugin.zsh" pick"tms"
+zinit light yuki-ycino/tms
 
-zplugin ice lucid wait"0" depth"1" as"program" src"tmk.plugin.zsh" pick"tmk"
-zplugin light yuki-ycino/tmk
+zinit ice lucid wait"0" depth"1" as"program" src"tmk.plugin.zsh" pick"tmk"
+zinit light yuki-ycino/tmk
 
 # Language Server
-zplugin ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd64*" mv"efm-langserver -> ${ZPFX}/bin/efm-langserver"
-zplugin light mattn/efm-langserver
+zinit ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd64*" mv"efm-langserver -> ${ZPFX}/bin/efm-langserver"
+zinit light mattn/efm-langserver
 
 # util
-zplugin ice lucid wait"0" depth"1"
-zplugin light yukiycino-dotfiles/fancy-ctrl-z
+zinit ice lucid wait"0" depth"1"
+zinit light yukiycino-dotfiles/fancy-ctrl-z
 
-zplugin ice lucid wait"0"
-zplugin snippet 'https://github.com/knu/zsh-git-escape-magic/blob/master/git-escape-magic'
+zinit ice lucid wait"0"
+zinit snippet 'https://github.com/knu/zsh-git-escape-magic/blob/master/git-escape-magic'
 # }}}
 
 # fast-syntax-highlighting {{{
@@ -812,7 +812,7 @@ function env_rehash() {
 
 # Loading fzf {{{
 
-source ~/.zplugin/plugins/junegunn---fzf/shell/completion.zsh
+source ~/.zinit/plugins/junegunn---fzf/shell/completion.zsh
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 export FZF_DEFAULT_OPTS='--reverse'
 export FZF_COMPLETION_TRIGGER=';'
@@ -834,9 +834,9 @@ if [[ ! -f ~/.zshrc.zwc ]] || [[ "$(readlink ~/.zshrc)" -nt ~/.zshrc.zwc ]]; the
   zcompile ~/.zshrc
 fi
 
-# zplugin
-if [[ ! -f ~/.zplugin/bin/zplugin.zsh ]] || [[ ~/.zplugin/bin/zplugin.zsh -nt ~/.zplugin/bin/zplugin.zsh.zwc ]]; then
-  zcompile ~/.zplugin/bin/zplugin.zsh
+# zinit
+if [[ ! -f ~/.zinit/bin/zinit.zsh ]] || [[ ~/.zinit/bin/zinit.zsh -nt ~/.zinit/bin/zinit.zsh.zwc ]]; then
+  zcompile ~/.zinit/bin/zinit.zsh
 fi
 
 
@@ -846,8 +846,8 @@ fi
 # fi
 
 # fzf
-if [[ ! -f ~/.zplugin/plugins/junegunn---fzf/shell/completion.zsh ]] || [[ ~/.zplugin/plugins/junegunn---fzf/shell/completion.zsh -nt ~/.zplugin/plugins/junegunn---fzf/shell/completion.zsh.zwc ]]; then
-  zcompile ~/.zplugin/plugins/junegunn---fzf/shell/completion.zsh
+if [[ ! -f ~/.zinit/plugins/junegunn---fzf/shell/completion.zsh ]] || [[ ~/.zinit/plugins/junegunn---fzf/shell/completion.zsh -nt ~/.zinit/plugins/junegunn---fzf/shell/completion.zsh.zwc ]]; then
+  zcompile ~/.zinit/plugins/junegunn---fzf/shell/completion.zsh
 fi
 
 # fzf_completions

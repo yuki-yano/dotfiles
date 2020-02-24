@@ -1,5 +1,5 @@
 SRC_DIR       = File.dirname(File.expand_path(__FILE__))
-ZPLUGIN_DIR   = File.join(ENV['HOME'], '.zplugin')
+ZINIT_DIR     = File.join(ENV['HOME'], '.zinit')
 ZGEN_DIR      = File.join(ENV['HOME'], '.zsh/zgen')
 DOTFILES_SRCS = %w[
   .atom
@@ -34,28 +34,28 @@ namespace :dotfiles do
 end
 
 namespace :zsh do
-  namespace :zplugin do
-    # @see https://github.com/zdharma/zplugin/blob/master/doc/install.sh
-    desc 'Install zplugin'
+  namespace :zinit do
+    # @see https://github.com/zdharma/zinit/blob/master/doc/install.sh
+    desc 'Install zinit'
     task :install do
       begin
-        FileUtils.mkdir(ZPLUGIN_DIR)
-        puts ">>> Downloading zplugin to #{ZPLUGIN_DIR}/bin"
-        sh "cd #{ZPLUGIN_DIR}; git clone --depth 10 https://github.com/zdharma/zplugin.git bin"
+        FileUtils.mkdir(ZINIT_DIR)
+        puts ">>> Downloading zinit to #{ZINIT_DIR}/bin"
+        sh "cd #{ZINIT_DIR}; git clone --depth 10 https://github.com/zdharma/zinit.git bin"
         puts '>>> Done'
       rescue Errno::EEXIST => _
-        puts 'Zplugin directory already exists'
+        puts 'Zinit directory already exists'
         exit 1
       end
     end
 
-    desc 'Uninstall zplugin'
+    desc 'Uninstall zinit'
     task :uninstall do
       begin
-        FileUtils.rm_r(ZPLUGIN_DIR)
-        puts "Remove directory #{ZPLUGIN_DIR}"
+        FileUtils.rm_r(ZINIT_DIR)
+        puts "Remove directory #{ZINIT_DIR}"
       rescue Errno::ENOENT => _
-        puts "#{ZPLUGIN_DIR} does not exist"
+        puts "#{ZINIT_DIR} does not exist"
         exit 1
       end
     end

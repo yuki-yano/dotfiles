@@ -24,8 +24,8 @@ fpath=(~/.zsh/completions(N-/) $fpath)
 # library path
 export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/
 
-# zplugin
-ZPLG_HOME=$HOME/.zplugin
+# zinit
+ZPLG_HOME=$HOME/.zinit
 ZPFX=$ZPLG_HOME/polaris
 path=($ZPFX/bin(N-/) $path)
 

@@ -5,7 +5,7 @@ This repository includes a lot of configuration file is used and optimized for m
 ## Tools configuration
 
 - zsh
-  - zplugin
+  - zinit
   - fzf
 - neovim
   - fzf
