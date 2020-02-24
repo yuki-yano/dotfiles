@@ -2524,8 +2524,8 @@ AutoCmd ColorScheme * highlight MatchWord               ctermfg=NONE ctermbg=NON
 AutoCmd ColorScheme * highlight MatchWordCur            ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
 AutoCmd ColorScheme * highlight QuickScopePrimary       ctermfg=68   ctermbg=NONE                      guifg=#5F87D7 guibg=NONE
 AutoCmd ColorScheme * highlight QuickScopeSecondary     ctermfg=72   ctermbg=NONE                      guifg=#5FAFAF guibg=NONE
-AutoCmd ColorScheme * highlight ShotFGraph              ctermfg=209  ctermbg=NONE                      guifg=#E27878 guibg=NONE
 AutoCmd ColorScheme * highlight ShotFBlank              ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#E27878 guibg=NONE    gui=underline,bold
+AutoCmd ColorScheme * highlight ShotFGraph              ctermfg=209  ctermbg=NONE                      guifg=#E27878 guibg=NONE
 AutoCmd ColorScheme * highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
 AutoCmd ColorScheme * highlight ZenSpace                ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
 AutoCmd ColorScheme * highlight illuminatedWord         ctermfg=72   ctermbg=NONE                      guifg=#5FAF87 guibg=NONE
