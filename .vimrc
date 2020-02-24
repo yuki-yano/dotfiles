@@ -2497,6 +2497,24 @@ AutoCmd ColorScheme * highlight Search                  ctermfg=68   ctermbg=232
 AutoCmd ColorScheme * highlight Todo                    ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
 AutoCmd ColorScheme * highlight Visual                  ctermfg=159  ctermbg=23                        guifg=#AFFFFF guibg=#005F5F
 
+" Gina (Vital.Vim.Buffer.ANSI)
+AutoCmd ColorScheme * highlight AnsiColor0  ctermfg=0  guifg=#1E2132
+AutoCmd ColorScheme * highlight AnsiColor1  ctermfg=1  guifg=#E27878
+AutoCmd ColorScheme * highlight AnsiColor2  ctermfg=2  guifg=#B4BE82
+AutoCmd ColorScheme * highlight AnsiColor3  ctermfg=3  guifg=#E2A478
+AutoCmd ColorScheme * highlight AnsiColor4  ctermfg=4  guifg=#84A0C6
+AutoCmd ColorScheme * highlight AnsiColor5  ctermfg=5  guifg=#A093C7
+AutoCmd ColorScheme * highlight AnsiColor6  ctermfg=6  guifg=#89B8C2
+AutoCmd ColorScheme * highlight AnsiColor7  ctermfg=7  guifg=#C6C8D1
+AutoCmd ColorScheme * highlight AnsiColor8  ctermfg=8  guifg=#6B7089
+AutoCmd ColorScheme * highlight AnsiColor9  ctermfg=9  guifg=#E98989
+AutoCmd ColorScheme * highlight AnsiColor10 ctermfg=10 guifg=#C0CA8E
+AutoCmd ColorScheme * highlight AnsiColor11 ctermfg=11 guifg=#F0C674
+AutoCmd ColorScheme * highlight AnsiColor12 ctermfg=12 guifg=#91ACD1
+AutoCmd ColorScheme * highlight AnsiColor13 ctermfg=13 guifg=#ADA0D3
+AutoCmd ColorScheme * highlight AnsiColor14 ctermfg=14 guifg=#95C4CE
+AutoCmd ColorScheme * highlight AnsiColor15 ctermfg=15 guifg=#D2D4DE
+
 AutoCmd ColorScheme * highlight BrightestHighlight      ctermfg=72   ctermbg=NONE                      guifg=#5FAF87 guibg=NONE
 AutoCmd ColorScheme * highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
 AutoCmd ColorScheme * highlight ExtraWhiteSpace         ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
