@@ -2379,16 +2379,19 @@ let g:floaterm_borderchars = ['─', '│', '─', '│', '╭', '╮', '╯', '
 nnoremap <silent> <C-s> :<C-u>FloatermToggle<CR>
 
 AutoCmd FileType floaterm call s:floaterm_settings()
+AutoCmd FileType gitrebase call s:set_git_rebase_settings()
 
 function! s:floaterm_settings() abort
   tnoremap <silent> <buffer> <C-s> <C-\><C-n>:FloatermToggle<CR>
   let b:highlight_cursor = 0
 endfunction
 
-AutoCmd FileType gitrebase set winhighlight=Normal:GitRebase
-AutoCmd FileType gitrebase set winblend=30
-AutoCmd FileType gitrebase nnoremap <silent> <buffer> <Leader>d :bdelete!<Space><Bar><Space>close<CR>
+function! s:set_git_rebase_settings() abort
+  set winhighlight=Normal:GitRebase
+  set winblend=30
 
+  nnoremap <silent> <buffer> <Leader>d :bdelete!<Space><Bar><Space>close<CR>
+endfunction
 " }}}3
 
 " table-mode {{{3
