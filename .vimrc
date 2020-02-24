@@ -2384,7 +2384,7 @@ function! s:floaterm_settings() abort
 endfunction
 
 AutoCmd FileType gitrebase set winhighlight=Normal:GitRebase
-AutoCmd FileType gitrebase set winblend=10
+AutoCmd FileType gitrebase set winblend=30
 AutoCmd FileType gitrebase nnoremap <silent> <buffer> <Leader>d :bdelete!<Space><Bar><Space>close<CR>
 
 " }}}3
