@@ -35,7 +35,6 @@ function set_async() {
 # }}}
 
 # sync loading {{{
-zplugin light b4b4r07/zsh-vimode-visual
 zplugin light yukiycino-dotfiles/zsh-abbrev-alias
 zplugin light yukiycino-dotfiles/zsh-extra-abbrev
 zplugin light yukiycino-dotfiles/zsh-show-buffer-stack
@@ -471,10 +470,6 @@ alias -g RS='$(git status --short | fzf-git-rspec | fzf --multi --preview="git d
 # Command Buffer Stack
 RPROMPT='${COMMAND_BUFFER_STACK}'
 
-PROMPT='
-%F{blue}%~%f $GIT_STATUS [%{$MAGENTA%}${RUBY_VERSION}%{$DEFAULT%} %{$GREEN%}${PYTHON_VERSION}%{$DEFAULT%} %{$BLUE%}${NODE_VERSION}%{$DEFAULT%}]
-${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
-
 # function update_git_prompt() {
 #   GIT_STATUS=$(git-prompt)
 # }
@@ -486,25 +481,34 @@ ${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{
 #     zle reset-prompt
 #   fi
 # }
+ if [[ $ZSH_VI_MODE != 1 ]]; then
+  PROMPT='
+%F{blue}%~%f $GIT_STATUS [%{$MAGENTA%}${RUBY_VERSION}%{$DEFAULT%} %{$GREEN%}${PYTHON_VERSION}%{$DEFAULT%} %{$BLUE%}${NODE_VERSION}%{$DEFAULT%}]
+%{$DEFAULT%}%F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
+ else
+  PROMPT='
+%F{blue}%~%f $GIT_STATUS [%{$MAGENTA%}${RUBY_VERSION}%{$DEFAULT%} %{$GREEN%}${PYTHON_VERSION}%{$DEFAULT%} %{$BLUE%}${NODE_VERSION}%{$DEFAULT%}]
+${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
 
-function prompt_update_vim_prompt() {
-  VIM_NORMAL="%{$CYAN%}-- NORMAL --%{$DEFAULT%}"
-  VIM_INSERT="%{$YELLOW%}-- INSERT --%{$DEFAULT%}"
-  VIM_VISUAL="%{$GREEN%}-- VISUAL --%{$DEFAULT%}"
-  VIM_PROMPT="${${${KEYMAP/vicmd/$VIM_NORMAL}/(main|viins)/$VIM_INSERT}/(vivis)/$VIM_VISUAL}"
-  zle reset-prompt
-}
+  function prompt_update_vim_prompt() {
+    VIM_NORMAL="%{$CYAN%}-- NORMAL --%{$DEFAULT%}"
+    VIM_INSERT="%{$YELLOW%}-- INSERT --%{$DEFAULT%}"
+    VIM_VISUAL="%{$GREEN%}-- VISUAL --%{$DEFAULT%}"
+    VIM_PROMPT="${${KEYMAP/vicmd/$VIM_NORMAL}/(main|viins)/$VIM_INSERT}"
+    zle reset-prompt
+  }
 
-function _zle-line-init {
-  prompt_update_vim_prompt
-}
+  function _zle-line-init {
+    prompt_update_vim_prompt
+  }
 
-function _zle-keymap-select {
-  prompt_update_vim_prompt
-}
+  function _zle-keymap-select {
+    prompt_update_vim_prompt
+  }
 
-zle -N zle-line-init _zle-line-init
-zle -N zle-keymap-select _zle-keymap-select
+  zle -N zle-line-init _zle-line-init
+  zle -N zle-keymap-select _zle-keymap-select
+ fi
 
 function venv_name () {
   PYTHON_VIRTUAL_ENV_STRING=""
@@ -614,115 +618,142 @@ zle -N zed-page-down _zed_page_down
 # Bindkey {{{
 
 # Default bind
-# bindkey -e
-bindkey -v
 
-# Wait for next key input for 0.15 seconds (Default 0.4s)
-KEYTIMEOUT=15
+if [[ $ZSH_VI_MODE != 1 ]]; then
+  # Emacs Mode
+  bindkey -e
 
-bindkey -M viins '^i'  fzf-direct-completion
-bindkey -M viins ' '   __abbrev_alias::magic_abbrev_expand_and_space
-bindkey -M viins '^x ' __abbrev_alias::no_magic_abbrev_expand
-bindkey -M viins '^ '  extra-abbrev
-bindkey -M viins '^m'  magic-abbrev-expand-and-accept-line
-bindkey -M viins '^]'  insert-last-word
-bindkey -M viins '^u'  undo
-bindkey -M viins "^[u" redo
-bindkey -M viins '^[f' vi-forward-blank-word
-bindkey -M viins "^[b" vi-backward-blank-word
+  # My ZLE bind
+  bindkey '^i'  fzf-direct-completion
+  bindkey ' '   __abbrev_alias::magic_abbrev_expand_and_space
+  bindkey '^x ' __abbrev_alias::no_magic_abbrev_expand
+  bindkey '^ '  extra-abbrev
+  bindkey '^m'  magic-abbrev-expand-and-accept-line
+  bindkey '^]'  insert-last-word
+  bindkey '^u'  undo
+  bindkey "^[u" redo
+  bindkey '^[f' vi-forward-blank-word
+  bindkey "^[b" vi-backward-blank-word
+  bindkey '^r'   history-selection
+  bindkey '^xs'  snippet-selection
+  bindkey '^x^s' snippet-selection
+  bindkey '^xk'  process-selection
+  bindkey '^x^k' process-selection
 
-bindkey -M viins '^a' beginning-of-line
-bindkey -M viins '^b' backward-char
-bindkey -M viins '^d' delete-char-or-list
-bindkey -M viins '^e' end-of-line
-bindkey -M viins '^f' forward-char
-bindkey -M viins '^g' send-break
-bindkey -M viins '^k' kill-line-or-up-pane
-bindkey -M viins '^w' backward-kill-word
-bindkey -M viins '^p' up-line-or-history
-bindkey -M viins '^n' down-line-or-history
-bindkey -M viins '^y' yank
-bindkey -M viins '^q' show-buffer-stack
+  # Add tmux bind
+  bindkey '^h' backspace-or-left-pane
+  bindkey '^j' accept-line-or-down-pane
 
-# mapping undo and redo
-# bindkey -M viins '^u' backward-kill-line
+  # common bind
+  bindkey '^a' beginning-of-line
+  bindkey '^b' backward-char
+  bindkey '^d' delete-char-or-list
+  bindkey '^e' end-of-line
+  bindkey '^f' forward-char
+  bindkey '^g' send-break
+  bindkey '^k' kill-line-or-up-pane
+  bindkey '^w' backward-kill-word
+  bindkey '^p' up-line-or-history
+  bindkey '^n' down-line-or-history
+  bindkey '^y' yank
+  bindkey '^q' show-buffer-stack
 
-bindkey -M viins "$terminfo[kcbt]" reverse-menu-complete
+  bindkey "$terminfo[kcbt]" reverse-menu-complete
 
-# Add vim bind
-bindkey -M vicmd 'k'  up-line-or-history
-bindkey -M vicmd 'j'  down-line-or-history
-bindkey -M vicmd '/'  vi-history-search-forward
-bindkey -M vicmd '?'  vi-history-search-backward
-bindkey -M vicmd 'gg' beginning-of-line
-bindkey -M vicmd 'G'  end-of-line
-bindkey -M vicmd 'q'  show-buffer-stack
-bindkey -M vicmd '^m' magic-abbrev-expand-and-accept-line
+  # Completion bind
+  zmodload zsh/complist
+  bindkey -M menuselect '^g' .send-break
+  bindkey -M menuselect '^i' forward-char
+  bindkey -M menuselect '^j' .accept-line
+  bindkey -M menuselect '^k' accept-and-infer-next-history
+  bindkey -M menuselect '^n' down-line-or-history
+  bindkey -M menuselect '^p' up-line-or-history
+  bindkey -M menuselect '^h' undo
 
-# Add tmux bind
-bindkey -M viins '^h' backspace-or-left-pane
-bindkey -M vicmd '^h' left-pane
-bindkey -M vivis '^h' left-pane
-bindkey -M vicmd '^k' up-pane
-bindkey -M vivis '^k' up-pane
-bindkey -M viins '^j' accept-line-or-down-pane
+  # Command Line Edit
+  zle -N edit-command-line
+  bindkey '^xe'  edit-command-line
+  bindkey '^x^e' edit-command-line
+else
+  bindkey -v
 
-# Completion bind
-zmodload zsh/complist
-bindkey -M menuselect '^g' .send-break
-bindkey -M menuselect '^i' forward-char
-bindkey -M menuselect '^j' .accept-line
-bindkey -M menuselect '^k' accept-and-infer-next-history
-bindkey -M menuselect '^n' down-line-or-history
-bindkey -M menuselect '^p' up-line-or-history
-bindkey -M menuselect '^h' undo
+  # Wait for next key input for 0.15 seconds (Default 0.4s)
+  KEYTIMEOUT=15
 
-# All Mode bind
-bindkey -M viins '^r'   history-selection
-bindkey -M vicmd '^r'   history-selection
-bindkey -M vivis '^r'   history-selection
-bindkey -M viins '^xs'  snippet-selection
-bindkey -M vicmd '^xs'  snippet-selection
-bindkey -M vivis '^xs'  snippet-selection
-bindkey -M viins '^x^s' snippet-selection
-bindkey -M vicmd '^x^s' snippet-selection
-bindkey -M vivis '^x^s' snippet-selection
-bindkey -M viins '^xk'  process-selection
-bindkey -M vicmd '^xk'  process-selection
-bindkey -M vivis '^xk'  process-selection
-bindkey -M viins '^x^k' process-selection
-bindkey -M vicmd '^x^k' process-selection
-bindkey -M vivis '^x^k' process-selection
+  bindkey -M viins '^i'  fzf-direct-completion
+  bindkey -M viins ' '   __abbrev_alias::magic_abbrev_expand_and_space
+  bindkey -M viins '^x ' __abbrev_alias::no_magic_abbrev_expand
+  bindkey -M viins '^ '  extra-abbrev
+  bindkey -M viins '^m'  magic-abbrev-expand-and-accept-line
+  bindkey -M viins '^]'  insert-last-word
+  bindkey -M viins '^u'  undo
+  bindkey -M viins "^[u" redo
+  bindkey -M viins '^[f' vi-forward-blank-word
+  bindkey -M viins "^[b" vi-backward-blank-word
 
-# Command Line Edit
-zle -N edit-command-line
-bindkey -M viins '^xe'  edit-command-line
-bindkey -M vicmd '^xe'  edit-command-line
-bindkey -M viins '^x^e' edit-command-line
-bindkey -M vicmd '^x^e' edit-command-line
+  bindkey -M viins '^a' beginning-of-line
+  bindkey -M viins '^b' backward-char
+  bindkey -M viins '^d' delete-char-or-list
+  bindkey -M viins '^e' end-of-line
+  bindkey -M viins '^f' forward-char
+  bindkey -M viins '^g' send-break
+  bindkey -M viins '^k' kill-line-or-up-pane
+  bindkey -M viins '^w' backward-kill-word
+  bindkey -M viins '^p' up-line-or-history
+  bindkey -M viins '^n' down-line-or-history
+  bindkey -M viins '^y' yank
+  bindkey -M viins '^q' show-buffer-stack
 
-# Surround
-zle -N delete-surround surround
-zle -N add-surround surround
-zle -N change-surround surround
-bindkey -M vicmd  'sr' change-surround
-bindkey -M vicmd  'sd' delete-surround
-bindkey -M vicmd  'sa' add-surround
-bindkey -M visual 'S'  add-surround
+  # mapping undo and redo
+  # bindkey -M viins '^u' backward-kill-line
 
-zle -N select-bracketed
-for m in visual vivis viopp; do
-  for c in {a,i}${(s..)^:-'()[]{}<>bB'}; do
-    bindkey -M "$m" "$c" select-bracketed
-  done
-done
+  bindkey -M viins "$terminfo[kcbt]" reverse-menu-complete
 
-zle -N select-quoted
-for m in visual vivis viopp; do
-  for c in {a,i}{\',\",\`}; do
-    bindkey -M "$m" "$c" select-quoted
-  done
-done
+  # Add vim bind
+  bindkey -M vicmd 'k'  up-line-or-history
+  bindkey -M vicmd 'j'  down-line-or-history
+  bindkey -M vicmd '/'  vi-history-search-forward
+  bindkey -M vicmd '?'  vi-history-search-backward
+  bindkey -M vicmd 'gg' beginning-of-line
+  bindkey -M vicmd 'G'  end-of-line
+  bindkey -M vicmd 'q'  show-buffer-stack
+  bindkey -M vicmd '^m' magic-abbrev-expand-and-accept-line
+
+  # Add tmux bind
+  bindkey -M viins '^h' backspace-or-left-pane
+  bindkey -M vicmd '^h' left-pane
+  bindkey -M vicmd '^k' up-pane
+  bindkey -M viins '^j' accept-line-or-down-pane
+
+  # Completion bind
+  zmodload zsh/complist
+  bindkey -M menuselect '^g' .send-break
+  bindkey -M menuselect '^i' forward-char
+  bindkey -M menuselect '^j' .accept-line
+  bindkey -M menuselect '^k' accept-and-infer-next-history
+  bindkey -M menuselect '^n' down-line-or-history
+  bindkey -M menuselect '^p' up-line-or-history
+  bindkey -M menuselect '^h' undo
+
+  # All Mode bind
+  bindkey -M viins '^r'   history-selection
+  bindkey -M vicmd '^r'   history-selection
+  bindkey -M viins '^xs'  snippet-selection
+  bindkey -M vicmd '^xs'  snippet-selection
+  bindkey -M viins '^x^s' snippet-selection
+  bindkey -M vicmd '^x^s' snippet-selection
+  bindkey -M viins '^xk'  process-selection
+  bindkey -M vicmd '^xk'  process-selection
+  bindkey -M viins '^x^k' process-selection
+  bindkey -M vicmd '^x^k' process-selection
+
+  # Command Line Edit
+  zle -N edit-command-line
+  bindkey -M viins '^xe'  edit-command-line
+  bindkey -M vicmd '^xe'  edit-command-line
+  bindkey -M viins '^x^e' edit-command-line
+  bindkey -M vicmd '^x^e' edit-command-line
+fi
 
 # zed
 # zed -b
