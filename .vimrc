@@ -2495,7 +2495,7 @@ AutoCmd ColorScheme * highlight Search                  ctermfg=68   ctermbg=232
 AutoCmd ColorScheme * highlight Todo                    ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
 AutoCmd ColorScheme * highlight Visual                  ctermfg=159  ctermbg=23                        guifg=#AFFFFF guibg=#005F5F
 
-AutoCmd ColorScheme * highlight BrightestHighlight      ctermfg=30   ctermbg=NONE                      guifg=#008787 guibg=NONE
+AutoCmd ColorScheme * highlight BrightestHighlight      ctermfg=72   ctermbg=NONE                      guifg=#5FAF87 guibg=NONE
 AutoCmd ColorScheme * highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
 AutoCmd ColorScheme * highlight ExtraWhiteSpace         ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
 AutoCmd ColorScheme * highlight FloatermNF              ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#161821
