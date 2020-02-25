@@ -212,11 +212,8 @@ let g:maplocalleader = ','
 noremap <Leader>      <Nop>
 noremap <LocalLeader> <Nop>
 
-"" Cursor
-noremap 0 ^
-noremap ^ 0
-noremap <Leader>h ^
-noremap <Leader>l $
+"" Move beginning toggle
+noremap <silent> <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
 
 "" Disable mark
 nnoremap m <Nop>
