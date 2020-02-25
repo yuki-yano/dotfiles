@@ -329,9 +329,9 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 
 function rg() {
   if [[ -t 1 ]]; then
-    command rg --smart-case --pretty "$@" | less -RFX
+    command rg --smart-case --pretty --ignore-vcs "$@" | less -RFX
   else
-    command rg --smart-case --pretty "$@"
+    command rg --smart-case --pretty --ignore-vcs "$@"
   fi
 }
 
