@@ -1,44 +1,21 @@
-version: 2
-
-tools:
-  go-golangci-lint: &go-golangci-lint
+languages:
+  go:
     lint-command: "golangci-lint run"
 
-  eruby-erb: &eruby-erb
+  eruby:
     lint-command: "erb -x -T - | ruby -c"
     lint-stdin: true
     lint-offset: 1
     format-command: "htmlbeautifier"
 
-  json-jq: &json-jq
-    lint-command: 'jq .'
-
-  json-fixjson: &json-fixjson
-    format-command: 'fixjson'
-
-  markdown-markdownlint: &markdown-markdownlint
+  markdown:
     lint-command: "markdownlint -s"
     lint-stdin: true
     lint-formats:
       - "%f:%l %m"
 
-  vim-vint: &vim-vint
+  vim:
     lint-command: "vint --stdin-display-name ${INPUT} -"
     lint-stdin: true
-
-languages:
-  go:
-    - <<: *go-golangci-lint
-
-  eruby:
-    - <<: *eruby-erb
-
-  json:
-    - <<: *json-jq
-    - <<: *json-fixjson
-
-  markdown:
-    - <<: *markdown-markdownlint
-
-  vim:
-    - <<: *vim-vint
+    lint-formats:
+      - '%f:%l:%c: %m'
