@@ -82,6 +82,10 @@ zinit light yukiycino-dotfiles/fancy-ctrl-z
 
 zinit ice lucid wait"0"
 zinit snippet 'https://github.com/knu/zsh-git-escape-magic/blob/master/git-escape-magic'
+
+zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*macos*" mv"yj-macos -> ${ZPFX}/bin/yj"
+zplugin light sclevine/yj
+
 # }}}
 
 # fast-syntax-highlighting {{{
