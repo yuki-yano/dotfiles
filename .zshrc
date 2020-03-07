@@ -63,6 +63,9 @@ zinit light junegunn/fzf-bin
 zinit ice lucid wait"0" depth"1" as"program" mv"bin/fzf-tmux -> ${ZPFX}/bin/fzf-tmux"
 zinit light junegunn/fzf
 
+zinit ice lucid wait"!0" depth"1" atinit"FZF_SNIPPET_CONFIG_DIR=\"$HOME/.config/snippets\""
+zinit light yuki-ycino/zsh-fzf-snippet
+
 zinit ice lucid wait"0" depth"1" as"program" src"tms.plugin.zsh" pick"tms"
 zinit light yuki-ycino/tms
 
@@ -419,18 +422,6 @@ function history-selection() {
 }
 zle -N history-selection
 
-## Snippet
-function snippet-selection() {
-  local snippet
-  snippet=$(\grep -v "^#" ~/.config/snippets | \grep -v "^\s*$" | fzf --query "$LBUFFER" --prompt="Snippet> ")
-  if [[ $snippet != "" ]]; then
-    BUFFER=$snippet
-    CURSOR=$#BUFFER
-  fi
-  zle reset-prompt
-}
-zle -N snippet-selection
-
 function process-selection() {
   local pids
   pids=$(\ps -u $USER -o 'pid,stat,%cpu,%mem,cputime,command' | fzf --multi --prompt="Kill processes" | cut -f1 | tr '\n' ' ' )
@@ -635,8 +626,8 @@ if [[ $ZSH_VI_MODE != 1 ]]; then
   bindkey '^[f' vi-forward-blank-word
   bindkey "^[b" vi-backward-blank-word
   bindkey '^r'   history-selection
-  bindkey '^xs'  snippet-selection
-  bindkey '^x^s' snippet-selection
+  bindkey '^xs'  fzf-snippet-selection
+  bindkey '^x^s' fzf-snippet-selection
   bindkey '^xk'  process-selection
   bindkey '^x^k' process-selection
 
