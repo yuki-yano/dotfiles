@@ -428,7 +428,7 @@ zle -N history-selection
 
 function process-selection() {
   local pids
-  pids=$(\ps -u $USER -o 'pid,stat,%cpu,%mem,cputime,command' | fzf --multi --prompt="Kill processes" | cut -f1 | tr '\n' ' ' )
+  pids=$(\ps -u $USER -o 'pid,stat,%cpu,%mem,cputime,command' | fzf --multi --prompt="Kill processes> " | awk '{print $1}' | tr '\n' ' ' )
 
   if [[ $pids != "" ]]; then
     BUFFER="kill $pids"
