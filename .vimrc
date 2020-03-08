@@ -865,7 +865,7 @@ xmap     <Leader>a       <Plug>(coc-format-selected)
 AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
 function! s:show_documentation()
-  if &filetype ==# 'vim'
+  if (index(['vim','help'], &filetype) >= 0)
     execute 'h '.expand('<cword>')
   else
     call CocAction('doHover')
