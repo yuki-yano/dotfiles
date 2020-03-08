@@ -1106,6 +1106,7 @@ nnoremap <silent> <Leader>*     :<C-u>FzfPreviewLines -add-fzf-arg=--no-sort -ad
 nnoremap          <CR>          :<C-u>FzfPreviewProjectGrep<Space>
 nnoremap          <Leader><CR>  :<C-u>FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(@/, '\(\\v\<Bar>\\<\<Bar>\\>\)', '', 'g')<CR>"
 xnoremap          <CR>          "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+nnoremap <silent> <Leader><C-]> :<C-u>FzfPreviewCtags -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"
 nnoremap <silent> <Leader>m     :<C-u>FzfPreviewBookmarks<CR>
 
 nnoremap <silent> <LocalLeader>b              :<C-u>FzfPreviewBufferTags<CR>
