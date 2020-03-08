@@ -1611,8 +1611,8 @@ let g:easy_align_delimiters = {
 \ }
 " }}}3
 
-" easymotion {{{3
-if dein#tap('vim-easymotion')
+" easymotion & shot-f {{{3
+if dein#tap('vim-easymotion') && dein#tap('vim-shot-f')
   " EasyMotion
   let g:EasyMotion_do_mapping       = 0
   let g:EasyMotion_smartcase        = 1
@@ -1624,15 +1624,22 @@ if dein#tap('vim-easymotion')
   let g:EasyMotion_prompt           = 'Search by EasyMotion ({n} character(s)) > '
 
   nmap <silent> S  <Plug>(easymotion-overwin-f2)
-  omap <silent> S  <Plug>(easymotion-overwin-f2)
+  omap <silent> S  <Plug>(easymotion-bd-f2)
   xmap <silent> S  <Plug>(easymotion-bd-f2)
   nmap <silent> ss <Plug>(easymotion-overwin-f2)
-  omap <silent> ss <Plug>(easymotion-overwin-f2)
+  omap <silent> ss <Plug>(easymotion-bd-f2)
   xmap <silent> ss <Plug>(easymotion-bd-f2)
   omap <silent> f  <Plug>(easymotion-fl)
   omap <silent> t  <Plug>(easymotion-tl)
   omap <silent> F  <Plug>(easymotion-Fl)
   omap <silent> T  <Plug>(easymotion-Tl)
+
+  " shot-f
+  let g:shot_f_no_default_key_mappings = 1
+  nmap <silent> f <Plug>(shot-f-f)
+  nmap <silent> F <Plug>(shot-f-F)
+  nmap <silent> t <Plug>(shot-f-t)
+  nmap <silent> T <Plug>(shot-f-T)
 endif
 " }}}3
 
