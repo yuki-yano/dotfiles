@@ -646,6 +646,17 @@ AutoCmd FileType sh              setlocal expandtab   shiftwidth=2 softtabstop=2
 AutoCmd FileType zsh             setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 " }}}3
 
+" Fold {{{3
+AutoCmd FileType javascript      setlocal foldmethod=syntax foldlevel=100
+AutoCmd FileType typescript      setlocal foldmethod=syntax foldlevel=100
+AutoCmd FileType typescriptreact setlocal foldmethod=syntax foldlevel=100
+AutoCmd FileType typescript.tsx  setlocal foldmethod=syntax foldlevel=100
+AutoCmd FileType vue             setlocal foldmethod=syntax foldlevel=100
+AutoCmd FileType ruby            setlocal foldmethod=syntax foldlevel=100
+AutoCmd FileType python          setlocal foldmethod=syntax foldlevel=100
+AutoCmd FileType go              setlocal foldmethod=syntax foldlevel=100
+" }}}3
+
 " iskeyword {{{3
 AutoCmd FileType vue  setlocal iskeyword+=$ iskeyword+=& iskeyword+=- iskeyword+=? iskeyword-=/
 AutoCmd FileType ruby setlocal iskeyword+=@ iskeyword+=! iskeyword+=? iskeyword+=&
