@@ -792,43 +792,12 @@ let g:coc_global_extensions = [
 \ 'coc-yaml',
 \ ]
 
-" completion & snippet
-call coc#config('suggest.minTriggerInputLength', 1)
-call coc#config('suggest.labelMaxLength', 30)
-call coc#config('tabnine.priority.', 100)
-
-call coc#config('snippets.loadFromExtensions', v:false)
-call coc#config('snippets.textmateSnippetsRoots', ['~/.vsnip'])
-
-let g:coc_snippet_next = '<C-f>'
-let g:coc_snippet_prev = '<C-b>'
-
-" diagnostic
-call coc#config('diagnostic.checkCurrentLine', v:true)
-call coc#config('diagnostic.errorSign', '')
-call coc#config('diagnostic.warningSign', '')
-call coc#config('diagnostic.infoSign', '')
-
+" Manual completion
 inoremap <silent> <expr> <C-Space> coc#refresh()
 
-" util
-call coc#config('coc.preferences.useQuickfixForLocations', v:true)
-call coc#config('codeLens.enable', v:true)
-
-" Language
-
-"" TypeScript
-call coc#config('typescript.preferences.importModuleSpecifier', 'relative')
-call coc#config('typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis', v:true)
-call coc#config('eslint.filetypes', ['javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'typescript.tsx'])
-
-"" Ruby
-call coc#config('solargraph.diagnostics', v:true)
-call coc#config('solargraph.formatting', v:true)
-
-"" Python
-call coc#config('python.jediEnabled', v:false)
-call coc#config('python.linting.flake8Enabled', v:true)
+" Snippet map
+let g:coc_snippet_next = '<C-f>'
+let g:coc_snippet_prev = '<C-b>'
 
 " Language Server
 call coc#config('languageserver', {

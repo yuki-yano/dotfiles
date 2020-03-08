@@ -1,0 +1,36 @@
+{
+  "suggest.minTriggerInputLength": 1,
+  "suggest.labelMaxLength": 30,
+  "tabnine.priority": 100,
+  "snippets.loadFromExtensions": false,
+  "snippets.textmateSnippetsRoots": ["~/.vsnip"],
+
+  "diagnostic.checkCurrentLine": true,
+  "diagnostic.errorSign": "",
+  "diagnostic.warningSign": "",
+  "diagnostic.infoSign": "",
+
+  "coc.preferences.useQuickfixForLocations": true,
+  "codeLens.enable": true,
+
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
+  "eslint.filetypes": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "typescript.tsx"
+  ],
+  "solargraph.diagnostics": true,
+  "solargraph.formatting": true,
+
+  "python.jediEnabled": false,
+  "python.linting.flake8Enabled": true,
+
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/docker/cli/master/cli/compose/schema/data/config_schema_v3.9.json": [
+      "/docker-compose.yml"
+    ]
+  }
+}
