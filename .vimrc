@@ -1510,20 +1510,22 @@ endif
 " }}}3
 
 " bookmarks {{{3
-function! g:BMBufferFileLocation(file)
-  let l:filename = 'vim-bookmarks'
-  let l:location = ''
-  if isdirectory(fnamemodify(a:file, ':p:h') . '/.git')
-    " Current work dir is git's work tree
-    let l:location = fnamemodify(a:file, ':p:h') . '/.git'
+let g:bookmark_save_per_working_dir = 1
+
+function! g:BMWorkDirFileLocation()
+  let filename = 'bookmarks'
+  let location = ''
+
+  if isdirectory('.git')
+    let location = getcwd() . '/.git'
   else
-    " Look upwards (at parents) for a directory named '.git'
-    let l:location = finddir('.git', fnamemodify(a:file, ':p:h') . '/.;')
+    let location = finddir('.git', '.;')
   endif
-  if len(l:location) > 0
-    return simplify(l:location . '/.' . l:filename)
+
+  if len(location) > 0
+    return location . '/' . filename
   else
-    return simplify(fnamemodify(a:file, ':p:h') . '/.' . l:filename)
+    return getcwd() . '/.' . filename
   endif
 endfunction
 " }}}3
