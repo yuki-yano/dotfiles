@@ -636,7 +636,6 @@ AutoCmd FileType ruby            setlocal expandtab   shiftwidth=2 softtabstop=2
 AutoCmd FileType eruby           setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType python          setlocal expandtab   shiftwidth=4 softtabstop=4 tabstop=4
 AutoCmd FileType go              setlocal noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
-AutoCmd FileType rust            setlocal expandtab   shiftwidth=4 softtabstop=4 tabstop=4
 AutoCmd FileType json            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType markdown        setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType html            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
