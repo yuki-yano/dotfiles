@@ -186,6 +186,22 @@ if whence bat > /dev/null; then
 fi
 # }}}
 
+# sed {{{
+if whence gsed > /dev/null; then
+  alias sed='gsed'
+fi
+# }}}
+
+# vim {{{
+alias vi='nvim'
+alias vr='nvr'
+alias vimdiff='nvim -d'
+# }}}
+
+# git {{{
+alias gitt='gittower .'
+# }}}
+
 # du {{{
 if whence dust > /dev/null; then
   alias du=dust

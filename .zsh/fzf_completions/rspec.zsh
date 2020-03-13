@@ -1,5 +1,8 @@
 #!/usr/bin/zsh
 
+# ruby
+alias grspec='rspec'
+
 function _fzf-rspec-completion() {
   local tokens lastcmd
   setopt localoptions noshwordsplit
