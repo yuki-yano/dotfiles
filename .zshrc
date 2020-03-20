@@ -635,19 +635,17 @@ if [[ $ZSH_VI_MODE != 1 ]]; then
   bindkey -e
 
   # My ZLE bind
-  bindkey '^i'  fzf-direct-completion
-  bindkey ' '   __abbrev_alias::magic_abbrev_expand_and_space
-  bindkey '^x ' __abbrev_alias::no_magic_abbrev_expand
-  bindkey '^ '  extra-abbrev
-  bindkey '^m'  magic-abbrev-expand-and-accept-line
-  bindkey '^]'  insert-last-word
-  bindkey '^u'  undo
-  bindkey "^[u" redo
-  bindkey '^[f' vi-forward-blank-word
-  bindkey "^[b" vi-backward-blank-word
+  bindkey '^i'   fzf-direct-completion
+  bindkey ' '    __abbrev_alias::magic_abbrev_expand_and_space
+  bindkey '^x '  __abbrev_alias::no_magic_abbrev_expand
+  bindkey '^ '   extra-abbrev
+  bindkey '^m'   magic-abbrev-expand-and-accept-line
+  bindkey '^]'   insert-last-word
+  bindkey '^u'   undo
+  bindkey "^[u"  redo
+  bindkey '^[f'  vi-forward-blank-word
+  bindkey "^[b"  vi-backward-blank-word
   bindkey '^r'   history-selection
-  bindkey '^xs'  fzf-snippet-selection
-  bindkey '^x^s' fzf-snippet-selection
   bindkey '^xk'  process-selection
   bindkey '^x^k' process-selection
 
