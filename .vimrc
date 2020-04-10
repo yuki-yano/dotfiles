@@ -774,6 +774,7 @@ AlterCommand!          list CocList
 AlterCommand! <cmdwin> list CocList
 
 let g:coc_global_extensions = [
+\ 'coc-calc',
 \ 'coc-css',
 \ 'coc-docker',
 \ 'coc-eslint',
