@@ -73,7 +73,7 @@ zinit ice lucid wait"0" depth"1" as"program" src"tmk.plugin.zsh" pick"tmk"
 zinit light yuki-ycino/tmk
 
 # Language Server
-zinit ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd64*" mv"efm-langserver -> ${ZPFX}/bin/efm-langserver"
+zinit ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd64*" mv"*/efm-langserver -> ${ZPFX}/bin/efm-langserver"
 zinit light mattn/efm-langserver
 
 # util
