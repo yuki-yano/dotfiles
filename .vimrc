@@ -1074,13 +1074,13 @@ nnoremap <silent> <Leader>B     :<C-u>FzfPreviewAllBuffers -processors=g:fzf_pre
 nnoremap <silent> <Leader>o     :<C-u>FzfPreviewFromResources buffer project_mru<CR>
 nnoremap <silent> <Leader><C-o> :<C-u>FzfPreviewJumps<CR>
 nnoremap <silent> <Leader>g;    :<C-u>FzfPreviewChanges<CR>
-nnoremap <silent> <Leader>/     :<C-u>FzfPreviewLines -add-fzf-arg=--no-sort -add-fzf-arg=--query="'"<CR>
+nnoremap <silent> <Leader>/     :<C-u>FzfPreviewLines -resume -add-fzf-arg=--no-sort -add-fzf-arg=--query="'"<CR>
 nnoremap <silent> <Leader>*     :<C-u>FzfPreviewLines -add-fzf-arg=--no-sort -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
 nnoremap          <CR>          :<C-u>FzfPreviewProjectGrep<Space>
 nnoremap          <Leader><CR>  :<C-u>FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(@/, '\(\\v\<Bar>\\<\<Bar>\\>\)', '', 'g')<CR>"
 xnoremap          <CR>          "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-nnoremap <silent> <Leader><C-]> :<C-u>FzfPreviewCtags -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"
-nnoremap <silent> <Leader>m     :<C-u>FzfPreviewBookmarks<CR>
+nnoremap <silent> <Leader><C-]> :<C-u>FzfPreviewCtags -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap <silent> <Leader>m     :<C-u>FzfPreviewBookmarks -resume<CR>
 
 nnoremap <silent> <LocalLeader>b              :<C-u>FzfPreviewBufferTags<CR>
 nnoremap <silent> <LocalLeader><LocalLeader>q :<C-u>FzfPreviewQuickFix<CR>
