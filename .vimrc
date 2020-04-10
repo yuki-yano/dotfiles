@@ -842,6 +842,8 @@ function! s:show_documentation()
     call CocAction('doHover')
   endif
 endfunction
+
+AutoCmd FileType typescript,typescript.tsx setlocal tagfunc=CocTagFunc
 " }}}2
 
 " Language {{{2
