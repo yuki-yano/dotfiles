@@ -49,6 +49,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Git {{{3
   call dein#add('ToruIwashita/git-switcher.vim', {'lazy': 1, 'on_cmd': ['Gsw', 'GswSave', 'GswLoad']})
   call dein#add('lambdalisue/gina.vim')
+  call dein#add('rhysd/committia.vim')
   " }}}3
 
   " Fuzzy Finder {{{3
