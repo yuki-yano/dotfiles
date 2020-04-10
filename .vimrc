@@ -2042,7 +2042,6 @@ if dein#tap('lightline.vim')
   let s:lightline_ignore_filepath_ft = [
   \ 'qf',
   \ 'fzf',
-  \ 'vimfiler',
   \ 'gina-status',
   \ 'gina-branch',
   \ 'gina-log',
