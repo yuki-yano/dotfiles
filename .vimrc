@@ -117,6 +117,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kamykn/spelunker.vim')
   call dein#add('luochen1990/rainbow')
   call dein#add('machakann/vim-highlightedyank')
+  call dein#add('mopp/smartnumber.vim')
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('ryanoasis/vim-devicons')
   call dein#add('yuttie/comfortable-motion.vim')
@@ -353,7 +354,6 @@ set laststatus=2
 set list listchars=tab:^\ ,trail:_,extends:>,precedes:<
 set matchpairs+=<:>
 set matchtime=1
-set number | set relativenumber
 set pumheight=40
 set scrolloff=5
 set showtabline=2
@@ -968,11 +968,12 @@ if dein#tap('denite.nvim')
   let s:menus = {}
   let s:menus.toggle = { 'description': 'Toggle Command' }
   let s:menus.toggle.command_candidates = [
-  \ ['Toggle CursorHighlight   [CursorHighlightToggle]',   'CursorHighlightToggle'  ],
-  \ ['Toggle ComfortableMotion [ComfortableMotionToggle]', 'ToggleComfortableMotion'],
-  \ ['Toggle IndentLine        [IndentLinesToggle]',       'IndentLinesToggle'      ],
-  \ ['Toggle SyntaxHighlight   [SyntaxHighlightToggle]',   'SyntaxHighlightToggle'  ],
-  \ ['Toggle TableMode         [TableMode]',               'TableModeToggle'        ],
+  \ ['Toggle CursorHighlight   [CursorHighlightToggle]',     'CursorHighlightToggle'  ],
+  \ ['Toggle SmartNumber       [SmartNumberToggleRelative]', 'SNumbersToggleRelative' ],
+  \ ['Toggle ComfortableMotion [ComfortableMotionToggle]',   'ToggleComfortableMotion'],
+  \ ['Toggle IndentLine        [IndentLinesToggle]',         'IndentLinesToggle'      ],
+  \ ['Toggle SyntaxHighlight   [SyntaxHighlightToggle]',     'SyntaxHighlightToggle'  ],
+  \ ['Toggle TableMode         [TableMode]',                 'TableModeToggle'        ],
   \ ]
   call denite#custom#var('menu', 'menus', s:menus)
   nnoremap <silent> <Leader>t :<C-u>Denite menu:toggle<CR>
@@ -2240,6 +2241,10 @@ let g:rainbow_conf.separately = {
 \ 'capture'     : 0,
 \ 'tagbar'      : 0,
 \ }
+" }}}3
+
+" smartnumber {{{3
+let g:snumber_enable_startup = 1
 " }}}3
 
 " zenspace {{{3
