@@ -2486,14 +2486,14 @@ nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus<CR>
 syntax enable
 
 " Highlight {{{2
-AutoCmd ColorScheme * highlight CursorColumn            ctermfg=NONE ctermbg=236                       guifg=NONE    guibg=#303030
-AutoCmd ColorScheme * highlight CursorLine              ctermfg=NONE ctermbg=236                       guifg=NONE    guibg=#303030
-AutoCmd ColorScheme * highlight CursorLineNr            ctermfg=253  ctermbg=NONE                      guifg=#DADADA guibg=NONE
-AutoCmd ColorScheme * highlight LineNr                  ctermfg=241  ctermbg=NONE                      guifg=#626262 guibg=NONE
-AutoCmd ColorScheme * highlight NonText                 ctermfg=60   ctermbg=NONE                      guifg=#5F5F87 guibg=NONE
-AutoCmd ColorScheme * highlight Search                  ctermfg=68   ctermbg=232                       guifg=#5F87D7 guibg=#080808
-AutoCmd ColorScheme * highlight Todo                    ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
-AutoCmd ColorScheme * highlight Visual                  ctermfg=159  ctermbg=23                        guifg=#AFFFFF guibg=#005F5F
+AutoCmd ColorScheme * highlight CursorColumn ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#303030
+AutoCmd ColorScheme * highlight CursorLine   ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#303030
+AutoCmd ColorScheme * highlight CursorLineNr ctermfg=253  ctermbg=NONE guifg=#DADADA guibg=NONE
+AutoCmd ColorScheme * highlight LineNr       ctermfg=241  ctermbg=NONE guifg=#626262 guibg=NONE
+AutoCmd ColorScheme * highlight NonText      ctermfg=60   ctermbg=NONE guifg=#5F5F87 guibg=NONE
+AutoCmd ColorScheme * highlight Search       ctermfg=68   ctermbg=232  guifg=#5F87D7 guibg=#080808
+AutoCmd ColorScheme * highlight Todo         ctermfg=229  ctermbg=NONE guifg=#FFFFAF guibg=NONE
+AutoCmd ColorScheme * highlight Visual       ctermfg=159  ctermbg=23   guifg=#AFFFFF guibg=#005F5F
 
 " Gina (Vital.Vim.Buffer.ANSI)
 AutoCmd ColorScheme * highlight AnsiColor0  ctermfg=0  guifg=#1E2132
