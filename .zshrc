@@ -165,9 +165,9 @@ function set_autosuggest() {
 # exa {{{
 if whence exa > /dev/null; then
   alias ls="exa"
-  alias ll="exa -lh  --git"
-  alias la="exa -alh --git"
-  alias lt="exa -alh --git"
+  alias ll="exa -lh  --git --time-style long-iso"
+  alias la="exa -alh --git --time-style long-iso"
+  alias lt="exa -alh --git --time-style long-iso"
 elif whence gls > /dev/null; then
   alias ls='gls --color=auto'
   alias ll='ls -lh'
