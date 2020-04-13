@@ -49,7 +49,7 @@ zinit light mafredri/zsh-async
 zinit ice lucid wait"!0" depth"1" atinit"zpcompinit; zpcdreplay" atload"set_fast_theme"
 zinit light zdharma/fast-syntax-highlighting
 
-zinit ice lucid wait"!0" depth"1" atload'set_autosuggest'
+zinit ice lucid wait"!0" depth"1" atload"set_autosuggest" atload"set_autosuggetsions_theme"
 zinit light zsh-users/zsh-autosuggestions
 
 # completion
@@ -105,6 +105,11 @@ function set_fast_theme() {
   bindkey -M viins '^n' history-search-forward
   bindkey -M vicmd 'k'  history-search-backward
   bindkey -M vicmd 'j'  history-search-forward
+}
+
+# autosuggestions-theme {{{
+function set_autosuggetsions_theme() {
+  ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=243
 }
 # }}}
 
