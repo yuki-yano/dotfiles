@@ -873,9 +873,9 @@ AlterCommand!          mark[ed] MarkedOpen
 AlterCommand! <cmdwin> mark[ed] MarkedOpen
 " }}}3
 
-" typescript {{{
+" typescript {{{3
 AutoCmd BufNewFile,BufRead *.tsx setlocal filetype=typescript.tsx
-" }}}
+" }}}3
 
 " vim {{{3
 let g:vimsyntax_noerror = 1
