@@ -158,6 +158,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Color Theme {{{3
   call dein#add('cocopon/iceberg.vim')
+  call dein#add('joshdick/onedark.vim')
   " }}}3
 
   call dein#end()
@@ -1917,7 +1918,7 @@ let g:indentLine_fileTypeExclude = ['json']
 " lightline {{{3
 if dein#tap('lightline.vim')
   let g:lightline = {
-  \ 'colorscheme': 'iceberg_yano',
+  \ 'colorscheme': 'onedark',
   \ 'active': {
   \   'left': [
   \     ['mode', 'spell', 'paste'],
@@ -2538,8 +2539,11 @@ AutoCmd ColorScheme * highlight CocInfoSign             ctermfg=229  ctermbg=NON
 " AutoCmd ColorScheme * highlight StatusLineNC ctermfg=0 ctermbg=none guifg=#1E2132 guibg=#C6C8D1
 " }}}2
 
-" iceberg {{{2
-colorscheme iceberg
+" onedark {{{2
+colorscheme onedark
+
+"" ruby_hl_lvar.vim
+hi! Identifier cterm=NONE ctermfg=10 guifg=#C0CA8E
 " }}}2
 
 " }}}1
