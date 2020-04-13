@@ -10,11 +10,13 @@ upgrade
 install mas
 
 ## Shell
-install bash
-install tmux
+install bash binutils coreutils findutils bash-completion
+install shellcheck # Haskell
+install tmux reattach-to-user-namespace
 install zsh
 
 ## Editor
+install readline
 install vim
 install neovim --HEAD
 install railwaycat/emacsmacport/emacs-mac
@@ -22,66 +24,40 @@ install railwaycat/emacsmacport/emacs-mac
 ## Languages
 install boost
 install gcc
-install go
-install golangci/tap/golangci-lint
+install go golangci/tap/golangci-lint
 install lua
-install node
-install nodenv
+install node nodenv yarn
 install openssl
-install pyenv
-install python
-install python@2
-install rbenv
-install readline
-install ruby
-install ruby-build
-install shellcheck # Haskell
+install pyenv python python@2
+install ruby rbenv ruby-build
 install source-highlight
-install yarn
 
 ## Service
 install ansible
+install asciinema
 install awscli
 install heroku/brew/heroku
 install packer
 install terraform
 
 ## Database
-install mysql
-install postgresql
-install redis
-install sqlite
+install mysql postgresql redis sqlite
 
-## Utils
-install ag
-install asciinema
-install autoconf
-install automake
-install bat
-install ccat
-install cmake
-install coreutils
-install ctop
-install curl
-install direnv
-install dust
-install exa
-install fd
-install findutils
-install gawk
+## Modern CLI
+install ag bat ctop dust direnv exa fd glow ripgrep
+
+## GNU Core Utilities
+install autoconf automake cmake gawk gnu-sed gnu-time gpatch gpg2 wget
+
+
+## Util
 install global
-install glow
-install gnu-sed
-install gnu-time
-install gpatch
-install gpg2
 install graphviz
-install jq
-install nkf
-install parallel
-install reattach-to-user-namespace
-install ripgrep
 install rsync
+install itchyny/tap/mmv
+install jq
+install parallel
+install pstree
 install tokei
 install tree
 install universal-ctags/universal-ctags/universal-ctags --HEAD --with-jansson
@@ -90,13 +66,7 @@ install watch
 install wget
 
 ## VCS
-install diff-so-fancy
-install ghq
-install gibo
-install git
-install gitnub/gh/gh
-install hub
-install tig
+install git hub tig gh ghq gobo diff-so-fancy git-extras
 
 ## Media
 install ffmpeg
