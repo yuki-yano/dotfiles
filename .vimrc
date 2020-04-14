@@ -76,6 +76,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-operator-user')
 
   call dein#add('kana/vim-textobj-entire') " ie ae
+  call dein#add('kana/vim-textobj-fold') " iz az
+  call dein#add('kana/vim-textobj-indent') " ii ai
   call dein#add('kana/vim-textobj-line') " al il
   call dein#add('rhysd/vim-textobj-ruby') " ir ar
   call dein#add('thinca/vim-textobj-between') " i{char} a{char}
