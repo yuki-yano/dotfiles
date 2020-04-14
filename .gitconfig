@@ -14,6 +14,7 @@
   attributesfile = ~/.gitattributes_global
 
 [alias]
+  sync = !git checkout master && git pull origin master --rebase && git fetch -p origin && git branch -d $(git branch --merged | grep -v master | grep -v '*')
   openpr  = "!f() { hub browse -- `git log --merges --oneline --reverse --ancestry-path $1...master | grep 'Merge pull request #' | head -n 1 | cut -f5 -d' ' | sed -e 's%#%pull/%'`; }; f"
 
 [pager]
