@@ -1,5 +1,4 @@
 # zinit {{{
-
 if [[ ! -d $ZPLG_HOME/bin ]]; then
   if whence git > /dev/null; then
     git clone --depth 10 https://github.com/zdharma/zinit.git $ZPLG_HOME/bin
@@ -15,6 +14,7 @@ if [[ ! -d $ZPLG_HOME/misc ]]; then
 fi
 
 source $ZPLG_HOME/bin/zinit.zsh
+# }}}
 
 # zsh-async command {{{
 function set_async() {
