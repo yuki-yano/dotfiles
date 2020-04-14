@@ -56,6 +56,10 @@ zinit light zsh-users/zsh-autosuggestions
 zinit ice lucid wait"0" depth"1" blockf
 zinit light zsh-users/zsh-completions
 
+# rip
+zinit ice lucid wait"!0" from"gh-r" as"program" var"0.12.0" mv"rip -> ${ZPFX}/bin/rip"
+zinit light nivekuil/rip
+
 # fuzzy finder
 zinit ice lucid wait"0" from"gh-r" as"program" mv"fzf -> ${ZPFX}/bin/fzf"
 zinit light junegunn/fzf-bin
