@@ -97,6 +97,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('junegunn/vim-easy-align',   {'lazy': 1, 'on_cmd': 'EasyAlign'})
   call dein#add('mg979/vim-visual-multi',    {'rev': 'test'})
   call dein#add('mhinz/vim-grepper',         {'lazy': 1, 'on_cmd': 'Grepper', 'on_map': '<Plug>'})
+  call dein#add('mtth/scratch.vim',          {'lazy': 1, 'on_cmd': 'Scratch'})
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',      {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/accelerated-jk',      {'lazy': 1, 'on_map': '<Plug>'})
@@ -1761,6 +1762,13 @@ if dein#tap('vim-sandwich')
   \ },
   \ ]
 endif
+" }}}3
+
+" scratch {{{3
+AlterCommand!          sc[ratch] Scratch
+AlterCommand! <cmdwin> sc[ratch] Scratch
+
+let g:scratch_no_mappings = 1
 " }}}3
 
 " tcomment {{{3
