@@ -119,6 +119,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('itchyny/lightline.vim')
   call dein#add('kamykn/spelunker.vim')
   call dein#add('luochen1990/rainbow')
+  call dein#add('machakann/vim-highlightedundo')
   call dein#add('machakann/vim-highlightedyank')
   call dein#add('mopp/smartnumber.vim')
   call dein#add('ntpeters/vim-better-whitespace')
@@ -1898,6 +1899,13 @@ if dein#tap('foldCC.vim')
 endif
 " }}}3
 
+" highlightedundo {{{3
+let g:highlightedundo#highlight_mode = 2
+
+nmap <silent> u     <Plug>(highlightedundo-undo)
+nmap <silent> <C-r> <Plug>(highlightedundo-redo)
+" }}}3
+
 " highlightedyank {{{3
 if dein#tap('vim-highlightedyank')
   let g:highlightedyank_highlight_duration = 300
@@ -2504,6 +2512,9 @@ AutoCmd ColorScheme * highlight NonText      ctermfg=60   ctermbg=NONE guifg=#5F
 AutoCmd ColorScheme * highlight Search       ctermfg=68   ctermbg=232  guifg=#5F87D7 guibg=#080808
 AutoCmd ColorScheme * highlight Todo         ctermfg=229  ctermbg=NONE guifg=#FFFFAF guibg=NONE
 AutoCmd ColorScheme * highlight Visual       ctermfg=159  ctermbg=23   guifg=#AFFFFF guibg=#005F5F
+AutoCmd ColorScheme * highlight DiffAdd      ctermfg=233  ctermbg=64   guifg=#C4C4C4 guibg=#3E5935
+AutoCmd ColorScheme * highlight DiffDelete   ctermfg=233  ctermbg=95   guifg=#C4C4C4 guibg=#593535
+AutoCmd ColorScheme * highlight DiffChange   ctermfg=233  ctermbg=143  guifg=#C4C4C4 guibg=#594D1A
 
 " Gina (Vital.Vim.Buffer.ANSI)
 AutoCmd ColorScheme * highlight AnsiColor0  ctermfg=0  guifg=#1E2132
