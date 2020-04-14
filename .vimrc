@@ -1355,8 +1355,8 @@ AlterCommand! <cmdwin> gsl GswLoad
 " }}}3
 
 " gina {{{3
-AlterCommand!          g[it] Gina
-AlterCommand! <cmdwin> g[it] Gina
+AlterCommand!          git   Gina
+AlterCommand! <cmdwin> git   Gina
 AlterCommand!          gina  Gina
 AlterCommand! <cmdwin> gina  Gina
 AlterCommand!          gs    Gina<Space>status
