@@ -47,9 +47,9 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Git {{{3
-  call dein#add('ToruIwashita/git-switcher.vim', {'lazy': 1, 'on_cmd': ['Gsw', 'GswSave', 'GswLoad']})
   call dein#add('lambdalisue/gina.vim')
   call dein#add('rhysd/committia.vim')
+  call dein#add('wting/gitsessions.vim')
   " }}}3
 
   " Fuzzy Finder {{{3
@@ -1348,15 +1348,6 @@ endif
 
 " Git {{{2
 
-" git-switcher {{{3
-AlterCommand!          gsw Gsw
-AlterCommand! <cmdwin> gsw Gsw
-AlterCommand!          gss GswSave
-AlterCommand! <cmdwin> gss GswSave
-AlterCommand!          gsl GswLoad
-AlterCommand! <cmdwin> gsl GswLoad
-" }}}3
-
 " gina {{{3
 AlterCommand!          git   Gina
 AlterCommand! <cmdwin> git   Gina
@@ -1410,6 +1401,17 @@ function! s:gina_settings()
   " require floaterm
   call gina#custom#mapping#nmap('log', 'R', ":<C-u>call gina#action#call('yank:rev')<CR>:FloatermNew git rebase -i <C-r>\"<CR>", {'noremap': 1, 'silent': 1})
 endfunction
+" }}}3
+
+" gitsessions {{{3
+AlterCommand!          gss GitSessionSave
+AlterCommand! <cmdwin> gss GitSessionSave
+AlterCommand!          gsl GitSessionLoad
+AlterCommand! <cmdwin> gsl GitSessionLoad
+AlterCommand!          gsd GitSessionDelete
+AlterCommand! <cmdwin> gsd GitSessionDelete
+
+let g:gitsessions_disable_auto_load = 1
 " }}}3
 
 " }}}2
