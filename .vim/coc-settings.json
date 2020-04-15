@@ -29,6 +29,7 @@
   "python.linting.flake8Enabled": true,
 
   "yaml.schemas": {
+    "http://json.schemastore.org/composer": "/*",
     "https://raw.githubusercontent.com/docker/cli/master/cli/compose/schema/data/config_schema_v3.9.json": [
       "/docker-compose.yml"
     ]
