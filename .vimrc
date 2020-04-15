@@ -1870,7 +1870,7 @@ let g:better_whitespace_filetypes_blacklist = [
 let g:brightest#enable_highlight_all_window = 1
 let g:brightest#highlight = {
 \ 'group': 'BrighTestHighlight',
-\ 'priority': 1
+\ 'priority': 0
 \ }
 let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat']
 " }}}3
