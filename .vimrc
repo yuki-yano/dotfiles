@@ -142,11 +142,11 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('lambdalisue/vim-manpager',     {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER']})
   call dein#add('lambdalisue/vim-pager',        {'lazy': 1, 'on_cmd': 'PAGER'})
   call dein#add('majutsushi/tagbar',            {'lazy': 1, 'on_cmd': ['TagbarOpen', 'TagbarToggle']})
-  call dein#add('mbbill/undotree',              {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
-  call dein#add('osyo-manga/vim-brightest')
   call dein#add('moll/vim-bbye',                {'lazy': 1, 'on_cmd': ['Bdelete', 'Bwipeout']})
+  call dein#add('osyo-manga/vim-brightest')
   call dein#add('osyo-manga/vim-gift')
   call dein#add('pocke/vim-automatic',          {'depends': 'vim-gift'})
+  call dein#add('simnalamburt/vim-mundo',       {'lazy': 1, 'on_cmd': 'MundoToggle'})
   call dein#add('thinca/vim-localrc')
   call dein#add('tyru/capture.vim',             {'lazy': 1, 'on_cmd': 'Capture'})
   call dein#add('tyru/vim-altercmd')
@@ -2420,6 +2420,10 @@ function! s:set_git_rebase_settings() abort
 endfunction
 " }}}3
 
+" mundo {{{3
+nnoremap <silent> <Leader>u :<C-u>MundoToggle<CR>
+" }}}3
+
 " table-mode {{{3
 let g:table_mode_corner='|'
 " }}}3
@@ -2437,10 +2441,6 @@ function! Tagbar_status_func(current, sort, fname, ...) abort
   return lightline#statusline(0)
 endfunction
 let g:tagbar_status_func = 'Tagbar_status_func'
-" }}}3
-
-" undotree {{{3
-nnoremap <silent> <Leader>u :<C-u>UndotreeToggle<CR>
 " }}}3
 
 " windowswap {{{3
