@@ -124,6 +124,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mopp/smartnumber.vim')
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('ryanoasis/vim-devicons')
+  call dein#add('wellle/context.vim')
   call dein#add('yuttie/comfortable-motion.vim')
   " }}}3
 
@@ -975,6 +976,7 @@ if dein#tap('denite.nvim')
   let s:menus.toggle.command_candidates = [
   \ ['Toggle CursorHighlight   [CursorHighlightToggle]',     'CursorHighlightToggle'  ],
   \ ['Toggle SmartNumber       [SmartNumberToggleRelative]', 'SNumbersToggleRelative' ],
+  \ ['Toggle Context           [ContextToggleWindow]',       'ContextToggleWindow'    ],
   \ ['Toggle ComfortableMotion [ComfortableMotionToggle]',   'ToggleComfortableMotion'],
   \ ['Toggle IndentLine        [IndentLinesToggle]',         'IndentLinesToggle'      ],
   \ ['Toggle SyntaxHighlight   [SyntaxHighlightToggle]',     'SyntaxHighlightToggle'  ],
@@ -1898,6 +1900,10 @@ function! s:toggle_comfortable_motion()
 endfunction
 
 command! ToggleComfortableMotion call <SID>toggle_comfortable_motion()
+" }}}3
+
+" context {{{3
+let g:context_enabled = 0
 " }}}3
 
 " foldCC {{{3
