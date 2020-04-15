@@ -998,7 +998,8 @@ let g:neomru#dictionary_mru_path = expand('~/.cache/vim/neomru/dictionary')
 " }}}3
 
 " fzf {{{3
-" Set default register
+
+" Set default register {{{4
 function! s:fzf_set_register()
   call fzf#run({
   \ 'source': <SID>get_register_history(),
@@ -1022,8 +1023,9 @@ endfunction
 
 command! FzfSetRegister call <SID>fzf_set_register()
 nnoremap <silent> (ctrlp) :<C-u>FzfSetRegister<CR>
+" }}}4
 
-" Delete History
+" Delete History {{{4
 function! s:fzf_delete_history() abort
   call fzf#run({
   \ 'source': <SID>command_history(),
@@ -1049,8 +1051,9 @@ endfunction
 
 command! FzfDeleteHistory call s:fzf_delete_history()
 " nnoremap <silent> <Leader>h :<C-u>FzfDeleteHistory<CR>
+" }}}4
 
-" Open File at Cursor
+" Open File at Cursor {{{4
 function! s:fzf_open_gf()
   let s:file_path = tolower(expand('<cfile>'))
 
@@ -1069,6 +1072,8 @@ endfunction
 
 command! FzfOpenGf call s:fzf_open_gf()
 " nnoremap <silent> <leader>gf :FzfOpenGf<CR>
+" }}}4
+
 " }}}3
 
 " fzf-preview {{{3
