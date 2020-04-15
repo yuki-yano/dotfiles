@@ -35,6 +35,8 @@ function set_async() {
 # }}}
 
 # sync loading {{{
+zinit ice depth=1
+zinit light romkatv/powerlevel10k
 zinit light yukiycino-dotfiles/zsh-abbrev-alias
 zinit light yukiycino-dotfiles/zsh-extra-abbrev
 zinit light yukiycino-dotfiles/zsh-show-buffer-stack
@@ -483,84 +485,73 @@ alias -g RS='$(git status --short | fzf-git-rspec | fzf --multi --preview="git d
 # }}}
 
 # Prompt {{{
+local grey='246'
+local red='1'
+local yellow='3'
+local blue='4'
+local magenta='5'
+local cyan='6'
+local white='7'
 
-# pure prompt
-# PROMPT='${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
+function prompt_anyenv() {
+  local ruby_version python_version node_version
 
-# Command Buffer Stack
-RPROMPT='${COMMAND_BUFFER_STACK}'
-
-# function update_git_prompt() {
-#   GIT_STATUS=$(git-prompt)
-# }
-# add-zsh-hook precmd update_git_prompt
-
-# TMOUT=1
-# TRAPALRM() {
-#   if [[ "${WIDGET}" != "fzf-completion" ]] && [[ "${WIDGET}" != "magic-abbrev-expand-and-fzf-direct-completion" ]]; then
-#     zle reset-prompt
-#   fi
-# }
- if [[ $ZSH_VI_MODE != 1 ]]; then
-  PROMPT='
-%F{blue}%~%f $GIT_STATUS [%{$MAGENTA%}${RUBY_VERSION}%{$DEFAULT%} %{$GREEN%}${PYTHON_VERSION}%{$DEFAULT%} %{$BLUE%}${NODE_VERSION}%{$DEFAULT%}]
-%{$DEFAULT%}%F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
- else
-  PROMPT='
-%F{blue}%~%f $GIT_STATUS [%{$MAGENTA%}${RUBY_VERSION}%{$DEFAULT%} %{$GREEN%}${PYTHON_VERSION}%{$DEFAULT%} %{$BLUE%}${NODE_VERSION}%{$DEFAULT%}]
-${VIM_PROMPT}%{$DEFAULT%} %F{246}${PYTHON_VIRTUAL_ENV_STRING}%f%(?.%{$WHITE%}.%{$RED%})$ %{$DEFAULT%}'
-
-  function prompt_update_vim_prompt() {
-    VIM_NORMAL="%{$CYAN%}-- NORMAL --%{$DEFAULT%}"
-    VIM_INSERT="%{$YELLOW%}-- INSERT --%{$DEFAULT%}"
-    VIM_VISUAL="%{$GREEN%}-- VISUAL --%{$DEFAULT%}"
-    VIM_PROMPT="${${KEYMAP/vicmd/$VIM_NORMAL}/(main|viins)/$VIM_INSERT}"
-    zle reset-prompt
-  }
-
-  function _zle-line-init {
-    prompt_update_vim_prompt
-  }
-
-  function _zle-keymap-select {
-    prompt_update_vim_prompt
-  }
-
-  zle -N zle-line-init _zle-line-init
-  zle -N zle-keymap-select _zle-keymap-select
- fi
-
-function venv_name () {
-  PYTHON_VIRTUAL_ENV_STRING=""
-  if [[ -n "$VIRTUAL_ENV" ]]; then
-    PYTHON_VIRTUAL_ENV_STRING="venv:$(basename $VIRTUAL_ENV) "
-  fi
-}
-add-zsh-hook precmd venv_name
-
-function detect_ruby_version() {
   if which rbenv > /dev/null 2>&1; then
-    RUBY_VERSION="Ruby-$(rbenv version-name)"
+    ruby_version="Ruby-$(rbenv version-name)"
   fi
-}
-add-zsh-hook precmd detect_ruby_version
-
-function detect_node_version() {
+  if which pyenv > /dev/null 2>&1; then
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+      python_version="Python-venv"
+    else
+      python_version="Python-$(pyenv version-name)"
+    fi
+  fi
   if which nodenv > /dev/null 2>&1; then
-    NODE_VERSION="Node-$(nodenv version-name)"
+    node_version="Node-$(nodenv version-name)"
   fi
+  p10k segment -f white -t "[%{$MAGENTA%}${ruby_version}%{$DEFAULT%} %{$GREEN%}${python_version}%{$DEFAULT%} %{$BLUE%}${node_version}%{$DEFAULT%}]"
 }
-add-zsh-hook precmd detect_node_version
 
-function detect_python_version() {
+function prompt_venv() {
+  local venv
+  venv=""
   if [[ -n "$VIRTUAL_ENV" ]]; then
-    PYTHON_VERSION="Python-venv"
-  else
-    PYTHON_VERSION="Python-$(pyenv version-name)"
+    venv="venv:$(basename $VIRTUAL_ENV)"
+    p10k segment -f white -t "[%F{72}${venv}%f]"
   fi
 }
-add-zsh-hook precmd detect_python_version
 
+function prompt_show_buffer_stack() {
+  p10k segment -f white -e -t '$COMMAND_BUFFER_STACK'
+}
+typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
+  dir
+  vcs
+  anyenv
+  newline
+  venv
+  prompt_char
+)
+
+typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
+  show_buffer_stack
+)
+
+typeset -g POWERLEVEL9K_BACKGROUND=
+typeset -g POWERLEVEL9K_{LEFT,RIGHT}_{LEFT,RIGHT}_WHITESPACE=
+typeset -g POWERLEVEL9K_{LEFT,RIGHT}_SUBSEGMENT_SEPARATOR=' '
+typeset -g POWERLEVEL9K_{LEFT,RIGHT}_SEGMENT_SEPARATOR=
+typeset -g POWERLEVEL9K_VISUAL_IDENTIFIER_EXPANSION=
+
+typeset -g POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
+
+typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_{VIINS,VICMD,VIVIS}_FOREGROUND=$white
+typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_{VIINS,VICMD,VIVIS}_FOREGROUND=$red
+typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIINS_CONTENT_EXPANSION='$'
+typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VICMD_CONTENT_EXPANSION='$'
+typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIVIS_CONTENT_EXPANSION='$'
+typeset -g POWERLEVEL9K_DIR_FOREGROUND=$blue
+typeset -g POWERLEVEL9K_VCS_CONTENT_EXPANSION='$GIT_STATUS'
 # }}}
 
 # tmux {{{
