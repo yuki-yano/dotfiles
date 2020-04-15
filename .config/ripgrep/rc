@@ -1,0 +1,7 @@
+--glob=!.git/*
+--colors=match:fg:magenta
+--colors=match:style:nobold
+--colors=path:fg:green
+--colors=path:style:bold
+--colors=line:fg:cyan
+--colors=line:style:bold

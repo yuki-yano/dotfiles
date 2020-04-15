@@ -32,6 +32,9 @@ path=($ZPFX/bin(N-/) $path)
 # curl
 path=(/usr/local/opt/curl/bin(N-/) $path)
 
+# ripgrep
+export RIPGREP_CONFIG_PATH=$HOME/.config/ripgrep/rc
+
 # XDG Base Directory
 export XDG_CONFIG_HOME=$HOME/.config
 

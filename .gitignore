@@ -9,10 +9,11 @@
 
 # Config
 /.config/*
-!/.config/efm-langserver
 !/.config/alacritty/
+!/.config/efm-langserver
 !/.config/karabiner/assets
 !/.config/karabiner/karabiner.json
 !/.config/nvim
+!/.config/ripgrep
 !/.config/snippets
 !/.config/vscode
