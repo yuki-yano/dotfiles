@@ -612,186 +612,59 @@ zle -N accept-line-or-down-pane _accept-line-or-down-pane
 
 # }}}
 
-# zed {{{
-
-function _zed_page_up() {
-  integer count=$(( LINES / 2 - 1 ))
-  while (( count -- )); do
-    zle up-line
-  done
-}
-
-function _zed_page_down() {
-  integer count=$(( LINES / 2 - 1 ))
-  while (( count -- )); do
-    zle down-line
-  done
-}
-
-zle -N zed-page-up   _zed_page_up
-zle -N zed-page-down _zed_page_down
-
-# }}}
-
 # Bindkey {{{
 
-# Default bind
+bindkey -e
 
-if [[ $ZSH_VI_MODE != 1 ]]; then
-  # Emacs Mode
-  bindkey -e
+# My ZLE bind
+bindkey '^i'   fzf-direct-completion
+bindkey ' '    __abbrev_alias::magic_abbrev_expand_and_space
+bindkey '^x '  __abbrev_alias::no_magic_abbrev_expand
+bindkey '^ '   extra-abbrev
+bindkey '^m'   magic-abbrev-expand-and-accept-line
+bindkey '^]'   insert-last-word
+bindkey '^u'   undo
+bindkey "^[u"  redo
+bindkey '^[f'  vi-forward-blank-word
+bindkey "^[b"  vi-backward-blank-word
+bindkey '^r'   history-selection
+bindkey '^xk'  process-selection
+bindkey '^x^k' process-selection
 
-  # My ZLE bind
-  bindkey '^i'   fzf-direct-completion
-  bindkey ' '    __abbrev_alias::magic_abbrev_expand_and_space
-  bindkey '^x '  __abbrev_alias::no_magic_abbrev_expand
-  bindkey '^ '   extra-abbrev
-  bindkey '^m'   magic-abbrev-expand-and-accept-line
-  bindkey '^]'   insert-last-word
-  bindkey '^u'   undo
-  bindkey "^[u"  redo
-  bindkey '^[f'  vi-forward-blank-word
-  bindkey "^[b"  vi-backward-blank-word
-  bindkey '^r'   history-selection
-  bindkey '^xk'  process-selection
-  bindkey '^x^k' process-selection
+# Add tmux bind
+bindkey '^h' backspace-or-left-pane
+bindkey '^j' accept-line-or-down-pane
 
-  # Add tmux bind
-  bindkey '^h' backspace-or-left-pane
-  bindkey '^j' accept-line-or-down-pane
+# common bind
+bindkey '^a' beginning-of-line
+bindkey '^b' backward-char
+bindkey '^d' delete-char-or-list
+bindkey '^e' end-of-line
+bindkey '^f' forward-char
+bindkey '^g' send-break
+bindkey '^k' kill-line-or-up-pane
+bindkey '^w' backward-kill-word
+bindkey '^p' up-line-or-history
+bindkey '^n' down-line-or-history
+bindkey '^y' yank
+bindkey '^q' show-buffer-stack
 
-  # common bind
-  bindkey '^a' beginning-of-line
-  bindkey '^b' backward-char
-  bindkey '^d' delete-char-or-list
-  bindkey '^e' end-of-line
-  bindkey '^f' forward-char
-  bindkey '^g' send-break
-  bindkey '^k' kill-line-or-up-pane
-  bindkey '^w' backward-kill-word
-  bindkey '^p' up-line-or-history
-  bindkey '^n' down-line-or-history
-  bindkey '^y' yank
-  bindkey '^q' show-buffer-stack
+bindkey "$terminfo[kcbt]" reverse-menu-complete
 
-  bindkey "$terminfo[kcbt]" reverse-menu-complete
+# Completion bind
+zmodload zsh/complist
+bindkey -M menuselect '^g' .send-break
+bindkey -M menuselect '^i' forward-char
+bindkey -M menuselect '^j' .accept-line
+bindkey -M menuselect '^k' accept-and-infer-next-history
+bindkey -M menuselect '^n' down-line-or-history
+bindkey -M menuselect '^p' up-line-or-history
+bindkey -M menuselect '^h' undo
 
-  # Completion bind
-  zmodload zsh/complist
-  bindkey -M menuselect '^g' .send-break
-  bindkey -M menuselect '^i' forward-char
-  bindkey -M menuselect '^j' .accept-line
-  bindkey -M menuselect '^k' accept-and-infer-next-history
-  bindkey -M menuselect '^n' down-line-or-history
-  bindkey -M menuselect '^p' up-line-or-history
-  bindkey -M menuselect '^h' undo
-
-  # Command Line Edit
-  zle -N edit-command-line
-  bindkey '^xe'  edit-command-line
-  bindkey '^x^e' edit-command-line
-else
-  bindkey -v
-
-  # Wait for next key input for 0.15 seconds (Default 0.4s)
-  KEYTIMEOUT=15
-
-  bindkey -M viins '^i'  fzf-direct-completion
-  bindkey -M viins ' '   __abbrev_alias::magic_abbrev_expand_and_space
-  bindkey -M viins '^x ' __abbrev_alias::no_magic_abbrev_expand
-  bindkey -M viins '^ '  extra-abbrev
-  bindkey -M viins '^m'  magic-abbrev-expand-and-accept-line
-  bindkey -M viins '^]'  insert-last-word
-  bindkey -M viins '^u'  undo
-  bindkey -M viins "^[u" redo
-  bindkey -M viins '^[f' vi-forward-blank-word
-  bindkey -M viins "^[b" vi-backward-blank-word
-
-  bindkey -M viins '^a' beginning-of-line
-  bindkey -M viins '^b' backward-char
-  bindkey -M viins '^d' delete-char-or-list
-  bindkey -M viins '^e' end-of-line
-  bindkey -M viins '^f' forward-char
-  bindkey -M viins '^g' send-break
-  bindkey -M viins '^k' kill-line-or-up-pane
-  bindkey -M viins '^w' backward-kill-word
-  bindkey -M viins '^p' up-line-or-history
-  bindkey -M viins '^n' down-line-or-history
-  bindkey -M viins '^y' yank
-  bindkey -M viins '^q' show-buffer-stack
-
-  # mapping undo and redo
-  # bindkey -M viins '^u' backward-kill-line
-
-  bindkey -M viins "$terminfo[kcbt]" reverse-menu-complete
-
-  # Add vim bind
-  bindkey -M vicmd 'k'  up-line-or-history
-  bindkey -M vicmd 'j'  down-line-or-history
-  bindkey -M vicmd '/'  vi-history-search-forward
-  bindkey -M vicmd '?'  vi-history-search-backward
-  bindkey -M vicmd 'gg' beginning-of-line
-  bindkey -M vicmd 'G'  end-of-line
-  bindkey -M vicmd 'q'  show-buffer-stack
-  bindkey -M vicmd '^m' magic-abbrev-expand-and-accept-line
-
-  # Add tmux bind
-  bindkey -M viins '^h' backspace-or-left-pane
-  bindkey -M vicmd '^h' left-pane
-  bindkey -M vicmd '^k' up-pane
-  bindkey -M viins '^j' accept-line-or-down-pane
-
-  # Completion bind
-  zmodload zsh/complist
-  bindkey -M menuselect '^g' .send-break
-  bindkey -M menuselect '^i' forward-char
-  bindkey -M menuselect '^j' .accept-line
-  bindkey -M menuselect '^k' accept-and-infer-next-history
-  bindkey -M menuselect '^n' down-line-or-history
-  bindkey -M menuselect '^p' up-line-or-history
-  bindkey -M menuselect '^h' undo
-
-  # All Mode bind
-  bindkey -M viins '^r'   history-selection
-  bindkey -M vicmd '^r'   history-selection
-  bindkey -M viins '^xs'  snippet-selection
-  bindkey -M vicmd '^xs'  snippet-selection
-  bindkey -M viins '^x^s' snippet-selection
-  bindkey -M vicmd '^x^s' snippet-selection
-  bindkey -M viins '^xk'  process-selection
-  bindkey -M vicmd '^xk'  process-selection
-  bindkey -M viins '^x^k' process-selection
-  bindkey -M vicmd '^x^k' process-selection
-
-  # Command Line Edit
-  zle -N edit-command-line
-  bindkey -M viins '^xe'  edit-command-line
-  bindkey -M vicmd '^xe'  edit-command-line
-  bindkey -M viins '^x^e' edit-command-line
-  bindkey -M vicmd '^x^e' edit-command-line
-fi
-
-# zed
-# zed -b
-# bindkey -N zed viins
-#
-# bindkey -M zed       '^n' down-line-or-search
-# bindkey -M zed       '^p' up-line-or-search
-# bindkey -M zed       '^m' self-insert-unmeta
-# bindkey -M zed       '^s' history-incremental-search-forward
-# bindkey -M zed       '^r' history-incremental-search-backward
-# bindkey -M zed-vicmd 'j'  down-line-or-search
-# bindkey -M zed-vicmd 'k'  up-line-or-search
-# bindkey -M zed-vicmd 'gg' vi-goto-first-line
-# bindkey -M zed-vicmd 'G'  end-of-buffer
-# bindkey -M zed-vicmd '^r' redo
-# bindkey -M zed-vicmd '/'  history-incremental-search-forward
-# bindkey -M zed-vicmd '?'  history-incremental-search-backward
-# bindkey -M zed-vicmd 'n'  vi-repeat-search
-# bindkey -M zed-vicmd 'N'  vi-rev-repeat-search
-# bindkey -M zed-vicmd 'ZZ' accept-line
-# bindkey -M zed-vicmd '^u' zed-page-up
-# bindkey -M zed-vicmd '^d' zed-page-down
+# Command Line Edit
+zle -N edit-command-line
+bindkey '^xe'  edit-command-line
+bindkey '^x^e' edit-command-line
 
 # }}}
 
