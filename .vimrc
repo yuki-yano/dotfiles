@@ -793,6 +793,7 @@ let g:coc_global_extensions = [
 \ 'coc-sh',
 \ 'coc-snippets',
 \ 'coc-solargraph',
+\ 'coc-stylelint',
 \ 'coc-tabnine',
 \ 'coc-tsserver',
 \ 'coc-vetur',
