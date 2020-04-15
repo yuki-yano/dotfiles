@@ -16,33 +16,14 @@ fi
 source $ZPLG_HOME/bin/zinit.zsh
 # }}}
 
-# zsh-async command {{{
-function set_async() {
-  async_init
-  async_start_worker git_prompt_worker -n
-  function git_prompt_callback() {
-    GIT_STATUS=$(git-prompt zsh)
-    zle reset-prompt
-  }
-  function kick_git_prompt_worker() {
-    async_job git_prompt_worker true
-  }
-  async_register_callback git_prompt_worker git_prompt_callback
-  add-zsh-hook precmd kick_git_prompt_worker
-  cd $current_dir; kick_git_prompt_worker
-}
-# current_dir=$(pwd)
-# }}}
-
 # sync loading {{{
 zinit ice depth=1
 zinit light romkatv/powerlevel10k
+zinit ice lucid atload"!_zsh_git_prompt_precmd_hook"
+zinit load woefe/git-prompt.zsh
 zinit light yukiycino-dotfiles/zsh-abbrev-alias
 zinit light yukiycino-dotfiles/zsh-extra-abbrev
 zinit light yukiycino-dotfiles/zsh-show-buffer-stack
-
-zinit ice lucid atload"set_async"
-zinit light mafredri/zsh-async
 # }}}
 
 # async loading {{{
@@ -521,12 +502,20 @@ function prompt_venv() {
   fi
 }
 
+function prompt_rebasing() {
+  if [[ -d ".git/rebase-merge" ]] || [[ -d ".git/rebase-apply" ]]; then
+    p10k segment -f red -e -t ' Rebasing'
+  fi
+}
+
 function prompt_show_buffer_stack() {
   p10k segment -f white -e -t '$COMMAND_BUFFER_STACK'
 }
+
 typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
   dir
   vcs
+  rebasing
   anyenv
   newline
   venv
@@ -539,7 +528,7 @@ typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
 
 typeset -g POWERLEVEL9K_BACKGROUND=
 typeset -g POWERLEVEL9K_{LEFT,RIGHT}_{LEFT,RIGHT}_WHITESPACE=
-typeset -g POWERLEVEL9K_{LEFT,RIGHT}_SUBSEGMENT_SEPARATOR=' '
+typeset -g POWERLEVEL9K_{LEFT,RIGHT}_SUBSEGMENT_SEPARATOR=
 typeset -g POWERLEVEL9K_{LEFT,RIGHT}_SEGMENT_SEPARATOR=
 typeset -g POWERLEVEL9K_VISUAL_IDENTIFIER_EXPANSION=
 
@@ -551,7 +540,25 @@ typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIINS_CONTENT_EXPANSION='$'
 typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VICMD_CONTENT_EXPANSION='$'
 typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIVIS_CONTENT_EXPANSION='$'
 typeset -g POWERLEVEL9K_DIR_FOREGROUND=$blue
-typeset -g POWERLEVEL9K_VCS_CONTENT_EXPANSION='$GIT_STATUS'
+typeset -g POWERLEVEL9K_VCS_CONTENT_EXPANSION='$(gitprompt)'
+
+ZSH_THEME_GIT_PROMPT_PREFIX=""
+ZSH_THEME_GIT_PROMPT_SUFFIX=" "
+ZSH_THEME_GIT_PROMPT_SEPARATOR="|"
+ZSH_THEME_GIT_PROMPT_DETACHED="%{$fg_bold[cyan]%}:"
+ZSH_THEME_GIT_PROMPT_BRANCH="%{$fg_bold[white]%} "
+ZSH_THEME_GIT_PROMPT_UPSTREAM_PREFIX="%{$fg[magenta]%}->%{$fg[cyan]%}"
+ZSH_THEME_GIT_PROMPT_UPSTREAM_SUFFIX=" "
+ZSH_THEME_GIT_PROMPT_BEHIND="%{$fg_bold[cyan]%}↓ "
+ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg_bold[cyan]%}↑ "
+ZSH_THEME_GIT_PROMPT_UNMERGED=" %{$fg[red]%}X:"
+ZSH_THEME_GIT_PROMPT_STAGED=" %{$fg[green]%}M:"
+ZSH_THEME_GIT_PROMPT_UNSTAGED=" %{$fg[red]%}M:"
+ZSH_THEME_GIT_PROMPT_UNTRACKED=" %{$fg[red]%}?:"
+ZSH_THEME_GIT_PROMPT_CLEAN=" %{$fg_bold[green]%}✔"
+ZSH_THEME_GIT_PROMPT_STASHED=" %{$fg[blue]%}Stash:"
+ZSH_GIT_PROMPT_SHOW_UPSTREAM=full
+ZSH_GIT_PROMPT_SHOW_STASH=1
 # }}}
 
 # tmux {{{

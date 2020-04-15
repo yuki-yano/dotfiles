@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-if [[ $# -gt 1 ]]; then
-  exit 1
-fi
-
-project=$(basename $1)
-cat "/tmp/git-prompt/${project}"
