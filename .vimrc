@@ -107,8 +107,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('terryma/vim-expand-region', {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-qfreplace',      {'lazy': 1, 'on_cmd': 'Qfreplace'})
   call dein#add('tommcdo/vim-exchange',      {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
-  call dein#add('tomtom/tcomment_vim',       {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
   call dein#add('tpope/vim-repeat')
+  call dein#add('tyru/caw.vim'             , {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('unblevable/quick-scope')
   " }}}3
 
@@ -1542,6 +1542,17 @@ function! g:BMWorkDirFileLocation()
 endfunction
 " }}}3
 
+" caw {{{3
+let g:caw_no_default_keymappings = 1
+
+nmap <silent> <Leader>cc <Plug>(caw:hatpos:toggle)
+xmap <silent> <Leader>cc <Plug>(caw:hatpos:toggle)
+nmap <silent> <Leader>cw <Plug>(caw:wrap:comment)
+xmap <silent> <Leader>cw <Plug>(caw:wrap:comment)
+nmap <silent> <Leader>cW <Plug>(caw:wrap:uncomment)
+xmap <silent> <Leader>cW <Plug>(caw:wrap:uncomment)
+" }}}3
+
 " easy-align {{{3
 vnoremap ga :EasyAlign<CR>
 
@@ -1774,12 +1785,6 @@ AlterCommand!          sc[ratch] Scratch
 AlterCommand! <cmdwin> sc[ratch] Scratch
 
 let g:scratch_no_mappings = 1
-" }}}3
-
-" tcomment {{{3
-let g:tcomment_maps = 0
-
-noremap <silent> <Leader>cc :TComment<CR>
 " }}}3
 
 " visual-multi {{{3
