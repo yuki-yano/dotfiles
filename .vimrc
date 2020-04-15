@@ -736,7 +736,7 @@ set cedit=\<C-c>
 AutoCmd CmdwinEnter * call <SID>init_cmdwin()
 
 function! s:init_cmdwin() abort
-  set number | set norelativenumber
+  setlocal number | setlocal norelativenumber
   nnoremap <buffer> <CR> <CR>
   nnoremap <buffer> <silent> q :<C-u>quit<CR>
   inoremap <buffer> <C-c> <Esc>l<C-c>
