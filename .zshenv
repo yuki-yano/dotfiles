@@ -29,6 +29,9 @@ ZPLG_HOME=$HOME/.zinit
 ZPFX=$ZPLG_HOME/polaris
 path=($ZPFX/bin(N-/) $path)
 
+# popd
+alias p=popd
+
 # curl
 path=(/usr/local/opt/curl/bin(N-/) $path)
 
