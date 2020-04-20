@@ -32,7 +32,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Language {{{3
-  call dein#add('MaxMEllon/vim-jsx-pretty',                {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('elzr/vim-json',                           {'lazy': 1, 'on_ft': 'json'})
   call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': 'css'})
   call dein#add('itspriddle/vim-marked',                   {'lazy': 1, 'on_ft': 'markdown'})
@@ -59,7 +58,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('junegunn/fzf', {'build': './install --bin', 'merged': 0})
   " call dein#add('yuki-ycino/fzf-preview.vim')
   call dein#local('~/repos/github.com/yuki-ycino', {}, ['fzf-preview.vim'])
-  call dein#add('Shougo/neomru.vim')
   " }}}3
 
   " filer {{{3
