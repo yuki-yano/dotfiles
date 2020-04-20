@@ -4,11 +4,9 @@ create-react-app
 expo-cli
 firebase-tools
 fixjson
-gtop
 htmlhint
 javascript-typescript-langserver
 jsonlint
-markdownlint-cli
 neovim
 now
 npm-check-updates
@@ -20,5 +18,4 @@ tern
 ts-node
 typescript
 vim-language-server
-vtop
 vue-language-server
