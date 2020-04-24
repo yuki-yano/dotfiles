@@ -1588,10 +1588,10 @@ let g:grepper = {
 
 " jplus {{{3
 if dein#tap('vim-jplus')
-  nmap J  <Plug>(jplus)
-  vmap J  <Plug>(jplus)
-  nmap gJ <Plug>(jplus-input)
-  vmap gJ <Plug>(jplus-input)
+  nmap J         <Plug>(jplus)
+  vmap J         <Plug>(jplus)
+  nmap <Leader>J <Plug>(jplus-input)
+  vmap <Leader>J <Plug>(jplus-input)
 endif
 " }}}3
 
