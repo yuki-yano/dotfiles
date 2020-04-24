@@ -108,6 +108,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tpope/vim-repeat')
   call dein#add('tyru/caw.vim'             , {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('unblevable/quick-scope')
+  call dein#add('vim-scripts/Align',         {'lazy': 1, 'on_cmd': 'Align'})
   " }}}3
 
   " Appearance {{{3
