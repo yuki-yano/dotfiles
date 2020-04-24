@@ -44,7 +44,7 @@ install terraform
 install mysql postgresql redis sqlite
 
 ## Modern CLI
-install ag bat ctop dust direnv exa fd glow ripgrep
+install ag bat ctop direnv exa fd glow ripgrep procs
 
 ## GNU Core Utilities
 install autoconf automake cmake gawk gnu-sed gnu-time gpatch gpg2 wget
