@@ -150,6 +150,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('pocke/vim-automatic',          {'depends': 'vim-gift'})
   call dein#add('simnalamburt/vim-mundo',       {'lazy': 1, 'on_cmd': 'MundoToggle'})
   call dein#add('thinca/vim-localrc')
+  call dein#add('thinca/vim-ref',               {'lazy': 1, 'on_cmd': 'Ref'})
   call dein#add('tyru/capture.vim',             {'lazy': 1, 'on_cmd': 'Capture'})
   call dein#add('tyru/vim-altercmd')
   call dein#add('voldikss/vim-floaterm')
@@ -2423,6 +2424,11 @@ nnoremap <silent> <Leader>u :<C-u>MundoToggle<CR>
 let g:previm_open_cmd            = 'open -a "Google Chrome"'
 let g:previm_disable_default_css = 1
 let g:previm_custom_css_path     = '~/.config/previm/gfm.css'
+" }}}3
+
+" ref {{{3
+AlterCommand!          refe Ref<Space>refe
+AlterCommand! <cmdwin> refe Ref<Space>refe
 " }}}3
 
 " table-mode {{{3
