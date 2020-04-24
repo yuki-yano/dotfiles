@@ -20,7 +20,7 @@ source $ZPLG_HOME/bin/zinit.zsh
 zinit ice depth=1
 zinit light romkatv/powerlevel10k
 zinit ice lucid atload"!_zsh_git_prompt_precmd_hook"
-zinit load woefe/git-prompt.zsh
+zinit light woefe/git-prompt.zsh
 zinit light yukiycino-dotfiles/zsh-abbrev-alias
 zinit light yukiycino-dotfiles/zsh-extra-abbrev
 zinit light yukiycino-dotfiles/zsh-show-buffer-stack
@@ -476,7 +476,7 @@ function prompt_venv() {
 
 function prompt_rebasing() {
   if [[ -d ".git/rebase-merge" ]] || [[ -d ".git/rebase-apply" ]]; then
-    p10k segment -f red -e -t ' Rebasing'
+    p10k segment -f red -e -t ' Rebasing '
   fi
 }
 
@@ -527,10 +527,11 @@ ZSH_THEME_GIT_PROMPT_UNMERGED=" %{$fg[red]%}X:"
 ZSH_THEME_GIT_PROMPT_STAGED=" %{$fg[green]%}M:"
 ZSH_THEME_GIT_PROMPT_UNSTAGED=" %{$fg[red]%}M:"
 ZSH_THEME_GIT_PROMPT_UNTRACKED=" %{$fg[red]%}?:"
-ZSH_THEME_GIT_PROMPT_CLEAN=" %{$fg_bold[green]%}✔"
+ZSH_THEME_GIT_PROMPT_CLEAN=" %{$fg_bold[green]%}✔ "
 ZSH_THEME_GIT_PROMPT_STASHED=" %{$fg[blue]%}Stash:"
 ZSH_GIT_PROMPT_SHOW_UPSTREAM=full
 ZSH_GIT_PROMPT_SHOW_STASH=1
+ZSH_GIT_PROMPT_FORCE_BLANK=1
 # }}}
 
 # tmux {{{
