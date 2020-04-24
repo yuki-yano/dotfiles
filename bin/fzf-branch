@@ -1,3 +1,0 @@
-#!/usr/bin/env ruby
-
-puts STDIN.read.split("\n").map { |b| b[2..-1] }.map { |b| b.split('->').first }.map(&:strip)

@@ -1,0 +1,6 @@
+#autoload
+
+symbols+=(
+  '(^gh issue view( --web)? \# $)' gh_my_issue
+  '(^gh pr view( --web)? \# $)'    gh_my_pr
+)

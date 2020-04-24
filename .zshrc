@@ -114,6 +114,7 @@ if which abbrev-alias > /dev/null 2>&1; then
   abbrev-alias gdcw="git diff --cached --color-words"
   abbrev-alias gco="git checkout"
   abbrev-alias gci="git commit"
+  abbrev-alias gcif="git commit --fixup"
   abbrev-alias gst="git stash"
   abbrev-alias gstp="git stash pop"
   abbrev-alias gstd="git stash drop"
@@ -121,6 +122,12 @@ if which abbrev-alias > /dev/null 2>&1; then
   abbrev-alias tw="tmux swap-pane -t"
   abbrev-alias ch="cheat"
   abbrev-alias chs="cheat --shell"
+  abbrev-alias is="gh issue view --web"
+  abbrev-alias pr="gh pr view --web"
+
+  FZF_PREVIEW_GITHUB_USER=yuki-ycino
+  abbrev-alias mis='gh issue view --web #'
+  abbrev-alias mpr='gh pr view --web #'
 fi
 
 function _magic-abbrev-expand-and-accept-line() {
@@ -353,41 +360,6 @@ function rg() {
 # }}}
 
 # fzf {{{
-for f in $(find ~/.zsh/fzf_completions/ -name "*.zsh"); do
-  source "${f}"
-done
-
-function fzf-direct-completion() {
-  local tokens cmd lastcmd
-  setopt localoptions noshwordsplit
-
-  if [[ $BUFFER[-1] == $FZF_COMPLETION_TRIGGER && $BUFFER[-2] == " " ]]; then
-    zle fzf-completion
-    return
-  fi
-
-  if [[ $BUFFER[-1] != " " ]]; then
-    zle expand-or-complete
-    return
-  fi
-
-  tokens=(${(z)BUFFER})
-  cmd=${tokens[1]}
-  lastcmd=${tokens[-1]}
-
-  if [[ $cmd == "git" ]]; then
-    zle fzf-git-completion
-  elif [[ $cmd == "rbenv" || $cmd == "pyenv" || $cmd == "nodenv" ]]; then
-    zle fzf-anyenv-completion
-  elif [[ $cmd == "tmux" ]]; then
-    zle fzf-tmux-completion
-  elif [[ $lastcmd == "rspec" || $lastcmd == "grspec" ]]; then
-    zle fzf-rspec-completion
-  else
-    zle expand-or-complete
-  fi
-}
-zle -N fzf-direct-completion
 
 # Project
 function f() {
@@ -617,7 +589,7 @@ zle -N accept-line-or-down-pane _accept-line-or-down-pane
 bindkey -e
 
 # My ZLE bind
-bindkey '^i'   fzf-direct-completion
+bindkey '^i'   fzf-or-normal-completion
 bindkey ' '    __abbrev_alias::magic_abbrev_expand_and_space
 bindkey '^x '  __abbrev_alias::no_magic_abbrev_expand
 bindkey '^ '   extra-abbrev
@@ -693,7 +665,7 @@ function env_rehash() {
 
 # }}}
 
-# Local File {{{
+# Load util {{{
 
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
@@ -701,7 +673,6 @@ function env_rehash() {
 
 # Loading fzf {{{
 
-source ~/.zinit/plugins/junegunn---fzf/shell/completion.zsh
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 export FZF_DEFAULT_OPTS='--reverse'
 export FZF_COMPLETION_TRIGGER=';'
@@ -728,23 +699,6 @@ if [[ ! -f ~/.zinit/bin/zinit.zsh ]] || [[ ~/.zinit/bin/zinit.zsh -nt ~/.zinit/b
   zcompile ~/.zinit/bin/zinit.zsh
 fi
 
-
-# zgen
-# if [[ ! -f ~/.zsh/zgen/zgen.zsh.zwc ]] || [[ ~/.zsh/zgen/zgen.zsh -nt ~/.zsh/zgen/zgen.zsh.zwc ]]; then
-#   zcompile  ~/.zsh/zgen/zgen.zsh
-# fi
-
-# fzf
-if [[ ! -f ~/.zinit/plugins/junegunn---fzf/shell/completion.zsh ]] || [[ ~/.zinit/plugins/junegunn---fzf/shell/completion.zsh -nt ~/.zinit/plugins/junegunn---fzf/shell/completion.zsh.zwc ]]; then
-  zcompile ~/.zinit/plugins/junegunn---fzf/shell/completion.zsh
-fi
-
-# fzf_completions
-for f in $(find ~/.zsh/fzf_completions/ -name "*.zsh"); do
-  if [[ ! -f "${f}.zwc" ]] || [[ $f -nt "${f}.zwc" ]]; then
-    zcompile "${f}"
-  fi
-done
 # }}}
 
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:

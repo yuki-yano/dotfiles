@@ -1,3 +1,0 @@
-#!/usr/bin/env ruby
-
-puts STDIN.read.split("\n").map { |f| f.split(' ').last }.select { |f| f =~ /.+_spec.rb/ }
