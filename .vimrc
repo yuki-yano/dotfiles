@@ -84,6 +84,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Edit & Move & Search {{{3
+  call dein#add('AndrewRadev/splitjoin.vim', {'lazy': 1, 'on_cmd': ['SplitJoinSplit', 'SplitJoinJoin']})
   call dein#add('LeafCage/yankround.vim')
   call dein#add('MattesGroeger/vim-bookmarks')
   call dein#add('cohama/lexima.vim',         {'lazy': 1, 'on_event': 'InsertEnter', 'hook_post_source': 'call Hook_on_post_source_lexima()'})
@@ -1771,6 +1772,13 @@ AlterCommand!          sc[ratch] Scratch
 AlterCommand! <cmdwin> sc[ratch] Scratch
 
 let g:scratch_no_mappings = 1
+" }}}3
+
+" splitjoin {{{3
+let g:splitjoin_align             = 1
+let g:splitjoin_trailing_comma    = 1
+let g:splitjoin_ruby_curly_braces = 0
+let g:splitjoin_ruby_hanging_args = 0
 " }}}3
 
 " visual-multi {{{3
