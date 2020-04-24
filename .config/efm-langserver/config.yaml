@@ -1,21 +1,6 @@
 languages:
-  go:
-    lint-command: "golangci-lint run"
-
   eruby:
     lint-command: "erb -x -T - | ruby -c"
     lint-stdin: true
     lint-offset: 1
     format-command: "htmlbeautifier"
-
-  markdown:
-    lint-command: "markdownlint -s"
-    lint-stdin: true
-    lint-formats:
-      - "%f:%l %m"
-
-  vim:
-    lint-command: "vint --stdin-display-name ${INPUT} -"
-    lint-stdin: true
-    lint-formats:
-      - '%f:%l:%c: %m'

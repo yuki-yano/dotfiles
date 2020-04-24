@@ -806,21 +806,6 @@ inoremap <silent> <expr> <C-Space> coc#refresh()
 let g:coc_snippet_next = '<C-f>'
 let g:coc_snippet_prev = '<C-b>'
 
-" Language Server
-call coc#config('languageserver', {
-\ 'graphql': {
-\   'module': expand('~/repos/github.com/apollographql/apollo-tooling/packages/apollo-language-server/lib/server.js'),
-\   'args': ['--node-ipc'],
-\   'filetypes': ['graphql', 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'typescript.tsx'],
-\   'rootPatterns': ['apollo.config.js']
-\ },
-\ 'efm': {
-\   'command': 'efm-langserver',
-\   'args': [],
-\   'filetypes': ['go', 'eruby', 'json', 'markdown', 'vim']
-\ },
-\ })
-
 " Git
 nmap gp <Plug>(coc-git-prevchunk)
 nmap gn <Plug>(coc-git-nextchunk)

@@ -13,6 +13,27 @@
   "coc.preferences.useQuickfixForLocations": true,
   "codeLens.enable": true,
 
+  "languageserver": {
+    "graphql": {
+      "module": "~/repos/github.com/apollographql/apollo-tooling/packages/apollo-language-server/lib/server.js",
+      "args": ["--node-ipc"],
+      "filetypes": [
+        "graphql",
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "typescript.tsx"
+      ],
+      "rootPatterns": ["apollo.config.js"]
+    },
+    "efm": {
+      "command": "efm-langserver",
+      "args": [],
+      "filetypes": ["go", "eruby", "json", "markdown", "vim"]
+    }
+  },
+
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
   "eslint.filetypes": [
@@ -33,5 +54,19 @@
     "https://raw.githubusercontent.com/docker/cli/master/cli/compose/schema/data/config_schema_v3.9.json": [
       "/docker-compose.yml"
     ]
+  },
+  "diagnostic-languageserver.filetypes": {
+    "go": "golangci-lint",
+    "vim": "vint",
+    "sh": "shellcheck"
+  },
+  "diagnostic-languageserver.formatFiletypes": {
+    "sh": "shfmt"
+  },
+  "diagnostic-languageserver.formatters": {
+    "shfmt": {
+      "command": "shfmt",
+      "args": ["-i", "2", "-bn", "-ci", "-sr"]
+    }
   }
 }
