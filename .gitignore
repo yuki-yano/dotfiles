@@ -15,6 +15,7 @@
 !/.config/karabiner/assets
 !/.config/karabiner/karabiner.json
 !/.config/nvim
+!/.config/previm
 !/.config/ripgrep
 !/.config/snippets
 !/.config/vscode

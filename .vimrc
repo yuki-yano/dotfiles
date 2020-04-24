@@ -34,7 +34,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Language {{{3
   call dein#add('elzr/vim-json',                           {'lazy': 1, 'on_ft': 'json'})
   call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': 'css'})
-  call dein#add('itspriddle/vim-marked',                   {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('jparise/vim-graphql',                     {'lazy': 1, 'on_ft': ['graphql', 'javascript', 'typescript', 'typescriptreact', 'typescript.tsx']})
   call dein#add('leafgarland/typescript-vim',              {'lazy': 1, 'on_ft': ['typescript', 'typescriptreact', 'typescript.tsx']})
   call dein#add('othree/yajs.vim',                         {'lazy': 1, 'on_ft': 'javascript'})
@@ -137,6 +136,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('itchyny/vim-qfedit')
   call dein#add('jsfaint/gen_tags.vim')
   call dein#add('kana/vim-niceblock',           {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
+  call dein#add('kannokanno/previm',            {'lazy': 1, 'on_cmd': 'PrevimOpen'})
   call dein#add('lambdalisue/vim-manpager',     {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER']})
   call dein#add('lambdalisue/vim-pager',        {'lazy': 1, 'on_cmd': 'PAGER'})
   call dein#add('majutsushi/tagbar',            {'lazy': 1, 'on_cmd': ['TagbarOpen', 'TagbarToggle']})
@@ -855,11 +855,6 @@ let g:vim_markdown_conceal                 = 0
 let g:vim_markdown_conceal_code_blocks     = 0
 let g:vim_markdown_auto_insert_bullets     = 0
 let g:vim_markdown_new_list_item_indent    = 0
-" }}}3
-
-" marked {{{3
-AlterCommand!          mark[ed] MarkedOpen
-AlterCommand! <cmdwin> mark[ed] MarkedOpen
 " }}}3
 
 " typescript {{{3
@@ -2411,6 +2406,12 @@ endfunction
 
 " mundo {{{3
 nnoremap <silent> <Leader>u :<C-u>MundoToggle<CR>
+" }}}3
+
+" previm {{{3
+let g:previm_open_cmd            = 'open -a "Google Chrome"'
+let g:previm_disable_default_css = 1
+let g:previm_custom_css_path     = '~/.config/previm/gfm.css'
 " }}}3
 
 " table-mode {{{3
