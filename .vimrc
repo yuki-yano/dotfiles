@@ -571,24 +571,6 @@ command! ToggleLocationList call <SID>toggle_location_list()
 nnoremap <silent> <LocalLeader>l :<C-u>ToggleLocationList<CR>
 " }}}2
 
-" MoveToNewTab {{{2
-function! s:move_to_new_tab()
-  tab split
-  tabprevious
-
-  if winnr('$') > 1
-    close
-  elseif bufnr('$') > 1
-    buffer #
-  endif
-
-  tabnext
-endfunction
-
-command! MoveToNewTab call <SID>move_to_new_tab()
-nnoremap <silent> gm :<C-u>MoveToNewTab<CR>
-" }}}2
-
 " HelpEdit & HelpView {{{2
 function! s:option_to_view()
   setlocal buftype=help nomodifiable readonly
