@@ -114,6 +114,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Appearance {{{3
   call dein#add('LeafCage/foldCC.vim')
+  call dein#add('RRethy/vim-hexokinase', {'build': 'make hexokinase'})
   call dein#add('Yggdroot/indentLine')
   call dein#add('andymass/vim-matchup')
   call dein#add('itchyny/lightline.vim')
