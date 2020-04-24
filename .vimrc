@@ -47,6 +47,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Git {{{3
   call dein#add('lambdalisue/gina.vim')
   call dein#add('rhysd/committia.vim')
+  call dein#add('rhysd/conflict-marker.vim')
   call dein#add('wting/gitsessions.vim')
   " }}}3
 
