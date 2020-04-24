@@ -40,17 +40,17 @@ zinit ice lucid wait"0" depth"1" blockf
 zinit light zsh-users/zsh-completions
 
 # rip
-zinit ice lucid wait"!0" from"gh-r" as"program" var"0.12.0" mv"rip -> ${ZPFX}/bin/rip"
+zinit ice lucid wait"0" from"gh-r" as"program" var"0.12.0" mv"rip -> ${ZPFX}/bin/rip"
 zinit light nivekuil/rip
 
 # fuzzy finder
 zinit ice lucid wait"0" from"gh-r" as"program" mv"fzf -> ${ZPFX}/bin/fzf"
 zinit light junegunn/fzf-bin
 
-zinit ice lucid wait"0" depth"1" as"program" mv"bin/fzf-tmux -> ${ZPFX}/bin/fzf-tmux"
+zinit ice lucid wait"0" depth"1" as"program" mv"bin/fzf-tmux -> ${ZPFX}/bin/fzf-tmux" src"shell/completion.zsh"
 zinit light junegunn/fzf
 
-zinit ice lucid wait"!0" depth"1" atinit"FZF_SNIPPET_CONFIG_DIR=\"$HOME/.config/snippets\""
+zinit ice lucid wait"0" depth"1" atinit"FZF_SNIPPET_CONFIG_DIR=\"$HOME/.config/snippets\""
 zinit light yuki-ycino/zsh-fzf-snippet
 
 zinit ice lucid wait"0" depth"1" as"program" src"tms.plugin.zsh" pick"tms"
@@ -69,9 +69,6 @@ zinit light yukiycino-dotfiles/fancy-ctrl-z
 
 zinit ice lucid wait"0"
 zinit snippet 'https://github.com/knu/zsh-git-escape-magic/blob/master/git-escape-magic'
-
-zplugin ice lucid from"gh-r" wait"0" as"program" bpick"*macos*" mv"yj-macos -> ${ZPFX}/bin/yj"
-zplugin light sclevine/yj
 
 # }}}
 
@@ -120,8 +117,6 @@ if which abbrev-alias > /dev/null 2>&1; then
   abbrev-alias gstd="git stash drop"
   abbrev-alias t="tms"
   abbrev-alias tw="tmux swap-pane -t"
-  abbrev-alias ch="cheat"
-  abbrev-alias chs="cheat --shell"
   abbrev-alias is="gh issue view --web"
   abbrev-alias pr="gh pr view --web"
 
@@ -149,7 +144,7 @@ add-zsh-hook precmd check-buffer-stack
 
 # autosuggestions {{{
 function set_autosuggest() {
-  ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(magic-abbrev-expand-and-accept-line magic-abbrev-expand-and-fzf-direct-completion $ZSH_AUTOSUGGEST_CLEAR_WIDGETS)
+  ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(magic-abbrev-expand-and-accept-line $ZSH_AUTOSUGGEST_CLEAR_WIDGETS)
   _zsh_autosuggest_start
 }
 # }}}
@@ -180,7 +175,7 @@ else
 fi
 
 if whence bat > /dev/null; then
-  alias bat='bat --theme zenburn'
+  alias bat='bat --theme=ansi-dark'
   alias b='bat --color=always --style=grid --theme=ansi-dark'
 fi
 # }}}
