@@ -767,12 +767,15 @@ AlterCommand! <cmdwin> list CocList
 let g:coc_global_extensions = [
 \ 'coc-calc',
 \ 'coc-css',
+\ 'coc-cssmodules',
+\ 'coc-diagnostic',
 \ 'coc-docker',
 \ 'coc-eslint',
 \ 'coc-git',
 \ 'coc-go',
 \ 'coc-html',
 \ 'coc-json',
+\ 'coc-markdownlint',
 \ 'coc-prettier',
 \ 'coc-python',
 \ 'coc-sh',
@@ -780,6 +783,7 @@ let g:coc_global_extensions = [
 \ 'coc-solargraph',
 \ 'coc-stylelint',
 \ 'coc-tabnine',
+\ 'coc-tailwindcss',
 \ 'coc-tsserver',
 \ 'coc-vetur',
 \ 'coc-vimlsp',
@@ -788,6 +792,10 @@ let g:coc_global_extensions = [
 
 " Manual completion
 inoremap <silent> <expr> <C-Space> coc#refresh()
+
+" Move diagnostics
+nmap <silent> <LocalLeader>[ <Plug>(coc-diagnostic-prev)
+nmap <silent> <LocalLeader>] <Plug>(coc-diagnostic-next)
 
 " Snippet map
 let g:coc_snippet_next = '<C-f>'
