@@ -908,42 +908,6 @@ if dein#tap('denite.nvim')
   AutoCmd FileType denite        call s:denite_settings()
   AutoCmd FileType denite-filter call s:denite_filter_settings()
 
-  "" option
-  call denite#custom#source('_',        'matchers', ['matcher/regexp'])
-  call denite#custom#source('file_mru', 'matchers', ['matcher/fuzzy', 'matcher/project_files'])
-  call denite#custom#source('line',     'matchers', ['matcher/regexp'])
-  call denite#custom#source('grep',     'matchers', ['matcher/regexp'])
-  call denite#custom#source('menu',     'matchers', ['matcher/regexp'])
-
-  call denite#custom#source('file_mru', 'converters', ['converter/relative_abbr'])
-  call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
-  \ [
-  \  '*~', '*.o', '*.exe', '*.bak',
-  \  '.DS_Store', '*.pyc', '*.sw[po]', '*.class',
-  \  '.hg/', '.git/', '.bzr/', '.svn/',
-  \  'node_modules', 'vendor/bundle', '__pycache__/', 'venv/',
-  \  'tags', 'tags-*', '.png', 'jp[e]g', '.gif',
-  \  '*.min.*'
-  \ ])
-
-  call denite#custom#var('file_rec', 'command',        [ 'rg', '--files', '--glob', '!.git', ''])
-  call denite#custom#var('grep',     'command',        ['rg'])
-  call denite#custom#var('grep',     'default_opts',   ['--vimgrep', '--no-heading'])
-  call denite#custom#var('grep',     'recursive_opts', [])
-  call denite#custom#var('grep',     'pattern_opt',    ['--regexp'])
-  call denite#custom#var('grep',     'separator',      ['--'])
-  call denite#custom#var('grep',     'final_opts',     [])
-
-  "" grep
-  nnoremap <silent> <Leader><Leader>/ :<C-u>Denite grep:::! -start-filter<CR>
-  nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord grep:::! -start-filter<CR>
-
-  "" change
-  nnoremap <silent> <Leader>; :<C-u>Denite change<CR>
-
-  "" ctags & gtags
-  nnoremap <silent> <Leader><C-]> :<C-u>DeniteCursorWord gtags_context tag<CR>
-
   "" menu
   let s:menus = {}
   let s:menus.toggle = { 'description': 'Toggle Command' }
