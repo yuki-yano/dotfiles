@@ -929,109 +929,29 @@ endif
 
 " }}}3
 
-" neomru {{{3
-let g:neomru#file_mru_path       = expand('~/.cache/vim/neomru/file')
-let g:neomru#dictionary_mru_path = expand('~/.cache/vim/neomru/dictionary')
-" }}}3
-
-" fzf {{{3
-
-" Set default register {{{4
-function! s:fzf_set_register()
-  call fzf#run({
-  \ 'source': <SID>get_register_history(),
-  \ 'options': '--no-sort --with-nth 3.. --prompt="RegisterHistory>" --preview "preview_yankround_register {1}"',
-  \ 'sink': function('<SID>register_history_sink'),
-  \ 'window': 'call fzf_preview#window#create_centered_floating_window()',
-  \ })
-endfunction
-
-let s:register_preview_command = 'preview_yankround_register {1}'
-
-function! s:get_register_history()
-  let l:histories = map(copy(g:_yankround_cache), 'split(v:val, "\t", 1)')
-  return map(l:histories, 'v:key + 1 . " " . v:val[0] . " "  . v:val[1]')
-endfunction
-
-function! s:register_history_sink(line)
-  let l:parts = split(a:line, ' ', 1)
-  call setreg('"', join(l:parts[2:], ' '), l:parts[0])
-endfunction
-
-command! FzfSetRegister call <SID>fzf_set_register()
-nnoremap <silent> (ctrlp) :<C-u>FzfSetRegister<CR>
-" }}}4
-
-" Delete History {{{4
-function! s:fzf_delete_history() abort
-  call fzf#run({
-  \ 'source': <SID>command_history(),
-  \ 'options': '--multi --prompt="DeleteHistory>"',
-  \ 'sink': function('<SID>delete_history'),
-  \ 'window': 'call fzf_preview#window#create_centered_floating_window()'
-  \ })
-endfunction
-
-function! s:command_history() abort
-  let l:out = ''
-  redir => l:out
-  silent! history
-  redir END
-
-  return map(reverse(split(l:out, '\n')), "substitute(substitute(v:val, '\^\>', '', ''), '\^\\\s\\\+', '', '')")
-endfunction
-
-function! s:delete_history(command) abort
-  call histdel(':', str2nr(get(split(a:command, '  '), 0)))
-  wviminfo
-endfunction
-
-command! FzfDeleteHistory call s:fzf_delete_history()
-" nnoremap <silent> <Leader>h :<C-u>FzfDeleteHistory<CR>
-" }}}4
-
-" Open File at Cursor {{{4
-function! s:fzf_open_gf()
-  let s:file_path = tolower(expand('<cfile>'))
-
-  if s:file_path ==# ''
-    echo '[Error] <cfile> return empty string.'
-    return 0
-  endif
-
-  call fzf#run({
-  \ 'source': 'rg --files --hidden --follow',
-  \ 'sink': 'e',
-  \ 'options': '-x --multi --prompt="CursorFiles>" --query=' . shellescape(s:file_path),
-  \ 'window': 'call fzf_preview#window#create_centered_floating_window()'
-  \ })
-endfunction
-
-command! FzfOpenGf call s:fzf_open_gf()
-" nnoremap <silent> <leader>gf :FzfOpenGf<CR>
-" }}}4
-
-" }}}3
-
 " fzf-preview {{{3
 let g:fzf_preview_command                      = 'bat --color=always --style=grid --theme=ansi-dark {-1}'
 let g:fzf_preview_filelist_postprocess_command = 'gxargs -d "\n" exa --color=always'
 let g:fzf_preview_use_dev_icons                = 1
 
-nnoremap <silent> <Leader>p     :<C-u>FzfPreviewFromResources project_mru git<CR>
-nnoremap <silent> <Leader>gs    :<C-u>FzfPreviewGitStatus -processors=g:fzf_preview_gina_processors<CR>
-nnoremap <silent> <Leader>b     :<C-u>FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
-nnoremap <silent> <Leader>B     :<C-u>FzfPreviewAllBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
-nnoremap <silent> <Leader>o     :<C-u>FzfPreviewFromResources buffer project_mru<CR>
-nnoremap <silent> <Leader><C-o> :<C-u>FzfPreviewJumps<CR>
-nnoremap <silent> <Leader>g;    :<C-u>FzfPreviewChanges<CR>
-nnoremap <silent> <Leader>/     :<C-u>FzfPreviewLines -resume -add-fzf-arg=--no-sort -add-fzf-arg=--query="'"<CR>
-nnoremap <silent> <Leader>*     :<C-u>FzfPreviewLines -add-fzf-arg=--no-sort -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
-nnoremap          <CR>          :<C-u>FzfPreviewProjectGrep<Space>
-nnoremap          <Leader><CR>  :<C-u>FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(@/, '\(\\v\<Bar>\\<\<Bar>\\>\)', '', 'g')<CR>"
-xnoremap          <CR>          "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-nnoremap <silent> <Leader><C-]> :<C-u>FzfPreviewCtags -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
-nnoremap <silent> <Leader>m     :<C-u>FzfPreviewBookmarks -resume<CR>
+nnoremap <silent> <Leader>p         :<C-u>FzfPreviewFromResources project_mru git<CR>
+nnoremap <silent> <Leader>gs        :<C-u>FzfPreviewGitStatus -processors=g:fzf_preview_gina_processors<CR>
+nnoremap <silent> <Leader>gf        :<C-u>FzfPreviewFromResources project_mru git -add-fzf-arg=--select-1 -add-fzf-arg=--query="'<C-r>=substitute(expand('<cfile>'), '^\.\+/', '', '')<CR>"<CR>
+nnoremap <silent> <Leader>b         :<C-u>FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
+nnoremap <silent> <Leader>B         :<C-u>FzfPreviewAllBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
+nnoremap <silent> <Leader>o         :<C-u>FzfPreviewFromResources buffer project_mru<CR>
+nnoremap <silent> <Leader>O         :<C-u>FzfPreviewFromResources buffer project_mrw<CR>
+nnoremap <silent> <Leader><C-o>     :<C-u>FzfPreviewJumps<CR>
+nnoremap <silent> <Leader>g;        :<C-u>FzfPreviewChanges<CR>
+nnoremap <silent> <Leader>/         :<C-u>FzfPreviewLines -resume -add-fzf-arg=--no-sort -add-fzf-arg=--query="'"<CR>
+nnoremap <silent> <Leader><Leader>/ :<C-u>FzfPreviewBufferLines -resume -add-fzf-arg=--no-sort -add-fzf-arg=--query="'"<CR>
+nnoremap <silent> <Leader>*         :<C-u>FzfPreviewLines -add-fzf-arg=--no-sort -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap          gr                :<C-u>FzfPreviewProjectGrep<Space>
+xnoremap          gr                "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+nnoremap          gR                :<C-u>FzfPreviewProjectCommandGrep<Space>
+xnoremap          gR                "sy:FzfPreviewProjectCommandGrep<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+nnoremap <silent> <Leader><C-]>     :<C-u>FzfPreviewCtags -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap <silent> <Leader>m         :<C-u>FzfPreviewBookmarks -resume<CR>
 
 nnoremap <silent> <LocalLeader>b              :<C-u>FzfPreviewBufferTags<CR>
 nnoremap <silent> <LocalLeader><LocalLeader>q :<C-u>FzfPreviewQuickFix<CR>
@@ -1093,6 +1013,31 @@ endfunction
 
 AutoCmd FileType fzf let b:highlight_cursor = 0
 
+" FzfPreviewYankround {{{4
+function! FzfPreviewYankround(addtional, args)
+  let histories = map(copy(g:_yankround_cache), 'split(v:val, "\t", 1)')
+  let source = map(histories, { key, val -> key + 1 . ' ' . val[0] . ' ' . val[1] })
+
+  let optional = '--no-sort --with-nth 3..'
+  let preview = 'preview_yankround_register {1}'
+
+  return{
+  \ 'source': source,
+  \ 'sink': function('<SID>register_history_sink'),
+  \ 'options': fzf_preview#command#get_command_options('RegisterHistory', preview, optional)
+  \ }
+endfunction
+
+function! s:register_history_sink(lines)
+  let l:parts = split(a:lines[1], ' ', 1)
+  call setreg('"', join(l:parts[2:], ' '), l:parts[0])
+endfunction
+
+command! FzfPreviewYankround :call fzf_preview#runner#fzf_run(fzf_preview#initializer#initialize('FzfPreviewYankround', {}, <f-args>))
+nnoremap <silent> (ctrlp) :<C-u>FzfPreviewYankround<CR>
+" }}}4
+
+" FzfPreviewBookmarks {{{4
 command! -nargs=* -complete=customlist,fzf_preview#args#complete_options FzfPreviewBookmarks
   \ :call fzf_preview#runner#fzf_run(fzf_preview#initializer#initialize('FzfPreviewBookmarks', {}, <f-args>))
 
@@ -1135,6 +1080,8 @@ function! s:bookmarks_format_line(line) abort
     return filename . ':' . line_number . ':' . text . ':' . comment
   endif
 endfunction
+" }}}4
+
 " }}}3
 
 " lexima {{{3
