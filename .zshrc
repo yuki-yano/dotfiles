@@ -405,16 +405,6 @@ function history-selection() {
 }
 zle -N history-selection
 
-# Global Alias
-
-## Git
-alias -g  B='$(git branch -a | fzf-branch | fzf --multi --preview="git fzflog {}" --prompt "All Branches>"    | sed -e "s/^\*\s*//g")'
-alias -g RB='$(git branch -r | fzf-branch | fzf --multi --preview="git fzflog {}" --prompt "Remote Branches>" | sed -e "s/^\*\s*//g")'
-alias -g LB='$(git branch    | fzf-branch | fzf --multi --preview="git fzflog {}" --prompt "Local Branches>"  | sed -e "s/^\*\s*//g")'
-
-## RSpec
-alias -g RS='$(git status --short | fzf-git-rspec | fzf --multi --preview="git diff --color=always {}" --prompt "Changed RSpec>")'
-
 # }}}
 
 # Prompt {{{
