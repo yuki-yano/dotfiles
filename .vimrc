@@ -2402,8 +2402,10 @@ nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus<CR>
 syntax enable
 
 " Highlight {{{2
-AutoCmd ColorScheme * highlight CursorColumn ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#303030
-AutoCmd ColorScheme * highlight CursorLine   ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#303030
+AutoCmd ColorScheme * highlight Normal       ctermfg=145  ctermbg=235  guifg=#ABB2BF guibg=#26282F
+AutoCmd ColorScheme * highlight NormalNC     ctermfg=144  ctermbg=234  guifg=#ABB2BF guibg=#282C34
+AutoCmd ColorScheme * highlight CursorColumn ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#353535
+AutoCmd ColorScheme * highlight CursorLine   ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#353535
 AutoCmd ColorScheme * highlight CursorLineNr ctermfg=253  ctermbg=NONE guifg=#DADADA guibg=NONE
 AutoCmd ColorScheme * highlight LineNr       ctermfg=241  ctermbg=NONE guifg=#626262 guibg=NONE
 AutoCmd ColorScheme * highlight NonText      ctermfg=60   ctermbg=NONE guifg=#5F5F87 guibg=NONE
