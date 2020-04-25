@@ -119,12 +119,14 @@ if which abbrev-alias > /dev/null 2>&1; then
   abbrev-alias gstd="git stash drop"
   abbrev-alias t="tms"
   abbrev-alias tw="tmux swap-pane -t"
-  abbrev-alias is="gh issue view --web"
-  abbrev-alias pr="gh pr view --web"
 
   FZF_PREVIEW_GITHUB_USER=yuki-ycino
+  abbrev-alias is="gh issue view --web"
+  abbrev-alias pr="gh pr view --web"
   abbrev-alias mis='gh issue view --web #'
   abbrev-alias mpr='gh pr view --web #'
+
+  abbrev-alias tl='tldr'
 fi
 
 function _magic-abbrev-expand-and-accept-line() {
