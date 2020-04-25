@@ -1,0 +1,7 @@
+#autoload
+
+typeset -g -A symbols=()
+
+symbols=(
+  '(^kill( \-9)? $)' kill_process
+)

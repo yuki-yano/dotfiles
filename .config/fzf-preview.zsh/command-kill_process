@@ -1,0 +1,23 @@
+#autoload
+
+typeset id="kill_process"
+typeset candidate_command="procs --color=always"
+typeset -a fzf_options=(
+  $FZF_PREVIEW_DEFAULT_SETTING
+  "--ansi"
+  "--multi"
+  "--prompt='Kill Process> '"
+)
+
+typeset -a bind=(
+  "${FZF_PREVIEW_DEFAULT_BIND}"
+)
+
+fzf_options+=("--bind=\"${(j:,:)bind}\"")
+
+typeset callback=("awk '{ print \$1 }'")
+
+typeset complete_func_name="_fzf_complete_${id}"
+complete_func_creator $complete_func_name  "${callback}"
+FZF_COMPLETION_OPTS=${(j: :)fzf_options}
+eval $complete_func_name "\"${candidate_command}\""

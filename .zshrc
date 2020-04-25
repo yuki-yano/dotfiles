@@ -401,25 +401,6 @@ function history-selection() {
 }
 zle -N history-selection
 
-function process-selection() {
-  local pids
-  pids=$(\ps -u $USER -o 'pid,stat,%cpu,%mem,cputime,command' | fzf --multi --prompt="Kill processes> " | awk '{print $1}' | tr '\n' ' ' )
-
-  if [[ $pids != "" ]]; then
-    BUFFER="kill $pids"
-    CURSOR=$#BUFFER
-  fi
-  zle reset-prompt
-}
-zle -N process-selection
-
-## GitHub Issues
-function ghi() {
-  local issues
-  issues=$(gh issue list --state open --limit 100 | fzf --multi --preview 'gh issue view -p {1}' | cut -f1)
-  echo $issues | xargs -I{} gh issue view {}
-}
-
 # Global Alias
 
 ## Git
@@ -596,8 +577,6 @@ bindkey "^[u"  redo
 bindkey '^[f'  vi-forward-blank-word
 bindkey "^[b"  vi-backward-blank-word
 bindkey '^r'   history-selection
-bindkey '^xk'  process-selection
-bindkey '^x^k' process-selection
 
 # Add tmux bind
 bindkey '^h' backspace-or-left-pane
