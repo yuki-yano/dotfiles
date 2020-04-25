@@ -1,3 +1,9 @@
+# p10k {{{
+if [[ -f ~/.p10k.zsh ]]; then
+  source ~/.p10k.zsh
+fi
+# }}}
+
 # zinit {{{
 if [[ ! -d $ZPLG_HOME/bin ]]; then
   if whence git > /dev/null; then
@@ -666,6 +672,11 @@ fi
 # zinit
 if [[ ! -f ~/.zinit/bin/zinit.zsh ]] || [[ ~/.zinit/bin/zinit.zsh -nt ~/.zinit/bin/zinit.zsh.zwc ]]; then
   zcompile ~/.zinit/bin/zinit.zsh
+fi
+
+# p10k
+if [[ ! -f ~/.p10k.zsh ]] || [[ ~/.p10k.zsh -nt ~/.p10k.zsh ]]; then
+  zcompile ~/.p10k.zsh
 fi
 
 # }}}
