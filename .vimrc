@@ -932,6 +932,7 @@ endif
 let g:fzf_preview_command                      = 'bat --color=always --style=grid --theme=ansi-dark {-1}'
 let g:fzf_preview_filelist_postprocess_command = 'gxargs -d "\n" exa --color=always'
 let g:fzf_preview_use_dev_icons                = 1
+let $FZF_PREVIEW_PREVIEW_BAT_THEME             = 'ansi-dark'
 
 nnoremap <silent> <Leader>p         :<C-u>FzfPreviewFromResources project_mru git<CR>
 nnoremap <silent> <Leader>gs        :<C-u>FzfPreviewGitStatus -processors=g:fzf_preview_gina_processors<CR>
