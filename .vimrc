@@ -655,8 +655,8 @@ AutoCmd FileType html setlocal iskeyword+=-
 AutoCmd FileType css  setlocal iskeyword+=- iskeyword+=#
 AutoCmd FileType scss setlocal iskeyword+=- iskeyword+=# iskeyword+=$
 AutoCmd FileType vim  setlocal iskeyword+=-
-AutoCmd FileType sh   setlocal iskeyword+=$ iskeyword+=-
-AutoCmd FileType zsh  setlocal iskeyword+=$ iskeyword+=-
+AutoCmd FileType sh   setlocal iskeyword+=-
+AutoCmd FileType zsh  setlocal iskeyword+=-
 " }}}3
 
 " Set FileType {{{3
