@@ -21,6 +21,15 @@ zinit ice depth=1
 zinit light romkatv/powerlevel10k
 zinit ice lucid atload"!_zsh_git_prompt_precmd_hook"
 zinit light woefe/git-prompt.zsh
+
+# fuzzy finder
+zinit ice lucid from"gh-r" as"program" mv"fzf -> ${ZPFX}/bin/fzf"
+zinit light junegunn/fzf-bin
+zinit ice lucid depth"1" as"program" mv"bin/fzf-tmux -> ${ZPFX}/bin/fzf-tmux" src"shell/completion.zsh"
+zinit light junegunn/fzf
+# zinit light yuki-ycino/fzf-preview.zsh
+zinit light chitoku-k/fzf-zsh-completions
+
 zinit light yukiycino-dotfiles/zsh-abbrev-alias
 zinit light yukiycino-dotfiles/zsh-extra-abbrev
 zinit light yukiycino-dotfiles/zsh-show-buffer-stack
@@ -42,13 +51,6 @@ zinit light zsh-users/zsh-completions
 # rip
 zinit ice lucid wait"0" from"gh-r" as"program" var"0.12.0" mv"rip -> ${ZPFX}/bin/rip"
 zinit light nivekuil/rip
-
-# fuzzy finder
-zinit ice lucid wait"0" from"gh-r" as"program" mv"fzf -> ${ZPFX}/bin/fzf"
-zinit light junegunn/fzf-bin
-
-zinit ice lucid wait"0" depth"1" as"program" mv"bin/fzf-tmux -> ${ZPFX}/bin/fzf-tmux" src"shell/completion.zsh"
-zinit light junegunn/fzf
 
 zinit ice lucid wait"0" depth"1" atinit"FZF_SNIPPET_CONFIG_DIR=\"$HOME/.config/snippets\""
 zinit light yuki-ycino/zsh-fzf-snippet
