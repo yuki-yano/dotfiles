@@ -2,7 +2,6 @@ SRC_DIR       = File.dirname(File.expand_path(__FILE__))
 ZINIT_DIR     = File.join(ENV['HOME'], '.zinit')
 ZGEN_DIR      = File.join(ENV['HOME'], '.zsh/zgen')
 DOTFILES_SRCS = %w[
-  .atom
   .bashrc
   .config
   .ctags.d
