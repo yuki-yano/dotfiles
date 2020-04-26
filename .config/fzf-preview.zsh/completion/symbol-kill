@@ -3,5 +3,5 @@
 typeset -g -A symbols=()
 
 symbols=(
-  '(^kill( \-9)? $)' kill_process
+  '(^kill( \-9)? $)' kill_process_from_procs
 )

@@ -1,6 +1,6 @@
 #autoload
 
-typeset id="kill_process"
+typeset id="kill_process_from_procs"
 typeset candidate_command="procs --color=always"
 typeset -a fzf_options=(
   $FZF_PREVIEW_DEFAULT_SETTING
