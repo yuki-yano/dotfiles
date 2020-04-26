@@ -177,16 +177,11 @@ else
 fi
 # }}}
 
-# bat & ccat {{{
-if whence ccat > /dev/null; then
-  alias c=ccat
-else
-  alias c=cat
-fi
-
+# bat {{{
 if whence bat > /dev/null; then
   alias bat='bat --theme=ansi-dark'
   alias b='bat --color=always --style=grid --theme=ansi-dark'
+  alias c='bat --color=always --style=grid --theme=ansi-dark'
 fi
 # }}}
 
