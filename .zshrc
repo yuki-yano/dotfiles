@@ -399,18 +399,6 @@ function f() {
   fi
 }
 
-## History
-function history-selection() {
-  local history
-  history=$(\history -n -r 1 | fzf --no-sort --query="'$LBUFFER" --prompt="History> ")
-  if [[ $history != "" ]]; then
-    BUFFER=$history
-    CURSOR=$#BUFFER
-  fi
-  zle reset-prompt
-}
-zle -N history-selection
-
 # }}}
 
 # Prompt {{{
@@ -576,7 +564,6 @@ bindkey '^u'   undo
 bindkey "^[u"  redo
 bindkey '^[f'  vi-forward-blank-word
 bindkey "^[b"  vi-backward-blank-word
-bindkey '^r'   history-selection
 
 # Add tmux bind
 bindkey '^h' backspace-or-left-pane
@@ -612,6 +599,9 @@ bindkey -M menuselect '^h' undo
 zle -N edit-command-line
 bindkey '^xe'  edit-command-line
 bindkey '^x^e' edit-command-line
+
+# fzf-preview.zsh
+bindkey '^r' fzf-history-selection
 
 # }}}
 
