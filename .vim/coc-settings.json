@@ -29,8 +29,7 @@
     },
     "efm": {
       "command": "efm-langserver",
-      "args": [],
-      "filetypes": ["go", "eruby", "json", "markdown", "vim"]
+      "filetypes": ["go", "json", "vim", "sh"]
     }
   },
 
@@ -54,19 +53,5 @@
     "https://raw.githubusercontent.com/docker/cli/master/cli/compose/schema/data/config_schema_v3.9.json": [
       "/docker-compose.yml"
     ]
-  },
-  "diagnostic-languageserver.filetypes": {
-    "go": "golangci-lint",
-    "vim": "vint",
-    "sh": "shellcheck"
-  },
-  "diagnostic-languageserver.formatFiletypes": {
-    "sh": "shfmt"
-  },
-  "diagnostic-languageserver.formatters": {
-    "shfmt": {
-      "command": "shfmt",
-      "args": ["-i", "2", "-bn", "-ci", "-sr"]
-    }
   }
 }
