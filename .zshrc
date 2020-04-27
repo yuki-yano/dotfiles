@@ -107,8 +107,11 @@ function set_autosuggetsions_theme() {
 
 # abbrev-alias {{{
 
-if which abbrev-alias > /dev/null 2>&1; then
-  abbrev-alias g="git"
+if whence abbrev-alias > /dev/null 2>&1; then
+  abbrev-alias N=" >/dev/null 2>&1"
+  abbrev-alias N1=" >/dev/null"
+  abbrev-alias N2=" 2>/dev/null"
+
   abbrev-alias gs="git status --short --branch"
   abbrev-alias ga="git add"
   abbrev-alias gaa="git add --all"
