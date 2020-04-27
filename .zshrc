@@ -361,14 +361,10 @@ function rg() {
 # Project
 function f() {
   local project dir repository session current_session
-  project=$(ghq list | fzf --prompt='Project >' --preview "glow -s dark {}" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up)
+  dir=$(ghq list -p | sed -e "s|${HOME}|~|" | fzf --prompt='Project >' --preview "glow -s dark \$(eval echo {})/README.md" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up)
 
-  if [[ $project == "" ]]; then
+  if [[ $dir == "" ]]; then
     return 1
-  elif [[ -d ~/repos/${project} ]]; then
-    dir=~/repos/${project}
-  elif [[ -d ~/.go/src/${project} ]]; then
-    dir=~/.go/src/${project}
   fi
 
   if [[ ! -z ${TMUX} ]]; then
@@ -377,17 +373,17 @@ function f() {
     current_session=$(tmux list-sessions | grep 'attached' | cut -d":" -f1)
 
     if [[ $current_session =~ ^[0-9]+$ ]]; then
-      cd $dir
+      eval cd "${dir}"
       tmux rename-session $session
     else
-      tmux list-sessions | cut -d":" -f1 | grep -e "^$session\$" > /dev/null
+      tmux list-sessions | cut -d":" -f1 | grep -e "^${session}\$" > /dev/null
       if [[ $? != 0 ]]; then
-        tmux new-session -d -c $dir -s $session
+        tmux new-session -d -c $(eval echo "${dir}") -s $session
       fi
       tmux switch-client -t $session
     fi
   else
-    cd $dir
+    eval cd "${dir}"
   fi
 }
 
