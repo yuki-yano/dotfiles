@@ -92,11 +92,6 @@ function set_fast_theme() {
   FAST_HIGHLIGHT_STYLES[path]='fg=green'
   FAST_HIGHLIGHT_STYLES[globbing]='fg=green,bold'
   FAST_HIGHLIGHT_STYLES[history-expansion]='fg=green,bold'
-
-  bindkey -M viins '^p' history-search-backward
-  bindkey -M viins '^n' history-search-forward
-  bindkey -M vicmd 'k'  history-search-backward
-  bindkey -M vicmd 'j'  history-search-forward
 }
 
 # autosuggestions-theme {{{
