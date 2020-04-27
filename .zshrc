@@ -138,11 +138,6 @@ if whence abbrev-alias > /dev/null 2>&1; then
   abbrev-alias tl='tldr'
 fi
 
-function _magic-abbrev-expand-and-accept-line() {
-  zle __abbrev_alias::magic_abbrev_expand
-  zle accept-line
-}
-zle -N magic-abbrev-expand-and-accept-line _magic-abbrev-expand-and-accept-line
 # }}}
 
 # extra-abbrev {{{
@@ -157,7 +152,11 @@ add-zsh-hook precmd check-buffer-stack
 
 # autosuggestions {{{
 function set_autosuggest() {
-  ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(magic-abbrev-expand-and-accept-line $ZSH_AUTOSUGGEST_CLEAR_WIDGETS)
+  if whence _magic-abbrev-expand-and-accept-line > /dev/null 2>&1; then
+    ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(magic-abbrev-expand-and-accept-line $ZSH_AUTOSUGGEST_CLEAR_WIDGETS)
+  else
+    ZSH_AUTOSUGGEST_CLEAR_WIDGETS=($ZSH_AUTOSUGGEST_CLEAR_WIDGETS)
+  fi
   _zsh_autosuggest_start
 }
 # }}}
@@ -552,11 +551,7 @@ zle -N accept-line-or-down-pane _accept-line-or-down-pane
 bindkey -e
 
 # My ZLE bind
-bindkey '^i'   fzf-or-normal-completion
-bindkey ' '    __abbrev_alias::magic_abbrev_expand_and_space
-bindkey '^x '  __abbrev_alias::no_magic_abbrev_expand
 bindkey '^ '   extra-abbrev
-bindkey '^m'   magic-abbrev-expand-and-accept-line
 bindkey '^]'   insert-last-word
 bindkey '^u'   undo
 bindkey "^[u"  redo
@@ -599,7 +594,26 @@ bindkey '^xe'  edit-command-line
 bindkey '^x^e' edit-command-line
 
 # fzf-preview.zsh
-bindkey '^r' fzf-history-selection
+if whence fzf-or-normal-completion > /dev/null 2>&1; then
+  bindkey '^i' fzf-or-normal-completion
+fi
+
+if whence fzf-history-selection > /dev/null 2>&1; then
+  bindkey '^r' fzf-history-selection
+fi
+
+# abbrev-alias
+if whence abbrev-alias > /dev/null 2>&1; then
+  function _magic-abbrev-expand-and-accept-line() {
+    zle __abbrev_alias::magic_abbrev_expand
+    zle accept-line
+  }
+  zle -N magic-abbrev-expand-and-accept-line _magic-abbrev-expand-and-accept-line
+
+  bindkey ' '   __abbrev_alias::magic_abbrev_expand_and_space
+  bindkey '^x ' __abbrev_alias::no_magic_abbrev_expand
+  bindkey '^m'  magic-abbrev-expand-and-accept-line
+fi
 
 # }}}
 
