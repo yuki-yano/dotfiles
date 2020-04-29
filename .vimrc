@@ -739,14 +739,14 @@ endfunction
 " altercmd {{{3
 if dein#tap('vim-altercmd')
   call altercmd#load()
-  AlterCommand!          ee              e!
-  AlterCommand! <cmdwin> ee              e!
-  AlterCommand!          high[lightinfo] HighlightInfo
-  AlterCommand! <cmdwin> high[lightinfo] HighlightInfo
-  AlterCommand!          vs[code]        VSCode
-  AlterCommand! <cmdwin> vs[code]        VSCode
-  AlterCommand!          co[de]          VSCode
-  AlterCommand! <cmdwin> co[de]          VSCode
+  AlterCommand          ee              e!
+  AlterCommand <cmdwin> ee              e!
+  AlterCommand          high[lightinfo] HighlightInfo
+  AlterCommand <cmdwin> high[lightinfo] HighlightInfo
+  AlterCommand          vs[code]        VSCode
+  AlterCommand <cmdwin> vs[code]        VSCode
+  AlterCommand          co[de]          VSCode
+  AlterCommand <cmdwin> co[de]          VSCode
 endif
 " }}}3
 
@@ -755,15 +755,15 @@ endif
 " Plugin Manager {{{2
 
 " dein {{{3
-AlterCommand!          dein Dein
-AlterCommand! <cmdwin> dein Dein
+AlterCommand          dein Dein
+AlterCommand <cmdwin> dein Dein
 " }}}
 
 " }}}2
 
 " IDE {{{2
-AlterCommand!          list CocList
-AlterCommand! <cmdwin> list CocList
+AlterCommand          list CocList
+AlterCommand <cmdwin> list CocList
 
 let g:coc_global_extensions = [
 \ 'coc-calc',
@@ -871,8 +871,8 @@ AutoCmd FileType vue syntax sync fromstart
 " Completion & Fuzzy Finder {{{2
 
 " Denite {{{3
-AlterCommand!          d[enite] Denite
-AlterCommand! <cmdwin> d[enite] Denite
+AlterCommand          d[enite] Denite
+AlterCommand <cmdwin> d[enite] Denite
 
 if dein#tap('denite.nvim')
   " Denite
@@ -1243,24 +1243,24 @@ endif
 " Git {{{2
 
 " gina {{{3
-AlterCommand!          git   Gina
-AlterCommand! <cmdwin> git   Gina
-AlterCommand!          gina  Gina
-AlterCommand! <cmdwin> gina  Gina
-AlterCommand!          gs    Gina<Space>status
-AlterCommand! <cmdwin> gs    Gina<Space>status
-AlterCommand!          gci   Gina<Space>commit
-AlterCommand! <cmdwin> gci   Gina<Space>commit
-AlterCommand!          gd    Gina<Space>diff
-AlterCommand! <cmdwin> gd    Gina<Space>diff
-AlterCommand!          gdc   Gina<Space>diff<Space>--cached
-AlterCommand! <cmdwin> gdc   Gina<Space>diff<Space>--cached
-AlterCommand!          gco   Gina<Space>checkout
-AlterCommand! <cmdwin> gco   Gina<Space>checkout
-AlterCommand!          log   Gina<Space>log
-AlterCommand! <cmdwin> log   Gina<Space>log
-AlterCommand!          blame Gina<Space>blame
-AlterCommand! <cmdwin> blame Gina<Space>blame
+AlterCommand          git   Gina
+AlterCommand <cmdwin> git   Gina
+AlterCommand          gina  Gina
+AlterCommand <cmdwin> gina  Gina
+AlterCommand          gs    Gina<Space>status
+AlterCommand <cmdwin> gs    Gina<Space>status
+AlterCommand          gci   Gina<Space>commit
+AlterCommand <cmdwin> gci   Gina<Space>commit
+AlterCommand          gd    Gina<Space>diff
+AlterCommand <cmdwin> gd    Gina<Space>diff
+AlterCommand          gdc   Gina<Space>diff<Space>--cached
+AlterCommand <cmdwin> gdc   Gina<Space>diff<Space>--cached
+AlterCommand          gco   Gina<Space>checkout
+AlterCommand <cmdwin> gco   Gina<Space>checkout
+AlterCommand          log   Gina<Space>log
+AlterCommand <cmdwin> log   Gina<Space>log
+AlterCommand          blame Gina<Space>blame
+AlterCommand <cmdwin> blame Gina<Space>blame
 
 AutoCmd VimEnter * call s:gina_settings()
 
@@ -1298,12 +1298,12 @@ endfunction
 " }}}3
 
 " gitsessions {{{3
-AlterCommand!          gss GitSessionSave
-AlterCommand! <cmdwin> gss GitSessionSave
-AlterCommand!          gsl GitSessionLoad
-AlterCommand! <cmdwin> gsl GitSessionLoad
-AlterCommand!          gsd GitSessionDelete
-AlterCommand! <cmdwin> gsd GitSessionDelete
+AlterCommand          gss GitSessionSave
+AlterCommand <cmdwin> gss GitSessionSave
+AlterCommand          gsl GitSessionLoad
+AlterCommand <cmdwin> gsl GitSessionLoad
+AlterCommand          gsd GitSessionDelete
+AlterCommand <cmdwin> gsd GitSessionDelete
 
 let g:gitsessions_disable_auto_load = 1
 " }}}3
@@ -1580,8 +1580,8 @@ xmap <silent> <Leader>k <Plug>(edgemotion-k)
 " }}}3
 
 " grepper {{{3
-AlterCommand!          gr[ep] Grepper
-AlterCommand! <cmdwin> gr[ep] Grepper
+AlterCommand          gr[ep] Grepper
+AlterCommand <cmdwin> gr[ep] Grepper
 
 let g:grepper = {
 \ 'tools': ['rg', 'git', 'ag'],
@@ -1675,8 +1675,8 @@ endif
 " }}}3
 
 " scratch {{{3
-AlterCommand!          sc[ratch] Scratch
-AlterCommand! <cmdwin> sc[ratch] Scratch
+AlterCommand          sc[ratch] Scratch
+AlterCommand <cmdwin> sc[ratch] Scratch
 
 let g:scratch_no_mappings = 1
 " }}}3
@@ -2282,8 +2282,8 @@ nnoremap <silent> <Leader>d :Bdelete!<CR>
 " }}}3
 
 " capture {{{3
-AlterCommand!          cap[ture] Capture
-AlterCommand! <cmdwin> cap[ture] Capture
+AlterCommand          cap[ture] Capture
+AlterCommand <cmdwin> cap[ture] Capture
 AutoCmd FileType capture nnoremap <silent> <buffer> q :<C-u>quit<CR>
 " }}}3
 
@@ -2323,8 +2323,8 @@ let g:previm_custom_css_path     = '~/.config/previm/gfm.css'
 " }}}3
 
 " ref {{{3
-AlterCommand!          refe Ref<Space>refe
-AlterCommand! <cmdwin> refe Ref<Space>refe
+AlterCommand          refe Ref<Space>refe
+AlterCommand <cmdwin> refe Ref<Space>refe
 " }}}3
 
 " table-mode {{{3
@@ -2341,8 +2341,8 @@ nnoremap <silent> <C-w><C-w> :call WindowSwap#EasyWindowSwap()<CR>
 " Develop {{{2
 
 " quickrun {{{3
-AlterCommand!          r QuickRun
-AlterCommand! <cmdwin> r QuickRun
+AlterCommand          r QuickRun
+AlterCommand <cmdwin> r QuickRun
 
 let g:quickrun_config = {
 \ '_' : {
