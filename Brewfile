@@ -51,13 +51,14 @@ install autoconf automake cmake gawk gnu-sed gnu-time gpatch gpg2 wget
 
 
 ## Util
+install expect
 install global
 install graphviz
-install rsync
 install itchyny/tap/mmv
 install jq
 install parallel
 install pstree
+install rsync
 install tokei
 install tree
 install universal-ctags/universal-ctags/universal-ctags --HEAD --with-jansson
@@ -66,7 +67,7 @@ install watch
 install wget
 
 ## VCS
-install git hub tig gh ghq gobo diff-so-fancy git-extras
+install git hub tig gh ghq gobo diff-so-fancy
 
 ## Media
 install ffmpeg
