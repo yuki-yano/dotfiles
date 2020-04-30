@@ -135,6 +135,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Util {{{3
   call dein#add('AndrewRadev/linediff.vim',     {'lazy': 1, 'on_cmd': 'Linediff'})
+  call dein#add('liuchengxu/vista.vim',         {'lazy': 1, 'on_cmd': ['Vista', 'Vista!', 'Vista!!']})
   call dein#add('aiya000/aho-bakaup.vim')
   call dein#add('dhruvasagar/vim-table-mode',   {'lazy': 1, 'on_cmd': 'TableModeToggle'})
   call dein#add('itchyny/vim-qfedit')
@@ -952,10 +953,10 @@ nnoremap          gr                :<C-u>FzfPreviewProjectGrep<Space>
 xnoremap          gr                "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
 nnoremap          gR                :<C-u>FzfPreviewProjectCommandGrep<Space>
 xnoremap          gR                "sy:FzfPreviewProjectCommandGrep<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-nnoremap <silent> <Leader><C-]>     :<C-u>FzfPreviewCtags -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap <silent> <Leader><C-]>     :<C-u>FzfPreviewVistaCtags -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
 nnoremap <silent> <Leader>m         :<C-u>FzfPreviewBookmarks -resume<CR>
 
-nnoremap <silent> <LocalLeader>b              :<C-u>FzfPreviewBufferTags<CR>
+nnoremap <silent> <LocalLeader>b              :<C-u>FzfPreviewVistaBufferCtags -processors=g:fzf_preview_vista_processors<CR>
 nnoremap <silent> <LocalLeader><LocalLeader>q :<C-u>FzfPreviewQuickFix<CR>
 nnoremap <silent> <LocalLeader><LocalLeader>l :<C-u>FzfPreviewLocationList<CR>
 
@@ -1011,6 +1012,12 @@ function! s:fzf_preview_settings() abort
   let g:fzf_preview_gina_processors['ctrl-a'] = function('s:gina_add')
   let g:fzf_preview_gina_processors['ctrl-r'] = function('s:gina_reset')
   let g:fzf_preview_gina_processors['ctrl-c'] = function('s:gina_patch')
+
+  let g:fzf_preview_vista_processors = fzf_preview#resource_processor#get_processors()
+  let g:fzf_preview_vista_processors[''] = function('s:edit_vista_btag', ['edit'])
+  let g:fzf_preview_vista_processors['ctrl-s'] = function('s:edit_vista_btag', ['split'])
+  let g:fzf_preview_vista_processors['ctrl-v'] = function('s:edit_vista_btag', ['vertical split'])
+  let g:fzf_preview_vista_processors['ctrl-t'] = function('s:edit_vista_btag', ['tabedit'])
 endfunction
 
 AutoCmd FileType fzf let b:highlight_cursor = 0
@@ -1081,6 +1088,71 @@ function! s:bookmarks_format_line(line) abort
   else
     return filename . ':' . line_number . ':' . text . ':' . comment
   endif
+endfunction
+" }}}4
+
+" FzfPreviewVistaCtags {{{4
+command! -nargs=* -complete=customlist,fzf_preview#args#complete_options FzfPreviewVistaCtags
+  \ :call fzf_preview#runner#fzf_run(fzf_preview#initializer#initialize('FzfPreviewVistaCtags', {}, <f-args>))
+
+function! FzfPreviewVistaCtags(additional, args) abort
+  let data = items(vista#executive#ctags#ProjectRun())
+  let source = []
+
+  for kind_and_infos in data
+    let [kind, infos] = kind_and_infos
+
+    for info in infos
+      call add(source, [info['lnum'], '[' . kind . ']', info['text'], info['tagfile']])
+    endfor
+  endfor
+
+  let preview = g:fzf_preview_grep_preview_cmd . " '{-1}:{1}'"
+
+  return {
+  \ 'source': map(fzf_preview#util#align_lists(source), { _, v -> join(v, '  ') }),
+  \ 'sink': function('fzf_preview#handler#handle_changes_and_buffer_tags'),
+  \ 'options': fzf_preview#command#get_command_options('Ctags', preview)
+  \ }
+endfunction
+" }}}4
+
+" FzfPreviewVistaBufferCtags {{{4
+command! -nargs=* -complete=customlist,fzf_preview#args#complete_options FzfPreviewVistaBufferCtags
+  \ :call fzf_preview#runner#fzf_run(fzf_preview#initializer#initialize('FzfPreviewVistaBufferCtags', {}, <f-args>))
+
+function! FzfPreviewVistaBufferCtags(additional, args) abort
+  let data = items(vista#executive#ctags#Run(expand('%:p')))
+  let source = []
+
+  for kind_and_infos in data
+    let [kind, infos] = kind_and_infos
+
+    for info in infos
+      call add(source, [info['text'] . ':' . info['lnum'], '[' . kind . ']', getline(info['lnum'])])
+    endfor
+  endfor
+
+  let preview = g:fzf_preview_grep_preview_cmd . ' ' . expand('%') . ':{1}'"
+
+  return {
+  \ 'source': map(fzf_preview#util#align_lists(source), { _, v -> join(v, '  ') }),
+  \ 'sink': function('s:handle_vista_btag'),
+  \ 'options': fzf_preview#command#get_command_options('BufferCtags', preview)
+  \ }
+endfunction
+
+function! s:handle_vista_btag(lines) abort
+  call fzf_preview#handler#handle_resource(a:lines, 1, 0, v:false, v:true)
+endfunction
+
+function! s:edit_vista_btag(command, lines) abort
+  let file = expand('%')
+  for line in a:lines
+    execute join(['silent', a:command, file], ' ')
+    let lnum = split(split(line, ' ')[0], ':')[-1]
+    call cursor(lnum, 0)
+  endfor
 endfunction
 " }}}4
 
@@ -2169,6 +2241,11 @@ let g:rainbow_conf.separately = {
 
 " smartnumber {{{3
 let g:snumber_enable_startup = 1
+" }}}3
+
+" vista {{{3
+let g:vista_default_executive = 'ctags'
+AutoCmd VimEnter * call vista#RunForNearestMethodOrFunction()
 " }}}3
 
 " zenspace {{{3
