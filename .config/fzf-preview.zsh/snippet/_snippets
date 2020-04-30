@@ -1,0 +1,49 @@
+gs:              git status --short --branch
+ga:              git add {{file}}
+gaa:             git add --all
+gci:             git commit
+gci:             git commit -m '{{commit_message}}'
+gcif:            git commit --fixup {{commit_id}}
+gd:              git diff {{branch}}
+gd:              git diff -- {{file}}
+gd:              git diff {{branch}} -- {{file}}
+gd:              git diff {{branch1}} {{branch2}} -- {{file}}
+gdc:             git diff --cached
+gdc:             git diff --cached -- {{file}}
+gdc:             git diff --cached {{branch}} -- {{file}}
+gco:             git checkout {{branch}}
+gco:             git checkout {{branch}} -- {{file}}
+gco:             git checkout --track {{origin_branch}}
+gre:             git reset {{branch}}
+gre:             git reset -- {{file}}
+grh:             git reset --hard {{branch}}
+gst:             git stash
+gstl:            git stash list
+gsts:            git stash show {{stash}}
+gsta:            git stash apply {{stash}}
+gstp:            git stash pop {{stash}}
+gstd:            git stash drop {{stash}}
+squash:          git rebase --interactive --autosquash {{branch}}
+conflict:        git status --short | rg "^UU" --no-line-number | awk '{ print $2 }'
+yarn_conflict:   git checkout {{original_branch}} -- yarn.lock && yarn install
+gis:             gh issue view --web
+gpr:             gh pr view --web
+gmis:            gh issue view --web #
+gmpr:            gh pr view --web #
+dco-log:         docker-compose logs -f --tail=100 {{service}}
+dco-attach:      docker attach $(docker-compose ps --quiet {{service}})
+null:            >/dev/null 2>&1
+null1:           >/dev/null
+null2:           2>/dev/null
+piep_xargs:      | xargs -I{} {{command}} {}
+pipe_awk:        | awk '{ print ${{column}} }'
+nr:              npm run #
+yr:              yarn run #
+vim_none:        vim -u NONE
+t:               tms
+tw:              tmux swap-pane -t
+tl:              tldr
+brew_search:     echo '' | fzf --phony --query="'" --bind="change:reload:brew search --formulae {q} 2>/dev/null | grep -v 'Formulae' " --preview="brew info {} 2>/dev/null"
+cask_search:     echo '' | fzf --phony --query="'" --bind="change:reload:brew search --casks {q} 2>/dev/null | grep -v 'Casks' " --preview="brew cask info {} 2>/dev/null"
+disable_desktop: defaults write com.apple.finder CreateDesktop -boolean false; killall Finder
+enable_desktop:  defaults write com.apple.finder CreateDesktop -boolean true; killall Finder
