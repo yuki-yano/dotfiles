@@ -36,8 +36,6 @@ zinit light junegunn/fzf
 # zinit light yuki-ycino/fzf-preview.zsh
 zinit light chitoku-k/fzf-zsh-completions
 
-zinit light yukiycino-dotfiles/zsh-abbrev-alias
-zinit light yukiycino-dotfiles/zsh-extra-abbrev
 zinit light yukiycino-dotfiles/zsh-show-buffer-stack
 # }}}
 
@@ -57,9 +55,6 @@ zinit light zsh-users/zsh-completions
 # rip
 zinit ice lucid wait"0" from"gh-r" as"program" var"0.12.0" mv"rip -> ${ZPFX}/bin/rip"
 zinit light nivekuil/rip
-
-zinit ice lucid wait"0" depth"1" atinit"FZF_SNIPPET_CONFIG_DIR=\"$HOME/.config/snippets\""
-zinit light yuki-ycino/zsh-fzf-snippet
 
 zinit ice lucid wait"0" depth"1" as"program" src"tms.plugin.zsh" pick"tms"
 zinit light yuki-ycino/tms
@@ -100,59 +95,13 @@ function set_autosuggetsions_theme() {
 }
 # }}}
 
-# abbrev-alias {{{
-
-if whence abbrev-alias > /dev/null 2>&1; then
-  abbrev-alias N=" >/dev/null 2>&1"
-  abbrev-alias N1=" >/dev/null"
-  abbrev-alias N2=" 2>/dev/null"
-
-  abbrev-alias gs="git status --short --branch"
-  abbrev-alias ga="git add"
-  abbrev-alias gaa="git add --all"
-  abbrev-alias grm="git rm"
-  abbrev-alias gd="git diff"
-  abbrev-alias gdw="git diff --color-words"
-  abbrev-alias gdc="git diff --cached"
-  abbrev-alias gdcw="git diff --cached --color-words"
-  abbrev-alias gco="git checkout"
-  abbrev-alias gci="git commit"
-  abbrev-alias gcif="git commit --fixup"
-  abbrev-alias gst="git stash"
-  abbrev-alias gstp="git stash pop"
-  abbrev-alias gstd="git stash drop"
-  abbrev-alias t="tms"
-  abbrev-alias tw="tmux swap-pane -t"
-
-  FZF_PREVIEW_GITHUB_USER=yuki-ycino
-  abbrev-alias is="gh issue view --web"
-  abbrev-alias pr="gh pr view --web"
-  abbrev-alias mis='gh issue view --web #'
-  abbrev-alias mpr='gh pr view --web #'
-
-  abbrev-alias tl='tldr'
-fi
-
-# }}}
-
-# extra-abbrev {{{
-EXTRA_ABBREV=(
-  "gci" "git commit -m '_|_'"
-)
-# }}}
-
 # show-buffer-stack {{{
 add-zsh-hook precmd check-buffer-stack
 # }}}
 
 # autosuggestions {{{
 function set_autosuggest() {
-  if whence _magic-abbrev-expand-and-accept-line > /dev/null 2>&1; then
-    ZSH_AUTOSUGGEST_CLEAR_WIDGETS=(magic-abbrev-expand-and-accept-line $ZSH_AUTOSUGGEST_CLEAR_WIDGETS)
-  else
-    ZSH_AUTOSUGGEST_CLEAR_WIDGETS=($ZSH_AUTOSUGGEST_CLEAR_WIDGETS)
-  fi
-  _zsh_autosuggest_start
+  ZSH_AUTOSUGGEST_CLEAR_WIDGETS=($ZSH_AUTOSUGGEST_CLEAR_WIDGETS)
 }
 # }}}
 
@@ -163,7 +112,6 @@ if whence exa > /dev/null; then
   alias ls="exa"
   alias ll="exa -lh  --git --time-style long-iso"
   alias la="exa -alh --git --time-style long-iso"
-  alias lt="exa -alh --git --time-style long-iso"
 elif whence gls > /dev/null; then
   alias ls='gls --color=auto'
   alias ll='ls -lh'
@@ -542,7 +490,6 @@ zle -N accept-line-or-down-pane _accept-line-or-down-pane
 bindkey -e
 
 # My ZLE bind
-bindkey '^ '   extra-abbrev
 bindkey '^]'   insert-last-word
 bindkey '^u'   undo
 bindkey "^[u"  redo
@@ -591,19 +538,6 @@ fi
 
 if whence fzf-history-selection > /dev/null 2>&1; then
   bindkey '^r' fzf-history-selection
-fi
-
-# abbrev-alias
-if whence abbrev-alias > /dev/null 2>&1; then
-  function _magic-abbrev-expand-and-accept-line() {
-    zle __abbrev_alias::magic_abbrev_expand
-    zle accept-line
-  }
-  zle -N magic-abbrev-expand-and-accept-line _magic-abbrev-expand-and-accept-line
-
-  bindkey ' '   __abbrev_alias::magic_abbrev_expand_and_space
-  bindkey '^x ' __abbrev_alias::no_magic_abbrev_expand
-  bindkey '^m'  magic-abbrev-expand-and-accept-line
 fi
 
 # }}}
