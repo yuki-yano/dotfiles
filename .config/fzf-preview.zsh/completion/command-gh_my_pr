@@ -1,7 +1,8 @@
 #autoload
 
 typeset id="gh_my_pr"
-typeset candidate_command="gh pr list --limit 100 --assignee=\$FZF_PREVIEW_GITHUB_USER"
+local candidate_command="gh pr list --limit 100 --state open --assignee=\$FZF_PREVIEW_GITHUB_USER"
+
 typeset -a fzf_options=(
   "${FZF_PREVIEW_DEFAULT_SETTING}"
   "--no-sort"
@@ -9,7 +10,6 @@ typeset -a fzf_options=(
   "--header='C-o: open, C-m: merged, C-c: closed, C-a: all'"
   "--preview=\"gh pr view {1}\""
 )
-
 typeset -a bind=(
   "${FZF_PREVIEW_DEFAULT_BIND}"
   "ctrl-o:reload(gh pr list --limit 100 --state open --assignee=\$FZF_PREVIEW_GITHUB_USER)"
@@ -17,13 +17,9 @@ typeset -a bind=(
   "ctrl-c:reload(gh pr list --limit 100 --state closed --assignee=\$FZF_PREVIEW_GITHUB_USER)"
   "ctrl-a:reload(gh pr list --limit 100 --state all --assignee=\$FZF_PREVIEW_GITHUB_USER)"
 )
-
 fzf_options+=("--bind=\"${(j:,:)bind}\"")
-
+local fzf_command="fzf ${(j: :)fzf_options}"
 typeset callback=("awk '{ print \$1 }'")
 
-typeset complete_func_name="_fzf_complete_${id}"
-complete_func_creator $complete_func_name "${callback}"
-FZF_COMPLETION_OPTS=${(j: :)fzf_options}
-eval $complete_func_name "\"${candidate_command}\""
+fzf-preview-complete $candidate_command $fzf_command $callback
 BUFFER=${BUFFER/\#/}
