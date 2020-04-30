@@ -253,6 +253,11 @@ nnoremap x "_x
 "" incsearch
 " nnoremap / /\v
 
+"" tagjump
+nnoremap <silent> s<C-]> :<C-u>sp<CR><C-]>
+nnoremap <silent> v<C-]> :<C-u>vsp<CR><C-]>
+nnoremap <silent> t<C-]> :<C-u>tabe<CR><C-]>
+
 "" QuickFix
 nnoremap [c :cprevious<CR>
 nnoremap ]c :cnext<CR>
