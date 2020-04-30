@@ -1,4 +1,6 @@
 --glob=!.git/*
+--smart-case
+--ignore-vcs
 --colors=match:fg:magenta
 --colors=match:style:nobold
 --colors=path:fg:green
