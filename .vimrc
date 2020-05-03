@@ -219,15 +219,12 @@ command! -nargs=* AutoCmd autocmd MyVimrc <args>
 
 "" Leader
 let g:mapleader = "\<Space>"
-let g:maplocalleader = ','
-noremap <Leader>      <Nop>
-noremap <LocalLeader> <Nop>
+noremap <Leader> <Nop>
+noremap m        <Nop>
+map     m        [dev]
 
 "" Move beginning toggle
 noremap <silent> <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
-
-"" Disable mark
-nnoremap m <Nop>
 
 "" BackSpace
 imap <C-h> <BS>
@@ -282,10 +279,13 @@ vnoremap < <gv
 vnoremap > >gv|
 
 "" Tab
-nnoremap <silent> gt :<C-u>tablast <Bar> tabedit<CR>
-nnoremap <silent> gd :<C-u>tabclose<CR>
-nnoremap <silent> gh :<C-u>tabprevious<CR>
-nnoremap <silent> gl :<C-u>tabnext<CR>
+nnoremap t <Nop>
+nmap     t [tab]
+nnoremap <silent> [tab]t :<C-u>tablast <Bar> tabedit<CR>
+nnoremap <silent> [tab]d :<C-u>tabclose<CR>
+nnoremap <silent> [tab]h :<C-u>tabprevious<CR>
+nnoremap <silent> [tab]l :<C-u>tabnext<CR>
+nnoremap <silent> [tab]m <C-w>T
 
 "" resize
 nnoremap <Left>  :vertical resize -1<CR>
@@ -561,7 +561,7 @@ function! s:toggle_quickfix()
 endfunction
 
 command! ToggleQuickfix call <SID>toggle_quickfix()
-nnoremap <silent> <LocalLeader>q :<C-u>ToggleQuickfix<CR>
+nnoremap <silent> [dev]q :<C-u>ToggleQuickfix<CR>
 " }}}2
 
 " ToggleLocationList {{{2
@@ -575,7 +575,7 @@ function! s:toggle_location_list()
 endfunction
 
 command! ToggleLocationList call <SID>toggle_location_list()
-nnoremap <silent> <LocalLeader>l :<C-u>ToggleLocationList<CR>
+nnoremap <silent> [dev]l :<C-u>ToggleLocationList<CR>
 " }}}2
 
 " HelpEdit & HelpView {{{2
@@ -800,30 +800,25 @@ let g:coc_global_extensions = [
 " Manual completion
 inoremap <silent> <expr> <C-Space> coc#refresh()
 
-" Move diagnostics
-nmap <silent> <LocalLeader>[ <Plug>(coc-diagnostic-prev)
-nmap <silent> <LocalLeader>] <Plug>(coc-diagnostic-next)
-
 " Snippet map
 let g:coc_snippet_next = '<C-f>'
 let g:coc_snippet_prev = '<C-b>'
 
-" Git
-nmap gp <Plug>(coc-git-prevchunk)
-nmap gn <Plug>(coc-git-nextchunk)
-
 " keymap
-nnoremap K               :call <SID>show_documentation()<CR>
-nmap     <LocalLeader>p  <Plug>(coc-diagnostic-prev)
-nmap     <LocalLeader>n  <Plug>(coc-diagnostic-next)
-nmap     <LocalLeader>d  <Plug>(coc-definition)
-nmap     <LocalLeader>t  <Plug>(coc-type-definition)
-nmap     <LocalLeader>i  <Plug>(coc-implementation)
-nmap     <LocalLeader>rf <Plug>(coc-references)
-nmap     <LocalLeader>rn <Plug>(coc-rename)
-nmap     <LocalLeader>a  <Plug>(coc-fix-current)
-nmap     <Leader>a       <Plug>(coc-format)
-xmap     <Leader>a       <Plug>(coc-format-selected)
+nnoremap K       :<C-u>call s:show_documentation()<CR>
+nmap     [dev]p  <Plug>(coc-diagnostic-prev)
+nmap     [dev]n  <Plug>(coc-diagnostic-next)
+nmap     [dev]d  <Plug>(coc-definition)
+nmap     [dev]t  <Plug>(coc-type-definition)
+nmap     [dev]i  <Plug>(coc-implementation)
+nmap     [dev]rf <Plug>(coc-references)
+nmap     [dev]rn <Plug>(coc-rename)
+nmap     [dev]a  <Plug>(coc-fix-current)
+nmap     [dev]f  <Plug>(coc-format)
+xmap     [dev]f  <Plug>(coc-format-selected)
+nmap     [dev]gp <Plug>(coc-git-prevchunk)
+nmap     [dev]gn <Plug>(coc-git-nextchunk)
+nmap     [dev]gs <Plug>(coc-git-chunkinfo)
 
 AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
@@ -916,6 +911,8 @@ if dein#tap('denite.nvim')
   AutoCmd FileType denite-filter call s:denite_filter_settings()
 
   "" menu
+  AlterCommand          to[ggle] Denite<Space>menu:toggle
+  AlterCommand <cmdwin> to[ggle] Denite<Space>menu:toggle
   let s:menus = {}
   let s:menus.toggle = { 'description': 'Toggle Command' }
   let s:menus.toggle.command_candidates = [
@@ -928,10 +925,6 @@ if dein#tap('denite.nvim')
   \ ['Toggle TableMode         [TableMode]',                 'TableModeToggle'        ],
   \ ]
   call denite#custom#var('menu', 'menus', s:menus)
-  nnoremap <silent> <Leader>t :<C-u>Denite menu:toggle<CR>
-
-  "" resume
-  nnoremap <silent> dr :<C-u>Denite -resume<CR>
 endif
 
 " }}}3
@@ -942,28 +935,32 @@ let g:fzf_preview_filelist_postprocess_command = 'gxargs -d "\n" exa --color=alw
 let g:fzf_preview_use_dev_icons                = 1
 let $FZF_PREVIEW_PREVIEW_BAT_THEME             = 'ansi-dark'
 
-nnoremap <silent> <Leader>p         :<C-u>FzfPreviewFromResources project_mru git<CR>
-nnoremap <silent> <Leader>gs        :<C-u>FzfPreviewGitStatus -processors=g:fzf_preview_gina_processors<CR>
-nnoremap <silent> <Leader>gf        :<C-u>FzfPreviewFromResources project_mru git -add-fzf-arg=--select-1 -add-fzf-arg=--query="'<C-r>=substitute(expand('<cfile>'), '^\.\+/', '', '')<CR>"<CR>
-nnoremap <silent> <Leader>b         :<C-u>FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
-nnoremap <silent> <Leader>B         :<C-u>FzfPreviewAllBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
-nnoremap <silent> <Leader>o         :<C-u>FzfPreviewFromResources buffer project_mru<CR>
-nnoremap <silent> <Leader>O         :<C-u>FzfPreviewFromResources buffer project_mrw<CR>
-nnoremap <silent> <Leader><C-o>     :<C-u>FzfPreviewJumps<CR>
-nnoremap <silent> <Leader>g;        :<C-u>FzfPreviewChanges<CR>
-nnoremap <silent> <Leader>/         :<C-u>FzfPreviewLines -resume -add-fzf-arg=--no-sort -add-fzf-arg=--query="'"<CR>
-nnoremap <silent> <Leader><Leader>/ :<C-u>FzfPreviewBufferLines -resume -add-fzf-arg=--no-sort -add-fzf-arg=--query="'"<CR>
-nnoremap <silent> <Leader>*         :<C-u>FzfPreviewLines -add-fzf-arg=--no-sort -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
-nnoremap          gr                :<C-u>FzfPreviewProjectGrep<Space>
-xnoremap          gr                "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-nnoremap          gR                :<C-u>FzfPreviewProjectCommandGrep<Space>
-xnoremap          gR                "sy:FzfPreviewProjectCommandGrep<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-nnoremap <silent> <Leader><C-]>     :<C-u>FzfPreviewVistaCtags -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
-nnoremap <silent> <Leader>m         :<C-u>FzfPreviewBookmarks -resume<CR>
+noremap ; <Nop>
+noremap ;; ;
+map     ; [fzf-p]
 
-nnoremap <silent> <LocalLeader>b              :<C-u>FzfPreviewVistaBufferCtags -processors=g:fzf_preview_vista_processors<CR>
-nnoremap <silent> <LocalLeader><LocalLeader>q :<C-u>FzfPreviewQuickFix<CR>
-nnoremap <silent> <LocalLeader><LocalLeader>l :<C-u>FzfPreviewLocationList<CR>
+nnoremap <silent> [fzf-p]a     :<C-u>FzfPreviewFromResources project_mru git<CR>
+nnoremap <silent> [fzf-p]s     :<C-u>FzfPreviewGitStatus -processors=g:fzf_preview_gina_processors<CR>
+nnoremap <silent> [fzf-p]gf    :<C-u>FzfPreviewFromResources project_mru git -add-fzf-arg=--select-1 -add-fzf-arg=--query="'<C-r>=substitute(expand('<cfile>'), '^\.\+/', '', '')<CR>"<CR>
+nnoremap <silent> [fzf-p]b     :<C-u>FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
+nnoremap <silent> [fzf-p]B     :<C-u>FzfPreviewAllBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
+nnoremap <silent> [fzf-p]r     :<C-u>FzfPreviewFromResources buffer project_mru<CR>
+nnoremap <silent> [fzf-p]w     :<C-u>FzfPreviewFromResources buffer project_mrw<CR>
+nnoremap <silent> [fzf-p]<C-o> :<C-u>FzfPreviewJumps<CR>
+nnoremap <silent> [fzf-p]g;    :<C-u>FzfPreviewChanges<CR>
+nnoremap <silent> [fzf-p]/     :<C-u>FzfPreviewLines -resume -add-fzf-arg=--no-sort -add-fzf-arg=--query="'"<CR>
+nnoremap <silent> [fzf-p]?     :<C-u>FzfPreviewBufferLines -resume -add-fzf-arg=--no-sort -add-fzf-arg=--query="'"<CR>
+nnoremap <silent> [fzf-p]*     :<C-u>FzfPreviewLines -add-fzf-arg=--no-sort -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap          [fzf-p]f     :<C-u>FzfPreviewProjectGrep<Space>
+xnoremap          [fzf-p]f     "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+nnoremap          [fzf-p]F     :<C-u>FzfPreviewProjectCommandGrep<Space>
+xnoremap          [fzf-p]F     "sy:FzfPreviewProjectCommandGrep<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+nnoremap <silent> [fzf-p]q     :<C-u>FzfPreviewQuickFix<CR>
+nnoremap <silent> [fzf-p]l     :<C-u>FzfPreviewLocationList<CR>
+nnoremap <silent> [fzf-p]p     :<C-u>FzfPreviewYankround<CR>
+nnoremap <silent> [fzf-p]m     :<C-u>FzfPreviewBookmarks -resume<CR>
+nnoremap <silent> [fzf-p]<C-]> :<C-u>FzfPreviewVistaCtags -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap <silent> [fzf-p]o     :<C-u>FzfPreviewVistaBufferCtags -processors=g:fzf_preview_vista_processors<CR>
 
 augroup fzf_preview
   autocmd!
@@ -1048,7 +1045,6 @@ function! s:register_history_sink(lines)
 endfunction
 
 command! FzfPreviewYankround :call fzf_preview#runner#fzf_run(fzf_preview#initializer#initialize('FzfPreviewYankround', {}, <f-args>))
-nnoremap <silent> (ctrlp) :<C-u>FzfPreviewYankround<CR>
 " }}}4
 
 " FzfPreviewBookmarks {{{4
@@ -1493,7 +1489,19 @@ endif
 " }}}3
 
 " bookmarks {{{3
-let g:bookmark_save_per_working_dir = 1
+let g:bookmark_no_default_key_mappings = 1
+let g:bookmark_save_per_working_dir    = 1
+
+noremap M <Nop>
+map     M [bookmark]
+
+nnoremap <silent> [bookmark]m :<C-u>BookmarkToggle<CR>
+nnoremap <silent> [bookmark]i :<C-u>BookmarkAnnotate<CR>
+nnoremap <silent> [bookmark]n :<C-u>BookmarkNext<CR>
+nnoremap <silent> [bookmark]p :<C-u>BookmarkPrev<CR>
+nnoremap <silent> [bookmark]a :<C-u>BookmarkShowAll<CR>
+nnoremap <silent> [bookmark]c :<C-u>BookmarkClear<CR>
+nnoremap <silent> [bookmark]x :<C-u>BookmarkClearAll<CR>
 
 function! g:BMWorkDirFileLocation()
   let filename = 'bookmarks'
@@ -1603,8 +1611,6 @@ if dein#tap('vim-easymotion') && dein#tap('vim-shot-f')
   let g:shot_f_no_default_key_mappings = 1
   nmap <silent> f <Plug>(shot-f-f)
   nmap <silent> F <Plug>(shot-f-F)
-  nmap <silent> t <Plug>(shot-f-t)
-  nmap <silent> T <Plug>(shot-f-T)
 endif
 " }}}3
 
@@ -2415,7 +2421,7 @@ let g:table_mode_corner='|'
 
 " windowswap {{{3
 let g:windowswap_map_keys = 0
-nnoremap <silent> <C-w><C-w> :call WindowSwap#EasyWindowSwap()<CR>
+nnoremap <silent> <Leader><C-w> :call WindowSwap#EasyWindowSwap()<CR>
 " }}}3
 
 " }}}2
