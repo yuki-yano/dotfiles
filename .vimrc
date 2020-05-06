@@ -807,20 +807,20 @@ let g:coc_snippet_next = '<C-f>'
 let g:coc_snippet_prev = '<C-b>'
 
 " keymap
-nnoremap K       :<C-u>call s:show_documentation()<CR>
-nmap     [dev]p  <Plug>(coc-diagnostic-prev)
-nmap     [dev]n  <Plug>(coc-diagnostic-next)
-nmap     [dev]d  <Plug>(coc-definition)
-nmap     [dev]t  <Plug>(coc-type-definition)
-nmap     [dev]i  <Plug>(coc-implementation)
-nmap     [dev]rf <Plug>(coc-references)
-nmap     [dev]rn <Plug>(coc-rename)
-nmap     [dev]a  <Plug>(coc-fix-current)
-nmap     [dev]f  <Plug>(coc-format)
-xmap     [dev]f  <Plug>(coc-format-selected)
-nmap     [dev]gp <Plug>(coc-git-prevchunk)
-nmap     [dev]gn <Plug>(coc-git-nextchunk)
-nmap     [dev]gs <Plug>(coc-git-chunkinfo)
+nnoremap <silent> K       :<C-u>call <SID>show_documentation()<CR>
+nmap     <silent> [dev]p  <Plug>(coc-diagnostic-prev)
+nmap     <silent> [dev]n  <Plug>(coc-diagnostic-next)
+nmap     <silent> [dev]d  <Plug>(coc-definition)
+nmap     <silent> [dev]t  <Plug>(coc-type-definition)
+nmap     <silent> [dev]i  <Plug>(coc-implementation)
+nmap     <silent> [dev]rf <Plug>(coc-references)
+nmap     <silent> [dev]rn <Plug>(coc-rename)
+nmap     <silent> [dev]a  <Plug>(coc-fix-current)
+nmap     <silent> [dev]f  <Plug>(coc-format)
+xmap     <silent> [dev]f  <Plug>(coc-format-selected)
+nmap     <silent> [dev]gp <Plug>(coc-git-prevchunk)
+nmap     <silent> [dev]gn <Plug>(coc-git-nextchunk)
+nmap     <silent> [dev]gs <Plug>(coc-git-chunkinfo)
 
 AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
