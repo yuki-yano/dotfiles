@@ -30,6 +30,7 @@ install node nodenv yarn
 install openssl
 install pyenv python python@2
 install ruby rbenv ruby-build
+install perl
 install source-highlight
 
 ## Service
