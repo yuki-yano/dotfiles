@@ -2612,6 +2612,7 @@ nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus<CR>
 syntax enable
 
 " Highlight {{{2
+
 AutoCmd ColorScheme * highlight Normal       ctermfg=145  ctermbg=235  guifg=#ABB2BF guibg=#26282F
 AutoCmd ColorScheme * highlight NormalNC     ctermfg=144  ctermbg=234  guifg=#ABB2BF guibg=#282C34
 AutoCmd ColorScheme * highlight CursorColumn ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#353535
@@ -2619,6 +2620,7 @@ AutoCmd ColorScheme * highlight CursorLine   ctermfg=NONE ctermbg=236  guifg=NON
 AutoCmd ColorScheme * highlight CursorLineNr ctermfg=253  ctermbg=NONE guifg=#DADADA guibg=NONE
 AutoCmd ColorScheme * highlight LineNr       ctermfg=241  ctermbg=NONE guifg=#626262 guibg=NONE
 AutoCmd ColorScheme * highlight NonText      ctermfg=60   ctermbg=NONE guifg=#5F5F87 guibg=NONE
+AutoCmd ColorScheme * highlight Identifier   ctermfg=10   ctermbg=NONE guifg=#C0CA8E guibg=NONE
 AutoCmd ColorScheme * highlight Search       ctermfg=68   ctermbg=232  guifg=#5F87D7 guibg=#080808
 AutoCmd ColorScheme * highlight Todo         ctermfg=229  ctermbg=NONE guifg=#FFFFAF guibg=NONE
 AutoCmd ColorScheme * highlight Visual       ctermfg=159  ctermbg=23   guifg=#AFFFFF guibg=#005F5F
@@ -2644,6 +2646,7 @@ AutoCmd ColorScheme * highlight AnsiColor13 ctermfg=13 guifg=#ADA0D3
 AutoCmd ColorScheme * highlight AnsiColor14 ctermfg=14 guifg=#95C4CE
 AutoCmd ColorScheme * highlight AnsiColor15 ctermfg=15 guifg=#D2D4DE
 
+" Plugin highlight
 AutoCmd ColorScheme * highlight BrightestHighlight      ctermfg=72   ctermbg=NONE                      guifg=#5FAF87 guibg=NONE
 AutoCmd ColorScheme * highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
 AutoCmd ColorScheme * highlight ExtraWhiteSpace         ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
@@ -2667,16 +2670,120 @@ AutoCmd ColorScheme * highlight CocErrorSign            ctermfg=9    ctermbg=NON
 AutoCmd ColorScheme * highlight CocWarningSign          ctermfg=214  ctermbg=NONE                      guifg=#FFAF00 guibg=NONE
 AutoCmd ColorScheme * highlight CocInfoSign             ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
 
-" Fix lightline
-" AutoCmd ColorScheme * highlight StatusLine   ctermfg=0 ctermbg=none guifg=#1E2132 guibg=#C6C8D1
-" AutoCmd ColorScheme * highlight StatusLineNC ctermfg=0 ctermbg=none guifg=#1E2132 guibg=#C6C8D1
 " }}}2
 
 " onedark {{{2
+
 colorscheme onedark
 
-"" ruby_hl_lvar.vim
-hi! Identifier cterm=NONE ctermfg=10 guifg=#C0CA8E
+" lightline highlight {{{3
+let s:colors = onedark#GetColors()
+
+let s:term_red         = s:colors.red.cterm
+let s:term_dark_red    = s:colors.dark_red.cterm
+let s:term_green       = s:colors.green.cterm
+let s:term_yellow      = s:colors.yellow.cterm
+let s:term_blue        = s:colors.blue.cterm
+let s:term_purple      = s:colors.purple.cterm
+let s:term_white       = s:colors.white.cterm
+let s:term_black       = s:colors.black.cterm
+let s:term_grey        = s:colors.cursor_grey.cterm
+let s:term_dark_yellow = s:colors.dark_yellow.cterm
+
+let s:red         = [s:colors.red.gui, s:term_red]
+let s:dark_red    = [s:colors.dark_red.gui, s:term_dark_red]
+let s:green       = [s:colors.green.gui, s:term_green]
+let s:yellow      = [s:colors.yellow.gui, s:term_yellow]
+let s:blue        = [s:colors.blue.gui, s:term_blue]
+let s:purple      = [s:colors.purple.gui, s:term_purple]
+let s:white       = [s:colors.white.gui, s:term_white]
+let s:black       = [s:colors.black.gui, s:term_black]
+let s:grey        = [s:colors.visual_grey.gui, s:term_grey]
+let s:dark_yellow = [s:colors.dark_yellow.gui, s:term_dark_yellow]
+let s:bold        = 'bold'
+
+" Self Definition
+let s:orange      = ['#D78700', 172]
+let s:blue_green  = ['#00AFAF', 37 ]
+
+let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
+
+let s:p.normal.left = [
+\ [s:black, s:green],
+\ [s:orange, s:grey],
+\ [s:blue_green, s:grey],
+\ [s:blue, s:grey],
+\ ]
+
+let s:p.insert.left = [
+\ [s:black,      s:yellow],
+\ [s:orange,     s:grey],
+\ [s:blue_green, s:grey],
+\ [s:blue,       s:grey],
+\]
+
+let s:p.visual.left = [
+\ [s:black,      s:purple],
+\ [s:orange,     s:grey],
+\ [s:blue_green, s:grey],
+\ [s:blue,       s:grey],
+\ ]
+
+let s:p.replace.left = [
+\ [s:black,      s:red],
+\ [s:orange,     s:grey],
+\ [s:blue_green, s:grey],
+\ [s:blue,       s:grey],
+\ ]
+
+let s:p.inactive.left = [
+\ [s:blue_green, s:grey],
+\ [s:orange,     s:grey],
+\ [s:blue_green, s:grey],
+\ [s:blue,       s:grey],
+\ ]
+
+let s:p.normal.right   = [[s:white, s:black],   [s:white, s:grey]]
+let s:p.inactive.right = [[s:black, s:white],   [s:black, s:white]]
+let s:p.insert.right   = [[s:black, s:blue],    [s:white, s:grey]]
+let s:p.replace.right  = [[s:black, s:red],     [s:white, s:grey]]
+let s:p.visual.right   = [[s:black, s:purple],  [s:white, s:grey]]
+
+let s:p.normal.middle   = [[s:white, s:black]]
+let s:p.inactive.middle = [[s:white, s:grey]]
+
+let s:p.tabline.left   = [[s:blue,   s:grey]]
+let s:p.tabline.tabsel = [[s:orange, s:black]]
+let s:p.tabline.middle = [[s:white,  s:black]]
+let s:p.tabline.right  = [[s:white,  s:grey]]
+
+let s:coc_diagnostic = [
+\ [s:grey, s:red   ],
+\ [s:grey, s:orange],
+\ [s:grey, s:yellow],
+\ [s:grey, s:green ],
+\ ]
+
+let s:p.normal.error        = s:coc_diagnostic[0:0]
+let s:p.insert.error        = s:coc_diagnostic[0:0]
+let s:p.replace.error       = s:coc_diagnostic[0:0]
+let s:p.visual.error        = s:coc_diagnostic[0:0]
+let s:p.normal.warning      = s:coc_diagnostic[1:1]
+let s:p.insert.warning      = s:coc_diagnostic[1:1]
+let s:p.replace.warning     = s:coc_diagnostic[1:1]
+let s:p.visual.warning      = s:coc_diagnostic[1:1]
+let s:p.normal.information  = s:coc_diagnostic[2:2]
+let s:p.insert.information  = s:coc_diagnostic[2:2]
+let s:p.replace.information = s:coc_diagnostic[2:2]
+let s:p.visual.information  = s:coc_diagnostic[2:2]
+let s:p.normal.ok           = s:coc_diagnostic[3:3]
+let s:p.insert.ok           = s:coc_diagnostic[3:3]
+let s:p.replace.ok          = s:coc_diagnostic[3:3]
+let s:p.visual.ok           = s:coc_diagnostic[3:3]
+
+let g:lightline#colorscheme#onedark#palette = lightline#colorscheme#flatten(s:p)
+" }}}3
+
 " }}}2
 
 " }}}1
