@@ -53,5 +53,26 @@
     "https://raw.githubusercontent.com/docker/cli/master/cli/compose/schema/data/config_schema_v3.9.json": [
       "/docker-compose.yml"
     ]
-  }
+  },
+  "coc-actions.hideCursor": false,
+
+  "cSpell.diagnosticLevel": "Hint",
+  "cSpell.enabledLanguageIds": [
+    "vim",
+    "css",
+    "git-commit",
+    "go",
+    "html",
+    "javascript",
+    "javascriptreact",
+    "json",
+    "jsonc",
+    "markdown",
+    "python",
+    "ruby",
+    "typescript",
+    "typescript.tsx",
+    "typescriptreact",
+    "yaml"
+  ]
 }

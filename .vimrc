@@ -119,7 +119,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Yggdroot/indentLine')
   call dein#add('andymass/vim-matchup')
   call dein#add('itchyny/lightline.vim')
-  call dein#add('kamykn/spelunker.vim')
   call dein#add('liuchengxu/vim-which-key')
   call dein#add('luochen1990/rainbow')
   call dein#add('machakann/vim-highlightedundo')
@@ -774,6 +773,7 @@ AlterCommand          list CocList
 AlterCommand <cmdwin> list CocList
 
 let g:coc_global_extensions = [
+\ 'coc-actions',
 \ 'coc-calc',
 \ 'coc-css',
 \ 'coc-cssmodules',
@@ -790,6 +790,7 @@ let g:coc_global_extensions = [
 \ 'coc-sh',
 \ 'coc-snippets',
 \ 'coc-solargraph',
+\ 'coc-spell-checker',
 \ 'coc-stylelint',
 \ 'coc-tabnine',
 \ 'coc-tailwindcss',

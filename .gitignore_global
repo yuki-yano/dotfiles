@@ -46,5 +46,8 @@ GTAGS
 !.gitkeep
 git-worktrees/*
 
+# vim
+cSpell.json
+
 # VSCode
 .vscode
