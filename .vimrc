@@ -45,10 +45,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Git {{{3
+  call dein#add('APZelos/blamer.nvim')
   call dein#add('hotwatermorning/auto-git-diff')
   call dein#add('lambdalisue/gina.vim')
   call dein#add('rhysd/committia.vim')
   call dein#add('rhysd/conflict-marker.vim')
+  call dein#add('rhysd/git-messenger.vim', {'lazy': 1, 'on_cmd': 'GitMessenger'})
   call dein#add('wting/gitsessions.vim')
   " }}}3
 
@@ -1311,6 +1313,14 @@ endif
 " }}}2
 
 " Git {{{2
+
+" blamer {{{3
+let g:blamer_enabled = 1
+" }}}3
+
+" git-messenger {{{3
+nnoremap <silent> gm :<C-u>GitMessenger<CR>
+" }}}3
 
 " gina {{{3
 AlterCommand          git   Gina
