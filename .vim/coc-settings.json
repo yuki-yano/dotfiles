@@ -13,6 +13,41 @@
   "coc.preferences.useQuickfixForLocations": true,
   "codeLens.enable": true,
 
+  "explorer.icon.enableVimDevicons": true,
+  "explorer.previewAction.onHover": false,
+  "explorer.keyMappings": {
+    "i": false,
+    "<Tab>": "actionMenu",
+
+    "k": "nodePrev",
+    "j": "nodeNext",
+    "t": ["expanded?", "expand", "collapse"],
+    "<CR>": "open",
+
+    "h": "gotoParent",
+    "l": ["expandable?", "expand", "open"],
+
+    "x": "toggleSelection",
+
+    "y": "copyFilepath",
+    "Y": "copyFilename",
+    "c": "copyFile",
+    "p": "pasteFile",
+    "d": "delete",
+    "D": "deleteForever",
+
+    "N": "addFile",
+    "K": "addDirectory",
+    "r": "rename",
+
+    "!": "toggleHidden",
+    "R": "refresh",
+
+    "?": "help",
+    "q": "quit",
+    "<esc>": "esc"
+  },
+
   "languageserver": {
     "graphql": {
       "module": "~/repos/github.com/apollographql/apollo-tooling/packages/apollo-language-server/lib/server.js",
