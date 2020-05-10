@@ -723,6 +723,7 @@ set cedit=\<C-c>
 " xnoremap q: :
 
 AutoCmd CmdwinEnter * call <SID>init_cmdwin()
+AutoCmd CmdwinLeave * call <SID>deinit_cmdwin()
 
 function! s:init_cmdwin() abort
   setlocal number | setlocal norelativenumber
@@ -730,8 +731,20 @@ function! s:init_cmdwin() abort
   nnoremap <buffer> <silent> q :<C-u>quit<CR>
   inoremap <buffer> <C-c> <Esc>l<C-c>
 
+  call coc#config('suggest.floatEnable', v:false)
+  call coc#config('diagnostic.messageTarget', 'echo')
+  call coc#config('signature.target', 'echo')
+  call coc#config('coc.preferences.hoverTarget', 'echo')
+
   " nnoremap <silent> <buffer> dd :<C-u>rviminfo<CR>:call histdel(getcmdwintype(), line('.') - line('$'))<CR>:wviminfo!<CR>dd
   startinsert!
+endfunction
+
+function! s:deinit_cmdwin() abort
+  call coc#config('suggest.floatEnable', v:true)
+  call coc#config('diagnostic.messageTarget', 'float')
+  call coc#config('signature.target', 'float')
+  call coc#config('coc.preferences.hoverTarget', 'float')
 endfunction
 " }}}1
 
