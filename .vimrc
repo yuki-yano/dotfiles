@@ -825,12 +825,17 @@ nmap     <silent> [dev]t  <Plug>(coc-type-definition)
 nmap     <silent> [dev]i  <Plug>(coc-implementation)
 nmap     <silent> [dev]rf <Plug>(coc-references)
 nmap     <silent> [dev]rn <Plug>(coc-rename)
-nmap     <silent> [dev]a  <Plug>(coc-fix-current)
+nmap     <silent> [dev]a  :<C-u>set operatorfunc=<SID>coc_actions_open_from_selected<CR>g@
+xmap     <silent> [dev]a  :<C-u>execute 'CocCommand actions.open ' . visualmode()<CR>
 nmap     <silent> [dev]f  <Plug>(coc-format)
 xmap     <silent> [dev]f  <Plug>(coc-format-selected)
-nmap     <silent> [dev]gp <Plug>(coc-git-prevchunk)
-nmap     <silent> [dev]gn <Plug>(coc-git-nextchunk)
 nmap     <silent> [dev]gs <Plug>(coc-git-chunkinfo)
+
+nmap     <silent> gp      <Plug>(coc-git-prevchunk)
+nmap     <silent> gn      <Plug>(coc-git-nextchunk)
+
+nmap     <Leader>e :CocCommand explorer<CR>
+nmap     <Leader>E :CocCommand explorer --reveal expand('%')<CR>
 
 AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
@@ -840,6 +845,10 @@ function! s:show_documentation()
   else
     call CocAction('doHover')
   endif
+endfunction
+
+function! s:coc_actions_open_from_selected(type) abort
+  execute 'CocCommand actions.open ' . a:type
 endfunction
 
 AutoCmd FileType typescript,typescript.tsx setlocal tagfunc=CocTagFunc
