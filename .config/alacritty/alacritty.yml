@@ -56,31 +56,31 @@ font:
 
 colors:
   primary:
-    background: '0x252525'
-    foreground: '0xf0f0f0'
+    background: '#282c34'
+    foreground: '#abb2bf'
   cursor:
     background: '0xf0f0f0'
     foreground: '0x26282a'
 
   normal:
-    black:   '0x1e2132'
-    red:     '0xe27878'
-    green:   '0xb4be82'
-    yellow:  '0xe2a478'
-    blue:    '0x84a0c6'
-    magenta: '0xa093c7'
-    cyan:    '0x89b8c2'
-    white:   '0xc6c8d1'
+    black:   '#282c34'
+    red:     '#e06c75'
+    green:   '#98c379'
+    yellow:  '#d19a66'
+    blue:    '#61afef'
+    magenta: '#c678dd'
+    cyan:    '#56b6c2'
+    white:   '#abb2bf'
 
   bright:
-    black:   '0x6b7089'
-    red:     '0xe98989'
-    green:   '0xc0ca8e'
-    yellow:  '0xe9b189'
-    blue:    '0x91acd1'
-    magenta: '0xada0d3'
-    cyan:    '0x95c4ce'
-    white:   '0xd2d4de'
+    black:   '#5c6370'
+    red:     '#e06c75'
+    green:   '#98c379'
+    yellow:  '#d19a66'
+    blue:    '#61afef'
+    magenta: '#c678dd'
+    cyan:    '#56b6c2'
+    white:   '#ffffff'
 
 visual_bell:
   animation: EaseOutExpo
