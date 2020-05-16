@@ -800,7 +800,6 @@ let g:coc_global_extensions = [
 \ 'coc-sh',
 \ 'coc-snippets',
 \ 'coc-solargraph',
-\ 'coc-sources',
 \ 'coc-spell-checker',
 \ 'coc-stylelint',
 \ 'coc-tabnine',
