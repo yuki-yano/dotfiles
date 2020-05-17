@@ -242,6 +242,9 @@ nnoremap <silent> <Leader>W :<C-u>update!<CR>
 nnoremap <expr> i len(getline('.')) ? "i" : "cc"
 nnoremap <expr> A len(getline('.')) ? "A" : "cc"
 
+"" o to A<CR>
+nmap o A<CR>
+
 " Ignore registers
 nnoremap x "_x
 
