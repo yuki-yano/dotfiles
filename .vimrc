@@ -163,6 +163,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Color Theme {{{3
   call dein#add('cocopon/iceberg.vim')
+  call dein#add('icymind/NeoSolarized')
   call dein#add('joshdick/onedark.vim')
   " }}}3
 
@@ -362,7 +363,7 @@ set helplang=ja
 set hidden
 set hlsearch
 set laststatus=2
-set list listchars=tab:^\ ,trail:_,extends:>,precedes:<
+set list listchars=tab:^\ ,trail:_,extends:>,precedes:<,eol:$
 set matchpairs+=<:>
 set matchtime=1
 set pumheight=40
@@ -614,6 +615,55 @@ command! HighlightInfo call s:get_highlight_info()
 
 " VSCode {{{2
 command! VSCode execute printf('!code -r "%s"', expand('%'))
+" }}}2
+
+" Review {{{2
+let g:review_status = v:false
+
+function! s:start_review() abort
+  let g:review_status = v:true
+
+  colorscheme NeoSolarized
+  set background=light
+  call lightline#disable()
+
+  SNumbersDisable
+  set number norelativenumber
+
+  let g:comfortable_motion_enable = 0
+  ToggleComfortableMotion
+
+  set list listchars=tab:^\ ,trail:_,extends:>,precedes:<
+endfunction
+
+command! StartReview call <SID>start_review()
+
+function! s:end_review() abort
+  let g:review_status = v:false
+
+  colorscheme onedark
+  set background=dark
+  call lightline#enable()
+
+  SNumbersEnable
+
+  let g:comfortable_motion_enable = 1
+  ToggleComfortableMotion
+
+  set list listchars=tab:^\ ,trail:_,extends:>,precedes:<,eol:$
+endfunction
+
+command! EndReview call <SID>end_review()
+
+function! s:toggle_review() abort
+  if g:review_status
+    EndReview
+  else
+    StartReview
+  endif
+endfunction
+
+command! ToggleReview call <SID>toggle_review()
 " }}}2
 
 " }}}1
@@ -940,6 +990,7 @@ if dein#tap('denite.nvim')
   let s:menus = {}
   let s:menus.toggle = { 'description': 'Toggle Command' }
   let s:menus.toggle.command_candidates = [
+  \ ['Toggle Review            [ToggleReview]',              'ToggleReview'           ],
   \ ['Toggle CursorHighlight   [CursorHighlightToggle]',     'CursorHighlightToggle'  ],
   \ ['Toggle SmartNumber       [SmartNumberToggleRelative]', 'SNumbersToggleRelative' ],
   \ ['Toggle Context           [ContextToggleWindow]',       'ContextToggleWindow'    ],
