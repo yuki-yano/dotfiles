@@ -727,10 +727,10 @@ AutoCmd FileType html,eruby call <SID>map_html_keys()
 " }}}2
 
 " Set quit {{{2
-AutoCmd FileType help nnoremap <silent> <buffer> q :<C-u>quit<CR>
-AutoCmd FileType diff nnoremap <silent> <buffer> q :<C-u>quit<CR>
-AutoCmd FileType man  nnoremap <silent> <buffer> q :<C-u>quit<CR>
-AutoCmd FileType git  nnoremap <silent> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType help nnoremap <silent> <nowait> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType diff nnoremap <silent> <nowait> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType man  nnoremap <silent> <nowait> <buffer> q :<C-u>quit<CR>
+AutoCmd FileType git  nnoremap <silent> <nowait> <buffer> q :<C-u>quit<CR>
 " }}}2
 
 " }}}1
@@ -749,7 +749,7 @@ AutoCmd CmdwinLeave * call <SID>deinit_cmdwin()
 function! s:init_cmdwin() abort
   setlocal number | setlocal norelativenumber
   nnoremap <buffer> <CR> <CR>
-  nnoremap <buffer> <silent> q :<C-u>quit<CR>
+  nnoremap <buffer> <silent> <nowait> q :<C-u>quit<CR>
   inoremap <buffer> <C-c> <Esc>l<C-c>
 
   call coc#config('suggest.floatEnable', v:false)
