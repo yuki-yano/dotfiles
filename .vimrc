@@ -309,17 +309,10 @@ vnoremap <silent> sp :<C-u>let @" = substitute(system("pbpaste"), "\n\+$", "", "
 
 "" NeoVim
 if has('nvim')
-  if has('vim_starting') && empty(argv())
-    syntax off
-  endif
-
   let g:python_host_prog  = $HOME . '/.pyenv/shims/python2'
   let g:python3_host_prog = $HOME . '/.pyenv/shims/python3'
 
   set inccommand=nosplit
-
-  AutoCmd CursorHold   * rshada | wshada
-  AutoCmd TextYankPost * rshada | wshada
 
   AutoCmd FocusGained * checktime
 
@@ -714,22 +707,6 @@ AutoCmd FileType sh   setlocal iskeyword+=-
 AutoCmd FileType zsh  setlocal iskeyword+=-
 " }}}3
 
-" Set FileType {{{3
-AutoCmd BufNewFile,BufRead *.js             set filetype=javascript
-AutoCmd BufNewFile,BufRead *.erb            set filetype=eruby
-AutoCmd BufNewFile,BufRead *.cson           set filetype=coffee
-AutoCmd BufNewFile,BufRead .babelrc         set filetype=json
-AutoCmd BufNewFile,BufRead .eslintrc        set filetype=json
-AutoCmd BufNewFile,BufRead .stylelintrc     set filetype=json
-AutoCmd BufNewFile,BufRead .prettierrc      set filetype=json
-AutoCmd BufNewFile,BufRead .tern-project    set filetype=json
-AutoCmd BufNewFile,BufRead .pryrc           set filetype=ruby
-AutoCmd BufNewFile,BufRead Gemfile          set filetype=ruby
-AutoCmd BufNewFile,BufRead Vagrantfile      set filetype=ruby
-AutoCmd BufNewFile,BufRead Schemafile       set filetype=ruby
-AutoCmd BufNewFile,BufRead .gitconfig.local set filetype=gitconfig
-" }}}3
-
 " }}}2
 
 " HTML & eruby {{{2
@@ -745,14 +722,6 @@ function! s:map_html_keys()
   inoremap <silent> <buffer> \" &#8221;
 endfunction
 AutoCmd FileType html,eruby call <SID>map_html_keys()
-" }}}2
-
-" vim {{{2
-AutoCmd FileType vim setlocal keywordprg=:help
-" }}}2
-
-" shell {{{2
-AutoCmd FileType sh,bash,zsh,man setlocal keywordprg=man
 " }}}2
 
 " Set quit {{{2
@@ -911,7 +880,6 @@ AutoCmd FileType typescript,typescript.tsx setlocal tagfunc=CocTagFunc
 
 " gen_tags {{{3
 let g:gen_tags#ctags_auto_gen = 1
-let g:gen_tags#gtags_auto_gen = 1
 let g:gen_tags#ctags_opts = '--excmd=number'
 " }}}3
 
