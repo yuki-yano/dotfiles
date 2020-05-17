@@ -317,8 +317,6 @@ if has('nvim')
 
   set inccommand=nosplit
 
-  AutoCmd FocusGained * checktime
-
   tnoremap <Esc> <C-\><C-n>
   AutoCmd TermOpen * set nonumber | set norelativenumber
 
@@ -450,6 +448,7 @@ AutoCmd InsertLeave * setlocal nopaste
 "" Misc
 set autoread
 set updatetime=500
+AutoCmd FocusGained * checktime
 
 "" Turn off default plugins.
 let g:loaded_gzip              = 1
