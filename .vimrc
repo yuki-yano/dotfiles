@@ -251,9 +251,10 @@ nnoremap x "_x
 " nnoremap / /\v
 
 "" tagjump
-nnoremap <silent> s<C-]> :<C-u>sp<CR><C-]>
-nnoremap <silent> v<C-]> :<C-u>vsp<CR><C-]>
-nnoremap <silent> t<C-]> :<C-u>tabe<CR><C-]>
+nnoremap <silent> s<C-]> :<C-u>wincmd ]<CR>
+nnoremap <silent> v<C-]> :<C-u>vertical wincmd ]<CR>
+nnoremap <silent> t<C-]> :<C-u>tab wincmd ]<CR>
+nnoremap <silent> r<C-]> <C-w>}
 
 "" QuickFix
 nnoremap [c :cprevious<CR>
