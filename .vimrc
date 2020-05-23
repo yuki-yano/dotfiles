@@ -1786,6 +1786,7 @@ let g:splitjoin_ruby_hanging_args = 0
 " }}}3
 
 " visual-multi {{{3
+let g:VM_set_statusline             = 0
 let g:VM_leader                     = '\'
 let g:VM_default_mappings           = 0
 let g:VM_sublime_mappings           = 0
@@ -2089,7 +2090,7 @@ if dein#tap('lightline.vim')
     let l:special_mode = get(s:lightline_ft_to_mode_hash, &filetype, '')
     let l:win = getwininfo(win_getid())[0]
     return l:special_mode !=# '' ? l:special_mode :
-    \ exists('g:VM') && g:VM.is_active ? 'VISUAL MULTI' :
+    \ exists('g:Vm') && g:Vm.is_active ? 'VISUAL MULTI' :
     \ anzu#search_status() !=# '' ? 'Anzu' :
     \ Lightline_mode() !=# '' ? '' :
     \ l:win.loclist ? 'Location List' :
