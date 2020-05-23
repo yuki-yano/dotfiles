@@ -2625,62 +2625,62 @@ syntax enable
 
 " Highlight {{{2
 
-AutoCmd ColorScheme * highlight Normal       ctermfg=145  ctermbg=235  guifg=#ABB2BF guibg=#26282F
-AutoCmd ColorScheme * highlight NormalNC     ctermfg=144  ctermbg=234  guifg=#ABB2BF guibg=#282C34
-AutoCmd ColorScheme * highlight CursorColumn ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#353535
-AutoCmd ColorScheme * highlight CursorLine   ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#353535
-AutoCmd ColorScheme * highlight CursorLineNr ctermfg=253  ctermbg=NONE guifg=#DADADA guibg=NONE
-AutoCmd ColorScheme * highlight LineNr       ctermfg=241  ctermbg=NONE guifg=#626262 guibg=NONE
-AutoCmd ColorScheme * highlight NonText      ctermfg=60   ctermbg=NONE guifg=#5F5F87 guibg=NONE
-AutoCmd ColorScheme * highlight Identifier   ctermfg=10   ctermbg=NONE guifg=#C0CA8E guibg=NONE
-AutoCmd ColorScheme * highlight Search       ctermfg=68   ctermbg=232  guifg=#5F87D7 guibg=#080808
-AutoCmd ColorScheme * highlight Todo         ctermfg=229  ctermbg=NONE guifg=#FFFFAF guibg=NONE
-AutoCmd ColorScheme * highlight Visual       ctermfg=159  ctermbg=23   guifg=#AFFFFF guibg=#005F5F
-AutoCmd ColorScheme * highlight DiffAdd      ctermfg=233  ctermbg=64   guifg=#C4C4C4 guibg=#3E5935
-AutoCmd ColorScheme * highlight DiffDelete   ctermfg=233  ctermbg=95   guifg=#C4C4C4 guibg=#593535
-AutoCmd ColorScheme * highlight DiffChange   ctermfg=233  ctermbg=143  guifg=#C4C4C4 guibg=#594D1A
+AutoCmd ColorScheme onedark highlight Normal       ctermfg=145  ctermbg=235  guifg=#ABB2BF guibg=#26282F
+AutoCmd ColorScheme onedark highlight NormalNC     ctermfg=144  ctermbg=234  guifg=#ABB2BF guibg=#282C34
+AutoCmd ColorScheme onedark highlight CursorColumn ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#353535
+AutoCmd ColorScheme onedark highlight CursorLine   ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#353535
+AutoCmd ColorScheme onedark highlight CursorLineNr ctermfg=253  ctermbg=NONE guifg=#DADADA guibg=NONE
+AutoCmd ColorScheme onedark highlight LineNr       ctermfg=241  ctermbg=NONE guifg=#626262 guibg=NONE
+AutoCmd ColorScheme onedark highlight NonText      ctermfg=60   ctermbg=NONE guifg=#5F5F87 guibg=NONE
+AutoCmd ColorScheme onedark highlight Identifier   ctermfg=10   ctermbg=NONE guifg=#C0CA8E guibg=NONE
+AutoCmd ColorScheme onedark highlight Search       ctermfg=68   ctermbg=232  guifg=#5F87D7 guibg=#080808
+AutoCmd ColorScheme onedark highlight Todo         ctermfg=229  ctermbg=NONE guifg=#FFFFAF guibg=NONE
+AutoCmd ColorScheme onedark highlight Visual       ctermfg=159  ctermbg=23   guifg=#AFFFFF guibg=#005F5F
+AutoCmd ColorScheme onedark highlight DiffAdd      ctermfg=233  ctermbg=64   guifg=#C4C4C4 guibg=#3E5935
+AutoCmd ColorScheme onedark highlight DiffDelete   ctermfg=233  ctermbg=95   guifg=#C4C4C4 guibg=#593535
+AutoCmd ColorScheme onedark highlight DiffChange   ctermfg=233  ctermbg=143  guifg=#C4C4C4 guibg=#594D1A
 
 " Gina (Vital.Vim.Buffer.ANSI)
-AutoCmd ColorScheme * highlight AnsiColor0  ctermfg=0  guifg=#1E2132
-AutoCmd ColorScheme * highlight AnsiColor1  ctermfg=1  guifg=#E27878
-AutoCmd ColorScheme * highlight AnsiColor2  ctermfg=2  guifg=#B4BE82
-AutoCmd ColorScheme * highlight AnsiColor3  ctermfg=3  guifg=#E2A478
-AutoCmd ColorScheme * highlight AnsiColor4  ctermfg=4  guifg=#84A0C6
-AutoCmd ColorScheme * highlight AnsiColor5  ctermfg=5  guifg=#A093C7
-AutoCmd ColorScheme * highlight AnsiColor6  ctermfg=6  guifg=#89B8C2
-AutoCmd ColorScheme * highlight AnsiColor7  ctermfg=7  guifg=#C6C8D1
-AutoCmd ColorScheme * highlight AnsiColor8  ctermfg=8  guifg=#6B7089
-AutoCmd ColorScheme * highlight AnsiColor9  ctermfg=9  guifg=#E98989
-AutoCmd ColorScheme * highlight AnsiColor10 ctermfg=10 guifg=#C0CA8E
-AutoCmd ColorScheme * highlight AnsiColor11 ctermfg=11 guifg=#F0C674
-AutoCmd ColorScheme * highlight AnsiColor12 ctermfg=12 guifg=#91ACD1
-AutoCmd ColorScheme * highlight AnsiColor13 ctermfg=13 guifg=#ADA0D3
-AutoCmd ColorScheme * highlight AnsiColor14 ctermfg=14 guifg=#95C4CE
-AutoCmd ColorScheme * highlight AnsiColor15 ctermfg=15 guifg=#D2D4DE
+AutoCmd ColorScheme onedark highlight AnsiColor0  ctermfg=0  guifg=#1E2132
+AutoCmd ColorScheme onedark highlight AnsiColor1  ctermfg=1  guifg=#E27878
+AutoCmd ColorScheme onedark highlight AnsiColor2  ctermfg=2  guifg=#B4BE82
+AutoCmd ColorScheme onedark highlight AnsiColor3  ctermfg=3  guifg=#E2A478
+AutoCmd ColorScheme onedark highlight AnsiColor4  ctermfg=4  guifg=#84A0C6
+AutoCmd ColorScheme onedark highlight AnsiColor5  ctermfg=5  guifg=#A093C7
+AutoCmd ColorScheme onedark highlight AnsiColor6  ctermfg=6  guifg=#89B8C2
+AutoCmd ColorScheme onedark highlight AnsiColor7  ctermfg=7  guifg=#C6C8D1
+AutoCmd ColorScheme onedark highlight AnsiColor8  ctermfg=8  guifg=#6B7089
+AutoCmd ColorScheme onedark highlight AnsiColor9  ctermfg=9  guifg=#E98989
+AutoCmd ColorScheme onedark highlight AnsiColor10 ctermfg=10 guifg=#C0CA8E
+AutoCmd ColorScheme onedark highlight AnsiColor11 ctermfg=11 guifg=#F0C674
+AutoCmd ColorScheme onedark highlight AnsiColor12 ctermfg=12 guifg=#91ACD1
+AutoCmd ColorScheme onedark highlight AnsiColor13 ctermfg=13 guifg=#ADA0D3
+AutoCmd ColorScheme onedark highlight AnsiColor14 ctermfg=14 guifg=#95C4CE
+AutoCmd ColorScheme onedark highlight AnsiColor15 ctermfg=15 guifg=#D2D4DE
 
 " Plugin highlight
-AutoCmd ColorScheme * highlight BrightestHighlight      ctermfg=72   ctermbg=NONE                      guifg=#5FAF87 guibg=NONE
-AutoCmd ColorScheme * highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
-AutoCmd ColorScheme * highlight ExtraWhiteSpace         ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
-AutoCmd ColorScheme * highlight FloatermNF              ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#161821
-AutoCmd ColorScheme * highlight GitRebase               ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#1F1F20
-AutoCmd ColorScheme * highlight HighlightedyankRegion   ctermfg=1    ctermbg=NONE                      guifg=#E27878 guibg=NONE
-AutoCmd ColorScheme * highlight MatchParen              ctermfg=NONE ctermbg=NONE cterm=underline      guifg=NONE    guibg=NONE    gui=underline
-AutoCmd ColorScheme * highlight MatchParenCur           ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
-AutoCmd ColorScheme * highlight MatchWord               ctermfg=NONE ctermbg=NONE cterm=underline      guifg=NONE    guibg=NONE    gui=underline
-AutoCmd ColorScheme * highlight MatchWordCur            ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
-AutoCmd ColorScheme * highlight QuickScopePrimary       ctermfg=68   ctermbg=NONE                      guifg=#5F87D7 guibg=NONE
-AutoCmd ColorScheme * highlight QuickScopeSecondary     ctermfg=72   ctermbg=NONE                      guifg=#5FAFAF guibg=NONE
-AutoCmd ColorScheme * highlight ShotFBlank              ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#E27878 guibg=NONE    gui=underline,bold
-AutoCmd ColorScheme * highlight ShotFGraph              ctermfg=209  ctermbg=NONE                      guifg=#E27878 guibg=NONE
-AutoCmd ColorScheme * highlight WhichKey                ctermfg=74                                     guifg=#5fafd7
-AutoCmd ColorScheme * highlight WhichKeyDesc            ctermfg=178  ctermbg=NONE                      guifg=#d7af00 guibg=NONE
-AutoCmd ColorScheme * highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
-AutoCmd ColorScheme * highlight ZenSpace                ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
+AutoCmd ColorScheme onedark highlight BrightestHighlight      ctermfg=72   ctermbg=NONE                      guifg=#5FAF87 guibg=NONE
+AutoCmd ColorScheme onedark highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
+AutoCmd ColorScheme onedark highlight ExtraWhiteSpace         ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
+AutoCmd ColorScheme onedark highlight FloatermNF              ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#161821
+AutoCmd ColorScheme onedark highlight GitRebase               ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#1F1F20
+AutoCmd ColorScheme onedark highlight HighlightedyankRegion   ctermfg=1    ctermbg=NONE                      guifg=#E27878 guibg=NONE
+AutoCmd ColorScheme onedark highlight MatchParen              ctermfg=NONE ctermbg=NONE cterm=underline      guifg=NONE    guibg=NONE    gui=underline
+AutoCmd ColorScheme onedark highlight MatchParenCur           ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
+AutoCmd ColorScheme onedark highlight MatchWord               ctermfg=NONE ctermbg=NONE cterm=underline      guifg=NONE    guibg=NONE    gui=underline
+AutoCmd ColorScheme onedark highlight MatchWordCur            ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
+AutoCmd ColorScheme onedark highlight QuickScopePrimary       ctermfg=68   ctermbg=NONE                      guifg=#5F87D7 guibg=NONE
+AutoCmd ColorScheme onedark highlight QuickScopeSecondary     ctermfg=72   ctermbg=NONE                      guifg=#5FAFAF guibg=NONE
+AutoCmd ColorScheme onedark highlight ShotFBlank              ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#E27878 guibg=NONE    gui=underline,bold
+AutoCmd ColorScheme onedark highlight ShotFGraph              ctermfg=209  ctermbg=NONE                      guifg=#E27878 guibg=NONE
+AutoCmd ColorScheme onedark highlight WhichKey                ctermfg=74                                     guifg=#5fafd7
+AutoCmd ColorScheme onedark highlight WhichKeyDesc            ctermfg=178  ctermbg=NONE                      guifg=#d7af00 guibg=NONE
+AutoCmd ColorScheme onedark highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
+AutoCmd ColorScheme onedark highlight ZenSpace                ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
 
-AutoCmd ColorScheme * highlight CocErrorSign            ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
-AutoCmd ColorScheme * highlight CocWarningSign          ctermfg=214  ctermbg=NONE                      guifg=#FFAF00 guibg=NONE
-AutoCmd ColorScheme * highlight CocInfoSign             ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
+AutoCmd ColorScheme onedark highlight CocErrorSign            ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
+AutoCmd ColorScheme onedark highlight CocWarningSign          ctermfg=214  ctermbg=NONE                      guifg=#FFAF00 guibg=NONE
+AutoCmd ColorScheme onedark highlight CocInfoSign             ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
 
 " }}}2
 
