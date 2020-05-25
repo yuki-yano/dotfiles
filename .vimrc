@@ -371,8 +371,6 @@ set scrolloff=5
 set showtabline=2
 set spellcapcheck=
 set spelllang=en,cjk
-set splitbelow
-set splitright
 set synmaxcol=300
 set virtualedit=all
 
