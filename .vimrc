@@ -167,6 +167,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Color Theme {{{3
+  call dein#add('arcticicestudio/nord-vim')
   call dein#add('cocopon/iceberg.vim')
   call dein#add('icymind/NeoSolarized')
   call dein#add('joshdick/onedark.vim')
@@ -640,7 +641,7 @@ command! StartReview call <SID>start_review()
 function! s:end_review() abort
   let g:review_status = v:false
 
-  colorscheme onedark
+  colorscheme nord
   set background=dark
   call lightline#enable()
 
@@ -976,10 +977,10 @@ endif
 " }}}3
 
 " fzf-preview {{{3
-let g:fzf_preview_command                      = 'bat --color=always --style=grid --theme=ansi-dark {-1}'
+let g:fzf_preview_command                      = 'bat --color=always --style=grid --theme=Nord {-1}'
 let g:fzf_preview_filelist_postprocess_command = 'gxargs -d "\n" exa --color=always'
 let g:fzf_preview_use_dev_icons                = 1
-let $FZF_PREVIEW_PREVIEW_BAT_THEME             = 'ansi-dark'
+let $FZF_PREVIEW_PREVIEW_BAT_THEME             = 'Nord'
 
 noremap ; <Nop>
 noremap ;; ;
@@ -1989,7 +1990,7 @@ let g:indentLine_fileTypeExclude = ['json']
 " lightline {{{3
 if dein#tap('lightline.vim')
   let g:lightline = {
-  \ 'colorscheme': 'onedark',
+  \ 'colorscheme': 'nord',
   \ 'active': {
   \   'left': [
   \     ['mode', 'spell', 'paste'],
@@ -2670,157 +2671,155 @@ syntax enable
 
 " Highlight {{{2
 
-AutoCmd ColorScheme onedark highlight Normal       ctermfg=145  ctermbg=235  guifg=#ABB2BF guibg=#26282F
-AutoCmd ColorScheme onedark highlight NormalNC     ctermfg=144  ctermbg=234  guifg=#ABB2BF guibg=#282C34
-AutoCmd ColorScheme onedark highlight CursorColumn ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#353535
-AutoCmd ColorScheme onedark highlight CursorLine   ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#353535
-AutoCmd ColorScheme onedark highlight CursorLineNr ctermfg=253  ctermbg=NONE guifg=#DADADA guibg=NONE
-AutoCmd ColorScheme onedark highlight LineNr       ctermfg=241  ctermbg=NONE guifg=#626262 guibg=NONE
-AutoCmd ColorScheme onedark highlight NonText      ctermfg=60   ctermbg=NONE guifg=#5F5F87 guibg=NONE
-AutoCmd ColorScheme onedark highlight Identifier   ctermfg=10   ctermbg=NONE guifg=#C0CA8E guibg=NONE
-AutoCmd ColorScheme onedark highlight Search       ctermfg=68   ctermbg=232  guifg=#5F87D7 guibg=#080808
-AutoCmd ColorScheme onedark highlight Todo         ctermfg=229  ctermbg=NONE guifg=#FFFFAF guibg=NONE
-AutoCmd ColorScheme onedark highlight Visual       ctermfg=159  ctermbg=23   guifg=#AFFFFF guibg=#005F5F
-AutoCmd ColorScheme onedark highlight DiffAdd      ctermfg=233  ctermbg=64   guifg=#C4C4C4 guibg=#3E5935
-AutoCmd ColorScheme onedark highlight DiffDelete   ctermfg=233  ctermbg=95   guifg=#C4C4C4 guibg=#593535
-AutoCmd ColorScheme onedark highlight DiffChange   ctermfg=233  ctermbg=143  guifg=#C4C4C4 guibg=#594D1A
+AutoCmd ColorScheme nord,onedark,iceberg,iceberg highlight Normal       ctermfg=145  ctermbg=235  guifg=#ABB2BF guibg=#26282F
+AutoCmd ColorScheme nord,onedark,iceberg highlight NormalNC     ctermfg=144  ctermbg=234  guifg=#ABB2BF guibg=#282C34
+AutoCmd ColorScheme nord,onedark,iceberg highlight CursorColumn ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#353535
+AutoCmd ColorScheme nord,onedark,iceberg highlight CursorLine   ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#353535
+AutoCmd ColorScheme nord,onedark,iceberg highlight CursorLineNr ctermfg=253  ctermbg=NONE guifg=#DADADA guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight LineNr       ctermfg=241  ctermbg=NONE guifg=#626262 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight NonText      ctermfg=60   ctermbg=NONE guifg=#5F5F87 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight Identifier   ctermfg=10   ctermbg=NONE guifg=#C0CA8E guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight Search       ctermfg=68   ctermbg=232  guifg=#5F87D7 guibg=#080808
+AutoCmd ColorScheme nord,onedark,iceberg highlight Todo         ctermfg=229  ctermbg=NONE guifg=#FFFFAF guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight Visual       ctermfg=159  ctermbg=23   guifg=#AFFFFF guibg=#005F5F
+AutoCmd ColorScheme nord,onedark,iceberg highlight Folded       ctermfg=233  ctermbg=0    guifg=#767676 guibg=#3B4252
+AutoCmd ColorScheme nord,onedark,iceberg highlight DiffAdd      ctermfg=233  ctermbg=64   guifg=#C4C4C4 guibg=#282C34
+AutoCmd ColorScheme nord,onedark,iceberg highlight DiffDelete   ctermfg=233  ctermbg=95   guifg=#C4C4C4 guibg=#593535
+AutoCmd ColorScheme nord,onedark,iceberg highlight DiffChange   ctermfg=233  ctermbg=143  guifg=#C4C4C4 guibg=#594D1A
 
 " Gina (Vital.Vim.Buffer.ANSI)
-AutoCmd ColorScheme onedark highlight AnsiColor0  ctermfg=0  guifg=#1E2132
-AutoCmd ColorScheme onedark highlight AnsiColor1  ctermfg=1  guifg=#E27878
-AutoCmd ColorScheme onedark highlight AnsiColor2  ctermfg=2  guifg=#B4BE82
-AutoCmd ColorScheme onedark highlight AnsiColor3  ctermfg=3  guifg=#E2A478
-AutoCmd ColorScheme onedark highlight AnsiColor4  ctermfg=4  guifg=#84A0C6
-AutoCmd ColorScheme onedark highlight AnsiColor5  ctermfg=5  guifg=#A093C7
-AutoCmd ColorScheme onedark highlight AnsiColor6  ctermfg=6  guifg=#89B8C2
-AutoCmd ColorScheme onedark highlight AnsiColor7  ctermfg=7  guifg=#C6C8D1
-AutoCmd ColorScheme onedark highlight AnsiColor8  ctermfg=8  guifg=#6B7089
-AutoCmd ColorScheme onedark highlight AnsiColor9  ctermfg=9  guifg=#E98989
-AutoCmd ColorScheme onedark highlight AnsiColor10 ctermfg=10 guifg=#C0CA8E
-AutoCmd ColorScheme onedark highlight AnsiColor11 ctermfg=11 guifg=#F0C674
-AutoCmd ColorScheme onedark highlight AnsiColor12 ctermfg=12 guifg=#91ACD1
-AutoCmd ColorScheme onedark highlight AnsiColor13 ctermfg=13 guifg=#ADA0D3
-AutoCmd ColorScheme onedark highlight AnsiColor14 ctermfg=14 guifg=#95C4CE
-AutoCmd ColorScheme onedark highlight AnsiColor15 ctermfg=15 guifg=#D2D4DE
+AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor0  ctermfg=0  guifg=#2E3440
+AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor1  ctermfg=1  guifg=#3B4252
+AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor2  ctermfg=2  guifg=#434C5E
+AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor3  ctermfg=3  guifg=#4C566A
+AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor4  ctermfg=4  guifg=#D8DEE9
+AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor5  ctermfg=5  guifg=#E5E9F0
+AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor6  ctermfg=6  guifg=#ECEFF4
+AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor7  ctermfg=7  guifg=#8FBCBB
+AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor8  ctermfg=8  guifg=#88C0D0
+AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor9  ctermfg=9  guifg=#81A1C1
+AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor10 ctermfg=10 guifg=#5E81AC
+AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor11 ctermfg=11 guifg=#BF616A
+AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor12 ctermfg=12 guifg=#D08770
+AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor13 ctermfg=13 guifg=#EBCB8B
+AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor14 ctermfg=14 guifg=#A3BE8C
+AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor15 ctermfg=15 guifg=#B48EAD
 
 " Plugin highlight
-AutoCmd ColorScheme onedark highlight BrightestHighlight      ctermfg=72   ctermbg=NONE                      guifg=#5FAF87 guibg=NONE
-AutoCmd ColorScheme onedark highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
-AutoCmd ColorScheme onedark highlight ExtraWhiteSpace         ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
-AutoCmd ColorScheme onedark highlight FloatermNF              ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#161821
-AutoCmd ColorScheme onedark highlight GitRebase               ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#1F1F20
-AutoCmd ColorScheme onedark highlight HighlightedyankRegion   ctermfg=1    ctermbg=NONE                      guifg=#E27878 guibg=NONE
-AutoCmd ColorScheme onedark highlight MatchParen              ctermfg=NONE ctermbg=NONE cterm=underline      guifg=NONE    guibg=NONE    gui=underline
-AutoCmd ColorScheme onedark highlight MatchParenCur           ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
-AutoCmd ColorScheme onedark highlight MatchWord               ctermfg=NONE ctermbg=NONE cterm=underline      guifg=NONE    guibg=NONE    gui=underline
-AutoCmd ColorScheme onedark highlight MatchWordCur            ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
-AutoCmd ColorScheme onedark highlight QuickScopePrimary       ctermfg=68   ctermbg=NONE                      guifg=#5F87D7 guibg=NONE
-AutoCmd ColorScheme onedark highlight QuickScopeSecondary     ctermfg=72   ctermbg=NONE                      guifg=#5FAFAF guibg=NONE
-AutoCmd ColorScheme onedark highlight ShotFBlank              ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#E27878 guibg=NONE    gui=underline,bold
-AutoCmd ColorScheme onedark highlight ShotFGraph              ctermfg=209  ctermbg=NONE                      guifg=#E27878 guibg=NONE
-AutoCmd ColorScheme onedark highlight WhichKey                ctermfg=74                                     guifg=#5fafd7
-AutoCmd ColorScheme onedark highlight WhichKeyDesc            ctermfg=178  ctermbg=NONE                      guifg=#d7af00 guibg=NONE
-AutoCmd ColorScheme onedark highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
-AutoCmd ColorScheme onedark highlight ZenSpace                ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
+AutoCmd ColorScheme nord,onedark,iceberg highlight BrightestHighlight      ctermfg=72   ctermbg=NONE                      guifg=#5FAF87 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
+AutoCmd ColorScheme nord,onedark,iceberg highlight ExtraWhiteSpace         ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
+AutoCmd ColorScheme nord,onedark,iceberg highlight FloatermNF              ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#161821
+AutoCmd ColorScheme nord,onedark,iceberg highlight GitRebase               ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#1F1F20
+AutoCmd ColorScheme nord,onedark,iceberg highlight HighlightedyankRegion   ctermfg=1    ctermbg=NONE                      guifg=#E27878 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight MatchParen              ctermfg=NONE ctermbg=NONE cterm=underline      guifg=NONE    guibg=NONE    gui=underline
+AutoCmd ColorScheme nord,onedark,iceberg highlight MatchParenCur           ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
+AutoCmd ColorScheme nord,onedark,iceberg highlight MatchWord               ctermfg=NONE ctermbg=NONE cterm=underline      guifg=NONE    guibg=NONE    gui=underline
+AutoCmd ColorScheme nord,onedark,iceberg highlight MatchWordCur            ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
+AutoCmd ColorScheme nord,onedark,iceberg highlight QuickScopePrimary       ctermfg=68   ctermbg=NONE                      guifg=#5F87D7 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight QuickScopeSecondary     ctermfg=72   ctermbg=NONE                      guifg=#5FAFAF guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight ShotFBlank              ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#E27878 guibg=NONE    gui=underline,bold
+AutoCmd ColorScheme nord,onedark,iceberg highlight ShotFGraph              ctermfg=209  ctermbg=NONE                      guifg=#E27878 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight WhichKey                ctermfg=74                                     guifg=#5fafd7
+AutoCmd ColorScheme nord,onedark,iceberg highlight WhichKeyDesc            ctermfg=178  ctermbg=NONE                      guifg=#d7af00 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
+AutoCmd ColorScheme nord,onedark,iceberg highlight ZenSpace                ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
 
-AutoCmd ColorScheme onedark highlight CocErrorSign            ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
-AutoCmd ColorScheme onedark highlight CocWarningSign          ctermfg=214  ctermbg=NONE                      guifg=#FFAF00 guibg=NONE
-AutoCmd ColorScheme onedark highlight CocInfoSign             ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight CocErrorSign            ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight CocWarningSign          ctermfg=214  ctermbg=NONE                      guifg=#FFAF00 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight CocInfoSign             ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
 
 " }}}2
 
-" onedark {{{2
+" nord {{{2
 
-colorscheme onedark
+let g:nord_uniform_diff_background = 1
+colorscheme nord
 
 " lightline highlight {{{3
-let s:colors = onedark#GetColors()
-
-let s:term_red         = s:colors.red.cterm
-let s:term_dark_red    = s:colors.dark_red.cterm
-let s:term_green       = s:colors.green.cterm
-let s:term_yellow      = s:colors.yellow.cterm
-let s:term_blue        = s:colors.blue.cterm
-let s:term_purple      = s:colors.purple.cterm
-let s:term_white       = s:colors.white.cterm
-let s:term_black       = s:colors.black.cterm
-let s:term_grey        = s:colors.cursor_grey.cterm
-let s:term_dark_yellow = s:colors.dark_yellow.cterm
-
-let s:red         = [s:colors.red.gui, s:term_red]
-let s:dark_red    = [s:colors.dark_red.gui, s:term_dark_red]
-let s:green       = [s:colors.green.gui, s:term_green]
-let s:yellow      = [s:colors.yellow.gui, s:term_yellow]
-let s:blue        = [s:colors.blue.gui, s:term_blue]
-let s:purple      = [s:colors.purple.gui, s:term_purple]
-let s:white       = [s:colors.white.gui, s:term_white]
-let s:black       = [s:colors.black.gui, s:term_black]
-let s:grey        = [s:colors.visual_grey.gui, s:term_grey]
-let s:dark_yellow = [s:colors.dark_yellow.gui, s:term_dark_yellow]
-let s:bold        = 'bold'
-
-" Self Definition
-let s:orange      = ['#D78700', 172]
+let s:nord0       = ['#3B4252', 0]
+let s:nord1       = ['#BF616A', 1]
+let s:nord2       = ['#A3BE8C', 2]
+let s:nord3       = ['#EBCB8B', 3]
+let s:nord4       = ['#81A1C1', 4]
+let s:nord5       = ['#B48EAD', 5]
+let s:nord6       = ['#88C0D0', 6]
+let s:nord7       = ['#E5E9F0', 7]
+let s:nord8       = ['#4C566A', 8]
+let s:nord9       = ['#B04B57', 9]
+let s:nord10      = ['#93B379', 10]
+let s:nord11      = ['#D08770', 11]
+let s:nord12      = ['#5E81AC', 12]
+let s:nord13      = ['#A4799D', 13]
+let s:nord14      = ['#8FBCBB', 14]
+let s:nord15      = ['#ECEFF4', 15]
+" let s:white       = ['#AFAFAF', 145]
+" let s:black       = ['#262626', 235]
+let s:grey        = ['#3A3A3A', 237]
+" let s:red         = ['#FF5F87', 204]
+" let s:blue        = ['#00AFFF', 39]
+" let s:green       = ['#75A174', 108]
+" let s:yellow      = ['#D7AF87', 180]
+" let s:orange      = ['#D78700', 172]
 let s:blue_green  = ['#00AFAF', 37 ]
 
 let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
 
 let s:p.normal.left = [
-\ [s:black, s:green],
-\ [s:orange, s:grey],
-\ [s:blue_green, s:grey],
-\ [s:blue, s:grey],
+\ [s:nord0,      s:nord4],
+\ [s:nord7,      s:grey ],
+\ [s:blue_green, s:grey ],
+\ [s:nord4,      s:grey ],
 \ ]
 
 let s:p.insert.left = [
-\ [s:black,      s:yellow],
-\ [s:orange,     s:grey],
-\ [s:blue_green, s:grey],
-\ [s:blue,       s:grey],
+\ [s:nord0,      s:nord3 ],
+\ [s:nord7,      s:grey  ],
+\ [s:blue_green, s:grey  ],
+\ [s:nord4,      s:grey  ],
 \]
 
 let s:p.visual.left = [
-\ [s:black,      s:purple],
-\ [s:orange,     s:grey],
-\ [s:blue_green, s:grey],
-\ [s:blue,       s:grey],
+\ [s:nord0,      s:nord5],
+\ [s:nord7,      s:grey ],
+\ [s:blue_green, s:grey ],
+\ [s:nord4,      s:grey ],
 \ ]
 
 let s:p.replace.left = [
-\ [s:black,      s:red],
-\ [s:orange,     s:grey],
-\ [s:blue_green, s:grey],
-\ [s:blue,       s:grey],
+\ [s:nord0,      s:nord1],
+\ [s:nord7,      s:grey ],
+\ [s:blue_green, s:grey ],
+\ [s:nord4,      s:grey ],
 \ ]
 
 let s:p.inactive.left = [
 \ [s:blue_green, s:grey],
-\ [s:orange,     s:grey],
+\ [s:nord7,      s:grey],
 \ [s:blue_green, s:grey],
-\ [s:blue,       s:grey],
+\ [s:nord4,      s:grey],
 \ ]
 
-let s:p.normal.right   = [[s:white, s:black],   [s:white, s:grey]]
-let s:p.inactive.right = [[s:black, s:white],   [s:black, s:white]]
-let s:p.insert.right   = [[s:black, s:blue],    [s:white, s:grey]]
-let s:p.replace.right  = [[s:black, s:red],     [s:white, s:grey]]
-let s:p.visual.right   = [[s:black, s:purple],  [s:white, s:grey]]
+let s:p.normal.right   = [[s:nord7, s:nord0],   [s:nord7, s:grey ]]
+let s:p.inactive.right = [[s:nord0, s:nord7],   [s:nord0, s:nord7]]
+let s:p.insert.right   = [[s:nord0, s:nord3],   [s:nord7, s:grey ]]
+let s:p.replace.right  = [[s:nord0, s:nord1],   [s:nord7, s:grey ]]
+let s:p.visual.right   = [[s:nord0, s:nord5],   [s:nord7, s:grey ]]
 
-let s:p.normal.middle   = [[s:white, s:black]]
-let s:p.inactive.middle = [[s:white, s:grey]]
+let s:p.normal.middle   = [[s:nord7, s:nord0]]
+let s:p.inactive.middle = [[s:nord7, s:grey]]
 
-let s:p.tabline.left   = [[s:blue,   s:grey]]
-let s:p.tabline.tabsel = [[s:orange, s:black]]
-let s:p.tabline.middle = [[s:white,  s:black]]
-let s:p.tabline.right  = [[s:white,  s:grey]]
+let s:p.tabline.left   = [[s:nord7, s:nord8]]
+let s:p.tabline.tabsel = [[s:nord0, s:nord4]]
+let s:p.tabline.middle = [[s:nord7, s:nord0]]
+let s:p.tabline.right  = [[s:nord7, s:nord8]]
 
 let s:coc_diagnostic = [
-\ [s:grey, s:red   ],
-\ [s:grey, s:orange],
-\ [s:grey, s:yellow],
-\ [s:grey, s:green ],
+\ [s:grey, s:nord1 ],
+\ [s:grey, s:nord11],
+\ [s:grey, s:nord3 ],
+\ [s:grey, s:nord2 ],
 \ ]
-
 let s:p.normal.error        = s:coc_diagnostic[0:0]
 let s:p.insert.error        = s:coc_diagnostic[0:0]
 let s:p.replace.error       = s:coc_diagnostic[0:0]
@@ -2838,7 +2837,8 @@ let s:p.insert.ok           = s:coc_diagnostic[3:3]
 let s:p.replace.ok          = s:coc_diagnostic[3:3]
 let s:p.visual.ok           = s:coc_diagnostic[3:3]
 
-let g:lightline#colorscheme#onedark#palette = lightline#colorscheme#flatten(s:p)
+let g:lightline#colorscheme#nord#palette = lightline#colorscheme#flatten(s:p)
+
 " }}}3
 
 " }}}2
