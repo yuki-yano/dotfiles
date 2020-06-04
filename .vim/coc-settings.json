@@ -9,6 +9,7 @@
   "diagnostic.errorSign": "",
   "diagnostic.warningSign": "",
   "diagnostic.infoSign": "",
+  "diagnostic.hintSign": "",
 
   "coc.preferences.useQuickfixForLocations": true,
   "codeLens.enable": true,
