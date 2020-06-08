@@ -2,7 +2,7 @@ gs:              git status --short --branch
 ga:              git add {{file}}
 gaa:             git add --all
 gci:             git commit
-gci:             git commit -m '{{commit_message}}'
+gcim:            git commit -m '{{commit_message}}'
 gcif:            git commit --fixup {{commit_id}}
 gd:              git diff {{branch}}
 gd:              git diff -- {{file}}
