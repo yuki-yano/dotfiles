@@ -537,7 +537,7 @@ function! s:auto_mkdir(dir, force)
 endfunction
 " }}}2
 
-" ToggleSyntaxHighLight {{{2
+" ToggleSyntaxHighlight {{{2
 function! s:syntax_highlight_toggle()
   if exists('g:syntax_on')
     syntax off
