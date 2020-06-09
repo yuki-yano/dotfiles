@@ -1,7 +1,6 @@
 {
   "suggest.minTriggerInputLength": 1,
   "suggest.labelMaxLength": 30,
-  "tabnine.priority": 100,
   "snippets.loadFromExtensions": false,
   "snippets.textmateSnippetsRoots": ["~/.vsnip"],
 
