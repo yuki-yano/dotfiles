@@ -885,7 +885,8 @@ AutoCmd FileType typescript,typescript.tsx setlocal tagfunc=CocTagFunc
 
 " gen_tags {{{3
 let g:gen_tags#ctags_auto_gen = 1
-let g:gen_tags#ctags_opts = '--excmd=number'
+let g:gen_tags#ctags_opts     = '--excmd=number'
+let g:loaded_gentags#gtags    = 1
 " }}}3
 
 " json {{{3
