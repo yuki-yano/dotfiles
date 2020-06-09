@@ -87,31 +87,32 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Edit & Move & Search {{{3
-  call dein#add('AndrewRadev/splitjoin.vim', {'lazy': 1, 'on_cmd': ['SplitJoinSplit', 'SplitJoinJoin']})
+  call dein#add('AndrewRadev/splitjoin.vim',     {'lazy': 1, 'on_cmd': ['SplitJoinSplit', 'SplitJoinJoin']})
+  call dein#add('Bakudankun/BackAndForward.vim')
   call dein#add('LeafCage/yankround.vim')
   call dein#add('MattesGroeger/vim-bookmarks')
-  call dein#add('cohama/lexima.vim',         {'lazy': 1, 'on_event': 'InsertEnter', 'hook_post_source': 'call Hook_on_post_source_lexima()'})
+  call dein#add('cohama/lexima.vim',             {'lazy': 1, 'on_event': 'InsertEnter', 'hook_post_source': 'call Hook_on_post_source_lexima()'})
   call dein#add('deris/vim-shot-f')
   call dein#add('easymotion/vim-easymotion')
   call dein#add('haya14busa/incsearch.vim')
-  call dein#add('haya14busa/vim-asterisk',   {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('haya14busa/vim-asterisk',       {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-edgemotion')
-  call dein#add('haya14busa/vim-metarepeat', {'lazy': 1, 'on_map': ['go', 'g.', '<Plug>']})
-  call dein#add('junegunn/vim-easy-align',   {'lazy': 1, 'on_cmd': 'EasyAlign'})
-  call dein#add('mg979/vim-visual-multi',    {'rev': 'test'})
-  call dein#add('mhinz/vim-grepper',         {'lazy': 1, 'on_cmd': 'Grepper', 'on_map': '<Plug>'})
-  call dein#add('mtth/scratch.vim',          {'lazy': 1, 'on_cmd': 'Scratch'})
+  call dein#add('haya14busa/vim-metarepeat',     {'lazy': 1, 'on_map': ['go', 'g.', '<Plug>']})
+  call dein#add('junegunn/vim-easy-align',       {'lazy': 1, 'on_cmd': 'EasyAlign'})
+  call dein#add('mg979/vim-visual-multi',        {'rev': 'test'})
+  call dein#add('mhinz/vim-grepper',             {'lazy': 1, 'on_cmd': 'Grepper', 'on_map': '<Plug>'})
+  call dein#add('mtth/scratch.vim',              {'lazy': 1, 'on_cmd': 'Scratch'})
   call dein#add('osyo-manga/vim-anzu')
-  call dein#add('osyo-manga/vim-jplus',      {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('rhysd/accelerated-jk',      {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('osyo-manga/vim-jplus',          {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('rhysd/accelerated-jk',          {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('ronakg/quickr-preview.vim')
-  call dein#add('terryma/vim-expand-region', {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('thinca/vim-qfreplace',      {'lazy': 1, 'on_cmd': 'Qfreplace'})
-  call dein#add('tommcdo/vim-exchange',      {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
+  call dein#add('terryma/vim-expand-region',     {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('thinca/vim-qfreplace',          {'lazy': 1, 'on_cmd': 'Qfreplace'})
+  call dein#add('tommcdo/vim-exchange',          {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
   call dein#add('tpope/vim-repeat')
-  call dein#add('tyru/caw.vim',              {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('tyru/caw.vim',                  {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('unblevable/quick-scope')
-  call dein#add('vim-scripts/Align',         {'lazy': 1, 'on_cmd': 'Align'})
+  call dein#add('vim-scripts/Align',             {'lazy': 1, 'on_cmd': 'Align'})
   " }}}3
 
   " Appearance {{{3
@@ -1542,6 +1543,11 @@ if dein#tap('vim-anzu') && dein#tap('vim-asterisk') && dein#tap('incsearch.vim')
   map g* <Plug>(asterisk-gz*)<Plug>(anzu-update-search-status)
   map g# <Plug>(asterisk-gz#)<Plug>(anzu-update-search-status)
 endif
+" }}}3
+
+" BackAndForward {{{3
+nmap g<C-o> <Plug>(backandforward-back)
+nmap g<C-i> <Plug>(backandforward-forward)
 " }}}3
 
 " bookmarks {{{3
