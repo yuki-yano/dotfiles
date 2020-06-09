@@ -2690,7 +2690,7 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight Search       ctermfg=68   cte
 AutoCmd ColorScheme nord,onedark,iceberg highlight Todo         ctermfg=229  ctermbg=NONE guifg=#FFFFAF guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight Visual       ctermfg=159  ctermbg=23   guifg=#AFFFFF guibg=#005F5F
 AutoCmd ColorScheme nord,onedark,iceberg highlight Folded       ctermfg=233  ctermbg=0    guifg=#767676 guibg=#3B4252
-AutoCmd ColorScheme nord,onedark,iceberg highlight DiffAdd      ctermfg=233  ctermbg=64   guifg=#C4C4C4 guibg=#282C34
+AutoCmd ColorScheme nord,onedark,iceberg highlight DiffAdd      ctermfg=233  ctermbg=64   guifg=#C4C4C4 guibg=#456D4F
 AutoCmd ColorScheme nord,onedark,iceberg highlight DiffDelete   ctermfg=233  ctermbg=95   guifg=#C4C4C4 guibg=#593535
 AutoCmd ColorScheme nord,onedark,iceberg highlight DiffChange   ctermfg=233  ctermbg=143  guifg=#C4C4C4 guibg=#594D1A
 
