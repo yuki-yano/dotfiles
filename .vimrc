@@ -876,7 +876,12 @@ function! s:coc_actions_open_from_selected(type) abort
   execute 'CocCommand actions.open ' . a:type
 endfunction
 
-AutoCmd FileType typescript,typescript.tsx setlocal tagfunc=CocTagFunc
+function! s:coc_typescript_settings() abort
+  setlocal tagfunc=CocTagFunc
+  nnoremap <silent> <buffer> [dev]F :<C-u>CocCommand eslint.executeAutofix<CR>
+endfunction
+
+AutoCmd FileType typescript,typescript.tsx call s:coc_typescript_settings()
 " }}}2
 
 " Language {{{2
