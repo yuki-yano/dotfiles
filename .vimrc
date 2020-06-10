@@ -537,7 +537,7 @@ function! s:auto_mkdir(dir, force)
 endfunction
 " }}}2
 
-" ToggleSyntaxHighlight {{{2
+" SyntaxHighlightToggle {{{2
 function! s:syntax_highlight_toggle()
   if exists('g:syntax_on')
     syntax off
@@ -549,8 +549,8 @@ endfunction
 command! SyntaxHighlightToggle call <SID>syntax_highlight_toggle()
 " }}}2
 
-" ToggleQuickfix {{{2
-function! s:toggle_quickfix()
+" QuickfixToggle {{{2
+function! s:quickfix_toggle()
   let l:_ = winnr('$')
   cclose
   if l:_ == winnr('$')
@@ -559,12 +559,12 @@ function! s:toggle_quickfix()
   endif
 endfunction
 
-command! ToggleQuickfix call <SID>toggle_quickfix()
-nnoremap <silent> [dev]q :<C-u>ToggleQuickfix<CR>
+command! QuickfixToggle call <SID>quickfix_toggle()
+nnoremap <silent> [dev]q :<C-u>QuickfixToggle<CR>
 " }}}2
 
 " ToggleLocationList {{{2
-function! s:toggle_location_list()
+function! s:location_list_toggle()
   let l:_ = winnr('$')
   lclose
   if l:_ == winnr('$')
@@ -573,8 +573,8 @@ function! s:toggle_location_list()
   endif
 endfunction
 
-command! ToggleLocationList call <SID>toggle_location_list()
-nnoremap <silent> [dev]l :<C-u>ToggleLocationList<CR>
+command! LocationListToggle call <SID>location_list_toggle()
+nnoremap <silent> [dev]l :<C-u>LocationListToggle<CR>
 " }}}2
 
 " HelpEdit & HelpView {{{2
@@ -632,7 +632,7 @@ function! s:start_review() abort
   set number norelativenumber
 
   let g:comfortable_motion_enable = 0
-  ToggleComfortableMotion
+  ComfortableMotionToggle
 
   set list listchars=tab:^\ ,trail:_,extends:>,precedes:<
 endfunction
@@ -649,14 +649,14 @@ function! s:end_review() abort
   SNumbersEnable
 
   let g:comfortable_motion_enable = 1
-  ToggleComfortableMotion
+  ComfortableMotionToggle
 
   set list listchars=tab:^\ ,trail:_,extends:>,precedes:<,eol:$
 endfunction
 
 command! EndReview call <SID>end_review()
 
-function! s:toggle_review() abort
+function! s:review_toggle() abort
   if g:review_status
     EndReview
   else
@@ -664,7 +664,7 @@ function! s:toggle_review() abort
   endif
 endfunction
 
-command! ToggleReview call <SID>toggle_review()
+command! ReviewToggle call <SID>review_toggle()
 " }}}2
 
 " }}}1
@@ -967,11 +967,11 @@ if dein#tap('denite.nvim')
   let s:menus = {}
   let s:menus.toggle = { 'description': 'Toggle Command' }
   let s:menus.toggle.command_candidates = [
-  \ ['Toggle Review            [ToggleReview]',              'ToggleReview'           ],
+  \ ['Toggle Review            [ReviewToggle]',              'ReviewToggle'           ],
   \ ['Toggle CursorHighlight   [CursorHighlightToggle]',     'CursorHighlightToggle'  ],
   \ ['Toggle SmartNumber       [SmartNumberToggleRelative]', 'SNumbersToggleRelative' ],
   \ ['Toggle Context           [ContextToggleWindow]',       'ContextToggleWindow'    ],
-  \ ['Toggle ComfortableMotion [ComfortableMotionToggle]',   'ToggleComfortableMotion'],
+  \ ['Toggle ComfortableMotion [ComfortableMotionToggle]',   'ComfortableMotionToggle'],
   \ ['Toggle IndentLine        [IndentLinesToggle]',         'IndentLinesToggle'      ],
   \ ['Toggle SyntaxHighlight   [SyntaxHighlightToggle]',     'SyntaxHighlightToggle'  ],
   \ ['Toggle TableMode         [TableMode]',                 'TableModeToggle'        ],
@@ -1936,7 +1936,7 @@ if dein#tap('comfortable-motion.vim')
   let g:comfortable_motion_no_default_key_mappings = 1
   let g:comfortable_motion_enable = 0
 
-  function! s:toggle_comfortable_motion()
+  function! s:comfortable_motion_toggle()
     if g:comfortable_motion_enable == 1
       let g:comfortable_motion_enable = 0
 
@@ -1954,7 +1954,7 @@ if dein#tap('comfortable-motion.vim')
     endif
   endfunction
 
-  command! ToggleComfortableMotion call <SID>toggle_comfortable_motion()
+  command! ComfortableMotionToggle call <SID>comfortable_motion_toggle()
 endif
 " }}}3
 
