@@ -569,6 +569,18 @@ function env_rehash() {
   fi
 }
 
+# Automatically save the current git state to reflog
+add-zsh-hook precmd git_auto_save
+
+function git_auto_save() {
+  if [[ -d .git ]] && [[ -f .git/auto-save ]] && [[ $(find .git/auto-save -mmin -$((60)) | wc -l) -eq 0 ]]; then
+    if [[ ! -f ".git/MERGE_HEAD" ]] && [[ $(git --no-pager diff --cached | wc -l) -eq 0 ]] && [[ ! -f .git/index.lock ]] && [[ ! -d .git/rebase-merge ]] && [[ ! -d .git/rebase-apply ]]; then
+      touch .git/auto-save && git add --all && git commit -m "Auto save: $(date -R)" >/dev/null && git reset HEAD^ >/dev/null
+      echo "Git auto save!"
+    fi
+  fi
+}
+
 # }}}
 
 # Load util {{{
