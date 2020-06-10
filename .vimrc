@@ -2079,6 +2079,7 @@ if dein#tap('lightline.vim')
 
   " Disable lineinfo, fileencoding and fileformat
   let s:lightline_ignore_right_ft = [
+  \ 'qf',
   \ 'help',
   \ 'diff',
   \ 'man',
@@ -2108,6 +2109,11 @@ if dein#tap('lightline.vim')
 
   let s:lightline_ignore_modifiable_ft = [
   \ 'qf',
+  \ 'help',
+  \ 'man',
+  \ 'fzf',
+  \ 'fern',
+  \ 'capture',
   \ 'gina-status',
   \ 'gina-branch',
   \ 'gina-log',
@@ -2129,6 +2135,7 @@ if dein#tap('lightline.vim')
   let s:lightline_ignore_filepath_ft = [
   \ 'qf',
   \ 'fzf',
+  \ 'fern',
   \ 'gina-status',
   \ 'gina-branch',
   \ 'gina-log',
