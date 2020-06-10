@@ -2066,6 +2066,7 @@ if dein#tap('lightline.vim')
   \   'linter_errors':       'Lightline_coc_errors',
   \   'linter_warnings':     'Lightline_coc_warnings',
   \   'linter_informations': 'Lightline_coc_information',
+  \   'linter_hint':         'Lightline_coc_hint',
   \   'linter_ok':           'Lightline_coc_ok',
   \ },
   \ 'enable': {
@@ -2248,6 +2249,10 @@ if dein#tap('lightline.vim')
 
   function! Lightline_coc_information() abort
     return b:coc_diagnostic_info['information'] != 0 ? ' ' . b:coc_diagnostic_info['information'] : ''
+  endfunction
+
+  function! Lightline_coc_hint() abort
+    return b:coc_diagnostic_info['hint'] != 0 ? ' ' . b:coc_diagnostic_info['hint'] : ''
   endfunction
 
   function! Lightline_coc_ok() abort
@@ -2829,8 +2834,10 @@ let s:coc_diagnostic = [
 \ [s:grey, s:nord1 ],
 \ [s:grey, s:nord11],
 \ [s:grey, s:nord3 ],
+\ [s:grey, s:nord4 ],
 \ [s:grey, s:nord2 ],
 \ ]
+
 let s:p.normal.error        = s:coc_diagnostic[0:0]
 let s:p.insert.error        = s:coc_diagnostic[0:0]
 let s:p.replace.error       = s:coc_diagnostic[0:0]
@@ -2843,6 +2850,10 @@ let s:p.normal.information  = s:coc_diagnostic[2:2]
 let s:p.insert.information  = s:coc_diagnostic[2:2]
 let s:p.replace.information = s:coc_diagnostic[2:2]
 let s:p.visual.information  = s:coc_diagnostic[2:2]
+let s:p.normal.hint         = s:coc_diagnostic[2:2]
+let s:p.insert.hint         = s:coc_diagnostic[2:2]
+let s:p.replace.hint        = s:coc_diagnostic[2:2]
+let s:p.visual.hint         = s:coc_diagnostic[2:2]
 let s:p.normal.ok           = s:coc_diagnostic[3:3]
 let s:p.insert.ok           = s:coc_diagnostic[3:3]
 let s:p.replace.ok          = s:coc_diagnostic[3:3]
