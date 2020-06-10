@@ -386,8 +386,8 @@ set shiftwidth=2
 set smartindent
 set tabstop=2
 
-AutoCmd FileType * setlocal formatoptions-=ro
-AutoCmd FileType * setlocal formatoptions+=jBn
+set formatoptions-=ro
+set formatoptions+=jBn
 
 "" viminfo
 set viminfo='1000,:1000
