@@ -866,7 +866,7 @@ AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
+    nnoremap <buffer> K K
   else
     call CocAction('doHover')
   endif
