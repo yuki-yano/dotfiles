@@ -1898,7 +1898,7 @@ if dein#tap('yankround.vim')
   nmap p <Plug>(yankround-p)
   xmap p <Plug>(yankround-p)
   nmap P <Plug>(yankround-P)
-  nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "(ctrlp)"
+  nmap <silent>        <C-p> <Plug>(yankround-prev)
   nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : "(ctrln)"
 endif
 " }}}3
