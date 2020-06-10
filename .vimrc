@@ -225,7 +225,7 @@ command! -nargs=* AutoCmd autocmd MyVimrc <args>
 "" Leader
 let g:mapleader = "\<Space>"
 noremap <Leader> <Nop>
-noremap m        <Nop>
+noremap [dev]    <Nop>
 map     m        [dev]
 
 "" Move beginning toggle
@@ -288,8 +288,8 @@ vnoremap < <gv
 vnoremap > >gv|
 
 "" Tab
-nnoremap t <Nop>
-nmap     t [tab]
+nnoremap [tab] <Nop>
+nmap     t     [tab]
 nnoremap <silent> [tab]t :<C-u>tablast <Bar> tabedit<CR>
 nnoremap <silent> [tab]d :<C-u>tabclose<CR>
 nnoremap <silent> [tab]h :<C-u>tabprevious<CR>
@@ -982,9 +982,9 @@ let g:fzf_preview_filelist_postprocess_command = 'gxargs -d "\n" exa --color=alw
 let g:fzf_preview_use_dev_icons                = 1
 let $FZF_PREVIEW_PREVIEW_BAT_THEME             = 'Nord'
 
-noremap ; <Nop>
-noremap ;; ;
-map     ; [fzf-p]
+noremap [fzf-p] <Nop>
+map     ;       [fzf-p]
+noremap ;;      ;
 
 nnoremap <silent> [fzf-p]a     :<C-u>FzfPreviewFromResources project_mru git<CR>
 nnoremap <silent> [fzf-p]s     :<C-u>FzfPreviewGitStatus -processors=g:fzf_preview_gina_processors<CR>
@@ -1553,8 +1553,8 @@ nmap g<C-i> <Plug>(backandforward-forward)
 let g:bookmark_no_default_key_mappings = 1
 let g:bookmark_save_per_working_dir    = 1
 
-noremap M <Nop>
-map     M [bookmark]
+noremap [bookmark] <Nop>
+map     M          [bookmark]
 
 nnoremap <silent> [bookmark]m :<C-u>BookmarkToggle<CR>
 nnoremap <silent> [bookmark]i :<C-u>BookmarkAnnotate<CR>
