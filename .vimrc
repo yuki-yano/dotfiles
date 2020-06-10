@@ -1651,8 +1651,8 @@ let g:easy_align_delimiters = {
 \ }
 " }}}3
 
-" easymotion & shot-f {{{3
-if dein#tap('vim-easymotion') && dein#tap('vim-shot-f')
+" easymotion {{{3
+if dein#tap('vim-easymotion')
   " EasyMotion
   let g:EasyMotion_do_mapping       = 0
   let g:EasyMotion_smartcase        = 1
@@ -1673,11 +1673,6 @@ if dein#tap('vim-easymotion') && dein#tap('vim-shot-f')
   omap <silent> t  <Plug>(easymotion-tl)
   omap <silent> F  <Plug>(easymotion-Fl)
   omap <silent> T  <Plug>(easymotion-Tl)
-
-  " shot-f
-  let g:shot_f_no_default_key_mappings = 1
-  nmap <silent> f <Plug>(shot-f-f)
-  nmap <silent> F <Plug>(shot-f-F)
 endif
 " }}}3
 
@@ -1838,6 +1833,14 @@ let g:splitjoin_align             = 1
 let g:splitjoin_trailing_comma    = 1
 let g:splitjoin_ruby_curly_braces = 0
 let g:splitjoin_ruby_hanging_args = 0
+" }}}3
+
+" shot-f {{{3
+if dein#tap('vim-shot-f')
+  let g:shot_f_no_default_key_mappings = 1
+  nmap <silent> f <Plug>(shot-f-f)
+  nmap <silent> F <Plug>(shot-f-F)
+endif
 " }}}3
 
 " visual-multi {{{3
