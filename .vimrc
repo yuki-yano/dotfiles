@@ -1929,28 +1929,30 @@ let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat
 " }}}3
 
 " comfortable-motion {{{3
-let g:comfortable_motion_no_default_key_mappings = 1
-let g:comfortable_motion_enable = 0
+if dein#tap('comfortable-motion.vim')
+  let g:comfortable_motion_no_default_key_mappings = 1
+  let g:comfortable_motion_enable = 0
 
-function! s:toggle_comfortable_motion()
-  if exists('g:comfortable_motion_enable') && g:comfortable_motion_enable == 1
-    let g:comfortable_motion_enable = 0
+  function! s:toggle_comfortable_motion()
+    if g:comfortable_motion_enable == 1
+      let g:comfortable_motion_enable = 0
 
-    nunmap <C-d>
-    nunmap <C-u>
-    nunmap <C-f>
-    nunmap <C-b>
-  else
-    let g:comfortable_motion_enable = 1
+      nunmap <C-d>
+      nunmap <C-u>
+      nunmap <C-f>
+      nunmap <C-b>
+    else
+      let g:comfortable_motion_enable = 1
 
-    nnoremap <silent> <C-d> :call comfortable_motion#flick(100)<CR>
-    nnoremap <silent> <C-u> :call comfortable_motion#flick(-100)<CR>
-    nnoremap <silent> <C-f> :call comfortable_motion#flick(200)<CR>
-    nnoremap <silent> <C-b> :call comfortable_motion#flick(-200)<CR>
-  endif
-endfunction
+      nnoremap <silent> <C-d> :call comfortable_motion#flick(100)<CR>
+      nnoremap <silent> <C-u> :call comfortable_motion#flick(-100)<CR>
+      nnoremap <silent> <C-f> :call comfortable_motion#flick(200)<CR>
+      nnoremap <silent> <C-b> :call comfortable_motion#flick(-200)<CR>
+    endif
+  endfunction
 
-command! ToggleComfortableMotion call <SID>toggle_comfortable_motion()
+  command! ToggleComfortableMotion call <SID>toggle_comfortable_motion()
+endif
 " }}}3
 
 " context {{{3
