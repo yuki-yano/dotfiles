@@ -144,6 +144,8 @@ key_bindings:
   - { key: X,        mods: Command,       chars: "\x1bx"                      }
   - { key: Y,        mods: Command,       chars: "\x1by"                      }
   - { key: Z,        mods: Command,       chars: "\x1bz"                      }
+  - { key: LBracket, mods: Command,       chars: "\x1b\x5b"                   }
+  - { key: RBracket, mods: Command,       chars: "\x1b\x5d"                   }
   - { key: A,        mods: Command|Shift, chars: "\x1bA"                      }
   - { key: B,        mods: Command|Shift, chars: "\x1bB"                      }
   - { key: C,        mods: Command|Shift, chars: "\x1bC"                      }
