@@ -384,6 +384,12 @@ function prompt_rebasing() {
   fi
 }
 
+function prompt_conflicting() {
+  if [[ -f ".git/MERGE_HEAD" ]]; then
+    p10k segment -f red -e -t ' Conflicting '
+  fi
+}
+
 function prompt_show_buffer_stack() {
   p10k segment -f white -e -t '$COMMAND_BUFFER_STACK'
 }
@@ -391,6 +397,7 @@ function prompt_show_buffer_stack() {
 typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
   dir
   vcs
+  conflicting
   rebasing
   anyenv
   newline
