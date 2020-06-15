@@ -399,7 +399,6 @@ typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
   vcs
   conflicting
   rebasing
-  anyenv
   newline
   venv
   prompt_char
