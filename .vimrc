@@ -1784,6 +1784,12 @@ if dein#tap('vim-sandwich')
   \   'match_syntax': 1,
   \ },
   \ {
+  \   '__filetype__': 'javascript, typescript',
+  \   'buns':     ['${', '}'],
+  \   'input':    ['$'],
+  \   'filetype': ['javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'typescript.tsx'],
+  \ },
+  \ {
   \   '__filetype__': 'ruby',
   \   'buns':     ['#{', '}'],
   \   'input':    ['#'],
