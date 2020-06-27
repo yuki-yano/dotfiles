@@ -64,7 +64,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " filer {{{3
   call dein#add('lambdalisue/fern.vim')
-
   call dein#add('lambdalisue/fern-renderer-devicons.vim')
   " }}}3
 
@@ -814,6 +813,7 @@ let g:coc_global_extensions = [
 \ 'coc-diagnostic',
 \ 'coc-docker',
 \ 'coc-eslint',
+\ 'coc-explorer',
 \ 'coc-git',
 \ 'coc-go',
 \ 'coc-html',
@@ -858,6 +858,9 @@ xmap     <silent> [dev]a  :<C-u>execute 'CocCommand actions.open ' . visualmode(
 nmap     <silent> [dev]f  <Plug>(coc-format)
 xmap     <silent> [dev]f  <Plug>(coc-format-selected)
 nmap     <silent> [dev]gs <Plug>(coc-git-chunkinfo)
+
+nnoremap <Leader>e :<C-u>CocCommand explorer<CR>
+nnoremap <Leader>E :<C-u>CocCommand explorer --reveal expand('%')<CR>
 
 nmap     <silent> gp      <Plug>(coc-git-prevchunk)
 nmap     <silent> gn      <Plug>(coc-git-nextchunk)
