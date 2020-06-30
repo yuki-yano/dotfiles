@@ -236,8 +236,8 @@ setopt share_history
 setopt transient_rprompt
 
 ## dircolors
-if [[ -f ~/.dircolors ]] && whence gdircolors > /dev/null; then
-  eval "$(gdircolors ~/.dircolors)"
+if [[ -f ~/.dir_colors ]] && whence gdircolors > /dev/null; then
+  eval "$(gdircolors ~/.dir_colors)"
 fi
 
 # history
