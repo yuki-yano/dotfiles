@@ -549,7 +549,6 @@ zmodload zsh/zpty
 
 # Auto execute rehash when executing anyenv command
 add-zsh-hook preexec env_rehash
-add-zsh-hook precmd  env_rehash
 
 function env_rehash() {
   if   echo "$1" | grep rbenv  > /dev/null ; then
