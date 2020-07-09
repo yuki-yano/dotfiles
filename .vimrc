@@ -1009,7 +1009,7 @@ let $BAT_STYLE        = 'plain'
 
 " fzf-preview {{{3
 let g:fzf_preview_command                      = 'bat --color=always --style=plain --theme=Nord ''{-1}'''
-let g:fzf_preview_git_files_command            = 'git ls-files --exclude-standard --existing-only | while read line; do if [[ ! -L $line ]]; then echo $line; fi; done'
+let g:fzf_preview_git_files_command            = 'git ls-files --exclude-standard | while read line; do if [[ ! -L $line ]] && [[ -f $line ]]; then echo $line; fi; done'
 let g:fzf_preview_git_status_preview_command =  '[[ $(git diff -- {-1}) != "" ]] && git diff -- {-1} | delta --file-decoration-style=none || ' .
                                                 \ '[[ $(git diff --cached -- {-1}) != "" ]] && git diff --cached -- {-1} | delta --file-decoration-style=none || ' .
                                                 \ g:fzf_preview_command

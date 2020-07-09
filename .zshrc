@@ -1,3 +1,20 @@
+# local fzf-preview.zsh initialize {{{
+
+export FZF_PREVIEW_DISABLE_DEFAULT_BIND=1
+export FZF_TMUX_DISABLED=1
+source ~/repos/github.com/yuki-ycino/fzf-preview.zsh/fzf-preview.zsh
+
+function fzf-preview-settings() {
+  bindkey '^ '  fzf-snippet-selection
+  bindkey ' '   fzf-auto-snippet-and-space
+  bindkey '^m'  fzf-auto-snippet-and-accept-line
+  bindkey '^[f' fzf-snippet-next-placeholder
+  bindkey '^i'  fzf-or-normal-completion
+  bindkey '^r'  fzf-history-selection
+}
+
+# }}}
+
 # p10k {{{
 if [[ -f ~/.p10k.zsh ]]; then
   source ~/.p10k.zsh
@@ -527,15 +544,6 @@ zle -N edit-command-line
 bindkey '^xe'  edit-command-line
 bindkey '^x^e' edit-command-line
 
-# fzf-preview.zsh
-if whence fzf-or-normal-completion > /dev/null 2>&1; then
-  bindkey '^i' fzf-or-normal-completion
-fi
-
-if whence fzf-history-selection > /dev/null 2>&1; then
-  bindkey '^r' fzf-history-selection
-fi
-
 # }}}
 
 # Misc {{{
@@ -615,5 +623,12 @@ if [[ ! -f ~/.p10k.zsh ]] || [[ ~/.p10k.zsh -nt ~/.p10k.zsh ]]; then
 fi
 
 # }}}
+
+if whence fzf-preview > /dev/null; then
+  add-zsh-hook precmd fzf-preview-settings
+
+  ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(accept-line fzf-auto-snippet fzf-snippet-selection fzf-auto-snippet-and-space fzf-auto-snippet-and-accept-line)
+  export FZF_PREVIEW_GITHUB_USER=yuki-ycino
+fi
 
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:
