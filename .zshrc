@@ -144,9 +144,9 @@ fi
 # }}}
 
 # vim {{{
-alias vi='nvim'
-alias vr='nvr'
-alias vimdiff='nvim -d'
+alias vi='LANG=C nvim'
+alias vr='LANG=C nvr'
+alias vimdiff='LANG=C nvim -d'
 # }}}
 
 # git {{{
