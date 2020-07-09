@@ -853,8 +853,8 @@ nmap     <silent> [dev]t  <Plug>(coc-type-definition)
 nmap     <silent> [dev]i  <Plug>(coc-implementation)
 nmap     <silent> [dev]rf <Plug>(coc-references)
 nmap     <silent> [dev]rn <Plug>(coc-rename)
-nmap     <silent> [dev]a  :<C-u>set operatorfunc=<SID>coc_actions_open_from_selected<CR>g@
-xmap     <silent> [dev]a  :<C-u>execute 'CocCommand actions.open ' . visualmode()<CR>
+nnoremap <silent> [dev]a  :<C-u>set operatorfunc=<SID>coc_actions_open_from_selected<CR>g@
+xnoremap <silent> [dev]a  :<C-u>execute 'CocCommand actions.open ' . visualmode()<CR>
 nmap     <silent> [dev]f  <Plug>(coc-format)
 xmap     <silent> [dev]f  <Plug>(coc-format-selected)
 nmap     <silent> [dev]gs <Plug>(coc-git-chunkinfo)
