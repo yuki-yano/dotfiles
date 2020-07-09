@@ -12,7 +12,6 @@
   "diagnostic.hintSign": "",
 
   "coc.preferences.useQuickfixForLocations": true,
-  "codeLens.enable": true,
 
   "explorer.icon.enableVimDevicons": true,
   "explorer.previewAction.onHover": false,
