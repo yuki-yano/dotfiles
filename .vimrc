@@ -105,7 +105,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',          {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/accelerated-jk',          {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('ronakg/quickr-preview.vim')
   call dein#add('terryma/vim-expand-region',     {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-qfreplace',          {'lazy': 1, 'on_cmd': 'Qfreplace'})
   call dein#add('tommcdo/vim-exchange',          {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
@@ -1746,17 +1745,6 @@ if dein#tap('vim-jplus')
   nmap <Leader>J <Plug>(jplus-input)
   vmap <Leader>J <Plug>(jplus-input)
 endif
-" }}}3
-
-" quickr-preview {{{3
-let g:quickr_preview_keymaps = 0
-
-function! s:quickr_preview_settings() abort
-  nmap <silent> <buffer> p <Plug>(quickr_preview)
-  nmap <silent> <buffer> q <Plug>(quickr_preview_qf_close)
-endfunction
-
-AutoCmd FileType qf call s:quickr_preview_settings()
 " }}}3
 
 " reword {{{3
