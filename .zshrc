@@ -301,14 +301,6 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 
 # Funcion & Alias {{{
 
-function rg() {
-  if [[ -t 1 ]]; then
-    command rg "$@" | less -RFX
-  else
-    command rg "$@"
-  fi
-}
-
 # }}}
 
 # fzf {{{
