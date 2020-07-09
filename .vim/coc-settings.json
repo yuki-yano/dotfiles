@@ -83,8 +83,14 @@
   "python.jediEnabled": false,
   "python.linting.flake8Enabled": true,
 
+  "json.schemas": [
+    {
+      "url": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/api/json/catalog.json",
+      "fileMatch": ["/*"]
+    }
+  ],
   "yaml.schemas": {
-    "http://json.schemastore.org/composer": "/*",
+    "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/api/json/catalog.json": "/*",
     "https://raw.githubusercontent.com/docker/cli/master/cli/compose/schema/data/config_schema_v3.9.json": [
       "/docker-compose.yml"
     ]
