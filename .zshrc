@@ -514,8 +514,8 @@ bindkey '^f' forward-char
 bindkey '^g' send-break
 bindkey '^k' kill-line-or-up-pane
 bindkey '^w' backward-kill-word
-bindkey '^p' up-line-or-history
-bindkey '^n' down-line-or-history
+bindkey '^p' history-search-backward
+bindkey '^n' history-search-forward
 bindkey '^y' yank
 bindkey '^q' show-buffer-stack
 
