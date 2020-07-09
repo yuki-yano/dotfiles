@@ -1008,7 +1008,7 @@ let $BAT_STYLE        = 'plain'
 " }}}3
 
 " fzf-preview {{{3
-let g:fzf_preview_command                      = 'bat --color=always --style=grid --theme=Nord {-1}'
+let g:fzf_preview_command                      = 'bat --color=always --style=plain --theme=Nord ''{-1}'''
 let g:fzf_preview_filelist_postprocess_command = 'gxargs -d "\n" exa --color=always'
 let g:fzf_preview_use_dev_icons                = 1
 let $FZF_PREVIEW_PREVIEW_BAT_THEME             = 'Nord'
