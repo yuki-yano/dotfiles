@@ -1023,17 +1023,18 @@ map     ;       [fzf-p]
 noremap ;;      ;
 
 nnoremap <silent> [fzf-p]a     :<C-u>FzfPreviewFromResources project_mru git<CR>
-nnoremap <silent> [fzf-p]s     :<C-u>FzfPreviewGitStatus -processors=g:fzf_preview_gina_processors<CR>
-nnoremap <silent> [fzf-p]gf    :<C-u>FzfPreviewFromResources project_mru git -add-fzf-arg=--select-1 -add-fzf-arg=--query="'<C-r>=substitute(expand('<cfile>'), '^\.\+/', '', '')<CR>"<CR>
-nnoremap <silent> [fzf-p]b     :<C-u>FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
-nnoremap <silent> [fzf-p]B     :<C-u>FzfPreviewAllBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
+nnoremap <silent> [fzf-p]s     :<C-u>FzfPreviewGitStatus --processes=fzf_preview_gina_processes<CR>
+nnoremap <silent> [fzf-p]gf    :<C-u>FzfPreviewFromResources project_mru git --add-fzf-arg=--select-1 --add-fzf-arg=--query="'<C-r>=substitute(expand('<cfile>'), '^\.\+/', '', '')<CR>"<CR>
+nnoremap <silent> [fzf-p]b     :<C-u>FzfPreviewBuffers --processes=fzf_preview_buffer_delete_processes<CR>
+nnoremap <silent> [fzf-p]B     :<C-u>FzfPreviewAllBuffers<CR>
 nnoremap <silent> [fzf-p]r     :<C-u>FzfPreviewFromResources buffer project_mru<CR>
-nnoremap <silent> [fzf-p]w     :<C-u>FzfPreviewFromResources buffer project_mrw<CR>
+nnoremap <silent> [fzf-p]w     :<C-u>FzfPreviewProjectMrw<CR>
 nnoremap <silent> [fzf-p]<C-o> :<C-u>FzfPreviewJumps<CR>
 nnoremap <silent> [fzf-p]g;    :<C-u>FzfPreviewChanges<CR>
-nnoremap <silent> [fzf-p]/     :<C-u>FzfPreviewLines -resume -add-fzf-arg=--no-sort -add-fzf-arg=--query="'"<CR>
-nnoremap <silent> [fzf-p]?     :<C-u>FzfPreviewBufferLines -resume -add-fzf-arg=--no-sort -add-fzf-arg=--query="'"<CR>
-nnoremap <silent> [fzf-p]*     :<C-u>FzfPreviewLines -add-fzf-arg=--no-sort -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap <silent> [fzf-p]/     :<C-u>FzfPreviewLines --resume --add-fzf-arg=--no-sort<CR>
+nnoremap <silent> [fzf-p]*     :<C-u>FzfPreviewLines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap <silent> [fzf-p]n     :<C-u>FzfPreviewLines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=substitute(@/, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
+nnoremap <silent> [fzf-p]?     :<C-u>FzfPreviewBufferLines --resume --add-fzf-arg=--no-sort<CR>
 nnoremap          [fzf-p]f     :<C-u>FzfPreviewProjectGrep<Space>
 xnoremap          [fzf-p]f     "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
 nnoremap          [fzf-p]F     :<C-u>FzfPreviewProjectCommandGrep<Space>
@@ -1041,7 +1042,7 @@ xnoremap          [fzf-p]F     "sy:FzfPreviewProjectCommandGrep<Space>"<C-r>=sub
 nnoremap <silent> [fzf-p]q     :<C-u>FzfPreviewQuickFix<CR>
 nnoremap <silent> [fzf-p]l     :<C-u>FzfPreviewLocationList<CR>
 nnoremap <silent> [fzf-p]p     :<C-u>FzfPreviewYankround<CR>
-nnoremap <silent> [fzf-p]m     :<C-u>FzfPreviewBookmarks -resume<CR>
+nnoremap <silent> [fzf-p]m     :<C-u>FzfPreviewBookmarks --resume<CR>
 nnoremap <silent> [fzf-p]<C-]> :<C-u>FzfPreviewVistaCtags -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
 nnoremap <silent> [fzf-p]o     :<C-u>FzfPreviewVistaBufferCtags -processors=g:fzf_preview_vista_processors<CR>
 
@@ -1086,94 +1087,24 @@ function! s:gina_patch(paths) abort
 endfunction
 
 function! s:fzf_preview_settings() abort
-  let g:fzf_preview_custom_default_processors = fzf_preview#resource_processor#get_default_processors()
-  call remove(g:fzf_preview_custom_default_processors, 'ctrl-x')
-  let g:fzf_preview_custom_default_processors['ctrl-s'] = function('fzf_preview#resource_processor#split')
+  let g:fzf_preview_custom_processes['open-file'] = fzf_preview#remote#process#get_default_processes('open-file')
+  let g:fzf_preview_custom_processes['open-file']['ctrl-s'] = g:fzf_preview_custom_processes['open-file']['ctrl-x']
+  call remove(g:fzf_preview_custom_processes['open-file'], 'ctrl-x')
 
-  let g:fzf_preview_buffer_delete_processors = fzf_preview#resource_processor#get_default_processors()
-  let g:fzf_preview_buffer_delete_processors['ctrl-x'] = function('s:buffers_delete_from_lines')
+  let g:fzf_preview_buffer_delete_processes = copy(g:fzf_preview_custom_processes['open-file'])
+  let g:fzf_preview_buffer_delete_processes['ctrl-x'] = function('s:buffers_delete_from_lines')
 
-  let g:fzf_preview_gina_processors = fzf_preview#resource_processor#get_processors()
-  let g:fzf_preview_gina_processors['ctrl-a'] = function('s:gina_add')
-  let g:fzf_preview_gina_processors['ctrl-r'] = function('s:gina_reset')
-  let g:fzf_preview_gina_processors['ctrl-c'] = function('s:gina_patch')
+  let g:fzf_preview_custom_processes['open-bufnr'] = fzf_preview#remote#process#get_default_processes('open-bufnr')
+  let g:fzf_preview_custom_processes['open-bufnr']['ctrl-s'] = g:fzf_preview_custom_processes['open-bufnr']['ctrl-x']
+  let g:fzf_preview_custom_processes['open-bufnr']['ctrl-x'] = function('s:buffers_delete_from_lines')
 
-  let g:fzf_preview_vista_processors = fzf_preview#resource_processor#get_processors()
-  let g:fzf_preview_vista_processors[''] = function('s:edit_vista_btag', ['edit'])
-  let g:fzf_preview_vista_processors['ctrl-s'] = function('s:edit_vista_btag', ['split'])
-  let g:fzf_preview_vista_processors['ctrl-v'] = function('s:edit_vista_btag', ['vertical split'])
-  let g:fzf_preview_vista_processors['ctrl-t'] = function('s:edit_vista_btag', ['tabedit'])
+  let g:fzf_preview_gina_processes = copy(g:fzf_preview_custom_processes['open-file'])
+  let g:fzf_preview_gina_processes['ctrl-a'] = function('s:gina_add')
+  let g:fzf_preview_gina_processes['ctrl-r'] = function('s:gina_reset')
+  let g:fzf_preview_gina_processes['ctrl-c'] = function('s:gina_patch')
 endfunction
 
 AutoCmd FileType fzf let b:highlight_cursor = 0
-
-" FzfPreviewYankround {{{4
-function! FzfPreviewYankround(addtional, args)
-  let histories = map(copy(g:_yankround_cache), 'split(v:val, "\t", 1)')
-  let source = map(histories, { key, val -> key + 1 . ' ' . val[0] . ' ' . val[1] })
-
-  let optional = '--no-sort --with-nth 3..'
-  let preview = 'preview_yankround_register {1}'
-
-  return{
-  \ 'source': source,
-  \ 'sink': function('<SID>register_history_sink'),
-  \ 'options': fzf_preview#command#get_command_options('RegisterHistory', preview, optional)
-  \ }
-endfunction
-
-function! s:register_history_sink(lines)
-  let l:parts = split(a:lines[1], ' ', 1)
-  call setreg('"', join(l:parts[2:], ' '), l:parts[0])
-endfunction
-
-command! FzfPreviewYankround :call fzf_preview#runner#fzf_run(fzf_preview#initializer#initialize('FzfPreviewYankround', {}, <f-args>))
-" }}}4
-
-" FzfPreviewBookmarks {{{4
-command! -nargs=* -complete=customlist,fzf_preview#args#complete_options FzfPreviewBookmarks
-  \ :call fzf_preview#runner#fzf_run(fzf_preview#initializer#initialize('FzfPreviewBookmarks', {}, <f-args>))
-
-function! FzfPreviewBookmarks(additional, args) abort
-  let source = fzf_preview#converter#convert_for_fzf(filter(map(bm#location_list(), {
-  \ _, b -> s:bookmarks_format_line(b)
-  \ }), {
-  \ _, b -> b !=# ''
-  \ }), 1)
-
-  let optional = '--delimiter :'
-  let preview = g:fzf_preview_grep_preview_cmd . ' {}'
-
-  return {
-  \ 'source': source,
-  \ 'sink': function('fzf_preview#handler#handle_grep'),
-  \ 'options': fzf_preview#command#get_command_options('Bookmarks', preview, optional)
-  \ }
-endfunction
-
-function! s:bookmarks_format_line(line) abort
-  let line = split(a:line, ':')
-  let filename = fnamemodify(line[0], ':.')
-  if !filereadable(filename)
-    return ''
-  endif
-
-  let line_number = line[1]
-  let text = line[2]
-
-  if text ==# 'Annotation'
-    let comment = line[3]
-  else
-    let text = join(line[2:], ':')
-  endif
-
-  if text !=# 'Annotation'
-    return filename . ':' . line_number . ':' . text
-  else
-    return filename . ':' . line_number . ':' . text . ':' . comment
-  endif
-endfunction
-" }}}4
 
 " FzfPreviewVistaCtags {{{4
 command! -nargs=* -complete=customlist,fzf_preview#args#complete_options FzfPreviewVistaCtags
