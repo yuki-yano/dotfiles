@@ -115,11 +115,11 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Appearance {{{3
-  call dein#add('LeafCage/foldCC.vim')
   call dein#add('RRethy/vim-hexokinase', {'build': 'make hexokinase'})
   call dein#add('Yggdroot/indentLine')
   call dein#add('andymass/vim-matchup')
   call dein#add('itchyny/lightline.vim')
+  call dein#add('lambdalisue/readablefold.vim')
   call dein#add('liuchengxu/vim-which-key')
   call dein#add('luochen1990/rainbow')
   call dein#add('machakann/vim-highlightedundo')
