@@ -1,6 +1,7 @@
 {
   "suggest.minTriggerInputLength": 1,
   "suggest.asciiCharactersOnly": true,
+  "suggest.snippetIndicator": " >>",
   "snippets.loadFromExtensions": false,
   "snippets.textmateSnippetsRoots": ["~/.vsnip"],
 
