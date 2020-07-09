@@ -2175,7 +2175,7 @@ if dein#tap('lightline.vim')
     elseif &filetype ==? 'qf' && getwininfo(win_getid())[0].quickfix
       return 'QuickFix'
     else
-      return &filetype . ' ' . WebDevIconsGetFileTypeSymbol()
+      return &filetype . ' ' . WebDevIconsGetFileTypeSymbol() . ' '
     endif
   endfunction
 
