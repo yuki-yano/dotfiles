@@ -25,6 +25,8 @@ source $ZPLG_HOME/bin/zinit.zsh
 # sync loading {{{
 zinit ice depth=1
 zinit light romkatv/powerlevel10k
+zinit ice depth=1
+zinit light zsh-users/zsh-autosuggestions
 zinit ice lucid atload"!_zsh_git_prompt_precmd_hook"
 zinit light woefe/git-prompt.zsh
 
@@ -43,9 +45,6 @@ zinit light yukiycino-dotfiles/zsh-show-buffer-stack
 # PROMPT
 zinit ice lucid wait"!0" depth"1" atinit"zpcompinit; zpcdreplay" atload"set_fast_theme"
 zinit light zdharma/fast-syntax-highlighting
-
-zinit ice lucid wait"!0" depth"1" atload"set_autosuggest" atload"set_autosuggetsions_theme"
-zinit light zsh-users/zsh-autosuggestions
 
 # completion
 zinit ice lucid wait"0" depth"1" blockf
@@ -92,20 +91,8 @@ function set_fast_theme() {
   FAST_HIGHLIGHT_STYLES[history-expansion]='fg=green,bold'
 }
 
-# autosuggestions-theme {{{
-function set_autosuggetsions_theme() {
-  ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=243
-}
-# }}}
-
 # show-buffer-stack {{{
 add-zsh-hook precmd check-buffer-stack
-# }}}
-
-# autosuggestions {{{
-function set_autosuggest() {
-  ZSH_AUTOSUGGEST_CLEAR_WIDGETS=($ZSH_AUTOSUGGEST_CLEAR_WIDGETS)
-}
 # }}}
 
 # alias {{{
