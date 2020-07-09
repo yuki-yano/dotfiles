@@ -5,10 +5,10 @@
 [color]
   ui             = auto
   diff           = auto
-  diff-highlight = auto
 
 [core]
   autocrlf       = input
+  pager          = delta
   editor         = nvim
   excludesfile   = ~/.gitignore_global
   attributesfile = ~/.gitattributes_global
@@ -17,13 +17,8 @@
   sync = !git checkout master && git pull origin master --rebase && git fetch -p origin && git branch -d $(git branch --merged | grep -v master | grep -v '*')
   openpr  = "!f() { hub browse -- `git log --merges --oneline --reverse --ancestry-path $1...master | grep 'Merge pull request #' | head -n 1 | cut -f5 -d' ' | sed -e 's%#%pull/%'`; }; f"
 
-[pager]
-  log  = diff-so-fancy | less
-  show = diff-so-fancy | less
-  diff = diff-so-fancy | less
-
 [interactive]
-  diffFilter = diff-highlight
+  diffFilter = delta --color-only
 
 [include]
   path = ~/.gitconfig.local
@@ -82,5 +77,8 @@
   rev  = https://{host}/{path}/commit/{commit}
   pr   = https://{host}/{path}/pull/{short_ref}
   file = "https://{host}/{path}/{file.directory? and :tree or :blob}/{short_rev}/{file}{lines && \"#L%s\" % lines.join(\"-\")}"
+
+[delta]
+  theme = Nord
 
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:

@@ -68,7 +68,7 @@ install watch
 install wget
 
 ## VCS
-install git hub tig gh ghq gobo diff-so-fancy
+install git hub tig gh ghq gobo git-delta
 
 ## Media
 install ffmpeg
