@@ -34,7 +34,6 @@ zinit light junegunn/fzf-bin
 zinit ice lucid depth"1" as"program" mv"bin/fzf-tmux -> ${ZPFX}/bin/fzf-tmux" src"shell/completion.zsh"
 zinit light junegunn/fzf
 # zinit light yuki-ycino/fzf-preview.zsh
-zinit light chitoku-k/fzf-zsh-completions
 
 zinit light yukiycino-dotfiles/zsh-show-buffer-stack
 # }}}
