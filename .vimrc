@@ -1009,6 +1009,10 @@ let $BAT_STYLE        = 'plain'
 
 " fzf-preview {{{3
 let g:fzf_preview_command                      = 'bat --color=always --style=plain --theme=Nord ''{-1}'''
+let g:fzf_preview_git_files_command            = 'git ls-files --exclude-standard --existing-only | while read line; do if [[ ! -L $line ]]; then echo $line; fi; done'
+let g:fzf_preview_git_status_preview_command =  '[[ $(git diff -- {-1}) != "" ]] && git diff -- {-1} | delta --file-decoration-style=none || ' .
+                                                \ '[[ $(git diff --cached -- {-1}) != "" ]] && git diff --cached -- {-1} | delta --file-decoration-style=none || ' .
+                                                \ g:fzf_preview_command
 let g:fzf_preview_grep_cmd                     = 'rg --line-number --no-heading --color=always --sort=path'
 let g:fzf_preview_filelist_postprocess_command = 'gxargs -d "\n" exa --color=always'
 let g:fzf_preview_use_dev_icons                = 1
