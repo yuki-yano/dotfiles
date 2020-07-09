@@ -58,6 +58,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Shougo/denite.nvim')
 
   call dein#add('junegunn/fzf', {'build': './install --bin', 'merged': 0})
+  call dein#add('junegunn/fzf.vim')
+  call dein#add('antoinemadec/coc-fzf')
   " call dein#add('yuki-ycino/fzf-preview.vim')
   call dein#local('~/repos/github.com/yuki-ycino', {}, ['fzf-preview.vim'])
   " }}}3
@@ -856,6 +858,7 @@ let g:coc_snippet_prev = '<C-b>'
 nnoremap <silent> K       :<C-u>call <SID>show_documentation()<CR>
 nmap     <silent> [dev]p  <Plug>(coc-diagnostic-prev)
 nmap     <silent> [dev]n  <Plug>(coc-diagnostic-next)
+nnoremap <silent> [dev]e  :<C-u>CocFzfList diagnostics<CR>
 nmap     <silent> [dev]d  <Plug>(coc-definition)
 nmap     <silent> [dev]t  <Plug>(coc-type-definition)
 nmap     <silent> [dev]i  <Plug>(coc-implementation)
@@ -994,6 +997,14 @@ if dein#tap('denite.nvim')
   call denite#custom#var('menu', 'menus', s:menus)
 endif
 
+" }}}3
+
+" fzf & coc-fzf {{{3
+let g:fzf_layout      = { 'window': { 'width': 0.9, 'height': 0.9 } }
+let g:coc_fzf_preview = 'right'
+let g:coc_fzf_opts    = ['--layout=reverse']
+let $BAT_THEME        = 'Nord'
+let $BAT_STYLE        = 'plain'
 " }}}3
 
 " fzf-preview {{{3
