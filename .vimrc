@@ -805,6 +805,13 @@ AlterCommand <cmdwin> dein Dein
 AlterCommand          list CocList
 AlterCommand <cmdwin> list CocList
 
+AlterCommand          jest       Jest
+AlterCommand <cmdwin> jest       Jest
+AlterCommand          jc[urrent] JestCurrent
+AlterCommand <cmdwin> jc[urrent] JestCurrent
+AlterCommand          js[ingle]  JestSingle
+AlterCommand <cmdwin> js[ingle]  JestSingle
+
 let g:coc_global_extensions = [
 \ 'coc-actions',
 \ 'coc-calc',
@@ -817,6 +824,7 @@ let g:coc_global_extensions = [
 \ 'coc-git',
 \ 'coc-go',
 \ 'coc-html',
+\ 'coc-jest',
 \ 'coc-json',
 \ 'coc-markdownlint',
 \ 'coc-marketplace',
@@ -883,6 +891,10 @@ function! s:coc_typescript_settings() abort
   setlocal tagfunc=CocTagFunc
   nnoremap <silent> <buffer> [dev]F :<C-u>CocCommand eslint.executeAutofix<CR>
 endfunction
+
+command! Jest        :call CocAction('runCommand', 'jest.projectTest')
+command! JestCurrent :call CocAction('runCommand', 'jest.fileTest', ['%'])
+command! JestSingle  :call CocAction('runCommand', 'jest.singleTest')
 
 AutoCmd FileType typescript,typescript.tsx call s:coc_typescript_settings()
 " }}}2
