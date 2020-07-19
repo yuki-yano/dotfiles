@@ -494,6 +494,9 @@ zle -N accept-line-or-down-pane _accept-line-or-down-pane
 
 bindkey -e
 
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end  history-search-end
+
 # My ZLE bind
 bindkey '^]'   insert-last-word
 bindkey '^u'   undo
@@ -514,8 +517,8 @@ bindkey '^f' forward-char
 bindkey '^g' send-break
 bindkey '^k' kill-line-or-up-pane
 bindkey '^w' backward-kill-word
-bindkey '^p' history-search-backward
-bindkey '^n' history-search-forward
+bindkey '^p' history-beginning-search-backward-end
+bindkey '^n' history-beginning-search-forward-end
 bindkey '^y' yank
 bindkey '^q' show-buffer-stack
 
