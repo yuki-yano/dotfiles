@@ -6,6 +6,7 @@
   "snippets.textmateSnippetsRoots": ["~/.vsnip"],
 
   "diagnostic.checkCurrentLine": true,
+  "diagnostic.messageDelay": 0,
   "diagnostic.errorSign": "",
   "diagnostic.warningSign": "",
   "diagnostic.infoSign": "",
