@@ -122,7 +122,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('andymass/vim-matchup')
   call dein#add('itchyny/lightline.vim')
   call dein#add('lambdalisue/readablefold.vim')
-  call dein#add('liuchengxu/vim-which-key')
   call dein#add('luochen1990/rainbow')
   call dein#add('machakann/vim-highlightedundo')
   call dein#add('machakann/vim-highlightedyank')
@@ -2295,123 +2294,6 @@ let g:vista_default_executive = 'ctags'
 AutoCmd VimEnter * call vista#RunForNearestMethodOrFunction()
 " }}}3
 
-" which-key {{{3
-nnoremap <silent> <Leader>   :<C-u>WhichKey '<Space>'<CR>
-nnoremap <silent> [fzf-p]    :<C-u>WhichKey ';'<CR>
-nnoremap <silent> s          :<C-u>WhichKey 's'<CR>
-nnoremap <silent> [dev]      :<C-u>WhichKey 'm'<CR>
-nnoremap <silent> [tab]      :<C-u>WhichKey 't'<CR>
-nnoremap <silent> [bookmark] :<C-u>WhichKey 'M'<CR>
-vnoremap <silent> <Leader>   :<C-u>WhichKeyVisual '<Space>'<CR>
-vnoremap <silent> [fzf-p]    :<C-u>WhichKeyVisual ';'<CR>
-vnoremap <silent> s          :<C-u>WhichKeyVisual 's'<CR>
-vnoremap <silent> [dev]      :<C-u>WhichKeyVisual 'm'<CR>
-
-let g:which_key_map = {}
-call which_key#register('<Space>', 'g:which_key_map')
-let g:which_key_map = {
-\ 'name':  '+leader',
-\ 'w':     'Save File',
-\ 'W':     'Force save File',
-\ 'd':     'Delete buffer',
-\ 'r':     'Replacw word',
-\ 'R':     'Replace current word',
-\ 'e':     'File explorer',
-\ 'E':     'File explorer with current file',
-\ 'cc':    'Toggle comment',
-\ 'cw':    'Wrap comment',
-\ 'cW':    'Wrap uncomment',
-\ 'j':     'which_key_ignore',
-\ 'k':     'which_key_ignore',
-\ 'J':     'Jplus whith input',
-\ 'u':     'Undo tree',
-\ '<C-W>': 'Window swap',
-\ }
-
-let g:which_fzf_preview_key_map = {}
-call which_key#register(';', 'g:which_fzf_preview_key_map')
-let g:which_fzf_preview_key_map = {
-\ 'name':  '+fzf-preview',
-\ 'a':     'Project file',
-\ 's':     'Git status',
-\ 'gf':    'Find cursor file',
-\ 'b':     'Buffer',
-\ 'B':     'All buffers',
-\ 'r':     'Mru',
-\ 'w':     'Mrw',
-\ '<C-O>': 'Jumps',
-\ 'g;':    'Changes',
-\ '/':     'Lines',
-\ '?':     'All buffer lines',
-\ '*':     'Search word from lines',
-\ 'f':     'Project grep',
-\ 'F':     'Advanced project grep',
-\ 'q':     'Quickfix',
-\ 'l':     'LocationList',
-\ 'p':     'Register history',
-\ 'm':     'Bookmarks',
-\ '<C-]>': 'Ctags',
-\ 'o':     'BufferTags',
-\ ';':     'which_key_ignore',
-\ }
-
-let g:which_s_key_map = {}
-call which_key#register('s', 'g:which_s_key_map')
-let g:which_s_key_map = {
-\ 'name': '+sandwich+system',
-\ '<C-]>': 'which_key_ignore',
-\ 'a': 'Sandwich add',
-\ 'd': 'Sandwich delete',
-\ 'r': 'Sandwich replace',
-\ 's': 'Easy motion 2stroke',
-\ 'p': 'Paste register to system clipboard',
-\ 'c': 'Paste unname register from system clipboard',
-\ 'db': 'which_key_ignore',
-\ 'rb': 'which_key_ignore',
-\ }
-
-let g:which_dev_key_map = {}
-call which_key#register('m', 'g:which_dev_key_map')
-let g:which_dev_key_map = {
-\ 'name': '+dev',
-\ 'q':    'Quickfix',
-\ 'l':    'LocationList',
-\ 'p':    'Previous Diagnostic',
-\ 'n':    'Next Diagnostic',
-\ 'd':    'Definition',
-\ 't':    'Type definition',
-\ 'i':    'Implementation',
-\ 'rf':   'references',
-\ 'rn':   'rename',
-\ 'a':    'Fix current',
-\ 'f':    'Format',
-\ }
-
-let g:which_tab_key_map = {}
-call which_key#register('t', 'g:which_tab_key_map')
-let g:which_tab_key_map = {
-\ 'name': '+tab',
-\ 't':    'New tab',
-\ 'd':    'Delete tab',
-\ 'l':    'Next tab',
-\ 'h':    'Previous tab',
-\ 'm':    'Move current buffer to new tab',
-\ }
-
-let g:which_bookmark_key_map = {}
-call which_key#register('M', 'g:which_bookmark_key_map')
-let g:which_bookmark_key_map = {
-\ 'name': '+bookmark',
-\ 'm':    'Toggle bookmark',
-\ 'i':    'Annotate bookmark',
-\ 'n':    'Next bookmark',
-\ 'p':    'Previous bookmark',
-\ 'a':    'Show all bookmark',
-\ 'c':    'Clear buffer bookmark',
-\ 'x':    'Clear all bookmark',
-\ }
-" }}}3
-
 " zenspace {{{3
 let g:zenspace#default_mode = 'on'
 " }}}3
@@ -2693,8 +2575,6 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight QuickScopePrimary       cterm
 AutoCmd ColorScheme nord,onedark,iceberg highlight QuickScopeSecondary     ctermfg=72   ctermbg=NONE                      guifg=#5FAFAF guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight ShotFBlank              ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#E27878 guibg=NONE    gui=underline,bold
 AutoCmd ColorScheme nord,onedark,iceberg highlight ShotFGraph              ctermfg=209  ctermbg=NONE                      guifg=#E27878 guibg=NONE
-AutoCmd ColorScheme nord,onedark,iceberg highlight WhichKey                ctermfg=74                                     guifg=#5fafd7
-AutoCmd ColorScheme nord,onedark,iceberg highlight WhichKeyDesc            ctermfg=178  ctermbg=NONE                      guifg=#d7af00 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
 AutoCmd ColorScheme nord,onedark,iceberg highlight ZenSpace                ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
 
