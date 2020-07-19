@@ -1,21 +1,7 @@
 {
-  "if": {
-    "prefix": ["if"],
-    "body": ["if (${1:condition}) {", "\t${0:code}", "}"]
-  },
-  "if-else": {
-    "prefix": ["if-else", "ife", "ie"],
-    "body": [
-      "if (${1:condition}) {",
-      "\t${2:code}",
-      "} else {",
-      "\t${3:code}",
-      "}"
-    ]
-  },
   "for": {
     "prefix": ["for"],
-    "body": ["for (let ${1:v}, of ${2:object}) {", "\t${3:code}", "}"]
+    "body": ["for (const ${1:v}, of ${2:object}) {", "\t${3:code}", "}"]
   },
   "switch": {
     "prefix": ["switch"],
@@ -58,37 +44,9 @@
     "prefix": ["ar", "arrow"],
     "body": ["(${1:params}) => {${2:code}}"]
   },
-  "function": {
-    "prefix": ["function", "func"],
-    "body": ["function ${1:name}(${2:params}:${3:type}) {", "\t$0", "}"]
-  },
-  "map": {
-    "prefix": ["map"],
-    "body": ["map((${1:v}) => {", "\t${2:code}", "})"]
-  },
   "class": {
     "prefix": ["class"],
     "body": ["class ${1:Klass} {", "\tconstructor(${3:params}) {", "\t}", "}"]
-  },
-  "import": {
-    "prefix": ["import", "im"],
-    "body": ["import { ${1:object} } from \"${2:module}\""]
-  },
-  "default-import": {
-    "prefix": ["default-import", "dim"],
-    "body": ["import ${1:object} from \"${2:module}\""]
-  },
-  "type": {
-    "prefix": ["type"],
-    "body": ["type ${1:Type} = {", "\t${2:property}: ${3:type}", "}"]
-  },
-  "interface": {
-    "prefix": ["interface"],
-    "body": ["interface ${1:Type} {", "\t${2:property}: ${3:type}", "}"]
-  },
-  "props": {
-    "prefix": ["props"],
-    "body": ["type Props = {$0}"]
   },
   "react-fc": {
     "prefix": ["react-fc", "fc"],
