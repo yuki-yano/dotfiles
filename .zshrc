@@ -131,9 +131,10 @@ fi
 
 # bat {{{
 if whence bat > /dev/null; then
-  alias bat='bat --theme=ansi-dark'
-  alias b='bat --color=always --style=grid --theme=ansi-dark'
-  alias c='bat --color=always --style=grid --theme=ansi-dark'
+  export BAT_THEME='Nord'
+  alias bat='bat'
+  alias b='bat --color=always --style=plain'
+  alias c='bat --color=always --style=plain'
 fi
 # }}}
 
