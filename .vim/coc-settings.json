@@ -17,8 +17,11 @@
 
   "coc.preferences.useQuickfixForLocations": true,
 
+  "explorer.sources": [{ "name": "file", "expand": true }],
   "explorer.icon.enableVimDevicons": true,
   "explorer.previewAction.onHover": false,
+  "explorer.activeMode": false,
+  "explorer.file.autoReveal": false,
   "explorer.keyMappings": {
     "i": false,
     "<Tab>": "actionMenu",
