@@ -2152,10 +2152,6 @@ if dein#tap('lightline.vim')
   endfunction
 
   function! Lightline_filepath() abort
-    if !Lightline_is_visible(140)
-      return ''
-    endif
-
     if count(s:lightline_ignore_filepath_ft, &filetype) || expand('%:t') ==# '[Command Line]'
       return ''
     endif
