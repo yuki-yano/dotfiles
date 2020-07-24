@@ -892,11 +892,9 @@ let g:coc_snippet_prev = '<C-b>'
 nnoremap <silent> K       :<C-u>call <SID>show_documentation()<CR>
 nmap     <silent> [dev]p  <Plug>(coc-diagnostic-prev)
 nmap     <silent> [dev]n  <Plug>(coc-diagnostic-next)
-nnoremap <silent> [dev]e  :<C-u>CocFzfList diagnostics<CR>
 nmap     <silent> [dev]d  <Plug>(coc-definition)
 nmap     <silent> [dev]t  <Plug>(coc-type-definition)
 nmap     <silent> [dev]i  <Plug>(coc-implementation)
-nmap     <silent> [dev]rf <Plug>(coc-references)
 nmap     <silent> [dev]rn <Plug>(coc-rename)
 nnoremap <silent> [dev]a  :<C-u>set operatorfunc=<SID>coc_actions_open_from_selected<CR>g@
 xnoremap <silent> [dev]a  :<C-u>execute 'CocCommand actions.open ' . visualmode()<CR>
@@ -1062,29 +1060,34 @@ noremap [fzf-p] <Nop>
 map     ;       [fzf-p]
 noremap ;;      ;
 
-nnoremap <silent> [fzf-p]a     :<C-u>FzfPreviewFromResources project_mru git<CR>
-nnoremap <silent> [fzf-p]s     :<C-u>FzfPreviewGitStatus --processes=fzf_preview_gina_processes<CR>
-nnoremap <silent> [fzf-p]gf    :<C-u>FzfPreviewFromResources project_mru git --add-fzf-arg=--select-1 --add-fzf-arg=--query="'<C-r>=substitute(expand('<cfile>'), '^\.\+/', '', '')<CR>"<CR>
-nnoremap <silent> [fzf-p]b     :<C-u>FzfPreviewBuffers --processes=fzf_preview_buffer_delete_processes<CR>
-nnoremap <silent> [fzf-p]B     :<C-u>FzfPreviewAllBuffers<CR>
-nnoremap <silent> [fzf-p]r     :<C-u>FzfPreviewFromResources buffer project_mru<CR>
-nnoremap <silent> [fzf-p]w     :<C-u>FzfPreviewProjectMrw<CR>
-nnoremap <silent> [fzf-p]<C-o> :<C-u>FzfPreviewJumps<CR>
-nnoremap <silent> [fzf-p]g;    :<C-u>FzfPreviewChanges<CR>
-nnoremap <silent> [fzf-p]/     :<C-u>FzfPreviewLines --resume --add-fzf-arg=--no-sort<CR>
-nnoremap <silent> [fzf-p]*     :<C-u>FzfPreviewLines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
-nnoremap <silent> [fzf-p]n     :<C-u>FzfPreviewLines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=substitute(@/, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
-nnoremap <silent> [fzf-p]?     :<C-u>FzfPreviewBufferLines --resume --add-fzf-arg=--no-sort<CR>
-nnoremap          [fzf-p]f     :<C-u>FzfPreviewProjectGrep<Space>
-xnoremap          [fzf-p]f     "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-nnoremap          [fzf-p]F     :<C-u>FzfPreviewProjectCommandGrep<Space>
-xnoremap          [fzf-p]F     "sy:FzfPreviewProjectCommandGrep<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-nnoremap <silent> [fzf-p]q     :<C-u>FzfPreviewQuickFix<CR>
-nnoremap <silent> [fzf-p]l     :<C-u>FzfPreviewLocationList<CR>
-nnoremap <silent> [fzf-p]p     :<C-u>FzfPreviewYankround<CR>
-nnoremap <silent> [fzf-p]m     :<C-u>FzfPreviewBookmarks --resume<CR>
-nnoremap <silent> [fzf-p]<C-]> :<C-u>FzfPreviewVistaCtags -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
-nnoremap <silent> [fzf-p]o     :<C-u>FzfPreviewVistaBufferCtags -processors=g:fzf_preview_vista_processors<CR>
+nnoremap <silent> [fzf-p]r     :<C-u>CocCommand fzf-preview.FromResources buffer project_mru<CR>
+nnoremap <silent> [fzf-p]w     :<C-u>CocCommand fzf-preview.ProjectMrwFiles<CR>
+nnoremap <silent> [fzf-p]a     :<C-u>CocCommand fzf-preview.FromResources project_mru git<CR>
+nnoremap <silent> [fzf-p]g     :<C-u>CocCommand fzf-preview.GitActions<CR>
+nnoremap <silent> [fzf-p]s     :<C-u>CocCommand fzf-preview.GitStatus<CR>
+nnoremap <silent> [fzf-p]gf    :<C-u>CocCommand fzf-preview.FromResources project_mru git --add-fzf-arg=--select-1 --add-fzf-arg=--query="'<C-r>=substitute(expand('<cfile>'), '^\.\+/', '', '')<CR>"<CR>
+nnoremap <silent> [fzf-p]b     :<C-u>CocCommand fzf-preview.Buffers<CR>
+nnoremap <silent> [fzf-p]B     :<C-u>CocCommand fzf-preview.AllBuffers<CR>
+nnoremap <silent> [fzf-p]<C-o> :<C-u>CocCommand fzf-preview.Jumps<CR>
+nnoremap <silent> [fzf-p]g;    :<C-u>CocCommand fzf-preview.Changes<CR>
+nnoremap <silent> [fzf-p]/     :<C-u>CocCommand fzf-preview.Lines --resume --add-fzf-arg=--no-sort<CR>
+nnoremap <silent> [fzf-p]*     :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap <silent> [fzf-p]n     :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=substitute(@/, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
+nnoremap <silent> [fzf-p]?     :<C-u>CocCommand fzf-preview.BufferLines --resume --add-fzf-arg=--no-sort<CR>
+nnoremap          [fzf-p]f     :<C-u>CocCommand fzf-preview.ProjectGrep<Space>
+xnoremap          [fzf-p]f     "sy:CocCommand fzf-preview.ProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+nnoremap          [fzf-p]F     :<C-u>CocCommand fzf-preview.ProjectCommandGrep<Space>
+xnoremap          [fzf-p]F     "sy:CocCommand fzf-preview.ProjectCommandGrep<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+nnoremap <silent> [fzf-p]q     :<C-u>CocCommand fzf-preview.QuickFix<CR>
+nnoremap <silent> [fzf-p]l     :<C-u>CocCommand fzf-preview.LocationList<CR>
+nnoremap <silent> [fzf-p]p     :<C-u>CocCommand fzf-preview.Yankround<CR>
+nnoremap <silent> [fzf-p]m     :<C-u>CocCommand fzf-preview.Bookmarks --resume<CR>
+nnoremap <silent> [fzf-p]<C-]> :<C-u>CocCommand fzf-preview.VistaCtags --add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap <silent> [fzf-p]o     :<C-u>CocCommand fzf-preview.VistaBufferCtags<CR>
+
+nnoremap <silent> [dev]q  :<C-u>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
+nnoremap <silent> [dev]Q  :<C-u>CocCommand fzf-preview.CocDiagnostics<CR>
+nnoremap <silent> [dev]rf :<C-u>CocCommand fzf-preview.CocReferences<CR>
 
 augroup fzf_preview
   autocmd!
@@ -1093,123 +1096,34 @@ augroup END
 
 function! s:buffers_delete_from_lines(lines) abort
   for line in a:lines
-    let matches = matchlist(line, '^buffer \(\d\+\)$')
+    let matches = matchlist(line, '\[\(\d\+\)\]')
     if len(matches) >= 1
       execute 'Bdelete! ' . matches[1]
-    else
-      execute 'Bdelete! ' . line
     endif
   endfor
 endfunction
 
-function! s:gina_add(paths) abort
-  for path in a:paths
-    execute 'silent Gina add ' . path
-  endfor
-
-  echomsg 'Git add ' . join(a:paths, ', ')
-endfunction
-
-function! s:gina_reset(paths) abort
-  for path in a:paths
-    execute 'silent Gina reset ' . path
-  endfor
-
-  echomsg 'Git reset ' . join(a:paths, ', ')
-endfunction
-
-function! s:gina_patch(paths) abort
-  for path in a:paths
-    execute 'silent Gina patch ' . path
-  endfor
-
-  echomsg 'Git add --patch ' . join(a:paths, ', ')
-endfunction
-
 function! s:fzf_preview_settings() abort
-  let g:fzf_preview_custom_processes['open-file'] = fzf_preview#remote#process#get_default_processes('open-file')
+  let g:fzf_preview_custom_processes['open-file'] = fzf_preview#remote#process#get_default_processes('open-file', 'coc')
   let g:fzf_preview_custom_processes['open-file']['ctrl-s'] = g:fzf_preview_custom_processes['open-file']['ctrl-x']
   call remove(g:fzf_preview_custom_processes['open-file'], 'ctrl-x')
 
-  let g:fzf_preview_buffer_delete_processes = copy(g:fzf_preview_custom_processes['open-file'])
-  let g:fzf_preview_buffer_delete_processes['ctrl-x'] = function('s:buffers_delete_from_lines')
+  let g:fzf_preview_custom_processes['open-buffer'] = fzf_preview#remote#process#get_default_processes('open-buffer', 'coc')
+  let g:fzf_preview_custom_processes['open-buffer']['ctrl-s'] = g:fzf_preview_custom_processes['open-buffer']['ctrl-x']
+  call remove(g:fzf_preview_custom_processes['open-buffer'], 'ctrl-q')
+  let g:fzf_preview_custom_processes['open-buffer']['ctrl-x'] = get(function('s:buffers_delete_from_lines'), 'name')
 
-  let g:fzf_preview_custom_processes['open-bufnr'] = fzf_preview#remote#process#get_default_processes('open-bufnr')
+  let g:fzf_preview_custom_processes['open-bufnr'] = fzf_preview#remote#process#get_default_processes('open-bufnr', 'coc')
   let g:fzf_preview_custom_processes['open-bufnr']['ctrl-s'] = g:fzf_preview_custom_processes['open-bufnr']['ctrl-x']
-  let g:fzf_preview_custom_processes['open-bufnr']['ctrl-x'] = function('s:buffers_delete_from_lines')
+  call remove(g:fzf_preview_custom_processes['open-bufnr'], 'ctrl-q')
+  let g:fzf_preview_custom_processes['open-bufnr']['ctrl-x'] = get(function('s:buffers_delete_from_lines'), 'name')
 
-  let g:fzf_preview_gina_processes = copy(g:fzf_preview_custom_processes['open-file'])
-  let g:fzf_preview_gina_processes['ctrl-a'] = function('s:gina_add')
-  let g:fzf_preview_gina_processes['ctrl-r'] = function('s:gina_reset')
-  let g:fzf_preview_gina_processes['ctrl-c'] = function('s:gina_patch')
+  let g:fzf_preview_custom_processes['git-status'] = fzf_preview#remote#process#get_default_processes('git-status', 'coc')
+  let g:fzf_preview_custom_processes['git-status']['ctrl-s'] = g:fzf_preview_custom_processes['git-status']['ctrl-x']
+  call remove(g:fzf_preview_custom_processes['git-status'], 'ctrl-x')
 endfunction
 
 AutoCmd FileType fzf let b:highlight_cursor = 0
-
-" FzfPreviewVistaCtags {{{4
-command! -nargs=* -complete=customlist,fzf_preview#args#complete_options FzfPreviewVistaCtags
-  \ :call fzf_preview#runner#fzf_run(fzf_preview#initializer#initialize('FzfPreviewVistaCtags', {}, <f-args>))
-
-function! FzfPreviewVistaCtags(additional, args) abort
-  let data = items(vista#executive#ctags#ProjectRun())
-  let source = []
-
-  for kind_and_infos in data
-    let [kind, infos] = kind_and_infos
-
-    for info in infos
-      call add(source, [info['lnum'], '[' . kind . ']', info['text'], info['tagfile']])
-    endfor
-  endfor
-
-  let preview = g:fzf_preview_grep_preview_cmd . " '{-1}:{1}'"
-
-  return {
-  \ 'source': map(fzf_preview#util#align_lists(source), { _, v -> join(v, '  ') }),
-  \ 'sink': function('fzf_preview#handler#handle_changes_and_buffer_tags'),
-  \ 'options': fzf_preview#command#get_command_options('Ctags', preview)
-  \ }
-endfunction
-" }}}4
-
-" FzfPreviewVistaBufferCtags {{{4
-command! -nargs=* -complete=customlist,fzf_preview#args#complete_options FzfPreviewVistaBufferCtags
-  \ :call fzf_preview#runner#fzf_run(fzf_preview#initializer#initialize('FzfPreviewVistaBufferCtags', {}, <f-args>))
-
-function! FzfPreviewVistaBufferCtags(additional, args) abort
-  let data = items(vista#executive#ctags#Run(expand('%:p')))
-  let source = []
-
-  for kind_and_infos in data
-    let [kind, infos] = kind_and_infos
-
-    for info in infos
-      call add(source, [info['text'] . ':' . info['lnum'], '[' . kind . ']', getline(info['lnum'])])
-    endfor
-  endfor
-
-  let preview = g:fzf_preview_grep_preview_cmd . ' ' . expand('%') . ':{1}'"
-
-  return {
-  \ 'source': map(fzf_preview#util#align_lists(source), { _, v -> join(v, '  ') }),
-  \ 'sink': function('s:handle_vista_btag'),
-  \ 'options': fzf_preview#command#get_command_options('BufferCtags', preview)
-  \ }
-endfunction
-
-function! s:handle_vista_btag(lines) abort
-  call fzf_preview#handler#handle_resource(a:lines, 1, 0, v:false, v:true)
-endfunction
-
-function! s:edit_vista_btag(command, lines) abort
-  let file = expand('%')
-  for line in a:lines
-    execute join(['silent', a:command, file], ' ')
-    let lnum = split(split(line, ' ')[0], ':')[-1]
-    call cursor(lnum, 0)
-  endfor
-endfunction
-" }}}4
 
 " }}}3
 
