@@ -243,6 +243,9 @@ noremap <silent> <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^
 imap <C-h> <BS>
 cmap <C-h> <BS>
 
+"" Buffer
+nnoremap <C-q> <C-^>
+
 "" Yank
 nnoremap Y y$
 
