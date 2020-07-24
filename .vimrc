@@ -360,7 +360,6 @@ if has('nvim')
   let g:terminal_color_14 = '#95c4ce'
   let g:terminal_color_15 = '#d2d4de'
 
-  set termguicolors
   set pumblend=20
   set wildoptions+=pum
 endif
@@ -385,6 +384,7 @@ set showtabline=2
 set spellcapcheck=
 set spelllang=en,cjk
 set synmaxcol=300
+set termguicolors
 set virtualedit=all
 
 "" Indent
