@@ -70,6 +70,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " filer {{{3
   call dein#add('lambdalisue/fern.vim')
   call dein#add('lambdalisue/fern-renderer-devicons.vim')
+
+  call dein#add('Shougo/defx.nvim')
+  call dein#add('kristijanhusak/defx-icons')
+  call dein#add('kristijanhusak/defx-git')
   " }}}3
 
   " textobj & operator {{{3
@@ -110,6 +114,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',          {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('rhysd/accelerated-jk',          {'lazy': 1, 'on_map': '<Plug>'})
+  call dein#add('t9md/vim-choosewin',            {'lazy': 1, 'on_map': {'n': '<Plug>'}})
   call dein#add('terryma/vim-expand-region',     {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-qfreplace',          {'lazy': 1, 'on_cmd': 'Qfreplace'})
   call dein#add('tommcdo/vim-exchange',          {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
@@ -873,8 +878,8 @@ nmap     <silent> [dev]f  <Plug>(coc-format)
 xmap     <silent> [dev]f  <Plug>(coc-format-selected)
 nmap     <silent> [dev]gs <Plug>(coc-git-chunkinfo)
 
-nnoremap <Leader>e :<C-u>CocCommand explorer<CR>
-nnoremap <Leader>E :<C-u>CocCommand explorer --reveal expand('%')<CR>
+" nnoremap <Leader>e :<C-u>CocCommand explorer<CR>
+" nnoremap <Leader>E :<C-u>CocCommand explorer --reveal expand('%')<CR>
 
 nmap     <silent> gp      <Plug>(coc-git-prevchunk)
 nmap     <silent> gn      <Plug>(coc-git-nextchunk)
@@ -1397,10 +1402,69 @@ let g:gitsessions_disable_auto_load = 1
 
 " filer {{{2
 
+" defx {{{3
+let g:defx_git#raw_mode        = 1
+let g:defx_icons_column_length = 2
+
+if has('nvim')
+  nnoremap <silent> <Leader>e :Defx -columns=mark:git:indent:icons:filename:type -split=vertical -winwidth=40 -direction=topleft<CR>
+  nnoremap <silent> <Leader>E :Defx -columns=mark:git:indent:icons:filename:type -split=vertical -winwidth=40 -direction=topleft -search=`expand('%:p')`<CR>
+endif
+
+let g:defx_ignore_filtype = ['denite', 'defx']
+
+function! DefxChoosewin(context) abort
+    let l:winnrs = filter(range(1, winnr('$')), 'index(g:defx_ignore_filtype, getwinvar(v:val, "&filetype")) == -1' )
+    for filename in a:context.targets
+        let result = choosewin#start(l:winnrs, {'auto_choose': 1, 'hook_enable': 0})
+        if result == []
+          return 0
+        endif
+        execute 'edit' filename
+    endfor
+endfunction
+
+function! s:defx_settings() abort
+  nnoremap <silent> <buffer> <expr> <nowait> j       line('.') == line('$') ? 'gg' : 'j'
+  nnoremap <silent> <buffer> <expr> <nowait> k       line('.') == 1 ? 'G' : 'k'
+  nnoremap <silent> <buffer> <expr> <nowait> t       defx#do_action('open_or_close_tree')
+  nnoremap <silent> <buffer> <expr> <nowait> h       defx#do_action('cd', ['..'])
+  nnoremap <silent> <buffer> <expr> <nowait> l       defx#is_directory() ? defx#do_action('open_tree') : 0
+  nnoremap <silent> <buffer> <expr> <nowait> L       defx#do_action('open_tree_recursive')
+  nnoremap <silent> <buffer> <expr> <nowait> .       defx#do_action('toggle_ignored_files')
+  nnoremap <silent> <buffer> <expr> <nowait> ~       defx#do_action('cd')
+
+  nnoremap <silent> <buffer> <expr> <nowait> <CR>    defx#is_directory() ? 0 : defx#do_action('call', 'DefxChoosewin')
+  nnoremap <silent> <buffer> <expr> <nowait> x       defx#do_action('toggle_select') . 'j'
+  nnoremap <silent> <buffer> <expr> <nowait> <Space> defx#do_action('toggle_select') . 'j'
+  nnoremap <silent> <buffer> <expr> <nowait> *       defx#do_action('toggle_select_all')
+  nnoremap <silent> <buffer> <expr> <nowait> N       defx#do_action('new_file')
+  nnoremap <silent> <buffer> <expr> <nowait> N       defx#do_action('new_multiple_files')
+  nnoremap <silent> <buffer> <expr> <nowait> K       defx#do_action('new_directory')
+  nnoremap <silent> <buffer> <expr> <nowait> c       defx#do_action('copy')
+  nnoremap <silent> <buffer> <expr> <nowait> m       defx#do_action('move')
+  nnoremap <silent> <buffer> <expr> <nowait> p       defx#do_action('paste')
+  nnoremap <silent> <buffer> <expr> <nowait> d       defx#do_action('remove')
+  nnoremap <silent> <buffer> <expr> <nowait> r       defx#do_action('rename')
+  nnoremap <silent> <buffer> <expr> <nowait> yy      defx#do_action('yank_path')
+
+  nnoremap <silent> <buffer> <expr> <nowait> q       defx#do_action('quit')
+  nnoremap <silent> <buffer> <expr> <nowait> R       defx#do_action('redraw')
+  nnoremap <silent> <buffer> <expr> <nowait> <C-g>   defx#do_action('print')
+endfunction
+
+AutoCmd FileType defx call s:defx_settings()
+" }}}3
+
 " fern {{{3
 let g:fern#disable_default_mappings = 1
 let g:fern#drawer_width = 40
 let g:fern#renderer = 'devicons'
+
+if !has('nvim')
+  nnoremap <silent> <Leader>e :<C-u>Fern . -drawer <CR>
+  nnoremap <silent> <Leader>E :<C-u>Fern . -drawer -reveal=%<CR>
+endif
 
 function! s:fern_settings() abort
   nmap <silent> <buffer> <expr> <Plug>(fern-expand-or-collapse) fern#smart#leaf("\<Plug>(fern-action-collapse)", "\<Plug>(fern-action-expand)", "\<Plug>(fern-action-collapse)")
@@ -1691,6 +1755,10 @@ if dein#tap('vim-jplus')
 endif
 " }}}3
 
+" quick-scope {{{3
+let g:qs_buftype_blacklist = ['terminal', 'nofile']
+" }}}3
+
 " reword {{{3
 MyAlterCommand rew[ord] %RewordPreview
 
@@ -1870,12 +1938,25 @@ let g:better_whitespace_filetypes_blacklist = [
 " }}}3
 
 " brightest {{{3
-let g:brightest#enable_highlight_all_window = 1
+let g:brightest#enable_filetypes = {
+\ '_':    1,
+\ 'defx': 0,
+\ 'fern': 0,
+\ }
+
 let g:brightest#highlight = {
 \ 'group': 'BrighTestHighlight',
 \ 'priority': 0
 \ }
 let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat']
+" }}}3
+
+" choosewin {{{3
+let s:choosewin_nord = ['#81A1C1', '#4C566A']
+let g:choosewin_color_label = {
+\ 'gui': s:choosewin_nord + ['bold'],
+\ 'cterm': [4, 8]
+\ }
 " }}}3
 
 " comfortable-motion {{{3
@@ -1946,7 +2027,7 @@ endif
 " }}}3
 
 " indent-line {{{3
-let g:indentLine_fileTypeExclude = ['json']
+let g:indentLine_fileTypeExclude = ['json', 'defx', 'fern']
 " }}}3
 
 " lightline {{{3
@@ -2034,6 +2115,7 @@ if dein#tap('lightline.vim')
   \ 'diff',
   \ 'man',
   \ 'fzf',
+  \ 'defx',
   \ 'fern',
   \ 'coc-explorer',
   \ 'capture',
@@ -2049,6 +2131,7 @@ if dein#tap('lightline.vim')
   \ 'diff':         'Diff',
   \ 'man':          'Man',
   \ 'fzf':          'FZF',
+  \ 'defx':         'Defx',
   \ 'fern':         'Fern',
   \ 'coc-explorer': 'Explorer',
   \ 'capture':      'Capture',
@@ -2064,6 +2147,7 @@ if dein#tap('lightline.vim')
   \ 'help',
   \ 'man',
   \ 'fzf',
+  \ 'defx',
   \ 'fern',
   \ 'coc-explorer',
   \ 'capture',
@@ -2077,6 +2161,7 @@ if dein#tap('lightline.vim')
   let s:lightline_ignore_filename_ft = [
   \ 'qf',
   \ 'fzf',
+  \ 'defx',
   \ 'fern',
   \ 'coc-explorer',
   \ 'gina-status',
@@ -2089,6 +2174,7 @@ if dein#tap('lightline.vim')
   let s:lightline_ignore_filepath_ft = [
   \ 'qf',
   \ 'fzf',
+  \ 'defx',
   \ 'fern',
   \ 'coc-explorer',
   \ 'gina-status',
@@ -2584,6 +2670,13 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight ZenSpace                cterm
 AutoCmd ColorScheme nord,onedark,iceberg highlight CocErrorSign            ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight CocWarningSign          ctermfg=214  ctermbg=NONE                      guifg=#FFAF00 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight CocInfoSign             ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
+
+AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Untracked    ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Modified     ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Staged       ctermfg=2    ctermbg=NONE                      guifg=#b4be82 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Deleted      ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Renamed      ctermfg=2    ctermbg=NONE                      guifg=#b4be82 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Unmerged     ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
 
 " }}}2
 
