@@ -638,6 +638,20 @@ function! s:start_review() abort
   colorscheme NeoSolarized
   set background=light
   call lightline#disable()
+  let g:fzf_preview_command_bak = g:fzf_preview_command
+  let g:fzf_preview_command = 'bat --color=always --style=plain --theme="Solarized (light)" ''{-1}'''
+
+  if has('nvim')
+    let g:fzf_preview_git_status_preview_command = '[[ $(git diff -- {-1}) != "" ]] && git diff -- {-1} | delta --file-decoration-style=none || ' .
+                                                   \ '[[ $(git diff --cached -- {-1}) != "" ]] && git diff --cached -- {-1} | delta --file-decoration-style=none || ' .
+                                                   \ g:fzf_preview_command
+  endif
+  let $FZF_PREVIEW_PREVIEW_BAT_THEME_BAK = $FZF_PREVIEW_PREVIEW_BAT_THEME
+  let $FZF_PREVIEW_PREVIEW_BAT_THEME = 'Solarized (light)'
+  let $FZF_DEFAULT_OPTS_BAK = $FZF_DEFAULT_OPTS
+  let $FZF_DEFAULT_OPTS = '--color=fg:240,bg:230,hl:33,fg+:241,bg+:221,hl+:33,info:33,prompt:33,pointer:166,marker:166,spinner:33'
+  let $BAT_THEME_BAK = $BAT_THEME
+  let $BAT_THEME = 'Solarized (light)'
 
   SNumbersDisable
   set number norelativenumber
@@ -656,6 +670,15 @@ function! s:end_review() abort
   colorscheme nord
   set background=dark
   call lightline#enable()
+  let g:fzf_preview_command = g:fzf_preview_command_bak
+  if has('nvim')
+    let g:fzf_preview_git_status_preview_command = '[[ $(git diff -- {-1}) != "" ]] && git diff -- {-1} | delta --file-decoration-style=none || ' .
+                                                   \ '[[ $(git diff --cached -- {-1}) != "" ]] && git diff --cached -- {-1} | delta --file-decoration-style=none || ' .
+                                                   \ g:fzf_preview_command
+  endif
+  let $FZF_PREVIEW_PREVIEW_BAT_THEME = $FZF_PREVIEW_PREVIEW_BAT_THEME_BAK
+  let $FZF_DEFAULT_OPTS = $FZF_DEFAULT_OPTS_BAK
+  let $BAT_THEME = $BAT_THEME_BAK
 
   SNumbersEnable
 
@@ -1013,20 +1036,27 @@ endif
 let g:fzf_layout      = { 'window': { 'width': 0.9, 'height': 0.9 } }
 let g:coc_fzf_preview = 'right'
 let g:coc_fzf_opts    = ['--layout=reverse']
+let $FZF_DEFAULT_OPTS = '--color=hl:#81A1C1,hl+:#81A1C1,info:#EACB8A,prompt:#81A1C1,pointer:#B48DAC,marker:#A3BE8B,spinner:#B48DAC,header:#A3BE8B'
 let $BAT_THEME        = 'Nord'
 let $BAT_STYLE        = 'plain'
 " }}}3
 
 " fzf-preview {{{3
-let g:fzf_preview_command                      = 'bat --color=always --style=plain --theme=Nord ''{-1}'''
+let g:fzf_preview_command                      = 'bat --color=always --style=plain --theme="Nord" ''{-1}'''
 let g:fzf_preview_git_files_command            = 'git ls-files --exclude-standard | while read line; do if [[ ! -L $line ]] && [[ -f $line ]]; then echo $line; fi; done'
-let g:fzf_preview_git_status_preview_command =  '[[ $(git diff -- {-1}) != "" ]] && git diff -- {-1} | delta --file-decoration-style=none || ' .
-                                                \ '[[ $(git diff --cached -- {-1}) != "" ]] && git diff --cached -- {-1} | delta --file-decoration-style=none || ' .
-                                                \ g:fzf_preview_command
-let g:fzf_preview_grep_cmd                     = 'rg --line-number --no-heading --color=always --sort=path'
-let g:fzf_preview_filelist_postprocess_command = 'gxargs -d "\n" exa --color=always'
 let g:fzf_preview_use_dev_icons                = 1
 let $FZF_PREVIEW_PREVIEW_BAT_THEME             = 'Nord'
+" let g:fzf_preview_use_look_ahead_mr_cache      = 1
+"
+if has('nvim')
+  let g:fzf_preview_grep_cmd                     = 'rg --line-number --no-heading --color=never --sort=path'
+else
+  let g:fzf_preview_grep_cmd                     = 'rg --line-number --no-heading --color=always --sort=path'
+  let g:fzf_preview_filelist_postprocess_command = 'gxargs -d "\n" exa -1 --color=always'
+endif
+
+if has('nvim')
+endif
 
 noremap [fzf-p] <Nop>
 map     ;       [fzf-p]
