@@ -967,16 +967,17 @@ if dein#tap('denite.nvim')
 
   " Define mappings
   function! s:denite_settings() abort
-    nnoremap <silent> <expr> <buffer> i       denite#do_map('open_filter_buffer')
-    nnoremap <silent> <expr> <buffer> <CR>    denite#do_map('do_action')
-    nnoremap <silent> <expr> <buffer> <C-g>   denite#do_map('quit')
-    nnoremap <silent> <expr> <buffer> q       denite#do_map('quit')
-    nnoremap <silent> <expr> <buffer> ZQ      denite#do_map('quit')
-    nnoremap <silent>        <buffer> <C-n>   j
-    nnoremap <silent>        <buffer> <C-p>   k
-    nnoremap <silent> <expr> <buffer> <Space> denite#do_map('toggle_select') . 'j'
-    nnoremap <silent> <expr> <buffer> d       denite#do_map('do_action', 'delete')
-    nnoremap <silent> <expr> <buffer> p       denite#do_map('do_action', 'preview')
+    nnoremap <silent> <expr> <buffer>          i       denite#do_map('open_filter_buffer')
+    nnoremap <silent> <expr> <buffer>          <CR>    denite#do_map('do_action')
+    nnoremap <silent> <expr> <buffer>          <Tab>   denite#do_map('choose_action')
+    nnoremap <silent> <expr> <buffer>          <C-g>   denite#do_map('quit')
+    nnoremap <silent> <expr> <buffer>          q       denite#do_map('quit')
+    nnoremap <silent> <expr> <buffer>          ZQ      denite#do_map('quit')
+    nnoremap <silent>        <buffer>          <C-n>   j
+    nnoremap <silent>        <buffer>          <C-p>   k
+    nnoremap <silent> <expr> <buffer> <nowait> <Space> denite#do_map('toggle_select') . 'j'
+    nnoremap <silent> <expr> <buffer>          d       denite#do_map('do_action', 'delete')
+    nnoremap <silent> <expr> <buffer>          p       denite#do_map('do_action', 'preview')
   endfunction
 
   function! s:denite_filter_settings() abort
