@@ -1040,21 +1040,10 @@ let $BAT_STYLE        = 'plain'
 " }}}3
 
 " fzf-preview {{{3
-let g:fzf_preview_command                      = 'bat --color=always --style=plain --theme="Nord" ''{-1}'''
-let g:fzf_preview_git_files_command            = 'git ls-files --exclude-standard | while read line; do if [[ ! -L $line ]] && [[ -f $line ]]; then echo $line; fi; done'
-let g:fzf_preview_use_dev_icons                = 1
-let $FZF_PREVIEW_PREVIEW_BAT_THEME             = 'Nord'
-" let g:fzf_preview_use_look_ahead_mr_cache      = 1
-"
-if has('nvim')
-  let g:fzf_preview_grep_cmd                     = 'rg --line-number --no-heading --color=never --sort=path'
-else
-  let g:fzf_preview_grep_cmd                     = 'rg --line-number --no-heading --color=always --sort=path'
-  let g:fzf_preview_filelist_postprocess_command = 'gxargs -d "\n" exa -1 --color=always'
-endif
-
-if has('nvim')
-endif
+let g:fzf_preview_git_files_command = 'git ls-files --exclude-standard | while read line; do if [[ ! -L $line ]] && [[ -f $line ]]; then echo $line; fi; done'
+let g:fzf_preview_grep_cmd          = 'rg --line-number --no-heading --color=never --sort=path'
+let g:fzf_preview_use_dev_icons     = 1
+let $FZF_PREVIEW_PREVIEW_BAT_THEME  = 'Nord'
 
 noremap [fzf-p] <Nop>
 map     ;       [fzf-p]
@@ -1065,11 +1054,9 @@ nnoremap <silent> [fzf-p]w     :<C-u>CocCommand fzf-preview.ProjectMrwFiles<CR>
 nnoremap <silent> [fzf-p]a     :<C-u>CocCommand fzf-preview.FromResources project_mru git<CR>
 nnoremap <silent> [fzf-p]g     :<C-u>CocCommand fzf-preview.GitActions<CR>
 nnoremap <silent> [fzf-p]s     :<C-u>CocCommand fzf-preview.GitStatus<CR>
-nnoremap <silent> [fzf-p]gf    :<C-u>CocCommand fzf-preview.FromResources project_mru git --add-fzf-arg=--select-1 --add-fzf-arg=--query="'<C-r>=substitute(expand('<cfile>'), '^\.\+/', '', '')<CR>"<CR>
 nnoremap <silent> [fzf-p]b     :<C-u>CocCommand fzf-preview.Buffers<CR>
 nnoremap <silent> [fzf-p]B     :<C-u>CocCommand fzf-preview.AllBuffers<CR>
 nnoremap <silent> [fzf-p]<C-o> :<C-u>CocCommand fzf-preview.Jumps<CR>
-nnoremap <silent> [fzf-p]g;    :<C-u>CocCommand fzf-preview.Changes<CR>
 nnoremap <silent> [fzf-p]/     :<C-u>CocCommand fzf-preview.Lines --resume --add-fzf-arg=--no-sort<CR>
 nnoremap <silent> [fzf-p]*     :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
 nnoremap <silent> [fzf-p]n     :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=substitute(@/, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
@@ -1104,6 +1091,9 @@ function! s:buffers_delete_from_lines(lines) abort
 endfunction
 
 function! s:fzf_preview_settings() abort
+  let g:fzf_preview_grep_preview_cmd = 'COLORTERM=truecolor ' . g:fzf_preview_grep_preview_cmd
+  let g:fzf_preview_command = 'COLORTERM=truecolor ' . g:fzf_preview_command
+
   let g:fzf_preview_custom_processes['open-file'] = fzf_preview#remote#process#get_default_processes('open-file', 'coc')
   let g:fzf_preview_custom_processes['open-file']['ctrl-s'] = g:fzf_preview_custom_processes['open-file']['ctrl-x']
   call remove(g:fzf_preview_custom_processes['open-file'], 'ctrl-x')
