@@ -1289,11 +1289,10 @@ AutoCmd VimEnter * call s:gina_settings()
 function! s:gina_settings()
   call gina#custom#command#option('status', '--short')
   call gina#custom#command#option('/\%(status\|commit\|branch\)', '--opener', 'split')
+  call gina#custom#command#option('diff', '--opener', 'vsplit')
 
   call gina#custom#command#option('/\%(status\|changes\)', '--ignore-submodules')
   call gina#custom#command#option('status', '--branch')
-  call gina#custom#command#option('branch', '-v', 'v')
-  call gina#custom#command#option('branch', '--all')
   call gina#custom#mapping#nmap('status', '<C-j>', ':TmuxNavigateDown<CR>', {'noremap': 1, 'silent': 1})
   call gina#custom#mapping#nmap('status', '<C-k>', ':TmuxNavigateUp<CR>',   {'noremap': 1, 'silent': 1})
 
