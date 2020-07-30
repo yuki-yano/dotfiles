@@ -1,7 +1,7 @@
 {
   "for": {
     "prefix": ["for"],
-    "body": ["for (const ${1:v}, of ${2:object}) {", "\t${3:code}", "}"]
+    "body": ["for (const ${1:v} of ${2:object}) {", "\t${3:code}", "}"]
   },
   "switch": {
     "prefix": ["switch"],
