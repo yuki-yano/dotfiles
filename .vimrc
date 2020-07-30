@@ -46,13 +46,13 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Git {{{3
-  call dein#add('APZelos/blamer.nvim')
+  " call dein#add('APZelos/blamer.nvim')
+  " call dein#add('rhysd/conflict-marker.vim')
+  " call dein#add('rhysd/git-messenger.vim', {'lazy': 1, 'on_cmd': 'GitMessenger'})
   call dein#add('hotwatermorning/auto-git-diff')
   call dein#add('lambdalisue/gina.vim')
-  call dein#add('tpope/vim-fugitive')
   call dein#add('rhysd/committia.vim')
-  call dein#add('rhysd/conflict-marker.vim')
-  call dein#add('rhysd/git-messenger.vim', {'lazy': 1, 'on_cmd': 'GitMessenger'})
+  call dein#add('tpope/vim-fugitive')
   call dein#add('wting/gitsessions.vim')
   " }}}3
 
@@ -1284,15 +1284,6 @@ endif
 
 " Git {{{2
 
-" blamer {{{3
-let g:blamer_enabled = 1
-let g:blamer_show_in_visual_modes = 0
-" }}}3
-
-" git-messenger {{{3
-nnoremap <silent> gm :<C-u>GitMessenger<CR>
-" }}}3
-
 " gina {{{3
 MyAlterCommand git   Gina
 MyAlterCommand gina  Gina
@@ -2507,6 +2498,19 @@ let g:quickrun_config = {
 \   'outputter/buffer/close_on_empty' : 1,
 \ }
 \ }
+" }}}3
+
+" }}}2
+
+" Removed Plugin {{{2
+
+" " blamer {{{3
+" let g:blamer_enabled = 1
+" let g:blamer_show_in_visual_modes = 0
+" " }}}3
+
+" git-messenger {{{3
+nnoremap <silent> gm :<C-u>GitMessenger<CR>
 " }}}3
 
 " }}}2
