@@ -1895,7 +1895,7 @@ if dein#tap('lightline.vim')
   \ 'active': {
   \   'left': [
   \     ['mode', 'spell', 'paste'],
-  \     ['filepath', 'filename'],
+  \     ['filepath', 'filename', 'vista'],
   \     ['special_mode', 'anzu', 'vm_regions'],
   \     [],
   \    ],
@@ -1932,6 +1932,7 @@ if dein#tap('lightline.vim')
   \   'fileformat':   'Lightline_fileformat',
   \   'anzu':         'anzu#search_status',
   \   'vm_regions':   'Lightline_vm_regions',
+  \   'vista':        'NearestMethodOrFunction',
   \ },
   \ 'tab_component_function': {
   \   'tabwinnum': 'Lightline_tab_win_num',
@@ -2168,14 +2169,11 @@ if dein#tap('lightline.vim')
   "   return (&filetype !=# 'denite') ? '' : (substitute(denite#get_status_mode(), '[- ]', '', 'g'))
   " endfunction
 
-  function! Lightline_vm_regions() abort
-    if exists('g:VM') && g:VM.is_active
-      let l:index = b:VM_Selection.Vars.index + 1
-      let l:max   = len(b:VM_Selection.Regions)
-      return '(' . l:index . '/' . l:max . ')'
-    else
+  function! NearestMethodOrFunction() abort
+    if !Lightline_is_visible(140)
       return ''
     endif
+    return get(b:, 'vista_nearest_method_or_function', '')
   endfunction
 
   AutoCmd User CocDiagnosticChange call lightline#update()
