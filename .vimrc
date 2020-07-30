@@ -1490,8 +1490,8 @@ endif
 " }}}3
 
 " BackAndForward {{{3
-nmap g<C-o> <Plug>(backandforward-back)
-nmap g<C-i> <Plug>(backandforward-forward)
+nmap <C-b> <Plug>(backandforward-back)
+nmap <C-f> <Plug>(backandforward-forward)
 " }}}3
 
 " bookmarks {{{3
