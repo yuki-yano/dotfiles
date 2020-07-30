@@ -62,10 +62,9 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('hrsh7th/vim-denite-gitto')
 
   call dein#add('junegunn/fzf', {'build': './install --bin', 'merged': 0})
-  call dein#add('junegunn/fzf.vim')
-  call dein#add('antoinemadec/coc-fzf')
-  " call dein#add('yuki-ycino/fzf-preview.vim')
-  call dein#local('~/repos/github.com/yuki-ycino', {}, ['fzf-preview.vim'])
+  " call dein#add('yuki-ycino/fzf-preview.vim', {'rev': 'release', 'merged': 0})
+  call dein#add('junegunn/fzf.vim', {'merged': 0})
+  call dein#add('~/repos/github.com/yuki-ycino/fzf-preview.vim', {'merged': 0})
   " }}}3
 
   " filer {{{3
