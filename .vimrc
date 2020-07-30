@@ -95,7 +95,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Edit & Move & Search {{{3
-  call dein#add('AndrewRadev/splitjoin.vim',     {'lazy': 1, 'on_cmd': ['SplitJoinSplit', 'SplitJoinJoin']})
+  " call dein#add('AndrewRadev/splitjoin.vim',     {'lazy': 1, 'on_cmd': ['SplitJoinSplit', 'SplitJoinJoin']})
+  " call dein#add('mg979/vim-visual-multi',        {'rev': 'test'})
   call dein#add('Bakudankun/BackAndForward.vim')
   call dein#add('LeafCage/yankround.vim')
   call dein#add('MattesGroeger/vim-bookmarks')
@@ -108,7 +109,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('haya14busa/vim-metarepeat',     {'lazy': 1, 'on_map': ['go', 'g.', '<Plug>']})
   call dein#add('junegunn/vim-easy-align',       {'lazy': 1, 'on_cmd': 'EasyAlign'})
   call dein#add('lambdalisue/reword.vim')
-  call dein#add('mg979/vim-visual-multi',        {'rev': 'test'})
   call dein#add('mhinz/vim-grepper',             {'lazy': 1, 'on_cmd': 'Grepper', 'on_map': '<Plug>'})
   call dein#add('mtth/scratch.vim',              {'lazy': 1, 'on_cmd': 'Scratch'})
   call dein#add('osyo-manga/vim-anzu')
@@ -125,7 +125,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Appearance {{{3
-  call dein#add('RRethy/vim-hexokinase', {'build': 'make hexokinase'})
+  " call dein#add('RRethy/vim-hexokinase', {'build': 'make hexokinase'})
   call dein#add('Yggdroot/indentLine')
   call dein#add('andymass/vim-matchup')
   call dein#add('itchyny/lightline.vim')
@@ -145,23 +145,23 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Util {{{3
+  " call dein#add('osyo-manga/vim-brightest')
+  " call dein#add('osyo-manga/vim-gift')
+  " call dein#add('pocke/vim-automatic',          {'depends': 'vim-gift'})
+  " call dein#add('previm/previm',                {'lazy': 1, 'on_cmd': 'PrevimOpen'})
+  " call dein#add('thinca/vim-ref',               {'lazy': 1, 'on_cmd': 'Ref'})
   call dein#add('AndrewRadev/linediff.vim',     {'lazy': 1, 'on_cmd': 'Linediff'})
   call dein#add('aiya000/aho-bakaup.vim')
   call dein#add('dhruvasagar/vim-table-mode',   {'lazy': 1, 'on_cmd': 'TableModeToggle'})
   call dein#add('itchyny/vim-qfedit')
   call dein#add('jsfaint/gen_tags.vim')
   call dein#add('kana/vim-niceblock',           {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
-  call dein#add('previm/previm',                {'lazy': 1, 'on_cmd': 'PrevimOpen'})
   call dein#add('lambdalisue/vim-manpager',     {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER']})
   call dein#add('lambdalisue/vim-pager',        {'lazy': 1, 'on_cmd': 'PAGER'})
   call dein#add('liuchengxu/vista.vim',         {'lazy': 1, 'on_cmd': ['Vista', 'Vista!', 'Vista!!']})
   call dein#add('moll/vim-bbye',                {'lazy': 1, 'on_cmd': ['Bdelete', 'Bwipeout']})
-  call dein#add('osyo-manga/vim-brightest')
-  call dein#add('osyo-manga/vim-gift')
-  call dein#add('pocke/vim-automatic',          {'depends': 'vim-gift'})
   call dein#add('simnalamburt/vim-mundo',       {'lazy': 1, 'on_cmd': 'MundoToggle'})
   call dein#add('thinca/vim-localrc')
-  call dein#add('thinca/vim-ref',               {'lazy': 1, 'on_cmd': 'Ref'})
   call dein#add('tyru/capture.vim',             {'lazy': 1, 'on_cmd': 'Capture'})
   call dein#add('tyru/vim-altercmd')
   call dein#add('voldikss/vim-floaterm')
@@ -1782,68 +1782,12 @@ MyAlterCommand sc[ratch] Scratch
 let g:scratch_no_mappings = 1
 " }}}3
 
-" splitjoin {{{3
-let g:splitjoin_align             = 1
-let g:splitjoin_trailing_comma    = 1
-let g:splitjoin_ruby_curly_braces = 0
-let g:splitjoin_ruby_hanging_args = 0
-" }}}3
-
 " shot-f {{{3
 if dein#tap('vim-shot-f')
   let g:shot_f_no_default_key_mappings = 1
   nmap <silent> f <Plug>(shot-f-f)
   nmap <silent> F <Plug>(shot-f-F)
 endif
-" }}}3
-
-" visual-multi {{{3
-let g:VM_set_statusline             = 0
-let g:VM_leader                     = '\'
-let g:VM_default_mappings           = 0
-let g:VM_sublime_mappings           = 0
-let g:VM_mouse_mappings             = 0
-let g:VM_extended_mappings          = 0
-let g:VM_no_meta_mappings           = 1
-let g:VM_reselect_first_insert      = 0
-let g:VM_reselect_first_always      = 0
-let g:VM_case_setting               = 'smart'
-let g:VM_pick_first_after_n_cursors = 0
-let g:VM_dynamic_synmaxcol          = 20
-let g:VM_disable_syntax_in_imode    = 0
-let g:VM_exit_on_1_cursor_left      = 0
-let g:VM_manual_infoline            = 1
-
-nmap <silent> (ctrln) <Plug>(VM-Find-Under)
-xmap <silent> <C-n>   <Plug>(VM-Find-Subword-Under)
-
-let g:VM_maps = {}
-"
-let g:VM_maps['Find Under']         = ''
-let g:VM_maps['Find Subword Under'] = ''
-let g:VM_maps['Skip Region']        = '<C-s>'
-let g:VM_maps['Remove Region']      = '<C-q>'
-let g:VM_maps['Start Regex Search'] = 'g/'
-let g:VM_maps['Select All']         = '<A-a>'
-let g:VM_maps['Add Cursor Down']    = '<A-S-j>'
-let g:VM_maps['Add Cursor Up']      = '<A-S-k>'
-let g:VM_maps['Select l']           = '<A-S-l>'
-let g:VM_maps['Select h']           = '<A-S-h>'
-
-let g:VM_maps['Find Next']          = ']'
-let g:VM_maps['Find Prev']          = '['
-let g:VM_maps['Goto Next']          = '}'
-let g:VM_maps['Goto Prev']          = '{'
-let g:VM_maps['Seek Next']          = '<C-d>'
-let g:VM_maps['Seek Prev']          = '<C-u>'
-
-let g:VM_maps['Surround']           = 'S'
-let g:VM_maps['D']                  = 'D'
-let g:VM_maps['J']                  = 'J'
-let g:VM_maps['Dot']                = '.'
-let g:VM_maps['c']                  = 'c'
-let g:VM_maps['C']                  = 'C'
-let g:VM_maps['Replace Pattern']    = 'R'
 " }}}3
 
 " yankround {{{3
@@ -1874,20 +1818,6 @@ let g:better_whitespace_filetypes_blacklist = [
 \ 'gitrebase',
 \ 'denite',
 \ ]
-" }}}3
-
-" brightest {{{3
-let g:brightest#enable_filetypes = {
-\ '_':    1,
-\ 'defx': 0,
-\ 'fern': 0,
-\ }
-
-let g:brightest#highlight = {
-\ 'group': 'BrighTestHighlight',
-\ 'priority': 0
-\ }
-let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat']
 " }}}3
 
 " choosewin {{{3
@@ -2462,16 +2392,6 @@ endfunction
 nnoremap <silent> <Leader>u :<C-u>MundoToggle<CR>
 " }}}3
 
-" previm {{{3
-let g:previm_open_cmd            = 'open -a "Google Chrome"'
-let g:previm_disable_default_css = 1
-let g:previm_custom_css_path     = '~/.config/previm/gfm.css'
-" }}}3
-
-" ref {{{3
-MyAlterCommand refe Ref<Space>refe
-" }}}3
-
 " table-mode {{{3
 let g:table_mode_corner='|'
 " }}}3
@@ -2503,14 +2423,94 @@ let g:quickrun_config = {
 
 " Removed Plugin {{{2
 
+" " brightest {{{3
+" let g:brightest#enable_filetypes = {
+"\ '_':    1,
+"\ 'defx': 0,
+"\ 'fern': 0,
+"\ }
+" 
+" let g:brightest#highlight = {
+"\ 'group': 'BrighTestHighlight',
+"\ 'priority': 0
+"\ }
+" let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat']
+" " }}}3
+
 " " blamer {{{3
 " let g:blamer_enabled = 1
 " let g:blamer_show_in_visual_modes = 0
 " " }}}3
 
-" git-messenger {{{3
-nnoremap <silent> gm :<C-u>GitMessenger<CR>
-" }}}3
+" " git-messenger {{{3
+" nnoremap <silent> gm :<C-u>GitMessenger<CR>
+" " }}}3
+
+" " previm {{{3
+" let g:previm_open_cmd            = 'open -a "Google Chrome"'
+" let g:previm_disable_default_css = 1
+" let g:previm_custom_css_path     = '~/.config/previm/gfm.css'
+" " }}}3
+
+" " splitjoin {{{3
+" let g:splitjoin_align             = 1
+" let g:splitjoin_trailing_comma    = 1
+" let g:splitjoin_ruby_curly_braces = 0
+" let g:splitjoin_ruby_hanging_args = 0
+" " }}}3
+
+" " visual-multi {{{3
+" let g:VM_set_statusline             = 0
+" let g:VM_leader                     = '\'
+" let g:VM_default_mappings           = 0
+" let g:VM_sublime_mappings           = 0
+" let g:VM_mouse_mappings             = 0
+" let g:VM_extended_mappings          = 0
+" let g:VM_no_meta_mappings           = 1
+" let g:VM_reselect_first_insert      = 0
+" let g:VM_reselect_first_always      = 0
+" let g:VM_case_setting               = 'smart'
+" let g:VM_pick_first_after_n_cursors = 0
+" let g:VM_dynamic_synmaxcol          = 20
+" let g:VM_disable_syntax_in_imode    = 0
+" let g:VM_exit_on_1_cursor_left      = 0
+" let g:VM_manual_infoline            = 1
+" 
+" nmap <silent> (ctrln) <Plug>(VM-Find-Under)
+" xmap <silent> <C-n>   <Plug>(VM-Find-Subword-Under)
+" 
+" let g:VM_maps = {}
+" "
+" let g:VM_maps['Find Under']         = ''
+" let g:VM_maps['Find Subword Under'] = ''
+" let g:VM_maps['Skip Region']        = '<C-s>'
+" let g:VM_maps['Remove Region']      = '<C-q>'
+" let g:VM_maps['Start Regex Search'] = 'g/'
+" let g:VM_maps['Select All']         = '<A-a>'
+" let g:VM_maps['Add Cursor Down']    = '<A-S-j>'
+" let g:VM_maps['Add Cursor Up']      = '<A-S-k>'
+" let g:VM_maps['Select l']           = '<A-S-l>'
+" let g:VM_maps['Select h']           = '<A-S-h>'
+" 
+" let g:VM_maps['Find Next']          = ']'
+" let g:VM_maps['Find Prev']          = '['
+" let g:VM_maps['Goto Next']          = '}'
+" let g:VM_maps['Goto Prev']          = '{'
+" let g:VM_maps['Seek Next']          = '<C-d>'
+" let g:VM_maps['Seek Prev']          = '<C-u>'
+" 
+" let g:VM_maps['Surround']           = 'S'
+" let g:VM_maps['D']                  = 'D'
+" let g:VM_maps['J']                  = 'J'
+" let g:VM_maps['Dot']                = '.'
+" let g:VM_maps['c']                  = 'c'
+" let g:VM_maps['C']                  = 'C'
+" let g:VM_maps['Replace Pattern']    = 'R'
+" " }}}3
+
+" " ref {{{3
+" MyAlterCommand refe Ref<Space>refe
+" " }}}3
 
 " }}}2
 
@@ -2598,7 +2598,7 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor14 ctermfg=14 guifg=
 AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor15 ctermfg=15 guifg=#B48EAD
 
 " Plugin highlight
-AutoCmd ColorScheme nord,onedark,iceberg highlight BrightestHighlight      ctermfg=72   ctermbg=NONE                      guifg=#5FAF87 guibg=NONE
+" AutoCmd ColorScheme nord,onedark,iceberg highlight BrightestHighlight      ctermfg=72   ctermbg=NONE                      guifg=#5FAF87 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
 AutoCmd ColorScheme nord,onedark,iceberg highlight ExtraWhiteSpace         ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
 AutoCmd ColorScheme nord,onedark,iceberg highlight FloatermNF              ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#161821
