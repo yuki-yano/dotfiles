@@ -111,7 +111,7 @@ export GOPATH=$HOME/.go
 path=(~/.go/bin(N-/) ~/.ghg/bin(N-/) $path)
 
 # java
-export JAVA_HOME=$(/usr/libexec/java_home -v "13")
+export JAVA_HOME=$(/usr/libexec/java_home -v "14")
 
 # llvm
 path=(/usr/local/opt/llvm/bin(N-/) $path)
