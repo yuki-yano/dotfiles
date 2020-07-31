@@ -12,8 +12,8 @@
 !/.config/alacritty/
 !/.config/efm-langserver
 !/.config/fzf-preview.zsh
-!/.config/karabiner/assets
-!/.config/karabiner/karabiner.json
+!/.config/karabiner
+/.config/karabiner/automatic_backups
 !/.config/nvim
 !/.config/previm
 !/.config/ripgrep
