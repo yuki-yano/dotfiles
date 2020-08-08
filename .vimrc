@@ -58,8 +58,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Fuzzy Finder {{{3
   call dein#add('Shougo/denite.nvim')
-  call dein#add('hrsh7th/vim-gitto')
-  call dein#add('hrsh7th/vim-denite-gitto')
 
   call dein#add('junegunn/fzf', {'build': './install --bin', 'merged': 0})
   " call dein#add('yuki-ycino/fzf-preview.vim', {'rev': 'release', 'merged': 0})
