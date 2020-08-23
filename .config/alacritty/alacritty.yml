@@ -11,7 +11,8 @@ window:
     y: 0
 
   decorations: full
-tabspaces: 2
+
+  dynamic_title: true
 
 draw_bold_text_with_bright_colors: true
 
@@ -82,7 +83,7 @@ colors:
     cyan:    '#8FBCBB'
     white:   '#ECEFF4'
 
-visual_bell:
+bell:
   animation: EaseOutExpo
   duration: 0
 
@@ -102,8 +103,6 @@ mouse:
 
 selection:
   semantic_escape_chars: ",│`|:\"' ()[]{}<>"
-
-dynamic_title: true
 
 cursor:
   style: Block
