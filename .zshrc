@@ -5,12 +5,13 @@ export FZF_TMUX_DISABLED=1
 source ~/repos/github.com/yuki-ycino/fzf-preview.zsh/fzf-preview.zsh
 
 function fzf-preview-settings() {
-  bindkey '^ '  fzf-snippet-selection
-  bindkey ' '   fzf-auto-snippet-and-space
-  bindkey '^m'  fzf-auto-snippet-and-accept-line
-  bindkey '^[f' fzf-snippet-next-placeholder
-  bindkey '^i'  fzf-or-normal-completion
-  bindkey '^r'  fzf-history-selection
+  bindkey '^ '   fzf-snippet-selection
+  bindkey ' '    fzf-auto-snippet-and-space
+  bindkey '^m'   fzf-auto-snippet-and-accept-line
+  bindkey '^[f'  fzf-snippet-next-placeholder
+  bindkey '^i'   fzf-or-normal-completion
+  bindkey '^r'   fzf-history-selection
+  bindkey '^x^s' fzf-snippet-selection
 }
 
 # }}}
