@@ -19,7 +19,6 @@ upgrade
 cask install 1password
 cask install alfred
 cask install appcleaner
-cask install atom
 cask install bartender
 cask install charles
 cask install dash
@@ -42,7 +41,6 @@ cask install kindle
 cask install mplayerx
 cask install ngrok
 cask install notion
-cask install one-switch
 cask install paw
 cask install react-native-debugger
 cask install scroll-reverser
