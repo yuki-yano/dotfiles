@@ -28,7 +28,7 @@ install go golangci/tap/golangci-lint
 install lua
 install node nodenv yarn
 install openssl
-install pyenv python python@2
+install pyenv python
 install ruby rbenv ruby-build
 install perl
 install source-highlight
