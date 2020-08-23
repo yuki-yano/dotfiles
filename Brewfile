@@ -62,7 +62,7 @@ install pstree
 install rsync
 install tokei
 install tree
-install universal-ctags/universal-ctags/universal-ctags --HEAD --with-jansson
+# install --HEAD --with-jansson universal-ctags/universal-ctags/universal-ctags
 install w3m
 install watch
 install wget
