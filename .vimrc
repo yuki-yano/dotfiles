@@ -32,16 +32,16 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Language {{{3
+  " call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': 'css'})
+  " call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
+  " call dein#add('tpope/vim-rails',                         {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('elzr/vim-json',                           {'lazy': 1, 'on_ft': 'json'})
   call dein#add('iamcco/markdown-preview.nvim',            {'lazy': 1, 'on_ft': 'markdown', 'build': 'sh -c "cd app & yarn install"' })
-  call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': 'css'})
   call dein#add('jparise/vim-graphql',                     {'lazy': 1, 'on_ft': ['graphql', 'javascript', 'typescript', 'typescriptreact', 'typescript.tsx']})
   call dein#add('leafgarland/typescript-vim',              {'lazy': 1, 'on_ft': ['typescript', 'typescriptreact', 'typescript.tsx']})
   call dein#add('othree/yajs.vim',                         {'lazy': 1, 'on_ft': 'javascript'})
   call dein#add('plasticboy/vim-markdown',                 {'lazy': 1, 'on_ft': 'markdown'})
-  call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
   call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescriptreact', 'typescript.tsx']})
-  call dein#add('tpope/vim-rails',                         {'lazy': 1, 'on_ft': 'ruby'})
   " }}}3
 
   " Git {{{3
@@ -94,6 +94,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Edit & Move & Search {{{3
   " call dein#add('AndrewRadev/splitjoin.vim',     {'lazy': 1, 'on_cmd': ['SplitJoinSplit', 'SplitJoinJoin']})
   " call dein#add('mg979/vim-visual-multi',        {'rev': 'test'})
+  " call dein#add('rhysd/accelerated-jk',          {'lazy': 1, 'on_map': '<Plug>'})
+  " call dein#add('unblevable/quick-scope')
   call dein#add('Bakudankun/BackAndForward.vim')
   call dein#add('LeafCage/yankround.vim')
   call dein#add('MattesGroeger/vim-bookmarks')
@@ -110,30 +112,28 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mtth/scratch.vim',              {'lazy': 1, 'on_cmd': 'Scratch'})
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',          {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('rhysd/accelerated-jk',          {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('t9md/vim-choosewin',            {'lazy': 1, 'on_map': {'n': '<Plug>'}})
   call dein#add('terryma/vim-expand-region',     {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-qfreplace',          {'lazy': 1, 'on_cmd': 'Qfreplace'})
   call dein#add('tommcdo/vim-exchange',          {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
   call dein#add('tpope/vim-repeat')
   call dein#add('tyru/caw.vim',                  {'lazy': 1, 'on_map': '<Plug>'})
-  call dein#add('unblevable/quick-scope')
   call dein#add('vim-scripts/Align',             {'lazy': 1, 'on_cmd': 'Align'})
   " }}}3
 
   " Appearance {{{3
   " call dein#add('RRethy/vim-hexokinase', {'build': 'make hexokinase'})
-  call dein#add('Yggdroot/indentLine')
-  call dein#add('andymass/vim-matchup')
+  " call dein#add('Yggdroot/indentLine')
+  " call dein#add('andymass/vim-matchup')
+  " call dein#add('mopp/smartnumber.vim')
+  " call dein#add('wellle/context.vim')
   call dein#add('itchyny/lightline.vim')
   call dein#add('lambdalisue/readablefold.vim')
   call dein#add('luochen1990/rainbow')
   call dein#add('machakann/vim-highlightedundo')
   call dein#add('machakann/vim-highlightedyank')
-  call dein#add('mopp/smartnumber.vim')
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('ryanoasis/vim-devicons')
-  call dein#add('wellle/context.vim')
   call dein#add('yuttie/comfortable-motion.vim')
   " }}}3
 
@@ -142,6 +142,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Util {{{3
+  " call dein#add('itchyny/vim-qfedit')
   " call dein#add('osyo-manga/vim-brightest')
   " call dein#add('osyo-manga/vim-gift')
   " call dein#add('pocke/vim-automatic',          {'depends': 'vim-gift'})
@@ -150,7 +151,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('AndrewRadev/linediff.vim',     {'lazy': 1, 'on_cmd': 'Linediff'})
   call dein#add('aiya000/aho-bakaup.vim')
   call dein#add('dhruvasagar/vim-table-mode',   {'lazy': 1, 'on_cmd': 'TableModeToggle'})
-  call dein#add('itchyny/vim-qfedit')
   call dein#add('jsfaint/gen_tags.vim')
   call dein#add('kana/vim-niceblock',           {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
   call dein#add('lambdalisue/vim-manpager',     {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER']})
@@ -257,9 +257,6 @@ nnoremap <silent> <Leader>W :<C-u>update!<CR>
 "" Automatically indent with i and A
 nnoremap <expr> i len(getline('.')) ? "i" : "cc"
 nnoremap <expr> A len(getline('.')) ? "A" : "cc"
-
-"" o to A<CR>
-nmap o A<CR>
 
 " Ignore registers
 nnoremap x "_x
@@ -376,6 +373,7 @@ set laststatus=2
 set list listchars=tab:^\ ,trail:_,extends:>,precedes:<,eol:$
 set matchpairs+=<:>
 set matchtime=1
+set number
 set pumheight=40
 set scrolloff=5
 set showtabline=2
@@ -651,9 +649,6 @@ function! s:start_review() abort
   let $BAT_THEME_BAK = $BAT_THEME
   let $BAT_THEME = 'Solarized (light)'
 
-  SNumbersDisable
-  set number norelativenumber
-
   let g:comfortable_motion_enable = 0
   ComfortableMotionToggle
 
@@ -677,8 +672,6 @@ function! s:end_review() abort
   let $FZF_PREVIEW_PREVIEW_BAT_THEME = $FZF_PREVIEW_PREVIEW_BAT_THEME_BAK
   let $FZF_DEFAULT_OPTS = $FZF_DEFAULT_OPTS_BAK
   let $BAT_THEME = $BAT_THEME_BAK
-
-  SNumbersEnable
 
   let g:comfortable_motion_enable = 1
   ComfortableMotionToggle
@@ -1016,7 +1009,6 @@ if dein#tap('denite.nvim')
   let s:menus.toggle.command_candidates = [
   \ ['Toggle Review            [ReviewToggle]',              'ReviewToggle'           ],
   \ ['Toggle CursorHighlight   [CursorHighlightToggle]',     'CursorHighlightToggle'  ],
-  \ ['Toggle SmartNumber       [SmartNumberToggleRelative]', 'SNumbersToggleRelative' ],
   \ ['Toggle Context           [ContextToggleWindow]',       'ContextToggleWindow'    ],
   \ ['Toggle ComfortableMotion [ComfortableMotionToggle]',   'ComfortableMotionToggle'],
   \ ['Toggle IndentLine        [IndentLinesToggle]',         'IndentLinesToggle'      ],
@@ -1466,10 +1458,10 @@ xmap a- <Plug>(textobj-between-a)-
 " Edit & Move & Search {{{2
 
 " accelerated-jk {{{3
-if dein#tap('accelerated-jk')
-  nmap j <Plug>(accelerated_jk_j)
-  nmap k <Plug>(accelerated_jk_k)
-endif
+" if dein#tap('accelerated-jk')
+"   nmap j <Plug>(accelerated_jk_j)
+"   nmap k <Plug>(accelerated_jk_k)
+" endif
 " }}}3
 
 " anzu & asterisk & incsearch {{{3
@@ -1682,7 +1674,7 @@ endif
 " }}}3
 
 " quick-scope {{{3
-let g:qs_buftype_blacklist = ['terminal', 'nofile']
+" let g:qs_buftype_blacklist = ['terminal', 'nofile']
 " }}}3
 
 " reword {{{3
@@ -1883,7 +1875,7 @@ endif
 " }}}3
 
 " indent-line {{{3
-let g:indentLine_fileTypeExclude = ['json', 'defx', 'fern']
+" let g:indentLine_fileTypeExclude = ['json', 'defx', 'fern']
 " }}}3
 
 " lightline {{{3
@@ -2179,7 +2171,7 @@ endif
 " }}}3
 
 " matchup {{{3
-let g:matchup_matchparen_status_offscreen = 0
+" let g:matchup_matchparen_status_offscreen = 0
 " }}}3
 
 " rainbow {{{3
