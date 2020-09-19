@@ -170,6 +170,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tyru/capture.vim',             {'lazy': 1, 'on_cmd': 'Capture'})
   call dein#add('tyru/vim-altercmd')
   call dein#add('voldikss/vim-floaterm')
+  call dein#add('wakatime/vim-wakatime')
   call dein#add('wesQ3/vim-windowswap',         {'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#MarkWindowSwap', 'WindowSwap#DoWindowSwap']})
   " }}}3
 
