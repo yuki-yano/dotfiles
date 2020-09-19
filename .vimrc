@@ -845,6 +845,8 @@ MyAlterCommand dein Dein
 " }}}2
 
 " IDE {{{2
+
+" coc {{{3
 MyAlterCommand list CocList
 
 MyAlterCommand jest       Jest
@@ -901,9 +903,15 @@ nmap     <silent> [dev]i  <Plug>(coc-implementation)
 nmap     <silent> [dev]rn <Plug>(coc-rename)
 nnoremap <silent> [dev]a  :<C-u>set operatorfunc=<SID>coc_actions_open_from_selected<CR>g@
 xnoremap <silent> [dev]a  :<C-u>execute 'CocCommand actions.open ' . visualmode()<CR>
+nmap     <silent> [dev]qf <Plug>(coc-fix-current)
 nmap     <silent> [dev]f  <Plug>(coc-format)
 xmap     <silent> [dev]f  <Plug>(coc-format-selected)
 nmap     <silent> [dev]gs <Plug>(coc-git-chunkinfo)
+
+xmap if <Plug>(coc-funcobj-i)
+omap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
+omap af <Plug>(coc-funcobj-a)
 
 " nnoremap <Leader>e :<C-u>CocCommand explorer<CR>
 " nnoremap <Leader>E :<C-u>CocCommand explorer --reveal expand('%')<CR>
