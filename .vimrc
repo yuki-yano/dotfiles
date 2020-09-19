@@ -704,6 +704,10 @@ command! ReviewToggle call <SID>review_toggle()
 
 " FileType {{{2
 
+" Set filetype {{{3
+AutoCmd BufNewFile,BufRead *.tsx setlocal filetype=typescript.tsx
+" }}}3
+
 " Intent {{{3
 AutoCmd FileType javascript      setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType typescript      setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
@@ -984,7 +988,8 @@ let g:vim_markdown_new_list_item_indent    = 0
 " }}}3
 
 " typescript {{{3
-AutoCmd BufNewFile,BufRead *.tsx setlocal filetype=typescript.tsx
+AutoCmd FileType typescript,typescriptreact,typescript.tsx :setlocal makeprg=tsc\ --project\ .\ --noEmit
+AutoCmd FileType typescript,typescriptreact,typescript.tsx :setlocal errorformat=%+A\ %#%f\ %#(%l\\\,%c):\ %m,%C%m
 " }}}3
 
 " vim {{{3
