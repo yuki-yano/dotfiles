@@ -34,6 +34,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Language {{{3
   " call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': 'css'})
+  " call dein#add('nvim-treesitter/nvim-treesitter',         {'merged': 0})
   " call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
   " call dein#add('tpope/vim-rails',                         {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('elzr/vim-json',                           {'lazy': 1, 'on_ft': 'json'})
@@ -955,6 +956,31 @@ let g:vim_markdown_conceal                 = 0
 let g:vim_markdown_conceal_code_blocks     = 0
 let g:vim_markdown_auto_insert_bullets     = 0
 let g:vim_markdown_new_list_item_indent    = 0
+" }}}3
+
+" treesitter {{{3
+" lua <<EOF
+" require'nvim-treesitter.configs'.setup {
+"   ensure_installed = {"typescript", "tsx", "javascript", "ruby", "python"},
+"   highlight = {
+"     enable = true,
+"   },
+"   refactor = {
+"     highlight_definitions = { enable = true },
+"   },
+"   textobjects = {
+"     select = {
+"       enable = true,
+"       keymaps = {
+"         ["af"] = "@function.outer",
+"         ["if"] = "@function.inner",
+"         ["ac"] = "@class.outer",
+"         ["ic"] = "@class.inner",
+"       },
+"     },
+"   },
+" }
+" EOF
 " }}}3
 
 " typescript {{{3
