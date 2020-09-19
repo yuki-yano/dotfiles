@@ -1,5 +1,3 @@
---langmap=typescript:.ts.tsx
-
 --exclude=bundle.*
 --exclude=*.bundle.*
 --exclude=*.min.js
