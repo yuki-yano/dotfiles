@@ -24,11 +24,12 @@ cask install charles
 cask install dash
 cask install default-folder-x
 cask install discord
-cask install homebrew/cask-versions/discord-canary
 cask install docker
 cask install firefox
 cask install google-chrome
 cask install google-chrome-canary
+cask install hey
+cask install homebrew/cask-versions/discord-canary
 cask install hyperswitch
 cask install iterm2
 cask install jasper
