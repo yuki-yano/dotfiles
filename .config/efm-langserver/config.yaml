@@ -1,76 +1,10 @@
 ---
 version: 2
 
-commands:
-  - title: Reload
-    command: :reload-config
-
-  - title: Editor
-    os: darwin
-    command: open
-    arguments:
-      - "-e"
-      - ${FILENAME}
-
-  - title: Filer
-    os: darwin
-    command: open
-    arguments:
-      - "-R"
-      - ${FILENAME}
-
-  - title: Browser
-    os: darwin
-    command: open
-    arguments:
-      - "-a"
-      - "Google Chrome"
-      - ${FILENAME}
-
-  - title: Open
-    os: darwin
-    command: open
-    arguments:
-      - ${FILENAME}
-
 tools:
   go-golangci-lint: &go-golangci-lint
-    lint-command: "golangci-lint run"
-
-  vint-lint: &vint-lint
-    lint-command: "vint --enable-neovim --style-problem --stdin-display-name ${INPUT} -"
-    lint-stdin: true
-    lint-formats:
-      - "%f:%l:%c: %m"
-
-  jsonlint-lint: &jsonlint-lint
-    lint-command: "jsonlint -c"
-    lint-stdin: true
-    lint-formats:
-      - "line %l, col %c, found: %m"
-
-  shellcheck-lint: &shellcheck-lint
-    lint-command: "shellcheck -s bash -f gcc -x -"
-    lint-stdin: true
-    lint-formats:
-      - "%f:%l:%c: %trror: %m"
-      - "%f:%l:%c: %tarning: %m"
-      - "%f:%l:%c: %tote: %m"
-
-  shfmt-format: &shfmt-format
-    format-command: "shfmt -ln bash -kp"
-    format-stdin: true
+    lint-command: 'golangci-lint run'
 
 languages:
   go:
     - <<: *go-golangci-lint
-
-  vim:
-    - <<: *vint-lint
-
-  json:
-    - <<: *jsonlint-lint
-
-  sh:
-    - <<: *shellcheck-lint
-    - <<: *shfmt-format
