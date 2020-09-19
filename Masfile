@@ -7,7 +7,6 @@
 # install 1246284741 # macOS High Sierra
 # install 1278508951 # Trello
 # install 1289197285 # MindNode
-# install 1384080005 # Tweetbot 3
 # install 402383384  # Base (Sqlite Editor)
 # install 413215883  # WinArchiver
 # install 413965349  # Soulver
@@ -16,6 +15,7 @@
 # install 499768540  # Power JSON Editor
 # install 514851490  # Navicat Data Modeler
 # install 537211143  # PhotoBulk
+# install 540348655  # Monosnap
 # install 599799247  # SoraAnnai
 # install 803083078  # IconExtractor
 # install 823766827  # OneDrive
@@ -34,6 +34,7 @@ install 1142578753 # OmniGraffle 7
 install 1176895641 # Spark
 install 1206246482 # EdgeView 2
 install 1319778037 # iStat Menus
+install 1384080005 # Tweetbot 3
 install 403388562  # Transmit 4
 install 406056744  # Evernote
 install 411643860  # DaisyDisk
@@ -47,7 +48,6 @@ install 485812721  # TweetDeck
 install 507257563  # Sip
 install 524373870  # Due
 install 539883307  # LINE
-install 540348655  # Monosnap
 install 568494494  # Pocket
 install 577085396  # Unclutter
 install 585829637  # Todoist
