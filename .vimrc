@@ -29,6 +29,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " IDE {{{3
   call dein#add('neoclide/coc.nvim', {'merged': 0, 'rev': 'release'})
+  call dein#add('tsuyoshicho/vim-efm-langserver-settings')
   " }}}3
 
   " Language {{{3
@@ -923,6 +924,12 @@ command! JestCurrent :call CocAction('runCommand', 'jest.fileTest', ['%'])
 command! JestSingle  :call CocAction('runCommand', 'jest.singleTest')
 
 AutoCmd FileType typescript,typescript.tsx call s:coc_typescript_settings()
+" }}}3
+
+" efm-langserver-settings {{{3
+let g:efm_langserver_settings#filetype_whitelist = ['ruby', 'json', 'vim', 'sh']
+" }}}3
+
 " }}}2
 
 " Language {{{2

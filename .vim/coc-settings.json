@@ -71,7 +71,7 @@
     },
     "efm": {
       "command": "efm-langserver",
-      "filetypes": ["go", "json", "vim", "sh"]
+      "filetypes": ["go", "ruby", "json", "vim", "sh"]
     }
   },
 
@@ -84,8 +84,6 @@
     "typescriptreact",
     "typescript.tsx"
   ],
-  "solargraph.diagnostics": true,
-  "solargraph.formatting": true,
 
   "python.jediEnabled": false,
   "python.linting.flake8Enabled": true,
