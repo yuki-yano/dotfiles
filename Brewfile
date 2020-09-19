@@ -52,6 +52,7 @@ install autoconf automake cmake gawk gnu-sed gnu-time gpatch gpg2 wget
 
 
 ## Util
+# install --HEAD --with-jansson universal-ctags/universal-ctags/universal-ctags
 install expect
 install global
 install graphviz
@@ -62,9 +63,9 @@ install pstree
 install rsync
 install tokei
 install tree
-# install --HEAD --with-jansson universal-ctags/universal-ctags/universal-ctags
 install w3m
 install watch
+install watchman
 install wget
 
 ## VCS
