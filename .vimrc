@@ -67,7 +67,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " filer {{{3
   call dein#add('lambdalisue/fern.vim')
-  call dein#add('lambdalisue/fern-renderer-devicons.vim')
+  call dein#add('lambdalisue/fern-git-status.vim')
+  call dein#add('lambdalisue/fern-renderer-nerdfont.vim')
+  call dein#add('lambdalisue/glyph-palette.vim')
+  call dein#add('lambdalisue/nerdfont.vim')
 
   call dein#add('Shougo/defx.nvim')
   call dein#add('kristijanhusak/defx-icons')
@@ -1332,8 +1335,8 @@ let g:defx_git#raw_mode        = 1
 let g:defx_icons_column_length = 2
 
 if has('nvim')
-  nnoremap <silent> <Leader>e :Defx -columns=mark:git:indent:icons:filename:type -split=vertical -winwidth=40 -direction=topleft<CR>
-  nnoremap <silent> <Leader>E :Defx -columns=mark:git:indent:icons:filename:type -split=vertical -winwidth=40 -direction=topleft -search=`expand('%:p')`<CR>
+  nnoremap <silent> <Leader><Leader>e :Defx -columns=mark:git:indent:icons:filename:type -split=vertical -winwidth=40 -direction=topleft<CR>
+  nnoremap <silent> <Leader><Leader>E :Defx -columns=mark:git:indent:icons:filename:type -split=vertical -winwidth=40 -direction=topleft -search=`expand('%:p')`<CR>
 endif
 
 let g:defx_ignore_filtype = ['denite', 'defx']
@@ -1382,14 +1385,15 @@ AutoCmd FileType defx call s:defx_settings()
 " }}}3
 
 " fern {{{3
-let g:fern#disable_default_mappings = 1
-let g:fern#drawer_width = 40
-let g:fern#renderer = 'devicons'
+let g:fern#disable_default_mappings  = 1
+let g:fern#drawer_width              = 40
+let g:fern#renderer                  = 'nerdfont'
+let g:fern#renderer#nerdfont#padding = '  '
 
-if !has('nvim')
-  nnoremap <silent> <Leader>e :<C-u>Fern . -drawer <CR>
-  nnoremap <silent> <Leader>E :<C-u>Fern . -drawer -reveal=%<CR>
-endif
+" if !has('nvim')
+nnoremap <silent> <Leader>e :<C-u>Fern . -drawer <CR>
+nnoremap <silent> <Leader>E :<C-u>Fern . -drawer -reveal=%<CR>
+" endif
 
 function! s:fern_settings() abort
   nmap <silent> <buffer> <expr> <Plug>(fern-expand-or-collapse) fern#smart#leaf("\<Plug>(fern-action-collapse)", "\<Plug>(fern-action-expand)", "\<Plug>(fern-action-collapse)")
@@ -1399,9 +1403,9 @@ function! s:fern_settings() abort
   nmap <silent> <buffer> <nowait> t     <Plug>(fern-expand-or-collapse)
   nmap <silent> <buffer> <nowait> l     <Plug>(fern-open-or-enter)
   nmap <silent> <buffer> <nowait> h     <Plug>(fern-action-leave)
-  nmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark-toggle)
-  nmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark-toggle)
-  vmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark-toggle)
+  nmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark:toggle)
+  nmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark:toggle)
+  vmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark:toggle)
   nmap <silent> <buffer> <nowait> N     <Plug>(fern-action-new-file)
   nmap <silent> <buffer> <nowait> K     <Plug>(fern-action-new-dir)
   nmap <silent> <buffer> <nowait> d     <Plug>(fern-action-trash)
@@ -1417,9 +1421,12 @@ function! s:fern_settings() abort
 
   nnoremap <silent> <buffer> <nowait> q :<C-u>quit<CR>
   nnoremap <silent> <buffer> <nowait> Q :<C-u>bwipe!<CR>
+
+  setlocal nonumber norelativenumber
 endfunction
 
 AutoCmd FileType fern call s:fern_settings()
+AutoCmd FileType fern call glyph_palette#apply()
 " }}}3
 
 " }}}2
@@ -2547,7 +2554,7 @@ syntax enable
 
 " Highlight {{{2
 
-AutoCmd ColorScheme nord,onedark,iceberg,iceberg highlight Normal       ctermfg=145  ctermbg=235  guifg=#ABB2BF guibg=#26282F
+AutoCmd ColorScheme nord,onedark,iceberg highlight Normal       ctermfg=145  ctermbg=235  guifg=#ABB2BF guibg=#26282F
 AutoCmd ColorScheme nord,onedark,iceberg highlight NormalNC     ctermfg=144  ctermbg=234  guifg=#ABB2BF guibg=#282C34
 AutoCmd ColorScheme nord,onedark,iceberg highlight CursorColumn ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#353535
 AutoCmd ColorScheme nord,onedark,iceberg highlight CursorLine   ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#353535
@@ -2603,13 +2610,18 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight CocErrorSign            cterm
 AutoCmd ColorScheme nord,onedark,iceberg highlight CocWarningSign          ctermfg=214  ctermbg=NONE                      guifg=#FFAF00 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight CocInfoSign             ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
 
-AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Untracked    ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
-AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Modified     ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
-AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Staged       ctermfg=2    ctermbg=NONE                      guifg=#b4be82 guibg=NONE
-AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Deleted      ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
-AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Renamed      ctermfg=2    ctermbg=NONE                      guifg=#b4be82 guibg=NONE
-AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Unmerged     ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Untracked      ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Modified       ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Staged         ctermfg=2    ctermbg=NONE                      guifg=#b4be82 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Deleted        ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Renamed        ctermfg=2    ctermbg=NONE                      guifg=#b4be82 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight Defx_git_Unmerged       ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
 
+AutoCmd ColorScheme nord,onedark,iceberg highlight FernGitStatusWorktree   ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight FernGitStatusIndex      ctermfg=2    ctermbg=NONE                      guifg=#b4be82 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight FernGitStatusUnmerged   ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight FernGitStatusUntracked  ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme nord,onedark,iceberg highlight link FernGitStatusIgnored Comment
 " }}}2
 
 " nord {{{2
