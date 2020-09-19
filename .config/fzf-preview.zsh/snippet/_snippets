@@ -47,3 +47,4 @@ brew_search:     echo '' | fzf --phony --query="'" --bind="change:reload:brew se
 cask_search:     echo '' | fzf --phony --query="'" --bind="change:reload:brew search --casks {q} 2>/dev/null | grep -v 'Casks' " --preview="brew cask info {} 2>/dev/null"
 disable_desktop: defaults write com.apple.finder CreateDesktop -boolean false; killall Finder
 enable_desktop:  defaults write com.apple.finder CreateDesktop -boolean true; killall Finder
+rails_init:      bundle exec rails new . --skip-action-mailer --skip-action-mailbox --skip-action-text --skip-action-cable --skip-sprockets --skip-spring --skip-listen --skip-javascript --skip-turbolinks --skip-test --skip-system-test --skip-bootsnap --api --skip-webpack-install
