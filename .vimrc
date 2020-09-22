@@ -185,6 +185,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Color Theme {{{3
+  call dein#add('NLKNguyen/papercolor-theme')
   call dein#add('arcticicestudio/nord-vim')
   call dein#add('cocopon/iceberg.vim')
   call dein#add('icymind/NeoSolarized')
@@ -643,9 +644,9 @@ let g:review_status = v:false
 function! s:review_start() abort
   let g:review_status = v:true
 
-  colorscheme NeoSolarized
+  colorscheme PaperColor
   set background=light
-  let g:lightline.colorscheme = 'lightline_solarized'
+  let g:lightline.colorscheme = 'PaperColor'
   call lightline#disable()
   call lightline#enable()
 
@@ -653,11 +654,14 @@ function! s:review_start() abort
   let g:fzf_preview_command = 'bat --color=always --style=plain --theme="Solarized (light)" ''{-1}'''
 
   let $FZF_PREVIEW_PREVIEW_BAT_THEME_BAK = $FZF_PREVIEW_PREVIEW_BAT_THEME
-  let $FZF_PREVIEW_PREVIEW_BAT_THEME = 'Solarized (light)'
+  let $FZF_PREVIEW_PREVIEW_BAT_THEME = 'papercolor-light'
   let $FZF_DEFAULT_OPTS_BAK = $FZF_DEFAULT_OPTS
-  let $FZF_DEFAULT_OPTS = '--color=fg:240,bg:230,hl:33,fg+:241,bg+:221,hl+:33,info:33,prompt:33,pointer:166,marker:166,spinner:33'
+  " PaperColor
+  let $FZF_DEFAULT_OPTS= '--color=fg:#4d4d4c,bg:#eeeeee,hl:#d7005f,fg+:#4d4d4c,bg+:#e8e8e8,hl+:#d7005f,info:#4271ae,prompt:#8959a8,pointer:#d7005f,marker:#4271ae,spinner:#4271ae,header:#4271ae'
+  " Solarized
+  " let $FZF_DEFAULT_OPTS = '--color=fg:240,bg:230,hl:33,fg+:241,bg+:221,hl+:33,info:33,prompt:33,pointer:166,marker:166,spinner:33'
   let $BAT_THEME_BAK = $BAT_THEME
-  let $BAT_THEME = 'Solarized (light)'
+  let $BAT_THEME = 'papercolor-light'
 
   let g:comfortable_motion_enable = 0
   " ComfortableMotionToggle
