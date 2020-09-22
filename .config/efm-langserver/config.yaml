@@ -5,6 +5,52 @@ tools:
   go-golangci-lint: &go-golangci-lint
     lint-command: 'golangci-lint run'
 
+  rubocop-lint: &rubocop-lint
+    lint-command: 'bundle exec rubocop --format emacs --force-exclusion --stdin ${INPUT}'
+    lint-ignore-exit-code: true
+    lint-stdin: true
+    lint-formats:
+      - '%f:%l:%c: %m'
+    root-markers:
+    - Gemfile
+    - .rubocop.yml
+
+  rubocop-format: &rubocop-format
+    format-command: 'bundle exec rubocop --auto-correct-all --stdin ${INPUT} | sed -e "1,/^=/d"'
+    format-stdin: true
+    root-markers:
+    - Gemfile
+    - .rubocop.yml
+
+  vint-lint: &vint-lint
+    lint-command: "vint --enable-neovim --style-problem --stdin-display-name ${INPUT} -"
+    lint-stdin: true
+    lint-formats:
+      - "%f:%l:%c: %m"
+
+  shellcheck-lint: &shellcheck-lint
+    lint-command: "shellcheck -s bash -f gcc -x -"
+    lint-stdin: true
+    lint-formats:
+      - "%f:%l:%c: %trror: %m"
+      - "%f:%l:%c: %tarning: %m"
+      - "%f:%l:%c: %tote: %m"
+
+  shfmt-format: &shfmt-format
+    format-command: "shfmt -ln bash -kp"
+    format-stdin: true
+
 languages:
   go:
     - <<: *go-golangci-lint
+
+  ruby:
+    - <<: *rubocop-lint
+    - <<: *rubocop-format
+
+  vim:
+    - <<: *vint-lint
+
+  sh:
+    - <<: *shellcheck-lint
+    - <<: *shfmt-format
