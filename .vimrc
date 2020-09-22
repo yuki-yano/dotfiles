@@ -2332,7 +2332,7 @@ endif
 " }}}3
 
 " smartnumber {{{3
-let g:snumber_enable_startup = 1
+" let g:snumber_enable_startup = 1
 " }}}3
 
 " vista {{{3
