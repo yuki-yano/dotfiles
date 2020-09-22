@@ -29,7 +29,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " IDE {{{3
   call dein#add('neoclide/coc.nvim', {'merged': 0, 'rev': 'release'})
-  call dein#add('tsuyoshicho/vim-efm-langserver-settings')
+  " call dein#add('tsuyoshicho/vim-efm-langserver-settings')
   " }}}3
 
   " Language {{{3
