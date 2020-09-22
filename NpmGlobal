@@ -4,4 +4,5 @@ neovim
 prettier
 ts-node
 typescript
+typesync
 vim-language-server
