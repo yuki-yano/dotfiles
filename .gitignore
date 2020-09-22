@@ -10,6 +10,7 @@
 # Config
 /.config/*
 !/.config/alacritty/
+!/.config/bat/
 !/.config/efm-langserver
 !/.config/fzf-preview.zsh
 !/.config/karabiner
