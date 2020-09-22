@@ -189,6 +189,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('cocopon/iceberg.vim')
   call dein#add('icymind/NeoSolarized')
   call dein#add('joshdick/onedark.vim')
+  call dein#add('taohexxx/lightline-solarized')
   " }}}3
 
   call dein#end()
@@ -639,20 +640,18 @@ command! VSCode execute printf('!code -r "%s"', expand('%'))
 " Review {{{2
 let g:review_status = v:false
 
-function! s:start_review() abort
+function! s:review_start() abort
   let g:review_status = v:true
 
   colorscheme NeoSolarized
   set background=light
+  let g:lightline.colorscheme = 'lightline_solarized'
   call lightline#disable()
+  call lightline#enable()
+
   let g:fzf_preview_command_bak = g:fzf_preview_command
   let g:fzf_preview_command = 'bat --color=always --style=plain --theme="Solarized (light)" ''{-1}'''
 
-  if has('nvim')
-    let g:fzf_preview_git_status_preview_command = '[[ $(git diff -- {-1}) != "" ]] && git diff -- {-1} | delta --file-decoration-style=none || ' .
-                                                   \ '[[ $(git diff --cached -- {-1}) != "" ]] && git diff --cached -- {-1} | delta --file-decoration-style=none || ' .
-                                                   \ g:fzf_preview_command
-  endif
   let $FZF_PREVIEW_PREVIEW_BAT_THEME_BAK = $FZF_PREVIEW_PREVIEW_BAT_THEME
   let $FZF_PREVIEW_PREVIEW_BAT_THEME = 'Solarized (light)'
   let $FZF_DEFAULT_OPTS_BAK = $FZF_DEFAULT_OPTS
@@ -661,42 +660,40 @@ function! s:start_review() abort
   let $BAT_THEME = 'Solarized (light)'
 
   let g:comfortable_motion_enable = 0
-  ComfortableMotionToggle
+  " ComfortableMotionToggle
 
   set list listchars=tab:^\ ,trail:_,extends:>,precedes:<
 endfunction
 
-command! StartReview call <SID>start_review()
+command! ReviewStart call s:review_start()
 
-function! s:end_review() abort
+function! s:review_end() abort
   let g:review_status = v:false
 
   colorscheme nord
   set background=dark
+  let g:lightline.colorscheme = 'nord'
+  call lightline#disable()
   call lightline#enable()
+
   let g:fzf_preview_command = g:fzf_preview_command_bak
-  if has('nvim')
-    let g:fzf_preview_git_status_preview_command = '[[ $(git diff -- {-1}) != "" ]] && git diff -- {-1} | delta --file-decoration-style=none || ' .
-                                                   \ '[[ $(git diff --cached -- {-1}) != "" ]] && git diff --cached -- {-1} | delta --file-decoration-style=none || ' .
-                                                   \ g:fzf_preview_command
-  endif
   let $FZF_PREVIEW_PREVIEW_BAT_THEME = $FZF_PREVIEW_PREVIEW_BAT_THEME_BAK
   let $FZF_DEFAULT_OPTS = $FZF_DEFAULT_OPTS_BAK
   let $BAT_THEME = $BAT_THEME_BAK
 
   let g:comfortable_motion_enable = 1
-  ComfortableMotionToggle
+  " ComfortableMotionToggle
 
   set list listchars=tab:^\ ,trail:_,extends:>,precedes:<,eol:$
 endfunction
 
-command! EndReview call <SID>end_review()
+command! ReviewEnd call <SID>review_end()
 
 function! s:review_toggle() abort
   if g:review_status
-    EndReview
+    ReviewEnd
   else
-    StartReview
+    ReviewStart
   endif
 endfunction
 
