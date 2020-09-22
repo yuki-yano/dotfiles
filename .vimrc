@@ -831,6 +831,7 @@ if dein#tap('vim-altercmd')
   MyAlterCommand ee       e!
   MyAlterCommand vs[code] VSCode
   MyAlterCommand co[de]   VSCode
+  MyAlterCommand fo[rk]   !fork
 endif
 " }}}3
 
