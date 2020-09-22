@@ -1016,7 +1016,7 @@ AutoCmd FileType vue syntax sync fromstart
 " Denite {{{3
 MyAlterCommand d[enite] Denite
 
-if dein#tap('denite.nvim')
+if dein#tap('denite.nvim') && has('nvim')
   " Denite
 
   "" highlight
