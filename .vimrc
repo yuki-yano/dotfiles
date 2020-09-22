@@ -63,6 +63,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('junegunn/fzf', {'build': './install --bin', 'merged': 0})
   " call dein#add('yuki-ycino/fzf-preview.vim', {'rev': 'release', 'merged': 0})
   call dein#add('junegunn/fzf.vim', {'merged': 0})
+  call dein#add('antoinemadec/coc-fzf', {'rev': 'release'})
   call dein#add('~/repos/github.com/yuki-ycino/fzf-preview.vim', {'merged': 0})
   " }}}3
 
@@ -863,6 +864,7 @@ let g:coc_global_extensions = [
 \ 'coc-docker',
 \ 'coc-eslint',
 \ 'coc-explorer',
+\ 'coc-floatinput',
 \ 'coc-git',
 \ 'coc-go',
 \ 'coc-html',
@@ -901,7 +903,8 @@ nmap     <silent> [dev]n  <Plug>(coc-diagnostic-next)
 nmap     <silent> [dev]d  <Plug>(coc-definition)
 nmap     <silent> [dev]t  <Plug>(coc-type-definition)
 nmap     <silent> [dev]i  <Plug>(coc-implementation)
-nmap     <silent> [dev]rn <Plug>(coc-rename)
+" nmap     <silent> [dev]rn <Plug>(coc-rename)
+nmap     <silent> [dev]rn <Plug>(coc-floatinput-rename)
 nnoremap <silent> [dev]a  :<C-u>set operatorfunc=<SID>coc_actions_open_from_selected<CR>g@
 xnoremap <silent> [dev]a  :<C-u>execute 'CocCommand actions.open ' . visualmode()<CR>
 nmap     <silent> [dev]qf <Plug>(coc-fix-current)
@@ -909,16 +912,11 @@ nmap     <silent> [dev]f  <Plug>(coc-format)
 xmap     <silent> [dev]f  <Plug>(coc-format-selected)
 nmap     <silent> [dev]gs <Plug>(coc-git-chunkinfo)
 
-xmap if <Plug>(coc-funcobj-i)
-omap if <Plug>(coc-funcobj-i)
-xmap af <Plug>(coc-funcobj-a)
-omap af <Plug>(coc-funcobj-a)
-
 " nnoremap <Leader>e :<C-u>CocCommand explorer<CR>
 " nnoremap <Leader>E :<C-u>CocCommand explorer --reveal expand('%')<CR>
 
-nmap     <silent> gp      <Plug>(coc-git-prevchunk)
-nmap     <silent> gn      <Plug>(coc-git-nextchunk)
+nmap     <silent> gp <Plug>(coc-git-prevchunk)
+nmap     <silent> gn <Plug>(coc-git-nextchunk)
 
 AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
