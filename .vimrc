@@ -89,6 +89,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-textobj-fold') " iz az
   call dein#add('kana/vim-textobj-indent') " ii ai
   call dein#add('kana/vim-textobj-line') " al il
+  call dein#add('machakann/vim-textobj-functioncall') " if af
   call dein#add('rhysd/vim-textobj-ruby') " ir ar
   call dein#add('thinca/vim-textobj-between') " i{char} a{char}
 
@@ -1509,6 +1510,23 @@ xmap i- <Plug>(textobj-between-i)-
 xmap a- <Plug>(textobj-between-a)-
 " }}}3
 
+" textobj-functioncall {{{3
+let g:textobj_functioncall_patterns = [
+  \ {
+  \   'header' : '\<\%(\h\k*\.\)*\h\k*',
+  \   'bra'    : '(',
+  \   'ket'    : ')',
+  \   'footer' : '',
+  \ },
+  \ {
+  \   'header' : '\<\h\k*',
+  \   'bra'    : '<',
+  \   'ket'    : '>',
+  \   'footer' : '',
+  \ },
+  \ ]
+" }}}3
+
 " }}}2
 
 " Edit & Move & Search {{{2
@@ -1799,6 +1817,31 @@ if dein#tap('vim-sandwich')
   \   'filetype': ['eruby'],
   \ },
   \ ]
+
+  let g:sandwich#recipes += [
+  \ {
+  \   'buns': ['InputGenerics()', '">"'],
+  \   'expr': 1,
+  \   'cursor': 'inner_tail',
+  \   'kind': ['add', 'replace'],
+  \   'action': ['add'],
+  \   'input': ['g']
+  \ },
+  \ {
+  \   'external': ['i<', "\<Plug>(textobj-functioncall-a)"],
+  \   'noremap': 0,
+  \   'kind': ['delete', 'replace', 'query'],
+  \   'input': ['g']
+  \ },
+  \ ]
+
+  function! InputGenerics() abort
+    let genericsname = input('Generics Name: ', '')
+    if genericsname ==# ''
+      throw 'OperatorSandwichCancel'
+    endif
+    return genericsname . '<'
+  endfunction
 
   let g:sandwich#magicchar#f#patterns = [
   \ {
