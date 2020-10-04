@@ -71,6 +71,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " filer {{{3
   call dein#add('lambdalisue/fern.vim')
   call dein#add('lambdalisue/fern-git-status.vim')
+  call dein#add('lambdalisue/fern-hijack.vim')
   call dein#add('lambdalisue/fern-renderer-nerdfont.vim')
   call dein#add('lambdalisue/glyph-palette.vim')
   call dein#add('lambdalisue/nerdfont.vim')
