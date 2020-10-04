@@ -102,6 +102,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Edit & Move & Search {{{3
   " call dein#add('AndrewRadev/splitjoin.vim',     {'lazy': 1, 'on_cmd': ['SplitJoinSplit', 'SplitJoinJoin']})
+  " call dein#add('deris/vim-shot-f')
   " call dein#add('mg979/vim-visual-multi',        {'rev': 'test'})
   " call dein#add('rhysd/accelerated-jk',          {'lazy': 1, 'on_map': '<Plug>'})
   " call dein#add('tyru/caw.vim',                  {'lazy': 1, 'on_map': '<Plug>'})
@@ -110,12 +111,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('LeafCage/yankround.vim')
   call dein#add('MattesGroeger/vim-bookmarks')
   call dein#add('cohama/lexima.vim',             {'lazy': 1, 'on_event': 'InsertEnter', 'hook_post_source': 'call Hook_on_post_source_lexima()'})
-  call dein#add('deris/vim-shot-f')
   call dein#add('easymotion/vim-easymotion')
   call dein#add('haya14busa/incsearch.vim')
   call dein#add('haya14busa/vim-asterisk',       {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-edgemotion')
   call dein#add('haya14busa/vim-metarepeat',     {'lazy': 1, 'on_map': ['go', 'g.', '<Plug>']})
+  call dein#add('hrsh7th/vim-eft')
   call dein#add('junegunn/vim-easy-align',       {'lazy': 1, 'on_cmd': 'EasyAlign'})
   call dein#add('lambdalisue/reword.vim')
   call dein#add('mhinz/vim-grepper',             {'lazy': 1, 'on_cmd': 'Grepper', 'on_map': '<Plug>'})
@@ -869,7 +870,6 @@ let g:coc_global_extensions = [
 \ 'coc-docker',
 \ 'coc-eslint',
 \ 'coc-explorer',
-\ 'coc-floatinput',
 \ 'coc-git',
 \ 'coc-go',
 \ 'coc-html',
@@ -883,8 +883,6 @@ let g:coc_global_extensions = [
 \ 'coc-snippets',
 \ 'coc-solargraph',
 \ 'coc-spell-checker',
-\ 'coc-stylelint',
-\ 'coc-tabnine',
 \ 'coc-tag',
 \ 'coc-tailwindcss',
 \ 'coc-tsserver',
@@ -908,8 +906,7 @@ nmap     <silent> [dev]n  <Plug>(coc-diagnostic-next)
 nmap     <silent> [dev]d  <Plug>(coc-definition)
 nmap     <silent> [dev]t  <Plug>(coc-type-definition)
 nmap     <silent> [dev]i  <Plug>(coc-implementation)
-" nmap     <silent> [dev]rn <Plug>(coc-rename)
-nmap     <silent> [dev]rn <Plug>(coc-floatinput-rename)
+nmap     <silent> [dev]rn <Plug>(coc-rename)
 nnoremap <silent> [dev]a  :<C-u>set operatorfunc=<SID>coc_actions_open_from_selected<CR>g@
 xnoremap <silent> [dev]a  :<C-u>execute 'CocCommand actions.open ' . visualmode()<CR>
 nmap     <silent> [dev]qf <Plug>(coc-fix-current)
@@ -1676,11 +1673,30 @@ if dein#tap('vim-easymotion')
   nmap <silent> ss <Plug>(easymotion-overwin-f2)
   omap <silent> ss <Plug>(easymotion-bd-f2)
   xmap <silent> ss <Plug>(easymotion-bd-f2)
-  omap <silent> f  <Plug>(easymotion-fl)
-  omap <silent> t  <Plug>(easymotion-tl)
-  omap <silent> F  <Plug>(easymotion-Fl)
-  omap <silent> T  <Plug>(easymotion-Tl)
+  " omap <silent> f  <Plug>(easymotion-fl)
+  " omap <silent> t  <Plug>(easymotion-tl)
+  " omap <silent> F  <Plug>(easymotion-Fl)
+  " omap <silent> T  <Plug>(easymotion-Tl)
 endif
+" }}}3
+
+" eft {{{3
+nmap ;; <Plug>(eft-repeat)
+xmap ;; <Plug>(eft-repeat)
+
+nmap f  <Plug>(eft-f)
+xmap f  <Plug>(eft-f)
+omap f  <Plug>(eft-f)
+nmap F  <Plug>(eft-F)
+xmap F  <Plug>(eft-F)
+omap F  <Plug>(eft-F)
+
+" nmap t  <Plug>(eft-t)
+" xmap t  <Plug>(eft-t)
+" omap t  <Plug>(eft-t)
+" nmap T  <Plug>(eft-T)
+" xmap T  <Plug>(eft-T)
+" omap T  <Plug>(eft-T)
 " }}}3
 
 " expand-region {{{3
@@ -1864,11 +1880,11 @@ let g:scratch_no_mappings = 1
 " }}}3
 
 " shot-f {{{3
-if dein#tap('vim-shot-f')
-  let g:shot_f_no_default_key_mappings = 1
-  nmap <silent> f <Plug>(shot-f-f)
-  nmap <silent> F <Plug>(shot-f-F)
-endif
+" if dein#tap('vim-shot-f')
+"   let g:shot_f_no_default_key_mappings = 1
+"   nmap <silent> f <Plug>(shot-f-f)
+"   nmap <silent> F <Plug>(shot-f-F)
+" endif
 " }}}3
 
 " tcomment {{{3
@@ -2697,7 +2713,11 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor15 ctermfg=15 guifg=
 
 " Plugin highlight
 " AutoCmd ColorScheme nord,onedark,iceberg highlight BrightestHighlight      ctermfg=72   ctermbg=NONE                      guifg=#5FAF87 guibg=NONE
+" AutoCmd ColorScheme nord,onedark,iceberg highlight ShotFBlank              ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#E27878 guibg=NONE    gui=underline,bold
+" AutoCmd ColorScheme nord,onedark,iceberg highlight ShotFGraph              ctermfg=209  ctermbg=NONE                      guifg=#E27878 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
+AutoCmd ColorScheme nord,onedark,iceberg highlight EftChar                 ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#E27878 guibg=NONE    gui=underline,bold
+AutoCmd ColorScheme nord,onedark,iceberg highlight EftSubChar              ctermfg=68   ctermbg=NONE cterm=underline,bold guifg=#5F87D7 guibg=NONE    gui=underline,bold
 AutoCmd ColorScheme nord,onedark,iceberg highlight ExtraWhiteSpace         ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
 AutoCmd ColorScheme nord,onedark,iceberg highlight FloatermNF              ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#161821
 AutoCmd ColorScheme nord,onedark,iceberg highlight GitRebase               ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#1F1F20
@@ -2708,8 +2728,6 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight MatchWord               cterm
 AutoCmd ColorScheme nord,onedark,iceberg highlight MatchWordCur            ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
 AutoCmd ColorScheme nord,onedark,iceberg highlight QuickScopePrimary       ctermfg=68   ctermbg=NONE                      guifg=#5F87D7 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight QuickScopeSecondary     ctermfg=72   ctermbg=NONE                      guifg=#5FAFAF guibg=NONE
-AutoCmd ColorScheme nord,onedark,iceberg highlight ShotFBlank              ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#E27878 guibg=NONE    gui=underline,bold
-AutoCmd ColorScheme nord,onedark,iceberg highlight ShotFGraph              ctermfg=209  ctermbg=NONE                      guifg=#E27878 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
 AutoCmd ColorScheme nord,onedark,iceberg highlight ZenSpace                ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
 
