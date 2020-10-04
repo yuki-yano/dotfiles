@@ -134,11 +134,11 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Appearance {{{3
   " call dein#add('RRethy/vim-hexokinase', {'build': 'make hexokinase'})
+  " call dein#add('Xuyuanp/scrollbar.nvim')
   " call dein#add('Yggdroot/indentLine')
   " call dein#add('andymass/vim-matchup')
   " call dein#add('mopp/smartnumber.vim')
   " call dein#add('wellle/context.vim')
-  call dein#add('Xuyuanp/scrollbar.nvim')
   call dein#add('itchyny/lightline.vim')
   call dein#add('lambdalisue/readablefold.vim')
   call dein#add('luochen1990/rainbow')
@@ -2339,16 +2339,16 @@ let g:rainbow_conf.separately = {
 " }}}3
 
 " scrollbar {{{3
-if has('nvim')
-  AutoCmd BufEnter    * silent! lua require('scrollbar').show()
-  AutoCmd BufLeave    * silent! lua require('scrollbar').clear()
-
-  AutoCmd CursorMoved * silent! lua require('scrollbar').show()
-  AutoCmd VimResized  * silent! lua require('scrollbar').show()
-
-  AutoCmd FocusGained * silent! lua require('scrollbar').show()
-  AutoCmd FocusLost   * silent! lua require('scrollbar').clear()
-endif
+" if has('nvim')
+"   AutoCmd BufEnter    * silent! lua require('scrollbar').show()
+"   AutoCmd BufLeave    * silent! lua require('scrollbar').clear()
+"
+"   AutoCmd CursorMoved * silent! lua require('scrollbar').show()
+"   AutoCmd VimResized  * silent! lua require('scrollbar').show()
+"
+"   AutoCmd FocusGained * silent! lua require('scrollbar').show()
+"   AutoCmd FocusLost   * silent! lua require('scrollbar').clear()
+" endif
 " }}}3
 
 " smartnumber {{{3
