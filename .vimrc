@@ -35,11 +35,11 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Language {{{3
   " call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': 'css'})
+  " call dein#add('iamcco/markdown-preview.nvim',            {'lazy': 1, 'on_ft': 'markdown', 'build': 'sh -c "cd app & yarn install"' })
   " call dein#add('nvim-treesitter/nvim-treesitter',         {'merged': 0})
   " call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
   " call dein#add('tpope/vim-rails',                         {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('elzr/vim-json',                           {'lazy': 1, 'on_ft': 'json'})
-  call dein#add('iamcco/markdown-preview.nvim',            {'lazy': 1, 'on_ft': 'markdown', 'build': 'sh -c "cd app & yarn install"' })
   call dein#add('jparise/vim-graphql',                     {'lazy': 1, 'on_ft': ['graphql', 'javascript', 'typescript', 'typescriptreact', 'typescript.tsx']})
   call dein#add('leafgarland/typescript-vim',              {'lazy': 1, 'on_ft': ['typescript', 'typescriptreact', 'typescript.tsx']})
   call dein#add('othree/yajs.vim',                         {'lazy': 1, 'on_ft': 'javascript'})
