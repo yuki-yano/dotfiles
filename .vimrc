@@ -2684,9 +2684,10 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight LineNr       ctermfg=241  cte
 AutoCmd ColorScheme nord,onedark,iceberg highlight NonText      ctermfg=60   ctermbg=NONE guifg=#5F5F87 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight Identifier   ctermfg=10   ctermbg=NONE guifg=#C0CA8E guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight Search       ctermfg=68   ctermbg=232  guifg=#5F87D7 guibg=#080808
+AutoCmd ColorScheme nord,onedark,iceberg highlight SignColumn   ctermfg=0    ctermbg=NONE guifg=#3B4252 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight Todo         ctermfg=229  ctermbg=NONE guifg=#FFFFAF guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight Visual       ctermfg=159  ctermbg=23   guifg=#AFFFFF guibg=#005F5F
-AutoCmd ColorScheme nord,onedark,iceberg highlight Folded       ctermfg=233  ctermbg=0    guifg=#767676 guibg=#3B4252
+AutoCmd ColorScheme nord,onedark,iceberg highlight Folded       ctermfg=245  ctermbg=NONE guifg=#686f9a guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight DiffAdd      ctermfg=233  ctermbg=64   guifg=#C4C4C4 guibg=#456D4F
 AutoCmd ColorScheme nord,onedark,iceberg highlight DiffDelete   ctermfg=233  ctermbg=95   guifg=#C4C4C4 guibg=#593535
 AutoCmd ColorScheme nord,onedark,iceberg highlight DiffChange   ctermfg=233  ctermbg=143  guifg=#C4C4C4 guibg=#594D1A
