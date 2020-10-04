@@ -974,28 +974,27 @@ let g:vim_markdown_new_list_item_indent    = 0
 " }}}3
 
 " treesitter {{{3
-" lua <<EOF
-" require'nvim-treesitter.configs'.setup {
-"   ensure_installed = {"typescript", "tsx", "javascript", "ruby", "python"},
-"   highlight = {
-"     enable = true,
-"   },
-"   refactor = {
-"     highlight_definitions = { enable = true },
-"   },
-"   textobjects = {
-"     select = {
-"       enable = true,
-"       keymaps = {
-"         ["af"] = "@function.outer",
-"         ["if"] = "@function.inner",
-"         ["ac"] = "@class.outer",
-"         ["ic"] = "@class.inner",
-"       },
-"     },
-"   },
-" }
-" EOF
+if dein#tap('nvim-treesitter') && has('nvim')
+lua <<EOF
+-- require'nvim-treesitter.configs'.setup {
+--   ensure_installed = {"typescript", "tsx", "javascript", "ruby", "python"},
+--   highlight = {
+--     enable = true,
+--   },
+--   refactor = {
+--     highlight_definitions = { enable = true },
+--   },
+-- }
+--
+-- require "nvim-treesitter.highlight"
+-- local hlmap = vim.treesitter.highlighter.hl_map
+--
+-- --Misc
+-- hlmap.error = nil
+-- hlmap["punctuation.delimiter"] = "Delimiter"
+-- hlmap["punctuation.bracket"] = nil
+EOF
+endif
 " }}}3
 
 " typescript {{{3
@@ -2746,6 +2745,9 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight FernGitStatusIndex      cterm
 AutoCmd ColorScheme nord,onedark,iceberg highlight FernGitStatusUnmerged   ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight FernGitStatusUntracked  ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight link FernGitStatusIgnored Comment
+
+" TreeSitter
+AutoCmd ColorScheme nord,foo,iceberg highlight link TSPunctBracket Normal
 " }}}2
 
 " nord {{{2
