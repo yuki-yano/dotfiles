@@ -938,6 +938,21 @@ function! s:coc_actions_open_from_selected(type) abort
   execute 'CocCommand actions.open ' . a:type
 endfunction
 
+function! s:coc_float() abort
+  call coc#config('diagnostic.messageTarget', 'float')
+  call coc#config('signature.target', 'float')
+  call coc#config('coc.preferences.hoverTarget', 'float')
+endfunction
+
+function! s:coc_echo() abort
+  call coc#config('diagnostic.messageTarget', 'echo')
+  call coc#config('signature.target', 'echo')
+  call coc#config('coc.preferences.hoverTarget', 'echo')
+endfunction
+
+command! CocFloat call <SID>coc_float()
+command! CocEcho  call <SID>coc_echo()
+
 function! s:coc_typescript_settings() abort
   setlocal tagfunc=CocTagFunc
   nnoremap <silent> <buffer> [dev]F :<C-u>CocCommand eslint.executeAutofix<CR>
