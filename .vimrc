@@ -1771,9 +1771,7 @@ endif
 " }}}3
 
 " reword {{{3
-MyAlterCommand rew[ord] %RewordPreview
-
-let g:reword_disable_seamless_preview = 1
+MyAlterCommand rew[ord] %Reword
 " }}}3
 
 " sandwich {{{3
