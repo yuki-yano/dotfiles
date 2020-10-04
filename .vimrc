@@ -1137,6 +1137,8 @@ nnoremap <silent> [dev]q  :<C-u>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
 nnoremap <silent> [dev]Q  :<C-u>CocCommand fzf-preview.CocDiagnostics<CR>
 nnoremap <silent> [dev]rf :<C-u>CocCommand fzf-preview.CocReferences<CR>
 
+nnoremap <silent> <Leader>gf    :<C-u>CocCommand fzf-preview.FromResources project_mru git --add-fzf-arg=--select-1 --add-fzf-arg=--query="<C-r>=substitute(expand('<cfile>'), '^\.\+/', '', '')<CR>"<CR>
+
 augroup fzf_preview
   autocmd!
   autocmd User fzf_preview#initialized call s:fzf_preview_settings()
@@ -1175,7 +1177,9 @@ function! s:fzf_preview_settings() abort
 endfunction
 
 AutoCmd FileType fzf let b:highlight_cursor = 0
-
+" if has('nvim')
+"   AutoCmd FileType fzf set winblend=15
+" endif
 " }}}3
 
 " lexima {{{3
