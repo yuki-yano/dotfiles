@@ -28,6 +28,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " IDE {{{3
+  " call dein#add('neoclide/coc.nvim', {'merged': 0, 'build': 'yarn install --frozen-lockfile'})
   call dein#add('neoclide/coc.nvim', {'merged': 0, 'rev': 'release'})
   " call dein#add('tsuyoshicho/vim-efm-langserver-settings')
   " }}}3
