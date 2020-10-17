@@ -2023,7 +2023,7 @@ if dein#tap('lightline.vim')
   \ 'active': {
   \   'left': [
   \     ['mode', 'spell', 'paste'],
-  \     ['filepath', 'filename', 'vista'],
+  \     ['filepath', 'filename'],
   \     ['special_mode', 'anzu', 'vm_regions'],
   \     [],
   \    ],
@@ -2051,7 +2051,6 @@ if dein#tap('lightline.vim')
   \  },
   \ 'component_function': {
   \   'mode':         'Lightline_mode',
-  \   'special_mode': 'Lightline_special_mode',
   \   'filepath':     'Lightline_filepath',
   \   'filename':     'Lightline_filename',
   \   'filetype':     'Lightline_filetype',
@@ -2060,13 +2059,11 @@ if dein#tap('lightline.vim')
   \   'fileformat':   'Lightline_fileformat',
   \   'anzu':         'anzu#search_status',
   \   'vm_regions':   'Lightline_vm_regions',
-  \   'vista':        'NearestMethodOrFunction',
   \ },
   \ 'tab_component_function': {
   \   'tabwinnum': 'Lightline_tab_win_num',
   \ },
   \ 'component_visible_condition': {
-  \   'special_mode': "%{Lightline_special_mode() !=# ''}",
   \   'anzu':         "%{anzu#search_status !=# ''}",
   \   'vm_regions':   "%{Lightline_vm_regions() !=# ''}",
   \ },
