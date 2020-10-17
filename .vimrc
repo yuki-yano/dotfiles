@@ -972,6 +972,10 @@ let g:efm_langserver_settings#filetype_whitelist = ['ruby', 'json', 'vim', 'sh']
 
 " Language {{{2
 
+" fixjson {{{3
+let g:fixjson_fix_on_save = 0
+" }}}3
+
 " gen_tags {{{3
 let g:gen_tags#ctags_auto_gen = 1
 let g:gen_tags#ctags_opts     = '--excmd=number'
