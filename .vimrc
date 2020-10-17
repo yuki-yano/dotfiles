@@ -907,7 +907,6 @@ nnoremap <silent> K       :<C-u>call <SID>show_documentation()<CR>
 nmap     <silent> [dev]p  <Plug>(coc-diagnostic-prev)
 nmap     <silent> [dev]n  <Plug>(coc-diagnostic-next)
 nmap     <silent> [dev]d  <Plug>(coc-definition)
-nmap     <silent> [dev]t  <Plug>(coc-type-definition)
 nmap     <silent> [dev]i  <Plug>(coc-implementation)
 nmap     <silent> [dev]rn <Plug>(coc-rename)
 nnoremap <silent> [dev]a  :<C-u>set operatorfunc=<SID>coc_actions_open_from_selected<CR>g@
@@ -1120,6 +1119,7 @@ nnoremap          [fzf-p]F     :<C-u>CocCommand fzf-preview.ProjectCommandGrep<S
 xnoremap          [fzf-p]F     "sy:CocCommand fzf-preview.ProjectCommandGrep<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
 nnoremap <silent> [fzf-p]q     :<C-u>CocCommand fzf-preview.QuickFix<CR>
 nnoremap <silent> [fzf-p]l     :<C-u>CocCommand fzf-preview.LocationList<CR>
+nnoremap <silent> [fzf-p]:     :<C-u>CocCommand fzf-preview.CommandPalette<CR>
 nnoremap <silent> [fzf-p]p     :<C-u>CocCommand fzf-preview.Yankround<CR>
 nnoremap <silent> [fzf-p]m     :<C-u>CocCommand fzf-preview.Bookmarks --resume<CR>
 nnoremap <silent> [fzf-p]<C-]> :<C-u>CocCommand fzf-preview.VistaCtags --add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
@@ -1128,8 +1128,9 @@ nnoremap <silent> [fzf-p]o     :<C-u>CocCommand fzf-preview.VistaBufferCtags<CR>
 nnoremap <silent> [dev]q  :<C-u>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
 nnoremap <silent> [dev]Q  :<C-u>CocCommand fzf-preview.CocDiagnostics<CR>
 nnoremap <silent> [dev]rf :<C-u>CocCommand fzf-preview.CocReferences<CR>
+nnoremap <silent> [dev]t  :<C-u>CocCommand fzf-preview.CocTypeDefinitions<CR>
 
-nnoremap <silent> <Leader>gf    :<C-u>CocCommand fzf-preview.FromResources project_mru git --add-fzf-arg=--select-1 --add-fzf-arg=--query="<C-r>=substitute(expand('<cfile>'), '^\.\+/', '', '')<CR>"<CR>
+nnoremap <silent> <Leader>gf :<C-u>CocCommand fzf-preview.FromResources project_mru git --add-fzf-arg=--select-1 --add-fzf-arg=--query="<C-r>=substitute(expand('<cfile>'), '^\.\+/', '', '')<CR>"<CR>
 
 augroup fzf_preview
   autocmd!
