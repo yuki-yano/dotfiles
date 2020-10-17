@@ -1335,7 +1335,7 @@ endif
 MyAlterCommand git   Gina
 MyAlterCommand gina  Gina
 MyAlterCommand gs    Gina<Space>status
-MyAlterCommand gci   Gina<Space>commit
+MyAlterCommand gci   Gina<Space>commit<Space>--no-verify
 MyAlterCommand gd    Gina<Space>diff
 MyAlterCommand gdc   Gina<Space>diff<Space>--cached
 MyAlterCommand gco   Gina<Space>checkout
@@ -1354,8 +1354,7 @@ function! s:gina_settings()
   call gina#custom#mapping#nmap('status', '<C-j>', ':TmuxNavigateDown<CR>', {'noremap': 1, 'silent': 1})
   call gina#custom#mapping#nmap('status', '<C-k>', ':TmuxNavigateUp<CR>',   {'noremap': 1, 'silent': 1})
 
-  call gina#custom#mapping#vmap('show', 'p', ':diffput<CR>', {'noremap': 1, 'silent': 1})
-  call gina#custom#mapping#vmap('show', 'o', ':diffget<CR>', {'noremap': 1, 'silent': 1})
+  call gina#custom#mapping#nmap('diff', '<CR>', '<Plug>(gina-diff-jump-vsplit)', {'silent': 1})
 
   call gina#custom#mapping#nmap('blame', '<C-l>', ':TmuxNavigateRight<CR>',    {'noremap': 1, 'silent': 1})
   call gina#custom#mapping#nmap('blame', '<C-r>', '<Plug>(gina-blame-redraw)', {'noremap': 1, 'silent': 1})
