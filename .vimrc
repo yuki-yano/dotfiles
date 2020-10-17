@@ -188,6 +188,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Develop {{{3
+  call dein#add('lambdalisue/vim-quickrun-neovim-job')
   call dein#add('rbtnn/vim-vimscript_lasterror')
   call dein#add('thinca/vim-prettyprint')
   call dein#add('thinca/vim-quickrun')
@@ -2541,8 +2542,18 @@ let g:quickrun_config = {
 \   'outputter/error/error'   : 'quickfix',
 \   'outputter/buffer/split'  : ':botright 15split',
 \   'outputter/buffer/close_on_empty' : 1,
+\ },
+\ 'tsc' : {
+\   'command': 'tsc',
+\   'exec': ['%C --project . --noEmit --incremental --tsBuildInfoFile .git/.tsbuildinfo'],
+\   'outputter' : 'quickfix',
+\   'outputter/quickfix/errorformat' : '%+A %#%f %#(%l\,%c): %m,%C%m',
+\ },
 \ }
-\ }
+
+if has('nvim')
+  let g:quickrun_config._.runner = 'neovim_job'
+endif
 " }}}3
 
 " }}}2
