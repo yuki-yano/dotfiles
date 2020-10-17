@@ -1462,7 +1462,6 @@ function! s:fern_settings() abort
   nmap <silent> <buffer> <nowait> l     <Plug>(fern-open-or-enter)
   nmap <silent> <buffer> <nowait> h     <Plug>(fern-action-leave)
   nmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark:toggle)
-  nmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark:toggle)
   vmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark:toggle)
   nmap <silent> <buffer> <nowait> N     <Plug>(fern-action-new-file)
   nmap <silent> <buffer> <nowait> K     <Plug>(fern-action-new-dir)
