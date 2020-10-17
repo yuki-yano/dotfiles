@@ -998,23 +998,12 @@ let g:vim_markdown_new_list_item_indent    = 0
 " treesitter {{{3
 if dein#tap('nvim-treesitter') && has('nvim')
 lua <<EOF
--- require'nvim-treesitter.configs'.setup {
---   ensure_installed = {"typescript", "tsx", "javascript", "ruby", "python"},
---   highlight = {
---     enable = true,
---   },
---   refactor = {
---     highlight_definitions = { enable = true },
---   },
--- }
---
--- require "nvim-treesitter.highlight"
--- local hlmap = vim.treesitter.highlighter.hl_map
---
--- --Misc
--- hlmap.error = nil
--- hlmap["punctuation.delimiter"] = "Delimiter"
--- hlmap["punctuation.bracket"] = nil
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = {"typescript", "tsx", "javascript", "ruby", "python"},
+  highlight = {
+    enable = true,
+  },
+}
 EOF
 endif
 " }}}3
