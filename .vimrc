@@ -1186,11 +1186,11 @@ if dein#tap('lexima.vim')
 
     "" Parenthesis
     let s:rules += [
-    \ { 'char': '(',     'at': '(\%#)', 'input': '<Del>',      },
-    \ { 'char': '(',     'at': '(\%#',                         },
-    \ { 'char': '<C-h>', 'at': '(\%#)', 'input': '<BS><Del>',  },
-    \ { 'char': '<BS>',  'at': '(\%#)', 'input': '<BS><Del>',  },
-    \ { 'char': '<TAB>', 'at': '\%#)',  'input': '<Right>',    },
+    \ { 'char': '(',     'at': '(\%#)', 'input': '<Del>',                         },
+    \ { 'char': '(',     'at': '(\%#',  'input': '(',         'input_after': '))' },
+    \ { 'char': '<C-h>', 'at': '(\%#)', 'input': '<BS><Del>',                     },
+    \ { 'char': '<BS>',  'at': '(\%#)', 'input': '<BS><Del>',                     },
+    \ { 'char': '<TAB>', 'at': '\%#)',  'input': '<Right>',                       },
     \ ]
 
     "" Brace
