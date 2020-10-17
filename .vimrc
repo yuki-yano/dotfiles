@@ -839,7 +839,7 @@ endfunction
 function! s:my_alter_command(original, altanative) abort
   if exists(':AlterCommand')
      execute 'AlterCommand ' . a:original . ' ' a:altanative
-     execute 'AlterCommand <cmdwin> '  . a:original . ' ' a:altanative
+     execute 'AlterCommand <cmdwin> ' . a:original . ' ' a:altanative
   endif
 endfunction
 
@@ -1612,7 +1612,7 @@ endfunction
 
 " caw {{{3
 " let g:caw_no_default_keymappings = 1
-" 
+"
 " nmap <silent> <Leader>cc <Plug>(caw:hatpos:toggle)
 " xmap <silent> <Leader>cc <Plug>(caw:hatpos:toggle)
 " nmap <silent> <Leader>cw <Plug>(caw:wrap:comment)
@@ -1703,12 +1703,12 @@ endif
 nmap ;; <Plug>(eft-repeat)
 xmap ;; <Plug>(eft-repeat)
 
-nmap f  <Plug>(eft-f)
-xmap f  <Plug>(eft-f)
-omap f  <Plug>(eft-f)
-nmap F  <Plug>(eft-F)
-xmap F  <Plug>(eft-F)
-omap F  <Plug>(eft-F)
+nmap f <Plug>(eft-f)
+xmap f <Plug>(eft-f)
+omap f <Plug>(eft-f)
+nmap F <Plug>(eft-F)
+xmap F <Plug>(eft-F)
+omap F <Plug>(eft-F)
 
 " nmap t  <Plug>(eft-t)
 " xmap t  <Plug>(eft-t)
@@ -2566,7 +2566,7 @@ endif
 "\ 'defx': 0,
 "\ 'fern': 0,
 "\ }
-" 
+"
 " let g:brightest#highlight = {
 "\ 'group': 'BrighTestHighlight',
 "\ 'priority': 0
@@ -2612,10 +2612,10 @@ endif
 " let g:VM_disable_syntax_in_imode    = 0
 " let g:VM_exit_on_1_cursor_left      = 0
 " let g:VM_manual_infoline            = 1
-" 
+"
 " nmap <silent> (ctrln) <Plug>(VM-Find-Under)
 " xmap <silent> <C-n>   <Plug>(VM-Find-Subword-Under)
-" 
+"
 " let g:VM_maps = {}
 " "
 " let g:VM_maps['Find Under']         = ''
@@ -2628,14 +2628,14 @@ endif
 " let g:VM_maps['Add Cursor Up']      = '<A-S-k>'
 " let g:VM_maps['Select l']           = '<A-S-l>'
 " let g:VM_maps['Select h']           = '<A-S-h>'
-" 
+"
 " let g:VM_maps['Find Next']          = ']'
 " let g:VM_maps['Find Prev']          = '['
 " let g:VM_maps['Goto Next']          = '}'
 " let g:VM_maps['Goto Prev']          = '{'
 " let g:VM_maps['Seek Next']          = '<C-d>'
 " let g:VM_maps['Seek Prev']          = '<C-u>'
-" 
+"
 " let g:VM_maps['Surround']           = 'S'
 " let g:VM_maps['D']                  = 'D'
 " let g:VM_maps['J']                  = 'J'
