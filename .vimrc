@@ -69,6 +69,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('junegunn/fzf.vim', {'merged': 0})
   call dein#add('antoinemadec/coc-fzf', {'rev': 'release'})
   call dein#add('~/repos/github.com/yuki-ycino/fzf-preview.vim', {'merged': 0})
+
+  " call dein#add('nvim-lua/popup.nvim', {'merged': 0})
+  " call dein#add('nvim-lua/plenary.nvim', {'merged': 0})
+  " call dein#add('nvim-lua/telescope.nvim', {'merged': 0})
   " }}}3
 
   " filer {{{3
@@ -79,9 +83,9 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('lambdalisue/glyph-palette.vim')
   call dein#add('lambdalisue/nerdfont.vim')
 
-  call dein#add('Shougo/defx.nvim')
-  call dein#add('kristijanhusak/defx-icons')
-  call dein#add('kristijanhusak/defx-git')
+  " call dein#add('Shougo/defx.nvim')
+  " call dein#add('kristijanhusak/defx-icons')
+  " call dein#add('kristijanhusak/defx-git')
   " }}}3
 
   " textobj & operator {{{3
@@ -140,16 +144,16 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('Xuyuanp/scrollbar.nvim')
   " call dein#add('Yggdroot/indentLine')
   " call dein#add('andymass/vim-matchup')
+  " call dein#add('luochen1990/rainbow')
   " call dein#add('mopp/smartnumber.vim')
   " call dein#add('wellle/context.vim')
+  " call dein#add('yuttie/comfortable-motion.vim')
   call dein#add('itchyny/lightline.vim')
   call dein#add('lambdalisue/readablefold.vim')
-  call dein#add('luochen1990/rainbow')
   call dein#add('machakann/vim-highlightedundo')
   call dein#add('machakann/vim-highlightedyank')
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('ryanoasis/vim-devicons')
-  call dein#add('yuttie/comfortable-motion.vim')
   " }}}3
 
   " tmux {{{3
@@ -157,23 +161,23 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Util {{{3
+  " call dein#add('dhruvasagar/vim-table-mode',   {'lazy': 1, 'on_cmd': 'TableModeToggle'})
   " call dein#add('itchyny/vim-qfedit')
+  " call dein#add('jsfaint/gen_tags.vim')
   " call dein#add('osyo-manga/vim-brightest')
   " call dein#add('osyo-manga/vim-gift')
   " call dein#add('pocke/vim-automatic',          {'depends': 'vim-gift'})
   " call dein#add('previm/previm',                {'lazy': 1, 'on_cmd': 'PrevimOpen'})
+  " call dein#add('segeljakt/vim-silicon',        {'lazy': 1, 'on_cmd': ['Silicon', 'Silicon!']})
   " call dein#add('thinca/vim-ref',               {'lazy': 1, 'on_cmd': 'Ref'})
   call dein#add('AndrewRadev/linediff.vim',     {'lazy': 1, 'on_cmd': 'Linediff'})
   call dein#add('aiya000/aho-bakaup.vim')
-  call dein#add('dhruvasagar/vim-table-mode',   {'lazy': 1, 'on_cmd': 'TableModeToggle'})
-  call dein#add('jsfaint/gen_tags.vim')
   call dein#add('kana/vim-niceblock',           {'lazy': 1, 'on_map': {'v': ['x', 'I', 'A'] }})
   call dein#add('lambdalisue/suda.vim',         {'lazy': 1, 'on_cmd': ['SudaRead', 'SudaWrite']})
   call dein#add('lambdalisue/vim-manpager',     {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER']})
   call dein#add('lambdalisue/vim-pager',        {'lazy': 1, 'on_cmd': 'PAGER'})
   call dein#add('liuchengxu/vista.vim',         {'lazy': 1, 'on_cmd': ['Vista', 'Vista!', 'Vista!!']})
   call dein#add('moll/vim-bbye',                {'lazy': 1, 'on_cmd': ['Bdelete', 'Bwipeout']})
-  call dein#add('segeljakt/vim-silicon',        {'lazy': 1, 'on_cmd': ['Silicon', 'Silicon!']})
   call dein#add('simnalamburt/vim-mundo',       {'lazy': 1, 'on_cmd': 'MundoToggle'})
   call dein#add('thinca/vim-localrc')
   call dein#add('tyru/capture.vim',             {'lazy': 1, 'on_cmd': 'Capture'})
