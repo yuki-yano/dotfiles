@@ -177,8 +177,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('lambdalisue/vim-manpager',     {'lazy': 1, 'on_cmd': ['Man', 'MANPAGER']})
   call dein#add('lambdalisue/vim-pager',        {'lazy': 1, 'on_cmd': 'PAGER'})
   call dein#add('liuchengxu/vista.vim',         {'lazy': 1, 'on_cmd': ['Vista', 'Vista!', 'Vista!!']})
+  call dein#add('mbbill/undotree',              {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
   call dein#add('moll/vim-bbye',                {'lazy': 1, 'on_cmd': ['Bdelete', 'Bwipeout']})
-  call dein#add('simnalamburt/vim-mundo',       {'lazy': 1, 'on_cmd': 'MundoToggle'})
   call dein#add('thinca/vim-localrc')
   call dein#add('tyru/capture.vim',             {'lazy': 1, 'on_cmd': 'Capture'})
   call dein#add('tyru/vim-altercmd')
@@ -2518,12 +2518,8 @@ function! s:set_git_rebase_settings() abort
 endfunction
 " }}}3
 
-" mundo {{{3
-nnoremap <silent> <Leader>u :<C-u>MundoToggle<CR>
-" }}}3
-
-" table-mode {{{3
-let g:table_mode_corner='|'
+" undotree {{{3
+nnoremap <silent> <Leader>u :<C-u>UndotreeToggle<CR>
 " }}}3
 
 " windowswap {{{3
