@@ -411,6 +411,7 @@ set spelllang=en,cjk
 set synmaxcol=300
 set termguicolors
 set virtualedit=all
+set guifont=SF\ Mono\ Square:h18
 
 "" Indent
 set autoindent
