@@ -1446,6 +1446,7 @@ let g:fern#disable_default_mappings  = 1
 let g:fern#drawer_width              = 40
 let g:fern#renderer                  = 'nerdfont'
 let g:fern#renderer#nerdfont#padding = '  '
+let g:fern#smart_cursor              = 'hide'
 
 " if !has('nvim')
 nnoremap <silent> <Leader>e :<C-u>Fern . -drawer<CR>
