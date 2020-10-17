@@ -69,8 +69,8 @@ zinit ice lucid wait"0" depth"1" blockf
 zinit light zsh-users/zsh-completions
 
 # git
-zinit ice lucid wait"0" as"program" pick"$ZPFX/bin/git-*" src"etc/git-extras-completion.zsh" make"PREFIX=$ZPFX"
-zinit light tj/git-extras
+# zinit ice lucid wait"0" as"program" pick"$ZPFX/bin/git-*" src"etc/git-extras-completion.zsh" make"PREFIX=$ZPFX"
+# zinit light tj/git-extras
 
 # rip
 zinit ice lucid wait"0" from"gh-r" as"program" var"0.12.0" mv"rip -> ${ZPFX}/bin/rip"
