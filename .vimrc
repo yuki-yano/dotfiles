@@ -196,6 +196,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Color Theme {{{3
+  call dein#add('high-moctane/gaming.vim')
   call dein#add('NLKNguyen/papercolor-theme')
   call dein#add('arcticicestudio/nord-vim')
   call dein#add('cocopon/iceberg.vim')
