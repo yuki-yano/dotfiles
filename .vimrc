@@ -1982,10 +1982,12 @@ endif
 " }}}3
 
 " highlightedundo {{{3
-let g:highlightedundo#highlight_mode = 2
+if dein#tap('vim-highlightedundo')
+  let g:highlightedundo#highlight_mode = 2
 
-nmap <silent> u     <Plug>(highlightedundo-undo)
-nmap <silent> <C-r> <Plug>(highlightedundo-redo)
+  nmap <silent> u     <Plug>(highlightedundo-undo)
+  nmap <silent> <C-r> <Plug>(highlightedundo-redo)
+endif
 " }}}3
 
 " highlightedyank {{{3
@@ -2371,8 +2373,10 @@ let g:rainbow_conf.separately = {
 " }}}3
 
 " vista {{{3
-let g:vista_default_executive = 'ctags'
-AutoCmd VimEnter * call vista#RunForNearestMethodOrFunction()
+if dein#tap('vista.vim')
+  let g:vista_default_executive = 'ctags'
+  AutoCmd VimEnter * call vista#RunForNearestMethodOrFunction()
+endif
 " }}}3
 
 " zenspace {{{3
