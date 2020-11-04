@@ -1,9 +1,14 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env bash
 
-puts `tmux list-sessions`.split("\n").map { |line|
-  if line.include?('attached')
-    "#[bold][#{line.split(':').first}]#[nobold]"
+current_session=$(tmux list-sessions | grep 'attached' | cut -d":" -f1)
+
+tmux list-sessions | while read -r line
+do
+  session=$(echo "$line" | cut -d":" -f1)
+  if [ "$current_session" = "$session" ];
+  then
+    echo -n "#[bold][$session]#[nobold] "
   else
-    line.split(':').first
-  end
-}.join(' ')
+    echo -n "$session "
+  fi
+done | sed -e 's/ \+$//'
