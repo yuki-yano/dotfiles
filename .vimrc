@@ -145,13 +145,13 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('Yggdroot/indentLine')
   " call dein#add('andymass/vim-matchup')
   " call dein#add('luochen1990/rainbow')
-  " call dein#add('mopp/smartnumber.vim')
   " call dein#add('wellle/context.vim')
   " call dein#add('yuttie/comfortable-motion.vim')
   call dein#add('itchyny/lightline.vim')
   call dein#add('lambdalisue/readablefold.vim')
   call dein#add('machakann/vim-highlightedundo')
   call dein#add('machakann/vim-highlightedyank')
+  call dein#add('mopp/smartnumber.vim')
   call dein#add('ntpeters/vim-better-whitespace')
   call dein#add('ryanoasis/vim-devicons')
   " }}}3
@@ -683,7 +683,9 @@ function! s:review_start() abort
   let $BAT_THEME_BAK = $BAT_THEME
   let $BAT_THEME = 'papercolor-light'
 
-  let g:comfortable_motion_enable = 0
+  SNumbersTurnOffRelative
+
+  " let g:comfortable_motion_enable = 0
   " ComfortableMotionToggle
 
   set list listchars=tab:^\ ,trail:_,extends:>,precedes:<
@@ -705,7 +707,9 @@ function! s:review_end() abort
   let $FZF_DEFAULT_OPTS = $FZF_DEFAULT_OPTS_BAK
   let $BAT_THEME = $BAT_THEME_BAK
 
-  let g:comfortable_motion_enable = 1
+  SNumbersTurnOnRelative
+
+  " let g:comfortable_motion_enable = 1
   " ComfortableMotionToggle
 
   set list listchars=tab:^\ ,trail:_,extends:>,precedes:<,eol:$
@@ -1073,6 +1077,7 @@ if dein#tap('denite.nvim') && has('nvim')
   let s:menus.toggle = { 'description': 'Toggle Command' }
   let s:menus.toggle.command_candidates = [
   \ ['Toggle Review            [ReviewToggle]',              'ReviewToggle'           ],
+  \ ['Toggle RelNum            [SNToggle]',                  'SNToggle'               ],
   \ ['Toggle CursorHighlight   [CursorHighlightToggle]',     'CursorHighlightToggle'  ],
   \ ['Toggle Context           [ContextToggleWindow]',       'ContextToggleWindow'    ],
   \ ['Toggle ComfortableMotion [ComfortableMotionToggle]',   'ComfortableMotionToggle'],
@@ -2364,7 +2369,20 @@ let g:rainbow_conf.separately = {
 " }}}3
 
 " smartnumber {{{3
-" let g:snumber_enable_startup = 1
+let g:snumber_enable_startup = 1
+let g:snumber_enable_relative = 1
+
+function! s:snumber_relative_toggle()
+  if g:snumber_enable_relative == 1
+    windo SNumbersTurnOffRelative
+    let g:snumber_enable_relative = 0
+  else
+    windo SNumbersTurnOnRelative
+    let g:snumber_enable_relative = 1
+  endif
+endfunction
+
+command! SNToggle call <SID>snumber_relative_toggle()
 " }}}3
 
 " vista {{{3
