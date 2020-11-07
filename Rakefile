@@ -91,27 +91,17 @@ namespace :pip do
   task install: 'PipGlobal' do
     sh 'pyenv rehash'
     sh 'pip  install setuptools'
-    sh 'pip2 install setuptools'
-    sh 'pip3 install setuptools'
     sh 'pip  install pip --upgrade'
-    sh 'pip2 install pip --upgrade'
-    sh 'pip3 install pip --upgrade'
-    sh 'pip  list --outdated --format=legacy | cut -d" " -f1 | xargs pip2 install --upgrade'
-    sh 'pip2 list --outdated --format=legacy | cut -d" " -f1 | xargs pip2 install --upgrade'
-    sh 'pip3 list --outdated --format=legacy | cut -d" " -f1 | xargs pip3 install --upgrade'
+    sh 'pip  list --outdated --format=legacy | cut -d" " -f1 | xargs pip install --upgrade'
     File.readlines('PipGlobal').map(&:chomp).each do |package|
-      system "pip  install #{package} --upgrade"
-      system "pip2 install #{package} --upgrade"
-      system "pip3 install #{package} --upgrade"
+      system "pip install #{package} --upgrade"
     end
   end
 
   desc 'Uninstall pip'
   task :uninstall do
-    pip2file = '/tmp/piplist2.txt'
     pip3file = '/tmp/piplist3.txt'
     sh 'pyenv rehash'
-    system "pip2 freeze > #{pip2file} && test -f #{pip2file} && yes | pip2 uninstall -r #{pip2file} && rm #{pip2file}"
     system "pip3 freeze > #{pip3file} && test -f #{pip3file} && yes | pip3 uninstall -r #{pip3file} && rm #{pip3file}"
   end
 end
