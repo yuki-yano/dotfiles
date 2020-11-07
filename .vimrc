@@ -28,9 +28,21 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " IDE {{{3
-  " call dein#add('neoclide/coc.nvim', {'merged': 0, 'build': 'yarn install --frozen-lockfile'})
-  call dein#add('neoclide/coc.nvim', {'merged': 0, 'rev': 'release'})
-  " call dein#add('tsuyoshicho/vim-efm-langserver-settings')
+  call dein#add('neoclide/coc.nvim', {'merged': 0, 'build': 'yarn install --frozen-lockfile'})
+  " call dein#add('neoclide/coc.nvim', {'merged': 0, 'rev': 'release'})
+
+  " call dein#add('tsuyoshicho/vim-efm-langserver-settings', {'merged': 0})
+
+  " call dein#add('prabirshrestha/vim-lsp',              {'merged': 0})
+  " call dein#add('mattn/vim-lsp-settings',              {'merged': 0})
+  " call dein#add('prabirshrestha/asyncomplete.vim',     {'merged': 0})
+  " call dein#add('prabirshrestha/asyncomplete-lsp.vim', {'merged': 0})
+  " call dein#add('kitagry/asyncomplete-tabnine.vim',    {'merged': 0, 'build': './install.sh'  })
+  " call dein#add('Shougo/deoplete.nvim',                {'merged': 0})
+  " call dein#add('lighttiger2505/deoplete-vim-lsp',     {'merged': 0})
+  " call dein#add('tbodt/deoplete-tabnine',              {'merged': 0, 'build': 'bash install.sh'})
+  " call dein#add('hrsh7th/vim-vsnip',                   {'merged': 0})
+  " call dein#add('hrsh7th/vim-vsnip-integ',             {'merged': 0})
   " }}}3
 
   " Language {{{3
@@ -990,6 +1002,135 @@ AutoCmd FileType typescript,typescript.tsx call s:coc_typescript_settings()
 
 " efm-langserver-settings {{{3
 let g:efm_langserver_settings#filetype_whitelist = ['ruby', 'json', 'vim', 'sh']
+" }}}3
+
+" deoplete.nvim {{{3
+" if dein#tap('deoplete.nvim')
+"   " Default Settings
+"   let g:deoplete#enable_at_startup = 1
+"
+"   call deoplete#custom#option({
+"   \ 'min_pattern_length': 2,
+"   \ 'camel_case': v:true,
+"   \ 'skip_chars': ['(', ')', '<', '>'],
+"   \ })
+"
+"   " Keymap
+"   inoremap <silent> <expr> <BS>  deoplete#smart_close_popup() . "\<C-h>"
+"   inoremap <silent> <expr> <C-h> deoplete#smart_close_popup() . "\<C-h>"
+"
+"   inoremap <silent> <expr> <C-n> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : deoplete#manual_complete()
+"   inoremap <silent> <expr> <C-g> pumvisible() ? deoplete#smart_close_popup() : "\<C-g>"
+"   inoremap <silent> <expr> <C-Space> deoplete#manual_complete()
+"
+"   function! s:check_back_space() abort
+"     let col = col('.') - 1
+"     return !col || getline('.')[col - 1]  =~# '\s'
+"   endfunction
+"
+"   " tmux-complete
+"   " let g:tmuxcomplete#trigger = ''
+"
+"   " vsnip
+"   " imap <expr> <C-Space>   vsnip#available(1)  ? "\<Plug>(vsnip-expand-or-jump)" : "\<C-Space>"
+"   " smap <expr> <C-Space>   vsnip#available(1)  ? "\<Plug>(vsnip-expand-or-jump)" : "\<C-Space>"
+"   " xmap <expr> <C-Space>   vsnip#available(1)  ? "\<Plug>(vsnip-expand-or-jump)" : "\<C-Space>"
+"   " imap <expr> <C-f>       vsnip#available(1)  ? "\<Plug>(vsnip-jump-next)"      : "\<C-f>"
+"   " smap <expr> <C-f>       vsnip#available(1)  ? "\<Plug>(vsnip-jump-next)"      : "\<C-f>"
+"   " xmap <expr> <C-f>       vsnip#available(1)  ? "\<Plug>(vsnip-jump-next)"      : "\<C-f>"
+"   " imap <expr> <C-b>       vsnip#available(-1) ? "\<Plug>(vsnip-jump-prev)"      : "\<C-b>"
+"   " smap <expr> <C-b>       vsnip#available(-1) ? "\<Plug>(vsnip-jump-prev)"      : "\<C-b>"
+"   " xmap <expr> <C-b>       vsnip#available(-1) ? "\<Plug>(vsnip-jump-prev)"      : "\<C-b>"
+"
+"   call deoplete#custom#source('_', 'converters', [
+"   \ 'converter_remove_paren',
+"   \ 'converter_remove_overlap',
+"   \ 'converter_truncate_abbr',
+"   \ 'converter_truncate_menu',
+"   \ 'converter_auto_delimiter',
+"   \ ])
+"
+"   " Sources
+"   " call deoplete#custom#source('typescript', 'rank', 1500)
+"   " call deoplete#custom#source('typescript', 'mark', '[TS]')
+"   " call deoplete#custom#source('typescript', 'max_candidates', 8)
+"
+"   " call deoplete#custom#source('lsp', 'rank', 1400)
+"   " call deoplete#custom#source('lsp', 'mark', '[LSP]')
+"   " call deoplete#custom#source('lsp', 'max_candidates', 8)
+"
+"   " call deoplete#custom#source('LanguageClient', 'rank', 1400)
+"   " call deoplete#custom#source('LanguageClient', 'mark', '[LC]')
+"   " call deoplete#custom#source('LanguageClient', 'max_candidates', 8)
+"
+"   " call deoplete#custom#source('denite', 'rank', 1400)
+"   " call deoplete#custom#source('denite', 'mark', '[denite]')
+"   " call deoplete#custom#source('denite', 'max_candidates', 5)
+"
+"   " call deoplete#custom#source('vim', 'rank', 1300)
+"   " call deoplete#custom#source('vim', 'mark', '[vim]')
+"   " call deoplete#custom#source('vim', 'max_candidates', 5)
+"
+"   " call deoplete#custom#source('vsnip', 'rank', 1300)
+"   " call deoplete#custom#source('vsnip', 'mark', '[Snip]')
+"   " call deoplete#custom#source('vsnip', 'max_candidates', 5)
+"
+"   call deoplete#custom#source('tabnine', 'rank', 1200)
+"   call deoplete#custom#source('tabnine', 'mark', '[TabNine]')
+"   call deoplete#custom#source('tabnine', 'max_candidates', 10)
+"   call deoplete#custom#source('tabnine', 'dup', v:true)
+"
+"   call deoplete#custom#source('around', 'rank', 1000)
+"   call deoplete#custom#source('around', 'mark', '[Around]')
+"   call deoplete#custom#source('around', 'max_candidates', 5)
+"
+"   call deoplete#custom#source('buffer', 'rank', 800)
+"   call deoplete#custom#source('buffer', 'mark', '[Buffer]')
+"   call deoplete#custom#source('buffer', 'max_candidates', 5)
+"
+"   " call deoplete#custom#source('tag', 'rank', 700)
+"   " call deoplete#custom#source('tag', 'mark', '[tag]')
+"   " call deoplete#custom#source('tag', 'max_candidates', 5)
+"
+"   " call deoplete#custom#source('omni', 'rank', 600)
+"   " call deoplete#custom#source('omni', 'mark', '[omni]')
+"   " call deoplete#custom#source('omni', 'max_candidates', 5)
+"
+"   call deoplete#custom#source('syntax', 'rank', 400)
+"   call deoplete#custom#source('syntax', 'mark', '[Syntax]')
+"   call deoplete#custom#source('syntax', 'max_candidates', 5)
+"
+"   call deoplete#custom#source('file', 'rank', 300)
+"   call deoplete#custom#source('file', 'mark', '[File]')
+"   call deoplete#custom#source('file', 'max_candidates', 5)
+"   call deoplete#custom#source('file', 'dup', v:true)
+"
+"   " call deoplete#custom#source('tmux-complete', 'rank', 200)
+"   " call deoplete#custom#source('tmux-complete', 'mark', '[tmux]')
+"   " call deoplete#custom#source('tmux-complete', 'max_candidates', 5)
+"
+"   " call deoplete#custom#source('webcomplete', 'rank', 100)
+"   " call deoplete#custom#source('webcomplete', 'mark', '[web]')
+"   " call deoplete#custom#source('webcomplete', 'max_candidates', 5)
+"
+"   " call deoplete#custom#source('look', 'rank', 100)
+"   " call deoplete#custom#source('look', 'mark', '[look]')
+"   " call deoplete#custom#source('look', 'max_candidates', 5)
+"
+"   let s:deoplete_default_sources = ['tabnine', 'file', 'around', 'buffer']
+"
+"   let s:deoplete_sources                    = {}
+"   let s:deoplete_sources['_']               = s:deoplete_default_sources
+"   let s:deoplete_sources['javascript']      = s:deoplete_default_sources + ['']
+"   let s:deoplete_sources['typescript']      = s:deoplete_default_sources + ['']
+"   let s:deoplete_sources['typescript.tsx']  = s:deoplete_default_sources + ['']
+"   let s:deoplete_sources['typescriptreact'] = s:deoplete_default_sources + ['']
+" endif
+" }}}3
+
+" asyncomplete {{{3
+" let g:asyncomplete_auto_popup = 1
+" imap <C-Space> <Plug>(asyncomplete_force_refresh)
 " }}}3
 
 " }}}2
