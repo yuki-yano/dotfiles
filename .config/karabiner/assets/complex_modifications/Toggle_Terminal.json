@@ -74,7 +74,7 @@
             {
               "type": "frontmost_application_if",
               "bundle_identifiers": [
-                "^io\\.Alacritty$"
+                "^io\\.alacritty$"
               ]
             }
           ]
