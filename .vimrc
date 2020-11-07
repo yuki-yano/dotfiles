@@ -2104,7 +2104,7 @@ let g:scratch_no_mappings = 1
 
 " yankround {{{3
 if dein#tap('yankround.vim')
-  let g:yankround_max_history   = 1000
+  let g:yankround_max_history   = 10000
   let g:yankround_use_region_hl = 1
   let g:yankround_dir           = '~/.cache/vim/yankround'
 
