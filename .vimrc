@@ -133,7 +133,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('deris/vim-shot-f')
   " call dein#add('haya14busa/incsearch.vim')
   " call dein#add('mg979/vim-visual-multi',        {'rev': 'test'})
-  " call dein#add('tyru/caw.vim',                  {'lazy': 1, 'on_map': '<Plug>'})
+  " call dein#add('tomtom/tcomment_vim',           {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
   " call dein#add('unblevable/quick-scope')
   call dein#add('Bakudankun/BackAndForward.vim')
   call dein#add('LeafCage/yankround.vim')
@@ -155,8 +155,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('terryma/vim-expand-region',     {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-qfreplace',          {'lazy': 1, 'on_cmd': 'Qfreplace'})
   call dein#add('tommcdo/vim-exchange',          {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
-  call dein#add('tomtom/tcomment_vim',           {'lazy': 1, 'on_cmd': ['TComment', 'TCommentBlock', 'TCommentInline', 'TCommentRight', 'TCommentBlock', 'TCommentAs']})
   call dein#add('tpope/vim-repeat')
+  call dein#add('tyru/caw.vim',                  {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('vim-scripts/Align',             {'lazy': 1, 'on_cmd': 'Align'})
   " }}}3
 
@@ -1659,14 +1659,10 @@ endfunction
 " }}}3
 
 " caw {{{3
-" let g:caw_no_default_keymappings = 1
-"
-" nmap <silent> <Leader>cc <Plug>(caw:hatpos:toggle)
-" xmap <silent> <Leader>cc <Plug>(caw:hatpos:toggle)
-" nmap <silent> <Leader>cw <Plug>(caw:wrap:comment)
-" xmap <silent> <Leader>cw <Plug>(caw:wrap:comment)
-" nmap <silent> <Leader>cW <Plug>(caw:wrap:uncomment)
-" xmap <silent> <Leader>cW <Plug>(caw:wrap:uncomment)
+let g:caw_no_default_keymappings = 0
+
+nmap <silent> <Leader>c <Plug>(caw:prefix)
+xmap <silent> <Leader>c <Plug>(caw:prefix)
 " }}}3
 
 " easy-align {{{3
@@ -2101,9 +2097,9 @@ let g:scratch_no_mappings = 1
 " }}}3
 
 " tcomment {{{3
-let g:tcomment_maps = 0
-
-noremap <silent> <Leader>cc :TComment<CR>
+" let g:tcomment_maps = 0
+"
+" noremap <silent> <Leader>cc :TComment<CR>
 " }}}3
 
 " yankround {{{3
