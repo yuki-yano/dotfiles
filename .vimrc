@@ -600,7 +600,7 @@ function! s:quickfix_toggle()
 endfunction
 
 command! QuickfixToggle call <SID>quickfix_toggle()
-nnoremap <silent> [dev]q :<C-u>QuickfixToggle<CR>
+nnoremap <silent> <Leader>q :<C-u>QuickfixToggle<CR>
 " }}}2
 
 " ToggleLocationList {{{2
@@ -614,7 +614,7 @@ function! s:location_list_toggle()
 endfunction
 
 command! LocationListToggle call <SID>location_list_toggle()
-nnoremap <silent> [dev]l :<C-u>LocationListToggle<CR>
+nnoremap <silent> <Leader><Leader>q :<C-u>LocationListToggle<CR>
 " }}}2
 
 " HelpEdit & HelpView {{{2
