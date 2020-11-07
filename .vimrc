@@ -57,9 +57,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('tpope/vim-rails',                         {'lazy': 1, 'on_ft': 'ruby'})
   call dein#add('elzr/vim-json',                           {'lazy': 1, 'on_ft': 'json'})
   call dein#add('iamcco/markdown-preview.nvim',            {'lazy': 1, 'on_ft': 'markdown', 'build': 'sh -c "cd app & yarn install"' })
-  call dein#add('nvim-treesitter/nvim-treesitter',         {'merged': 0})
   call dein#add('plasticboy/vim-markdown',                 {'lazy': 1, 'on_ft': 'markdown'})
   call dein#add('rhysd/vim-fixjson',                       {'lazy': 1, 'on_cmd': 'FixJson'})
+
+  if has('nvim')
+    call dein#add('nvim-treesitter/nvim-treesitter', {'merged': 0})
+  endif
   " }}}3
 
   " Git {{{3
@@ -1163,11 +1166,18 @@ let g:vim_markdown_new_list_item_indent    = 0
 if dein#tap('nvim-treesitter') && has('nvim')
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = {"typescript", "tsx", "javascript", "ruby", "python"},
+  ensure_installed = {"typescript", "tsx", "javascript", "json", "yaml", "ruby", "bash"},
   highlight = {
     enable = true,
   },
 }
+
+require "nvim-treesitter.highlight"
+local hlmap = vim.treesitter.highlighter.hl_map
+
+hlmap.error = nil
+hlmap["punctuation.delimiter"] = "Delimiter"
+hlmap["punctuation.bracket"] = nil
 EOF
 endif
 " }}}3
