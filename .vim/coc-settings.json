@@ -3,10 +3,13 @@
   "suggest.asciiCharactersOnly": true,
   "suggest.snippetIndicator": " >>",
   "suggest.languageSourcePriority": 200,
-  "tabnine.priority": 100,
   "snippets.priority": 300,
   "snippets.loadFromExtensions": false,
   "snippets.textmateSnippetsRoots": ["~/.vsnip"],
+
+  "tabnine.priority": 100,
+  "tabnine.shortcut": "TabNine",
+  "suggest.autoTrigger": "always",
 
   "diagnostic.checkCurrentLine": true,
   "diagnostic.messageDelay": 0,
@@ -15,6 +18,7 @@
   "diagnostic.infoSign": "",
   "diagnostic.hintSign": "",
 
+  "coc.preferences.promptInput": true,
   "coc.preferences.useQuickfixForLocations": true,
 
   "explorer.sources": [{ "name": "file", "expand": true }],
@@ -100,7 +104,6 @@
       "/docker-compose.yml"
     ]
   },
-  "coc-actions.hideCursor": false,
 
   "cSpell.diagnosticLevel": "Hint",
   "cSpell.enabledLanguageIds": [

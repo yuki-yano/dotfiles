@@ -880,6 +880,7 @@ MyAlterCommand dein Dein
 
 " coc {{{3
 MyAlterCommand list CocList
+MyAlterCommand OR   OrganizeImport
 
 MyAlterCommand jest       Jest
 MyAlterCommand jc[urrent] JestCurrent
@@ -891,13 +892,17 @@ let g:coc_global_extensions = [
 \ 'coc-eslint',
 \ 'coc-explorer',
 \ 'coc-git',
+\ 'coc-jest',
 \ 'coc-json',
+\ 'coc-marketplace',
 \ 'coc-prettier',
 \ 'coc-python',
+\ 'coc-react-refactor',
 \ 'coc-sh',
 \ 'coc-snippets',
 \ 'coc-solargraph',
 \ 'coc-spell-checker',
+\ 'coc-tabnine',
 \ 'coc-tailwindcss',
 \ 'coc-tsserver',
 \ 'coc-vimlsp',
@@ -926,19 +931,28 @@ nmap     <silent> [dev]f  <Plug>(coc-format)
 xmap     <silent> [dev]f  <Plug>(coc-format-selected)
 nmap     <silent> [dev]gs <Plug>(coc-git-chunkinfo)
 
+nnoremap <silent> <expr> <C-d> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-d>"
+nnoremap <silent> <expr> <C-u> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-u>"
+inoremap <silent> <expr> <C-d> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(1)\<CR>" : "\<Right>"
+inoremap <silent> <expr> <C-u> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(0)\<CR>" : "\<Left>"
+
 " nnoremap <Leader>e :<C-u>CocCommand explorer<CR>
 " nnoremap <Leader>E :<C-u>CocCommand explorer --reveal expand('%')<CR>
 
-nmap     <silent> gp <Plug>(coc-git-prevchunk)
-nmap     <silent> gn <Plug>(coc-git-nextchunk)
+nmap <silent> gp <Plug>(coc-git-prevchunk)
+nmap <silent> gn <Plug>(coc-git-nextchunk)
+
+command! -nargs=0 OrganizeImport :call CocAction('runCommand', 'editor.action.organizeImport')
 
 AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
-    nnoremap <buffer> K K
+    execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
   else
-    call CocAction('doHover')
+    execute '!' . &keywordprg . ' ' . expand('<cword>')
   endif
 endfunction
 
@@ -970,6 +984,7 @@ command! Jest        :call CocAction('runCommand', 'jest.projectTest')
 command! JestCurrent :call CocAction('runCommand', 'jest.fileTest', ['%'])
 command! JestSingle  :call CocAction('runCommand', 'jest.singleTest')
 
+" AutoCmd CursorHold * silent call CocActionAsync('highlight')
 AutoCmd FileType typescript,typescript.tsx call s:coc_typescript_settings()
 " }}}3
 
