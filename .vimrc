@@ -133,7 +133,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('deris/vim-shot-f')
   " call dein#add('haya14busa/incsearch.vim')
   " call dein#add('mg979/vim-visual-multi',        {'rev': 'test'})
-  " call dein#add('rhysd/accelerated-jk',          {'lazy': 1, 'on_map': '<Plug>'})
   " call dein#add('tyru/caw.vim',                  {'lazy': 1, 'on_map': '<Plug>'})
   " call dein#add('unblevable/quick-scope')
   call dein#add('Bakudankun/BackAndForward.vim')
@@ -152,6 +151,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('osyo-manga/vim-anzu')
   call dein#add('osyo-manga/vim-jplus',          {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('t9md/vim-choosewin',            {'lazy': 1, 'on_map': {'n': '<Plug>'}})
+  call dein#add('rhysd/accelerated-jk',          {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('terryma/vim-expand-region',     {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('thinca/vim-qfreplace',          {'lazy': 1, 'on_cmd': 'Qfreplace'})
   call dein#add('tommcdo/vim-exchange',          {'lazy': 1, 'on_map': {'n': ['cx', 'cxc', 'cxx'], 'x': ['X']}})
@@ -1599,10 +1599,10 @@ let g:textobj_functioncall_patterns = [
 " Edit & Move & Search {{{2
 
 " accelerated-jk {{{3
-" if dein#tap('accelerated-jk')
-"   nmap j <Plug>(accelerated_jk_j)
-"   nmap k <Plug>(accelerated_jk_k)
-" endif
+if dein#tap('accelerated-jk')
+  nmap j <Plug>(accelerated_jk_j)
+  nmap k <Plug>(accelerated_jk_k)
+endif
 " }}}3
 
 " anzu & asterisk {{{3
