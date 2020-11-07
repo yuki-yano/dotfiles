@@ -297,10 +297,6 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 
 # }}}
 
-# Funcion & Alias {{{
-
-# }}}
-
 # fzf {{{
 
 # Project
@@ -544,10 +540,6 @@ bindkey '^x^e' edit-command-line
 # GitKraken
 alias kraken='open -na "GitKraken" --args -p "$(git rev-parse --show-toplevel)"'
 
-# Loading zpty
-# https://github.com/zchee/deoplete-zsh
-zmodload zsh/zpty
-
 # Auto execute rehash when executing anyenv command
 add-zsh-hook preexec env_rehash
 
@@ -575,7 +567,7 @@ function git_auto_save() {
 
 # }}}
 
-# Load util {{{
+# Load local {{{
 
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
