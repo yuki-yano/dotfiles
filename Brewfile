@@ -61,6 +61,7 @@ install jq
 install parallel
 install pstree
 install rsync
+install silicon
 install tokei
 install tree
 install w3m
