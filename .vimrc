@@ -228,6 +228,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('cocopon/iceberg.vim')
   call dein#add('icymind/NeoSolarized')
   call dein#add('joshdick/onedark.vim')
+  call dein#add('sainnhe/gruvbox-material',     {'merged': 0})
   call dein#add('taohexxx/lightline-solarized')
   " }}}3
 
@@ -722,9 +723,9 @@ command! ReviewStart call s:review_start()
 function! s:review_end() abort
   let g:review_status = v:false
 
-  colorscheme nord
+  colorscheme gruvbox-material
   set background=dark
-  let g:lightline.colorscheme = 'nord'
+  let g:lightline.colorscheme = 'gruvbox'
   call lightline#disable()
   call lightline#enable()
 
@@ -1273,9 +1274,13 @@ endif
 let g:fzf_layout      = { 'window': { 'width': 0.9, 'height': 0.9 } }
 let g:coc_fzf_preview = 'right'
 let g:coc_fzf_opts    = ['--layout=reverse']
-let $FZF_DEFAULT_OPTS = '--color=hl:#81A1C1,hl+:#81A1C1,info:#EACB8A,prompt:#81A1C1,pointer:#B48DAC,marker:#A3BE8B,spinner:#B48DAC,header:#A3BE8B'
-let $BAT_THEME        = 'Nord'
+let $BAT_THEME        = 'gruvbox'
 let $BAT_STYLE        = 'plain'
+
+" Nord
+" let $FZF_DEFAULT_OPTS = '--color=hl:#81A1C1,hl+:#81A1C1,info:#EACB8A,prompt:#81A1C1,pointer:#B48DAC,marker:#A3BE8B,spinner:#B48DAC,header:#A3BE8B'
+" Gruvbox
+let $FZF_DEFAULT_OPTS = '--color=bg+:#1d2021,bg:#1d2021,spinner:#d8a657,hl:#a9b665,fg:#d4be98,header:#928374,info:#89b482,pointer:#7daea3,marker:#d8a657,fg+:#d4be98,prompt:#e78a4e,hl+:#89b482'
 " }}}3
 
 " fzf-preview {{{3
@@ -2234,7 +2239,7 @@ endif
 " lightline {{{3
 if dein#tap('lightline.vim')
   let g:lightline = {
-  \ 'colorscheme': 'nord',
+  \ 'colorscheme': 'gruvbox',
   \ 'active': {
   \   'left': [
   \     ['mode', 'spell', 'paste'],
@@ -2272,6 +2277,7 @@ if dein#tap('lightline.vim')
   \   'lineinfo':     'Lightline_lineinfo',
   \   'fileencoding': 'Lightline_fileencoding',
   \   'fileformat':   'Lightline_fileformat',
+  \   'special_mode': 'Lightline_special_mode',
   \   'anzu':         'anzu#search_status',
   \   'vm_regions':   'Lightline_vm_regions',
   \ },
@@ -2926,14 +2932,32 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight CursorLineNr ctermfg=253  cte
 AutoCmd ColorScheme nord,onedark,iceberg highlight LineNr       ctermfg=241  ctermbg=NONE guifg=#626262 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight NonText      ctermfg=60   ctermbg=NONE guifg=#5F5F87 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight Identifier   ctermfg=10   ctermbg=NONE guifg=#C0CA8E guibg=NONE
-AutoCmd ColorScheme nord,onedark,iceberg highlight Search       ctermfg=68   ctermbg=232  guifg=#5F87D7 guibg=#080808
+AutoCmd ColorScheme nord,onedark,iceberg highlight Search       ctermfg=68   ctermbg=232  guifg=NONE    guibg=#213F72
 AutoCmd ColorScheme nord,onedark,iceberg highlight SignColumn   ctermfg=0    ctermbg=NONE guifg=#3B4252 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight Todo         ctermfg=229  ctermbg=NONE guifg=#FFFFAF guibg=NONE
-AutoCmd ColorScheme nord,onedark,iceberg highlight Visual       ctermfg=159  ctermbg=23   guifg=#AFFFFF guibg=#005F5F
+AutoCmd ColorScheme nord,onedark,iceberg highlight Visual       ctermfg=NONE ctermbg=23   guifg=NONE    guibg=#1D4647
 AutoCmd ColorScheme nord,onedark,iceberg highlight Folded       ctermfg=245  ctermbg=NONE guifg=#686f9a guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight DiffAdd      ctermfg=233  ctermbg=64   guifg=#C4C4C4 guibg=#456D4F
 AutoCmd ColorScheme nord,onedark,iceberg highlight DiffDelete   ctermfg=233  ctermbg=95   guifg=#C4C4C4 guibg=#593535
 AutoCmd ColorScheme nord,onedark,iceberg highlight DiffChange   ctermfg=233  ctermbg=143  guifg=#C4C4C4 guibg=#594D1A
+
+" AutoCmd ColorScheme gruvbox-material highlight Normal       ctermfg=145  ctermbg=235  guifg=#ABB2BF guibg=#26282F
+" AutoCmd ColorScheme gruvbox-material highlight NormalNC     ctermfg=144  ctermbg=234  guifg=#ABB2BF guibg=#282C34
+AutoCmd ColorScheme gruvbox-material highlight CursorColumn ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#353535
+AutoCmd ColorScheme gruvbox-material highlight CursorLine   ctermfg=NONE ctermbg=236  guifg=NONE    guibg=#353535
+AutoCmd ColorScheme gruvbox-material highlight CursorLineNr ctermfg=253  ctermbg=NONE guifg=#DADADA guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight LineNr       ctermfg=241  ctermbg=NONE guifg=#626262 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight NonText      ctermfg=60   ctermbg=NONE guifg=#5F5F87 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight Identifier   ctermfg=10   ctermbg=NONE guifg=#C0CA8E guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight Search       ctermfg=68   ctermbg=232  guifg=NONE    guibg=#213F72
+AutoCmd ColorScheme gruvbox-material highlight SignColumn   ctermfg=0    ctermbg=NONE guifg=#32302f guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight Todo         ctermfg=229  ctermbg=NONE guifg=#FFFFAF guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight Visual       ctermfg=NONE ctermbg=23   guifg=NONE    guibg=#1D4647
+AutoCmd ColorScheme gruvbox-material highlight Folded       ctermfg=245  ctermbg=NONE guifg=#686f9a guibg=NONE
+" AutoCmd ColorScheme gruvbox-material highlight DiffAdd      ctermfg=233  ctermbg=64   guifg=#C4C4C4 guibg=#456D4F
+" AutoCmd ColorScheme gruvbox-material highlight DiffDelete   ctermfg=233  ctermbg=95   guifg=#C4C4C4 guibg=#593535
+" AutoCmd ColorScheme gruvbox-material highlight DiffChange   ctermfg=233  ctermbg=143  guifg=#C4C4C4 guibg=#594D1A
+AutoCmd ColorScheme gruvbox-material highlight DiffText     ctermfg=NONE ctermbg=223  guifg=NONE    guibg=#716522
 
 " Gina (Vital.Vim.Buffer.ANSI)
 AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor0  ctermfg=0  guifg=#2E3440
@@ -2953,8 +2977,24 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor13 ctermfg=13 guifg=
 AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor14 ctermfg=14 guifg=#A3BE8C
 AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor15 ctermfg=15 guifg=#B48EAD
 
+AutoCmd ColorScheme gruvbox-material highlight AnsiColor0  ctermfg=0  guifg=#2E3440
+AutoCmd ColorScheme gruvbox-material highlight AnsiColor1  ctermfg=1  guifg=#32302f
+AutoCmd ColorScheme gruvbox-material highlight AnsiColor2  ctermfg=2  guifg=#434C5E
+AutoCmd ColorScheme gruvbox-material highlight AnsiColor3  ctermfg=3  guifg=#4C566A
+AutoCmd ColorScheme gruvbox-material highlight AnsiColor4  ctermfg=4  guifg=#D8DEE9
+AutoCmd ColorScheme gruvbox-material highlight AnsiColor5  ctermfg=5  guifg=#d4be98
+AutoCmd ColorScheme gruvbox-material highlight AnsiColor6  ctermfg=6  guifg=#ECEFF4
+AutoCmd ColorScheme gruvbox-material highlight AnsiColor7  ctermfg=7  guifg=#8FBCBB
+AutoCmd ColorScheme gruvbox-material highlight AnsiColor8  ctermfg=8  guifg=#89b482
+AutoCmd ColorScheme gruvbox-material highlight AnsiColor9  ctermfg=9  guifg=#7daea3
+AutoCmd ColorScheme gruvbox-material highlight AnsiColor10 ctermfg=10 guifg=#5E81AC
+AutoCmd ColorScheme gruvbox-material highlight AnsiColor11 ctermfg=11 guifg=#ea6962
+AutoCmd ColorScheme gruvbox-material highlight AnsiColor12 ctermfg=12 guifg=#D08770
+AutoCmd ColorScheme gruvbox-material highlight AnsiColor13 ctermfg=13 guifg=#d8a657
+AutoCmd ColorScheme gruvbox-material highlight AnsiColor14 ctermfg=14 guifg=#a9b665
+AutoCmd ColorScheme gruvbox-material highlight AnsiColor15 ctermfg=15 guifg=#d3869b
+
 " Plugin highlight
-" AutoCmd ColorScheme nord,onedark,iceberg highlight BrightestHighlight      ctermfg=72   ctermbg=NONE                      guifg=#5FAF87 guibg=NONE
 " AutoCmd ColorScheme nord,onedark,iceberg highlight ShotFBlank              ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#E27878 guibg=NONE    gui=underline,bold
 " AutoCmd ColorScheme nord,onedark,iceberg highlight ShotFGraph              ctermfg=209  ctermbg=NONE                      guifg=#E27878 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
@@ -2991,7 +3031,47 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight FernGitStatusUntracked  cterm
 AutoCmd ColorScheme nord,onedark,iceberg highlight link FernGitStatusIgnored Comment
 
 " TreeSitter
-AutoCmd ColorScheme nord,foo,iceberg highlight link TSPunctBracket Normal
+AutoCmd ColorScheme nord,onedark,iceberg highlight link TSPunctBracket Normal
+
+" AutoCmd ColorScheme gruvbox-material highlight ShotFBlank              ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#E27878 guibg=NONE    gui=underline,bold
+" AutoCmd ColorScheme gruvbox-material highlight ShotFGraph              ctermfg=209  ctermbg=NONE                      guifg=#E27878 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight BrightestHighlight      ctermfg=NONE ctermbg=236                       guifg=NONE    guibg=#32302f
+AutoCmd ColorScheme gruvbox-material highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
+AutoCmd ColorScheme gruvbox-material highlight EftChar                 ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#E27878 guibg=NONE    gui=underline,bold
+AutoCmd ColorScheme gruvbox-material highlight EftSubChar              ctermfg=68   ctermbg=NONE cterm=underline,bold guifg=#5F87D7 guibg=NONE    gui=underline,bold
+AutoCmd ColorScheme gruvbox-material highlight ExtraWhiteSpace         ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
+AutoCmd ColorScheme gruvbox-material highlight FloatermNF              ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#161821
+AutoCmd ColorScheme gruvbox-material highlight GitRebase               ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#1F1F20
+AutoCmd ColorScheme gruvbox-material highlight HighlightedyankRegion   ctermfg=1    ctermbg=NONE                      guifg=#E27878 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight MatchParen              ctermfg=NONE ctermbg=NONE cterm=underline      guifg=NONE    guibg=NONE    gui=underline
+AutoCmd ColorScheme gruvbox-material highlight MatchParenCur           ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
+AutoCmd ColorScheme gruvbox-material highlight MatchWord               ctermfg=NONE ctermbg=NONE cterm=underline      guifg=NONE    guibg=NONE    gui=underline
+AutoCmd ColorScheme gruvbox-material highlight MatchWordCur            ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
+AutoCmd ColorScheme gruvbox-material highlight QuickScopePrimary       ctermfg=68   ctermbg=NONE                      guifg=#5F87D7 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight QuickScopeSecondary     ctermfg=72   ctermbg=NONE                      guifg=#5FAFAF guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
+AutoCmd ColorScheme gruvbox-material highlight ZenSpace                ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
+
+AutoCmd ColorScheme gruvbox-material highlight CocErrorSign            ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight CocWarningSign          ctermfg=214  ctermbg=NONE                      guifg=#FFAF60 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight CocInfoSign             ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
+
+AutoCmd ColorScheme gruvbox-material highlight Defx_git_Untracked      ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight Defx_git_Modified       ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight Defx_git_Staged         ctermfg=2    ctermbg=NONE                      guifg=#b4be82 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight Defx_git_Deleted        ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight Defx_git_Renamed        ctermfg=2    ctermbg=NONE                      guifg=#b4be82 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight Defx_git_Unmerged       ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+
+AutoCmd ColorScheme gruvbox-material highlight FernGitStatusWorktree   ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight FernGitStatusIndex      ctermfg=2    ctermbg=NONE                      guifg=#b4be82 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight FernGitStatusUnmerged   ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight FernGitStatusUntracked  ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight link FernGitStatusIgnored Comment
+
+" TreeSitter
+AutoCmd ColorScheme gruvbox-material highlight link TSPunctBracket Normal
+
 " }}}2
 
 " nord {{{2
@@ -3108,6 +3188,109 @@ let s:p.visual.ok           = s:coc_diagnostic[3:3]
 
 let g:lightline#colorscheme#nord#palette = lightline#colorscheme#flatten(s:p)
 
+" }}}3
+
+" }}}2
+
+" gruvbox-material {{{2
+
+let g:gruvbox_material_background = 'hard'
+colorscheme gruvbox-material
+
+" lightline highlight {{{3
+let s:gruvbox0   = ['#32302f', 0]
+let s:gruvbox1   = ['#ea6962', 1]
+let s:gruvbox2   = ['#a9b665', 2]
+let s:gruvbox3   = ['#d8a657', 3]
+let s:gruvbox4   = ['#7daea3', 4]
+let s:gruvbox5   = ['#d3869b', 5]
+let s:gruvbox6   = ['#89b482', 6]
+let s:gruvbox7   = ['#d4be98', 7]
+let s:grey       = ['#3A3A3A', 237]
+let s:blue_green = ['#00AFAF', 37 ]
+let s:warning    = ['#FFAF60', 214]
+let s:info       = ['#FFFFAF', 229]
+
+let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
+
+let s:p.normal.left = [
+\ [s:gruvbox0,   s:gruvbox4],
+\ [s:gruvbox7,   s:grey ],
+\ [s:blue_green, s:grey ],
+\ [s:gruvbox4,   s:grey ],
+\ ]
+
+let s:p.insert.left = [
+\ [s:gruvbox0,   s:gruvbox3 ],
+\ [s:gruvbox7,   s:grey  ],
+\ [s:blue_green, s:grey  ],
+\ [s:gruvbox4,   s:grey  ],
+\]
+
+let s:p.visual.left = [
+\ [s:gruvbox0,   s:gruvbox5],
+\ [s:gruvbox7,   s:grey ],
+\ [s:blue_green, s:grey ],
+\ [s:gruvbox4,   s:grey ],
+\ ]
+
+let s:p.replace.left = [
+\ [s:gruvbox0,   s:gruvbox1],
+\ [s:gruvbox7,   s:grey ],
+\ [s:blue_green, s:grey ],
+\ [s:gruvbox4,   s:grey ],
+\ ]
+
+let s:p.inactive.left = [
+\ [s:blue_green, s:grey],
+\ [s:gruvbox7,   s:grey],
+\ [s:blue_green, s:grey],
+\ [s:gruvbox4,   s:grey],
+\ ]
+
+let s:p.normal.right   = [[s:gruvbox7, s:gruvbox0],   [s:gruvbox7, s:grey ]]
+let s:p.inactive.right = [[s:gruvbox0, s:gruvbox7],   [s:gruvbox0, s:gruvbox7]]
+let s:p.insert.right   = [[s:gruvbox0, s:gruvbox3],   [s:gruvbox7, s:grey ]]
+let s:p.replace.right  = [[s:gruvbox0, s:gruvbox1],   [s:gruvbox7, s:grey ]]
+let s:p.visual.right   = [[s:gruvbox0, s:gruvbox5],   [s:gruvbox7, s:grey ]]
+
+let s:p.normal.middle   = [[s:gruvbox7, s:gruvbox0]]
+let s:p.inactive.middle = [[s:gruvbox7, s:grey]]
+
+let s:p.tabline.left   = [[s:gruvbox7, s:grey]]
+let s:p.tabline.tabsel = [[s:gruvbox0, s:gruvbox4]]
+let s:p.tabline.middle = [[s:gruvbox7, s:gruvbox0]]
+let s:p.tabline.right  = [[s:gruvbox7, s:grey]]
+
+let s:coc_diagnostic = [
+\ [s:grey, s:gruvbox1],
+\ [s:grey, s:warning],
+\ [s:grey, s:info],
+\ [s:grey, s:gruvbox4],
+\ ]
+
+let s:p.normal.error        = s:coc_diagnostic[0:0]
+let s:p.insert.error        = s:coc_diagnostic[0:0]
+let s:p.replace.error       = s:coc_diagnostic[0:0]
+let s:p.visual.error        = s:coc_diagnostic[0:0]
+let s:p.normal.warning      = s:coc_diagnostic[1:1]
+let s:p.insert.warning      = s:coc_diagnostic[1:1]
+let s:p.replace.warning     = s:coc_diagnostic[1:1]
+let s:p.visual.warning      = s:coc_diagnostic[1:1]
+let s:p.normal.information  = s:coc_diagnostic[2:2]
+let s:p.insert.information  = s:coc_diagnostic[2:2]
+let s:p.replace.information = s:coc_diagnostic[2:2]
+let s:p.visual.information  = s:coc_diagnostic[2:2]
+let s:p.normal.hint         = s:coc_diagnostic[2:2]
+let s:p.insert.hint         = s:coc_diagnostic[2:2]
+let s:p.replace.hint        = s:coc_diagnostic[2:2]
+let s:p.visual.hint         = s:coc_diagnostic[2:2]
+let s:p.normal.ok           = s:coc_diagnostic[3:3]
+let s:p.insert.ok           = s:coc_diagnostic[3:3]
+let s:p.replace.ok          = s:coc_diagnostic[3:3]
+let s:p.visual.ok           = s:coc_diagnostic[3:3]
+
+let g:lightline#colorscheme#gruvbox#palette = lightline#colorscheme#flatten(s:p)
 " }}}3
 
 " }}}2
