@@ -1182,11 +1182,6 @@ EOF
 endif
 " }}}3
 
-" typescript {{{3
-AutoCmd FileType typescript,typescriptreact,typescript.tsx :setlocal makeprg=tsc\ --project\ .\ --noEmit
-AutoCmd FileType typescript,typescriptreact,typescript.tsx :setlocal errorformat=%+A\ %#%f\ %#(%l\\\,%c):\ %m,%C%m
-" }}}3
-
 " vim {{{3
 let g:vimsyntax_noerror = 1
 let g:vim_indent_cont   = 0
