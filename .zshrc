@@ -132,7 +132,7 @@ fi
 
 # bat {{{
 if whence bat > /dev/null; then
-  export BAT_THEME='Nord'
+  export BAT_THEME='gruvbox'
   alias bat='bat'
   alias b='bat --color=always --style=plain'
   alias c='bat --color=always --style=plain'
