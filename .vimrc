@@ -110,6 +110,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Edit & Move & Search {{{3
   " call dein#add('AndrewRadev/splitjoin.vim',     {'lazy': 1, 'on_cmd': ['SplitJoinSplit', 'SplitJoinJoin']})
   " call dein#add('deris/vim-shot-f')
+  " call dein#add('haya14busa/incsearch.vim')
   " call dein#add('mg979/vim-visual-multi',        {'rev': 'test'})
   " call dein#add('rhysd/accelerated-jk',          {'lazy': 1, 'on_map': '<Plug>'})
   " call dein#add('tyru/caw.vim',                  {'lazy': 1, 'on_map': '<Plug>'})
@@ -119,7 +120,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('MattesGroeger/vim-bookmarks')
   call dein#add('cohama/lexima.vim',             {'merged': 0})
   call dein#add('easymotion/vim-easymotion')
-  call dein#add('haya14busa/incsearch.vim')
   call dein#add('haya14busa/vim-asterisk',       {'lazy': 1, 'on_map': '<Plug>'})
   call dein#add('haya14busa/vim-edgemotion')
   call dein#add('haya14busa/vim-metarepeat',     {'lazy': 1, 'on_map': ['go', 'g.', '<Plug>']})
@@ -292,6 +292,9 @@ nnoremap x "_x
 
 "" incsearch
 " nnoremap / /\v
+" nnoremap ? ?\v
+cnoremap <expr> / empty(getcmdline()) <Bar><Bar> getcmdline() ==# '\v' ? '<C-u>\<' : getcmdline() ==# '\<' ? '\><Left><Left>' : '/'
+cnoremap <expr> ? empty(getcmdline()) <Bar><Bar> getcmdline() ==# '\v' ? '<C-u>\<' : getcmdline() ==# '\<' ? '\><Left><Left>' : '?'
 
 "" tagjump
 nnoremap <silent> s<C-]> :<C-u>wincmd ]<CR>
@@ -1400,12 +1403,12 @@ let g:textobj_functioncall_patterns = [
 " endif
 " }}}3
 
-" anzu & asterisk & incsearch {{{3
-if dein#tap('vim-anzu') && dein#tap('vim-asterisk') && dein#tap('incsearch.vim')
-  let g:incsearch#magic = '\v'
+" anzu & asterisk {{{3
+if dein#tap('vim-anzu') && dein#tap('vim-asterisk')
+  " let g:incsearch#magic = '\v'
 
-  map /  <Plug>(incsearch-forward)
-  map ?  <Plug>(incsearch-backward)
+  " map /  <Plug>(incsearch-forward)
+  " map ?  <Plug>(incsearch-backward)
   map n  <Plug>(anzu-n)zzzv
   map N  <Plug>(anzu-N)zzzv
   map *  <Plug>(asterisk-z*)<Plug>(anzu-update-search-status)
