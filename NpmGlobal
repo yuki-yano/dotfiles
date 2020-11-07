@@ -2,6 +2,7 @@ fixjson
 jsonlint
 neovim
 prettier
+serve
 ts-node
 typescript
 typesync
