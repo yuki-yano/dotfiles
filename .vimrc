@@ -46,22 +46,23 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Language {{{3
-  " call dein#add('HerringtonDarkholme/yats.vim',            {'lazy': 1, 'on_ft': ['typescript', 'typescriptreact', 'typescript.tsx']})
-  " call dein#add('hail2u/vim-css3-syntax',                  {'lazy': 1, 'on_ft': 'css'})
-  " call dein#add('jparise/vim-graphql',                     {'lazy': 1, 'on_ft': ['graphql', 'javascript', 'typescript', 'typescriptreact', 'typescript.tsx']})
-  " call dein#add('leafgarland/typescript-vim',              {'lazy': 1, 'on_ft': ['typescript', 'typescriptreact', 'typescript.tsx']})
-  " call dein#add('othree/yajs.vim',                         {'lazy': 1, 'on_ft': 'javascript'})
-  " call dein#add('peitalin/vim-jsx-typescript',             {'lazy': 1, 'on_ft': ['typescript', 'typescriptreact', 'typescript.tsx']})
-  " call dein#add('posva/vim-vue',                           {'lazy': 1, 'on_ft': 'vue'})
-  " call dein#add('styled-components/vim-styled-components', {'lazy': 1, 'on_ft': ['javascript', 'typescript', 'typescriptreact', 'typescript.tsx']})
-  " call dein#add('tpope/vim-rails',                         {'lazy': 1, 'on_ft': 'ruby'})
-  call dein#add('elzr/vim-json',                           {'lazy': 1, 'on_ft': 'json'})
-  call dein#add('iamcco/markdown-preview.nvim',            {'lazy': 1, 'on_ft': 'markdown', 'build': 'sh -c "cd app & yarn install"' })
-  call dein#add('plasticboy/vim-markdown',                 {'lazy': 1, 'on_ft': 'markdown'})
-  call dein#add('rhysd/vim-fixjson',                       {'lazy': 1, 'on_cmd': 'FixJson'})
+  " call dein#add('HerringtonDarkholme/yats.vim',            {'merged': 0})
+  " call dein#add('hail2u/vim-css3-syntax',                  {'merged': 0})
+  " call dein#add('jparise/vim-graphql',                     {'merged': 0})
+  " call dein#add('othree/yajs.vim',                         {'merged': 0})
+  " call dein#add('posva/vim-vue',                           {'merged': 0})
+  " call dein#add('styled-components/vim-styled-components', {'merged': 0})
+  " call dein#add('tpope/vim-rails',                         {'merged': 0})
+  call dein#add('elzr/vim-json',                {'merged': 0})
+  call dein#add('iamcco/markdown-preview.nvim', {'merged': 0})
+  call dein#add('leafgarland/typescript-vim',   {'merged': 0})
+  call dein#add('peitalin/vim-jsx-typescript',  {'merged': 0})
+  call dein#add('plasticboy/vim-markdown',      {'merged': 0})
+  call dein#add('rhysd/vim-fixjson',            {'merged': 0})
 
   if has('nvim')
     call dein#add('nvim-treesitter/nvim-treesitter', {'merged': 0})
+    call dein#add('yardnsm/vim-import-cost',         {'merged': 0, 'build': 'npm install'})
   endif
   " }}}3
 
@@ -1147,6 +1148,14 @@ let g:fixjson_fix_on_save = 0
 let g:gen_tags#ctags_auto_gen = 1
 let g:gen_tags#ctags_opts     = '--excmd=number'
 let g:loaded_gentags#gtags    = 1
+" }}}3
+
+" import-cost {{{3
+if dein#tap('vim-import-cost') && has('nvim')
+  " AutoCmd InsertLeave *.js,*.jsx,*.ts,*.tsx ImportCost
+  " AutoCmd BufEnter *.js,*.jsx,*.ts,*.tsx    ImportCost
+  " AutoCmd CursorHold *.js,*.jsx,*.ts,*.tsx  ImportCost
+endif
 " }}}3
 
 " json {{{3
