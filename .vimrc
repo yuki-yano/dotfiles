@@ -872,7 +872,6 @@ command! -nargs=+ MyAlterCommand call <SID>my_alter_command(<f-args>)
 if dein#tap('vim-altercmd')
   call altercmd#load()
   MyAlterCommand ee       e!
-  MyAlterCommand vs[code] VSCode
   MyAlterCommand co[de]   VSCode
   MyAlterCommand fo[rk]   !fork
 endif
