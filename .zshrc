@@ -45,17 +45,11 @@ zinit ice depth=1
 zinit light romkatv/powerlevel10k
 zinit ice depth=1
 zinit light zsh-users/zsh-autosuggestions
-zinit ice lucid atload"!_zsh_git_prompt_precmd_hook"
+zinit ice lucid
 zinit light woefe/git-prompt.zsh
 
-# fuzzy finder
-zinit ice lucid from"gh-r" as"program" mv"fzf -> ${ZPFX}/bin/fzf"
-zinit light junegunn/fzf-bin
-zinit ice lucid depth"1" as"program" mv"bin/fzf-tmux -> ${ZPFX}/bin/fzf-tmux" src"shell/completion.zsh"
-zinit light junegunn/fzf
-# zinit light yuki-ycino/fzf-preview.zsh
-
 zinit light yukiycino-dotfiles/zsh-show-buffer-stack
+# zinit light yuki-ycino/fzf-preview.zsh
 # }}}
 
 # async loading {{{
@@ -81,6 +75,12 @@ zinit light yuki-ycino/tms
 
 zinit ice lucid wait"0" depth"1" as"program" src"tmk.plugin.zsh" pick"tmk"
 zinit light yuki-ycino/tmk
+
+# fuzzy finder
+zinit ice lucid wait"!0" from"gh-r" as"program" mv"fzf -> ${ZPFX}/bin/fzf"
+zinit light junegunn/fzf-bin
+zinit ice lucid wait"!0" depth"1" as"program" mv"bin/fzf-tmux -> ${ZPFX}/bin/fzf-tmux" src"shell/completion.zsh"
+zinit light junegunn/fzf
 
 # Language Server
 zinit ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd64*" mv"*/efm-langserver -> ${ZPFX}/bin/efm-langserver"
