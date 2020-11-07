@@ -51,7 +51,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Git {{{3
-  " call dein#add('APZelos/blamer.nvim')
   " call dein#add('rhysd/conflict-marker.vim')
   " call dein#add('rhysd/git-messenger.vim', {'lazy': 1, 'on_cmd': 'GitMessenger'})
   call dein#add('hotwatermorning/auto-git-diff')
@@ -59,6 +58,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('rhysd/committia.vim')
   call dein#add('tpope/vim-fugitive')
   call dein#add('wting/gitsessions.vim')
+
+  if has('nvim')
+    call dein#add('APZelos/blamer.nvim', {'merged': 0})
+  endif
   " }}}3
 
   " Fuzzy Finder {{{3
@@ -164,7 +167,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('dhruvasagar/vim-table-mode',   {'lazy': 1, 'on_cmd': 'TableModeToggle'})
   " call dein#add('itchyny/vim-qfedit')
   " call dein#add('jsfaint/gen_tags.vim')
-  " call dein#add('osyo-manga/vim-brightest')
   " call dein#add('osyo-manga/vim-gift')
   " call dein#add('pocke/vim-automatic',          {'depends': 'vim-gift'})
   " call dein#add('previm/previm',                {'lazy': 1, 'on_cmd': 'PrevimOpen'})
@@ -179,6 +181,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('liuchengxu/vista.vim',         {'lazy': 1, 'on_cmd': ['Vista', 'Vista!', 'Vista!!']})
   call dein#add('mbbill/undotree',              {'lazy': 1, 'on_cmd': 'UndotreeToggle'})
   call dein#add('moll/vim-bbye',                {'lazy': 1, 'on_cmd': ['Bdelete', 'Bwipeout']})
+  " call dein#add('osyo-manga/vim-brightest')
   call dein#add('thinca/vim-localrc')
   call dein#add('tyru/capture.vim',             {'lazy': 1, 'on_cmd': 'Capture'})
   call dein#add('tyru/vim-altercmd')
@@ -1939,6 +1942,24 @@ let g:better_whitespace_filetypes_blacklist = [
 \ ]
 " }}}3
 
+" blamer {{{3
+let g:blamer_enabled = 1
+let g:blamer_show_in_visual_modes = 0
+" }}}3
+
+" brightest {{{3
+let g:brightest#enable_filetypes = {
+\ '_':    1,
+\ 'fern': 0,
+\ }
+
+let g:brightest#highlight = {
+\ 'group': 'BrighTestHighlight',
+\ 'priority': 0
+\ }
+let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat']
+" }}}3
+
 " choosewin {{{3
 let s:choosewin_nord = ['#81A1C1', '#4C566A']
 let g:choosewin_color_label = {
@@ -2572,25 +2593,6 @@ endif
 " }}}2
 
 " Removed Plugin {{{2
-
-" " brightest {{{3
-" let g:brightest#enable_filetypes = {
-"\ '_':    1,
-"\ 'defx': 0,
-"\ 'fern': 0,
-"\ }
-"
-" let g:brightest#highlight = {
-"\ 'group': 'BrighTestHighlight',
-"\ 'priority': 0
-"\ }
-" let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat']
-" " }}}3
-
-" " blamer {{{3
-" let g:blamer_enabled = 1
-" let g:blamer_show_in_visual_modes = 0
-" " }}}3
 
 " " git-messenger {{{3
 " nnoremap <silent> gm :<C-u>GitMessenger<CR>
