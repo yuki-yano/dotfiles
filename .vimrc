@@ -119,7 +119,9 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-textobj-indent') " ii ai
   call dein#add('kana/vim-textobj-line') " al il
   call dein#add('machakann/vim-textobj-functioncall') " if af
+  call dein#add('mattn/vim-textobj-url',              {'merged': 0}) " iu au
   call dein#add('rhysd/vim-textobj-ruby') " ir ar
+  call dein#add('romgrk/equal.operator',              {'merged': 0}) " i=h a=h i=l a=l
   call dein#add('thinca/vim-textobj-between') " i{char} a{char}
 
   call dein#add('mopp/vim-operator-convert-case',  {'lazy': 1, 'depends': 'vim-operator-user', 'on_map': '<Plug>'}) " cy
@@ -1522,6 +1524,20 @@ AutoCmd FileType fern call glyph_palette#apply()
 " }}}2
 
 " textobj & operator {{{2
+
+" equal.operator {{{3
+let equal_operator_default_mappings = 0
+
+omap i=h <Plug>(operator-lhs)
+omap a=h <Plug>(operator-Lhs)
+xmap i=h <Plug>(visual-lhs)
+xmap a=h <Plug>(visual-Lhs)
+
+omap i=l <Plug>(operator-rhs)
+omap a=l <Plug>(operator-Rhs)
+xmap i=l <Plug>(visual-rhs)
+xmap a=l <Plug>(visual-Rhs)
+" }}}3
 
 " operator-convert-case {{{3
 map cy <Plug>(operator-convert-case-loop)
