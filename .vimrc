@@ -162,17 +162,22 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('RRethy/vim-hexokinase', {'build': 'make hexokinase'})
   " call dein#add('Xuyuanp/scrollbar.nvim')
   " call dein#add('Yggdroot/indentLine')
-  " call dein#add('andymass/vim-matchup')
   " call dein#add('luochen1990/rainbow')
   " call dein#add('wellle/context.vim')
   " call dein#add('yuttie/comfortable-motion.vim')
+  " call dein#add('andymass/vim-matchup')
   call dein#add('itchyny/lightline.vim')
   call dein#add('lambdalisue/readablefold.vim')
   call dein#add('machakann/vim-highlightedundo')
   call dein#add('machakann/vim-highlightedyank')
   call dein#add('mopp/smartnumber.vim')
   call dein#add('ntpeters/vim-better-whitespace')
+  call dein#add('ronakg/quickr-preview.vim',      {'merged': 0})
   call dein#add('ryanoasis/vim-devicons')
+
+  if has('nvim')
+    call dein#add('norcalli/nvim-colorizer.lua', {'merged': 0})
+  endif
   " }}}3
 
   " tmux {{{3
@@ -2500,7 +2505,20 @@ endif
 " }}}3
 
 " matchup {{{3
-" let g:matchup_matchparen_status_offscreen = 0
+let g:matchup_matchparen_status_offscreen = 0
+" }}}3
+
+" nvim-colorizer {{{3
+if dein#tap('nvim-colorizer.lua')
+  lua require'colorizer'.setup()
+endif
+" }}}3
+
+" quickr-preview {{{3
+let g:quickr_preview_keymaps = 0
+
+AutoCmd FileType qf nmap <silent> <buffer> p <Plug>(quickr_preview)
+AutoCmd FileType qf nmap <silent> <buffer> q <Plug>(quickr_preview_qf_close)
 " }}}3
 
 " rainbow {{{3
