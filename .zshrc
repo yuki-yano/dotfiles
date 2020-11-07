@@ -597,12 +597,12 @@ if [[ ! -f ~/.zshrc.zwc ]] || [[ "$(readlink ~/.zshrc)" -nt ~/.zshrc.zwc ]]; the
 fi
 
 # zinit
-if [[ ! -f ~/.zinit/bin/zinit.zsh ]] || [[ ~/.zinit/bin/zinit.zsh -nt ~/.zinit/bin/zinit.zsh.zwc ]]; then
+if [[ ! -f ~/.zinit/bin/zinit.zsh.zwc ]] || [[ ~/.zinit/bin/zinit.zsh -nt ~/.zinit/bin/zinit.zsh.zwc ]]; then
   zcompile ~/.zinit/bin/zinit.zsh
 fi
 
 # p10k
-if [[ ! -f ~/.p10k.zsh ]] || [[ ~/.p10k.zsh -nt ~/.p10k.zsh ]]; then
+if [[ ! -f ~/.p10k.zsh.zwc ]] || [[ ~/.p10k.zsh -nt ~/.p10k.zsh.zwc ]]; then
   zcompile ~/.p10k.zsh
 fi
 
