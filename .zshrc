@@ -177,12 +177,8 @@ autoload -Uz add-zsh-hook
 autoload -Uz colors; colors
 autoload -Uz edit-command-line
 autoload -Uz history-search-end
-autoload -Uz select-bracketed
-autoload -Uz select-quoted
 autoload -Uz smart-insert-last-word
-autoload -Uz surround
 autoload -Uz terminfo
-autoload -Uz zed
 
 # }}}
 
