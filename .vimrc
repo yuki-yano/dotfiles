@@ -1288,16 +1288,23 @@ let $FZF_DEFAULT_OPTS = '--color=bg+:#1d2021,bg:#1d2021,spinner:#d8a657,hl:#a9b6
 " }}}3
 
 " fzf-preview {{{3
-let g:fzf_preview_git_files_command = 'git ls-files --exclude-standard | while read line; do if [[ ! -L $line ]] && [[ -f $line ]]; then echo $line; fi; done'
-let g:fzf_preview_grep_cmd          = 'rg --line-number --no-heading --color=never --sort=path'
-let g:fzf_preview_use_dev_icons     = 1
-let $FZF_PREVIEW_PREVIEW_BAT_THEME  = 'Nord'
+let g:fzf_preview_git_files_command   = 'git ls-files --exclude-standard | while read line; do if [[ ! -L $line ]] && [[ -f $line ]]; then echo $line; fi; done'
+let g:fzf_preview_grep_cmd            = 'rg --line-number --no-heading --color=never --sort=path'
+let g:fzf_preview_mru_limit           = 500
+let g:fzf_preview_use_dev_icons       = 1
+let g:fzf_preview_default_fzf_options = {
+\ '--reverse': v:true,
+\ '--preview-window': 'wrap',
+\ '--exact': v:true,
+\ '--no-sort': v:true,
+\ }
+let $FZF_PREVIEW_PREVIEW_BAT_THEME  = 'gruvbox'
 
 noremap [fzf-p] <Nop>
 map     ;       [fzf-p]
 noremap ;;      ;
 
-nnoremap <silent> [fzf-p]r     :<C-u>CocCommand fzf-preview.FromResources buffer project_mru<CR>
+nnoremap <silent> [fzf-p]r     :<C-u>CocCommand fzf-preview.FromResources buffer project_mru git<CR>
 nnoremap <silent> [fzf-p]w     :<C-u>CocCommand fzf-preview.ProjectMrwFiles<CR>
 nnoremap <silent> [fzf-p]a     :<C-u>CocCommand fzf-preview.FromResources project_mru git<CR>
 nnoremap <silent> [fzf-p]g     :<C-u>CocCommand fzf-preview.GitActions<CR>
@@ -1306,8 +1313,9 @@ nnoremap <silent> [fzf-p]b     :<C-u>CocCommand fzf-preview.Buffers<CR>
 nnoremap <silent> [fzf-p]B     :<C-u>CocCommand fzf-preview.AllBuffers<CR>
 nnoremap <silent> [fzf-p]<C-o> :<C-u>CocCommand fzf-preview.Jumps<CR>
 nnoremap <silent> [fzf-p]/     :<C-u>CocCommand fzf-preview.Lines --resume --add-fzf-arg=--no-sort<CR>
-nnoremap <silent> [fzf-p]*     :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
-nnoremap <silent> [fzf-p]n     :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=substitute(@/, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
+nnoremap <silent> [fzf-p]*     :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
+xnoremap <silent> [fzf-p]*     "sy:CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=substitute(@s, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
+nnoremap <silent> [fzf-p]n     :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=substitute(@/, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
 nnoremap <silent> [fzf-p]?     :<C-u>CocCommand fzf-preview.BufferLines --resume --add-fzf-arg=--no-sort<CR>
 nnoremap          [fzf-p]f     :<C-u>CocCommand fzf-preview.ProjectGrep<Space>
 xnoremap          [fzf-p]f     "sy:CocCommand fzf-preview.ProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
@@ -1318,7 +1326,7 @@ nnoremap <silent> [fzf-p]l     :<C-u>CocCommand fzf-preview.LocationList<CR>
 nnoremap <silent> [fzf-p]:     :<C-u>CocCommand fzf-preview.CommandPalette<CR>
 nnoremap <silent> [fzf-p]p     :<C-u>CocCommand fzf-preview.Yankround<CR>
 nnoremap <silent> [fzf-p]m     :<C-u>CocCommand fzf-preview.Bookmarks --resume<CR>
-nnoremap <silent> [fzf-p]<C-]> :<C-u>CocCommand fzf-preview.VistaCtags --add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap <silent> [fzf-p]<C-]> :<C-u>CocCommand fzf-preview.VistaCtags --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
 nnoremap <silent> [fzf-p]o     :<C-u>CocCommand fzf-preview.VistaBufferCtags<CR>
 
 nnoremap <silent> [dev]q  :<C-u>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
@@ -1326,12 +1334,7 @@ nnoremap <silent> [dev]Q  :<C-u>CocCommand fzf-preview.CocDiagnostics<CR>
 nnoremap <silent> [dev]rf :<C-u>CocCommand fzf-preview.CocReferences<CR>
 nnoremap <silent> [dev]t  :<C-u>CocCommand fzf-preview.CocTypeDefinitions<CR>
 
-nnoremap <silent> <Leader>gf :<C-u>CocCommand fzf-preview.FromResources project_mru git --add-fzf-arg=--select-1 --add-fzf-arg=--query="<C-r>=substitute(expand('<cfile>'), '^\.\+/', '', '')<CR>"<CR>
-
-augroup fzf_preview
-  autocmd!
-  autocmd User fzf_preview#initialized call s:fzf_preview_settings()
-augroup END
+AutoCmd User fzf_preview#initialized call s:fzf_preview_settings()
 
 function! s:buffers_delete_from_lines(lines) abort
   for line in a:lines
@@ -1341,6 +1344,51 @@ function! s:buffers_delete_from_lines(lines) abort
     endif
   endfor
 endfunction
+
+"" TODO: fzf Reflection
+" function! FzfColor()
+"   if !exists('g:fzf_colors')
+"     return ''
+"   endif
+"
+"   let lines = filter(split(execute('script'), '\n'), { _, v -> v =~# 'junegunn/fzf/plugin/fzf.vim' })
+"   if len(lines) < 1
+"     return ''
+"   endif
+"
+"   let file_nums = matchlist(lines[0], '^\s*\(\d\+\)')
+"   if len(file_nums) <= 1
+"     return ''
+"   endif
+"
+"   let func_name = "\<SNR\>" . file_nums[1] . '_defaults()'
+"   if !exists('*' . func_name)
+"     return ''
+"   endif
+"
+"   let option = matchlist(execute('echo ' . func_name), '''--color=\(.\+\)''')
+"   if len(option) <= 1
+"     return ''
+"   endif
+"
+"   return option[1]
+" endfunction
+"
+" let g:fzf_colors = {
+"\ 'fg':      ['fg', 'Normal'],
+"\ 'bg':      ['bg', 'Normal'],
+"\ 'hl':      ['fg', 'Comment'],
+"\ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+"\ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+"\ 'hl+':     ['fg', 'Statement'],
+"\ 'info':    ['fg', 'PreProc'],
+"\ 'border':  ['fg', 'Ignore'],
+"\ 'prompt':  ['fg', 'Conditional'],
+"\ 'pointer': ['fg', 'Exception'],
+"\ 'marker':  ['fg', 'Keyword'],
+"\ 'spinner': ['fg', 'Label'],
+"\ 'header':  ['fg', 'Comment']
+"\ }
 
 function! s:fzf_preview_settings() abort
   let g:fzf_preview_grep_preview_cmd = 'COLORTERM=truecolor ' . g:fzf_preview_grep_preview_cmd
