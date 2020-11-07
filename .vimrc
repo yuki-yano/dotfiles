@@ -1362,6 +1362,10 @@ AutoCmd FileType fzf let b:highlight_cursor = 0
 " endif
 " }}}3
 
+" telescope {{{3
+" nnoremap <Leader>p <cmd>lua require'telescope.builtin'.git_files{}<CR>
+" }}}3
+
 " }}}2
 
 " Git {{{2
