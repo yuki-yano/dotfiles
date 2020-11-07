@@ -1432,14 +1432,14 @@ endif
 let g:defx_ignore_filtype = ['denite', 'defx']
 
 function! DefxChoosewin(context) abort
-    let l:winnrs = filter(range(1, winnr('$')), 'index(g:defx_ignore_filtype, getwinvar(v:val, "&filetype")) == -1' )
-    for filename in a:context.targets
-        let result = choosewin#start(l:winnrs, {'auto_choose': 1, 'hook_enable': 0})
-        if result == []
-          return 0
-        endif
-        execute 'edit' filename
-    endfor
+  let l:winnrs = filter(range(1, winnr('$')), 'index(g:defx_ignore_filtype, getwinvar(v:val, "&filetype")) == -1' )
+  for filename in a:context.targets
+    let result = choosewin#start(l:winnrs, {'auto_choose': 1, 'hook_enable': 0})
+    if result == []
+      return 0
+    endif
+    execute 'edit' filename
+  endfor
 endfunction
 
 function! s:defx_settings() abort
