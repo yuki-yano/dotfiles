@@ -105,6 +105,7 @@ function set_fast_theme() {
   FAST_HIGHLIGHT_STYLES[globbing]='fg=green,bold'
   FAST_HIGHLIGHT_STYLES[history-expansion]='fg=green,bold'
 }
+# }}}
 
 # show-buffer-stack {{{
 add-zsh-hook precmd check-buffer-stack
