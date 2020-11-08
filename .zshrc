@@ -2,7 +2,10 @@
 
 export FZF_PREVIEW_DISABLE_DEFAULT_BIND=1
 export FZF_TMUX_DISABLED=1
-source ~/repos/github.com/yuki-ycino/fzf-preview.zsh/fzf-preview.zsh
+
+if [[ -f ~/repos/github.com/yuki-ycino/fzf-preview.zsh/fzf-preview.zsh ]]; then
+  source ~/repos/github.com/yuki-ycino/fzf-preview.zsh/fzf-preview.zsh
+fi
 
 function fzf-preview-settings() {
   bindkey '^ '   fzf-snippet-selection
