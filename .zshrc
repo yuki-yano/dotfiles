@@ -153,10 +153,6 @@ alias vr='nvr'
 alias vimdiff='nvim -d'
 # }}}
 
-# git {{{
-alias gitt='gittower .'
-# }}}
-
 # du {{{
 if whence dust > /dev/null; then
   alias du=dust
@@ -538,9 +534,6 @@ bindkey '^x^e' edit-command-line
 # }}}
 
 # Misc {{{
-
-# GitKraken
-alias kraken='open -na "GitKraken" --args -p "$(git rev-parse --show-toplevel)"'
 
 # Auto execute rehash when executing anyenv command
 add-zsh-hook preexec env_rehash
