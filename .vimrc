@@ -2814,6 +2814,18 @@ function! s:set_git_rebase_settings() abort
 endfunction
 " }}}3
 
+" silicon {{{3
+let g:silicon = {
+\   'theme':           'Monokai Extended',
+\   'background':      '#97A1AC',
+\   'shadow-color':    '#555555',
+\   'line-number':     v:false,
+\   'round-corner':    v:true,
+\   'window-controls': v:true,
+\   'output':          '~/Downloads/silicon-{time:%Y-%m-%d-%H%M%S}.png',
+\ }
+" }}}3
+
 " undotree {{{3
 nnoremap <silent> <Leader>u :<C-u>UndotreeToggle<CR>
 " }}}3
