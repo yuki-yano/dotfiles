@@ -315,8 +315,8 @@ nnoremap <silent> <Leader>w :<C-u>update<CR>
 nnoremap <silent> <Leader>W :<C-u>update!<CR>
 
 "" Automatically indent with i and A
-nnoremap <expr> i len(getline('.')) ? "i" : "cc"
-nnoremap <expr> A len(getline('.')) ? "A" : "cc"
+nnoremap <expr> i len(getline('.')) ? "i" : "\"_cc"
+nnoremap <expr> A len(getline('.')) ? "A" : "\"_cc"
 
 " Ignore registers
 nnoremap x "_x
