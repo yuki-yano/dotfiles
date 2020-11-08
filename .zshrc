@@ -49,6 +49,10 @@ zinit light yukiycino-dotfiles/zsh-show-buffer-stack
 # zinit light yuki-ycino/fzf-preview.zsh
 # }}}
 
+# zsh-autosuggestions {{{
+ZSH_AUTOSUGGEST_USE_ASYNC=1
+# }}}
+
 # async loading {{{
 
 # PROMPT
