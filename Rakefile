@@ -10,7 +10,6 @@ DOTFILES_SRCS = %w[
   .gitconfig
   .gitignore_global
   .globalrc
-  .p10k.zsh
   .tigrc
   .tmux.conf
   .vim
