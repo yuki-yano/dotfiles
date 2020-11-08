@@ -908,6 +908,7 @@ MyAlterCommand dein Dein
 " coc {{{3
 MyAlterCommand list CocList
 MyAlterCommand OR   OrganizeImport
+MyAlterCommand ORE  OrganizeImportAndESLint
 
 MyAlterCommand jest       Jest
 MyAlterCommand jc[urrent] JestCurrent
@@ -969,7 +970,21 @@ inoremap <silent> <expr> <C-u> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll
 nmap <silent> gp <Plug>(coc-git-prevchunk)
 nmap <silent> gn <Plug>(coc-git-nextchunk)
 
-command! -nargs=0 OrganizeImport :call CocAction('runCommand', 'editor.action.organizeImport')
+function! s:organize_import_and_eslint() abort
+  augroup eslint_with_organize_import
+    autocmd!
+    autocmd TextChanged * CocCommand eslint.executeAutofix
+  augroup END
+
+  function! s:orgamize_import_callback(fail, success) abort
+    autocmd! eslint_with_organize_import
+  endfunction
+
+  call CocAction('runCommand', 'editor.action.organizeImport', function('<SID>orgamize_import_callback'))
+endfunction
+
+command! OrganizeImport          call CocAction('runCommand', 'editor.action.organizeImport')
+command! OrganizeImportAndESLint call <SID>organize_import_and_eslint()
 
 AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
@@ -1004,7 +1019,8 @@ command! CocEcho  call <SID>coc_echo()
 
 function! s:coc_typescript_settings() abort
   setlocal tagfunc=CocTagFunc
-  nnoremap <silent> <buffer> [dev]F :<C-u>CocCommand eslint.executeAutofix<CR>
+  command! ESLintFix :CocCommand eslint.executeAutofix
+  nnoremap <silent> <buffer> [dev]F :<C-u>ESLintFix<CR>
 endfunction
 
 command! Jest        :call CocAction('runCommand', 'jest.projectTest')
