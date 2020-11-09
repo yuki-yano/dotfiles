@@ -2212,8 +2212,9 @@ let g:blamer_show_in_visual_modes = 0
 
 " brightest {{{3
 let g:brightest#enable_filetypes = {
-\ '_':    1,
-\ 'fern': 0,
+\ '_':          1,
+\ 'fern':       0,
+\ 'cocactions': 0,
 \ }
 
 let g:brightest#highlight = {
