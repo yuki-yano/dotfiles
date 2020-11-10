@@ -106,6 +106,9 @@ nodenv() {
   esac
 }
 
+# Rust
+path=(~/.cargo/bin(N-/) $path)
+
 # go
 export GOPATH=$HOME/.go
 path=(~/.go/bin(N-/) ~/.ghg/bin(N-/) $path)
