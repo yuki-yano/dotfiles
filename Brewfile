@@ -53,6 +53,7 @@ install autoconf automake cmake gawk gnu-sed gnu-time gpatch gpg2 wget
 
 ## Util
 # install --HEAD --with-jansson universal-ctags/universal-ctags/universal-ctags
+install b4b4r07/tap/gomi
 install expect
 install global
 install graphviz
