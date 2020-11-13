@@ -32,6 +32,7 @@ gmis:            gh issue view --web #
 gmpr:            gh pr view --web #
 dco-log:         docker-compose logs -f --tail=100 {{service}}
 dco-attach:      docker attach $(docker-compose ps --quiet {{service}})
+rm:              gomi
 null:            >/dev/null 2>&1
 null1:           >/dev/null
 null2:           2>/dev/null
