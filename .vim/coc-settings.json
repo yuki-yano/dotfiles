@@ -75,7 +75,7 @@
     },
     "efm": {
       "command": "efm-langserver",
-      "filetypes": ["go", "ruby", "vim", "sh"]
+      "filetypes": ["go", "ruby", "vim", "sh", "zsh"]
     }
   },
 

@@ -54,3 +54,6 @@ languages:
   sh:
     - <<: *shellcheck-lint
     - <<: *shfmt-format
+
+  zsh:
+    - <<: *shellcheck-lint
