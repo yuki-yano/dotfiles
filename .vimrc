@@ -1551,17 +1551,6 @@ endif
 
 let g:defx_ignore_filtype = ['denite', 'defx']
 
-function! DefxChoosewin(context) abort
-  let l:winnrs = filter(range(1, winnr('$')), 'index(g:defx_ignore_filtype, getwinvar(v:val, "&filetype")) == -1' )
-  for filename in a:context.targets
-    let result = choosewin#start(l:winnrs, {'auto_choose': 1, 'hook_enable': 0})
-    if result == []
-      return 0
-    endif
-    execute 'edit' filename
-  endfor
-endfunction
-
 function! s:defx_settings() abort
   nnoremap <silent> <buffer> <expr> <nowait> j       line('.') == line('$') ? 'gg' : 'j'
   nnoremap <silent> <buffer> <expr> <nowait> k       line('.') == 1 ? 'G' : 'k'
@@ -1572,7 +1561,7 @@ function! s:defx_settings() abort
   nnoremap <silent> <buffer> <expr> <nowait> .       defx#do_action('toggle_ignored_files')
   nnoremap <silent> <buffer> <expr> <nowait> ~       defx#do_action('cd')
 
-  nnoremap <silent> <buffer> <expr> <nowait> <CR>    defx#is_directory() ? 0 : defx#do_action('call', 'DefxChoosewin')
+  nnoremap <silent> <buffer> <expr> <nowait> <CR>    defx#is_directory() ? 0 : defx#do_action('open', 'choose')
   nnoremap <silent> <buffer> <expr> <nowait> x       defx#do_action('toggle_select') . 'j'
   nnoremap <silent> <buffer> <expr> <nowait> <Space> defx#do_action('toggle_select') . 'j'
   nnoremap <silent> <buffer> <expr> <nowait> *       defx#do_action('toggle_select_all')
