@@ -24,11 +24,14 @@
   path = ~/.gitconfig.local
   path = .gitconfig.local
 
-[push]
-  default = current
-
 [fetch]
   prune = true
+
+[pull]
+  ff = true
+
+[push]
+  default = current
 
 [diff]
   indentHeuristic = true
