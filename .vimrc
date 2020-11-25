@@ -945,6 +945,10 @@ let g:coc_global_extensions = [
 \ 'coc-yaml',
 \ ]
 
+if !dein#tap('fzf-preview.vim')
+  call add(g:coc_global_extensions, 'coc-fzf-preview')
+endif
+
 " Manual completion
 inoremap <silent> <expr> <C-Space> coc#refresh()
 
