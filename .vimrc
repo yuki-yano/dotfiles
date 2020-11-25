@@ -119,15 +119,15 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('kana/vim-textobj-user',  {'merged': 0})
   call dein#add('kana/vim-operator-user', {'merged': 0})
 
+  " call dein#add('rhysd/vim-textobj-ruby',             {'merged': 0}) " ir ar
+  " call dein#add('thinca/vim-textobj-between',         {'merged': 0}) " i{char} a{char}
   call dein#add('kana/vim-textobj-entire',            {'merged': 0}) " ie ae
   call dein#add('kana/vim-textobj-fold',              {'merged': 0}) " iz az
   call dein#add('kana/vim-textobj-indent',            {'merged': 0}) " ii ai
   call dein#add('kana/vim-textobj-line',              {'merged': 0}) " al il
   call dein#add('machakann/vim-textobj-functioncall', {'merged': 0}) " if af
   call dein#add('mattn/vim-textobj-url',              {'merged': 0}) " iu au
-  call dein#add('rhysd/vim-textobj-ruby',             {'merged': 0}) " ir ar
   call dein#add('romgrk/equal.operator',              {'merged': 0}) " i=h a=h i=l a=l
-  call dein#add('thinca/vim-textobj-between',         {'merged': 0}) " i{char} a{char}
 
   call dein#add('mopp/vim-operator-convert-case',  {'merged': 0}) " cy
   call dein#add('yuki-ycino/vim-operator-replace', {'merged': 0}) " _
@@ -1662,22 +1662,24 @@ xmap a, <Plug>(swap-textobject-a)
 " }}}3
 
 " textobj-between {{{3
-let g:textobj_between_no_default_key_mappings = 1
+if dein#tap('vim-textobj-between')
+  let g:textobj_between_no_default_key_mappings = 1
 
-omap i/ <Plug>(textobj-between-i)/
-omap a/ <Plug>(textobj-between-a)/
-xmap i/ <Plug>(textobj-between-i)/
-xmap a/ <Plug>(textobj-between-a)/
+  omap i/ <Plug>(textobj-between-i)/
+  omap a/ <Plug>(textobj-between-a)/
+  xmap i/ <Plug>(textobj-between-i)/
+  xmap a/ <Plug>(textobj-between-a)/
 
-omap i_ <Plug>(textobj-between-i)_
-omap a_ <Plug>(textobj-between-a)_
-xmap i_ <Plug>(textobj-between-i)_
-xmap a_ <Plug>(textobj-between-a)_
+  omap i_ <Plug>(textobj-between-i)_
+  omap a_ <Plug>(textobj-between-a)_
+  xmap i_ <Plug>(textobj-between-i)_
+  xmap a_ <Plug>(textobj-between-a)_
 
-omap i- <Plug>(textobj-between-i)-
-omap a- <Plug>(textobj-between-a)-
-xmap i- <Plug>(textobj-between-i)-
-xmap a- <Plug>(textobj-between-a)-
+  omap i- <Plug>(textobj-between-i)-
+  omap a- <Plug>(textobj-between-a)-
+  xmap i- <Plug>(textobj-between-i)-
+  xmap a- <Plug>(textobj-between-a)-
+endif
 " }}}3
 
 " textobj-functioncall {{{3
@@ -2090,6 +2092,31 @@ BulkAlterCommand rew[ord] %Reword
 
 " sandwich {{{3
 if dein#tap('vim-sandwich')
+  omap is <Plug>(textobj-sandwich-query-i)
+  omap as <Plug>(textobj-sandwich-query-a)
+  xmap is <Plug>(textobj-sandwich-query-i)
+  xmap as <Plug>(textobj-sandwich-query-a)
+
+  omap i/ <Plug>(textobj-sandwich-literal-query-i)/
+  omap a/ <Plug>(textobj-sandwich-literal-query-a)/
+  xmap i/ <Plug>(textobj-sandwich-literal-query-i)/
+  xmap a/ <Plug>(textobj-sandwich-literal-query-a)/
+
+  omap i_ <Plug>(textobj-sandwich-literal-query-i)_
+  omap a_ <Plug>(textobj-sandwich-literal-query-a)_
+  xmap i_ <Plug>(textobj-sandwich-literal-query-i)_
+  xmap a_ <Plug>(textobj-sandwich-literal-query-a)_
+
+  omap i- <Plug>(textobj-sandwich-literal-query-i)-
+  omap a- <Plug>(textobj-sandwich-literal-query-a)-
+  xmap i- <Plug>(textobj-sandwich-literal-query-i)-
+  xmap a- <Plug>(textobj-sandwich-literal-query-a)-
+
+  omap i<Space> <Plug>(textobj-sandwich-literal-query-i)<Space>
+  omap a<Space> <Plug>(textobj-sandwich-literal-query-a)<Space>
+  xmap i<Space> <Plug>(textobj-sandwich-literal-query-i)<Space>
+  xmap a<Space> <Plug>(textobj-sandwich-literal-query-a)<Space>
+
   let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
   let g:sandwich#recipes += [
   \ {
