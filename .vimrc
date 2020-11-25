@@ -67,7 +67,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Git {{{3
-  " call dein#add('rhysd/git-messenger.vim', {'merged': 0})
   call dein#add('hotwatermorning/auto-git-diff', {'merged': 0})
   call dein#add('lambdalisue/gina.vim',          {'merged': 0})
   call dein#add('rhysd/committia.vim',           {'merged': 0})
@@ -76,7 +75,9 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('wting/gitsessions.vim',         {'merged': 0})
 
   if has('nvim')
-    call dein#add('APZelos/blamer.nvim', {'merged': 0})
+    " call dein#add('APZelos/blamer.nvim',     {'merged': 0})
+    " call dein#add('f-person/git-blame.nvim', {'merged': 0})
+    call dein#add('rhysd/git-messenger.vim', {'merged': 0})
   endif
   " }}}3
 
@@ -1450,6 +1451,19 @@ AutoCmd FileType fzf let b:highlight_cursor = 0
 
 " Git {{{2
 
+" blamer {{{3
+if dein#tap('blamer.nvim')
+  let g:blamer_enabled = 1
+  let g:blamer_show_in_visual_modes = 0
+endif
+" }}}3
+
+" git-messenger {{{3
+if dein#tap('git-messenger.vim')
+  nnoremap <silent> gm :<C-u>GitMessenger<CR>
+endif
+" }}}3
+
 " gina {{{3
 BulkAlterCommand git   Gina
 BulkAlterCommand gina  Gina
@@ -2212,11 +2226,6 @@ let g:better_whitespace_filetypes_blacklist = [
 \ ]
 " }}}3
 
-" blamer {{{3
-let g:blamer_enabled = 1
-let g:blamer_show_in_visual_modes = 0
-" }}}3
-
 " brightest {{{3
 let g:brightest#enable_filetypes = {
 \ '_':          1,
@@ -2901,10 +2910,6 @@ endif
 " }}}2
 
 " Removed Plugin {{{2
-
-" " git-messenger {{{3
-" nnoremap <silent> gm :<C-u>GitMessenger<CR>
-" " }}}3
 
 " " previm {{{3
 " let g:previm_open_cmd            = 'open -a "Google Chrome"'
