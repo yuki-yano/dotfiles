@@ -287,8 +287,8 @@ command! -nargs=* AutoCmd autocmd MyVimrc <args>
 "" Leader
 let g:mapleader = "\<Space>"
 noremap <Leader> <Nop>
-noremap [dev]    <Nop>
-map     m        [dev]
+noremap <dev>    <Nop>
+map     m        <dev>
 
 "" Move beginning toggle
 noremap <silent> <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
@@ -357,13 +357,13 @@ vnoremap < <gv
 vnoremap > >gv|
 
 "" Tab
-nnoremap [tab] <Nop>
-nmap     t     [tab]
-nnoremap <silent> [tab]t :<C-u>tablast <Bar> tabedit<CR>
-nnoremap <silent> [tab]d :<C-u>tabclose<CR>
-nnoremap <silent> [tab]h :<C-u>tabprevious<CR>
-nnoremap <silent> [tab]l :<C-u>tabnext<CR>
-nnoremap <silent> [tab]m <C-w>T
+nnoremap <t> <Nop>
+nmap     t     <t>
+nnoremap <silent> <t>t :<C-u>tablast <Bar> tabedit<CR>
+nnoremap <silent> <t>d :<C-u>tabclose<CR>
+nnoremap <silent> <t>h :<C-u>tabprevious<CR>
+nnoremap <silent> <t>l :<C-u>tabnext<CR>
+nnoremap <silent> <t>m <C-w>T
 
 "" resize
 nnoremap <Left>  :vertical resize -1<CR>
@@ -947,17 +947,17 @@ let g:coc_snippet_prev = '<C-b>'
 
 " keymap
 nnoremap <silent> K       :<C-u>call <SID>show_documentation()<CR>
-nmap     <silent> [dev]p  <Plug>(coc-diagnostic-prev)
-nmap     <silent> [dev]n  <Plug>(coc-diagnostic-next)
-nmap     <silent> [dev]d  <Plug>(coc-definition)
-nmap     <silent> [dev]i  <Plug>(coc-implementation)
-nmap     <silent> [dev]rn <Plug>(coc-rename)
-nnoremap <silent> [dev]a  :<C-u>set operatorfunc=<SID>coc_actions_open_from_selected<CR>g@
-xnoremap <silent> [dev]a  :<C-u>execute 'CocCommand actions.open ' . visualmode()<CR>
-nmap     <silent> [dev]qf <Plug>(coc-fix-current)
-nmap     <silent> [dev]f  <Plug>(coc-format)
-xmap     <silent> [dev]f  <Plug>(coc-format-selected)
-nmap     <silent> [dev]gs <Plug>(coc-git-chunkinfo)
+nmap     <silent> <dev>p  <Plug>(coc-diagnostic-prev)
+nmap     <silent> <dev>n  <Plug>(coc-diagnostic-next)
+nmap     <silent> <dev>d  <Plug>(coc-definition)
+nmap     <silent> <dev>i  <Plug>(coc-implementation)
+nmap     <silent> <dev>rn <Plug>(coc-rename)
+nnoremap <silent> <dev>a  :<C-u>set operatorfunc=<SID>coc_actions_open_from_selected<CR>g@
+xnoremap <silent> <dev>a  :<C-u>execute 'CocCommand actions.open ' . visualmode()<CR>
+nmap     <silent> <dev>qf <Plug>(coc-fix-current)
+nmap     <silent> <dev>f  <Plug>(coc-format)
+xmap     <silent> <dev>f  <Plug>(coc-format-selected)
+nmap     <silent> <dev>gs <Plug>(coc-git-chunkinfo)
 
 nnoremap <silent> <expr> <C-d> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-d>"
 nnoremap <silent> <expr> <C-u> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-u>"
@@ -1020,7 +1020,7 @@ command! CocEcho  call <SID>coc_echo()
 function! s:coc_typescript_settings() abort
   setlocal tagfunc=CocTagFunc
   command! ESLintFix :CocCommand eslint.executeAutofix
-  nnoremap <silent> <buffer> [dev]F :<C-u>ESLintFix<CR>
+  nnoremap <silent> <buffer> <dev>F :<C-u>ESLintFix<CR>
 endfunction
 
 command! Jest        :call CocAction('runCommand', 'jest.projectTest')
@@ -1316,39 +1316,39 @@ let g:fzf_preview_default_fzf_options = {
 \ }
 let $FZF_PREVIEW_PREVIEW_BAT_THEME  = 'gruvbox'
 
-noremap [fzf-p] <Nop>
-map     ;       [fzf-p]
+noremap <fzf-p> <Nop>
+map     ;       <fzf-p>
 noremap ;;      ;
 
-nnoremap <silent> [fzf-p]r     :<C-u>CocCommand fzf-preview.FromResources buffer project_mru git<CR>
-nnoremap <silent> [fzf-p]w     :<C-u>CocCommand fzf-preview.ProjectMrwFiles<CR>
-nnoremap <silent> [fzf-p]a     :<C-u>CocCommand fzf-preview.FromResources project_mru git<CR>
-nnoremap <silent> [fzf-p]g     :<C-u>CocCommand fzf-preview.GitActions<CR>
-nnoremap <silent> [fzf-p]s     :<C-u>CocCommand fzf-preview.GitStatus<CR>
-nnoremap <silent> [fzf-p]b     :<C-u>CocCommand fzf-preview.Buffers<CR>
-nnoremap <silent> [fzf-p]B     :<C-u>CocCommand fzf-preview.AllBuffers<CR>
-nnoremap <silent> [fzf-p]<C-o> :<C-u>CocCommand fzf-preview.Jumps<CR>
-nnoremap <silent> [fzf-p]/     :<C-u>CocCommand fzf-preview.Lines --resume --add-fzf-arg=--no-sort<CR>
-nnoremap <silent> [fzf-p]*     :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
-xnoremap <silent> [fzf-p]*     "sy:CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=substitute(@s, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
-nnoremap <silent> [fzf-p]n     :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=substitute(@/, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
-nnoremap <silent> [fzf-p]?     :<C-u>CocCommand fzf-preview.BufferLines --resume --add-fzf-arg=--no-sort<CR>
-nnoremap          [fzf-p]f     :<C-u>CocCommand fzf-preview.ProjectGrep<Space>
-xnoremap          [fzf-p]f     "sy:CocCommand fzf-preview.ProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-nnoremap          [fzf-p]F     :<C-u>CocCommand fzf-preview.ProjectCommandGrep<Space>
-xnoremap          [fzf-p]F     "sy:CocCommand fzf-preview.ProjectCommandGrep<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-nnoremap <silent> [fzf-p]q     :<C-u>CocCommand fzf-preview.QuickFix<CR>
-nnoremap <silent> [fzf-p]l     :<C-u>CocCommand fzf-preview.LocationList<CR>
-nnoremap <silent> [fzf-p]:     :<C-u>CocCommand fzf-preview.CommandPalette<CR>
-nnoremap <silent> [fzf-p]p     :<C-u>CocCommand fzf-preview.Yankround<CR>
-nnoremap <silent> [fzf-p]m     :<C-u>CocCommand fzf-preview.Bookmarks --resume<CR>
-nnoremap <silent> [fzf-p]<C-]> :<C-u>CocCommand fzf-preview.VistaCtags --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
-nnoremap <silent> [fzf-p]o     :<C-u>CocCommand fzf-preview.VistaBufferCtags<CR>
+nnoremap <silent> <fzf-p>r     :<C-u>CocCommand fzf-preview.FromResources buffer project_mru<CR>
+nnoremap <silent> <fzf-p>w     :<C-u>CocCommand fzf-preview.ProjectMrwFiles<CR>
+nnoremap <silent> <fzf-p>a     :<C-u>CocCommand fzf-preview.FromResources project_mru git<CR>
+nnoremap <silent> <fzf-p>g     :<C-u>CocCommand fzf-preview.GitActions<CR>
+nnoremap <silent> <fzf-p>s     :<C-u>CocCommand fzf-preview.GitStatus<CR>
+nnoremap <silent> <fzf-p>b     :<C-u>CocCommand fzf-preview.Buffers<CR>
+nnoremap <silent> <fzf-p>B     :<C-u>CocCommand fzf-preview.AllBuffers<CR>
+nnoremap <silent> <fzf-p><C-o> :<C-u>CocCommand fzf-preview.Jumps<CR>
+nnoremap <silent> <fzf-p>/     :<C-u>CocCommand fzf-preview.Lines --resume --add-fzf-arg=--no-sort<CR>
+nnoremap <silent> <fzf-p>*     :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
+xnoremap <silent> <fzf-p>*     "sy:CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=substitute(@s, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
+nnoremap <silent> <fzf-p>n     :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=substitute(@/, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
+nnoremap <silent> <fzf-p>?     :<C-u>CocCommand fzf-preview.BufferLines --resume --add-fzf-arg=--no-sort<CR>
+nnoremap          <fzf-p>f     :<C-u>CocCommand fzf-preview.ProjectGrep<Space>
+xnoremap          <fzf-p>f     "sy:CocCommand fzf-preview.ProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+nnoremap          <fzf-p>F     :<C-u>CocCommand fzf-preview.ProjectCommandGrep<Space>
+xnoremap          <fzf-p>F     "sy:CocCommand fzf-preview.ProjectCommandGrep<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+nnoremap <silent> <fzf-p>q     :<C-u>CocCommand fzf-preview.QuickFix<CR>
+nnoremap <silent> <fzf-p>l     :<C-u>CocCommand fzf-preview.LocationList<CR>
+nnoremap <silent> <fzf-p>:     :<C-u>CocCommand fzf-preview.CommandPalette<CR>
+nnoremap <silent> <fzf-p>p     :<C-u>CocCommand fzf-preview.Yankround<CR>
+nnoremap <silent> <fzf-p>m     :<C-u>CocCommand fzf-preview.Bookmarks --resume<CR>
+nnoremap <silent> <fzf-p><C-]> :<C-u>CocCommand fzf-preview.VistaCtags --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap <silent> <fzf-p>o     :<C-u>CocCommand fzf-preview.VistaBufferCtags<CR>
 
-nnoremap <silent> [dev]q  :<C-u>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
-nnoremap <silent> [dev]Q  :<C-u>CocCommand fzf-preview.CocDiagnostics<CR>
-nnoremap <silent> [dev]rf :<C-u>CocCommand fzf-preview.CocReferences<CR>
-nnoremap <silent> [dev]t  :<C-u>CocCommand fzf-preview.CocTypeDefinitions<CR>
+nnoremap <silent> <dev>q  :<C-u>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
+nnoremap <silent> <dev>Q  :<C-u>CocCommand fzf-preview.CocDiagnostics<CR>
+nnoremap <silent> <dev>rf :<C-u>CocCommand fzf-preview.CocReferences<CR>
+nnoremap <silent> <dev>t  :<C-u>CocCommand fzf-preview.CocTypeDefinitions<CR>
 
 AutoCmd User fzf_preview#initialized call s:fzf_preview_settings()
 
@@ -1702,16 +1702,16 @@ nmap <C-f> <Plug>(backandforward-forward)
 let g:bookmark_no_default_key_mappings = 1
 let g:bookmark_save_per_working_dir    = 1
 
-noremap [bookmark] <Nop>
-map     M          [bookmark]
+noremap <bookmark> <Nop>
+map     M          <bookmark>
 
-nnoremap <silent> [bookmark]m :<C-u>BookmarkToggle<CR>
-nnoremap <silent> [bookmark]i :<C-u>BookmarkAnnotate<CR>
-nnoremap <silent> [bookmark]n :<C-u>BookmarkNext<CR>
-nnoremap <silent> [bookmark]p :<C-u>BookmarkPrev<CR>
-nnoremap <silent> [bookmark]a :<C-u>BookmarkShowAll<CR>
-nnoremap <silent> [bookmark]c :<C-u>BookmarkClear<CR>
-nnoremap <silent> [bookmark]x :<C-u>BookmarkClearAll<CR>
+nnoremap <silent> <bookmark>m :<C-u>BookmarkToggle<CR>
+nnoremap <silent> <bookmark>i :<C-u>BookmarkAnnotate<CR>
+nnoremap <silent> <bookmark>n :<C-u>BookmarkNext<CR>
+nnoremap <silent> <bookmark>p :<C-u>BookmarkPrev<CR>
+nnoremap <silent> <bookmark>a :<C-u>BookmarkShowAll<CR>
+nnoremap <silent> <bookmark>c :<C-u>BookmarkClear<CR>
+nnoremap <silent> <bookmark>x :<C-u>BookmarkClearAll<CR>
 
 function! g:BMWorkDirFileLocation()
   let filename = 'bookmarks'
@@ -2845,6 +2845,17 @@ let g:silicon = {
 
 " undotree {{{3
 nnoremap <silent> <Leader>u :<C-u>UndotreeToggle<CR>
+" }}}3
+
+" which-key {{{3
+if dein#tap('vim-which-key')
+  nnoremap <silent> <Leader><CR>   :<C-u>WhichKey '<Leader>'<CR>
+  nnoremap <silent> <dev><CR>      :<C-u>WhichKey '<dev>'<CR>
+  nnoremap <silent> <fzf-p><CR>    :<C-u>WhichKey '<fzf-p>'<CR>
+  nnoremap <silent> <t><CR>        :<C-u>WhichKey '<t>'<CR>
+  nnoremap <silent> s<CR>          :<C-u>WhichKey 's'<CR>
+  nnoremap <silent> <bookmark><CR> :<C-u>WhichKey '<bookmark>'<CR>
+endif
 " }}}3
 
 " windowswap {{{3
