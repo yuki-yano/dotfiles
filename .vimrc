@@ -772,7 +772,7 @@ command! ReviewToggle call <SID>review_toggle()
 AutoCmd BufNewFile,BufRead *.tsx setlocal filetype=typescript.tsx
 " }}}3
 
-" Intent {{{3
+" Indent {{{3
 AutoCmd FileType javascript      setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType typescript      setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType typescriptreact setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
