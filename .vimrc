@@ -545,7 +545,7 @@ let g:loaded_netrwSettings     = 1
 let g:loaded_netrwFileHandlers = 1
 
 "" Highlight Annotation Comment
-AutoCmd WinEnter,BufRead,BufNew,Syntax * silent! call matchadd('Todo', '\(TODO\|FIXME\|OPTIMIZE\|HACK\|REVIEW\|NOTE\|INFO\|TEMP\):')
+AutoCmd WinEnter,BufRead,BufNew,Syntax * silent! call matchadd('Todo', '\(TODO\|FIXME\|REVIEW\|NOTE\|INFO\|REF\):')
 
 " }}}2
 
