@@ -10,8 +10,9 @@ if !isdirectory(s:DEIN_PATH)
 endif
 
 let &runtimepath .= ',' . s:DEIN_PATH
-let g:dein#install_max_processes   = 20
-let g:dein#install_process_timeout = 300
+let g:dein#install_max_processes    = 20
+let g:dein#install_process_timeout  = 300
+let g:dein#install_github_api_token = $DEIN_GITHUB_TOKEN
 " }}}2
 
 " Load Plugin {{{2
