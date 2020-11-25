@@ -932,6 +932,7 @@ let g:coc_global_extensions = [
 \ 'coc-prettier',
 \ 'coc-python',
 \ 'coc-react-refactor',
+\ 'coc-rust-analyzer',
 \ 'coc-sh',
 \ 'coc-snippets',
 \ 'coc-solargraph',
