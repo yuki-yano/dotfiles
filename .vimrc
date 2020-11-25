@@ -816,6 +816,10 @@ AutoCmd FileType zsh  setlocal iskeyword+=-
 
 " }}}2
 
+" Vim script {{{2
+let g:vimsyn_embed = 'l'
+" }}}2
+
 " HTML & eruby {{{2
 function! s:map_html_keys()
   inoremap <silent> <buffer> \\ \
