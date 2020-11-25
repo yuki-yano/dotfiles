@@ -262,11 +262,11 @@ scriptencoding utf-8
 " }}}2
 
 " Easy autocmd {{{2
-augroup MyVimrc
+augroup vimrc
   autocmd!
 augroup END
 
-command! -nargs=* AutoCmd autocmd MyVimrc <args>
+command! -nargs=* AutoCmd autocmd vimrc <args>
 " }}}2
 
 " Mappings {{{2
