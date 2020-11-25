@@ -1040,7 +1040,9 @@ AutoCmd FileType typescript,typescript.tsx call s:coc_typescript_settings()
 " }}}3
 
 " efm-langserver-settings {{{3
-let g:efm_langserver_settings#filetype_whitelist = ['ruby', 'json', 'vim', 'sh']
+if dein#tap('vim-efm-langserver-settings')
+  let g:efm_langserver_settings#filetype_whitelist = ['ruby', 'json', 'vim', 'sh', 'zsh']
+endif
 " }}}3
 
 " deoplete.nvim {{{3
@@ -1205,6 +1207,12 @@ let g:vim_markdown_conceal                 = 0
 let g:vim_markdown_conceal_code_blocks     = 0
 let g:vim_markdown_auto_insert_bullets     = 0
 let g:vim_markdown_new_list_item_indent    = 0
+" }}}3
+
+" rainbow_csv {{{3
+if dein#tap('rainbow_csv')
+  let g:disable_rainbow_key_mappings = 1
+endif
 " }}}3
 
 " treesitter {{{3
@@ -1444,7 +1452,9 @@ AutoCmd FileType fzf let b:highlight_cursor = 0
 " }}}3
 
 " telescope {{{3
-" nnoremap <Leader>p <cmd>lua require'telescope.builtin'.git_files{}<CR>
+if dein#tap('telescope.nvim')
+  nnoremap <silent> (ctrlp) <cmd>lua require'telescope.builtin'.git_files{}<CR>
+endif
 " }}}3
 
 " }}}2
@@ -1877,23 +1887,23 @@ let g:expand_region_text_objects = {
 \ 'ie': 0,
 \ }
 
-let g:expand_region_text_objects_ruby = {
-\ 'iw': 0,
-\ 'i"': 0,
-\ 'a"': 0,
-\ "i'": 0,
-\ "a'": 0,
-\ 'i(': 0,
-\ 'a(': 0,
-\ 'i[': 0,
-\ 'a[': 0,
-\ 'i{': 0,
-\ 'a{': 0,
-\ 'il': 0,
-\ 'ir': 0,
-\ 'ar': 0,
-\ 'ie': 0,
-\ }
+" let g:expand_region_text_objects_ruby = {
+" \ 'iw': 0,
+" \ 'i"': 0,
+" \ 'a"': 0,
+" \ "i'": 0,
+" \ "a'": 0,
+" \ 'i(': 0,
+" \ 'a(': 0,
+" \ 'i[': 0,
+" \ 'a[': 0,
+" \ 'i{': 0,
+" \ 'a{': 0,
+" \ 'il': 0,
+" \ 'ir': 0,
+" \ 'ar': 0,
+" \ 'ie': 0,
+" \ }
 
 vmap v <Plug>(expand_region_expand)
 vmap V <Plug>(expand_region_shrink)
@@ -2196,6 +2206,13 @@ let g:scratch_no_mappings = 1
 " noremap <silent> <Leader>cc :TComment<CR>
 " }}}3
 
+" trip {{{3
+if dein#tap('vim-trip')
+  nmap <C-a> <Plug>(trip-increment)
+  nmap <C-x> <Plug>(trip-decrement)
+endif
+" }}}3
+
 " yankround {{{3
 if dein#tap('yankround.vim')
   let g:yankround_max_history   = 10000
@@ -2205,7 +2222,7 @@ if dein#tap('yankround.vim')
   nmap p <Plug>(yankround-p)
   xmap p <Plug>(yankround-p)
   nmap P <Plug>(yankround-P)
-  nmap <silent>        <C-p> <Plug>(yankround-prev)
+  nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "(ctrlp)"
   nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : ""
 endif
 " }}}3
@@ -2318,7 +2335,10 @@ endif
 " }}}3
 
 " indent-line {{{3
-" let g:indentLine_fileTypeExclude = ['json', 'defx', 'fern']
+if dein#tap('indentLine')
+  let g:indentLine_enabled = 0
+  let g:indentLine_fileTypeExclude = ['json', 'defx', 'fern']
+endif
 " }}}3
 
 " lightline {{{3
@@ -2629,58 +2649,60 @@ AutoCmd FileType qf nmap <silent> <buffer> q <Plug>(quickr_preview_qf_close)
 " }}}3
 
 " rainbow {{{3
-let g:rainbow_active           = 1
-let g:rainbow_conf             = {}
-let g:rainbow_conf.cterms      = ['']
-let g:rainbow_conf.ctermfgs    = ['yellow', 'darkred', 'darkgreen', 'darkblue']
-let g:rainbow_conf.guis        = ['']
-let g:rainbow_conf.guifgs      = ['#BD9D0B', '#B3427E', '#5B9C14', '#3E7C94']
-let g:rainbow_conf.operator    = '_,_'
-let g:rainbow_conf.parentheses = ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold']
+if dein#tap('rainbow')
+  let g:rainbow_active           = 1
+  let g:rainbow_conf             = {}
+  let g:rainbow_conf.cterms      = ['']
+  let g:rainbow_conf.ctermfgs    = ['yellow', 'darkred', 'darkgreen', 'darkblue']
+  let g:rainbow_conf.guis        = ['']
+  let g:rainbow_conf.guifgs      = ['#BD9D0B', '#B3427E', '#5B9C14', '#3E7C94']
+  let g:rainbow_conf.operator    = '_,_'
+  let g:rainbow_conf.parentheses = ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold']
 
-let g:rainbow_conf.separately = {
-\ '*': {},
-\ 'vim': {
-\   'parentheses': ['start=/(/ end=/)/', 'start=/\[/ end=/\]/', 'start=/{/ end=/}/ fold', 'start=/(/ end=/)/ containedin=vimFuncBody', 'start=/\[/ end=/\]/ containedin=vimFuncBody', 'start=/{/ end=/}/ fold containedin=vimFuncBody'],
-\ },
-\ 'html': {
-\   'parentheses': ['start=/\v\<((script|style|area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
-\ },
-\ 'erb': {
-\   'parentheses': ['start=/\v\<((script|style|area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
-\ },
-\ 'sh': {
-\   'parentheses': [['\(^\|\s\)\S*()\s*{\?\($\|\s\)','_^{_','}'], ['\(^\|\s\)if\($\|\s\)','_\(^\|\s\)\(then\|else\|elif\)\($\|\s\)_','\(^\|\s\)fi\($\|\s\)'], ['\(^\|\s\)for\($\|\s\)','_\(^\|\s\)\(do\|in\)\($\|\s\)_','\(^\|\s\)done\($\|\s\)'], ['\(^\|\s\)while\($\|\s\)','_\(^\|\s\)\(do\)\($\|\s\)_','\(^\|\s\)done\($\|\s\)'], ['\(^\|\s\)case\($\|\s\)','_\(^\|\s\)\(\S*)\|in\|;;\)\($\|\s\)_','\(^\|\s\)esac\($\|\s\)']],
-\ },
-\ 'scss'        : 0,
-\ 'css'         : 0,
-\ 'help'        : 0,
-\ 'man'         : 0,
-\ 'diff'        : 0,
-\ 'qf'          : 0,
-\ 'fzf'         : 0,
-\ 'denite'      : 0,
-\ 'git'         : 0,
-\ 'gitcommit'   : 0,
-\ 'gina-status' : 0,
-\ 'gina-commit' : 0,
-\ 'gina-reflog' : 0,
-\ 'gina-blame'  : 0,
-\ 'capture'     : 0,
-\ }
+  let g:rainbow_conf.separately = {
+  \ '*': {},
+  \ 'vim': {
+  \   'parentheses': ['start=/(/ end=/)/', 'start=/\[/ end=/\]/', 'start=/{/ end=/}/ fold', 'start=/(/ end=/)/ containedin=vimFuncBody', 'start=/\[/ end=/\]/ containedin=vimFuncBody', 'start=/{/ end=/}/ fold containedin=vimFuncBody'],
+  \ },
+  \ 'html': {
+  \   'parentheses': ['start=/\v\<((script|style|area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
+  \ },
+  \ 'erb': {
+  \   'parentheses': ['start=/\v\<((script|style|area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
+  \ },
+  \ 'sh': {
+  \   'parentheses': [['\(^\|\s\)\S*()\s*{\?\($\|\s\)','_^{_','}'], ['\(^\|\s\)if\($\|\s\)','_\(^\|\s\)\(then\|else\|elif\)\($\|\s\)_','\(^\|\s\)fi\($\|\s\)'], ['\(^\|\s\)for\($\|\s\)','_\(^\|\s\)\(do\|in\)\($\|\s\)_','\(^\|\s\)done\($\|\s\)'], ['\(^\|\s\)while\($\|\s\)','_\(^\|\s\)\(do\)\($\|\s\)_','\(^\|\s\)done\($\|\s\)'], ['\(^\|\s\)case\($\|\s\)','_\(^\|\s\)\(\S*)\|in\|;;\)\($\|\s\)_','\(^\|\s\)esac\($\|\s\)']],
+  \ },
+  \ 'scss'        : 0,
+  \ 'css'         : 0,
+  \ 'help'        : 0,
+  \ 'man'         : 0,
+  \ 'diff'        : 0,
+  \ 'qf'          : 0,
+  \ 'fzf'         : 0,
+  \ 'denite'      : 0,
+  \ 'git'         : 0,
+  \ 'gitcommit'   : 0,
+  \ 'gina-status' : 0,
+  \ 'gina-commit' : 0,
+  \ 'gina-reflog' : 0,
+  \ 'gina-blame'  : 0,
+  \ 'capture'     : 0,
+  \ }
+endif
 " }}}3
 
 " scrollbar {{{3
-" if has('nvim')
-"   AutoCmd BufEnter    * silent! lua require('scrollbar').show()
-"   AutoCmd BufLeave    * silent! lua require('scrollbar').clear()
-"
-"   AutoCmd CursorMoved * silent! lua require('scrollbar').show()
-"   AutoCmd VimResized  * silent! lua require('scrollbar').show()
-"
-"   AutoCmd FocusGained * silent! lua require('scrollbar').show()
-"   AutoCmd FocusLost   * silent! lua require('scrollbar').clear()
-" endif
+if dein#tap('scrollbar.nvim')
+  AutoCmd BufEnter    * silent! lua require('scrollbar').show()
+  AutoCmd BufLeave    * silent! lua require('scrollbar').clear()
+
+  AutoCmd CursorMoved * silent! lua require('scrollbar').show()
+  AutoCmd VimResized  * silent! lua require('scrollbar').show()
+
+  AutoCmd FocusGained * silent! lua require('scrollbar').show()
+  AutoCmd FocusLost   * silent! lua require('scrollbar').clear()
+endif
 " }}}3
 
 " smartnumber {{{3
