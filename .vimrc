@@ -915,7 +915,6 @@ BulkAlterCommand jc[urrent] JestCurrent
 BulkAlterCommand js[ingle]  JestSingle
 
 let g:coc_global_extensions = [
-\ 'coc-actions',
 \ 'coc-diagnostic',
 \ 'coc-eslint',
 \ 'coc-explorer',
@@ -952,8 +951,8 @@ nmap     <silent> <dev>n  <Plug>(coc-diagnostic-next)
 nmap     <silent> <dev>d  <Plug>(coc-definition)
 nmap     <silent> <dev>i  <Plug>(coc-implementation)
 nmap     <silent> <dev>rn <Plug>(coc-rename)
-nnoremap <silent> <dev>a  :<C-u>set operatorfunc=<SID>coc_actions_open_from_selected<CR>g@
-xnoremap <silent> <dev>a  :<C-u>execute 'CocCommand actions.open ' . visualmode()<CR>
+nmap     <silent> <dev>a  <Plug>(coc-codeaction)
+xmap     <silent> <dev>a  <Plug>(coc-codeaction-selected)
 nmap     <silent> <dev>qf <Plug>(coc-fix-current)
 nmap     <silent> <dev>f  <Plug>(coc-format)
 xmap     <silent> <dev>f  <Plug>(coc-format-selected)
@@ -996,10 +995,6 @@ function! s:show_documentation()
   else
     execute '!' . &keywordprg . ' ' . expand('<cword>')
   endif
-endfunction
-
-function! s:coc_actions_open_from_selected(type) abort
-  execute 'CocCommand actions.open ' . a:type
 endfunction
 
 function! s:coc_float() abort
