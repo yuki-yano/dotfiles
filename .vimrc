@@ -876,20 +876,20 @@ endfunction
 " Eager Load {{{2
 
 " altercmd {{{3
-function! s:my_alter_command(original, altanative) abort
+function! s:bulk_alter_command(original, altanative) abort
   if exists(':AlterCommand')
      execute 'AlterCommand ' . a:original . ' ' a:altanative
      execute 'AlterCommand <cmdwin> ' . a:original . ' ' a:altanative
   endif
 endfunction
 
-command! -nargs=+ MyAlterCommand call <SID>my_alter_command(<f-args>)
+command! -nargs=+ BulkAlterCommand call <SID>bulk_alter_command(<f-args>)
 
 if dein#tap('vim-altercmd')
   call altercmd#load()
-  MyAlterCommand ee       e!
-  MyAlterCommand co[de]   VSCode
-  MyAlterCommand fo[rk]   !fork
+  BulkAlterCommand ee       e!
+  BulkAlterCommand co[de]   VSCode
+  BulkAlterCommand fo[rk]   !fork
 endif
 " }}}3
 
@@ -898,7 +898,7 @@ endif
 " Plugin Manager {{{2
 
 " dein {{{3
-MyAlterCommand dein Dein
+BulkAlterCommand dein Dein
 " }}}
 
 " }}}2
@@ -906,13 +906,13 @@ MyAlterCommand dein Dein
 " IDE {{{2
 
 " coc {{{3
-MyAlterCommand list CocList
-MyAlterCommand OR   OrganizeImport
-MyAlterCommand ORE  OrganizeImportAndESLint
+BulkAlterCommand list CocList
+BulkAlterCommand OR   OrganizeImport
+BulkAlterCommand ORE  OrganizeImportAndESLint
 
-MyAlterCommand jest       Jest
-MyAlterCommand jc[urrent] JestCurrent
-MyAlterCommand js[ingle]  JestSingle
+BulkAlterCommand jest       Jest
+BulkAlterCommand jc[urrent] JestCurrent
+BulkAlterCommand js[ingle]  JestSingle
 
 let g:coc_global_extensions = [
 \ 'coc-actions',
@@ -1233,7 +1233,7 @@ AutoCmd FileType vue syntax sync fromstart
 " Completion & Fuzzy Finder {{{2
 
 " Denite {{{3
-MyAlterCommand d[enite] Denite
+BulkAlterCommand d[enite] Denite
 
 if dein#tap('denite.nvim') && has('nvim')
   " Denite
@@ -1272,7 +1272,7 @@ if dein#tap('denite.nvim') && has('nvim')
   AutoCmd FileType denite-filter call s:denite_filter_settings()
 
   "" menu
-  MyAlterCommand to[ggle] Denite<Space>menu:toggle
+  BulkAlterCommand to[ggle] Denite<Space>menu:toggle
   let s:menus = {}
   let s:menus.toggle = { 'description': 'Toggle Command' }
   let s:menus.toggle.command_candidates = [
@@ -1444,15 +1444,15 @@ AutoCmd FileType fzf let b:highlight_cursor = 0
 " Git {{{2
 
 " gina {{{3
-MyAlterCommand git   Gina
-MyAlterCommand gina  Gina
-MyAlterCommand gs    Gina<Space>status
-MyAlterCommand gci   Gina<Space>commit<Space>--no-verify
-MyAlterCommand gd    Gina<Space>diff
-MyAlterCommand gdc   Gina<Space>diff<Space>--cached
-MyAlterCommand gco   Gina<Space>checkout
-MyAlterCommand log   Gina<Space>log
-MyAlterCommand blame Gina<Space>blame
+BulkAlterCommand git   Gina
+BulkAlterCommand gina  Gina
+BulkAlterCommand gs    Gina<Space>status
+BulkAlterCommand gci   Gina<Space>commit<Space>--no-verify
+BulkAlterCommand gd    Gina<Space>diff
+BulkAlterCommand gdc   Gina<Space>diff<Space>--cached
+BulkAlterCommand gco   Gina<Space>checkout
+BulkAlterCommand log   Gina<Space>log
+BulkAlterCommand blame Gina<Space>blame
 
 AutoCmd VimEnter * call s:gina_settings()
 
@@ -1488,9 +1488,9 @@ endfunction
 " }}}3
 
 " gitsessions {{{3
-MyAlterCommand gss GitSessionSave
-MyAlterCommand gsl GitSessionLoad
-MyAlterCommand gsd GitSessionDelete
+BulkAlterCommand gss GitSessionSave
+BulkAlterCommand gsl GitSessionLoad
+BulkAlterCommand gsd GitSessionDelete
 
 let g:gitsessions_disable_auto_load = 1
 " }}}3
@@ -1886,7 +1886,7 @@ xmap <silent> <Leader>k <Plug>(edgemotion-k)
 " }}}3
 
 " grepper {{{3
-MyAlterCommand gr[ep] Grepper
+BulkAlterCommand gr[ep] Grepper
 
 let g:grepper = {
 \ 'tools': ['rg', 'git', 'ag'],
@@ -2055,7 +2055,7 @@ endif
 " }}}3
 
 " reword {{{3
-MyAlterCommand rew[ord] %Reword
+BulkAlterCommand rew[ord] %Reword
 " }}}3
 
 " sandwich {{{3
@@ -2156,7 +2156,7 @@ endif
 " }}}3
 
 " scratch {{{3
-MyAlterCommand sc[ratch] Scratch
+BulkAlterCommand sc[ratch] Scratch
 
 let g:scratch_no_mappings = 1
 " }}}3
@@ -2802,7 +2802,7 @@ nnoremap <silent> <Leader>d :Bdelete!<CR>
 " }}}3
 
 " capture {{{3
-MyAlterCommand cap[ture] Capture
+BulkAlterCommand cap[ture] Capture
 AutoCmd FileType capture nnoremap <silent> <buffer> q :<C-u>quit<CR>
 " }}}3
 
@@ -2857,7 +2857,7 @@ nnoremap <silent> <Leader><C-w> :call WindowSwap#EasyWindowSwap()<CR>
 " Develop {{{2
 
 " quickrun {{{3
-MyAlterCommand r QuickRun
+BulkAlterCommand r QuickRun
 
 let g:quickrun_config = {
 \ '_' : {
@@ -2951,7 +2951,7 @@ endif
 " " }}}3
 
 " " ref {{{3
-" MyAlterCommand refe Ref<Space>refe
+" BulkAlterCommand refe Ref<Space>refe
 " " }}}3
 
 " }}}2
