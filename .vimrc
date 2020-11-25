@@ -61,8 +61,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('rhysd/vim-fixjson',            {'merged': 0})
 
   if has('nvim')
-    call dein#add('nvim-treesitter/nvim-treesitter', {'merged': 0})
-    call dein#add('yardnsm/vim-import-cost',         {'merged': 0, 'build': 'npm install'})
+    call dein#add('nvim-treesitter/nvim-treesitter',          {'merged': 0})
+    " call dein#add('p00f/nvim-ts-rainbow',                     {'merged': 0})
+    " call dein#add('nvim-treesitter/nvim-treesitter-refactor', {'merged': 0})
+    " call dein#add('romgrk/nvim-treesitter-context',           {'merged': 0})
   endif
   " }}}3
 
@@ -1219,18 +1221,26 @@ endif
 if dein#tap('nvim-treesitter') && has('nvim')
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = {"typescript", "tsx", "javascript", "json", "yaml", "ruby", "bash"},
+  ensure_installed = {"typescript", "tsx", "rust", "javascript", "ruby", "bash", "json", "yaml"},
   highlight = {
     enable = true,
   },
+  rainbow = {
+    enable = true,
+  },
+  refactor = {
+    highlight_current_scope = {
+      -- enable = true
+    },
+  },
 }
 
-require "nvim-treesitter.highlight"
-local hlmap = vim.treesitter.highlighter.hl_map
-
-hlmap.error = nil
-hlmap["punctuation.delimiter"] = "Delimiter"
-hlmap["punctuation.bracket"] = nil
+-- require "nvim-treesitter.highlight"
+-- local hlmap = vim.treesitter.highlighter.hl_map
+--
+-- hlmap.error = nil
+-- hlmap["punctuation.delimiter"] = "Delimiter"
+-- hlmap["punctuation.bracket"] = nil
 EOF
 endif
 " }}}3
