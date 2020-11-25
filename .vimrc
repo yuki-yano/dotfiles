@@ -232,6 +232,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('high-moctane/gaming.vim',      {'merged': 0})
   call dein#add('icymind/NeoSolarized',         {'merged': 0})
   call dein#add('joshdick/onedark.vim',         {'merged': 0})
+  call dein#add('sainnhe/edge',                 {'merged': 0})
   call dein#add('sainnhe/gruvbox-material',     {'merged': 0})
   call dein#add('taohexxx/lightline-solarized', {'merged': 0})
   " }}}3
@@ -695,20 +696,22 @@ let g:review_status = v:false
 function! s:review_start() abort
   let g:review_status = v:true
 
-  colorscheme PaperColor
+  colorscheme edge
   set background=light
-  let g:lightline.colorscheme = 'PaperColor'
+  let g:lightline.colorscheme = 'edge'
   call lightline#disable()
   call lightline#enable()
 
   let g:fzf_preview_command_bak = g:fzf_preview_command
-  let g:fzf_preview_command = 'bat --color=always --style=plain --theme="Solarized (light)" ''{-1}'''
+  let g:fzf_preview_command = 'bat --color=always --style=plain --theme="papercolor-light" ''{-1}'''
 
   let $FZF_PREVIEW_PREVIEW_BAT_THEME_BAK = $FZF_PREVIEW_PREVIEW_BAT_THEME
   let $FZF_PREVIEW_PREVIEW_BAT_THEME = 'papercolor-light'
   let $FZF_DEFAULT_OPTS_BAK = $FZF_DEFAULT_OPTS
+  " Edge
+  let $FZF_DEFAULT_OPTS= '--color=fg:#4b505b,bg:#fafafa,hl:#5079be,fg+:#4b505b,bg+:#fafafa,hl+:#3a8b84,info:#88909f,prompt:#d05858,pointer:#b05ccc,marker:#608e32,spinner:#d05858,header:#3a8b84'
   " PaperColor
-  let $FZF_DEFAULT_OPTS= '--color=fg:#4d4d4c,bg:#eeeeee,hl:#d7005f,fg+:#4d4d4c,bg+:#e8e8e8,hl+:#d7005f,info:#4271ae,prompt:#8959a8,pointer:#d7005f,marker:#4271ae,spinner:#4271ae,header:#4271ae'
+  " let $FZF_DEFAULT_OPTS= '--color=fg:#4d4d4c,bg:#eeeeee,hl:#d7005f,fg+:#4d4d4c,bg+:#e8e8e8,hl+:#d7005f,info:#4271ae,prompt:#8959a8,pointer:#d7005f,marker:#4271ae,spinner:#4271ae,header:#4271ae'
   " Solarized
   " let $FZF_DEFAULT_OPTS = '--color=fg:240,bg:230,hl:33,fg+:241,bg+:221,hl+:33,info:33,prompt:33,pointer:166,marker:166,spinner:33'
   let $BAT_THEME_BAK = $BAT_THEME
