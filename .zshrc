@@ -607,4 +607,6 @@ if whence fzf-preview > /dev/null; then
   export FZF_PREVIEW_GITHUB_USER=yuki-ycino
 fi
 
+export ENABLE_WAKATIME=1
+
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:
