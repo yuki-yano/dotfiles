@@ -21,12 +21,14 @@
   "coc.preferences.promptInput": true,
   "coc.preferences.useQuickfixForLocations": true,
 
+  "prettier.disableLanguages": ["markdown"],
+
   "explorer.sources": [{ "name": "file", "expand": true }],
   "explorer.icon.enableVimDevicons": true,
   "explorer.previewAction.onHover": false,
   "explorer.activeMode": false,
   "explorer.file.autoReveal": false,
-  "explorer.keyMappings": {
+  "explorer.keyMappings.global": {
     "i": false,
     "<Tab>": "actionMenu",
 
@@ -75,7 +77,7 @@
     },
     "efm": {
       "command": "efm-langserver",
-      "filetypes": ["go", "ruby", "vim", "sh", "zsh"]
+      "filetypes": ["go", "ruby", "vim", "sh", "zsh", "markdown"]
     }
   },
 
