@@ -178,6 +178,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tyru/caw.vim',                  {'merged': 0})
 
   if has('nvim')
+    call dein#add('gabrielpoca/replacer.nvim', {'merged': 0})
     call dein#add('kevinhwang91/nvim-hlslens', {'merged': 0})
   endif
   " }}}3
@@ -2118,6 +2119,10 @@ endif
 
 " quick-scope {{{3
 " let g:qs_buftype_blacklist = ['terminal', 'nofile']
+" }}}3
+
+" replacer {{{3
+BulkAlterCommand replacer lua<Space>require(\"replacer\").run()
 " }}}3
 
 " reword {{{3
