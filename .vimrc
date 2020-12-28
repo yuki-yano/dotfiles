@@ -168,7 +168,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('hrsh7th/vim-eft',               {'merged': 0})
   call dein#add('junegunn/vim-easy-align',       {'merged': 0})
   call dein#add('mhinz/vim-grepper',             {'merged': 0})
-  call dein#add('osyo-manga/vim-anzu',           {'merged': 0})
   call dein#add('osyo-manga/vim-jplus',          {'merged': 0})
   call dein#add('osyo-manga/vim-trip',           {'merged': 0})
   call dein#add('rhysd/accelerated-jk',          {'merged': 0})
@@ -177,6 +176,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tommcdo/vim-exchange',          {'merged': 0})
   call dein#add('tpope/vim-repeat',              {'merged': 0})
   call dein#add('tyru/caw.vim',                  {'merged': 0})
+
+  if has('nvim')
+    call dein#add('kevinhwang91/nvim-hlslens', {'merged': 0})
+  endif
   " }}}3
 
   " Appearance {{{3
@@ -1734,18 +1737,23 @@ if dein#tap('accelerated-jk')
 endif
 " }}}3
 
-" anzu & asterisk {{{3
-if dein#tap('vim-anzu') && dein#tap('vim-asterisk')
+" hlslens & asterisk {{{3
+if dein#tap('nvim-hlslens') && dein#tap('vim-asterisk')
   " let g:incsearch#magic = '\v'
 
   " map /  <Plug>(incsearch-forward)
   " map ?  <Plug>(incsearch-backward)
-  map n  <Plug>(anzu-n)zzzv
-  map N  <Plug>(anzu-N)zzzv
-  map *  <Plug>(asterisk-z*)<Plug>(anzu-update-search-status)
-  map #  <Plug>(asterisk-z#)<Plug>(anzu-update-search-status)
-  map g* <Plug>(asterisk-gz*)<Plug>(anzu-update-search-status)
-  map g# <Plug>(asterisk-gz#)<Plug>(anzu-update-search-status)
+
+  if has('nvim')
+    lua require('hlslens').setup({auto_enable = true})
+
+    nnoremap <silent> n  :<C-u>execute('normal! ' . v:count1 . 'n')<CR>:lua require('hlslens').start()<CR>zzzv
+    nnoremap <silent> N  :<C-u>execute('normal! ' . v:count1 . 'N')<CR>:lua require('hlslens').start()<CR>zzzv
+    map      <silent> *  <Plug>(asterisk-z*):lua require('hlslens').start()<CR>
+    map      <silent> #  <Plug>(asterisk-z#):lua require('hlslens').start()<CR>
+    map      <silent> g* <Plug>(asterisk-gz*):lua require('hlslens').start()<CR>
+    map      <silent> g# <Plug>(asterisk-gz#):lua require('hlslens').start()<CR>
+  endif
 endif
 " }}}3
 
@@ -2401,7 +2409,7 @@ if dein#tap('lightline.vim')
   \   'left': [
   \     ['mode', 'spell', 'paste'],
   \     ['filepath', 'filename'],
-  \     ['special_mode', 'anzu', 'vm_regions'],
+  \     ['special_mode', 'vm_regions'],
   \     [],
   \    ],
   \   'right': [
@@ -2435,14 +2443,12 @@ if dein#tap('lightline.vim')
   \   'fileencoding': 'Lightline_fileencoding',
   \   'fileformat':   'Lightline_fileformat',
   \   'special_mode': 'Lightline_special_mode',
-  \   'anzu':         'anzu#search_status',
   \   'vm_regions':   'Lightline_vm_regions',
   \ },
   \ 'tab_component_function': {
   \   'tabwinnum': 'Lightline_tab_win_num',
   \ },
   \ 'component_visible_condition': {
-  \   'anzu':         "%{anzu#search_status !=# ''}",
   \   'vm_regions':   "%{Lightline_vm_regions() !=# ''}",
   \ },
   \ 'component_function_visible_condition': {
@@ -2558,7 +2564,6 @@ if dein#tap('lightline.vim')
     let l:special_mode = get(s:lightline_ft_to_mode_hash, &filetype, '')
     let l:win = getwininfo(win_getid())[0]
     return l:special_mode !=# '' ? l:special_mode :
-    \ anzu#search_status() !=# '' ? 'Anzu' :
     \ Lightline_filetype() ==# '' ? '' :
     \ l:win.loclist ? '[Location List] ' . get(w:, 'quickfix_title', ''):
     \ l:win.quickfix ? '[QuickFix] ' . get(w:, 'quickfix_title', '') :
@@ -3058,8 +3063,7 @@ endif
 " Correct Interference {{{1
 
 " Mapping <Esc><Esc> {{{2
-" nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus <Bar> call Set_default_keymap()<CR>
-nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch <Bar> AnzuClearSearchStatus<CR>
+nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>:lua require('hlslens').disable()<CR>
 " }}}
 
 " keymaps {{{
@@ -3246,6 +3250,10 @@ AutoCmd ColorScheme gruvbox-material highlight FernGitStatusIndex      ctermfg=2
 AutoCmd ColorScheme gruvbox-material highlight FernGitStatusUnmerged   ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight FernGitStatusUntracked  ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight link FernGitStatusIgnored Comment
+
+AutoCmd ColorScheme gruvbox-material highlight HlSearchLensCur         ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#213F72
+AutoCmd ColorScheme gruvbox-material highlight HlSearchLens            ctermfg=68   ctermbg=232                       guifg=#889eb5 guibg=#283642
+AutoCmd ColorScheme gruvbox-material highlight HlSearchCur             ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#213F72
 
 " TreeSitter
 AutoCmd ColorScheme gruvbox-material highlight link TSPunctBracket Normal
