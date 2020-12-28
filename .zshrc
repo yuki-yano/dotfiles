@@ -10,6 +10,8 @@ fi
 function fzf-preview-settings() {
   bindkey '^ '   fzf-snippet-selection
   bindkey ' '    fzf-auto-snippet-and-space
+  bindkey '^x '  fzf-force-insert-space
+  bindkey '^x^ ' fzf-force-insert-space
   bindkey '^m'   fzf-auto-snippet-and-accept-line
   bindkey '^[f'  fzf-snippet-next-placeholder
   bindkey '^i'   fzf-or-normal-completion
@@ -491,7 +493,7 @@ zle -N history-beginning-search-forward-end  history-search-end
 
 # My ZLE bind
 bindkey '^]'   insert-last-word
-bindkey '^u'   undo
+# bindkey '^u'   undo
 bindkey "^[u"  redo
 bindkey '^[f'  vi-forward-blank-word
 bindkey "^[b"  vi-backward-blank-word
@@ -509,8 +511,8 @@ bindkey '^f' forward-char
 bindkey '^g' send-break
 bindkey '^k' kill-line-or-up-pane
 bindkey '^w' backward-kill-word
-bindkey '^p' history-beginning-search-backward-end
-bindkey '^n' history-beginning-search-forward-end
+# bindkey '^p' history-beginning-search-backward-end
+# bindkey '^n' history-beginning-search-forward-end
 bindkey '^y' yank
 bindkey '^q' show-buffer-stack
 
