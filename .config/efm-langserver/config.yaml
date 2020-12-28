@@ -3,24 +3,24 @@ version: 2
 
 tools:
   go-golangci-lint: &go-golangci-lint
-    lint-command: 'golangci-lint run'
+    lint-command: "golangci-lint run"
 
   rubocop-lint: &rubocop-lint
-    lint-command: 'bundle exec rubocop --format emacs --force-exclusion --stdin ${INPUT}'
+    lint-command: "bundle exec rubocop --format emacs --force-exclusion --stdin ${INPUT}"
     lint-ignore-exit-code: true
     lint-stdin: true
     lint-formats:
-      - '%f:%l:%c: %m'
+      - "%f:%l:%c: %m"
     root-markers:
-    - Gemfile
-    - .rubocop.yml
+      - Gemfile
+      - .rubocop.yml
 
   rubocop-format: &rubocop-format
     format-command: 'bundle exec rubocop --auto-correct-all --stdin ${INPUT} | sed -e "1,/^=/d"'
     format-stdin: true
     root-markers:
-    - Gemfile
-    - .rubocop.yml
+      - Gemfile
+      - .rubocop.yml
 
   vint-lint: &vint-lint
     lint-command: "vint --enable-neovim --style-problem --stdin-display-name ${INPUT} -"
@@ -40,6 +40,19 @@ tools:
     format-command: "shfmt -ln bash -kp"
     format-stdin: true
 
+  textlint-lint: &textlint-lint
+    lint-command: "yarn run textlint --format unix --stdin --stdin-filename ${INPUT}"
+    lint-ignore-exit-code: true
+    lint-stdin: true
+    lint-formats:
+      - "%f:%l:%c: %m [%trror/%r]"
+      - "%f:%l:%c: 【%r】 %m"
+      - "%E%f:%l:%c: %m"
+      - "%Z%m [%trror/%r]"
+      - "%C%m"
+    root-markers:
+      - .textlintrc
+
 languages:
   go:
     - <<: *go-golangci-lint
@@ -57,3 +70,6 @@ languages:
 
   zsh:
     - <<: *shellcheck-lint
+
+  markdown:
+    - <<: *textlint-lint
