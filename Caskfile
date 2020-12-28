@@ -29,7 +29,6 @@ cask install docker
 cask install firefox
 cask install google-chrome
 cask install google-chrome-canary
-cask install hey
 cask install homebrew/cask-versions/discord-canary
 cask install hyperswitch
 cask install iterm2
@@ -47,13 +46,11 @@ cask install ngrok
 cask install notion
 cask install paw
 cask install react-native-debugger
-cask install scroll-reverser
 cask install sequel-pro
 cask install skitch
 cask install sourcetree
 cask install station
 cask install sublime-text
-cask install tower
 cask install tripmode
 cask install vagrant
 cask install vimr
