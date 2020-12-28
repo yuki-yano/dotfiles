@@ -1249,7 +1249,7 @@ endif
 if dein#tap('nvim-treesitter') && has('nvim')
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = {"typescript", "tsx", "rust", "javascript", "ruby", "bash", "json", "yaml"},
+  ensure_installed = {"typescript", "tsx", "javascript", "css", "graphql", "jsdoc", "rust", "ruby", "bash", "json", "yaml"},
   highlight = {
     enable = true,
   },
