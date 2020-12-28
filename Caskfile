@@ -21,6 +21,7 @@ cask install alfred
 cask install appcleaner
 cask install bartender
 cask install charles
+cask install cleanshot
 cask install dash
 cask install default-folder-x
 cask install discord
