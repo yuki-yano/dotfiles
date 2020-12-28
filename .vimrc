@@ -321,7 +321,7 @@ noremap <dev>    <Nop>
 map     m        <dev>
 
 "" Move beginning toggle
-noremap <silent> <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
+noremap <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
 
 "" Move beginning and ending
 noremap <silent> <expr> <Leader>h getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
