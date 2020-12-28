@@ -1652,6 +1652,7 @@ function! s:fern_settings() abort
   nnoremap <silent> <buffer> <nowait> Q :<C-u>bwipe!<CR>
 
   setlocal nonumber norelativenumber
+  AutoCmd CursorMoved <buffer> echo matchstr(getline('.'), '[-./[:alnum:]_]\+')
 endfunction
 
 AutoCmd FileType fern call s:fern_settings()
