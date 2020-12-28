@@ -102,9 +102,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('yuki-ycino/fzf-preview.vim', {'merged': 0, 'rev': 'release'})
 
   if has('nvim')
-    call dein#add('nvim-lua/popup.nvim',     {'merged': 0})
-    call dein#add('nvim-lua/plenary.nvim',   {'merged': 0})
-    call dein#add('nvim-lua/telescope.nvim', {'merged': 0})
+    call dein#add('nvim-lua/popup.nvim',          {'merged': 0})
+    call dein#add('nvim-lua/plenary.nvim',        {'merged': 0})
+    call dein#add('nvim-lua/telescope.nvim',      {'merged': 0})
+    call dein#add('kyazdani42/nvim-web-devicons', {'merged': 0})
   endif
   " }}}3
 
