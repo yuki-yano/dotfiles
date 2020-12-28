@@ -953,12 +953,12 @@ BulkAlterCommand jc[urrent] JestCurrent
 BulkAlterCommand js[ingle]  JestSingle
 
 let g:coc_global_extensions = [
-\ 'coc-diagnostic',
 \ 'coc-eslint',
 \ 'coc-explorer',
 \ 'coc-git',
 \ 'coc-jest',
 \ 'coc-json',
+\ 'coc-markdownlint',
 \ 'coc-marketplace',
 \ 'coc-prettier',
 \ 'coc-python',
@@ -969,7 +969,6 @@ let g:coc_global_extensions = [
 \ 'coc-solargraph',
 \ 'coc-spell-checker',
 \ 'coc-tabnine',
-\ 'coc-tailwindcss',
 \ 'coc-tsserver',
 \ 'coc-vimlsp',
 \ 'coc-word',
@@ -994,9 +993,10 @@ nmap     <silent> <dev>n  <Plug>(coc-diagnostic-next)
 nmap     <silent> <dev>d  <Plug>(coc-definition)
 nmap     <silent> <dev>i  <Plug>(coc-implementation)
 nmap     <silent> <dev>rn <Plug>(coc-rename)
-nmap     <silent> <dev>a  <Plug>(coc-codeaction)
+nmap     <silent> <dev>T  <Plug>(coc-type-definition)
+nmap     <silent> <dev>a  <Plug>(coc-codeaction-selected)
+nmap     <silent> <dev>A  <Plug>(coc-codeaction)
 xmap     <silent> <dev>a  <Plug>(coc-codeaction-selected)
-nmap     <silent> <dev>qf <Plug>(coc-fix-current)
 nmap     <silent> <dev>f  <Plug>(coc-format)
 xmap     <silent> <dev>f  <Plug>(coc-format-selected)
 nmap     <silent> <dev>gs <Plug>(coc-git-chunkinfo)
