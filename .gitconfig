@@ -8,7 +8,13 @@
 
 [core]
   autocrlf       = input
-  pager          = delta
+  pager = "{                        \
+    if [[ $COLUMNS -ge 160 ]]; then \
+      delta --side-by-side;         \
+    else                            \
+      delta;                        \
+    fi                              \
+  }"
   editor         = nvim
   excludesfile   = ~/.gitignore_global
   attributesfile = ~/.gitattributes_global
@@ -84,5 +90,6 @@
 [delta]
   # theme = Nord
   theme = gruvbox
+  features = line-numbers decorations
 
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:
