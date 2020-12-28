@@ -1345,6 +1345,7 @@ endif
 " }}}3
 
 " fzf & coc-fzf {{{3
+let g:fzf_files_options = '--layout=reverse'
 let g:fzf_layout      = { 'window': { 'width': 0.9, 'height': 0.9 } }
 let g:coc_fzf_preview = 'right'
 let g:coc_fzf_opts    = ['--layout=reverse']
@@ -1389,8 +1390,6 @@ nnoremap <silent> <fzf-p>n     :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=
 nnoremap <silent> <fzf-p>?     :<C-u>CocCommand fzf-preview.BufferLines --resume --add-fzf-arg=--no-sort<CR>
 nnoremap          <fzf-p>f     :<C-u>CocCommand fzf-preview.ProjectGrep<Space>
 xnoremap          <fzf-p>f     "sy:CocCommand fzf-preview.ProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-nnoremap          <fzf-p>F     :<C-u>CocCommand fzf-preview.ProjectCommandGrep<Space>
-xnoremap          <fzf-p>F     "sy:CocCommand fzf-preview.ProjectCommandGrep<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
 nnoremap <silent> <fzf-p>q     :<C-u>CocCommand fzf-preview.QuickFix<CR>
 nnoremap <silent> <fzf-p>l     :<C-u>CocCommand fzf-preview.LocationList<CR>
 nnoremap <silent> <fzf-p>:     :<C-u>CocCommand fzf-preview.CommandPalette<CR>
@@ -1463,6 +1462,9 @@ endfunction
 function! s:fzf_preview_settings() abort
   let g:fzf_preview_grep_preview_cmd = 'COLORTERM=truecolor ' . g:fzf_preview_grep_preview_cmd
   let g:fzf_preview_command = 'COLORTERM=truecolor ' . g:fzf_preview_command
+  let g:fzf_preview_git_status_preview_command =  '[[ $(git diff --cached -- {-1}) != "" ]] && git diff --cached --color=always -- {-1} | delta || ' .
+  \ '[[ $(git diff -- {-1}) != "" ]] && git diff --color=always -- {-1} | delta || ' .
+  \ g:fzf_preview_command
 
   let g:fzf_preview_custom_processes['open-file'] = fzf_preview#remote#process#get_default_processes('open-file', 'coc')
   let g:fzf_preview_custom_processes['open-file']['ctrl-s'] = g:fzf_preview_custom_processes['open-file']['ctrl-x']
