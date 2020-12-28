@@ -419,10 +419,9 @@ vnoremap <silent> sp :<C-u>let @" = substitute(system("pbpaste"), "\n\+$", "", "
 "" NeoVim
 if has('nvim')
   let g:loaded_python_provider = 0
-  " let g:python_host_prog  = $HOME . '/.pyenv/shims/python2'
-  let g:python3_host_prog = $HOME . '/.pyenv/shims/python'
-
-  let g:loaded_perl_provider = 0
+  let g:loaded_perl_provider   = 0
+  let g:loaded_ruby_provider   = 0
+  let g:python3_host_prog      = $HOME . '/.pyenv/shims/python'
 
   set inccommand=nosplit
 
