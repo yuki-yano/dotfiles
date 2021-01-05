@@ -1375,9 +1375,6 @@ let g:fzf_preview_default_fzf_options = {
 \ '--exact': v:true,
 \ '--no-sort': v:true,
 \ }
-" let g:fzf_preview_direct_window_option = 'tmux'
-let g:fzf_prefer_tmux = 1
-let g:fzf_layout = { 'up': '~40%' }
 let $FZF_PREVIEW_PREVIEW_BAT_THEME  = 'gruvbox'
 
 noremap <fzf-p> <Nop>
