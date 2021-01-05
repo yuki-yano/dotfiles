@@ -1057,8 +1057,11 @@ command! CocEcho  call <SID>coc_echo()
 
 function! s:coc_typescript_settings() abort
   setlocal tagfunc=CocTagFunc
-  command! ESLintFix :CocCommand eslint.executeAutofix
-  nnoremap <silent> <buffer> <dev>F :<C-u>ESLintFix<CR>
+  nnoremap <silent> <buffer> <dev>f :<C-u>CocCommand eslint.executeAutofix<CR>
+endfunction
+
+function! s:coc_rust_settings() abort
+  setlocal tagfunc=CocTagFunc
 endfunction
 
 command! Jest        :call CocAction('runCommand', 'jest.projectTest')
