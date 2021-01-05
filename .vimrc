@@ -246,6 +246,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Develop {{{3
+  call dein#add('hrsh7th/vim-vital-vs',                {'merged': 0})
   call dein#add('lambdalisue/vim-quickrun-neovim-job', {'merged': 0})
   call dein#add('rbtnn/vim-vimscript_lasterror',       {'merged': 0})
   call dein#add('thinca/vim-prettyprint',              {'merged': 0})
