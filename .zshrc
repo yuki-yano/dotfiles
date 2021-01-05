@@ -13,7 +13,7 @@ function fzf-preview-settings() {
   bindkey '^x '  fzf-force-insert-space
   bindkey '^x^ ' fzf-force-insert-space
   bindkey '^m'   fzf-auto-snippet-and-accept-line
-  bindkey '^[f'  fzf-snippet-next-placeholder
+  # bindkey '^[f'  fzf-snippet-next-placeholder
   bindkey '^i'   fzf-or-normal-completion
   bindkey '^r'   fzf-history-selection
   bindkey '^x^s' fzf-snippet-selection
@@ -493,10 +493,9 @@ zle -N history-beginning-search-forward-end  history-search-end
 
 # My ZLE bind
 bindkey '^]'   insert-last-word
-# bindkey '^u'   undo
 bindkey "^[u"  redo
-bindkey '^[f'  vi-forward-blank-word
-bindkey "^[b"  vi-backward-blank-word
+bindkey '^[f'  forward-word
+bindkey "^[b"  backward-word
 
 # Add tmux bind
 bindkey '^h' backspace-or-left-pane
@@ -511,8 +510,8 @@ bindkey '^f' forward-char
 bindkey '^g' send-break
 bindkey '^k' kill-line-or-up-pane
 bindkey '^w' backward-kill-word
-# bindkey '^p' history-beginning-search-backward-end
-# bindkey '^n' history-beginning-search-forward-end
+bindkey '^p' history-beginning-search-backward
+bindkey '^n' history-beginning-search-forward
 bindkey '^y' yank
 bindkey '^q' show-buffer-stack
 
