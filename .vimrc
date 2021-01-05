@@ -58,7 +58,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('yardnsm/vim-import-cost',      {'merged': 0, 'build': 'npm install'})
   call dein#add('elzr/vim-json',                {'merged': 0})
   call dein#add('heavenshell/vim-jsdoc',        {'merged': 0, 'build': 'make install'})
-  call dein#add('iamcco/markdown-preview.nvim', {'merged': 0})
   call dein#add('jparise/vim-graphql',          {'merged': 0})
   call dein#add('leafgarland/typescript-vim',   {'merged': 0})
   call dein#add('plasticboy/vim-markdown',      {'merged': 0})
@@ -220,7 +219,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('osyo-manga/vim-brightest',         {'merged': 0})
   " call dein#add('osyo-manga/vim-gift',              {'merged': 0})
   " call dein#add('pocke/vim-automatic',              {'merged': 0})
-  " call dein#add('previm/previm',                    {'merged': 0})
   " call dein#add('thinca/vim-localrc',               {'merged': 0})
   " call dein#add('thinca/vim-ref',                   {'merged': 0})
   call dein#add('AndrewRadev/linediff.vim',         {'merged': 0})
@@ -235,6 +233,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('liuchengxu/vista.vim',             {'merged': 0})
   call dein#add('mbbill/undotree',                  {'merged': 0})
   call dein#add('moll/vim-bbye',                    {'merged': 0})
+  call dein#add('previm/previm',                    {'merged': 0})
   call dein#add('segeljakt/vim-silicon',            {'merged': 0})
   call dein#add('tyru/capture.vim',                 {'merged': 0})
   call dein#add('tyru/vim-altercmd',                {'merged': 0})
@@ -2934,6 +2933,12 @@ function! s:set_git_rebase_settings() abort
 endfunction
 " }}}3
 
+" previm {{{3
+let g:previm_open_cmd            = 'open -a "Google Chrome"'
+let g:previm_disable_default_css = 1
+let g:previm_custom_css_path     = '~/.config/previm/gfm.css'
+" }}}3
+
 " silicon {{{3
 let g:silicon = {
 \   'theme':           'Monokai Extended',
@@ -2997,12 +3002,6 @@ endif
 " }}}2
 
 " Removed Plugin {{{2
-
-" " previm {{{3
-" let g:previm_open_cmd            = 'open -a "Google Chrome"'
-" let g:previm_disable_default_css = 1
-" let g:previm_custom_css_path     = '~/.config/previm/gfm.css'
-" " }}}3
 
 " " splitjoin {{{3
 " let g:splitjoin_align             = 1
