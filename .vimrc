@@ -186,13 +186,13 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Appearance {{{3
   " call dein#add('RRethy/vim-hexokinase',         {'merged': 0, 'build': 'make hexokinase'})
   " call dein#add('andymass/vim-matchup',          {'merged': 0})
-  " call dein#add('luochen1990/rainbow',           {'merged': 0})
   " call dein#add('mhinz/vim-startify',            {'merged': 0})
   " call dein#add('wellle/context.vim',            {'merged': 0})
   " call dein#add('yuttie/comfortable-motion.vim', {'merged': 0})
   call dein#add('Yggdroot/indentLine',            {'merged': 0})
   call dein#add('itchyny/lightline.vim',          {'merged': 0})
   call dein#add('lambdalisue/readablefold.vim',   {'merged': 0})
+  call dein#add('luochen1990/rainbow',            {'merged': 0})
   call dein#add('machakann/vim-highlightedundo',  {'merged': 0})
   call dein#add('machakann/vim-highlightedyank',  {'merged': 0})
   call dein#add('mopp/smartnumber.vim',           {'merged': 0})
@@ -1262,12 +1262,12 @@ require'nvim-treesitter.configs'.setup {
   },
 }
 
--- require "nvim-treesitter.highlight"
--- local hlmap = vim.treesitter.highlighter.hl_map
---
--- hlmap.error = nil
--- hlmap["punctuation.delimiter"] = "Delimiter"
--- hlmap["punctuation.bracket"] = nil
+require "nvim-treesitter.highlight"
+local hlmap = vim.treesitter.highlighter.hl_map
+
+hlmap.error = nil
+hlmap["punctuation.delimiter"] = "Delimiter"
+hlmap["punctuation.bracket"] = nil
 EOF
 endif
 " }}}3
@@ -1368,6 +1368,9 @@ let g:fzf_preview_default_fzf_options = {
 \ '--exact': v:true,
 \ '--no-sort': v:true,
 \ }
+" let g:fzf_preview_direct_window_option = 'tmux'
+let g:fzf_prefer_tmux = 1
+let g:fzf_layout = { 'up': '~40%' }
 let $FZF_PREVIEW_PREVIEW_BAT_THEME  = 'gruvbox'
 
 noremap <fzf-p> <Nop>
