@@ -3283,113 +3283,115 @@ let g:nord_uniform_diff_background = 1
 colorscheme nord
 
 " lightline highlight {{{3
-let s:nord0       = ['#3B4252', 0]
-let s:nord1       = ['#BF616A', 1]
-let s:nord2       = ['#A3BE8C', 2]
-let s:nord3       = ['#EBCB8B', 3]
-let s:nord4       = ['#81A1C1', 4]
-let s:nord5       = ['#B48EAD', 5]
-let s:nord6       = ['#88C0D0', 6]
-let s:nord7       = ['#E5E9F0', 7]
-let s:nord8       = ['#4C566A', 8]
-let s:nord9       = ['#B04B57', 9]
-let s:nord10      = ['#93B379', 10]
-let s:nord11      = ['#D08770', 11]
-let s:nord12      = ['#5E81AC', 12]
-let s:nord13      = ['#A4799D', 13]
-let s:nord14      = ['#8FBCBB', 14]
-let s:nord15      = ['#ECEFF4', 15]
-" let s:white       = ['#AFAFAF', 145]
-" let s:black       = ['#262626', 235]
-let s:grey        = ['#3A3A3A', 237]
-" let s:red         = ['#FF5F87', 204]
-" let s:blue        = ['#00AFFF', 39]
-" let s:green       = ['#75A174', 108]
-" let s:yellow      = ['#D7AF87', 180]
-" let s:orange      = ['#D78700', 172]
-let s:blue_green  = ['#00AFAF', 37 ]
+if dein#tap('lightline.vim')
+  let s:nord0       = ['#3B4252', 0]
+  let s:nord1       = ['#BF616A', 1]
+  let s:nord2       = ['#A3BE8C', 2]
+  let s:nord3       = ['#EBCB8B', 3]
+  let s:nord4       = ['#81A1C1', 4]
+  let s:nord5       = ['#B48EAD', 5]
+  let s:nord6       = ['#88C0D0', 6]
+  let s:nord7       = ['#E5E9F0', 7]
+  let s:nord8       = ['#4C566A', 8]
+  let s:nord9       = ['#B04B57', 9]
+  let s:nord10      = ['#93B379', 10]
+  let s:nord11      = ['#D08770', 11]
+  let s:nord12      = ['#5E81AC', 12]
+  let s:nord13      = ['#A4799D', 13]
+  let s:nord14      = ['#8FBCBB', 14]
+  let s:nord15      = ['#ECEFF4', 15]
+  " let s:white       = ['#AFAFAF', 145]
+  " let s:black       = ['#262626', 235]
+  let s:grey        = ['#3A3A3A', 237]
+  " let s:red         = ['#FF5F87', 204]
+  " let s:blue        = ['#00AFFF', 39]
+  " let s:green       = ['#75A174', 108]
+  " let s:yellow      = ['#D7AF87', 180]
+  " let s:orange      = ['#D78700', 172]
+  let s:blue_green  = ['#00AFAF', 37 ]
 
-let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
+  let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
 
-let s:p.normal.left = [
-\ [s:nord0,      s:nord4],
-\ [s:nord7,      s:grey ],
-\ [s:blue_green, s:grey ],
-\ [s:nord4,      s:grey ],
-\ ]
+  let s:p.normal.left = [
+  \ [s:nord0,      s:nord4],
+  \ [s:nord7,      s:grey ],
+  \ [s:blue_green, s:grey ],
+  \ [s:nord4,      s:grey ],
+  \ ]
 
-let s:p.insert.left = [
-\ [s:nord0,      s:nord3 ],
-\ [s:nord7,      s:grey  ],
-\ [s:blue_green, s:grey  ],
-\ [s:nord4,      s:grey  ],
-\]
+  let s:p.insert.left = [
+  \ [s:nord0,      s:nord3 ],
+  \ [s:nord7,      s:grey  ],
+  \ [s:blue_green, s:grey  ],
+  \ [s:nord4,      s:grey  ],
+  \]
 
-let s:p.visual.left = [
-\ [s:nord0,      s:nord5],
-\ [s:nord7,      s:grey ],
-\ [s:blue_green, s:grey ],
-\ [s:nord4,      s:grey ],
-\ ]
+  let s:p.visual.left = [
+  \ [s:nord0,      s:nord5],
+  \ [s:nord7,      s:grey ],
+  \ [s:blue_green, s:grey ],
+  \ [s:nord4,      s:grey ],
+  \ ]
 
-let s:p.replace.left = [
-\ [s:nord0,      s:nord1],
-\ [s:nord7,      s:grey ],
-\ [s:blue_green, s:grey ],
-\ [s:nord4,      s:grey ],
-\ ]
+  let s:p.replace.left = [
+  \ [s:nord0,      s:nord1],
+  \ [s:nord7,      s:grey ],
+  \ [s:blue_green, s:grey ],
+  \ [s:nord4,      s:grey ],
+  \ ]
 
-let s:p.inactive.left = [
-\ [s:blue_green, s:grey],
-\ [s:nord7,      s:grey],
-\ [s:blue_green, s:grey],
-\ [s:nord4,      s:grey],
-\ ]
+  let s:p.inactive.left = [
+  \ [s:blue_green, s:grey],
+  \ [s:nord7,      s:grey],
+  \ [s:blue_green, s:grey],
+  \ [s:nord4,      s:grey],
+  \ ]
 
-let s:p.normal.right   = [[s:nord7, s:nord0],   [s:nord7, s:grey ]]
-let s:p.inactive.right = [[s:nord0, s:nord7],   [s:nord0, s:nord7]]
-let s:p.insert.right   = [[s:nord0, s:nord3],   [s:nord7, s:grey ]]
-let s:p.replace.right  = [[s:nord0, s:nord1],   [s:nord7, s:grey ]]
-let s:p.visual.right   = [[s:nord0, s:nord5],   [s:nord7, s:grey ]]
+  let s:p.normal.right   = [[s:nord7, s:nord0],   [s:nord7, s:grey ]]
+  let s:p.inactive.right = [[s:nord0, s:nord7],   [s:nord0, s:nord7]]
+  let s:p.insert.right   = [[s:nord0, s:nord3],   [s:nord7, s:grey ]]
+  let s:p.replace.right  = [[s:nord0, s:nord1],   [s:nord7, s:grey ]]
+  let s:p.visual.right   = [[s:nord0, s:nord5],   [s:nord7, s:grey ]]
 
-let s:p.normal.middle   = [[s:nord7, s:nord0]]
-let s:p.inactive.middle = [[s:nord7, s:grey]]
+  let s:p.normal.middle   = [[s:nord7, s:nord0]]
+  let s:p.inactive.middle = [[s:nord7, s:grey]]
 
-let s:p.tabline.left   = [[s:nord7, s:nord8]]
-let s:p.tabline.tabsel = [[s:nord0, s:nord4]]
-let s:p.tabline.middle = [[s:nord7, s:nord0]]
-let s:p.tabline.right  = [[s:nord7, s:nord8]]
+  let s:p.tabline.left   = [[s:nord7, s:nord8]]
+  let s:p.tabline.tabsel = [[s:nord0, s:nord4]]
+  let s:p.tabline.middle = [[s:nord7, s:nord0]]
+  let s:p.tabline.right  = [[s:nord7, s:nord8]]
 
-let s:coc_diagnostic = [
-\ [s:grey, s:nord1 ],
-\ [s:grey, s:nord11],
-\ [s:grey, s:nord3 ],
-\ [s:grey, s:nord4 ],
-\ [s:grey, s:nord2 ],
-\ ]
+  let s:coc_diagnostic = [
+  \ [s:grey, s:nord1 ],
+  \ [s:grey, s:nord11],
+  \ [s:grey, s:nord3 ],
+  \ [s:grey, s:nord4 ],
+  \ [s:grey, s:nord2 ],
+  \ ]
 
-let s:p.normal.error        = s:coc_diagnostic[0:0]
-let s:p.insert.error        = s:coc_diagnostic[0:0]
-let s:p.replace.error       = s:coc_diagnostic[0:0]
-let s:p.visual.error        = s:coc_diagnostic[0:0]
-let s:p.normal.warning      = s:coc_diagnostic[1:1]
-let s:p.insert.warning      = s:coc_diagnostic[1:1]
-let s:p.replace.warning     = s:coc_diagnostic[1:1]
-let s:p.visual.warning      = s:coc_diagnostic[1:1]
-let s:p.normal.information  = s:coc_diagnostic[2:2]
-let s:p.insert.information  = s:coc_diagnostic[2:2]
-let s:p.replace.information = s:coc_diagnostic[2:2]
-let s:p.visual.information  = s:coc_diagnostic[2:2]
-let s:p.normal.hint         = s:coc_diagnostic[2:2]
-let s:p.insert.hint         = s:coc_diagnostic[2:2]
-let s:p.replace.hint        = s:coc_diagnostic[2:2]
-let s:p.visual.hint         = s:coc_diagnostic[2:2]
-let s:p.normal.ok           = s:coc_diagnostic[3:3]
-let s:p.insert.ok           = s:coc_diagnostic[3:3]
-let s:p.replace.ok          = s:coc_diagnostic[3:3]
-let s:p.visual.ok           = s:coc_diagnostic[3:3]
+  let s:p.normal.error        = s:coc_diagnostic[0:0]
+  let s:p.insert.error        = s:coc_diagnostic[0:0]
+  let s:p.replace.error       = s:coc_diagnostic[0:0]
+  let s:p.visual.error        = s:coc_diagnostic[0:0]
+  let s:p.normal.warning      = s:coc_diagnostic[1:1]
+  let s:p.insert.warning      = s:coc_diagnostic[1:1]
+  let s:p.replace.warning     = s:coc_diagnostic[1:1]
+  let s:p.visual.warning      = s:coc_diagnostic[1:1]
+  let s:p.normal.information  = s:coc_diagnostic[2:2]
+  let s:p.insert.information  = s:coc_diagnostic[2:2]
+  let s:p.replace.information = s:coc_diagnostic[2:2]
+  let s:p.visual.information  = s:coc_diagnostic[2:2]
+  let s:p.normal.hint         = s:coc_diagnostic[2:2]
+  let s:p.insert.hint         = s:coc_diagnostic[2:2]
+  let s:p.replace.hint        = s:coc_diagnostic[2:2]
+  let s:p.visual.hint         = s:coc_diagnostic[2:2]
+  let s:p.normal.ok           = s:coc_diagnostic[3:3]
+  let s:p.insert.ok           = s:coc_diagnostic[3:3]
+  let s:p.replace.ok          = s:coc_diagnostic[3:3]
+  let s:p.visual.ok           = s:coc_diagnostic[3:3]
 
-let g:lightline#colorscheme#nord#palette = lightline#colorscheme#flatten(s:p)
+  let g:lightline#colorscheme#nord#palette = lightline#colorscheme#flatten(s:p)
+endif
 
 " }}}3
 
@@ -3405,99 +3407,101 @@ let g:gruvbox_material_disable_italic_comment = 1
 colorscheme gruvbox-material
 
 " lightline highlight {{{3
-let s:gruvbox0   = ['#32302f', 0]
-let s:gruvbox1   = ['#ea6962', 1]
-let s:gruvbox2   = ['#a9b665', 2]
-let s:gruvbox3   = ['#d8a657', 3]
-let s:gruvbox4   = ['#7daea3', 4]
-let s:gruvbox5   = ['#d3869b', 5]
-let s:gruvbox6   = ['#89b482', 6]
-let s:gruvbox7   = ['#d4be98', 7]
-let s:grey       = ['#3A3A3A', 237]
-let s:blue_green = ['#00AFAF', 37 ]
-let s:warning    = ['#FFAF60', 214]
-let s:info       = ['#FFFFAF', 229]
+if dein#tap('lightline.vim')
+  let s:gruvbox0   = ['#32302f', 0]
+  let s:gruvbox1   = ['#ea6962', 1]
+  let s:gruvbox2   = ['#a9b665', 2]
+  let s:gruvbox3   = ['#d8a657', 3]
+  let s:gruvbox4   = ['#7daea3', 4]
+  let s:gruvbox5   = ['#d3869b', 5]
+  let s:gruvbox6   = ['#89b482', 6]
+  let s:gruvbox7   = ['#d4be98', 7]
+  let s:grey       = ['#3A3A3A', 237]
+  let s:blue_green = ['#00AFAF', 37 ]
+  let s:warning    = ['#FFAF60', 214]
+  let s:info       = ['#FFFFAF', 229]
 
-let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
+  let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
 
-let s:p.normal.left = [
-\ [s:gruvbox0,   s:gruvbox4],
-\ [s:gruvbox7,   s:grey ],
-\ [s:blue_green, s:grey ],
-\ [s:gruvbox4,   s:grey ],
-\ ]
+  let s:p.normal.left = [
+  \ [s:gruvbox0,   s:gruvbox4],
+  \ [s:gruvbox7,   s:grey ],
+  \ [s:blue_green, s:grey ],
+  \ [s:gruvbox4,   s:grey ],
+  \ ]
 
-let s:p.insert.left = [
-\ [s:gruvbox0,   s:gruvbox3 ],
-\ [s:gruvbox7,   s:grey  ],
-\ [s:blue_green, s:grey  ],
-\ [s:gruvbox4,   s:grey  ],
-\]
+  let s:p.insert.left = [
+  \ [s:gruvbox0,   s:gruvbox3 ],
+  \ [s:gruvbox7,   s:grey  ],
+  \ [s:blue_green, s:grey  ],
+  \ [s:gruvbox4,   s:grey  ],
+  \]
 
-let s:p.visual.left = [
-\ [s:gruvbox0,   s:gruvbox5],
-\ [s:gruvbox7,   s:grey ],
-\ [s:blue_green, s:grey ],
-\ [s:gruvbox4,   s:grey ],
-\ ]
+  let s:p.visual.left = [
+  \ [s:gruvbox0,   s:gruvbox5],
+  \ [s:gruvbox7,   s:grey ],
+  \ [s:blue_green, s:grey ],
+  \ [s:gruvbox4,   s:grey ],
+  \ ]
 
-let s:p.replace.left = [
-\ [s:gruvbox0,   s:gruvbox1],
-\ [s:gruvbox7,   s:grey ],
-\ [s:blue_green, s:grey ],
-\ [s:gruvbox4,   s:grey ],
-\ ]
+  let s:p.replace.left = [
+  \ [s:gruvbox0,   s:gruvbox1],
+  \ [s:gruvbox7,   s:grey ],
+  \ [s:blue_green, s:grey ],
+  \ [s:gruvbox4,   s:grey ],
+  \ ]
 
-let s:p.inactive.left = [
-\ [s:blue_green, s:grey],
-\ [s:gruvbox7,   s:grey],
-\ [s:blue_green, s:grey],
-\ [s:gruvbox4,   s:grey],
-\ ]
+  let s:p.inactive.left = [
+  \ [s:blue_green, s:grey],
+  \ [s:gruvbox7,   s:grey],
+  \ [s:blue_green, s:grey],
+  \ [s:gruvbox4,   s:grey],
+  \ ]
 
-let s:p.normal.right   = [[s:gruvbox0, s:gruvbox4],   [s:gruvbox7, s:grey ]]
-let s:p.inactive.right = [[s:gruvbox0, s:gruvbox7],   [s:gruvbox0, s:gruvbox7]]
-let s:p.insert.right   = [[s:gruvbox0, s:gruvbox3],   [s:gruvbox7, s:grey ]]
-let s:p.replace.right  = [[s:gruvbox0, s:gruvbox1],   [s:gruvbox7, s:grey ]]
-let s:p.visual.right   = [[s:gruvbox0, s:gruvbox5],   [s:gruvbox7, s:grey ]]
+  let s:p.normal.right   = [[s:gruvbox0, s:gruvbox4],   [s:gruvbox7, s:grey ]]
+  let s:p.inactive.right = [[s:gruvbox0, s:gruvbox7],   [s:gruvbox0, s:gruvbox7]]
+  let s:p.insert.right   = [[s:gruvbox0, s:gruvbox3],   [s:gruvbox7, s:grey ]]
+  let s:p.replace.right  = [[s:gruvbox0, s:gruvbox1],   [s:gruvbox7, s:grey ]]
+  let s:p.visual.right   = [[s:gruvbox0, s:gruvbox5],   [s:gruvbox7, s:grey ]]
 
-let s:p.normal.middle   = [[s:gruvbox7, s:gruvbox0]]
-let s:p.inactive.middle = [[s:gruvbox7, s:grey]]
+  let s:p.normal.middle   = [[s:gruvbox7, s:gruvbox0]]
+  let s:p.inactive.middle = [[s:gruvbox7, s:grey]]
 
-let s:p.tabline.left   = [[s:gruvbox7, s:grey]]
-let s:p.tabline.tabsel = [[s:gruvbox0, s:gruvbox4]]
-let s:p.tabline.middle = [[s:gruvbox7, s:gruvbox0]]
-let s:p.tabline.right  = [[s:gruvbox7, s:grey]]
+  let s:p.tabline.left   = [[s:gruvbox7, s:grey]]
+  let s:p.tabline.tabsel = [[s:gruvbox0, s:gruvbox4]]
+  let s:p.tabline.middle = [[s:gruvbox7, s:gruvbox0]]
+  let s:p.tabline.right  = [[s:gruvbox7, s:grey]]
 
-let s:coc_diagnostic = [
-\ [s:grey, s:gruvbox1],
-\ [s:grey, s:warning],
-\ [s:grey, s:info],
-\ [s:grey, s:gruvbox4],
-\ ]
+  let s:coc_diagnostic = [
+  \ [s:grey, s:gruvbox1],
+  \ [s:grey, s:warning],
+  \ [s:grey, s:info],
+  \ [s:grey, s:gruvbox4],
+  \ ]
 
-let s:p.normal.error        = s:coc_diagnostic[0:0]
-let s:p.insert.error        = s:coc_diagnostic[0:0]
-let s:p.replace.error       = s:coc_diagnostic[0:0]
-let s:p.visual.error        = s:coc_diagnostic[0:0]
-let s:p.normal.warning      = s:coc_diagnostic[1:1]
-let s:p.insert.warning      = s:coc_diagnostic[1:1]
-let s:p.replace.warning     = s:coc_diagnostic[1:1]
-let s:p.visual.warning      = s:coc_diagnostic[1:1]
-let s:p.normal.information  = s:coc_diagnostic[2:2]
-let s:p.insert.information  = s:coc_diagnostic[2:2]
-let s:p.replace.information = s:coc_diagnostic[2:2]
-let s:p.visual.information  = s:coc_diagnostic[2:2]
-let s:p.normal.hint         = s:coc_diagnostic[2:2]
-let s:p.insert.hint         = s:coc_diagnostic[2:2]
-let s:p.replace.hint        = s:coc_diagnostic[2:2]
-let s:p.visual.hint         = s:coc_diagnostic[2:2]
-let s:p.normal.ok           = s:coc_diagnostic[3:3]
-let s:p.insert.ok           = s:coc_diagnostic[3:3]
-let s:p.replace.ok          = s:coc_diagnostic[3:3]
-let s:p.visual.ok           = s:coc_diagnostic[3:3]
+  let s:p.normal.error        = s:coc_diagnostic[0:0]
+  let s:p.insert.error        = s:coc_diagnostic[0:0]
+  let s:p.replace.error       = s:coc_diagnostic[0:0]
+  let s:p.visual.error        = s:coc_diagnostic[0:0]
+  let s:p.normal.warning      = s:coc_diagnostic[1:1]
+  let s:p.insert.warning      = s:coc_diagnostic[1:1]
+  let s:p.replace.warning     = s:coc_diagnostic[1:1]
+  let s:p.visual.warning      = s:coc_diagnostic[1:1]
+  let s:p.normal.information  = s:coc_diagnostic[2:2]
+  let s:p.insert.information  = s:coc_diagnostic[2:2]
+  let s:p.replace.information = s:coc_diagnostic[2:2]
+  let s:p.visual.information  = s:coc_diagnostic[2:2]
+  let s:p.normal.hint         = s:coc_diagnostic[2:2]
+  let s:p.insert.hint         = s:coc_diagnostic[2:2]
+  let s:p.replace.hint        = s:coc_diagnostic[2:2]
+  let s:p.visual.hint         = s:coc_diagnostic[2:2]
+  let s:p.normal.ok           = s:coc_diagnostic[3:3]
+  let s:p.insert.ok           = s:coc_diagnostic[3:3]
+  let s:p.replace.ok          = s:coc_diagnostic[3:3]
+  let s:p.visual.ok           = s:coc_diagnostic[3:3]
 
-let g:lightline#colorscheme#gruvbox#palette = lightline#colorscheme#flatten(s:p)
+  let g:lightline#colorscheme#gruvbox#palette = lightline#colorscheme#flatten(s:p)
+endif
 " }}}3
 
 " }}}2
