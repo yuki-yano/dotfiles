@@ -108,6 +108,7 @@ nodenv() {
 
 # Rust
 path=(~/.cargo/bin(N-/) $path)
+source "$HOME/.cargo/env"
 
 # go
 export GOPATH=$HOME/.go
