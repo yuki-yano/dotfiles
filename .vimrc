@@ -203,6 +203,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   if has('nvim')
     " call dein#add('glepnir/indent-guides.nvim',  {'merged': 0})
     " call dein#add('Xuyuanp/scrollbar.nvim',      {'merged': 0})
+    " call dein#add('dstein64/nvim-scrollview',    {'merged': 0})
     call dein#add('norcalli/nvim-colorizer.lua', {'merged': 0})
   endif
   " }}}3
