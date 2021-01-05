@@ -1636,10 +1636,11 @@ nnoremap <silent> <Leader>E :<C-u>Fern . -drawer -reveal=%<CR><C-w>=
 " endif
 
 function! s:fern_settings() abort
-  nmap <silent> <buffer> <expr> <Plug>(fern-expand-or-collapse) fern#smart#leaf("\<Plug>(fern-action-collapse)", "\<Plug>(fern-action-expand)", "\<Plug>(fern-action-collapse)")
+  nmap <silent> <buffer> <expr> <Plug>(fern-expand-or-collapse)                 fern#smart#leaf("\<Plug>(fern-action-collapse)", "\<Plug>(fern-action-expand)", "\<Plug>(fern-action-collapse)")
+  nmap <silent> <buffer> <expr> <Plug>(fern-open-system-directory-or-open-file) fern#smart#leaf( "\<Plug>(fern-action-open:select)", "\<Plug>(fern-action-open:system)")
 
   nmap <silent> <buffer> <nowait> a     <Plug>(fern-choice)
-  nmap <silent> <buffer> <nowait> <CR>  <Plug>(fern-action-open:select)
+  nmap <silent> <buffer> <nowait> <CR>  <Plug>(fern-open-system-directory-or-open-file)
   nmap <silent> <buffer> <nowait> t     <Plug>(fern-expand-or-collapse)
   nmap <silent> <buffer> <nowait> l     <Plug>(fern-open-or-enter)
   nmap <silent> <buffer> <nowait> h     <Plug>(fern-action-leave)
