@@ -98,7 +98,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('~/repos/github.com/yuki-ycino/fzf-preview.vim', {'merged': 0})
   endif
 
-  " call dein#add('yuki-ycino/fzf-preview.vim', {'merged': 0, 'rev': 'release'})
+  " call dein#add('yuki-ycino/fzf-preview.vim', {'merged': 0, 'rev': 'release/rpc'})
 
   if has('nvim')
     call dein#add('nvim-lua/popup.nvim',          {'merged': 0})
