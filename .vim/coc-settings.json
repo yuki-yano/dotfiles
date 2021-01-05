@@ -91,6 +91,9 @@
     "typescript.tsx"
   ],
 
+  "rust-analyzer.cargo.loadOutDirsFromCheck": true,
+  "rust-analyzer.procMacro.enable": true,
+
   "python.jediEnabled": false,
   "python.linting.flake8Enabled": true,
 

@@ -1070,6 +1070,7 @@ command! JestSingle  :call CocAction('runCommand', 'jest.singleTest')
 
 " AutoCmd CursorHold * silent call CocActionAsync('highlight')
 AutoCmd FileType typescript,typescript.tsx call s:coc_typescript_settings()
+AutoCmd FileType rust call s:coc_rust_settings()
 " }}}3
 
 " efm-langserver-settings {{{3
