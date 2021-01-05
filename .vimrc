@@ -1631,8 +1631,8 @@ let g:fern#renderer#nerdfont#padding = '  '
 let g:fern#smart_cursor              = 'hide'
 
 " if !has('nvim')
-nnoremap <silent> <Leader>e :<C-u>Fern . -drawer<CR>
-nnoremap <silent> <Leader>E :<C-u>Fern . -drawer -reveal=%<CR>
+nnoremap <silent> <Leader>e :<C-u>Fern . -drawer<CR><C-w>=
+nnoremap <silent> <Leader>E :<C-u>Fern . -drawer -reveal=%<CR><C-w>=
 " endif
 
 function! s:fern_settings() abort
