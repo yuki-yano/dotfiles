@@ -58,6 +58,7 @@ install expect
 install global
 install graphviz
 install itchyny/tap/mmv
+install jid
 install jq
 install parallel
 install pstree
