@@ -1,6 +1,7 @@
 fixjson
 jsonlint
 neovim
+npm-why
 prettier
 serve
 ts-node
