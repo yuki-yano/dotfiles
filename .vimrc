@@ -1894,22 +1894,57 @@ endif
 
 " eft {{{3
 if dein#tap('vim-eft')
-  nmap ;; <Plug>(eft-repeat)
-  xmap ;; <Plug>(eft-repeat)
+  let g:eft_enable = 1
+  nnoremap <Leader>f :<C-u>EftToggle<CR>
 
-  nmap f <Plug>(eft-f)
-  xmap f <Plug>(eft-f)
-  omap f <Plug>(eft-f)
-  nmap F <Plug>(eft-F)
-  xmap F <Plug>(eft-F)
-  omap F <Plug>(eft-F)
+  function s:eft_toggle()
+    if g:eft_enable == 1
+      let g:eft_enable = 0
+      call <SID>eft_disable()
+    else
+      let g:eft_enable = 1
+      call <SID>eft_enable()
+    endif
+  endfunction
+  command! EftToggle call <SID>eft_toggle()
 
-  " nmap t <Plug>(eft-t)
-  xmap t <Plug>(eft-t)
-  omap t <Plug>(eft-t)
-  " nmap T <Plug>(eft-T)
-  xmap T <Plug>(eft-T)
-  omap T <Plug>(eft-T)
+  function s:eft_enable()
+    nmap ;; <Plug>(eft-repeat)
+    xmap ;; <Plug>(eft-repeat)
+
+    nmap f <Plug>(eft-f)
+    xmap f <Plug>(eft-f)
+    omap f <Plug>(eft-f)
+    nmap F <Plug>(eft-F)
+    xmap F <Plug>(eft-F)
+    omap F <Plug>(eft-F)
+
+    " nmap t <Plug>(eft-t)
+    xmap t <Plug>(eft-t)
+    omap t <Plug>(eft-t)
+    " nmap T <Plug>(eft-T)
+    xmap T <Plug>(eft-T)
+    omap T <Plug>(eft-T)
+  endfunction
+
+  function s:eft_disable()
+    nnoremap ;; ;
+    nnoremap ;; ;
+
+    nunmap f
+    xunmap f
+    ounmap f
+    nunmap F
+    xunmap F
+    ounmap F
+
+    xunmap t
+    ounmap t
+    xunmap T
+    ounmap T
+  endfunction
+
+  AutoCmd VimEnter * call <SID>eft_enable()
 endif
 " }}}3
 
