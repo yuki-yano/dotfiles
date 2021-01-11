@@ -2814,20 +2814,23 @@ endif
 " }}}3
 
 " smartnumber {{{3
-let g:snumber_enable_startup = 1
-let g:snumber_enable_relative = 1
+if dein#tap('smartnumber.vim')
+  let g:snumber_enable_startup = 1
+  let g:snumber_enable_relative = 1
+  nnoremap <Leader>n :<C-u>SNToggle<CR>
 
-function! s:snumber_relative_toggle()
-  if g:snumber_enable_relative == 1
-    windo SNumbersTurnOffRelative
-    let g:snumber_enable_relative = 0
-  else
-    windo SNumbersTurnOnRelative
-    let g:snumber_enable_relative = 1
-  endif
-endfunction
+  function! s:snumber_relative_toggle()
+    if g:snumber_enable_relative == 1
+      windo SNumbersTurnOffRelative
+      let g:snumber_enable_relative = 0
+    else
+      windo SNumbersTurnOnRelative
+      let g:snumber_enable_relative = 1
+    endif
+  endfunction
 
-command! SNToggle call <SID>snumber_relative_toggle()
+  command! SNToggle call <SID>snumber_relative_toggle()
+endif
 " }}}3
 
 " vista {{{3
@@ -2944,7 +2947,9 @@ let g:automatic_config = [
 " }}}
 
 " bbye {{{3
-nnoremap <silent> <Leader>d :Bdelete!<CR>
+if dein#tap('vim-bbye')
+  nnoremap <silent> <Leader>d :<C-u>Bdelete!<CR>
+endif
 " }}}3
 
 " capture {{{3
