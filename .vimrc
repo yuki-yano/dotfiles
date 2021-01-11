@@ -237,6 +237,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('previm/previm',                    {'merged': 0})
   call dein#add('segeljakt/vim-silicon',            {'merged': 0})
   call dein#add('tyru/capture.vim',                 {'merged': 0})
+  call dein#add('tyru/open-browser.vim',            {'merged': 0})
   call dein#add('tyru/vim-altercmd',                {'merged': 0})
   call dein#add('voldikss/vim-floaterm',            {'merged': 0})
   call dein#add('wesQ3/vim-windowswap',             {'merged': 0})
@@ -3040,6 +3041,14 @@ let g:quickrun_config = {
 \   'exec': ['%C --project . --noEmit --incremental --tsBuildInfoFile .git/.tsbuildinfo'],
 \   'outputter' : 'quickfix',
 \   'outputter/quickfix/errorformat' : '%+A %#%f %#(%l\,%c): %m,%C%m',
+\ },
+\ 'yq' : {
+\   'exec': 'cat %s | yq eval --tojson',
+\ },
+\ 'yq-browser' : {
+\   'exec': 'cat %s | yq eval --tojson',
+\   'outputter' : 'browser',
+\   'outputter/browser/name' : tempname() . '.json',
 \ },
 \ }
 
