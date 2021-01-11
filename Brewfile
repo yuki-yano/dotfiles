@@ -45,7 +45,7 @@ install terraform
 install mysql postgresql redis sqlite
 
 ## Modern CLI
-install ag bat ctop direnv exa fd glow ripgrep procs
+install ag bat ctop direnv dust exa fd glow ripgrep procs
 
 ## GNU Core Utilities
 install autoconf automake cmake gawk gnu-sed gnu-time gpatch gpg2 wget
@@ -70,6 +70,7 @@ install w3m
 install watch
 install watchman
 install wget
+install yq
 
 ## VCS
 install git hub tig gh ghq gobo git-delta
