@@ -3,6 +3,8 @@
 # profile
 # zmodload zsh/zprof && zprof
 
+export XDG_CONFIG_DIR=$HOME/.config
+
 # language
 export LANG=ja_JP.UTF-8
 

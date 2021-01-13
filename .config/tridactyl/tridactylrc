@@ -1,0 +1,42 @@
+colorscheme gruvbox-dark-hard
+
+setnull searchurls.github
+setnull searchurls.amazon
+setnull searchurls.twitter
+setnull searchurls.youtube
+
+set searchengine google
+set tabopenpos last
+set smoothscroll false
+set scrollduration 100
+set allowautofocus false
+set historyresults 30
+
+unbind --mode=normal v
+unbind --mode=normal o
+unbind --mode=normal p
+
+bind --mode=normal h tabprev
+bind --mode=normal l tabnext
+
+bind --mode=normal <C-[> composite mode normal; hidecmdline
+bind --mode=insert <C-[> composite unfocus | mode normal
+bind --mode=hint   <C-[> hint.reset
+bind --mode=ex     <C-[> ex.hide_and_clear
+
+bind --mode=normal U fillcmdline undo
+
+unbind --mode=ex <C-f>
+unbind --mode=ex <Space>
+bind   --mode=ex <C-w>     text.backward_kill_word
+bind   --mode=ex <C-p>     ex.prev_completion
+bind   --mode=ex <C-n>     ex.next_completion
+bind   --mode=ex <C-Space> ex.insert_space_or_completion
+
+keymap a <Nop>
+keymap A <Nop>
+keymap p <Nop>
+keymap P <Nop>
+
+unbindurl google\.com/search --mode=normal j
+unbindurl google\.com/search --mode=normal k
