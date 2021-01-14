@@ -161,12 +161,6 @@ if whence dust > /dev/null; then
 fi
 # }}}
 
-# hub {{{
-if whence hub > /dev/null; then
-  alias git=hub
-fi
-# }}}
-
 # }}}
 
 # }}}

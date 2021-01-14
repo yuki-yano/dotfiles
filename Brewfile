@@ -73,7 +73,7 @@ install wget
 install yq
 
 ## VCS
-install git hub tig gh ghq gobo git-delta
+install git tig gh ghq gobo git-delta
 
 ## Media
 install ffmpeg
