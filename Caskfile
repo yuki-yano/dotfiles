@@ -5,58 +5,58 @@ update
 upgrade
 
 ## Casks
-# cask install bettertouchtool
-# cask install dropbox
-# cask install duet
-# cask install flux
-# cask install imagealpha
-# cask install imageoptim
-# cask install java
-# cask install kitematic
-# cask install simplecap
-# cask install virtualbox
-# cask install xquartz
-cask install 1password
-cask install alfred
-cask install appcleaner
-cask install bartender
-cask install charles
-cask install cleanshot
-cask install dash
-cask install default-folder-x
-cask install discord
-cask install docker
-cask install firefox
-cask install google-chrome
-cask install google-chrome-canary
-cask install homebrew/cask-versions/discord-canary
-cask install hyperswitch
-cask install iterm2
-cask install jasper
-cask install java
-cask install jetbrains-toolbox
-cask install kaleidoscope
-cask install kap
-cask install karabiner-elements
-cask install keyboard-cleaner
-cask install keycastr
-cask install kindle
-cask install mplayerx
-cask install ngrok
-cask install notion
-cask install paw
-cask install react-native-debugger
-cask install sequel-pro
-cask install skitch
-cask install sourcetree
-cask install station
-cask install sublime-text
-cask install tripmode
-cask install vagrant
-cask install vimr
-cask install visual-studio-code
-cask install vivaldi
-cask install vlc
+# install --cask bettertouchtool
+# install --cask dropbox
+# install --cask duet
+# install --cask flux
+# install --cask imagealpha
+# install --cask imageoptim
+# install --cask java
+# install --cask kitematic
+# install --cask simplecap
+# install --cask virtualbox
+# install --cask xquartz
+install --cask 1password
+install --cask alfred
+install --cask appcleaner
+install --cask bartender
+install --cask charles
+install --cask cleanshot
+install --cask dash
+install --cask default-folder-x
+install --cask discord
+install --cask docker
+install --cask firefox
+install --cask google-chrome
+install --cask google-chrome-canary
+install --cask homebrew/cask-versions/discord-canary
+install --cask hyperswitch
+install --cask iterm2
+install --cask jasper
+install --cask java
+install --cask jetbrains-toolbox
+install --cask kaleidoscope
+install --cask kap
+install --cask karabiner-elements
+install --cask keyboard-cleaner
+install --cask keycastr
+install --cask kindle
+install --cask mplayerx
+install --cask ngrok
+install --cask notion
+install --cask paw
+install --cask react-native-debugger
+install --cask sequel-pro
+install --cask skitch
+install --cask sourcetree
+install --cask station
+install --cask sublime-text
+install --cask tripmode
+install --cask vagrant
+install --cask vimr
+install --cask visual-studio-code
+install --cask vivaldi
+install --cask vlc
 
 # Remove outdated versions
 cleanup
