@@ -6,6 +6,7 @@ DOTFILES_SRCS = %w[
   .config
   .ctags.d
   .dir_colors
+  .finicky.js
   .gitattributes_global
   .gitconfig
   .gitignore_global

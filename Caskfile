@@ -26,6 +26,7 @@ install --cask dash
 install --cask default-folder-x
 install --cask discord
 install --cask docker
+install --cask finicky
 install --cask firefox
 install --cask google-chrome
 install --cask google-chrome-canary
