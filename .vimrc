@@ -390,6 +390,26 @@ nnoremap > >>
 vnoremap < <gv
 vnoremap > >gv|
 
+"" Window
+if has('nvim')
+  function! s:focus_floating() abort
+    if !empty(nvim_win_get_config(win_getid()).relative)
+      wincmd p
+      return
+    endif
+    for winnr in range(1, winnr('$'))
+      let l:winid = win_getid(winnr)
+      let l:conf = nvim_win_get_config(winid)
+      if l:conf.focusable && !empty(l:conf.relative)
+        call win_gotoid(l:winid)
+        return
+      endif
+    endfor
+    execute "normal! \<C-w>\<C-w>"
+  endfunction
+  nnoremap <silent> <C-w><C-w> :<C-u>call <SID>focus_floating()<CR>
+endif
+
 "" Tab
 nnoremap <t> <Nop>
 nmap     t     <t>
