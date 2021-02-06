@@ -204,7 +204,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   if has('nvim')
     " call dein#add('glepnir/indent-guides.nvim',  {'merged': 0})
     " call dein#add('Xuyuanp/scrollbar.nvim',      {'merged': 0})
-    " call dein#add('dstein64/nvim-scrollview',    {'merged': 0})
+    call dein#add('dstein64/nvim-scrollview',    {'merged': 0})
     call dein#add('norcalli/nvim-colorizer.lua', {'merged': 0})
   endif
   " }}}3
@@ -3313,6 +3313,8 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight FernGitStatusUnmerged   cterm
 AutoCmd ColorScheme nord,onedark,iceberg highlight FernGitStatusUntracked  ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight link FernGitStatusIgnored Comment
 
+AutoCmd ColorScheme nord,onedark,iceberg highlight ScrollView              ctermbg=159                                                  guibg=#D0D0D0
+
 " TreeSitter
 AutoCmd ColorScheme nord,onedark,iceberg highlight link TSPunctBracket Normal
 
@@ -3355,6 +3357,8 @@ AutoCmd ColorScheme gruvbox-material highlight link FernGitStatusIgnored Comment
 AutoCmd ColorScheme gruvbox-material highlight HlSearchLensCur         ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#213F72
 AutoCmd ColorScheme gruvbox-material highlight HlSearchLens            ctermfg=68   ctermbg=232                       guifg=#889eb5 guibg=#283642
 AutoCmd ColorScheme gruvbox-material highlight HlSearchCur             ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#213F72
+
+AutoCmd ColorScheme gruvbox-material highlight ScrollView              ctermbg=159                                                  guibg=#D0D0D0
 
 " TreeSitter
 AutoCmd ColorScheme gruvbox-material highlight link TSPunctBracket Normal
