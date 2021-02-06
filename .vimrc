@@ -180,6 +180,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   if has('nvim')
     call dein#add('gabrielpoca/replacer.nvim', {'merged': 0})
     call dein#add('kevinhwang91/nvim-hlslens', {'merged': 0})
+    call dein#add('monaqa/dial.nvim',          {'merged': 0})
   endif
   " }}}3
 
@@ -2986,6 +2987,17 @@ endif
 " capture {{{3
 BulkAlterCommand cap[ture] Capture
 AutoCmd FileType capture nnoremap <silent> <buffer> q :<C-u>quit<CR>
+" }}}3
+
+" dial {{{3
+if dein#tap('dial.nvim')
+  nmap <C-a>  <Plug>(dial-increment)
+  nmap <C-x>  <Plug>(dial-decrement)
+  vmap <C-a>  <Plug>(dial-increment)
+  vmap <C-x>  <Plug>(dial-decrement)
+  vmap g<C-a> <Plug>(dial-increment-additional)
+  vmap g<C-x> <Plug>(dial-decrement-additional)
+endif
 " }}}3
 
 " floaterm {{{3
