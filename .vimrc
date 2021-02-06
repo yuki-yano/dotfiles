@@ -1840,10 +1840,16 @@ endfunction
 " }}}3
 
 " caw {{{3
-let g:caw_no_default_keymappings = 0
+if dein#tap('caw.vim')
+  let g:caw_no_default_keymappings = 0
 
-nmap <silent> <Leader>c <Plug>(caw:prefix)
-xmap <silent> <Leader>c <Plug>(caw:prefix)
+  nmap <silent> <Leader>c  <Plug>(caw:hatpos:toggle:operator)
+  nmap <silent> <Leader>cc <Plug>(caw:hatpos:toggle)
+  xmap <silent> <Leader>cc <Plug>(caw:hatpos:toggle)
+  nmap <silent> <Leader>C  <Plug>(caw:wrap:toggle:operator)
+  nmap <silent> <Leader>CC <Plug>(caw:wrap:toggle)
+  xmap <silent> <Leader>CC <Plug>(caw:wrap:toggle)
+endif
 " }}}3
 
 " easy-align {{{3
