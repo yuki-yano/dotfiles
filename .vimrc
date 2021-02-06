@@ -3060,7 +3060,7 @@ endif
 " }}}3
 
 " previm {{{3
-let g:previm_open_cmd            = 'open -a "Vivaldi"'
+let g:previm_open_cmd            = 'open -a "Firefox"'
 let g:previm_disable_default_css = 1
 let g:previm_custom_css_path     = '~/.config/previm/gfm.css'
 " }}}3
