@@ -1,15 +1,15 @@
 {
+  "suggest.autoTrigger": "always",
   "suggest.minTriggerInputLength": 1,
   "suggest.asciiCharactersOnly": true,
   "suggest.snippetIndicator": " >>",
   "suggest.languageSourcePriority": 200,
+
   "snippets.priority": 300,
   "snippets.loadFromExtensions": false,
   "snippets.textmateSnippetsRoots": ["~/.vsnip"],
 
-  "tabnine.priority": 100,
-  "tabnine.shortcut": "TabNine",
-  "suggest.autoTrigger": "always",
+  "codeLens.enable": true,
 
   "diagnostic.checkCurrentLine": true,
   "diagnostic.messageDelay": 0,
@@ -83,7 +83,7 @@
 
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
-  "eslint.filetypes": [
+  "eslint.validate": [
     "javascript",
     "javascriptreact",
     "typescript",

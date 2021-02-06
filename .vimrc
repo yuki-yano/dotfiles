@@ -973,13 +973,11 @@ BulkAlterCommand dein Dein
 " IDE {{{2
 
 " coc {{{3
-BulkAlterCommand list CocList
-BulkAlterCommand OR   OrganizeImport
-BulkAlterCommand ORE  OrganizeImportAndESLint
-
-BulkAlterCommand jest       Jest
-BulkAlterCommand jc[urrent] JestCurrent
-BulkAlterCommand js[ingle]  JestSingle
+if dein#tap('coc.nvim')
+  BulkAlterCommand OR   OrganizeImport
+  BulkAlterCommand jest       Jest
+  BulkAlterCommand jc[urrent] JestCurrent
+  BulkAlterCommand js[ingle]  JestSingle
 
 let g:coc_global_extensions = [
 \ 'coc-eslint',
@@ -997,109 +995,111 @@ let g:coc_global_extensions = [
 \ 'coc-snippets',
 \ 'coc-solargraph',
 \ 'coc-spell-checker',
-\ 'coc-tabnine',
 \ 'coc-tsserver',
 \ 'coc-vimlsp',
 \ 'coc-word',
 \ 'coc-yaml',
 \ ]
 
-if !dein#tap('fzf-preview.vim')
-  call add(g:coc_global_extensions, 'coc-fzf-preview')
-endif
+  if !dein#tap('fzf-preview.vim')
+    call add(g:coc_global_extensions, 'coc-fzf-preview')
+  endif
 
-" Manual completion
-inoremap <silent> <expr> <C-Space> coc#refresh()
+  " Manual completion
+  inoremap <silent> <expr> <C-Space> coc#refresh()
 
-" Snippet map
-let g:coc_snippet_next = '<C-f>'
-let g:coc_snippet_prev = '<C-b>'
+  " Snippet map
+  let g:coc_snippet_next = '<C-f>'
+  let g:coc_snippet_prev = '<C-b>'
 
-" keymap
-nnoremap <silent> K       :<C-u>call <SID>show_documentation()<CR>
-nmap     <silent> <dev>p  <Plug>(coc-diagnostic-prev)
-nmap     <silent> <dev>n  <Plug>(coc-diagnostic-next)
-nmap     <silent> <dev>d  <Plug>(coc-definition)
-nmap     <silent> <dev>i  <Plug>(coc-implementation)
-nmap     <silent> <dev>rn <Plug>(coc-rename)
-nmap     <silent> <dev>T  <Plug>(coc-type-definition)
-nmap     <silent> <dev>a  <Plug>(coc-codeaction-selected)
-nmap     <silent> <dev>A  <Plug>(coc-codeaction)
-xmap     <silent> <dev>a  <Plug>(coc-codeaction-selected)
-nmap     <silent> <dev>f  <Plug>(coc-format)
-xmap     <silent> <dev>f  <Plug>(coc-format-selected)
-nmap     <silent> <dev>gs <Plug>(coc-git-chunkinfo)
+  " keymap
+  nnoremap <silent> K       :<C-u>call <SID>show_documentation()<CR>
+  nmap     <silent> <dev>p  <Plug>(coc-diagnostic-prev)
+  nmap     <silent> <dev>n  <Plug>(coc-diagnostic-next)
+  nmap     <silent> <dev>d  <Plug>(coc-definition)
+  nmap     <silent> <dev>I  <Plug>(coc-implementation)
+  nmap     <silent> <dev>rn <Plug>(coc-rename)
+  nmap     <silent> <dev>T  <Plug>(coc-type-definition)
+  nmap     <silent> <dev>a  <Plug>(coc-codeaction-selected)
+  nmap     <silent> <dev>A  <Plug>(coc-codeaction)
+  nmap     <silent> <dev>l  <Plug>(coc-codelens-action)
+  xmap     <silent> <dev>a  <Plug>(coc-codeaction-selected)
+  nmap     <silent> <dev>f  <Plug>(coc-format)
+  xmap     <silent> <dev>f  <Plug>(coc-format-selected)
+  nmap     <silent> <dev>gs <Plug>(coc-git-chunkinfo)
 
-nnoremap <silent> <expr> <C-d> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-d>"
-nnoremap <silent> <expr> <C-u> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-u>"
-inoremap <silent> <expr> <C-d> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(1)\<CR>" : "\<Right>"
-inoremap <silent> <expr> <C-u> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(0)\<CR>" : "\<Left>"
+  nnoremap <silent> <expr> <C-d> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-d>"
+  nnoremap <silent> <expr> <C-u> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-u>"
+  inoremap <silent> <expr> <C-d> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(1)\<CR>" : "\<Right>"
+  inoremap <silent> <expr> <C-u> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(0)\<CR>" : "\<Left>"
 
-" nnoremap <Leader>e :<C-u>CocCommand explorer<CR>
-" nnoremap <Leader>E :<C-u>CocCommand explorer --reveal expand('%')<CR>
+  " nnoremap <Leader>e :<C-u>CocCommand explorer<CR>
+  " nnoremap <Leader>E :<C-u>CocCommand explorer --reveal expand('%')<CR>
 
-nmap <silent> gp <Plug>(coc-git-prevchunk)
-nmap <silent> gn <Plug>(coc-git-nextchunk)
+  nmap <silent> gp <Plug>(coc-git-prevchunk)
+  nmap <silent> gn <Plug>(coc-git-nextchunk)
 
-function! s:organize_import_and_eslint() abort
-  augroup eslint_with_organize_import
-    autocmd!
-    autocmd TextChanged * CocCommand eslint.executeAutofix
-  augroup END
+  function! s:organize_import_and_eslint() abort
+    augroup eslint_with_organize_import
+      autocmd!
+      autocmd TextChanged * CocCommand eslint.executeAutofix
+    augroup END
 
-  function! s:orgamize_import_callback(fail, success) abort
-    autocmd! eslint_with_organize_import
+    function! s:orgamize_import_callback(fail, success) abort
+      autocmd! eslint_with_organize_import
+    endfunction
+
+    call CocAction('runCommand', 'editor.action.organizeImport', function('<SID>orgamize_import_callback'))
   endfunction
 
-  call CocAction('runCommand', 'editor.action.organizeImport', function('<SID>orgamize_import_callback'))
-endfunction
+  command! OrganizeImport          call CocAction('runCommand', 'editor.action.organizeImport')
+  command! OrganizeImportAndESLint call <SID>organize_import_and_eslint()
 
-command! OrganizeImport          call CocAction('runCommand', 'editor.action.organizeImport')
-command! OrganizeImportAndESLint call <SID>organize_import_and_eslint()
+  AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
-AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+  function! s:show_documentation()
+    if (index(['vim','help'], &filetype) >= 0)
+      execute 'h '.expand('<cword>')
+    elseif (coc#rpc#ready())
+      call CocActionAsync('doHover')
+    else
+      execute '!' . &keywordprg . ' ' . expand('<cword>')
+    endif
+  endfunction
 
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  elseif (coc#rpc#ready())
-    call CocActionAsync('doHover')
-  else
-    execute '!' . &keywordprg . ' ' . expand('<cword>')
-  endif
-endfunction
+  function! s:coc_float() abort
+    call coc#config('diagnostic.messageTarget', 'float')
+    call coc#config('signature.target', 'float')
+    call coc#config('coc.preferences.hoverTarget', 'float')
+  endfunction
 
-function! s:coc_float() abort
-  call coc#config('diagnostic.messageTarget', 'float')
-  call coc#config('signature.target', 'float')
-  call coc#config('coc.preferences.hoverTarget', 'float')
-endfunction
+  function! s:coc_echo() abort
+    call coc#config('diagnostic.messageTarget', 'echo')
+    call coc#config('signature.target', 'echo')
+    call coc#config('coc.preferences.hoverTarget', 'echo')
+  endfunction
 
-function! s:coc_echo() abort
-  call coc#config('diagnostic.messageTarget', 'echo')
-  call coc#config('signature.target', 'echo')
-  call coc#config('coc.preferences.hoverTarget', 'echo')
-endfunction
+  command! CocFloat call <SID>coc_float()
+  command! CocEcho  call <SID>coc_echo()
 
-command! CocFloat call <SID>coc_float()
-command! CocEcho  call <SID>coc_echo()
+  function! s:coc_typescript_settings() abort
+    setlocal tagfunc=CocTagFunc
+    nnoremap <silent> <buffer> <dev>f :<C-u>CocCommand eslint.executeAutofix<CR>
+  endfunction
 
-function! s:coc_typescript_settings() abort
-  setlocal tagfunc=CocTagFunc
-  nnoremap <silent> <buffer> <dev>f :<C-u>CocCommand eslint.executeAutofix<CR>
-endfunction
+  function! s:coc_rust_settings() abort
+    setlocal tagfunc=CocTagFunc
+    nnoremap <silent> <buffer> gK :<C-u>CocCommand rust-analyzer.openDocs<CR>
+  endfunction
 
-function! s:coc_rust_settings() abort
-  setlocal tagfunc=CocTagFunc
-endfunction
+  command! Jest        :call CocAction('runCommand', 'jest.projectTest')
+  command! JestCurrent :call CocAction('runCommand', 'jest.fileTest', ['%'])
+  command! JestSingle  :call CocAction('runCommand', 'jest.singleTest')
 
-command! Jest        :call CocAction('runCommand', 'jest.projectTest')
-command! JestCurrent :call CocAction('runCommand', 'jest.fileTest', ['%'])
-command! JestSingle  :call CocAction('runCommand', 'jest.singleTest')
-
-" AutoCmd CursorHold * silent call CocActionAsync('highlight')
-AutoCmd FileType typescript,typescript.tsx call s:coc_typescript_settings()
-AutoCmd FileType rust call s:coc_rust_settings()
+  " AutoCmd CursorHold * silent call CocActionAsync('highlight')
+  AutoCmd FileType typescript,typescript.tsx call s:coc_typescript_settings()
+  AutoCmd FileType rust call s:coc_rust_settings()
+endif
 " }}}3
 
 " efm-langserver-settings {{{3
