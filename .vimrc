@@ -359,6 +359,8 @@ nnoremap x "_x
 cnoremap <expr> / empty(getcmdline()) <Bar><Bar> getcmdline() ==# '\v' ? '<C-u>\<' : getcmdline() ==# '\<' ? '\><Left><Left>' : '/'
 cnoremap <expr> ? empty(getcmdline()) <Bar><Bar> getcmdline() ==# '\v' ? '<C-u>\<' : getcmdline() ==# '\<' ? '\><Left><Left>' : '?'
 
+nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>
+
 "" tagjump
 nnoremap <silent> s<C-]> :<C-u>wincmd ]<CR>
 nnoremap <silent> v<C-]> :<C-u>vertical wincmd ]<CR>
@@ -1766,6 +1768,8 @@ if dein#tap('nvim-hlslens') && dein#tap('vim-asterisk')
     map      <silent> #  <Plug>(asterisk-z#):lua require('hlslens').start()<CR>
     map      <silent> g* <Plug>(asterisk-gz*):lua require('hlslens').start()<CR>
     map      <silent> g# <Plug>(asterisk-gz#):lua require('hlslens').start()<CR>
+
+    nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>:lua require('hlslens').disable()<CR>
   endif
 endif
 " }}}3
@@ -3127,13 +3131,7 @@ endif
 
 " Correct Interference {{{1
 
-" Mapping <Esc><Esc> {{{2
-nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>:lua require('hlslens').disable()<CR>
-" }}}
-
-" keymaps {{{
-" function! Set_default_keymap() abort
-"   let g:keymap = 'Default'
+" keymaps {{{ function! Set_default_keymap() abort let g:keymap = 'Default'
 "   call lightline#update()
 " endfunction
 "
