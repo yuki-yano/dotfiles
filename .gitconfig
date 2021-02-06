@@ -29,6 +29,19 @@
   path = ~/.gitconfig.local
   path = .gitconfig.local
 
+[status]
+  showUntrackedFiles = all
+
+[diff]
+  indentHeuristic = true
+  compactionHeuristic = true
+  renames = true
+  mnemonicprefix = false
+  tool = nvimdiff
+
+[commit]
+  verbose = true
+
 [fetch]
   prune = true
 
@@ -37,13 +50,6 @@
 
 [push]
   default = current
-
-[diff]
-  indentHeuristic = true
-  compactionHeuristic = true
-  renames = true
-  mnemonicprefix = false
-  tool = nvimdiff
 
 [merge]
   conflictStyle = diff3
