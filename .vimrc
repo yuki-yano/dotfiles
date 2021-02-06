@@ -3016,8 +3016,10 @@ endif
 " }}}3
 
 " capture {{{3
-BulkAlterCommand cap[ture] Capture
-AutoCmd FileType capture nnoremap <silent> <buffer> q :<C-u>quit<CR>
+if dein#tap('capture.vim')
+  BulkAlterCommand cap[ture] Capture
+  AutoCmd FileType capture nnoremap <silent> <buffer> q :<C-u>quit<CR>
+endif
 " }}}3
 
 " dial {{{3
@@ -3032,28 +3034,29 @@ endif
 " }}}3
 
 " floaterm {{{3
-let g:floaterm_width       = 0.8
-let g:floaterm_height      = 0.8
-let g:floaterm_winblend    = 15
-let g:floaterm_position    = 'center'
-let g:floaterm_borderchars = ['─', '│', '─', '│', '╭', '╮', '╯', '╰']
+if dein#tap('vim-floaterm')
+  let g:floaterm_width       = 0.8
+  let g:floaterm_height      = 0.8
+  let g:floaterm_winblend    = 15
+  let g:floaterm_position    = 'center'
 
-nnoremap <silent> <C-s> :<C-u>FloatermToggle<CR>
+  nnoremap <silent> <C-s> :<C-u>FloatermToggle<CR>
 
-AutoCmd FileType floaterm call s:floaterm_settings()
-AutoCmd FileType gitrebase call s:set_git_rebase_settings()
+  AutoCmd FileType floaterm call s:floaterm_settings()
+  AutoCmd FileType gitrebase call s:set_git_rebase_settings()
 
-function! s:floaterm_settings() abort
-  tnoremap <silent> <buffer> <C-s> <C-\><C-n>:FloatermToggle<CR>
-  let b:highlight_cursor = 0
-endfunction
+  function! s:floaterm_settings() abort
+    tnoremap <silent> <buffer> <C-s> <C-\><C-n>:FloatermToggle<CR>
+    let b:highlight_cursor = 0
+  endfunction
 
-function! s:set_git_rebase_settings() abort
-  set winhighlight=Normal:GitRebase
-  set winblend=30
+  function! s:set_git_rebase_settings() abort
+    set winhighlight=Normal:GitRebase
+    set winblend=30
 
-  nnoremap <silent> <buffer> <Leader>d :bdelete!<Space><Bar><Space>close<CR>
-endfunction
+    nnoremap <silent> <buffer> <Leader>d :bdelete!<Space><Bar><Space>close<CR>
+  endfunction
+endif
 " }}}3
 
 " previm {{{3
