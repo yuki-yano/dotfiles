@@ -2497,7 +2497,7 @@ if dein#tap('lightline.vim')
   \ 'active': {
   \   'left': [
   \     ['mode', 'spell', 'paste'],
-  \     ['filepath', 'filename'],
+  \     ['filepath', 'filename', 'modified_buffers'],
   \     ['special_mode', 'vm_regions'],
   \     [],
   \    ],
@@ -2524,15 +2524,16 @@ if dein#tap('lightline.vim')
   \   'paste': "%{&paste ? 'PASTE' : ''}",
   \  },
   \ 'component_function': {
-  \   'mode':         'Lightline_mode',
-  \   'filepath':     'Lightline_filepath',
-  \   'filename':     'Lightline_filename',
-  \   'filetype':     'Lightline_filetype',
-  \   'lineinfo':     'Lightline_lineinfo',
-  \   'fileencoding': 'Lightline_fileencoding',
-  \   'fileformat':   'Lightline_fileformat',
-  \   'special_mode': 'Lightline_special_mode',
-  \   'vm_regions':   'Lightline_vm_regions',
+  \   'mode':             'Lightline_mode',
+  \   'filepath':         'Lightline_filepath',
+  \   'filename':         'Lightline_filename',
+  \   'modified_buffers': 'Lightline_modified_buffers',
+  \   'filetype':         'Lightline_filetype',
+  \   'lineinfo':         'Lightline_lineinfo',
+  \   'fileencoding':     'Lightline_fileencoding',
+  \   'fileformat':       'Lightline_fileformat',
+  \   'special_mode':     'Lightline_special_mode',
+  \   'vm_regions':       'Lightline_vm_regions',
   \ },
   \ 'tab_component_function': {
   \   'tabwinnum': 'Lightline_tab_win_num',
@@ -2680,12 +2681,36 @@ if dein#tap('lightline.vim')
 
     if count(s:lightline_ignore_filename_ft, &filetype)
       return ''
-    elseif l:filename ==# ''
-      return '[No Name]'
-    elseif &modifiable
-      return l:filename . (&modified ? ' [+]' : '')
+    endif
+
+    if l:filename ==# ''
+      let l:filename = '[No Name]'
+    endif
+
+    if &modifiable && &modified
+      let l:filename = l:filename . ' [+]'
+    endif
+
+    if !&modifiable
+      let l:filename = l:filename . ' [X]'
+    endif
+
+    return l:filename
+  endfunction
+
+  function! Lightline_modified_buffers() abort
+    let l:modified_background_buffers = filter(range(1, bufnr('$')),
+    \ { _, bufnr -> bufexists(bufnr) && buflisted(bufnr) && getbufvar(bufnr, 'buftype') ==# '' && filereadable(expand('#' . bufnr . ':p')) && bufnr != bufnr('%') && getbufvar(bufnr, '&modified') == 1 }
+    \ )
+
+    if count(s:lightline_ignore_filename_ft, &filetype)
+      return ''
+    endif
+
+    if len(l:modified_background_buffers) > 0
+      return '!' . len(l:modified_background_buffers)
     else
-      return l:filename . ' [X]'
+      return ''
     endif
   endfunction
 
