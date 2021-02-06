@@ -917,20 +917,24 @@ function! s:init_cmdwin() abort
   nnoremap <buffer> <silent> <nowait> q :<C-u>quit<CR>
   inoremap <buffer> <C-c> <Esc>l<C-c>
 
-  call coc#config('suggest.floatEnable', v:false)
-  call coc#config('diagnostic.messageTarget', 'echo')
-  call coc#config('signature.target', 'echo')
-  call coc#config('coc.preferences.hoverTarget', 'echo')
+  if dein#tap('coc.nvim')
+    call coc#config('suggest.floatEnable', v:false)
+    call coc#config('diagnostic.messageTarget', 'echo')
+    call coc#config('signature.target', 'echo')
+    call coc#config('coc.preferences.hoverTarget', 'echo')
+  endif
 
   " nnoremap <silent> <buffer> dd :<C-u>rviminfo<CR>:call histdel(getcmdwintype(), line('.') - line('$'))<CR>:wviminfo!<CR>dd
   startinsert!
 endfunction
 
 function! s:deinit_cmdwin() abort
-  call coc#config('suggest.floatEnable', v:true)
-  call coc#config('diagnostic.messageTarget', 'float')
-  call coc#config('signature.target', 'float')
-  call coc#config('coc.preferences.hoverTarget', 'float')
+  if dein#tap('coc.nvim')
+    call coc#config('suggest.floatEnable', v:true)
+    call coc#config('diagnostic.messageTarget', 'float')
+    call coc#config('signature.target', 'float')
+    call coc#config('coc.preferences.hoverTarget', 'float')
+  endif
 endfunction
 " }}}1
 
