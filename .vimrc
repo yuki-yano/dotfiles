@@ -1716,7 +1716,7 @@ xmap a=l <Plug>(visual-Rhs)
 " }}}3
 
 " operator-convert-case {{{3
-map cy <Plug>(operator-convert-case-loop)
+nmap cy <Plug>(operator-convert-case-loop)
 " }}}3
 
 " operator-replace {{{3
