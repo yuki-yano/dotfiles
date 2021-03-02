@@ -3068,6 +3068,15 @@ let g:automatic_config = [
 \ ]
 " }}}
 
+" auto-session {{{3
+if dein#tap('auto-session')
+  if !isdirectory(expand('~/.cache/vim/auto-session'))
+    call mkdir(expand('~/.cache/vim/auto-session'), 'p')
+  endif
+  let g:auto_session_root_dir = expand('~/.cache/vim/auto-session')
+endif
+" }}}3
+
 " bbye {{{3
 if dein#tap('vim-bbye')
   nnoremap <silent> <Leader>d :<C-u>Bdelete!<CR>
