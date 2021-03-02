@@ -3,8 +3,14 @@
   email = yuki.ycino@gmail.com
 
 [color]
-  ui             = auto
-  diff           = auto
+  ui   = auto
+  diff = auto
+
+[color "status"]
+  added     = green
+  changed   = red
+  untracked = yellow
+  unmerged  = magenta
 
 [core]
   autocrlf       = input
