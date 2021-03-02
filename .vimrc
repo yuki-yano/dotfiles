@@ -347,6 +347,14 @@ nnoremap <C-q> <C-^>
 
 "" Yank
 nnoremap Y y$
+function! s:yank_without_indent() abort
+  normal! gvy
+  let l:content = getreg(v:register, 1, v:true)
+  let l:leading = min(map(copy(l:content), { _, v -> len(matchstr(v, '^\s*')) }))
+  call map(l:content, { _, v -> v[l:leading :] })
+  call setreg(v:register, l:content, getregtype(v:register))
+endfunction
+vnoremap gy <Esc>:<C-u>call <SID>yank_without_indent()<CR>
 
 "" Disable s
 noremap s <Nop>
