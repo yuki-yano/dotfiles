@@ -3142,6 +3142,10 @@ if dein#tap('vim-floaterm')
 endif
 " }}}3
 
+" memolist {{{3
+let g:memolist_path = '~/.config/memolist'
+" }}}3
+
 " previm {{{3
 let g:previm_open_cmd            = 'open -a "Firefox"'
 let g:previm_disable_default_css = 1
