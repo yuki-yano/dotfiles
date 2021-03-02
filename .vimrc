@@ -2089,6 +2089,13 @@ let g:grepper = {
 \ }
 " }}}3
 
+" hop {{{3
+if dein#tap('hop.nvim')
+  nnoremap <silent> S  :<C-u>HopWord<CR>
+  nnoremap <silent> ss :<C-u>HopWord<CR>
+endif
+" }}}3
+
 " jplus {{{3
 if dein#tap('vim-jplus')
   nmap J         <Plug>(jplus)
