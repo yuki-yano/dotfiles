@@ -2553,12 +2553,12 @@ if dein#tap('lightline.vim')
   \     ['mode', 'spell', 'paste'],
   \     ['filepath', 'filename', 'modified_buffers'],
   \     ['special_mode', 'vm_regions'],
-  \     [],
   \    ],
   \   'right': [
   \     ['lineinfo'],
   \     ['filetype', 'fileencoding', 'fileformat'],
   \     ['linter_ok', 'linter_informations', 'linter_warnings', 'linter_errors'],
+  \     ['coc_status'],
   \   ],
   \ },
   \ 'inactive': {
@@ -2587,6 +2587,7 @@ if dein#tap('lightline.vim')
   \   'fileencoding':     'Lightline_fileencoding',
   \   'fileformat':       'Lightline_fileformat',
   \   'special_mode':     'Lightline_special_mode',
+  \   'coc_status':       'Lightline_coc_status',
   \   'vm_regions':       'Lightline_vm_regions',
   \ },
   \ 'tab_component_function': {
@@ -2839,6 +2840,10 @@ if dein#tap('lightline.vim')
     \ b:coc_diagnostic_info['warning'] == 0 &&
     \ b:coc_diagnostic_info['information'] == 0 ?
     \ ' ' : ''
+  endfunction
+
+  function! Lightline_coc_status() abort
+    return get(g:, 'coc_status', '')
   endfunction
 
   " function! Lightline_denite() abort
