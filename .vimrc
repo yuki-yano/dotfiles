@@ -3098,6 +3098,21 @@ if dein#tap('dial.nvim')
   vmap <C-x>  <Plug>(dial-decrement)
   vmap g<C-a> <Plug>(dial-increment-additional)
   vmap g<C-x> <Plug>(dial-decrement-additional)
+lua << EOF
+local dial = require("dial")
+
+dial.augends["custom#boolean"] = dial.common.enum_cyclic{
+  name = "boolean",
+  strlist = {"true", "false"},
+}
+dial.augends["custom#and_or"] = dial.common.enum_cyclic{
+  name = "and_or",
+  strlist = {"&&", "||"},
+  ptn_format = "\\C\\M\\(%s\\)",
+}
+table.insert(dial.config.searchlist.normal, "custom#boolean")
+table.insert(dial.config.searchlist.normal, "custom#and_or")
+EOF
 endif
 " }}}3
 
