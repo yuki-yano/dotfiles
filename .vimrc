@@ -996,27 +996,30 @@ if dein#tap('coc.nvim')
   BulkAlterCommand jc[urrent] JestCurrent
   BulkAlterCommand js[ingle]  JestSingle
 
-let g:coc_global_extensions = [
-\ 'coc-eslint',
-\ 'coc-explorer',
-\ 'coc-git',
-\ 'coc-jest',
-\ 'coc-json',
-\ 'coc-markdownlint',
-\ 'coc-marketplace',
-\ 'coc-prettier',
-\ 'coc-python',
-\ 'coc-react-refactor',
-\ 'coc-rust-analyzer',
-\ 'coc-sh',
-\ 'coc-snippets',
-\ 'coc-solargraph',
-\ 'coc-spell-checker',
-\ 'coc-tsserver',
-\ 'coc-vimlsp',
-\ 'coc-word',
-\ 'coc-yaml',
-\ ]
+  let g:coc_global_extensions = [
+  \ 'coc-deno',
+  \ 'coc-eslint',
+  \ 'coc-explorer',
+  \ 'coc-git',
+  \ 'coc-jest',
+  \ 'coc-json',
+  \ 'coc-lists',
+  \ 'coc-markdownlint',
+  \ 'coc-marketplace',
+  \ 'coc-prettier',
+  \ 'coc-python',
+  \ 'coc-react-refactor',
+  \ 'coc-rust-analyzer',
+  \ 'coc-sh',
+  \ 'coc-snippets',
+  \ 'coc-solargraph',
+  \ 'coc-spell-checker',
+  \ 'coc-tsdetect',
+  \ 'coc-tsserver',
+  \ 'coc-vimlsp',
+  \ 'coc-word',
+  \ 'coc-yaml',
+  \ ]
 
   if !dein#tap('fzf-preview.vim')
     call add(g:coc_global_extensions, 'coc-fzf-preview')
@@ -1101,7 +1104,15 @@ let g:coc_global_extensions = [
 
   function! s:coc_typescript_settings() abort
     setlocal tagfunc=CocTagFunc
-    nnoremap <silent> <buffer> <dev>f :<C-u>CocCommand eslint.executeAutofix<CR>
+    if s:is_deno()
+      nnoremap <silent> <buffer> <dev>f :<C-u>call CocAction('format')<CR>
+    else
+      nnoremap <silent> <buffer> <dev>f :<C-u>CocCommand eslint.executeAutofix<CR>
+    endif
+  endfunction
+
+  function! s:is_deno() abort
+    return finddir('node_modules', expand('%:p:h') . ';') ==# ''
   endfunction
 
   function! s:coc_rust_settings() abort
