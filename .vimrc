@@ -1281,9 +1281,8 @@ let g:loaded_gentags#gtags    = 1
 
 " import-cost {{{3
 if dein#tap('vim-import-cost') && has('nvim')
-  " AutoCmd InsertLeave *.js,*.jsx,*.ts,*.tsx ImportCost
-  " AutoCmd BufEnter *.js,*.jsx,*.ts,*.tsx    ImportCost
-  " AutoCmd CursorHold *.js,*.jsx,*.ts,*.tsx  ImportCost
+  AutoCmd InsertLeave *.js,*.jsx,*.ts,*.tsx ImportCost
+  AutoCmd BufEnter *.js,*.jsx,*.ts,*.tsx    ImportCost
 endif
 " }}}3
 
