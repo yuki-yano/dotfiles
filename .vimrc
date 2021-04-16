@@ -254,7 +254,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('wesQ3/vim-windowswap',             {'merged': 0})
 
   if has('nvim')
-    call dein#add('notomo/cmdbuf.nvim', {'merged': 0})
+    " call dein#add('notomo/cmdbuf.nvim', {'merged': 0})
   endif
 
   if $ENABLE_WAKATIME == 1
