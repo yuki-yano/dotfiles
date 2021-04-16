@@ -2178,21 +2178,36 @@ if dein#tap('lexima.vim')
   "" Move closing parenthesis
   let s:rules += [
   \ { 'char': '<C-f>', 'at': '\%#\s*)',  'input': '<Left><C-o>f)<Right>'  },
+  \ { 'char': '<Tab>', 'at': '\%#\s*)',  'input': '<Left><C-o>f)<Right>'  },
   \ { 'char': '<C-f>', 'at': '\%#\s*\}', 'input': '<Left><C-o>f}<Right>'  },
+  \ { 'char': '<Tab>', 'at': '\%#\s*\}', 'input': '<Left><C-o>f}<Right>'  },
   \ { 'char': '<C-f>', 'at': '\%#\s*\]', 'input': '<Left><C-o>f]<Right>'  },
+  \ { 'char': '<Tab>', 'at': '\%#\s*\]', 'input': '<Left><C-o>f]<Right>'  },
   \ { 'char': '<C-f>', 'at': '\%#\s*>',  'input': '<Left><C-o>f><Right>'  },
+  \ { 'char': '<Tab>', 'at': '\%#\s*>',  'input': '<Left><C-o>f><Right>'  },
   \ { 'char': '<C-f>', 'at': '\%#\s*`',  'input': '<Left><C-o>f`<Right>'  },
+  \ { 'char': '<Tab>', 'at': '\%#\s*`',  'input': '<Left><C-o>f`<Right>'  },
   \ { 'char': '<C-f>', 'at': '\%#\s*"',  'input': '<Left><C-o>f"<Right>'  },
+  \ { 'char': '<Tab>', 'at': '\%#\s*"',  'input': '<Left><C-o>f"<Right>'  },
   \ { 'char': '<C-f>', 'at': '\%#\s*''', 'input': '<Left><C-o>f''<Right>' },
+  \ { 'char': '<Tab>', 'at': '\%#\s*''', 'input': '<Left><C-o>f''<Right>' },
+  \ ]
+
+  "" Insert semicolon at the end of the line
+  let s:rules += [
+  \ { 'char': ';', 'at': '(.*\%#)$',   'input': '<Right>;' },
+  \ { 'char': ';', 'at': '^\s*\%#)$',  'input': '<Right>;' },
+  \ { 'char': ';', 'at': '(.*\%#\}$',  'input': '<Right>;' },
+  \ { 'char': ';', 'at': '^\s*\%#\}$', 'input': '<Right>;' },
   \ ]
 
   "" TypeScript
   let s:rules += [
-  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>',     'at': '(\%#)',                                      'input': '(',                              'input_after': ') => {}', },
-  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '<C-f>', 'at': '\%#)\s=>',                                   'input': '<C-o>f{<Right>',                                           },
-  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '{',     'at': '^import\s\(type\s\)\?\%#',                   'input': '{<Space><Space>} from ""<Left>',                           },
-  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '<C-b>', 'at': '^import\s\(type\s\)\?{\s\s}\sfrom ".*\%#"$', 'input': '<C-o>F}<Left>',                                            },
-  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '$',     'at': '$\%#',                                       'input': '{}<Left>',                                                 },
+  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\s([a-zA-Z, ]*\%#)',            'input': '<Left><C-o>f)<Right>a=> {}<Esc>',                 },
+  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\s([a-zA-Z]\+\%#)',             'input': '<Right> => {}<Left>',              'priority': 10 },
+  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-z]((.*\%#.*))',              'input': '<Left><C-o>f)a => {}<Esc>',                       },
+  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-z]([a-zA-Z]\+\%#)',          'input': ' => {}<Left>',                                    },
+  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '(.*[a-zA-Z]\+<[a-zA-Z]\+>\%#)', 'input': '<Left><C-o>f)<Right>a=> {}<Left>',                },
   \ ]
 
   "" ruby
