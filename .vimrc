@@ -80,9 +80,9 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Git {{{3
   " call dein#add('hotwatermorning/auto-git-diff', {'merged': 0})
   " call dein#add('rhysd/conflict-marker.vim',     {'merged': 0})
-  call dein#add('cohama/agit.vim',               {'merged': 0})
+  " call dein#add('cohama/agit.vim',               {'merged': 0})
+  " call dein#add('tpope/vim-fugitive',            {'merged': 0})
   call dein#add('lambdalisue/gina.vim',          {'merged': 0})
-  call dein#add('tpope/vim-fugitive',            {'merged': 0})
   call dein#add('wting/gitsessions.vim',         {'merged': 0})
 
   if has('nvim')
