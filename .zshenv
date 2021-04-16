@@ -108,6 +108,10 @@ nodenv() {
   esac
 }
 
+# deno
+path=(~/.deno/bin(N-/) $path)
+
+
 # Rust
 path=(~/.cargo/bin(N-/) $path)
 source "$HOME/.cargo/env"
