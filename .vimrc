@@ -2300,7 +2300,9 @@ endif
 " }}}3
 
 " replacer {{{3
-BulkAlterCommand replacer lua<Space>require(\"replacer\").run()
+BulkAlterCommand repla[cer] lua<Space>require(\"replacer\").run()
+
+command! Replace lua require("replacer").run()
 " }}}3
 
 " reword {{{3
