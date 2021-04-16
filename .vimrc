@@ -3540,8 +3540,8 @@ AutoCmd ColorScheme gruvbox-material highlight link BiscuitColor   Comment
 
 " nord {{{2
 
-let g:nord_uniform_diff_background = 1
-colorscheme nord
+" let g:nord_uniform_diff_background = 1
+" colorscheme nord
 
 " lightline highlight {{{3
 if dein#tap('lightline.vim')
