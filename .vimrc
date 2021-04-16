@@ -1435,7 +1435,7 @@ let g:fzf_files_options = '--layout=reverse'
 let g:fzf_layout      = { 'window': { 'width': 0.9, 'height': 0.9 } }
 let g:coc_fzf_preview = 'right'
 let g:coc_fzf_opts    = ['--layout=reverse']
-let $BAT_THEME        = 'gruvbox'
+let $BAT_THEME        = 'gruvbox-dark'
 let $BAT_STYLE        = 'plain'
 
 " Nord
@@ -1456,7 +1456,7 @@ let g:fzf_preview_default_fzf_options = {
 \ '--exact': v:true,
 \ '--no-sort': v:true,
 \ }
-let $FZF_PREVIEW_PREVIEW_BAT_THEME  = 'gruvbox'
+let $FZF_PREVIEW_PREVIEW_BAT_THEME  = 'gruvbox-dark'
 
 noremap <fzf-p> <Nop>
 map     ;       <fzf-p>
@@ -1491,6 +1491,7 @@ nnoremap <silent> <dev>q  :<C-u>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
 nnoremap <silent> <dev>Q  :<C-u>CocCommand fzf-preview.CocDiagnostics<CR>
 nnoremap <silent> <dev>rf :<C-u>CocCommand fzf-preview.CocReferences<CR>
 nnoremap <silent> <dev>t  :<C-u>CocCommand fzf-preview.CocTypeDefinitions<CR>
+nnoremap <silent> <dev>i  :<C-u>CocCommand fzf-preview.CocImplementations<CR>
 
 AutoCmd User fzf_preview#rpc#initialized call s:fzf_preview_settings()
 
