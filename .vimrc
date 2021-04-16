@@ -71,6 +71,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   if has('nvim')
     call dein#add('nvim-treesitter/nvim-treesitter',          {'merged': 0})
+    " call dein#add('code-biscuits/nvim-biscuits',              {'merged': 0})
     " call dein#add('p00f/nvim-ts-rainbow',                     {'merged': 0})
     " call dein#add('nvim-treesitter/nvim-treesitter-refactor', {'merged': 0})
     " call dein#add('romgrk/nvim-treesitter-context',           {'merged': 0})
@@ -1316,19 +1317,37 @@ endif
 if dein#tap('nvim-treesitter') && has('nvim')
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = {"typescript", "tsx", "javascript", "css", "graphql", "jsdoc", "rust", "ruby", "bash", "json", "yaml", "toml"},
+  ensure_installed = {
+    "typescript",
+    "tsx",
+    "javascript",
+    "css",
+    "graphql",
+    "jsdoc",
+    "rust",
+    "ruby",
+    "bash",
+    "json",
+    "yaml",
+  },
   highlight = {
     enable = true,
   },
-  rainbow = {
-    enable = true,
-  },
-  refactor = {
-    highlight_current_scope = {
-      -- enable = true
-    },
-  },
+  -- rainbow = {
+  --   enable = true,
+  -- },
+  -- refactor = {
+  --   highlight_current_scope = {
+  --     enable = true
+  --   },
+  -- },
 }
+
+-- require('nvim-biscuits').setup({
+--   default_config = {
+--     prefix_string = " => "
+--   },
+-- })
 
 require "nvim-treesitter.highlight"
 local hlmap = vim.treesitter.highlighter.hl_map
@@ -3491,6 +3510,7 @@ AutoCmd ColorScheme gruvbox-material highlight ScrollView              ctermbg=1
 
 " TreeSitter
 AutoCmd ColorScheme gruvbox-material highlight link TSPunctBracket Normal
+AutoCmd ColorScheme gruvbox-material highlight link BiscuitColor   Comment
 
 " }}}2
 
