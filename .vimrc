@@ -65,6 +65,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('heavenshell/vim-jsdoc',        {'merged': 0, 'build': 'make install'})
   call dein#add('jparise/vim-graphql',          {'merged': 0})
   call dein#add('leafgarland/typescript-vim',   {'merged': 0})
+  call dein#add('pantharshit00/vim-prisma',     {'merged': 0})
   call dein#add('plasticboy/vim-markdown',      {'merged': 0})
   call dein#add('rhysd/vim-fixjson',            {'merged': 0})
 
