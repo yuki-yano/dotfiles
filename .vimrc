@@ -410,8 +410,8 @@ cnoremap <C-p> <Up>
 "" Indent
 nnoremap < <<
 nnoremap > >>
-vnoremap < <gv
-vnoremap > >gv|
+xnoremap < <gv
+xnoremap > >gv|
 
 "" Window
 if has('nvim')
@@ -454,12 +454,12 @@ nnoremap Q @q
 "" regexp
 nnoremap <Leader>R "syiw:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
 nnoremap <Leader>r :%s/\v//g<Left><Left><Left>
-vnoremap <Leader>r "sy:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
+xnoremap <Leader>r "sy:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
 
 "" Clipboard
 nnoremap <silent> sc :<C-u>call system("pbcopy", @") <Bar> echo "Copied \" register to OS clipboard"<CR>
 nnoremap <silent> sp :<C-u>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>
-vnoremap <silent> sp :<C-u>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>gv
+xnoremap <silent> sp :<C-u>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>gv
 " }}}2
 
 " Set Options {{{2
@@ -1719,7 +1719,7 @@ if dein#tap('fern.vim')
     nmap <silent> <buffer> <nowait> l     <Plug>(fern-open-or-enter)
     nmap <silent> <buffer> <nowait> h     <Plug>(fern-action-leave)
     nmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark:toggle)
-    vmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark:toggle)
+    xmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark:toggle)
     nmap <silent> <buffer> <nowait> N     <Plug>(fern-action-new-file)
     nmap <silent> <buffer> <nowait> K     <Plug>(fern-action-new-dir)
     nmap <silent> <buffer> <nowait> d     <Plug>(fern-action-trash)
@@ -1902,7 +1902,7 @@ endif
 " }}}3
 
 " easy-align {{{3
-vnoremap ga :EasyAlign<CR>
+xnoremap ga :EasyAlign<CR>
 
 let g:easy_align_delimiters = {
 \ '>': {
@@ -2074,8 +2074,8 @@ let g:expand_region_text_objects = {
 " \ 'ie': 0,
 " \ }
 
-vmap v <Plug>(expand_region_expand)
-vmap V <Plug>(expand_region_shrink)
+xmap v <Plug>(expand_region_expand)
+xmap V <Plug>(expand_region_shrink)
 " }}}3
 
 " edgemotion {{{3
@@ -2103,9 +2103,9 @@ endif
 " jplus {{{3
 if dein#tap('vim-jplus')
   nmap J         <Plug>(jplus)
-  vmap J         <Plug>(jplus)
+  xmap J         <Plug>(jplus)
   nmap <Leader>J <Plug>(jplus-input)
-  vmap <Leader>J <Plug>(jplus-input)
+  xmap <Leader>J <Plug>(jplus-input)
 endif
 " }}}3
 
@@ -3099,10 +3099,10 @@ endif
 if dein#tap('dial.nvim')
   nmap <C-a>  <Plug>(dial-increment)
   nmap <C-x>  <Plug>(dial-decrement)
-  vmap <C-a>  <Plug>(dial-increment)
-  vmap <C-x>  <Plug>(dial-decrement)
-  vmap g<C-a> <Plug>(dial-increment-additional)
-  vmap g<C-x> <Plug>(dial-decrement-additional)
+  xmap <C-a>  <Plug>(dial-increment)
+  xmap <C-x>  <Plug>(dial-decrement)
+  xmap g<C-a> <Plug>(dial-increment-additional)
+  xmap g<C-x> <Plug>(dial-decrement-additional)
 lua << EOF
 local dial = require("dial")
 
