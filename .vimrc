@@ -24,6 +24,11 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('haya14busa/dein-command.vim', {'merged': 0})
   " }}}3
 
+  " denops {{{3
+  call dein#add('vim-denops/denops.vim', {'merged': 0})
+  call dein#add('yuki-yano/dps-slack-status.vim', {'merged': 0})
+  " }}}3
+
   " Doc {{{3
   call dein#add('vim-jp/vimdoc-ja', {'merged': 0})
   " }}}3
