@@ -850,15 +850,10 @@ command! ReviewToggle call <SID>review_toggle()
 
 " FileType {{{2
 
-" Set filetype {{{3
-AutoCmd BufNewFile,BufRead *.tsx setlocal filetype=typescript.tsx
-" }}}3
-
 " Indent {{{3
 AutoCmd FileType javascript      setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType typescript      setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType typescriptreact setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType typescript.tsx  setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType vue             setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType ruby            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType eruby           setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
@@ -878,7 +873,6 @@ AutoCmd FileType zsh             setlocal expandtab   shiftwidth=2 softtabstop=2
 AutoCmd FileType javascript      setlocal foldmethod=syntax foldlevel=100
 AutoCmd FileType typescript      setlocal foldmethod=syntax foldlevel=100
 AutoCmd FileType typescriptreact setlocal foldmethod=syntax foldlevel=100
-AutoCmd FileType typescript.tsx  setlocal foldmethod=syntax foldlevel=100
 AutoCmd FileType vue             setlocal foldmethod=syntax foldlevel=100
 AutoCmd FileType ruby            setlocal foldmethod=syntax foldlevel=100
 AutoCmd FileType python          setlocal foldmethod=syntax foldlevel=100
@@ -1134,7 +1128,7 @@ if dein#tap('coc.nvim')
   command! JestSingle  :call CocAction('runCommand', 'jest.singleTest')
 
   " AutoCmd CursorHold * silent call CocActionAsync('highlight')
-  AutoCmd FileType typescript,typescript.tsx call s:coc_typescript_settings()
+  AutoCmd FileType typescript,typescriptreact call s:coc_typescript_settings()
   AutoCmd FileType rust call s:coc_rust_settings()
 endif
 " }}}3
@@ -1264,7 +1258,6 @@ endif
 "   let s:deoplete_sources['_']               = s:deoplete_default_sources
 "   let s:deoplete_sources['javascript']      = s:deoplete_default_sources + ['']
 "   let s:deoplete_sources['typescript']      = s:deoplete_default_sources + ['']
-"   let s:deoplete_sources['typescript.tsx']  = s:deoplete_default_sources + ['']
 "   let s:deoplete_sources['typescriptreact'] = s:deoplete_default_sources + ['']
 " endif
 " }}}3
@@ -2172,11 +2165,11 @@ if dein#tap('lexima.vim')
 
   "" TypeScript
   let s:rules += [
-  \ { 'filetype': ['typescript', 'typescript.tsx', 'typescriptreact', 'javascript'], 'char': '>',     'at': '(\%#)',                                      'input': '(',                              'input_after': ') => {}', },
-  \ { 'filetype': ['typescript', 'typescript.tsx', 'typescriptreact', 'javascript'], 'char': '<C-f>', 'at': '\%#)\s=>',                                   'input': '<C-o>f{<Right>',                                           },
-  \ { 'filetype': ['typescript', 'typescript.tsx', 'typescriptreact', 'javascript'], 'char': '{',     'at': '^import\s\(type\s\)\?\%#',                   'input': '{<Space><Space>} from ""<Left>',                           },
-  \ { 'filetype': ['typescript', 'typescript.tsx', 'typescriptreact', 'javascript'], 'char': '<C-b>', 'at': '^import\s\(type\s\)\?{\s\s}\sfrom ".*\%#"$', 'input': '<C-o>F}<Left>',                                            },
-  \ { 'filetype': ['typescript', 'typescript.tsx', 'typescriptreact', 'javascript'], 'char': '$',     'at': '$\%#',                                       'input': '{}<Left>',                                                 },
+  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>',     'at': '(\%#)',                                      'input': '(',                              'input_after': ') => {}', },
+  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '<C-f>', 'at': '\%#)\s=>',                                   'input': '<C-o>f{<Right>',                                           },
+  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '{',     'at': '^import\s\(type\s\)\?\%#',                   'input': '{<Space><Space>} from ""<Left>',                           },
+  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '<C-b>', 'at': '^import\s\(type\s\)\?{\s\s}\sfrom ".*\%#"$', 'input': '<C-o>F}<Left>',                                            },
+  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '$',     'at': '$\%#',                                       'input': '{}<Left>',                                                 },
   \ ]
 
   "" ruby
@@ -2333,7 +2326,7 @@ if dein#tap('vim-sandwich')
   \   '__filetype__': 'javascript, typescript',
   \   'buns':     ['${', '}'],
   \   'input':    ['$'],
-  \   'filetype': ['javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'typescript.tsx'],
+  \   'filetype': ['javascript', 'javascriptreact', 'typescript', 'typescriptreact'],
   \ },
   \ {
   \   '__filetype__': 'ruby',
