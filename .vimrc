@@ -227,7 +227,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('dhruvasagar/vim-table-mode',       {'merged': 0})
   " call dein#add('dstein64/vim-startuptime',         {'merged': 0})
   " call dein#add('itchyny/vim-qfedit',               {'merged': 0})
-  " call dein#add('jsfaint/gen_tags.vim',             {'merged': 0})
   " call dein#add('kristijanhusak/vim-carbon-now-sh', {'merged': 0})
   " call dein#add('lambdalisue/vim-pager',            {'merged': 0})
   " call dein#add('liuchengxu/vim-which-key',         {'merged': 0})
@@ -239,6 +238,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('AndrewRadev/linediff.vim',         {'merged': 0})
   call dein#add('aiya000/aho-bakaup.vim',           {'merged': 0})
   call dein#add('glidenote/memolist.vim',           {'merged': 0})
+  call dein#add('jsfaint/gen_tags.vim',             {'merged': 0})
   call dein#add('kana/vim-niceblock',               {'merged': 0})
   call dein#add('lambdalisue/suda.vim',             {'merged': 0})
   call dein#add('lambdalisue/vim-manpager',         {'merged': 0})
@@ -1280,9 +1280,11 @@ let g:fixjson_fix_on_save = 0
 " }}}3
 
 " gen_tags {{{3
-let g:gen_tags#ctags_auto_gen = 1
-let g:gen_tags#ctags_opts     = '--excmd=number'
-let g:loaded_gentags#gtags    = 1
+if dein#tap('gen_tags.vim')
+  let g:gen_tags#ctags_auto_gen = 1
+  let g:gen_tags#ctags_opts     = '--excmd=number'
+  let g:loaded_gentags#gtags    = 1
+endif
 " }}}3
 
 " import-cost {{{3
