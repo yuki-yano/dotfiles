@@ -1713,7 +1713,7 @@ if dein#tap('fern.vim')
   let g:fern#drawer_width                         = 40
   let g:fern#renderer                             = 'nerdfont'
   let g:fern#renderer#nerdfont#padding            = '  '
-  let g:fern#smart_cursor                         = 'hide'
+  let g:fern#hide_cursor                          = 1
   let g:fern#mapping#fzf#disable_default_mappings = 1
   let g:Fern_mapping_fzf_file_sink                = function('s:fern_reveal')
   let g:Fern_mapping_fzf_dir_sink                 = function('s:fern_reveal')
