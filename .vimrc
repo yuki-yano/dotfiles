@@ -705,9 +705,9 @@ command! SyntaxHighlightToggle call <SID>syntax_highlight_toggle()
 
 " QuickfixToggle {{{2
 function! s:quickfix_toggle()
-  let l:_ = winnr('$')
+  let _ = winnr('$')
   cclose
-  if l:_ == winnr('$')
+  if _ == winnr('$')
     botright copen
     " call g:Set_quickfix_keymap()
   endif
@@ -719,9 +719,9 @@ nnoremap <silent> <Leader>q :<C-u>QuickfixToggle<CR>
 
 " ToggleLocationList {{{2
 function! s:location_list_toggle()
-  let l:_ = winnr('$')
+  let _ = winnr('$')
   lclose
-  if l:_ == winnr('$')
+  if _ == winnr('$')
     botright lopen
     " call g:Set_locationlist_keymap()
   endif
