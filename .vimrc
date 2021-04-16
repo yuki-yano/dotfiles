@@ -3246,17 +3246,23 @@ let g:quickrun_config = {
 \ },
 \ 'tsc' : {
 \   'command': 'tsc',
-\   'exec': ['%C --project . --noEmit --incremental --tsBuildInfoFile .git/.tsbuildinfo'],
-\   'outputter' : 'quickfix',
-\   'outputter/quickfix/errorformat' : '%+A %#%f %#(%l\,%c): %m,%C%m',
+\   'exec': ['yarn run --silent %C --project . --noEmit --incremental --tsBuildInfoFile .git/.tsbuildinfo 2>/dev/null'],
+\   'outputter': 'quickfix',
+\   'outputter/quickfix/errorformat': '%+A %#%f %#(%l\,%c): %m,%C%m',
+\ },
+\ 'eslint' : {
+\   'command': 'eslint',
+\   'exec': ['yarn run --silent %C --format unix --ext .ts,.tsx %a 2>/dev/null'],
+\   'outputter': 'quickfix',
+\   'outputter/quickfix/errorformat': '%f:%l:%c:%m,%-G%.%#',
 \ },
 \ 'yq' : {
 \   'exec': 'cat %s | yq eval --tojson',
 \ },
 \ 'yq-browser' : {
 \   'exec': 'cat %s | yq eval --tojson',
-\   'outputter' : 'browser',
-\   'outputter/browser/name' : tempname() . '.json',
+\   'outputter': 'browser',
+\   'outputter/browser/name': tempname() . '.json',
 \ },
 \ }
 
