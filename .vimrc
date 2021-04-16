@@ -2710,12 +2710,12 @@ if dein#tap('lightline.vim')
   endfunction
 
   function! Lightline_special_mode() abort
-    let l:special_mode = get(s:lightline_ft_to_mode_hash, &filetype, '')
-    let l:win = getwininfo(win_getid())[0]
-    return l:special_mode !=# '' ? l:special_mode :
+    let special_mode = get(s:lightline_ft_to_mode_hash, &filetype, '')
+    let win = getwininfo(win_getid())[0]
+    return special_mode !=# '' ? special_mode :
     \ Lightline_filetype() ==# '' ? '' :
-    \ l:win.loclist ? '[Location List] ' . get(w:, 'quickfix_title', ''):
-    \ l:win.quickfix ? '[QuickFix] ' . get(w:, 'quickfix_title', '') :
+    \ win.loclist ? '[Location List] ' . get(w:, 'quickfix_title', ''):
+    \ win.quickfix ? '[QuickFix] ' . get(w:, 'quickfix_title', '') :
     \ ''
   endfunction
 
@@ -2724,41 +2724,41 @@ if dein#tap('lightline.vim')
       return ''
     endif
 
-    let l:path = fnamemodify(expand('%'), ':p:.:h')
-    return l:path ==# '.' ? '' : l:path
+    let path = fnamemodify(expand('%'), ':p:.:h')
+    return path ==# '.' ? '' : path
 
-    let l:not_home_prefix = match(l:path, '^/') != -1 ? '/' : ''
-    let l:dirs            = split(l:path, '/')
-    let l:last_dir        = remove(l:dirs, -1)
-    call map(l:dirs, 'v:val[0]')
+    let not_home_prefix = match(path, '^/') != -1 ? '/' : ''
+    let dirs            = split(path, '/')
+    let last_dir        = remove(dirs, -1)
+    call map(dirs, 'v:val[0]')
 
-    return len(l:dirs) ? l:not_home_prefix . join(l:dirs, '/') . '/' . l:last_dir : l:last_dir
+    return len(dirs) ? not_home_prefix . join(dirs, '/') . '/' . last_dir : last_dir
   endfunction
 
   function! Lightline_filename() abort
-    let l:filename = fnamemodify(expand('%'), ':t')
+    let filename = fnamemodify(expand('%'), ':t')
 
     if count(s:lightline_ignore_filename_ft, &filetype)
       return ''
     endif
 
-    if l:filename ==# ''
-      let l:filename = '[No Name]'
+    if filename ==# ''
+      let filename = '[No Name]'
     endif
 
     if &modifiable && &modified
-      let l:filename = l:filename . ' [+]'
+      let filename = filename . ' [+]'
     endif
 
     if !&modifiable
-      let l:filename = l:filename . ' [X]'
+      let filename = filename . ' [X]'
     endif
 
-    return l:filename
+    return filename
   endfunction
 
   function! Lightline_modified_buffers() abort
-    let l:modified_background_buffers = filter(range(1, bufnr('$')),
+    let modified_background_buffers = filter(range(1, bufnr('$')),
     \ { _, bufnr -> bufexists(bufnr) && buflisted(bufnr) && getbufvar(bufnr, 'buftype') ==# '' && filereadable(expand('#' . bufnr . ':p')) && bufnr != bufnr('%') && getbufvar(bufnr, '&modified') == 1 }
     \ )
 
@@ -2766,8 +2766,8 @@ if dein#tap('lightline.vim')
       return ''
     endif
 
-    if len(l:modified_background_buffers) > 0
-      return '!' . len(l:modified_background_buffers)
+    if len(modified_background_buffers) > 0
+      return '!' . len(modified_background_buffers)
     else
       return ''
     endif
@@ -2862,6 +2862,7 @@ if dein#tap('lightline.vim')
   endfunction
 
   AutoCmd User CocDiagnosticChange call lightline#update()
+  AutoCmd VimEnter *               call vista#RunForNearestMethodOrFunction()
 endif
 " }}}3
 
