@@ -421,10 +421,10 @@ if has('nvim')
       return
     endif
     for winnr in range(1, winnr('$'))
-      let l:winid = win_getid(winnr)
-      let l:conf = nvim_win_get_config(winid)
-      if l:conf.focusable && !empty(l:conf.relative)
-        call win_gotoid(l:winid)
+      let winid = win_getid(winnr)
+      let conf = nvim_win_get_config(winid)
+      if conf.focusable && !empty(conf.relative)
+        call win_gotoid(winid)
         return
       endif
     endfor
@@ -593,6 +593,9 @@ endif
 if $TERM ==# 'screen'
   set t_Co=256
 endif
+
+"" Session
+set sessionoptions=buffers,tabpages,winsize
 
 "" Git Editor require neovim-remote
 if has('nvim')
