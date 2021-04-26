@@ -64,6 +64,9 @@
   autostash = true
   autosquash = true
 
+[alias]
+  basebranch = !"basename \"$(git symbolic-ref --short refs/remotes/origin/HEAD)\""
+
 [help]
   autocorrect = -1
 
