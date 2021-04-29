@@ -123,5 +123,15 @@
     "typescript.tsx",
     "typescriptreact",
     "yaml"
+  ],
+  "tsserver.enable": false,
+  "deno.enable": true,
+  "deno.lint": true,
+  "coc.source.file.trimSameExts": [],
+  "prettier.disableLanguage": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
   ]
 }
