@@ -1,0 +1,128 @@
+snippets:
+  - name: git status
+    keyword: gs
+    snippet: git status --short --branch
+  - name: git add
+    keyword: ga
+    snippet: git add {{file}}
+  - name: git add all
+    keyword: gaa
+    snippet: git add --all
+  - name: git commit
+    keyword: gci
+    snippet: git commit
+  - name: git commit message
+    keyword: gcim
+    snippet: git commit -m '{{commit_message}}'
+  - name: git commit fixup
+    keyword: gcif
+    snippet: git commit --fixup {{commit_id}}
+  - name: git diff
+    keyword: gd
+    snippet: git diff {{branch}}
+  - name: git diff file
+    keyword: gd
+    snippet: git diff -- {{file}}
+  - name: git diff branch file
+    keyword: gd
+    snippet: git diff {{branch}} -- {{file}}
+  - name: git diff 2 branch
+    keyword: gd
+    snippet: git diff {{branch1}} {{brahcn2}}
+  - name: git diff 2 branch file
+    keyword: gd
+    snippet: git diff {{branch1}} {{brahcn2}} -- {{file}}
+  - name: git diff cached
+    keyword: gdc
+    snippet: git diff --cached
+  - name: git diff cached file
+    keyword: gdc
+    snippet: git diff --cached -- {{file}}
+  - name: git checkout
+    keyword: gco
+    snippet: git checkout {{branch}}
+  - name: git checkout file
+    keyword: gcof
+    snippet: git checkout -- {{file}}
+  - name: git checkout branch file
+    keyword: gcof
+    snippet: git checkout {{branch}} -- {{file}}
+  - name: git checkout track
+    keyword: gcot
+    snippet: git checkout --track {{origin_branch}}
+  - name: git reset
+    keyword: gre
+    snippet: git reset {{branch}}
+  - name: git reset file
+    keyword: gre
+    snippet: git reset -- {{file}}
+  - name: git reset hard
+    keyword: gre
+    snippet: git reset --hard {{branch}}
+  - name: git stash
+    keyword: gst
+    snippet: git stash
+  - name: git stash list
+    keyword: gstl
+    snippet: git stash list
+  - name: git stash show {{stash}}
+    keyword: gsts
+    snippet: git stash show {{stash}}
+  - name: git stash apply
+    keyword: gsta
+    snippet: git stash apply {{stash}}
+  - name: git stash pop
+    keyword: gstp
+    snippet: git stash pop {{stash}}
+  - name: git stash drop
+    keyword: gstd
+    snippet: git stash drop {{stash}}
+  - name: git rebase squash
+    keyword: squash
+    snippet: git rebase --interactive --autosquash {{branch}}
+  - name: git rebase squash auto
+    keyword: squash
+    snippet: GIT_EDITOR=cat git rebase --interactive --autosquash {{branch}}
+  - name: git main branch
+    snippet: basename "$(git symbolic-ref --short refs/remotes/origin/HEAD)"
+
+  - name: tms
+    keyword: t
+    snippet: tms
+  - name: tmux swap pane
+    keyword: ts
+    snippet: tmux swap-pane -t
+
+  - name: "null"
+    keyword: "null"
+    snippet: ">/dev/null 2>&1"
+  - name: stdout to null
+    keyword: null1
+    snippet: ">/dev/null"
+  - name: stderr to null
+    keyword: null2
+    snippet: "2>/dev/null"
+
+  - name: pipe xargs
+    keyword: pipe_xargs
+    snippet: "| xargs -I{} {{command}} {}"
+  - name: pipe awk
+    keyword: pipe_awk
+    snippet: "| awk '{ print ${{column}} }'"
+
+  - name: disable desktop
+    keyword: disable_desktop
+    snippet: defaults write com.apple.finder CreateDesktop -boolean false; killall Finder
+  - name: enable desktop
+    keyword: enable_desktop
+    snippet: defaults write com.apple.finder CreateDesktop -boolean true; killall Finder
+
+completions:
+  - name: kill
+    patterns: 
+      - "^kill( -9)? $"
+    sourceCommand: "procs --color=always"
+    options:
+      --multi: true
+      --prompt: "'Kill Process> '"
+    callback: "awk '{print $1}'"

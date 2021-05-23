@@ -1,5 +1,0 @@
-#autoload
-
-typeset -g -A symbols=(
-  '(^tmux swap-pane -t $)' tmux_swap_pane
-)
