@@ -197,6 +197,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('kevinhwang91/nvim-hlslens', {'merged': 0})
     call dein#add('monaqa/dial.nvim',          {'merged': 0})
     call dein#add('phaazon/hop.nvim',          {'merged': 0})
+    call dein#add('windwp/nvim-ts-autotag',    {'merged': 0})
   endif
   " }}}3
 
@@ -2490,6 +2491,14 @@ let g:scratch_no_mappings = 1
 " let g:tcomment_maps = 0
 "
 " noremap <silent> <Leader>cc :TComment<CR>
+" }}}3
+
+" ts-autotag {{{3
+if dein#tap('nvim-ts-autotag')
+lua << EOF
+require('nvim-ts-autotag').setup()
+EOF
+endif
 " }}}3
 
 " trip {{{3
