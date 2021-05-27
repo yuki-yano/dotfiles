@@ -198,6 +198,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('monaqa/dial.nvim',          {'merged': 0})
     call dein#add('phaazon/hop.nvim',          {'merged': 0})
     call dein#add('windwp/nvim-ts-autotag',    {'merged': 0})
+    call dein#add('yuki-yano/zero.nvim',       {'merged': 0})
   endif
   " }}}3
 
@@ -2525,6 +2526,14 @@ if dein#tap('yankround.vim')
   nmap P <Plug>(yankround-P)
   nmap <silent> <expr> <C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "(ctrlp)"
   nmap <silent> <expr> <C-n> yankround#is_active() ? "\<Plug>(yankround-next)" : ""
+endif
+" }}}3
+
+" zero {{{3
+if dein#tap('zero.nvim')
+lua << EOF
+require('zero').setup()
+EOF
 endif
 " }}}3
 
