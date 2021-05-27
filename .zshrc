@@ -50,10 +50,10 @@ zinit ice lucid wait"0" from"gh-r" as"program" var"0.12.0" mv"rip -> ${ZPFX}/bin
 zinit light nivekuil/rip
 
 zinit ice lucid wait"0" depth"1" as"program" src"tms.plugin.zsh" pick"tms"
-zinit light yuki-ycino/tms
+zinit light yuki-yano/tms
 
 zinit ice lucid wait"0" depth"1" as"program" src"tmk.plugin.zsh" pick"tmk"
-zinit light yuki-ycino/tmk
+zinit light yuki-yano/tmk
 
 # fuzzy finder
 zinit ice lucid wait"!0" from"gh-r" as"program" mv"fzf -> ${ZPFX}/bin/fzf"
