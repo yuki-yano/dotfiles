@@ -34,7 +34,6 @@ install perl
 install source-highlight
 
 ## Service
-install ansible
 install asciinema
 install awscli
 install heroku/brew/heroku
