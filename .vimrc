@@ -574,6 +574,9 @@ set foldmethod=manual
 set viewoptions=cursor,folds
 set suffixesadd=.js,.ts,.rb
 
+"" sign
+set signcolumn=yes
+
 "" Diff
 AutoCmd InsertLeave * if &l:diff | diffupdate | endif
 
