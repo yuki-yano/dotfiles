@@ -226,6 +226,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
     " call dein#add('Xuyuanp/scrollbar.nvim',      {'merged': 0})
     call dein#add('dstein64/nvim-scrollview',    {'merged': 0})
     call dein#add('norcalli/nvim-colorizer.lua', {'merged': 0})
+    call dein#add('folke/todo-comments.nvim',    {'merged': 0})
   endif
   " }}}3
 
@@ -633,9 +634,6 @@ let g:loaded_netrw             = 1
 let g:loaded_netrwPlugin       = 1
 let g:loaded_netrwSettings     = 1
 let g:loaded_netrwFileHandlers = 1
-
-"" Highlight Annotation Comment
-AutoCmd WinEnter,BufRead,BufNew,Syntax * silent! call matchadd('Todo', '\(TODO\|FIXME\|REVIEW\|NOTE\|INFO\|REF\):')
 
 " }}}2
 
@@ -3063,6 +3061,16 @@ if dein#tap('smartnumber.vim')
 endif
 " }}}3
 
+" todo-comments {{{3
+if dein#tap('todo-comments.nvim')
+lua << EOF
+require("todo-comments").setup {
+  signs = false
+}
+EOF
+endif
+" }}}3
+
 " vista {{{3
 if dein#tap('vista.vim')
   let g:vista_default_executive = 'ctags'
@@ -3452,7 +3460,6 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight NonText      ctermfg=60   cte
 AutoCmd ColorScheme nord,onedark,iceberg highlight Identifier   ctermfg=10   ctermbg=NONE guifg=#C0CA8E guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight Search       ctermfg=68   ctermbg=232  guifg=NONE    guibg=#213F72
 AutoCmd ColorScheme nord,onedark,iceberg highlight SignColumn   ctermfg=0    ctermbg=NONE guifg=#3B4252 guibg=NONE
-AutoCmd ColorScheme nord,onedark,iceberg highlight Todo         ctermfg=229  ctermbg=NONE guifg=#FFFFAF guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight Visual       ctermfg=NONE ctermbg=23   guifg=NONE    guibg=#1D4647
 AutoCmd ColorScheme nord,onedark,iceberg highlight Folded       ctermfg=245  ctermbg=NONE guifg=#686f9a guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight DiffAdd      ctermfg=233  ctermbg=64   guifg=#C4C4C4 guibg=#456D4F
@@ -3474,7 +3481,6 @@ AutoCmd ColorScheme gruvbox-material highlight DiffText     ctermfg=NONE ctermbg
 AutoCmd ColorScheme gruvbox-material highlight Folded       ctermfg=245  ctermbg=NONE guifg=#686f9a guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight Search       ctermfg=68   ctermbg=232  guifg=NONE    guibg=#213F72
 AutoCmd ColorScheme gruvbox-material highlight SignColumn   ctermfg=0    ctermbg=NONE guifg=#32302f guibg=NONE
-AutoCmd ColorScheme gruvbox-material highlight Todo         ctermfg=229  ctermbg=NONE guifg=#FFFFAF guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight Visual       ctermfg=NONE ctermbg=23   guifg=NONE    guibg=#1D4647
 
 " Gina (Vital.Vim.Buffer.ANSI)
