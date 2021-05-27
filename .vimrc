@@ -1036,6 +1036,7 @@ if dein#tap('coc.nvim')
   \ 'coc-spell-checker',
   \ 'coc-sql',
   \ 'coc-stylelintplus',
+  \ 'coc-tabnine',
   \ 'coc-tsdetect',
   \ 'coc-tsserver',
   \ 'coc-vimlsp',
