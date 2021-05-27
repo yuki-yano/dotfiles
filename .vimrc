@@ -2160,7 +2160,7 @@ let g:grepper = {
 
 " hop {{{3
 if dein#tap('hop.nvim')
-  nnoremap <silent> S  :<C-u>HopWord<CR>
+  nnoremap <silent> S  :<C-u>HopChar1<CR>
   nnoremap <silent> ss :<C-u>HopWord<CR>
 endif
 " }}}3
