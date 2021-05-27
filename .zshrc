@@ -58,10 +58,13 @@ zinit ice lucid wait"0" depth"1" as"program" src"tmk.plugin.zsh" pick"tmk"
 zinit light yuki-yano/tmk
 
 # fuzzy finder
-zinit ice lucid wait"!0" from"gh-r" as"program" mv"fzf -> ${ZPFX}/bin/fzf"
-zinit light junegunn/fzf-bin
-zinit ice lucid wait"!0" depth"1" as"program" mv"bin/fzf-tmux -> ${ZPFX}/bin/fzf-tmux" src"shell/completion.zsh"
+zinit ice lucid wait"!0" depth"1" as"program" mv"fzf -> ${ZPFX}/bin/fzf" cp"man/man.1/fzf* -> $ZPFX/share/man/man1"
 zinit light junegunn/fzf
+
+zinit ice lucid wait'0' as"program"
+zinit snippet 'https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux'
+
+zinit snippet 'https://github.com/junegunn/fzf/blob/master/shell/completion.zsh'
 
 # Language Server
 zinit ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd64*" mv"*/efm-langserver -> ${ZPFX}/bin/efm-langserver"
