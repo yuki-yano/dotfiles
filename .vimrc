@@ -184,6 +184,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('haya14busa/vim-edgemotion',     {'merged': 0})
   call dein#add('hrsh7th/vim-eft',               {'merged': 0})
   call dein#add('junegunn/vim-easy-align',       {'merged': 0})
+  call dein#add('osyo-manga/vim-anzu',           {'merged': 0})
   call dein#add('osyo-manga/vim-jplus',          {'merged': 0})
   call dein#add('terryma/vim-expand-region',     {'merged': 0})
   call dein#add('thinca/vim-qfreplace',          {'merged': 0})
@@ -387,8 +388,6 @@ nnoremap x "_x
 " nnoremap ? ?\v
 cnoremap <expr> / empty(getcmdline()) <Bar><Bar> getcmdline() ==# '\v' ? '<C-u>\<' : getcmdline() ==# '\<' ? '\><Left><Left>' : '/'
 cnoremap <expr> ? empty(getcmdline()) <Bar><Bar> getcmdline() ==# '\v' ? '<C-u>\<' : getcmdline() ==# '\<' ? '\><Left><Left>' : '?'
-
-nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>
 
 "" tagjump
 nnoremap <silent> s<C-]> :<C-u>wincmd ]<CR>
@@ -1892,23 +1891,27 @@ endif
 " }}}3
 
 " hlslens & asterisk {{{3
-if dein#tap('nvim-hlslens') && dein#tap('vim-asterisk')
+if dein#tap('nvim-hlslens') && dein#tap('vim-asterisk') && dein#tap('vim-anzu')
   " let g:incsearch#magic = '\v'
 
   " map /  <Plug>(incsearch-forward)
   " map ?  <Plug>(incsearch-backward)
 
+  nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>:AnzuClearSearchStatus<CR>
+
   if has('nvim')
     lua require('hlslens').setup({auto_enable = true})
 
-    nnoremap <silent> n  :<C-u>execute('normal! ' . v:count1 . 'n')<CR>:lua require('hlslens').start()<CR>zzzv
-    nnoremap <silent> N  :<C-u>execute('normal! ' . v:count1 . 'N')<CR>:lua require('hlslens').start()<CR>zzzv
-    map      <silent> *  <Plug>(asterisk-z*):lua require('hlslens').start()<CR>
-    map      <silent> #  <Plug>(asterisk-z#):lua require('hlslens').start()<CR>
-    map      <silent> g* <Plug>(asterisk-gz*):lua require('hlslens').start()<CR>
-    map      <silent> g# <Plug>(asterisk-gz#):lua require('hlslens').start()<CR>
-
-    nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>:lua require('hlslens').disable()<CR>
+    nmap <silent> n  :<C-u>execute('normal! ' . v:count1 . 'n')<CR>:lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)zzzv
+    nmap <silent> N  :<C-u>execute('normal! ' . v:count1 . 'N')<CR>:lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)zzzv
+    nmap <silent> *  <Plug>(asterisk-z*):lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
+    xmap <silent> *  <Plug>(asterisk-z*):lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
+    nmap <silent> #  <Plug>(asterisk-z#):lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
+    xmap <silent> #  <Plug>(asterisk-z#):lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
+    nmap <silent> g* <Plug>(asterisk-gz*):lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
+    xmap <silent> g* <Plug>(asterisk-gz*):lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
+    nmap <silent> g# <Plug>(asterisk-gz#):lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
+    xmap <silent> g# <Plug>(asterisk-gz#):lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
   endif
 endif
 " }}}3
@@ -2634,7 +2637,7 @@ if dein#tap('lightline.vim')
   \   'left': [
   \     ['mode', 'spell', 'paste'],
   \     ['filepath', 'filename', 'modified_buffers'],
-  \     ['special_mode', 'vm_regions'],
+  \     ['special_mode', 'anzu', 'vm_regions'],
   \    ],
   \   'right': [
   \     ['lineinfo'],
@@ -2670,13 +2673,15 @@ if dein#tap('lightline.vim')
   \   'fileformat':       'Lightline_fileformat',
   \   'special_mode':     'Lightline_special_mode',
   \   'coc_status':       'Lightline_coc_status',
+  \   'anzu':             'anzu#search_status',
   \   'vm_regions':       'Lightline_vm_regions',
   \ },
   \ 'tab_component_function': {
   \   'tabwinnum': 'Lightline_tab_win_num',
   \ },
   \ 'component_visible_condition': {
-  \   'vm_regions':   "%{Lightline_vm_regions() !=# ''}",
+  \   'anzu':       "%{anzu#search_status !=# ''}",
+  \   'vm_regions': "%{Lightline_vm_regions() !=# ''}",
   \ },
   \ 'component_function_visible_condition': {
   \   'spell': '&spell',
@@ -2791,6 +2796,7 @@ if dein#tap('lightline.vim')
     let special_mode = get(s:lightline_ft_to_mode_hash, &filetype, '')
     let win = getwininfo(win_getid())[0]
     return special_mode !=# '' ? special_mode :
+    \ anzu#search_status() !=# '' ? 'Anzu' :
     \ Lightline_filetype() ==# '' ? '' :
     \ win.loclist ? '[Location List] ' . get(w:, 'quickfix_title', ''):
     \ win.quickfix ? '[QuickFix] ' . get(w:, 'quickfix_title', '') :
@@ -3567,9 +3573,10 @@ AutoCmd ColorScheme gruvbox-material highlight link FernGitStatusIgnored Comment
 AutoCmd ColorScheme gruvbox-material highlight GitSignsChange  ctermfg=214  ctermbg=NONE guifg=#FFAF60 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight link GitSignsCurrentLineBlame Comment
 
-AutoCmd ColorScheme gruvbox-material highlight HlSearchLensCur         ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#213F72
+AutoCmd ColorScheme gruvbox-material highlight HlSearchNear            ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#175655
 AutoCmd ColorScheme gruvbox-material highlight HlSearchLens            ctermfg=68   ctermbg=232                       guifg=#889eb5 guibg=#283642
-AutoCmd ColorScheme gruvbox-material highlight HlSearchCur             ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#213F72
+AutoCmd ColorScheme gruvbox-material highlight HlSearchLensNear        ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#213F72
+AutoCmd ColorScheme gruvbox-material highlight HlSearchFloat           ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#213F72
 
 AutoCmd ColorScheme gruvbox-material highlight ScrollView              ctermbg=159                                                  guibg=#D0D0D0
 
