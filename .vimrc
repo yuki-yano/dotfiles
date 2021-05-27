@@ -3479,6 +3479,7 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight Identifier   ctermfg=10   cte
 AutoCmd ColorScheme nord,onedark,iceberg highlight Search       ctermfg=68   ctermbg=232  guifg=NONE    guibg=#213F72
 AutoCmd ColorScheme nord,onedark,iceberg highlight SignColumn   ctermfg=0    ctermbg=NONE guifg=#3B4252 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight Visual       ctermfg=NONE ctermbg=23   guifg=NONE    guibg=#1D4647
+AutoCmd ColorScheme nord,onedark,iceberg highlight Incsearch    ctermfg=68   ctermbg=232  guifg=NONE    guibg=#175655
 AutoCmd ColorScheme nord,onedark,iceberg highlight Folded       ctermfg=245  ctermbg=NONE guifg=#686f9a guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight DiffAdd      ctermfg=233  ctermbg=64   guifg=#C4C4C4 guibg=#456D4F
 AutoCmd ColorScheme nord,onedark,iceberg highlight DiffDelete   ctermfg=233  ctermbg=95   guifg=#C4C4C4 guibg=#593535
@@ -3585,6 +3586,7 @@ AutoCmd ColorScheme gruvbox-material highlight BrightestHighlight      ctermfg=N
 AutoCmd ColorScheme gruvbox-material highlight EasyMotionMoveHLDefault ctermfg=9    ctermbg=236  cterm=underline,bold guifg=#E98989 guibg=#303030 gui=underline,bold
 AutoCmd ColorScheme gruvbox-material highlight EftChar                 ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#E27878 guibg=NONE    gui=underline,bold
 AutoCmd ColorScheme gruvbox-material highlight EftSubChar              ctermfg=68   ctermbg=NONE cterm=underline,bold guifg=#5F87D7 guibg=NONE    gui=underline,bold
+AutoCmd ColorScheme gruvbox-material highlight ExchangeRegion          ctermfg=68   ctermbg=232  cterm=underline,bold guifg=NONE    guibg=#2E3F29 gui=underline,bold
 AutoCmd ColorScheme gruvbox-material highlight ExtraWhiteSpace         ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
 AutoCmd ColorScheme gruvbox-material highlight FloatermNF              ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#161821
 AutoCmd ColorScheme gruvbox-material highlight GitRebase               ctermfg=NONE ctermbg=234                       guifg=NONE    guibg=#1F1F20
