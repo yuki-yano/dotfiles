@@ -538,12 +538,6 @@ function git_auto_save() {
 
 # }}}
 
-# Load local {{{
-
-[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
-
-# }}}
-
 # Loading fzf {{{
 
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
@@ -577,5 +571,11 @@ fi
 ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(accept-line)
 
 export ENABLE_WAKATIME=1
+
+# Load local {{{
+
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+# }}}
 
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:
