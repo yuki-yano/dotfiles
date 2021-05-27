@@ -3315,6 +3315,11 @@ let g:quickrun_config = {
 \   'outputter/buffer/split'  : ':botright 15split',
 \   'outputter/buffer/close_on_empty' : 1,
 \ },
+\ 'deno' : {
+\   'command': 'deno',
+\   'cmdopt': '--no-check --allow-all --unstable',
+\   'exec': ['%c run %o %s'],
+\ },
 \ 'tsc' : {
 \   'command': 'tsc',
 \   'exec': ['yarn run --silent %C --project . --noEmit --incremental --tsBuildInfoFile .git/.tsbuildinfo 2>/dev/null'],
