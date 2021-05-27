@@ -361,7 +361,8 @@ imap <C-h> <BS>
 cmap <C-h> <BS>
 
 "" Buffer
-nnoremap <C-q> <C-^>
+nnoremap <C-q>     <C-^>
+nnoremap <Leader>R :<C-u>e!<CR>
 
 "" Yank
 nnoremap Y y$
@@ -462,7 +463,6 @@ nnoremap <Down>  :resize +1<CR>
 nnoremap Q @q
 
 "" regexp
-nnoremap <Leader>R "syiw:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
 nnoremap <Leader>r :%s/\v//g<Left><Left><Left>
 xnoremap <Leader>r "sy:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
 
@@ -981,7 +981,6 @@ command! -nargs=+ BulkAlterCommand call <SID>bulk_alter_command(<f-args>)
 
 if dein#tap('vim-altercmd')
   call altercmd#load()
-  BulkAlterCommand ee       e!
   BulkAlterCommand co[de]   VSCode
   BulkAlterCommand fo[rk]   !fork
 endif
