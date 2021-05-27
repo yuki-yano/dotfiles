@@ -27,10 +27,6 @@ zinit light woefe/git-prompt.zsh
 zinit light yukiycino-dotfiles/zsh-show-buffer-stack
 # }}}
 
-# zsh-autosuggestions {{{
-ZSH_AUTOSUGGEST_USE_ASYNC=1
-# }}}
-
 # async loading {{{
 
 # PROMPT
@@ -77,6 +73,10 @@ zinit light yukiycino-dotfiles/fancy-ctrl-z
 zinit ice lucid wait"0"
 zinit snippet 'https://github.com/knu/zsh-git-escape-magic/blob/master/git-escape-magic'
 
+# }}}
+
+# zsh-autosuggestions {{{
+ZSH_AUTOSUGGEST_USE_ASYNC=1
 # }}}
 
 # fast-syntax-highlighting {{{
