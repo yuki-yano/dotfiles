@@ -587,7 +587,6 @@ set undodir=~/.cache/vim/undo/
 "" Swap
 set swapfile
 set directory=~/.cache/vim/swap/
-AutoCmd SwapExists * let v:swapchoice = 'o'
 
 "" Term
 set shell=zsh
