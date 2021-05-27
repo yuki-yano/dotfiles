@@ -135,7 +135,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " textobj & operator {{{3
-  call dein#add('machakann/vim-sandwich', {'merged': 0})
+  call dein#add('machakann/vim-sandwich', {'merged': 0}) " ib, ab, is, as
   call dein#add('machakann/vim-swap',     {'merged': 0}) " g< g> i, a,
 
   call dein#add('kana/vim-textobj-user',  {'merged': 0})
