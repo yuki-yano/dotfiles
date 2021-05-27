@@ -94,6 +94,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
     " call dein#add('APZelos/blamer.nvim',     {'merged': 0})
     " call dein#add('f-person/git-blame.nvim', {'merged': 0})
     " call dein#add('rhysd/git-messenger.vim', {'merged': 0})
+    call dein#add('lewis6991/gitsigns.nvim', {'merged': 0})
   endif
   " }}}3
 
@@ -1018,7 +1019,6 @@ if dein#tap('coc.nvim')
   \ 'coc-deno',
   \ 'coc-eslint',
   \ 'coc-explorer',
-  \ 'coc-git',
   \ 'coc-jest',
   \ 'coc-json',
   \ 'coc-lists',
@@ -1077,8 +1077,8 @@ if dein#tap('coc.nvim')
   " nnoremap <Leader>e :<C-u>CocCommand explorer<CR>
   " nnoremap <Leader>E :<C-u>CocCommand explorer --reveal expand('%')<CR>
 
-  nmap <silent> gp <Plug>(coc-git-prevchunk)
-  nmap <silent> gn <Plug>(coc-git-nextchunk)
+  " nmap <silent> gp <Plug>(coc-git-prevchunk)
+  " nmap <silent> gn <Plug>(coc-git-nextchunk)
 
   function! s:organize_import_and_eslint() abort
     augroup eslint_with_organize_import
@@ -1668,6 +1668,30 @@ BulkAlterCommand gsl GitSessionLoad
 BulkAlterCommand gsd GitSessionDelete
 
 let g:gitsessions_disable_auto_load = 1
+" }}}3
+
+" gitsigns {{{3
+if dein#tap('gitsigns.nvim')
+  nnoremap <silent> gp :<C-u>lua require('gitsigns').prev_hunk()<CR>
+  nnoremap <silent> gn :<C-u>lua require('gitsigns').next_hunk()<CR>
+
+lua <<EOF
+require('gitsigns').setup {
+  signs = {
+    add          = {hl = 'GitSignsAdd'   , text = '+', numhl='GitSignsAddNr'   , linehl='GitSignsAddLn'   },
+    change       = {hl = 'GitSignsChange', text = '~', numhl='GitSignsChangeNr', linehl='GitSignsChangeLn'},
+    delete       = {hl = 'GitSignsDelete', text = '-', numhl='GitSignsDeleteNr', linehl='GitSignsDeleteLn'},
+    topdelete    = {hl = 'GitSignsDelete', text = '‾', numhl='GitSignsDeleteNr', linehl='GitSignsDeleteLn'},
+    changedelete = {hl = 'GitSignsChange', text = '~', numhl='GitSignsChangeNr', linehl='GitSignsChangeLn'},
+  },
+  keymaps = {
+    noremap = false,
+    buffer  = false,
+  },
+  current_line_blame = true,
+}
+EOF
+endif
 " }}}3
 
 " }}}2
@@ -3539,6 +3563,9 @@ AutoCmd ColorScheme gruvbox-material highlight FernGitStatusIndex      ctermfg=2
 AutoCmd ColorScheme gruvbox-material highlight FernGitStatusUnmerged   ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight FernGitStatusUntracked  ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight link FernGitStatusIgnored Comment
+
+AutoCmd ColorScheme gruvbox-material highlight GitSignsChange  ctermfg=214  ctermbg=NONE guifg=#FFAF60 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight link GitSignsCurrentLineBlame Comment
 
 AutoCmd ColorScheme gruvbox-material highlight HlSearchLensCur         ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#213F72
 AutoCmd ColorScheme gruvbox-material highlight HlSearchLens            ctermfg=68   ctermbg=232                       guifg=#889eb5 guibg=#283642
