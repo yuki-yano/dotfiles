@@ -1463,6 +1463,7 @@ let $FZF_DEFAULT_OPTS = '--color=bg+:#1d2021,bg:#1d2021,spinner:#d8a657,hl:#a9b6
 
 " fzf-preview {{{3
 " let g:fzf_preview_rpc_debug = 1
+let g:fzf_preview_filelist_command    = 'fd --hidden --exclude .git'
 let g:fzf_preview_git_files_command   = 'git ls-files --exclude-standard | while read line; do if [[ ! -L $line ]] && [[ -f $line ]]; then echo $line; fi; done'
 let g:fzf_preview_grep_cmd            = 'rg --line-number --no-heading --color=never --sort=path'
 let g:fzf_preview_mru_limit           = 5000
