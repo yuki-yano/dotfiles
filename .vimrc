@@ -1472,10 +1472,10 @@ let g:fzf_preview_use_dev_icons       = 1
 let g:fzf_preview_default_fzf_options = {
 \ '--reverse': v:true,
 \ '--preview-window': 'wrap',
-\ '--exact': v:true,
-\ '--no-sort': v:true,
+\ '--bind': 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,?:toggle-preview,ctrl-n:down,ctrl-p:up,ctrl-j:next-history,ctrl-k:previous-history'
 \ }
 let $FZF_PREVIEW_PREVIEW_BAT_THEME  = 'gruvbox-dark'
+let g:fzf_preview_history_dir = '~/.fzf'
 
 nnoremap <fzf-p> <Nop>
 xnoremap <fzf-p> <Nop>
@@ -1484,30 +1484,31 @@ xmap     ;       <fzf-p>
 nnoremap ;;      ;
 xnoremap ;;      ;
 
-nnoremap <silent> <fzf-p>r     :<C-u>FzfPreviewFromResourcesRpc buffer project_mru<CR>
-nnoremap <silent> <fzf-p>w     :<C-u>FzfPreviewProjectMrwFilesRpc<CR>
-nnoremap <silent> <fzf-p>a     :<C-u>FzfPreviewFromResourcesRpc project_mru git<CR>
-nnoremap <silent> <fzf-p>s     :<C-u>FzfPreviewGitStatusRpc<CR>
+nnoremap <silent> <fzf-p>r     :<C-u>CocCommand fzf-preview.FromResources --experimental-fast buffer project_mru<CR>
+nnoremap <silent> <fzf-p>w     :<C-u>FzfPreviewProjectMrwFilesRpc --experimental-fast<CR>
+nnoremap <silent> <fzf-p>a     :<C-u>FzfPreviewFromResourcesRpc --experimental-fast project_mru git<CR>
+nnoremap <silent> <fzf-p>s     :<C-u>FzfPreviewGitStatusRpc --experimental-fast<CR>
 nnoremap <silent> <fzf-p>gg    :<C-u>FzfPreviewGitActionsRpc<CR>
 nnoremap <silent> <fzf-p>b     :<C-u>FzfPreviewBuffersRpc<CR>
-nnoremap <silent> <fzf-p>B     :<C-u>FzfPreviewAllBuffersRpc<CR>
-nnoremap <silent> <fzf-p><C-o> :<C-u>FzfPreviewJumpsRpc<CR>
+nnoremap <silent> <fzf-p>B     :<C-u>FzfPreviewAllBuffersRpc --experimental-fast<CR>
+nnoremap <silent> <fzf-p><C-o> :<C-u>FzfPreviewJumpsRpc --experimental-fast<CR>
 nnoremap <silent> <fzf-p>g;    :<C-u>FzfPreviewChangesRpc<CR>
 nnoremap <silent> <fzf-p>/     :<C-u>FzfPreviewLinesRpc --resume --add-fzf-arg=--no-sort<CR>
 nnoremap <silent> <fzf-p>*     :<C-u>FzfPreviewLinesRpc --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
 xnoremap <silent> <fzf-p>*     "sy:FzfPreviewLinesRpc --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=substitute(@s, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
 nnoremap <silent> <fzf-p>n     :<C-u>FzfPreviewLinesRpc --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=substitute(@/, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
 nnoremap <silent> <fzf-p>?     :<C-u>FzfPreviewBufferLinesRpc --resume --add-fzf-arg=--no-sort<CR>
-nnoremap <silent> <fzf-p>q     :<C-u>FzfPreviewQuickFixRpc<CR>
-nnoremap <silent> <fzf-p>l     :<C-u>FzfPreviewLocationListRpc<CR>
-nnoremap <silent> <fzf-p>:     :<C-u>FzfPreviewCommandPaletteRpc<CR>
-nnoremap <silent> <fzf-p>m     :<C-u>FzfPreviewBookmarksRpc --resume<CR>
-nnoremap <silent> <fzf-p><C-]> :<C-u>FzfPreviewVistaCtagsRpc --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
-nnoremap <silent> <fzf-p>o     :<C-u>FzfPreviewVistaBufferCtagsRpc<CR>
+nnoremap <silent> <fzf-p>q     :<C-u>FzfPreviewQuickFixRpc --experimental-fast<CR>
+nnoremap <silent> <fzf-p>l     :<C-u>FzfPreviewLocationListRpc --experimental-fast<CR>
+nnoremap <silent> <fzf-p>:     :<C-u>FzfPreviewCommandPaletteRpc --experimental-fast<CR>
+nnoremap <silent> <fzf-p>m     :<C-u>FzfPreviewBookmarksRpc --resume --experimental-fast<CR>
+nnoremap <silent> <fzf-p><C-]> :<C-u>FzfPreviewVistaCtagsRpc --experimental-fast --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap <silent> <fzf-p>o     :<C-u>FzfPreviewVistaBufferCtagsRpc --experimental-fast<CR>
 
-nnoremap          <fzf-p>f     :<C-u>CocCommand fzf-preview.ProjectGrep<Space>
-xnoremap          <fzf-p>f     "sy:CocCommand fzf-preview.ProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-nnoremap <silent> <fzf-p>p     :<C-u>CocCommand fzf-preview.Yankround<CR>
+nnoremap          <fzf-p>f     :<C-u>CocCommand fzf-preview.ProjectGrep --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>
+xnoremap          <fzf-p>f     "sy:CocCommand fzf-preview.ProjectGrep --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+nnoremap <silent> <fzf-p>F     :<C-u>CocCommand fzf-preview.ProjectGrepRecall --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort --resume<CR>
+nnoremap <silent> <fzf-p>p     :<C-u>CocCommand fzf-preview.Yankround --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
 
 nnoremap <silent> <dev>q  :<C-u>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
 nnoremap <silent> <dev>Q  :<C-u>CocCommand fzf-preview.CocDiagnostics<CR>
