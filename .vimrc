@@ -1475,9 +1475,12 @@ let g:fzf_preview_default_fzf_options = {
 \ }
 let $FZF_PREVIEW_PREVIEW_BAT_THEME  = 'gruvbox-dark'
 
-noremap <fzf-p> <Nop>
-map     ;       <fzf-p>
-noremap ;;      ;
+nnoremap <fzf-p> <Nop>
+xnoremap <fzf-p> <Nop>
+nmap     ;       <fzf-p>
+xmap     ;       <fzf-p>
+nnoremap ;;      ;
+xnoremap ;;      ;
 
 nnoremap <silent> <fzf-p>r     :<C-u>FzfPreviewFromResourcesRpc buffer project_mru<CR>
 nnoremap <silent> <fzf-p>w     :<C-u>FzfPreviewProjectMrwFilesRpc<CR>
@@ -1600,7 +1603,7 @@ AutoCmd FileType fzf let b:highlight_cursor = 0
 
 " telescope {{{3
 if dein#tap('telescope.nvim')
-  nnoremap <silent> (ctrlp) <cmd>lua require'telescope.builtin'.git_files{}<CR>
+  nnoremap <silent> (ctrlp) :<C-u>lua require'telescope.builtin'.git_files{}<CR>
 endif
 " }}}3
 
@@ -1832,10 +1835,13 @@ xmap a=l <Plug>(visual-Rhs)
 
 " operator-convert-case {{{3
 nmap cy <Plug>(operator-convert-case-loop)
+xmap cy <Plug>(operator-convert-case-loop)
 " }}}3
 
 " operator-replace {{{3
-map _ <Plug>(operator-replace)
+nmap _ <Plug>(operator-replace)
+xmap _ <Plug>(operator-replace)
+omap _ <Plug>(operator-replace)
 " }}}3
 
 " swap {{{3
@@ -1929,8 +1935,8 @@ nmap <C-f> <Plug>(backandforward-forward)
 let g:bookmark_no_default_key_mappings = 1
 let g:bookmark_save_per_working_dir    = 1
 
-noremap <bookmark> <Nop>
-map     M          <bookmark>
+nnoremap <bookmark> <Nop>
+nmap     M          <bookmark>
 
 nnoremap <silent> <bookmark>m :<C-u>BookmarkToggle<CR>
 nnoremap <silent> <bookmark>i :<C-u>BookmarkAnnotate<CR>
@@ -2151,6 +2157,8 @@ nmap <silent> <Leader>j <Plug>(edgemotion-j)
 nmap <silent> <Leader>k <Plug>(edgemotion-k)
 xmap <silent> <Leader>j <Plug>(edgemotion-j)
 xmap <silent> <Leader>k <Plug>(edgemotion-k)
+omap <silent> <Leader>j <Plug>(edgemotion-j)
+omap <silent> <Leader>k <Plug>(edgemotion-k)
 " }}}3
 
 " grepper {{{3
