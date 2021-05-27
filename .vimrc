@@ -883,10 +883,7 @@ AutoCmd FileType zsh             setlocal expandtab   shiftwidth=2 softtabstop=2
 AutoCmd FileType javascript      setlocal foldmethod=syntax foldlevel=100
 AutoCmd FileType typescript      setlocal foldmethod=syntax foldlevel=100
 AutoCmd FileType typescriptreact setlocal foldmethod=syntax foldlevel=100
-AutoCmd FileType vue             setlocal foldmethod=syntax foldlevel=100
 AutoCmd FileType ruby            setlocal foldmethod=syntax foldlevel=100
-AutoCmd FileType python          setlocal foldmethod=syntax foldlevel=100
-AutoCmd FileType go              setlocal foldmethod=syntax foldlevel=100
 " }}}3
 
 " iskeyword {{{3
