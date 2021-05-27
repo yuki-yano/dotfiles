@@ -11,8 +11,6 @@
   "snippets.loadFromExtensions": false,
   "snippets.textmateSnippetsRoots": ["~/.vsnip"],
 
-  "codeLens.enable": true,
-
   "diagnostic.checkCurrentLine": true,
   "diagnostic.messageDelay": 0,
   "diagnostic.errorSign": "",
