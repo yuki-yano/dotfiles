@@ -525,7 +525,7 @@ function env_rehash() {
 }
 
 # Automatically save the current git state to reflog
-add-zsh-hook precmd git_auto_save
+add-zsh-hook preexec git_auto_save
 
 function git_auto_save() {
   if [[ -d .git ]] && [[ -f .git/auto-save ]] && [[ $(find .git/auto-save -mmin -$((60)) | wc -l) -eq 0 ]]; then
