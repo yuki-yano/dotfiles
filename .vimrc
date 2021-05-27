@@ -1019,6 +1019,7 @@ if dein#tap('coc.nvim')
   \ 'coc-deno',
   \ 'coc-eslint',
   \ 'coc-explorer',
+  \ 'coc-go',
   \ 'coc-jest',
   \ 'coc-json',
   \ 'coc-lists',
