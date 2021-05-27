@@ -12,7 +12,7 @@
 !/.config/alacritty/
 !/.config/bat/
 !/.config/efm-langserver
-!/.config/fzf-preview.zsh
+!/.config/zeno
 !/.config/karabiner
 /.config/karabiner/automatic_backups
 !/.config/nvim

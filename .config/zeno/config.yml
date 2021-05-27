@@ -85,6 +85,9 @@ snippets:
     snippet: GIT_EDITOR=cat git rebase --interactive --autosquash {{branch}}
   - name: git main branch
     snippet: basename "$(git symbolic-ref --short refs/remotes/origin/HEAD)"
+  - name: git tower
+    keyword: gitt
+    snippet: gittower .
 
   - name: tms
     keyword: t
@@ -96,12 +99,15 @@ snippets:
   - name: "null"
     keyword: "null"
     snippet: ">/dev/null 2>&1"
+    enableMiddleOfLine: true
   - name: stdout to null
     keyword: null1
     snippet: ">/dev/null"
+    enableMiddleOfLine: true
   - name: stderr to null
     keyword: null2
     snippet: "2>/dev/null"
+    enableMiddleOfLine: true
 
   - name: pipe xargs
     keyword: pipe_xargs

@@ -1,26 +1,3 @@
-# local fzf-preview.zsh initialize {{{
-
-export FZF_PREVIEW_DISABLE_DEFAULT_BIND=1
-export FZF_TMUX_DISABLED=1
-
-if [[ -f ~/repos/github.com/yuki-ycino/fzf-preview.zsh/fzf-preview.zsh ]]; then
-  source ~/repos/github.com/yuki-ycino/fzf-preview.zsh/fzf-preview.zsh
-fi
-
-function fzf-preview-settings() {
-  bindkey '^ '   fzf-snippet-selection
-  bindkey ' '    fzf-auto-snippet-and-space
-  bindkey '^x '  fzf-force-insert-space
-  bindkey '^x^ ' fzf-force-insert-space
-  bindkey '^m'   fzf-auto-snippet-and-accept-line
-  # bindkey '^[f'  fzf-snippet-next-placeholder
-  bindkey '^i'   fzf-or-normal-completion
-  bindkey '^r'   fzf-history-selection
-  bindkey '^x^s' fzf-snippet-selection
-}
-
-# }}}
-
 # zinit {{{
 if [[ ! -d $ZPLG_HOME/bin ]]; then
   if whence git > /dev/null; then
@@ -48,7 +25,6 @@ zinit ice lucid
 zinit light woefe/git-prompt.zsh
 
 zinit light yukiycino-dotfiles/zsh-show-buffer-stack
-# zinit light yuki-ycino/fzf-preview.zsh
 # }}}
 
 # zsh-autosuggestions {{{
@@ -593,12 +569,7 @@ fi
 
 # }}}
 
-if whence fzf-preview > /dev/null; then
-  add-zsh-hook precmd fzf-preview-settings
-
-  ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(accept-line fzf-auto-snippet fzf-snippet-selection fzf-auto-snippet-and-space fzf-auto-snippet-and-accept-line)
-  export FZF_PREVIEW_GITHUB_USER=yuki-ycino
-fi
+ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(accept-line)
 
 export ENABLE_WAKATIME=1
 
