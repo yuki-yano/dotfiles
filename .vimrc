@@ -735,7 +735,7 @@ function! s:location_list_toggle()
 endfunction
 
 command! LocationListToggle call <SID>location_list_toggle()
-nnoremap <silent> <Leader><Leader>q :<C-u>LocationListToggle<CR>
+nnoremap <silent> <Leader>l :<C-u>LocationListToggle<CR>
 " }}}2
 
 " HelpEdit & HelpView {{{2
