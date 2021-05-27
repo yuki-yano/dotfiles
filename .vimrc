@@ -327,18 +327,20 @@ command! -nargs=* AutoCmd autocmd vimrc <args>
 
 " Mappings {{{2
 
-"---------------------------------------------------------------------------|
-" Commands \ Modes | Normal | Insert | Command | Visual | Select | Operator |
-" map  / noremap   |    @   |   -    |    -    |   @    |   @    |    @     |
-" nmap / nnoremap  |    @   |   -    |    -    |   -    |   -    |    -     |
-" vmap / vnoremap  |    -   |   -    |    -    |   @    |   @    |    -     |
-" omap / onoremap  |    -   |   -    |    -    |   -    |   -    |    @     |
-" xmap / xnoremap  |    -   |   -    |    -    |   @    |   -    |    -     |
-" smap / snoremap  |    -   |   -    |    -    |   -    |   @    |    -     |
-" map! / noremap!  |    -   |   @    |    @    |   -    |   -    |    -     |
-" imap / inoremap  |    -   |   @    |    -    |   -    |   -    |    -     |
-" cmap / cnoremap  |    -   |   -    |    @    |   -    |   -    |    -     |
-"---------------------------------------------------------------------------"
+"-------------------------------------------------------------------------------------------|
+"  Modes     | Normal | Insert | Command | Visual | Select | Operator | Terminal | Lang-Arg |
+" [nore]map  |    @   |   -    |    -    |   @    |   @    |    @     |    -     |    -     |
+" n[nore]map |    @   |   -    |    -    |   -    |   -    |    -     |    -     |    -     |
+" n[orem]ap! |    -   |   @    |    @    |   -    |   -    |    -     |    -     |    -     |
+" i[nore]map |    -   |   @    |    -    |   -    |   -    |    -     |    -     |    -     |
+" c[nore]map |    -   |   -    |    @    |   -    |   -    |    -     |    -     |    -     |
+" v[nore]map |    -   |   -    |    -    |   @    |   @    |    -     |    -     |    -     |
+" x[nore]map |    -   |   -    |    -    |   @    |   -    |    -     |    -     |    -     |
+" s[nore]map |    -   |   -    |    -    |   -    |   @    |    -     |    -     |    -     |
+" o[nore]map |    -   |   -    |    -    |   -    |   -    |    @     |    -     |    -     |
+" t[nore]map |    -   |   -    |    -    |   -    |   -    |    -     |    @     |    -     |
+" l[nore]map |    -   |   @    |    @    |   -    |   -    |    -     |    -     |    @     |
+"-------------------------------------------------------------------------------------------"
 
 "" Leader
 let g:mapleader = "\<Space>"
