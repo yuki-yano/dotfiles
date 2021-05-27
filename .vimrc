@@ -1453,6 +1453,7 @@ let g:coc_fzf_preview = 'right'
 let g:coc_fzf_opts    = ['--layout=reverse']
 let $BAT_THEME        = 'gruvbox-dark'
 let $BAT_STYLE        = 'plain'
+" let g:fzf_history_dir = '~/.local/share/fzf-history'
 
 " Nord
 " let $FZF_DEFAULT_OPTS = '--color=hl:#81A1C1,hl+:#81A1C1,info:#EACB8A,prompt:#81A1C1,pointer:#B48DAC,marker:#A3BE8B,spinner:#B48DAC,header:#A3BE8B'
