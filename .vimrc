@@ -206,16 +206,17 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('Yggdroot/indentLine',            {'merged': 0})
   " call dein#add('andymass/vim-matchup',           {'merged': 0})
   " call dein#add('mhinz/vim-startify',             {'merged': 0})
+  " call dein#add('mopp/smartnumber.vim',           {'merged': 0})
   " call dein#add('ntpeters/vim-better-whitespace', {'merged': 0})
+  " call dein#add('ronakg/quickr-preview.vim',      {'merged': 0})
   " call dein#add('wellle/context.vim',             {'merged': 0})
   " call dein#add('yuttie/comfortable-motion.vim',  {'merged': 0})
   call dein#add('itchyny/lightline.vim',          {'merged': 0})
+  call dein#add('kevinhwang91/nvim-bqf',          {'merged': 0})
   call dein#add('lambdalisue/readablefold.vim',   {'merged': 0})
   call dein#add('luochen1990/rainbow',            {'merged': 0})
   call dein#add('machakann/vim-highlightedundo',  {'merged': 0})
   call dein#add('machakann/vim-highlightedyank',  {'merged': 0})
-  call dein#add('mopp/smartnumber.vim',           {'merged': 0})
-  call dein#add('ronakg/quickr-preview.vim',      {'merged': 0})
   call dein#add('ryanoasis/vim-devicons',         {'merged': 0})
 
   if has('nvim')
@@ -805,7 +806,7 @@ function! s:review_start() abort
   let $BAT_THEME_BAK = $BAT_THEME
   let $BAT_THEME = 'papercolor-light'
 
-  SNumbersTurnOffRelative
+  " SNumbersTurnOffRelative
 
   " let g:comfortable_motion_enable = 0
   " ComfortableMotionToggle
@@ -829,7 +830,7 @@ function! s:review_end() abort
   let $FZF_DEFAULT_OPTS = $FZF_DEFAULT_OPTS_BAK
   let $BAT_THEME = $BAT_THEME_BAK
 
-  SNumbersTurnOnRelative
+  " SNumbersTurnOnRelative
 
   " let g:comfortable_motion_enable = 1
   " ComfortableMotionToggle
@@ -1431,7 +1432,6 @@ if dein#tap('denite.nvim') && has('nvim')
   let s:menus.toggle = { 'description': 'Toggle Command' }
   let s:menus.toggle.command_candidates = [
   \ ['Toggle Review            [ReviewToggle]',              'ReviewToggle'           ],
-  \ ['Toggle RelNum            [SNToggle]',                  'SNToggle'               ],
   \ ['Toggle CursorHighlight   [CursorHighlightToggle]',     'CursorHighlightToggle'  ],
   \ ['Toggle Context           [ContextToggleWindow]',       'ContextToggleWindow'    ],
   \ ['Toggle ComfortableMotion [ComfortableMotionToggle]',   'ComfortableMotionToggle'],
@@ -1439,6 +1439,10 @@ if dein#tap('denite.nvim') && has('nvim')
   \ ['Toggle SyntaxHighlight   [SyntaxHighlightToggle]',     'SyntaxHighlightToggle'  ],
   \ ['Toggle TableMode         [TableMode]',                 'TableModeToggle'        ],
   \ ]
+
+  " smartnumber
+  "\ ['Toggle RelNum            [SNToggle]',                  'SNToggle'               ],
+
   call denite#custom#var('menu', 'menus', s:menus)
 endif
 
