@@ -3310,9 +3310,9 @@ BulkAlterCommand r QuickRun
 let g:quickrun_config = {
 \ '_' : {
 \   'outputter' : 'error',
-\   'outputter/error/success' : 'buffer',
-\   'outputter/error/error'   : 'quickfix',
-\   'outputter/buffer/split'  : ':botright 15split',
+\   'outputter/error/success': 'buffer',
+\   'outputter/error/error':   'quickfix',
+\   'outputter/buffer/opener': ':botright 15split',
 \   'outputter/buffer/close_on_empty' : 1,
 \ },
 \ 'deno' : {
