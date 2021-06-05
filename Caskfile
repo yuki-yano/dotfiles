@@ -18,6 +18,7 @@ upgrade
 # install --cask xquartz
 install --cask 1password
 install --cask alfred
+install --cask alt-tab
 install --cask appcleaner
 install --cask bartender
 install --cask charles
@@ -31,7 +32,6 @@ install --cask firefox
 install --cask google-chrome
 install --cask google-chrome-canary
 install --cask homebrew/cask-versions/discord-canary
-install --cask hyperswitch
 install --cask iterm2
 install --cask jasper
 install --cask java
