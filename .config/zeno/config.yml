@@ -62,6 +62,9 @@ snippets:
   - name: git stash
     keyword: gst
     snippet: git stash
+  - name: git stash --include-untracked
+    keyword: gstu
+    snippet: git stash -u
   - name: git stash list
     keyword: gstl
     snippet: git stash list
