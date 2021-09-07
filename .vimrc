@@ -2811,6 +2811,7 @@ if dein#tap('lightline.vim')
   \     ['lineinfo'],
   \     ['filetype', 'fileencoding', 'fileformat'],
   \     ['linter_ok', 'linter_informations', 'linter_warnings', 'linter_errors'],
+  \     ['quickrun'],
   \     ['coc_status'],
   \   ],
   \ },
@@ -2842,6 +2843,7 @@ if dein#tap('lightline.vim')
   \   'special_mode':     'Lightline_special_mode',
   \   'coc_status':       'Lightline_coc_status',
   \   'anzu':             'anzu#search_status',
+  \   'quickrun':         'Lightline_quickrun_runnning',
   \   'vm_regions':       'Lightline_vm_regions',
   \ },
   \ 'tab_component_function': {
@@ -2860,6 +2862,7 @@ if dein#tap('lightline.vim')
   \   'linter_warnings':     'warning',
   \   'linter_informations': 'information',
   \   'linter_ok':           'ok',
+  \   'quickrun':    'quickrun',
   \ },
   \ 'component_expand': {
   \   'linter_errors':       'Lightline_coc_errors',
@@ -2867,6 +2870,7 @@ if dein#tap('lightline.vim')
   \   'linter_informations': 'Lightline_coc_information',
   \   'linter_hint':         'Lightline_coc_hint',
   \   'linter_ok':           'Lightline_coc_ok',
+  \   'quickrun':            'Lightline_quickrun_runnning',
   \ },
   \ 'enable': {
   \   'statusline': 1,
@@ -3096,6 +3100,10 @@ if dein#tap('lightline.vim')
     \ b:coc_diagnostic_info['warning'] == 0 &&
     \ b:coc_diagnostic_info['information'] == 0 ?
     \ ' ' : ''
+  endfunction
+
+  function! Lightline_quickrun_runnning() abort
+    return g:quickrun_running_message
   endfunction
 
   function! Lightline_coc_status() abort
@@ -3478,45 +3486,101 @@ endif
 " Develop {{{2
 
 " quickrun {{{3
-BulkAlterCommand r QuickRun
+if dein#tap('vim-quickrun')
+  BulkAlterCommand r[un] QuickRun
 
-let g:quickrun_config = {
-\ '_' : {
-\   'outputter' : 'error',
-\   'outputter/error/success': 'buffer',
-\   'outputter/error/error':   'quickfix',
-\   'outputter/buffer/opener': ':botright 15split',
-\   'outputter/buffer/close_on_empty' : 1,
-\ },
-\ 'deno' : {
-\   'command': 'deno',
-\   'cmdopt': '--no-check --allow-all --unstable',
-\   'exec': ['%c run %o %s'],
-\ },
-\ 'tsc' : {
-\   'command': 'tsc',
-\   'exec': ['yarn run --silent %C --project . --noEmit --incremental --tsBuildInfoFile .git/.tsbuildinfo 2>/dev/null'],
-\   'outputter': 'quickfix',
-\   'outputter/quickfix/errorformat': '%+A %#%f %#(%l\,%c): %m,%C%m',
-\ },
-\ 'eslint' : {
-\   'command': 'eslint',
-\   'exec': ['yarn run --silent %C --format unix --ext .ts,.tsx %a 2>/dev/null'],
-\   'outputter': 'quickfix',
-\   'outputter/quickfix/errorformat': '%f:%l:%c:%m,%-G%.%#',
-\ },
-\ 'yq' : {
-\   'exec': 'cat %s | yq eval --tojson',
-\ },
-\ 'yq-browser' : {
-\   'exec': 'cat %s | yq eval --tojson',
-\   'outputter': 'browser',
-\   'outputter/browser/name': tempname() . '.json',
-\ },
-\ }
+  let s:notify_hook = {}
+  let g:quickrun_running_message = ''
+  let g:quickrun_notify_success_message = ''
+  let g:quickrun_notify_error_message = ''
 
-if has('nvim')
-  let g:quickrun_config._.runner = 'neovim_job'
+  function! s:notify_hook.on_ready(session, context) abort
+    let g:quickrun_running_message = '[QuickRun] Running ' . a:session.config.command
+
+    if dein#tap('lightline.vim')
+      call lightline#update()
+    endif
+  endfunction
+
+  function! s:notify_hook.on_finish(session, context) abort
+    let g:quickrun_running_message = ''
+
+    if dein#tap('lightline.vim')
+      call lightline#update()
+    endif
+  endfunction
+
+  function! s:notify_hook.on_success(session, context) abort
+    let g:quickrun_notify_success_message = 'Success ' . a:session.config.command
+    echohl String | echomsg '[QuickRun] ' . g:quickrun_notify_success_message | echohl None
+
+    if dein#tap('nvim-notify')
+      lua require('notify')(vim.g.quickrun_notify_success_message, 'info', { title = ' QuickRun' })
+    endif
+  endfunction
+
+  function! s:notify_hook.on_success(session, context) abort
+    let g:quickrun_notify_success_message = 'Success ' . a:session.config.command
+    echohl String | echomsg '[QuickRun] ' . g:quickrun_notify_success_message | echohl None
+
+    if dein#tap('nvim-notify')
+      lua require('notify')(vim.g.quickrun_notify_success_message, 'info', { title = ' QuickRun' })
+    endif
+  endfunction
+
+  function! s:notify_hook.on_failure(session, context) abort
+    let g:quickrun_notify_error_message = 'Error ' . a:session.config.command
+    echohl Error | echomsg '[QuickRun] ' . g:quickrun_notify_error_message | echohl None
+
+    if dein#tap('nvim-notify')
+      lua require('notify')(vim.g.quickrun_notify_error_message, 'error', { title = ' QuickRun' })
+    endif
+  endfunction
+
+  function! s:notify_hook.sweep() abort
+    let g:quickrun_notify_success_message = ''
+    let g:quickrun_notify_error_message = ''
+  endfunction
+
+  let g:quickrun_config = {
+  \ '_' : {
+  \   'outputter' : 'error',
+  \   'outputter/error/success': 'buffer',
+  \   'outputter/error/error':   'quickfix',
+  \   'outputter/buffer/opener': ':botright 15split',
+  \   'outputter/buffer/close_on_empty' : 1,
+  \   'hooks' : [s:notify_hook],
+  \ },
+  \ 'deno' : {
+  \   'command': 'deno',
+  \   'cmdopt': '--no-check --allow-all --unstable',
+  \   'exec': ['%c run %o %s'],
+  \ },
+  \ 'tsc' : {
+  \   'command': 'tsc',
+  \   'exec': ['yarn run --silent %C --project . --noEmit --incremental --tsBuildInfoFile .git/.tsbuildinfo 2>/dev/null'],
+  \   'outputter': 'quickfix',
+  \   'outputter/quickfix/errorformat': '%+A %#%f %#(%l\,%c): %m,%C%m',
+  \ },
+  \ 'eslint' : {
+  \   'command': 'eslint',
+  \   'exec': ['yarn run --silent %C --format unix --ext .ts,.tsx %a 2>/dev/null'],
+  \   'outputter': 'quickfix',
+  \   'outputter/quickfix/errorformat': '%f:%l:%c:%m,%-G%.%#',
+  \ },
+  \ 'yq' : {
+  \   'exec': 'cat %s | yq eval --tojson',
+  \ },
+  \ 'yq-browser' : {
+  \   'exec': 'cat %s | yq eval --tojson',
+  \   'outputter': 'browser',
+  \   'outputter/browser/name': tempname() . '.json',
+  \ },
+  \ }
+
+  if dein#tap('vim-quickrun-neovim-job')
+    let g:quickrun_config._.runner = 'neovim_job'
+  endif
 endif
 " }}}3
 
@@ -4012,6 +4076,11 @@ if dein#tap('lightline.vim')
   let s:p.insert.ok           = s:coc_diagnostic[3:3]
   let s:p.replace.ok          = s:coc_diagnostic[3:3]
   let s:p.visual.ok           = s:coc_diagnostic[3:3]
+
+  let s:p.normal.quickrun  = [[s:gruvbox0, s:info]]
+  let s:p.insert.quickrun  = [[s:gruvbox0, s:info]]
+  let s:p.replace.quickrun = [[s:gruvbox0, s:info]]
+  let s:p.visual.quickrun  = [[s:gruvbox0, s:info]]
 
   let g:lightline#colorscheme#gruvbox#palette = lightline#colorscheme#flatten(s:p)
 endif
