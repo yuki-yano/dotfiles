@@ -2234,12 +2234,48 @@ endif
 
 " caw {{{3
 if dein#tap('caw.vim')
-  let g:caw_no_default_keymappings = 0
+  let g:caw_integrated_plugin = 'ts_context_commentstring'
 
-  nmap <silent> <Leader>cc <Plug>(caw:hatpos:toggle)
-  xmap <silent> <Leader>cc <Plug>(caw:hatpos:toggle)
-  nmap <silent> <Leader>cw <Plug>(caw:wrap:toggle)
-  xmap <silent> <Leader>cw <Plug>(caw:wrap:toggle)
+  nmap <silent> <expr> <Leader>cc <SID>caw_hatpos_toggle()
+  xmap <silent> <expr> <Leader>cc <SID>caw_hatpos_toggle()
+  nmap <silent> <expr> <Leader>cw <SID>caw_wrap_toggle()
+  xmap <silent> <expr> <Leader>cw <SID>caw_wrap_toggle()
+
+  function! s:caw_hatpos_toggle() abort
+    if dein#tap('nvim-ts-context-commentstring')
+      lua require('ts_context_commentstring.internal').update_commentstring()
+      call caw#update_comments_from_commentstring(&commentstring)
+    endif
+
+    return "\<Plug>(caw:hatpos:toggle)"
+  endfunction
+
+  function! s:caw_wrap_toggle() abort
+    if dein#tap('nvim-ts-context-commentstring')
+      lua require('ts_context_commentstring.internal').update_commentstring()
+      call caw#update_comments_from_commentstring(&commentstring)
+    endif
+
+    let b:caw_wrap_oneline_comment = ["/*", "*/"]
+
+    return "\<Plug>(caw:wrap:toggle)"
+  endfunction
+
+  " function! s:caw_hatpos_toggle(mode) abort
+  "   if dein#tap('nvim-ts-context-commentstring')
+  "     lua require('ts_context_commentstring.internal').update_commentstring()
+  "   endif
+  "
+  "   call caw#keymapping_stub(a:mode, 'hatpos', 'toggle')
+  " endfunction
+
+  " function! s:caw_wrap_toggle(mode) abort
+  "   let b:caw_wrap_oneline_comment = ["/*", "*/"]
+  "   call caw#keymapping_stub(a:mode, 'wrap', 'toggle')
+  "   unlet b:caw_wrap_oneline_comment
+  " endfunction
+
+  " autocmd FileType typescript,typescriptreact let b:caw_wrap_oneline_comment = ['/*', '*/']
 endif
 " }}}3
 
