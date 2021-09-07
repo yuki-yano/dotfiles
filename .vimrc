@@ -1415,27 +1415,41 @@ endif
 
 " treesitter {{{3
 if dein#tap('nvim-treesitter') && has('nvim')
+  let g:highlightedundo_enable = 1
+
 lua <<EOF
-require'nvim-treesitter.configs'.setup {
+require('nvim-treesitter.configs').setup {
   ensure_installed = {
     "typescript",
     "tsx",
     "javascript",
-    "css",
     "graphql",
     "jsdoc",
+    "go",
     "rust",
     "ruby",
+    "python",
     "bash",
     "json",
     "yaml",
+    "dockerfile",
+    "vim",
+    "lua",
+    "html",
+    "css",
+    "comment",
+    "regex",
   },
   highlight = {
     enable = true,
   },
-  -- rainbow = {
-  --   enable = true,
-  -- },
+  context_commentstring = {
+    enable = true,
+    enable_autocmd = false,
+  },
+  rainbow = {
+    enable = true,
+  },
   -- refactor = {
   --   highlight_current_scope = {
   --     enable = true
@@ -1449,19 +1463,122 @@ require'nvim-treesitter.configs'.setup {
 --   },
 -- })
 
-require "nvim-treesitter.highlight"
-local hlmap = vim.treesitter.highlighter.hl_map
+-- require "nvim-treesitter.highlight"
+-- local hlmap = vim.treesitter.highlighter.hl_map
 
-hlmap.error = nil
-hlmap["punctuation.delimiter"] = "Delimiter"
-hlmap["punctuation.bracket"] = nil
+-- hlmap.error = nil
+-- hlmap["punctuation.delimiter"] = "Delimiter"
+-- hlmap["punctuation.bracket"] = nil
+
+-- require('treesitter-context').setup{
+--   enable = true,
+--   throttle = true,
+-- }
+
+-- require('treesitter-unit').select()
+-- require('treesitter-unit').enable_highlighting()
+
+-- require("indent_blankline").setup {
+--   space_char_blankline = " ",
+--   show_current_context = true,
+-- }
+
+-- require('nvim_context_vt').setup()
 EOF
-endif
-" }}}3
 
-" vim {{{3
-let g:vimsyntax_noerror = 1
-let g:vim_indent_cont   = 0
+  " omap <silent> <Plug>(textobj-treesitter-unit-i) :<C-u>lua require('treesitter-unit').select(true)<CR>
+  " xmap <silent> <Plug>(textobj-treesitter-unit-i) :lua require('treesitter-unit').select(true)<CR>
+  " omap <silent> <Plug>(textobj-treesitter-unit-a) :<C-u>lua require('treesitter-unit').select()<CR>
+  " xmap <silent> <Plug>(textobj-treesitter-unit-a) :lua require('treesitter-unit').select()<CR>
+
+  " omap <silent> iu <Plug>(textobj-treesitter-unit-i)
+  " xmap <silent> iu <Plug>(textobj-treesitter-unit-i)
+  " omap <silent> au <Plug>(textobj-treesitter-unit-a)
+  " xmap <silent> au <Plug>(textobj-treesitter-unit-a)
+
+
+  function! s:treesitter_toggle() abort
+    if g:treesitter_enable == 1
+      let g:treesitter_enable = 0
+      call <SID>treesitter_disable()
+    else
+      let g:treesitter_enable = 1
+      call <SID>treesitter_enable()
+    endif
+  endfunction
+  command! TreesitterToggle call <SID>treesitter_toggle()
+
+  function! s:treesitter_enable() abort
+    TSEnableAll highlight
+    TSEnableAll context_commentstring
+    TSEnableAll rainbow
+  endfunction
+
+  function! s:treesitter_disable() abort
+    TSDisableAll highlight
+    TSDisableAll context_commentstring
+    TSDisableAll rainbow
+  endfunction
+
+  function! s:check_large_file() abort
+    let max_file_size = 500 * 1000
+    let fsize = getfsize(@%)
+    let line_num = line('$')
+
+    if fsize > max_file_size
+      if input(printf('"%s" is too large file.(%s lines, %s byte) Continue? [y/N]', @%, line_num, fsize)) !~? '^y\%[es]$'
+        bwipeout
+        return
+      else
+        syntax off
+        call <SID>treesitter_disable()
+      endif
+    endif
+  endfunction
+
+  AutoCmd BufReadPre *.ts,*.tsx,*.js call <SID>check_large_file()
+
+  " AutoCmd BufReadPre  *.ts,*.tsx,*.js call <SID>disable_syntax()
+  " AutoCmd BufReadPost *.ts,*.tsx,*.js call <SID>set_syntax()
+  " AutoCmd BufEnter    *.ts,*.tsx,*.js call <SID>enable_tsbuf()
+  "
+  " function! s:disable_syntax() abort
+  "   syntax off
+  "   TSDisableAll highlight
+  "   TSDisableAll context_commentstring
+  "   TSDisableAll rainbow
+  " endfunction
+  " 
+  " function! s:enable_tsbuf() abort
+  "   if exists('b:ts_buf') && b:ts_buf
+  "     TSEnableAll highlight
+  "     TSEnableAll context_commentstring
+  "     TSEnableAll rainbow
+  "     TSBufEnable highlight
+  "     TSBufEnable context_commentstring
+  "     TSBufEnable rainbow
+  "   endif
+  " endfunction
+  "
+  " function! s:set_syntax() abort
+  "   let max_file_size = 500 * 1000
+  "   let fsize = getfsize(@%)
+  "   let line_num = line('$')
+  "
+  "   if fsize > max_file_size && input(printf('"%s" is too large file.(%s lines, %s byte) Continue? [y/N]', @%, line_num, fsize)) !~? '^y\%[es]$'
+  "     bwipeout
+  "     return
+  "   endif
+  "
+  "   if fsize < max_file_size
+  "     syntax on
+  "     let b:ts_buf = v:true
+  "   else
+  "     syntax off
+  "     let b:ts_buf = v:false
+  "   endif
+  " endfunction
+endif
 " }}}3
 
 " vue {{{3
