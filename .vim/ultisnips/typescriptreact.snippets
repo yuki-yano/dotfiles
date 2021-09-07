@@ -1,0 +1,61 @@
+extends typescript
+
+global !p
+def parse_props(args):
+	prop_names = []
+	for line in args.split("\n"):
+		arr = line.split(":")
+		if len(arr) == 0:
+			continue
+		prop_names.append(arr[0].lstrip())
+
+	return ', '.join(prop_names)
+endglobal
+
+snippet fc "React Functional Component"
+type ${1}Props = {
+	${2:props}
+}
+
+const ${3:Component}: FC<${1/\w+/$0/}Props> = ({ `!p snip.rv = parse_props(t[2])` }) => {
+	return <></>
+}
+endsnippet
+
+snippet fct "FC file template"
+import styled from "@emotion/styled"
+import type { FC } from "react"
+
+type PassedProps = {
+	${2}
+}
+
+type ContainerProps = {
+	${3}
+}
+
+type Props = PassedProps & ContainerProps
+
+const Component: FC<Props> = ({ `!p snip.rv = parse_props(t[2] + "\n" + t[3])` }) => {
+	return <></>
+}
+
+const StyledComponent = styled(Component)``
+
+const ContainerComponent: FC<PassedProps> = (props) => {
+	const { `!p snip.rv = parse_props(t[2])` } = props
+	return <StyledComponent {...props} />
+}
+
+export const `!p snip.rv = ''.join(list(map(lambda v: v.capitalize(), snip.basename.split('-'))))` = ContainerComponent
+endsnippet
+
+snippet state "useState hooks"
+const [${1:state}, set${1/\w+/\u$0/}] = useState(${2:default_value})
+endsnippet
+
+snippet effect "useEffect hooks"
+useEffect(() => {
+	${1}
+}, [${2:deps}])
+endsnippet

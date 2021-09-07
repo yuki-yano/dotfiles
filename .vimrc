@@ -2697,6 +2697,15 @@ if dein#tap('vim-trip')
 endif
 " }}}3
 
+" ultisnips {{{3
+if dein#tap('ultisnips')
+  let g:UltiSnipsExpandTrigger       = "<C-f>"
+  let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
+  let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
+  let g:UltiSnipsSnippetDirectories  = ["~/.vim/ultisnips"]
+endif
+" }}}3
+
 " yankround {{{3
 if dein#tap('yankround.vim')
   let g:yankround_max_history   = 10000

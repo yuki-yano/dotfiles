@@ -1,0 +1,77 @@
+snippet for "for of"
+for (const ${1:v} of ${2:list}) {
+	${3}
+}
+endsnippet
+
+snippet switch "Switch case"
+switch(${1:expr}) {
+	case ${2:match}: {
+		${3}
+		break
+	}
+
+	default: {
+		${4}
+	}
+}
+endsnippet
+
+snippet try "try catch"
+try {
+	${1}
+} catch(e: Error) {
+	${2}
+}
+endsnippet
+
+snippet tryf "try catch finally"
+try {
+	${1}
+} catch(e: Error) {
+	${2}
+} finally {
+	${3}
+}
+endsnippet
+
+snippet class "class"
+class ${1:Klass} {
+	constructor(${2:params}) {
+	}
+}
+endsnippet
+
+snippet log "console.log"
+console.log(${1})
+endsnippet
+
+snippet debug "console.debug"
+console.debug(${1})
+endsnippet
+
+snippet info "console.info"
+console.info(${1})
+endsnippet
+
+snippet warn "console.warn"
+console.warn(${1})
+endsnippet
+
+snippet error "console.error"
+console.error(${1})
+endsnippet
+
+snippet trace "console.trace"
+console.trace(${1})
+endsnippet
+
+snippet table "console.table"
+console.table(${1})
+endsnippet
+
+snippet group "console.group"
+console.group()
+console.log(${1})
+console.group()
+endsnippet
