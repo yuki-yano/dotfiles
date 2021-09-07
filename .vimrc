@@ -1861,7 +1861,17 @@ if dein#tap('fern.vim')
   let g:Fern_mapping_fzf_file_sink                = function('s:fern_reveal')
   let g:Fern_mapping_fzf_dir_sink                 = function('s:fern_reveal')
 
-  function! Fern_mapping_fzf_customize_option(spec)
+  function! s:fern_preview_width() abort
+    let width = float2nr(&columns * 0.8)
+    let width = min([width, 200])
+    return width
+  endfunction
+
+  let g:fern_preview_window_calculator = {
+  \ 'width': function('s:fern_preview_width')
+  \ }
+
+  function! Fern_mapping_fzf_customize_option(spec) abort
       let a:spec.options .= ' --multi'
       " Note that fzf#vim#with_preview comes from fzf.vim
       if exists('*fzf#vim#with_preview')
@@ -1871,39 +1881,56 @@ if dein#tap('fern.vim')
       endif
   endfunction
 
-
   nnoremap <silent> <Leader>e :<C-u>Fern . -drawer<CR><C-w>=
   nnoremap <silent> <Leader>E :<C-u>Fern . -drawer -reveal=%<CR><C-w>=
 
   function! s:fern_settings() abort
+    nnoremap <silent> <buffer> <Plug>(fern-page-down-wrapper) <C-d>
+    nnoremap <silent> <buffer> <Plug>(fern-page-up-wrapper)   <C-u>
+    nnoremap <silent> <buffer> <Plug>(fern-search-prev)       N
+
     nmap <silent> <buffer> <expr> <Plug>(fern-expand-or-collapse)                 fern#smart#leaf("\<Plug>(fern-action-collapse)", "\<Plug>(fern-action-expand)", "\<Plug>(fern-action-collapse)")
     nmap <silent> <buffer> <expr> <Plug>(fern-open-system-directory-or-open-file) fern#smart#leaf("\<Plug>(fern-action-open:select)", "\<Plug>(fern-action-open:system)")
+    nmap <silent> <buffer> <expr> <Plug>(fern-quit-or-close-preview)              fern_preview#smart_preview("\<Plug>(fern-action-preview:close)\<Plug>(fern-action-preview:auto:disable)", ":q\<CR>")
+    nmap <silent> <buffer> <expr> <Plug>(fern-wipe-or-close-preview)              fern_preview#smart_preview("\<Plug>(fern-action-preview:close)\<Plug>(fern-action-preview:auto:disable)", ":bwipe!\<CR>")
+    nmap <silent> <buffer> <expr> <Plug>(fern-page-down-or-scroll-down-preview)   fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:down:half)", "\<Plug>(fern-page-down-wrapper)")
+    nmap <silent> <buffer> <expr> <Plug>(fern-page-down-or-scroll-up-preview)     fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:up:half)", "\<Plug>(fern-page-up-wrapper)")
+    nmap <silent> <buffer> <expr> <Plug>(fern-new-file-or-search-prev)            v:hlsearch ? "\<Plug>(fern-search-prev)" : "\<Plug>(fern-action-new-file)"
 
-    nmap <silent> <buffer> <nowait> a     <Plug>(fern-choice)
-    nmap <silent> <buffer> <nowait> <CR>  <Plug>(fern-open-system-directory-or-open-file)
-    nmap <silent> <buffer> <nowait> t     <Plug>(fern-expand-or-collapse)
-    nmap <silent> <buffer> <nowait> l     <Plug>(fern-open-or-enter)
-    nmap <silent> <buffer> <nowait> h     <Plug>(fern-action-leave)
-    nmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark:toggle)
-    xmap <silent> <buffer> <nowait> x     <Plug>(fern-action-mark:toggle)
-    nmap <silent> <buffer> <nowait> N     <Plug>(fern-action-new-file)
-    nmap <silent> <buffer> <nowait> K     <Plug>(fern-action-new-dir)
-    nmap <silent> <buffer> <nowait> d     <Plug>(fern-action-trash)
-    nmap <silent> <buffer> <nowait> r     <Plug>(fern-action-rename)
-    nmap <silent> <buffer> <nowait> c     <Plug>(fern-action-copy)
-    nmap <silent> <buffer> <nowait> m     <Plug>(fern-action-move)
-    nmap <silent> <buffer> <nowait> !     <Plug>(fern-action-hidden-toggle)
-    nmap <silent> <buffer> <nowait> <C-g> <Plug>(fern-action-debug)
-    nmap <silent> <buffer> <nowait> ?     <Plug>(fern-action-help)
-    nmap <silent> <buffer> <nowait> <C-c> <Plug>(fern-action-cancel)
-    nmap <silent> <buffer> <nowait> .     <Plug>(fern-repeat)
-    nmap <silent> <buffer> <nowait> R     <Plug>(fern-action-redraw)
-    nmap <silent> <buffer> <nowait> ;f    <Plug>(fern-action-fzf-root-files)
-    nmap <silent> <buffer> <nowait> ;d    <Plug>(fern-action-fzf-root-dirs)
-    nmap <silent> <buffer> <nowait> ;a    <Plug>(fern-action-fzf-root-both)
-
-    nnoremap <silent> <buffer> <nowait> q :<C-u>quit<CR>
-    nnoremap <silent> <buffer> <nowait> Q :<C-u>bwipe!<CR>
+    nmap <silent> <buffer> <nowait> a       <Plug>(fern-choice)
+    nmap <silent> <buffer> <nowait> <CR>    <Plug>(fern-open-system-directory-or-open-file)
+    nmap <silent> <buffer> <nowait> t       <Plug>(fern-expand-or-collapse)
+    nmap <silent> <buffer> <nowait> l       <Plug>(fern-open-or-enter)
+    nmap <silent> <buffer> <nowait> h       <Plug>(fern-action-leave)
+    nmap <silent> <buffer> <nowait> x       <Plug>(fern-action-mark:toggle)j
+    xmap <silent> <buffer> <nowait> x       <Plug>(fern-action-mark:toggle)j
+    nmap <silent> <buffer> <nowait> <Space> <Plug>(fern-action-mark:toggle)j
+    xmap <silent> <buffer> <nowait> <Space> <Plug>(fern-action-mark:toggle)j
+    nmap <silent> <buffer> <nowait> N       <Plug>(fern-new-file-or-search-prev)
+    nmap <silent> <buffer> <nowait> K       <Plug>(fern-action-new-dir)
+    nmap <silent> <buffer> <nowait> d       <Plug>(fern-action-trash)
+    nmap <silent> <buffer> <nowait> r       <Plug>(fern-action-rename)
+    nmap <silent> <buffer> <nowait> c       <Plug>(fern-action-copy)
+    nmap <silent> <buffer> <nowait> C       <Plug>(fern-action-clipboard-copy)
+    nmap <silent> <buffer> <nowait> m       <Plug>(fern-action-move)
+    nmap <silent> <buffer> <nowait> M       <Plug>(fern-action-clipboard-move)
+    nmap <silent> <buffer> <nowait> P       <Plug>(fern-action-clipboard-paste)
+    nmap <silent> <buffer> <nowait> !       <Plug>(fern-action-hidden-toggle)
+    nmap <silent> <buffer> <nowait> y       <Plug>(fern-action-yank)
+    nmap <silent> <buffer> <nowait> <C-g>   <Plug>(fern-action-debug)
+    nmap <silent> <buffer> <nowait> ?       <Plug>(fern-action-help)
+    nmap <silent> <buffer> <nowait> <C-c>   <Plug>(fern-action-cancel)
+    nmap <silent> <buffer> <nowait> .       <Plug>(fern-repeat)
+    nmap <silent> <buffer> <nowait> q       <Plug>(fern-quit-or-close-preview)
+    nmap <silent> <buffer> <nowait> Q       <Plug>(fern-wipe-or-close-preview)
+    nmap <silent> <buffer> <nowait> p       <Plug>(fern-action-preview:toggle)
+    nmap <silent> <buffer> <nowait> <C-p>   <Plug>(fern-action-preview:auto:toggle)
+    nmap <silent> <buffer> <nowait> <C-d>   <Plug>(fern-page-down-or-scroll-down-preview)
+    nmap <silent> <buffer> <nowait> <C-u>   <Plug>(fern-page-down-or-scroll-up-preview)
+    nmap <silent> <buffer> <nowait> R       <Plug>(fern-action-reload:all)
+    nmap <silent> <buffer> <nowait> ;f      <Plug>(fern-action-fzf-root-files)
+    nmap <silent> <buffer> <nowait> ;d      <Plug>(fern-action-fzf-root-dirs)
+    nmap <silent> <buffer> <nowait> ;a      <Plug>(fern-action-fzf-root-both)
 
     setlocal nonumber norelativenumber
     augroup fern-cursor-moved
