@@ -1667,7 +1667,7 @@ endif
 " fzf-preview {{{3
 " let g:fzf_preview_rpc_debug = 1
 " let g:fzf_preview_direct_window_option = 'botright 20new'
-let g:fzf_preview_filelist_command    = 'fd --hidden --exclude .git'
+let g:fzf_preview_filelist_command    = 'fd --type file --hidden --exclude .git'
 let g:fzf_preview_git_files_command   = 'git ls-files --exclude-standard | while read line; do if [[ ! -L $line ]] && [[ -f $line ]]; then echo $line; fi; done'
 let g:fzf_preview_grep_cmd            = 'rg --line-number --no-heading --color=never --sort=path'
 let g:fzf_preview_mru_limit           = 5000
@@ -1677,8 +1677,11 @@ let g:fzf_preview_default_fzf_options = {
 \ '--preview-window': 'wrap',
 \ '--bind': 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,?:toggle-preview,ctrl-n:down,ctrl-p:up,ctrl-j:next-history,ctrl-k:previous-history'
 \ }
-let $FZF_PREVIEW_PREVIEW_BAT_THEME  = 'gruvbox-dark'
-let g:fzf_preview_history_dir = '~/.fzf'
+
+let $BAT_THEME                     = 'gruvbox-dark'
+let $FZF_PREVIEW_PREVIEW_BAT_THEME = 'gruvbox-dark'
+let $BAT_STYLE                     = 'plain'
+let g:fzf_preview_history_dir      = '~/.fzf'
 
 nnoremap <fzf-p> <Nop>
 xnoremap <fzf-p> <Nop>
