@@ -3524,6 +3524,15 @@ if dein#tap('vim-silicon')
   \ }
 endif
 " }}}3
+
+" test {{{3
+if dein#tap('vim-test') && dein#tap('vim-ultest')
+  BulkAlterCommand te[st]     Ultest
+  BulkAlterCommand tn[ear]    UltestNearest
+  BulkAlterCommand ts[ummary] UltestSummary
+
+  let g:ultest_use_pty = 1
+endif
 " }}}3
 
 " undotree {{{3
