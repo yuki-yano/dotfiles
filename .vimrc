@@ -20,16 +20,20 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#begin(s:DEIN_BASE_PATH)
 
   " Dein {{{3
-  call dein#add('Shougo/dein.vim',             {'merged': 0})
+  call dein#add('Shougo/dein.vim', {'merged': 0})
+
   call dein#add('haya14busa/dein-command.vim', {'merged': 0})
   " }}}3
 
   " denops {{{3
-  call dein#add('vim-denops/denops.vim', { 'merged': 0})
+  call dein#add('vim-denops/denops.vim', {'merged': 0})
 
-  " call dein#add('yuki-yano/dps-zero.vim',         { 'merged': 0})
-  call dein#add('yuki-yano/dps-deepl-browser',    { 'merged': 0})
-  call dein#add('yuki-yano/dps-slack-status.vim', { 'merged': 0})
+  call dein#add('kuuote/denops-skkeleton.vim', {'merged': 0})
+  call dein#add('lambdalisue/guise.vim',       {'merged': 0})
+
+  " if isdirectory(expand('~/repos/github.com/yuki-yano/dps-indent-line.vim'))
+  "   call dein#add('~/repos/github.com/yuki-yano/dps-indent-line.vim', {'merged': 0})
+  " endif
   " }}}3
 
   " Doc {{{3
@@ -39,6 +43,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " IDE {{{3
   call dein#add('neoclide/coc.nvim', {'merged': 0, 'rev': 'master', 'build': 'yarn install --frozen-lockfile'})
   " call dein#add('neoclide/coc.nvim', {'merged': 0, 'rev': 'release'})
+  "
+  " if isdirectory(expand('~/repos/github.com/yuki-yano/coc.nvim'))
+  "   call dein#add('~/repos/github.com/yuki-yano/coc.nvim', {'merged': 0})
+  " endif
 
   " call dein#add('tsuyoshicho/vim-efm-langserver-settings', {'merged': 0})
 
@@ -64,6 +72,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('styled-components/vim-styled-components', {'merged': 0})
   " call dein#add('tpope/vim-rails',                         {'merged': 0})
   " call dein#add('yardnsm/vim-import-cost',                 {'merged': 0, 'build': 'npm install'})
+  call dein#add('chr4/nginx.vim',             {'merged': 0})
   call dein#add('elzr/vim-json',              {'merged': 0})
   call dein#add('heavenshell/vim-jsdoc',      {'merged': 0, 'build': 'make install'})
   call dein#add('jparise/vim-graphql',        {'merged': 0})
@@ -71,30 +80,35 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('pantharshit00/vim-prisma',   {'merged': 0})
   call dein#add('plasticboy/vim-markdown',    {'merged': 0})
   call dein#add('rhysd/vim-fixjson',          {'merged': 0})
-  call dein#add('chr4/nginx.vim',             {'merged': 0})
 
   if has('nvim')
-    call dein#add('nvim-treesitter/nvim-treesitter',          {'merged': 0})
-    " call dein#add('code-biscuits/nvim-biscuits',              {'merged': 0})
-    " call dein#add('p00f/nvim-ts-rainbow',                     {'merged': 0})
-    " call dein#add('nvim-treesitter/nvim-treesitter-refactor', {'merged': 0})
-    " call dein#add('romgrk/nvim-treesitter-context',           {'merged': 0})
+    call dein#add('nvim-treesitter/nvim-treesitter', {'merged': 0})
+
+    " call dein#add('David-Kunz/treesitter-unit',                  {'merged': 0})
+    " call dein#add('code-biscuits/nvim-biscuits',                 {'merged': 0})
+    " call dein#add('haringsrob/nvim_context_vt',                  {'merged': 0})
+    " call dein#add('lukas-reineke/indent-blankline.nvim',         {'merged': 0})
+    " call dein#add('nvim-treesitter/nvim-treesitter-refactor',    {'merged': 0})
+    " call dein#add('nvim-treesitter/nvim-treesitter-textobjects', {'merged': 0})
+    " call dein#add('romgrk/nvim-treesitter-context',              {'merged': 0})
+    call dein#add('JoosepAlviste/nvim-ts-context-commentstring', {'merged': 0})
+    call dein#add('p00f/nvim-ts-rainbow',                        {'merged': 0})
   endif
   " }}}3
 
   " Git {{{3
-  " call dein#add('hotwatermorning/auto-git-diff', {'merged': 0})
-  " call dein#add('rhysd/conflict-marker.vim',     {'merged': 0})
-  " call dein#add('cohama/agit.vim',               {'merged': 0})
-  " call dein#add('tpope/vim-fugitive',            {'merged': 0})
+  call dein#add('cohama/agit.vim',               {'merged': 0})
+  call dein#add('hotwatermorning/auto-git-diff', {'merged': 0})
   call dein#add('lambdalisue/gina.vim',          {'merged': 0})
+  call dein#add('rhysd/conflict-marker.vim',     {'merged': 0})
+  call dein#add('tpope/vim-fugitive',            {'merged': 0})
   call dein#add('wting/gitsessions.vim',         {'merged': 0})
 
   if has('nvim')
     " call dein#add('APZelos/blamer.nvim',     {'merged': 0})
     " call dein#add('f-person/git-blame.nvim', {'merged': 0})
-    " call dein#add('rhysd/git-messenger.vim', {'merged': 0})
-    call dein#add('lewis6991/gitsigns.nvim', {'merged': 0})
+    " call dein#add('lewis6991/gitsigns.nvim', {'merged': 0})
+    call dein#add('rhysd/git-messenger.vim', {'merged': 0})
   endif
   " }}}3
 
@@ -109,11 +123,13 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('~/repos/github.com/yuki-yano/fzf-preview.vim', {'merged': 0})
   endif
 
+  " if isdirectory(expand('~/workspace/coc-ultisnips-select'))
+  "   call dein#add('~/workspace/coc-ultisnips-select', {'merged': 0})
+  " endif
+
   " call dein#add('yuki-yano/fzf-preview.vim', {'merged': 0, 'rev': 'release/rpc'})
 
   if has('nvim')
-    call dein#add('nvim-lua/popup.nvim',          {'merged': 0})
-    call dein#add('nvim-lua/plenary.nvim',        {'merged': 0})
     call dein#add('nvim-lua/telescope.nvim',      {'merged': 0})
     call dein#add('kyazdani42/nvim-web-devicons', {'merged': 0})
   endif
@@ -123,15 +139,19 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('lambdalisue/fern.vim',                   {'merged': 0})
 
   call dein#add('LumaKernel/fern-mapping-fzf.vim',        {'merged': 0})
+  call dein#add('LumaKernel/fern-mapping-reload-all.vim', {'merged': 0})
   call dein#add('lambdalisue/fern-git-status.vim',        {'merged': 0})
   call dein#add('lambdalisue/fern-renderer-nerdfont.vim', {'merged': 0})
   call dein#add('lambdalisue/glyph-palette.vim',          {'merged': 0})
   call dein#add('lambdalisue/nerdfont.vim',               {'merged': 0})
 
+  call dein#add('~/repos/github.com/yuki-yano/fern-preview.vim', {'merged': 0})
+
   if has('nvim')
-    " call dein#add('Shougo/defx.nvim',          {'merged': 0})
-    " call dein#add('kristijanhusak/defx-icons', {'merged': 0})
-    " call dein#add('kristijanhusak/defx-git',   {'merged': 0})
+    call dein#add('Shougo/defx.nvim',          {'merged': 0})
+    call dein#add('kristijanhusak/defx-icons', {'merged': 0})
+    call dein#add('kristijanhusak/defx-git',   {'merged': 0})
+    call dein#add('kyazdani42/nvim-tree.lua',  {'merged': 0})
   endif
   " }}}3
 
@@ -145,14 +165,15 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('rhysd/vim-textobj-ruby',             {'merged': 0}) " ir ar
   " call dein#add('romgrk/equal.operator',              {'merged': 0}) " i=h a=h i=l a=l
   " call dein#add('thinca/vim-textobj-between',         {'merged': 0}) " i{char} a{char}
-  call dein#add('kana/vim-textobj-entire',            {'merged': 0}) " ie ae
-  call dein#add('kana/vim-textobj-fold',              {'merged': 0}) " iz az
-  call dein#add('kana/vim-textobj-indent',            {'merged': 0}) " ii ai
-  call dein#add('kana/vim-textobj-line',              {'merged': 0}) " al il
-  call dein#add('machakann/vim-textobj-functioncall', {'merged': 0}) " if af
-  call dein#add('mattn/vim-textobj-url',              {'merged': 0}) " iu au
+  call dein#add('kana/vim-textobj-entire',              {'merged': 0}) " ie ae
+  call dein#add('kana/vim-textobj-fold',                {'merged': 0}) " iz az
+  call dein#add('kana/vim-textobj-indent',              {'merged': 0}) " ii ai
+  call dein#add('kana/vim-textobj-line',                {'merged': 0}) " al il
+  call dein#add('machakann/vim-textobj-functioncall',   {'merged': 0}) " if af
+  call dein#add('mattn/vim-textobj-url',                {'merged': 0}) " iu au
+  call dein#add('yuki-yano/vim-textobj-cursor-context', {'merged': 0}) " ic ac
 
-  call dein#add('mopp/vim-operator-convert-case',  {'merged': 0}) " cy
+  call dein#add('mopp/vim-operator-convert-case', {'merged': 0}) " cy
   call dein#add('yuki-yano/vim-operator-replace', {'merged': 0})  " _
   " }}}3
 
@@ -168,38 +189,47 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('lambdalisue/reword.vim',        {'merged': 0})
   " call dein#add('mg979/vim-visual-multi',        {'merged': 0, 'rev': 'test'})
   " call dein#add('mhinz/vim-grepper',             {'merged': 0})
-  " call dein#add('mtth/scratch.vim',              {'merged': 0})
   " call dein#add('osyo-manga/vim-trip',           {'merged': 0})
   " call dein#add('rhysd/accelerated-jk',          {'merged': 0})
   " call dein#add('t9md/vim-choosewin',            {'merged': 0})
   " call dein#add('tomtom/tcomment_vim',           {'merged': 0})
+  " call dein#add('tpope/vim-commentary',          {'merged': 0})
   " call dein#add('tpope/vim-repeat',              {'merged': 0})
   " call dein#add('unblevable/quick-scope',        {'merged': 0})
   " call dein#add('vim-scripts/Align',             {'merged': 0})
-  " call dein#add('yuki-yano/zero.vim',       {'merged': 0})
+  " call dein#add('yuki-yano/zero.vim',            {'merged': 0})
   call dein#add('Bakudankun/BackAndForward.vim', {'merged': 0})
   call dein#add('LeafCage/yankround.vim',        {'merged': 0})
   call dein#add('MattesGroeger/vim-bookmarks',   {'merged': 0})
+  call dein#add('SirVer/ultisnips',              {'merged': 0})
   call dein#add('cohama/lexima.vim',             {'merged': 0})
   call dein#add('haya14busa/vim-asterisk',       {'merged': 0})
   call dein#add('haya14busa/vim-edgemotion',     {'merged': 0})
   call dein#add('hrsh7th/vim-eft',               {'merged': 0})
   call dein#add('junegunn/vim-easy-align',       {'merged': 0})
+  call dein#add('mattn/vim-maketable',           {'merged': 0})
+  call dein#add('mtth/scratch.vim',              {'merged': 0})
   call dein#add('osyo-manga/vim-anzu',           {'merged': 0})
   call dein#add('osyo-manga/vim-jplus',          {'merged': 0})
+  call dein#add('t9md/vim-textmanip',            {'merged': 0})
   call dein#add('terryma/vim-expand-region',     {'merged': 0})
   call dein#add('thinca/vim-qfreplace',          {'merged': 0})
   call dein#add('tommcdo/vim-exchange',          {'merged': 0})
-  call dein#add('tyru/caw.vim',                  {'merged': 0})
+  call dein#add('tyru/caw.vim',                  {'merged': 0, 'rev': '703db47'})
 
   if has('nvim')
-    " call dein#add('rmagatti/auto-session',     {'merged': 0})
-    call dein#add('gabrielpoca/replacer.nvim', {'merged': 0})
-    call dein#add('kevinhwang91/nvim-hlslens', {'merged': 0})
-    call dein#add('monaqa/dial.nvim',          {'merged': 0})
-    call dein#add('phaazon/hop.nvim',          {'merged': 0})
-    call dein#add('windwp/nvim-ts-autotag',    {'merged': 0})
-    call dein#add('yuki-yano/zero.nvim',       {'merged': 0})
+    " call dein#add('b3nj5m1n/kommentary',                         {'merged': 0})
+    " call dein#add('phaazon/hop.nvim',                            {'merged': 0})
+    " call dein#add('rmagatti/auto-session',                       {'merged': 0})
+    " call dein#add('windwp/nvim-ts-autotag',                      {'merged': 0})
+    " call dein#add('winston0410/smart-cursor.nvim',               {'merged': 0})
+    call dein#add('gabrielpoca/replacer.nvim',                   {'merged': 0})
+    call dein#add('ggandor/lightspeed.nvim',                     {'merged': 0})
+    call dein#add('kevinhwang91/nvim-hlslens',                   {'merged': 0})
+    call dein#add('monaqa/dial.nvim',                            {'merged': 0})
+    call dein#add('nacro90/numb.nvim',                           {'merged': 0})
+    call dein#add('windwp/nvim-spectre',                         {'merged': 0})
+    call dein#add('yuki-yano/zero.nvim',                         {'merged': 0})
   endif
   " }}}3
 
@@ -207,26 +237,29 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('RRethy/vim-hexokinase',          {'merged': 0, 'build': 'make hexokinase'})
   " call dein#add('Yggdroot/indentLine',            {'merged': 0})
   " call dein#add('andymass/vim-matchup',           {'merged': 0})
+  " call dein#add('luochen1990/rainbow',            {'merged': 0})
   " call dein#add('mhinz/vim-startify',             {'merged': 0})
   " call dein#add('mopp/smartnumber.vim',           {'merged': 0})
   " call dein#add('ntpeters/vim-better-whitespace', {'merged': 0})
   " call dein#add('ronakg/quickr-preview.vim',      {'merged': 0})
   " call dein#add('wellle/context.vim',             {'merged': 0})
   " call dein#add('yuttie/comfortable-motion.vim',  {'merged': 0})
-  call dein#add('itchyny/lightline.vim',          {'merged': 0})
-  call dein#add('kevinhwang91/nvim-bqf',          {'merged': 0})
-  call dein#add('lambdalisue/readablefold.vim',   {'merged': 0})
-  call dein#add('luochen1990/rainbow',            {'merged': 0})
-  call dein#add('machakann/vim-highlightedundo',  {'merged': 0})
-  call dein#add('machakann/vim-highlightedyank',  {'merged': 0})
-  call dein#add('ryanoasis/vim-devicons',         {'merged': 0})
+  call dein#add('itchyny/lightline.vim',         {'merged': 0})
+  call dein#add('lambdalisue/readablefold.vim',  {'merged': 0})
+  call dein#add('machakann/vim-highlightedundo', {'merged': 0})
+  call dein#add('machakann/vim-highlightedyank', {'merged': 0})
+  call dein#add('ryanoasis/vim-devicons',        {'merged': 0})
 
   if has('nvim')
-    " call dein#add('glepnir/indent-guides.nvim',  {'merged': 0})
     " call dein#add('Xuyuanp/scrollbar.nvim',      {'merged': 0})
+    " call dein#add('glepnir/indent-guides.nvim',  {'merged': 0})
+    " call dein#add('karb94/neoscroll.nvim',       {'merged': 0})
+    " call dein#add('vuki656/package-info.nvim',   {'merged': 0})
     call dein#add('dstein64/nvim-scrollview',    {'merged': 0})
-    call dein#add('norcalli/nvim-colorizer.lua', {'merged': 0})
     call dein#add('folke/todo-comments.nvim',    {'merged': 0})
+    call dein#add('kevinhwang91/nvim-bqf',       {'merged': 0})
+    call dein#add('norcalli/nvim-colorizer.lua', {'merged': 0})
+    call dein#add('rcarriga/nvim-notify',        {'merged': 0})
   endif
   " }}}3
 
@@ -238,7 +271,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('antoinemadec/FixCursorHold.nvim',  {'merged': 0})
   " call dein#add('dhruvasagar/vim-table-mode',       {'merged': 0})
   " call dein#add('dstein64/vim-startuptime',         {'merged': 0})
-  " call dein#add('itchyny/vim-qfedit',               {'merged': 0})
   " call dein#add('kristijanhusak/vim-carbon-now-sh', {'merged': 0})
   " call dein#add('lambdalisue/vim-pager',            {'merged': 0})
   " call dein#add('liuchengxu/vim-which-key',         {'merged': 0})
@@ -247,26 +279,34 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('pocke/vim-automatic',              {'merged': 0})
   " call dein#add('thinca/vim-localrc',               {'merged': 0})
   " call dein#add('thinca/vim-ref',                   {'merged': 0})
-  call dein#add('AndrewRadev/linediff.vim',         {'merged': 0})
-  call dein#add('aiya000/aho-bakaup.vim',           {'merged': 0})
-  call dein#add('glidenote/memolist.vim',           {'merged': 0})
-  call dein#add('jsfaint/gen_tags.vim',             {'merged': 0})
-  call dein#add('kana/vim-niceblock',               {'merged': 0})
-  call dein#add('lambdalisue/suda.vim',             {'merged': 0})
-  call dein#add('lambdalisue/vim-manpager',         {'merged': 0})
-  call dein#add('liuchengxu/vista.vim',             {'merged': 0})
-  call dein#add('mbbill/undotree',                  {'merged': 0})
-  call dein#add('moll/vim-bbye',                    {'merged': 0})
-  call dein#add('previm/previm',                    {'merged': 0})
-  call dein#add('segeljakt/vim-silicon',            {'merged': 0})
-  call dein#add('tyru/capture.vim',                 {'merged': 0})
-  call dein#add('tyru/open-browser.vim',            {'merged': 0})
-  call dein#add('tyru/vim-altercmd',                {'merged': 0})
-  call dein#add('voldikss/vim-floaterm',            {'merged': 0})
-  call dein#add('wesQ3/vim-windowswap',             {'merged': 0})
+  call dein#add("rcarriga/vim-ultest",          {'merged': 0})
+  call dein#add('AndrewRadev/linediff.vim',     {'merged': 0})
+  call dein#add('aiya000/aho-bakaup.vim',       {'merged': 0})
+  call dein#add('glidenote/memolist.vim',       {'merged': 0})
+  call dein#add('iamcco/markdown-preview.nvim', {'merged': 0, 'build': 'sh -c "cd app && yarn install"'})
+  call dein#add('itchyny/vim-qfedit',           {'merged': 0})
+  call dein#add('jsfaint/gen_tags.vim',         {'merged': 0})
+  call dein#add('kana/vim-niceblock',           {'merged': 0})
+  call dein#add('lambdalisue/suda.vim',         {'merged': 0})
+  call dein#add('lambdalisue/vim-manpager',     {'merged': 0})
+  call dein#add('liuchengxu/vista.vim',         {'merged': 0})
+  call dein#add('mbbill/undotree',              {'merged': 0})
+  call dein#add('moll/vim-bbye',                {'merged': 0})
+  call dein#add('previm/previm',                {'merged': 0})
+  call dein#add('segeljakt/vim-silicon',        {'merged': 0})
+  call dein#add('tyru/capture.vim',             {'merged': 0})
+  call dein#add('tyru/open-browser.vim',        {'merged': 0})
+  call dein#add('tyru/vim-altercmd',            {'merged': 0})
+  call dein#add('vim-test/vim-test',            {'merged': 0})
+  call dein#add('voldikss/vim-floaterm',        {'merged': 0})
+  call dein#add('wesQ3/vim-windowswap',         {'merged': 0})
 
   if has('nvim')
-    " call dein#add('notomo/cmdbuf.nvim', {'merged': 0})
+    " call dein#add('notomo/cmdbuf.nvim',    {'merged': 0})
+    " call dein#add('lambdalisue/edita.vim', {'merged': 0})
+    call dein#add('gelguy/wilder.nvim',    {'merged': 0})
+    call dein#add('nvim-lua/plenary.nvim', {'merged': 0})
+    call dein#add('nvim-lua/popup.nvim',   {'merged': 0})
   endif
 
   if $ENABLE_WAKATIME == 1
@@ -275,12 +315,15 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Develop {{{3
-  call dein#add('hrsh7th/vim-vital-vs',                {'merged': 0})
-  call dein#add('lambdalisue/vim-quickrun-neovim-job', {'merged': 0})
-  call dein#add('rbtnn/vim-vimscript_lasterror',       {'merged': 0})
-  call dein#add('thinca/vim-prettyprint',              {'merged': 0})
-  call dein#add('thinca/vim-quickrun',                 {'merged': 0})
-  call dein#add('vim-jp/vital.vim',                    {'merged': 0})
+  call dein#add('hrsh7th/vim-vital-vs',          {'merged': 0})
+  call dein#add('rbtnn/vim-vimscript_lasterror', {'merged': 0})
+  call dein#add('thinca/vim-prettyprint',        {'merged': 0})
+  call dein#add('thinca/vim-quickrun',           {'merged': 0})
+  call dein#add('vim-jp/vital.vim',              {'merged': 0})
+
+  if has('nvim')
+    call dein#add('lambdalisue/vim-quickrun-neovim-job', {'merged': 0})
+  endif
   " }}}3
 
   " Color Theme {{{3
