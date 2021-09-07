@@ -3543,6 +3543,39 @@ if dein#tap('vim-which-key')
 endif
 " }}}3
 
+" wilder {{{3
+if dein#tap('wilder.nvim')
+  let wilder_cmd_line_renderer = wilder#popupmenu_renderer({
+  \ 'winblend': 20,
+  \ 'highlighter': wilder#basic_highlighter(),
+  \ 'left': [wilder#popupmenu_devicons(), wilder#popupmenu_buffer_flags({'flags': ' '})],
+  \ 'right': [' ', wilder#popupmenu_scrollbar()],
+  \ })
+
+  let wilder_search_renderer = wilder#wildmenu_renderer({
+  \ 'highlighter': wilder#basic_highlighter(),
+  \ 'separator': '  ',
+  \ 'left': [' '],
+  \ 'right': [' ', wilder#wildmenu_index()],
+  \ })
+
+  call wilder#setup({
+  \ 'modes': [':', '/', '?'],
+  \ 'accept_key': '<C-e>',
+  \ })
+
+  call wilder#set_option(
+  \ 'renderer',
+  \ wilder#renderer_mux({
+  \ ':': wilder_cmd_line_renderer,
+  \ '/': wilder_search_renderer,
+  \ '?': wilder_search_renderer,
+  \ 'substitute': wilder_search_renderer,
+  \ })
+  \ )
+endif
+" }}}3
+
 " windowswap {{{3
 if dein#tap('vim-windowswap')
   let g:windowswap_map_keys = 0
