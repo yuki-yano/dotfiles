@@ -3312,7 +3312,16 @@ endif
 
 " vista {{{3
 if dein#tap('vista.vim')
-  let g:vista_default_executive = 'ctags'
+  BulkAlterCommand vis[ta] Vista
+
+  let g:vista_default_executive      = 'coc'
+  let g:vista_sidebar_width          = 50
+  let g:vista_echo_cursor_strategy   = 'both'
+  let g:vista_update_on_text_changed = 1
+  let g:vista_blink                  = [1, 100]
+
+  nnoremap <silent> <Leader>v :<C-u>Vista<CR>
+
   AutoCmd VimEnter * call vista#RunForNearestMethodOrFunction()
 endif
 " }}}3
