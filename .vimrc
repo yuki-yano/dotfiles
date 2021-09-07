@@ -2164,7 +2164,7 @@ if dein#tap('accelerated-jk')
 endif
 " }}}3
 
-" hlslens & asterisk {{{3
+" hlslens & asterisk & anzu {{{3
 if dein#tap('nvim-hlslens') && dein#tap('vim-asterisk') && dein#tap('vim-anzu')
   " let g:incsearch#magic = '\v'
 
