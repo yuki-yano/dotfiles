@@ -1055,9 +1055,17 @@ BulkAlterCommand dein Dein
 
 " denops {{{2
 
-" dps-slack-status {{{3
-if dein#tap('dps-slack-status.vim')
-  " AutoCmd User DenopsSlackStatusReady SlackStatusWrite
+" denops-skkeleton {{{3
+if dein#tap('denops-skkeleton.vim')
+  imap <C-j> <Plug>(skkeleton-enable)
+  cmap <C-j> <Plug>(skkeleton-enable)
+
+  call skkeleton#config({
+  \ 'globalJisyo': expand('~/.vim/skk/SKK-JISYO.L')
+  \ })
+
+  AutoCmd User skkeleton-enable-pre let b:coc_suggest_disable = v:true
+  AutoCmd User skkeleton-disable-pre let b:coc_suggest_disable = v:false
 endif
 " }}}3
 
@@ -1444,7 +1452,9 @@ let g:vim_indent_cont   = 0
 " }}}3
 
 " vue {{{3
-AutoCmd FileType vue syntax sync fromstart
+if dein#tap('vim-vue')
+  AutoCmd FileType vue syntax sync fromstart
+endif
 " }}}3
 
 " }}}2
@@ -1511,19 +1521,17 @@ endif
 
 " }}}3
 
-" fzf & coc-fzf {{{3
-let g:fzf_files_options = '--layout=reverse'
-let g:fzf_layout      = { 'window': { 'width': 0.9, 'height': 0.9 } }
-let g:coc_fzf_preview = 'right'
-let g:coc_fzf_opts    = ['--layout=reverse']
-let $BAT_THEME        = 'gruvbox-dark'
-let $BAT_STYLE        = 'plain'
-" let g:fzf_history_dir = '~/.local/share/fzf-history'
+" fzf {{{3
+if dein#tap('fzf')
+  let g:fzf_files_options = '--layout=reverse'
+  let g:fzf_layout      = { 'window': { 'width': 0.9, 'height': 0.9 } }
+  " let g:fzf_history_dir = '~/.local/share/fzf-history'
 
-" Nord
-" let $FZF_DEFAULT_OPTS = '--color=hl:#81A1C1,hl+:#81A1C1,info:#EACB8A,prompt:#81A1C1,pointer:#B48DAC,marker:#A3BE8B,spinner:#B48DAC,header:#A3BE8B'
-" Gruvbox
-let $FZF_DEFAULT_OPTS = '--color=bg+:#1d2021,bg:#1d2021,spinner:#d8a657,hl:#a9b665,fg:#d4be98,header:#928374,info:#89b482,pointer:#7daea3,marker:#d8a657,fg+:#d4be98,prompt:#e78a4e,hl+:#89b482'
+  " Nord
+  " let $FZF_DEFAULT_OPTS = '--color=hl:#81A1C1,hl+:#81A1C1,info:#EACB8A,prompt:#81A1C1,pointer:#B48DAC,marker:#A3BE8B,spinner:#B48DAC,header:#A3BE8B'
+  " Gruvbox
+  let $FZF_DEFAULT_OPTS = '--color=bg+:#1d2021,bg:#1d2021,spinner:#d8a657,hl:#a9b665,fg:#d4be98,header:#928374,info:#89b482,pointer:#7daea3,marker:#d8a657,fg+:#d4be98,prompt:#e78a4e,hl+:#89b482'
+endif
 " }}}3
 
 " fzf-preview {{{3
@@ -1671,6 +1679,13 @@ AutoCmd FileType fzf let b:highlight_cursor = 0
 " endif
 " }}}3
 
+" coc-fzf {{{3
+if dein#tap('coc-fzf')
+  let g:coc_fzf_preview = 'right'
+  let g:coc_fzf_opts    = ['--layout=reverse']
+endif
+" }}}3
+
 " telescope {{{3
 if dein#tap('telescope.nvim')
   nnoremap <silent> (ctrlp) :<C-u>lua require('telescope.builtin').git_files{}<CR>
@@ -1772,11 +1787,11 @@ require('gitsigns').setup {
     topdelete    = {hl = 'GitSignsDelete', text = '‾', numhl='GitSignsDeleteNr', linehl='GitSignsDeleteLn'},
     changedelete = {hl = 'GitSignsChange', text = '~', numhl='GitSignsChangeNr', linehl='GitSignsChangeLn'},
   },
+  word_diff = false,
   keymaps = {
     noremap = false,
-    buffer  = false,
   },
-  current_line_blame = true,
+  current_line_blame = false,
 }
 EOF
 endif
@@ -1967,21 +1982,15 @@ if dein#tap('vim-textobj-between')
 endif
 " }}}3
 
-" textobj-functioncall {{{3
-let g:textobj_functioncall_patterns = [
-  \ {
-  \   'header' : '\<\%(\h\k*\.\)*\h\k*',
-  \   'bra'    : '(',
-  \   'ket'    : ')',
-  \   'footer' : '',
-  \ },
-  \ {
-  \   'header' : '\<\h\k*',
-  \   'bra'    : '<',
-  \   'ket'    : '>',
-  \   'footer' : '',
-  \ },
-  \ ]
+" textobj-url {{{3
+if dein#tap('vim-textobj-url')
+  let g:textobj_url_no_default_key_mappings = 1
+
+  omap iU <Plug>(textobj-url-i)
+  omap aU <Plug>(textobj-url-a)
+  xmap iU <Plug>(textobj-url-i)
+  xmap aU <Plug>(textobj-url-a)
+endif
 " }}}3
 
 " }}}2
@@ -2288,6 +2297,24 @@ if dein#tap('vim-jplus')
   xmap <silent> <Leader>J <Plug>(jplus-input)
 endif
 " }}}3
+
+" kommentary {{{3
+if dein#tap('kommentary')
+  let g:kommentary_create_default_mappings = v:false
+
+  nmap <silent> <Leader>cc <Plug>kommentary_line_default
+  nmap <silent> <Leader>c  <Plug>kommentary_motion_default
+  xmap <silent> <Leader>cc <Plug>kommentary_visual_default
+
+lua << EOF
+require('kommentary.config').configure_language('typescriptreact', {
+  single_line_comment_string = 'auto',
+  multi_line_comment_strings = 'auto',
+  hook_function = function()
+    require('ts_context_commentstring.internal').update_commentstring()
+  end,
+})
+EOF
 endif
 " }}}3
 
@@ -2454,6 +2481,27 @@ if dein#tap('lexima.vim')
 endif
 " }}}3
 
+" lightspeed {{{3
+if dein#tap('lightspeed.nvim')
+  lua require('lightspeed').setup({})
+
+  nmap <silent> ss <Plug>Lightspeed_s
+  xmap <silent> ss <Plug>Lightspeed_s
+  omap <silent> ss <Plug>Lightspeed_s
+  nmap <silent> S  <Plug>Lightspeed_S
+  xmap <silent> S  <Plug>Lightspeed_S
+  omap <silent> S  <Plug>Lightspeed_S
+endif
+" }}}3
+
+" numb {{{3
+if dein#tap('numb.nvim')
+lua << EOF
+require('numb').setup()
+EOF
+endif
+" }}}3
+
 " quick-scope {{{3
 " let g:qs_buftype_blacklist = ['terminal', 'nofile']
 " }}}3
@@ -2595,17 +2643,26 @@ endif
 " }}}3
 
 " scratch {{{3
-BulkAlterCommand sc[ratch] Scratch
+if dein#tap('scratch.vim')
+  BulkAlterCommand sc[ratch] Scratch
 
-let g:scratch_no_mappings = 1
+  let g:scratch_no_mappings = 1
+endif
 " }}}3
 
 " shot-f {{{3
-" if dein#tap('vim-shot-f')
-"   let g:shot_f_no_default_key_mappings = 1
-"   nmap <silent> f <Plug>(shot-f-f)
-"   nmap <silent> F <Plug>(shot-f-F)
-" endif
+if dein#tap('vim-shot-f')
+  let g:shot_f_no_default_key_mappings = 1
+  nmap <silent> f <Plug>(shot-f-f)
+  nmap <silent> F <Plug>(shot-f-F)
+endif
+" }}}3
+
+" smart-cursor {{{3
+if dein#tap('smart-cursor.nvim')
+  nnoremap <silent> o o<Esc>:lua require('smart-cursor').indent_cursor()<CR>i
+  nnoremap <silent> O O<Esc>:lua require('smart-cursor').indent_cursor()<CR>i
+endif
 " }}}3
 
 " tcomment {{{3
@@ -2615,6 +2672,14 @@ if dein#tap('tcomment_vim')
   noremap <silent> <Leader>cc :TComment<CR>
 endif
 " }}}3
+
+" textmanip {{{3
+if dein#tap('vim-textmanip')
+  xmap <C-j> <Plug>(textmanip-move-down)
+  xmap <C-k> <Plug>(textmanip-move-up)
+  xmap <C-h> <Plug>(textmanip-move-left)
+  xmap <C-l> <Plug>(textmanip-move-right)
+endif
 " }}}3
 
 " ts-autotag {{{3
@@ -3131,6 +3196,10 @@ if dein#tap('vim-matchup')
 endif
 " }}}3
 
+" neoscroll {{{3
+if dein#tap('neoscroll.nvim')
+  " lua require('neoscroll').setup({ mappings = {"<C-u>", "<C-d>"}})
+endif
 " }}}3
 
 " nvim-colorizer {{{3
@@ -3411,8 +3480,8 @@ if dein#tap('vim-floaterm')
 
   nnoremap <silent> <C-s> :<C-u>FloatermToggle<CR>
 
-  AutoCmd FileType floaterm call s:floaterm_settings()
-  AutoCmd FileType gitrebase call s:set_git_rebase_settings()
+  AutoCmd FileType floaterm call <SID>floaterm_settings()
+  AutoCmd FileType gitrebase call <SID>set_git_rebase_settings()
 
   function! s:floaterm_settings() abort
     tnoremap <silent> <buffer> <C-s> <C-\><C-n>:FloatermToggle<CR>
