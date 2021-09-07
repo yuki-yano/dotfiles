@@ -2717,31 +2717,14 @@ endif
 " }}}3
 
 " sandwich {{{3
-if dein#tap('vim-sandwich')
-  omap is <Plug>(textobj-sandwich-query-i)
-  omap as <Plug>(textobj-sandwich-query-a)
-  xmap is <Plug>(textobj-sandwich-query-i)
-  xmap as <Plug>(textobj-sandwich-query-a)
+if dein#tap('vim-sandwich') && dein#tap('vim-textobj-functioncall')
+  let g:textobj_sandwich_no_default_key_mappings     = 1
+  let g:textobj_functioncall_no_default_key_mappings = 1
 
-  omap i/ <Plug>(textobj-sandwich-literal-query-i)/
-  omap a/ <Plug>(textobj-sandwich-literal-query-a)/
-  xmap i/ <Plug>(textobj-sandwich-literal-query-i)/
-  xmap a/ <Plug>(textobj-sandwich-literal-query-a)/
-
-  omap i_ <Plug>(textobj-sandwich-literal-query-i)_
-  omap a_ <Plug>(textobj-sandwich-literal-query-a)_
-  xmap i_ <Plug>(textobj-sandwich-literal-query-i)_
-  xmap a_ <Plug>(textobj-sandwich-literal-query-a)_
-
-  omap i- <Plug>(textobj-sandwich-literal-query-i)-
-  omap a- <Plug>(textobj-sandwich-literal-query-a)-
-  xmap i- <Plug>(textobj-sandwich-literal-query-i)-
-  xmap a- <Plug>(textobj-sandwich-literal-query-a)-
-
-  omap i<Space> <Plug>(textobj-sandwich-literal-query-i)<Space>
-  omap a<Space> <Plug>(textobj-sandwich-literal-query-a)<Space>
-  xmap i<Space> <Plug>(textobj-sandwich-literal-query-i)<Space>
-  xmap a<Space> <Plug>(textobj-sandwich-literal-query-a)<Space>
+  omap <silent> ib <Plug>(textobj-sandwich-auto-i)
+  xmap <silent> ib <Plug>(textobj-sandwich-auto-i)
+  omap <silent> ab <Plug>(textobj-sandwich-auto-a)
+  xmap <silent> ab <Plug>(textobj-sandwich-auto-a)
 
   let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
   let g:sandwich#recipes += [
@@ -2770,37 +2753,76 @@ if dein#tap('vim-sandwich')
   \   'match_syntax': 1,
   \ },
   \ {
-  \   '__filetype__': 'javascript, typescript',
   \   'buns':     ['${', '}'],
   \   'input':    ['$'],
   \   'filetype': ['javascript', 'javascriptreact', 'typescript', 'typescriptreact'],
   \ },
   \ {
-  \   '__filetype__': 'ruby',
   \   'buns':     ['#{', '}'],
   \   'input':    ['#'],
   \   'filetype': ['ruby', 'eruby'],
   \ },
   \ {
-  \   '__filetype__': 'ruby',
   \   'buns':     ['-> () {', '}'],
   \   'input':    ['->'],
   \   'kind':     ['add'],
   \   'filetype': ['ruby', 'eruby'],
   \ },
   \ {
-  \   '__filetype__': 'eruby',
   \   'buns':     ['<% ', ' %>'],
   \   'input':    ['%'],
   \   'filetype': ['eruby'],
   \ },
   \ {
-  \   '__filetype__': 'eruby',
   \   'buns':     ['<%= ', ' %>'],
   \   'input':    ['='],
   \   'filetype': ['eruby'],
   \ },
   \ ]
+
+  let g:textobj_functioncall_patterns = [
+  \ {
+  \   'header' : '\<\%(\h\k*\.\)*\h\k*',
+  \   'bra'    : '(',
+  \   'ket'    : ')',
+  \   'footer' : '',
+  \ },
+  \ ]
+
+  omap <silent> if <Plug>(textobj-functioncall-innerparen-i)
+  xmap <silent> if <Plug>(textobj-functioncall-innerparen-i)
+  omap <silent> af <Plug>(textobj-functioncall-i)
+  xmap <silent> af <Plug>(textobj-functioncall-i)
+
+  let g:sandwich#magicchar#f#patterns = [
+  \ {
+  \   'header' : '\<\%(\h\k*\.\)*\h\k*',
+  \   'bra'    : '(',
+  \   'ket'    : ')',
+  \   'footer' : '',
+  \ },
+  \ ]
+
+  nmap <silent> srf <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)ff
+
+  let g:textobj_functioncall_generics_patterns = [
+  \ {
+  \   'header' : '\<\h\k*',
+  \   'bra'    : '<',
+  \   'ket'    : '>',
+  \   'footer' : '',
+  \ },
+  \ ]
+
+  onoremap <silent> <Plug>(textobj-functioncall-generics-i) :<C-u>call textobj#functioncall#ip('o', g:textobj_functioncall_generics_patterns)<CR>
+  xnoremap <silent> <Plug>(textobj-functioncall-generics-i) :<C-u>call textobj#functioncall#ip('x', g:textobj_functioncall_generics_patterns)<CR>
+  onoremap <silent> <Plug>(textobj-functioncall-generics-a) :<C-u>call textobj#functioncall#i('o', g:textobj_functioncall_generics_patterns)<CR>
+  xnoremap <silent> <Plug>(textobj-functioncall-generics-a) :<C-u>call textobj#functioncall#i('x', g:textobj_functioncall_generics_patterns)<CR>
+
+  omap <silent> ig <Plug>(textobj-functioncall-generics-i)
+  xmap <silent> ig <Plug>(textobj-functioncall-generics-i)
+  omap <silent> ag <Plug>(textobj-functioncall-generics-a)
+  xmap <silent> ag <Plug>(textobj-functioncall-generics-a)
 
   let g:sandwich#recipes += [
   \ {
@@ -2812,7 +2834,7 @@ if dein#tap('vim-sandwich')
   \   'input': ['g']
   \ },
   \ {
-  \   'external': ['i<', "\<Plug>(textobj-functioncall-a)"],
+  \   'external': ['i<', "\<Plug>(textobj-functioncall-generics-a)"],
   \   'noremap': 0,
   \   'kind': ['delete', 'replace', 'query'],
   \   'input': ['g']
@@ -2827,14 +2849,26 @@ if dein#tap('vim-sandwich')
     return genericsname . '<'
   endfunction
 
-  let g:sandwich#magicchar#f#patterns = [
+  nmap <silent> srg <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)gg
+
+  let g:textobj_functioncall_ts_string_variable_patterns = [
   \ {
-  \   'header' : '\<\%(\h\k*\.\)*\h\k*',
-  \   'bra'    : '(',
-  \   'ket'    : ')',
+  \   'header' : '\$',
+  \   'bra'    : '{',
+  \   'ket'    : '}',
   \   'footer' : '',
   \ },
   \ ]
+
+  onoremap <silent> <Plug>(textobj-functioncall-ts-string-variable-i) :<C-u>call textobj#functioncall#i('o', g:textobj_functioncall_ts_string_variable_patterns)<CR>
+  xnoremap <silent> <Plug>(textobj-functioncall-ts-string-variable-i) :<C-u>call textobj#functioncall#i('x', g:textobj_functioncall_ts_string_variable_patterns)<CR>
+  onoremap <silent> <Plug>(textobj-functioncall-ts-string-variable-a) :<C-u>call textobj#functioncall#a('o', g:textobj_functioncall_ts_string_variable_patterns)<CR>
+  xnoremap <silent> <Plug>(textobj-functioncall-ts-string-variable-a) :<C-u>call textobj#functioncall#a('x', g:textobj_functioncall_ts_string_variable_patterns)<CR>
+
+  omap <silent> i$ <Plug>(textobj-functioncall-ts-string-variable-i)
+  xmap <silent> i$ <Plug>(textobj-functioncall-ts-string-variable-i)
+  omap <silent> a$ <Plug>(textobj-functioncall-ts-string-variable-a)
+  xmap <silent> a$ <Plug>(textobj-functioncall-ts-string-variable-a)
 endif
 " }}}3
 
