@@ -402,15 +402,17 @@ imap <C-h> <BS>
 cmap <C-h> <BS>
 
 "" Buffer
-nnoremap <C-q>     <C-^>
-nnoremap <Leader>R :<C-u>e!<CR>
+nnoremap <C-q> <C-^>
+
+"" Save and reload (for treesitter)
+nnoremap <silent> <Leader>R :<C-u>w<CR>:e!<CR>
 
 "" Yank
 nnoremap Y y$
 function! s:yank_without_indent() abort
   normal! gvy
   let content = getreg(v:register, 1, v:true)
-  let leading = min(map(copy(content), { _, v -> len(matchstr(v, '^\s*')) }))
+  let leading = min(map(filter(copy(content), { _, v -> len(v) != 0 }), { _, v -> len(matchstr(v, '^\s*')) }))
   call map(content, { _, v -> v[leading :] })
   call setreg(v:register, content, getregtype(v:register))
 endfunction
@@ -504,13 +506,13 @@ nnoremap <Down>  :resize +1<CR>
 nnoremap Q @q
 
 "" regexp
-nnoremap <Leader>r :%s/\v//g<Left><Left><Left>
+nnoremap <Leader>r :<C-u>%s/\v//g<Left><Left><Left>
 xnoremap <Leader>r "sy:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
 
 "" Clipboard
 nnoremap <silent> sc :<C-u>call system("pbcopy", @") <Bar> echo "Copied \" register to OS clipboard"<CR>
 nnoremap <silent> sp :<C-u>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>
-xnoremap <silent> sp :<C-u>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>gv
+xnoremap <silent> sp <Esc>:let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>gv
 " }}}2
 
 " Set Options {{{2
@@ -520,7 +522,7 @@ if has('nvim')
   let g:loaded_python_provider = 0
   let g:loaded_perl_provider   = 0
   let g:loaded_ruby_provider   = 0
-  let g:python3_host_prog      = $HOME . '/.pyenv/shims/python'
+  let g:python3_host_prog      = $HOME . '/.asdf/shims/python'
 
   set inccommand=nosplit
 
@@ -610,7 +612,7 @@ set wrapscan
 
 "" Folding
 set foldcolumn=1
-set foldenable
+set nofoldenable
 set foldmethod=manual
 
 "" FileType
@@ -625,7 +627,9 @@ AutoCmd InsertLeave * if &l:diff | diffupdate | endif
 
 "" Undo
 set undofile
-set undodir=~/.cache/vim/undo/
+if has('nvim')
+  set undodir=~/.cache/vim/undo/
+endif
 
 "" Swap
 set swapfile
@@ -649,11 +653,6 @@ endif
 
 "" Session
 set sessionoptions=buffers,tabpages,winsize
-
-"" Git Editor require neovim-remote
-if has('nvim')
-  let $GIT_EDITOR = 'nvr --remote-wait'
-endif
 
 "" Automatically Disable Paste Mode
 AutoCmd InsertLeave * setlocal nopaste
@@ -704,7 +703,7 @@ function! s:enter(...) abort
   endif
   augroup highlight_cursor
     autocmd!
-    autocmd CursorMoved,WinLeave * call s:leave()
+    autocmd CursorMoved,WinLeave * call <SID>leave()
   augroup END
 endfunction
 
@@ -712,14 +711,14 @@ function! s:leave() abort
   setlocal nocursorline nocursorcolumn
   augroup highlight_cursor
     autocmd!
-    autocmd CursorHold * call s:enter()
-    autocmd WinEnter * call timer_start(s:highlight_cursor_wait, function('s:enter'))
+    autocmd CursorHold * call <SID>enter()
+    autocmd WinEnter * call timer_start(<SID>highlight_cursor_wait, function('<SID>enter'))
   augroup END
 endfunction
 
-" AutoCmd VimEnter * call timer_start(s:highlight_cursor_wait, function('s:enter'))
+" AutoCmd VimEnter * call timer_start(<SID>highlight_cursor_wait, function('<SID>enter'))
 
-function! s:cursor_highlight_toggle()
+function! s:cursor_highlight_toggle() abort
   if g:highlight_cursor
     let g:highlight_cursor = 0
     setlocal nocursorline nocursorcolumn
@@ -734,7 +733,7 @@ command! CursorHighlightToggle call <SID>cursor_highlight_toggle()
 
 " Auto mkdir {{{2
 AutoCmd BufWritePre * call <SID>auto_mkdir(expand('<afile>:p:h'), v:cmdbang)
-function! s:auto_mkdir(dir, force)
+function! s:auto_mkdir(dir, force) abort
   if !isdirectory(a:dir) && (a:force || input(printf('"%s" does not exist. Create? [y/N]', a:dir)) =~? '^y\%[es]$')
     call mkdir(a:dir, 'p')
   endif
@@ -742,19 +741,19 @@ endfunction
 " }}}2
 
 " SyntaxHighlightToggle {{{2
-function! s:syntax_highlight_toggle()
-  if exists('g:syntax_on')
-    syntax off
-  else
-    syntax enable
-  endif
-endfunction
+" function! s:syntax_highlight_toggle() abort
+"   if exists('g:syntax_on')
+"     syntax off
+"   else
+"     syntax enable
+"   endif
+" endfunction
 
-command! SyntaxHighlightToggle call <SID>syntax_highlight_toggle()
+" command! SyntaxHighlightToggle call <SID>syntax_highlight_toggle()
 " }}}2
 
 " QuickfixToggle {{{2
-function! s:quickfix_toggle()
+function! s:quickfix_toggle() abort
   let _ = winnr('$')
   cclose
   if _ == winnr('$')
@@ -768,7 +767,7 @@ nnoremap <silent> <Leader>q :<C-u>QuickfixToggle<CR>
 " }}}2
 
 " ToggleLocationList {{{2
-function! s:location_list_toggle()
+function! s:location_list_toggle() abort
   let _ = winnr('$')
   lclose
   if _ == winnr('$')
@@ -782,40 +781,44 @@ nnoremap <silent> <Leader>l :<C-u>LocationListToggle<CR>
 " }}}2
 
 " HelpEdit & HelpView {{{2
-function! s:option_to_view()
+function! s:option_to_help_view() abort
   setlocal buftype=help nomodifiable readonly
   setlocal nolist
   setlocal colorcolumn=
   setlocal conceallevel=2
 endfunction
 
-function! s:option_to_edit()
+function! s:option_to_help_edit() abort
   setlocal buftype= modifiable noreadonly
   setlocal list tabstop=8 shiftwidth=8 softtabstop=8 noexpandtab textwidth=78
   setlocal colorcolumn=+1
   setlocal conceallevel=0
 endfunction
 
-command! HelpEdit call <SID>option_to_edit()
-command! HelpView call <SID>option_to_view()
+command! HelpView call <SID>option_to_help_view()
+command! HelpEdit call <SID>option_to_help_edit()
 " }}}2
 
 " HighlightInfo {{{2
-function! s:get_syn_id(transparent)
+function! s:get_syn_id(transparent) abort
   let synid = synID(line('.'), col('.'), 1)
   return a:transparent ? synIDtrans(synid) : synid
 endfunction
 
-function! s:get_syn_name(synid)
+function! s:get_syn_name(synid) abort
   return synIDattr(a:synid, 'name')
 endfunction
 
-function! s:get_highlight_info()
+function! s:get_highlight_info() abort
   execute 'highlight ' . s:get_syn_name(s:get_syn_id(0))
   execute 'highlight ' . s:get_syn_name(s:get_syn_id(1))
 endfunction
 
-command! HighlightInfo call s:get_highlight_info()
+command! HighlightInfo call <SID>get_highlight_info()
+" }}}2
+
+" View JSON {{{2
+command! JSON set ft=json | call CocAction('format')
 " }}}2
 
 " VSCode {{{2
@@ -851,13 +854,19 @@ function! s:review_start() abort
 
   " SNumbersTurnOffRelative
 
-  " let g:comfortable_motion_enable = 0
-  " ComfortableMotionToggle
+  if dein#tap('comfortable-motion.vim')
+    let g:comfortable_motion_enable = 0
+    ComfortableMotionToggle
+  endif
 
-  set list listchars=tab:^\ ,trail:_,extends:>,precedes:<
+  if dein#tap('neoscroll.nvim')
+    lua require('neoscroll').setup({ mappings = {"<C-u>", "<C-d>"}})
+  endif
+
+  set listchars-=eol:$
 endfunction
 
-command! ReviewStart call s:review_start()
+command! ReviewStart call <SID>review_start()
 
 function! s:review_end() abort
   let g:review_status = v:false
@@ -875,10 +884,17 @@ function! s:review_end() abort
 
   " SNumbersTurnOnRelative
 
-  " let g:comfortable_motion_enable = 1
-  " ComfortableMotionToggle
+  if dein#tap('comfortable-motion.vim')
+    let g:comfortable_motion_enable = 1
+    ComfortableMotionToggle
+  endif
 
-  set list listchars=tab:^\ ,trail:_,extends:>,precedes:<,eol:$
+  if dein#tap('neoscroll.nvim')
+    nunmap <C-d>
+    nunmap <C-u>
+  endif
+
+  set listchars+=eol:$
 endfunction
 
 command! ReviewEnd call <SID>review_end()
@@ -913,7 +929,6 @@ AutoCmd FileType json            setlocal expandtab   shiftwidth=2 softtabstop=2
 AutoCmd FileType markdown        setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType html            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType css             setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
-AutoCmd FileType scss            setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType vim             setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType sh              setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType zsh             setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
@@ -931,7 +946,6 @@ AutoCmd FileType vue  setlocal iskeyword+=$ iskeyword+=& iskeyword+=- iskeyword+
 AutoCmd FileType ruby setlocal iskeyword+=@ iskeyword+=! iskeyword+=? iskeyword+=&
 AutoCmd FileType html setlocal iskeyword+=-
 AutoCmd FileType css  setlocal iskeyword+=- iskeyword+=#
-AutoCmd FileType scss setlocal iskeyword+=- iskeyword+=# iskeyword+=$
 AutoCmd FileType vim  setlocal iskeyword+=-
 AutoCmd FileType sh   setlocal iskeyword+=-
 AutoCmd FileType zsh  setlocal iskeyword+=-
@@ -944,7 +958,7 @@ let g:vimsyn_embed = 'l'
 " }}}2
 
 " HTML & eruby {{{2
-function! s:map_html_keys()
+function! s:map_html_keys() abort
   inoremap <silent> <buffer> \\ \
   inoremap <silent> <buffer> \& &amp;
   inoremap <silent> <buffer> \< &lt;
@@ -959,6 +973,7 @@ AutoCmd FileType html,eruby call <SID>map_html_keys()
 " }}}2
 
 " Set quit {{{2
+AutoCmd FileType qf   nnoremap <silent> <nowait> <buffer> q :<C-u>quit<CR>
 AutoCmd FileType help nnoremap <silent> <nowait> <buffer> q :<C-u>quit<CR>
 AutoCmd FileType diff nnoremap <silent> <nowait> <buffer> q :<C-u>quit<CR>
 AutoCmd FileType man  nnoremap <silent> <nowait> <buffer> q :<C-u>quit<CR>
@@ -1021,8 +1036,10 @@ command! -nargs=+ BulkAlterCommand call <SID>bulk_alter_command(<f-args>)
 
 if dein#tap('vim-altercmd')
   call altercmd#load()
-  BulkAlterCommand co[de]   VSCode
-  BulkAlterCommand fo[rk]   !fork
+  BulkAlterCommand ee     e!
+  BulkAlterCommand co[de] VSCode
+  BulkAlterCommand fo[rk] !fork
+  BulkAlterCommand js[on] JSON
 endif
 " }}}3
 
@@ -1332,7 +1349,9 @@ endif
 " Language {{{2
 
 " fixjson {{{3
-let g:fixjson_fix_on_save = 0
+if dein#tap('vim-fixjson')
+  let g:fixjson_fix_on_save = 0
+endif
 " }}}3
 
 " gen_tags {{{3
@@ -1351,16 +1370,20 @@ endif
 " }}}3
 
 " json {{{3
-let g:vim_json_syntax_conceal = 0
+if dein#tap('vim-json')
+  let g:vim_json_syntax_conceal = 0
+endif
 " }}}3
 
 " markdown {{{3
-let g:vim_markdown_folding_disabled        = 1
-let g:vim_markdown_no_default_key_mappings = 1
-let g:vim_markdown_conceal                 = 0
-let g:vim_markdown_conceal_code_blocks     = 0
-let g:vim_markdown_auto_insert_bullets     = 0
-let g:vim_markdown_new_list_item_indent    = 0
+if dein#tap('vim-markdown')
+  let g:vim_markdown_folding_disabled        = 1
+  let g:vim_markdown_no_default_key_mappings = 1
+  let g:vim_markdown_conceal                 = 0
+  let g:vim_markdown_conceal_code_blocks     = 0
+  let g:vim_markdown_auto_insert_bullets     = 0
+  let g:vim_markdown_new_list_item_indent    = 0
+endif
 " }}}3
 
 " rainbow_csv {{{3
@@ -1429,10 +1452,9 @@ AutoCmd FileType vue syntax sync fromstart
 " Completion & Fuzzy Finder {{{2
 
 " Denite {{{3
-BulkAlterCommand d[enite] Denite
 
 if dein#tap('denite.nvim') && has('nvim')
-  " Denite
+  BulkAlterCommand d[enite] Denite
 
   "" highlight
   call denite#custom#option('default', 'prompt', '>')
@@ -1464,8 +1486,8 @@ if dein#tap('denite.nvim') && has('nvim')
     inoremap <silent>        <buffer> <C-g> <Esc>
   endfunction
 
-  AutoCmd FileType denite        call s:denite_settings()
-  AutoCmd FileType denite-filter call s:denite_filter_settings()
+  AutoCmd FileType denite        call <SID>denite_settings()
+  AutoCmd FileType denite-filter call <SID>denite_filter_settings()
 
   "" menu
   BulkAlterCommand to[ggle] Denite<Space>menu:toggle
@@ -1536,8 +1558,8 @@ nnoremap <silent> <fzf-p>b     :<C-u>FzfPreviewBuffersRpc<CR>
 nnoremap <silent> <fzf-p>B     :<C-u>FzfPreviewAllBuffersRpc --experimental-fast<CR>
 nnoremap <silent> <fzf-p><C-o> :<C-u>FzfPreviewJumpsRpc --experimental-fast<CR>
 nnoremap <silent> <fzf-p>g;    :<C-u>FzfPreviewChangesRpc<CR>
-nnoremap <silent> <fzf-p>/     :<C-u>FzfPreviewLinesRpc --resume --add-fzf-arg=--no-sort<CR>
-nnoremap <silent> <fzf-p>*     :<C-u>FzfPreviewLinesRpc --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap <silent> <fzf-p>/     :<C-u>FzfPreviewLinesRpc --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
+nnoremap <silent> <fzf-p>*     :<C-u>FzfPreviewLinesRpc --add-fzf-arg=--exact --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
 xnoremap <silent> <fzf-p>*     "sy:FzfPreviewLinesRpc --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=substitute(@s, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
 nnoremap <silent> <fzf-p>n     :<C-u>FzfPreviewLinesRpc --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=substitute(@/, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
 nnoremap <silent> <fzf-p>?     :<C-u>FzfPreviewBufferLinesRpc --resume --add-fzf-arg=--no-sort<CR>
@@ -1559,7 +1581,9 @@ nnoremap <silent> <dev>rf :<C-u>CocCommand fzf-preview.CocReferences<CR>
 nnoremap <silent> <dev>t  :<C-u>CocCommand fzf-preview.CocTypeDefinitions<CR>
 nnoremap <silent> <dev>i  :<C-u>CocCommand fzf-preview.CocImplementations<CR>
 
-AutoCmd User fzf_preview#rpc#initialized call s:fzf_preview_settings()
+AutoCmd User fzf_preview#rpc#initialized call <SID>fzf_preview_settings()
+
+BulkAlterCommand tod[o] CocCommand<Space>fzf-preview.TodoComments
 
 function! s:buffers_delete_from_lines(lines) abort
   for line in a:lines
@@ -1571,7 +1595,7 @@ function! s:buffers_delete_from_lines(lines) abort
 endfunction
 
 "" TODO: fzf Reflection
-" function! FzfColor()
+" function! FzfColor() abort
 "   if !exists('g:fzf_colors')
 "     return ''
 "   endif
@@ -1600,20 +1624,20 @@ endfunction
 " endfunction
 "
 " let g:fzf_colors = {
-"\ 'fg':      ['fg', 'Normal'],
-"\ 'bg':      ['bg', 'Normal'],
-"\ 'hl':      ['fg', 'Comment'],
-"\ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-"\ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-"\ 'hl+':     ['fg', 'Statement'],
-"\ 'info':    ['fg', 'PreProc'],
-"\ 'border':  ['fg', 'Ignore'],
-"\ 'prompt':  ['fg', 'Conditional'],
-"\ 'pointer': ['fg', 'Exception'],
-"\ 'marker':  ['fg', 'Keyword'],
-"\ 'spinner': ['fg', 'Label'],
-"\ 'header':  ['fg', 'Comment']
-"\ }
+" \ 'fg':      ['fg', 'Normal'],
+" \ 'bg':      ['bg', 'Normal'],
+" \ 'hl':      ['fg', 'Comment'],
+" \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+" \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+" \ 'hl+':     ['fg', 'Statement'],
+" \ 'info':    ['fg', 'PreProc'],
+" \ 'border':  ['fg', 'Ignore'],
+" \ 'prompt':  ['fg', 'Conditional'],
+" \ 'pointer': ['fg', 'Exception'],
+" \ 'marker':  ['fg', 'Keyword'],
+" \ 'spinner': ['fg', 'Label'],
+" \ 'header':  ['fg', 'Comment']
+" \ }
 
 function! s:fzf_preview_settings() abort
   let g:fzf_preview_grep_preview_cmd = 'COLORTERM=truecolor ' . g:fzf_preview_grep_preview_cmd
@@ -1649,7 +1673,7 @@ AutoCmd FileType fzf let b:highlight_cursor = 0
 
 " telescope {{{3
 if dein#tap('telescope.nvim')
-  nnoremap <silent> (ctrlp) :<C-u>lua require'telescope.builtin'.git_files{}<CR>
+  nnoremap <silent> (ctrlp) :<C-u>lua require('telescope.builtin').git_files{}<CR>
 endif
 " }}}3
 
@@ -1664,62 +1688,74 @@ if dein#tap('blamer.nvim')
 endif
 " }}}3
 
+" git-blame {{{3
+if dein#tap('git-blame.nvim')
+  let g:gitblame_enabled = 0 
+endif
+" }}}3
+
 " git-messenger {{{3
 if dein#tap('git-messenger.vim')
+  let g:git_messenger_no_default_mappings = 1
+
   nnoremap <silent> gm :<C-u>GitMessenger<CR>
 endif
 " }}}3
 
 " gina {{{3
-BulkAlterCommand git   Gina
-BulkAlterCommand gina  Gina
-BulkAlterCommand gs    Gina<Space>status
-BulkAlterCommand gci   Gina<Space>commit<Space>--no-verify
-BulkAlterCommand gd    Gina<Space>diff
-BulkAlterCommand gdc   Gina<Space>diff<Space>--cached
-BulkAlterCommand gco   Gina<Space>checkout
-BulkAlterCommand log   Gina<Space>log
-BulkAlterCommand blame Gina<Space>blame
+if dein#tap('gina.vim')
+  BulkAlterCommand git   Gina
+  BulkAlterCommand gina  Gina
+  BulkAlterCommand gs    Gina<Space>status
+  BulkAlterCommand gci   Gina<Space>commit<Space>--no-verify
+  BulkAlterCommand gd    Gina<Space>diff
+  BulkAlterCommand gdc   Gina<Space>diff<Space>--cached
+  BulkAlterCommand gco   Gina<Space>checkout
+  BulkAlterCommand log   Gina<Space>log
+  BulkAlterCommand blame Gina<Space>blame
 
-AutoCmd VimEnter * call s:gina_settings()
+  AutoCmd VimEnter * call <SID>gina_settings()
 
-function! s:gina_settings()
-  call gina#custom#command#option('status', '--short')
-  call gina#custom#command#option('/\%(status\|commit\|branch\)', '--opener', 'split')
-  call gina#custom#command#option('diff', '--opener', 'vsplit')
+  function! s:gina_settings() abort
+    call gina#custom#command#option('status', '--short')
+    call gina#custom#command#option('/\%(status\|commit\|branch\)', '--opener', 'split')
+    call gina#custom#command#option('diff', '--opener', 'vsplit')
 
-  call gina#custom#command#option('/\%(status\|changes\)', '--ignore-submodules')
-  call gina#custom#command#option('status', '--branch')
-  call gina#custom#mapping#nmap('status', '<C-j>', ':TmuxNavigateDown<CR>', {'noremap': 1, 'silent': 1})
-  call gina#custom#mapping#nmap('status', '<C-k>', ':TmuxNavigateUp<CR>',   {'noremap': 1, 'silent': 1})
+    call gina#custom#command#option('/\%(status\|changes\)', '--ignore-submodules')
+    call gina#custom#command#option('status', '--branch')
+    call gina#custom#mapping#nmap('status', '<C-j>', ':TmuxNavigateDown<CR>', {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('status', '<C-k>', ':TmuxNavigateUp<CR>',   {'noremap': 1, 'silent': 1})
 
-  call gina#custom#mapping#nmap('diff', '<CR>', '<Plug>(gina-diff-jump-vsplit)', {'silent': 1})
+    call gina#custom#mapping#nmap('diff', '<CR>', '<Plug>(gina-diff-jump-vsplit)', {'silent': 1})
 
-  call gina#custom#mapping#nmap('blame', '<C-l>', ':TmuxNavigateRight<CR>',    {'noremap': 1, 'silent': 1})
-  call gina#custom#mapping#nmap('blame', '<C-r>', '<Plug>(gina-blame-redraw)', {'noremap': 1, 'silent': 1})
-  call gina#custom#mapping#nmap('blame', 'j',     'j<Plug>(gina-blame-echo)')
-  call gina#custom#mapping#nmap('blame', 'k',     'k<Plug>(gina-blame-echo)')
+    call gina#custom#mapping#nmap('blame', '<C-l>', ':TmuxNavigateRight<CR>',    {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('blame', '<C-r>', '<Plug>(gina-blame-redraw)', {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('blame', 'j',     'j<Plug>(gina-blame-echo)')
+    call gina#custom#mapping#nmap('blame', 'k',     'k<Plug>(gina-blame-echo)')
 
-  call gina#custom#action#alias('/\%(blame\|log\|reflog\)', 'preview', 'topleft show:commit:preview')
-  call gina#custom#mapping#nmap('/\%(blame\|log\|reflog\)', 'p',       ":<C-u>call gina#action#call('preview')<CR>", {'noremap': 1, 'silent': 1})
+    call gina#custom#action#alias('/\%(blame\|log\|reflog\)', 'preview', 'topleft show:commit:preview')
+    call gina#custom#mapping#nmap('/\%(blame\|log\|reflog\)', 'p',       ":<C-u>call gina#action#call('preview')<CR>", {'noremap': 1, 'silent': 1})
 
-  call gina#custom#execute('/\%(ls\|log\|reflog\|grep\)',                 'setlocal noautoread')
-  call gina#custom#execute('/\%(status\|branch\|ls\|log\|reflog\|grep\)', 'setlocal cursorline')
+    call gina#custom#execute('/\%(ls\|log\|reflog\|grep\)',                 'setlocal noautoread')
+    call gina#custom#execute('/\%(status\|branch\|ls\|log\|reflog\|grep\)', 'setlocal cursorline')
 
-  call gina#custom#mapping#nmap('/\%(status\|commit\|branch\|ls\|log\|reflog\|grep\)', 'q', 'ZQ', {'nnoremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('/\%(status\|commit\|branch\|ls\|log\|reflog\|grep\)', 'q', 'ZQ', {'nnoremap': 1, 'silent': 1})
 
-  call gina#custom#mapping#nmap('log', 'yy', ":<C-u>call gina#action#call('yank:rev')<CR>", {'noremap': 1, 'silent': 1})
-  " require floaterm
-  call gina#custom#mapping#nmap('log', 'R', ":<C-u>call gina#action#call('yank:rev')<CR>:FloatermNew git rebase -i <C-r>\"<CR>", {'noremap': 1, 'silent': 1})
-endfunction
+    call gina#custom#mapping#nmap('log', 'yy', ":<C-u>call gina#action#call('yank:rev')<CR>", {'noremap': 1, 'silent': 1})
+    " require floaterm
+    call gina#custom#mapping#nmap('log', 'R', ":<C-u>call gina#action#call('yank:rev')<CR>:FloatermNew git rebase -i <C-r>\"<CR>", {'noremap': 1, 'silent': 1})
+  endfunction
+endif
 " }}}3
 
 " gitsessions {{{3
-BulkAlterCommand gss GitSessionSave
-BulkAlterCommand gsl GitSessionLoad
-BulkAlterCommand gsd GitSessionDelete
+if dein#tap('gitsessions.vim')
+  BulkAlterCommand gss GitSessionSave
+  BulkAlterCommand gsl GitSessionLoad
+  BulkAlterCommand gsd GitSessionDelete
 
-let g:gitsessions_disable_auto_load = 1
+  let g:gitsessions_disable_auto_load = 1
+endif
 " }}}3
 
 " gitsigns {{{3
@@ -1751,46 +1787,48 @@ endif
 " filer {{{2
 
 " defx {{{3
-let g:defx_git#raw_mode        = 1
-let g:defx_icons_column_length = 2
+if dein#tap('defx.nvim')
+  let g:defx_git#raw_mode        = 1
+  let g:defx_icons_column_length = 2
 
-if has('nvim')
   nnoremap <silent> <Leader><Leader>e :Defx -columns=mark:git:indent:icons:filename:type -split=vertical -winwidth=40 -direction=topleft<CR>
   nnoremap <silent> <Leader><Leader>E :Defx -columns=mark:git:indent:icons:filename:type -split=vertical -winwidth=40 -direction=topleft -search=`expand('%:p')`<CR>
+
+  let g:defx_ignore_filtype = ['denite', 'defx']
+
+  function! s:defx_settings() abort
+    nnoremap <silent> <buffer> <expr> <nowait> j       line('.') == line('$') ? 'gg' : 'j'
+    nnoremap <silent> <buffer> <expr> <nowait> k       line('.') == 1 ? 'G' : 'k'
+    nnoremap <silent> <buffer> <expr> <nowait> t       defx#do_action('open_or_close_tree')
+    nnoremap <silent> <buffer> <expr> <nowait> h       defx#do_action('cd', ['..'])
+    nnoremap <silent> <buffer> <expr> <nowait> l       defx#is_directory() ? defx#do_action('open_tree') : 0
+    nnoremap <silent> <buffer> <expr> <nowait> L       defx#do_action('open_tree_recursive')
+    nnoremap <silent> <buffer> <expr> <nowait> .       defx#do_action('toggle_ignored_files')
+    nnoremap <silent> <buffer> <expr> <nowait> ~       defx#do_action('cd')
+
+    nnoremap <silent> <buffer> <expr> <nowait> <CR>    defx#is_directory() ? 0 : defx#do_action('open', 'choose')
+    nnoremap <silent> <buffer> <expr> <nowait> x       defx#do_action('toggle_select') . 'j'
+    nnoremap <silent> <buffer> <expr> <nowait> <Space> defx#do_action('toggle_select') . 'j'
+    nnoremap <silent> <buffer> <expr> <nowait> *       defx#do_action('toggle_select_all')
+    nnoremap <silent> <buffer> <expr> <nowait> N       defx#do_action('new_file')
+    nnoremap <silent> <buffer> <expr> <nowait> N       defx#do_action('new_multiple_files')
+    nnoremap <silent> <buffer> <expr> <nowait> K       defx#do_action('new_directory')
+    nnoremap <silent> <buffer> <expr> <nowait> c       defx#do_action('copy')
+    nnoremap <silent> <buffer> <expr> <nowait> m       defx#do_action('move')
+    nnoremap <silent> <buffer> <expr> <nowait> p       defx#do_action('paste')
+    nnoremap <silent> <buffer> <expr> <nowait> d       defx#do_action('remove')
+    nnoremap <silent> <buffer> <expr> <nowait> r       defx#do_action('rename')
+    nnoremap <silent> <buffer> <expr> <nowait> yy      defx#do_action('yank_path')
+
+    nnoremap <silent> <buffer> <expr> <nowait> q       defx#do_action('quit')
+    nnoremap <silent> <buffer> <expr> <nowait> R       defx#do_action('redraw')
+    nnoremap <silent> <buffer> <expr> <nowait> <C-g>   defx#do_action('print')
+
+    nnoremap <silent> <buffer> <expr> <nowait> p       defx#do_action('preview')
+  endfunction
+
+  AutoCmd FileType defx call <SID>defx_settings()
 endif
-
-let g:defx_ignore_filtype = ['denite', 'defx']
-
-function! s:defx_settings() abort
-  nnoremap <silent> <buffer> <expr> <nowait> j       line('.') == line('$') ? 'gg' : 'j'
-  nnoremap <silent> <buffer> <expr> <nowait> k       line('.') == 1 ? 'G' : 'k'
-  nnoremap <silent> <buffer> <expr> <nowait> t       defx#do_action('open_or_close_tree')
-  nnoremap <silent> <buffer> <expr> <nowait> h       defx#do_action('cd', ['..'])
-  nnoremap <silent> <buffer> <expr> <nowait> l       defx#is_directory() ? defx#do_action('open_tree') : 0
-  nnoremap <silent> <buffer> <expr> <nowait> L       defx#do_action('open_tree_recursive')
-  nnoremap <silent> <buffer> <expr> <nowait> .       defx#do_action('toggle_ignored_files')
-  nnoremap <silent> <buffer> <expr> <nowait> ~       defx#do_action('cd')
-
-  nnoremap <silent> <buffer> <expr> <nowait> <CR>    defx#is_directory() ? 0 : defx#do_action('open', 'choose')
-  nnoremap <silent> <buffer> <expr> <nowait> x       defx#do_action('toggle_select') . 'j'
-  nnoremap <silent> <buffer> <expr> <nowait> <Space> defx#do_action('toggle_select') . 'j'
-  nnoremap <silent> <buffer> <expr> <nowait> *       defx#do_action('toggle_select_all')
-  nnoremap <silent> <buffer> <expr> <nowait> N       defx#do_action('new_file')
-  nnoremap <silent> <buffer> <expr> <nowait> N       defx#do_action('new_multiple_files')
-  nnoremap <silent> <buffer> <expr> <nowait> K       defx#do_action('new_directory')
-  nnoremap <silent> <buffer> <expr> <nowait> c       defx#do_action('copy')
-  nnoremap <silent> <buffer> <expr> <nowait> m       defx#do_action('move')
-  nnoremap <silent> <buffer> <expr> <nowait> p       defx#do_action('paste')
-  nnoremap <silent> <buffer> <expr> <nowait> d       defx#do_action('remove')
-  nnoremap <silent> <buffer> <expr> <nowait> r       defx#do_action('rename')
-  nnoremap <silent> <buffer> <expr> <nowait> yy      defx#do_action('yank_path')
-
-  nnoremap <silent> <buffer> <expr> <nowait> q       defx#do_action('quit')
-  nnoremap <silent> <buffer> <expr> <nowait> R       defx#do_action('redraw')
-  nnoremap <silent> <buffer> <expr> <nowait> <C-g>   defx#do_action('print')
-endfunction
-
-AutoCmd FileType defx call s:defx_settings()
 " }}}3
 
 " fern {{{3
@@ -1853,10 +1891,13 @@ if dein#tap('fern.vim')
     nnoremap <silent> <buffer> <nowait> Q :<C-u>bwipe!<CR>
 
     setlocal nonumber norelativenumber
-    AutoCmd CursorMoved <buffer> echo matchstr(getline('.'), '[-./[:alnum:]_]\+')
+    augroup fern-cursor-moved
+      autocmd! * <buffer>
+      autocmd CursorMoved <buffer> echo matchstr(getline('.'), '[-./[:alnum:]_]\+')
+    augroup END
   endfunction
 
-  AutoCmd FileType fern call s:fern_settings()
+  AutoCmd FileType fern call <SID>fern_settings()
   AutoCmd FileType fern call glyph_palette#apply()
 endif
 " }}}3
@@ -1866,35 +1907,43 @@ endif
 " textobj & operator {{{2
 
 " equal.operator {{{3
-let equal_operator_default_mappings = 0
+if dein#tap('equal.operator')
+  let equal_operator_default_mappings = 0
 
-omap i=h <Plug>(operator-lhs)
-omap a=h <Plug>(operator-Lhs)
-xmap i=h <Plug>(visual-lhs)
-xmap a=h <Plug>(visual-Lhs)
+  omap i=h <Plug>(operator-lhs)
+  omap a=h <Plug>(operator-Lhs)
+  xmap i=h <Plug>(visual-lhs)
+  xmap a=h <Plug>(visual-Lhs)
 
-omap i=l <Plug>(operator-rhs)
-omap a=l <Plug>(operator-Rhs)
-xmap i=l <Plug>(visual-rhs)
-xmap a=l <Plug>(visual-Rhs)
+  omap i=l <Plug>(operator-rhs)
+  omap a=l <Plug>(operator-Rhs)
+  xmap i=l <Plug>(visual-rhs)
+  xmap a=l <Plug>(visual-Rhs)
+endif
 " }}}3
 
 " operator-convert-case {{{3
-nmap cy <Plug>(operator-convert-case-loop)
-xmap cy <Plug>(operator-convert-case-loop)
+if dein#tap('vim-operator-convert-case')
+  nmap cy <Plug>(operator-convert-case-loop)
+  xmap cy <Plug>(operator-convert-case-loop)
+endif
 " }}}3
 
 " operator-replace {{{3
-nmap _ <Plug>(operator-replace)
-xmap _ <Plug>(operator-replace)
-omap _ <Plug>(operator-replace)
+if dein#tap('vim-operator-replace')
+  nmap _ <Plug>(operator-replace)
+  xmap _ <Plug>(operator-replace)
+  omap _ <Plug>(operator-replace)
+endif
 " }}}3
 
 " swap {{{3
-omap i, <Plug>(swap-textobject-i)
-xmap i, <Plug>(swap-textobject-i)
-omap a, <Plug>(swap-textobject-a)
-xmap a, <Plug>(swap-textobject-a)
+if dein#tap('vim-swap')
+  omap i, <Plug>(swap-textobject-i)
+  xmap i, <Plug>(swap-textobject-i)
+  omap a, <Plug>(swap-textobject-a)
+  xmap a, <Plug>(swap-textobject-a)
+endif
 " }}}3
 
 " textobj-between {{{3
@@ -1973,41 +2022,45 @@ endif
 " }}}3
 
 " BackAndForward {{{3
-nmap <C-b> <Plug>(backandforward-back)
-nmap <C-f> <Plug>(backandforward-forward)
+if dein#tap('BackAndForward.vim')
+  nmap <C-b> <Plug>(backandforward-back)
+  nmap <C-f> <Plug>(backandforward-forward)
+endif
 " }}}3
 
 " bookmarks {{{3
-let g:bookmark_no_default_key_mappings = 1
-let g:bookmark_save_per_working_dir    = 1
+if dein#tap('vim-bookmarks')
+  let g:bookmark_no_default_key_mappings = 1
+  let g:bookmark_save_per_working_dir    = 1
 
-nnoremap <bookmark> <Nop>
-nmap     M          <bookmark>
+  nnoremap <bookmark> <Nop>
+  nmap     M          <bookmark>
 
-nnoremap <silent> <bookmark>m :<C-u>BookmarkToggle<CR>
-nnoremap <silent> <bookmark>i :<C-u>BookmarkAnnotate<CR>
-nnoremap <silent> <bookmark>n :<C-u>BookmarkNext<CR>
-nnoremap <silent> <bookmark>p :<C-u>BookmarkPrev<CR>
-nnoremap <silent> <bookmark>a :<C-u>BookmarkShowAll<CR>
-nnoremap <silent> <bookmark>c :<C-u>BookmarkClear<CR>
-nnoremap <silent> <bookmark>x :<C-u>BookmarkClearAll<CR>
+  nnoremap <silent> <bookmark>m :<C-u>BookmarkToggle<CR>
+  nnoremap <silent> <bookmark>i :<C-u>BookmarkAnnotate<CR>
+  nnoremap <silent> <bookmark>n :<C-u>BookmarkNext<CR>
+  nnoremap <silent> <bookmark>p :<C-u>BookmarkPrev<CR>
+  nnoremap <silent> <bookmark>a :<C-u>BookmarkShowAll<CR>
+  nnoremap <silent> <bookmark>c :<C-u>BookmarkClear<CR>
+  nnoremap <silent> <bookmark>x :<C-u>BookmarkClearAll<CR>
 
-function! g:BMWorkDirFileLocation()
-  let filename = 'bookmarks'
-  let location = ''
+  function! g:BMWorkDirFileLocation() abort
+    let filename = 'bookmarks'
+    let location = ''
 
-  if isdirectory('.git')
-    let location = getcwd() . '/.git'
-  else
-    let location = finddir('.git', '.;')
-  endif
+    if isdirectory('.git')
+      let location = getcwd() . '/.git'
+    else
+      let location = finddir('.git', '.;')
+    endif
 
-  if len(location) > 0
-    return location . '/' . filename
-  else
-    return getcwd() . '/.' . filename
-  endif
-endfunction
+    if len(location) > 0
+      return location . '/' . filename
+    else
+      return getcwd() . '/.' . filename
+    endif
+  endfunction
+endif
 " }}}3
 
 " caw {{{3
@@ -2022,56 +2075,58 @@ endif
 " }}}3
 
 " easy-align {{{3
-xnoremap ga :EasyAlign<CR>
+if dein#tap('vim-easy-align')
+  xmap ga <Plug>(EasyAlign)
 
-let g:easy_align_delimiters = {
-\ '>': {
-\   'pattern':       '===\|<=>\|=\~[#?]\?\|=>\|[:+/*!%^=><&|.-?]*=[#?]\?\|[-=]>\|<[-=]',
-\   'left_margin':   0,
-\   'right_margin':  0,
-\   'stick_to_left': 1,
-\ },
-\ '/': {
-\   'pattern':         '//\+\|/\*\|\*/',
-\   'left_margin':     1,
-\   'right_margin':    1,
-\   'stick_to_left':   0,
-\   'delimiter_align': 'l',
-\   'ignore_groups':   ['!Comment']
-\ },
-\ ']': {
-\   'pattern':       '[[\]]',
-\   'left_margin':   0,
-\   'right_margin':  0,
-\   'stick_to_left': 0,
-\  },
-\ ')': {
-\   'pattern':       '[()]',
-\   'left_margin':   0,
-\   'right_margin':  0,
-\   'stick_to_left': 0,
-\ },
-\ '#': {
-\   'pattern':       '#',
-\   'left_margin':   1,
-\   'right_margin':  1,
-\   'stick_to_left': 0,
-\   'ignore_groups': ['String'],
-\ },
-\ '"': {
-\   'left_margin':   1,
-\   'right_margin':  1,
-\   'stick_to_left': 0,
-\   'pattern':       '"',
-\   'ignore_groups': ['String'],
-\ },
-\ ';': {
-\   'pattern':       ';',
-\   'left_margin':   0,
-\   'right_margin':  1,
-\   'stick_to_left': 1,
-\ }
-\ }
+  let g:easy_align_delimiters = {
+  \ '>': {
+  \   'pattern':       '===\|<=>\|=\~[#?]\?\|=>\|[:+/*!%^=><&|.-?]*=[#?]\?\|[-=]>\|<[-=]',
+  \   'left_margin':   0,
+  \   'right_margin':  0,
+  \   'stick_to_left': 1,
+  \ },
+  \ '/': {
+  \   'pattern':         '//\+\|/\*\|\*/',
+  \   'left_margin':     1,
+  \   'right_margin':    1,
+  \   'stick_to_left':   0,
+  \   'delimiter_align': 'l',
+  \   'ignore_groups':   ['!Comment']
+  \ },
+  \ ']': {
+  \   'pattern':       '[[\]]',
+  \   'left_margin':   0,
+  \   'right_margin':  0,
+  \   'stick_to_left': 0,
+  \  },
+  \ ')': {
+  \   'pattern':       '[()]',
+  \   'left_margin':   0,
+  \   'right_margin':  0,
+  \   'stick_to_left': 0,
+  \ },
+  \ '#': {
+  \   'pattern':       '#',
+  \   'left_margin':   1,
+  \   'right_margin':  1,
+  \   'stick_to_left': 0,
+  \   'ignore_groups': ['String'],
+  \ },
+  \ '"': {
+  \   'left_margin':   1,
+  \   'right_margin':  1,
+  \   'stick_to_left': 0,
+  \   'pattern':       '"',
+  \   'ignore_groups': ['String'],
+  \ },
+  \ ';': {
+  \   'pattern':       ';',
+  \   'left_margin':   0,
+  \   'right_margin':  1,
+  \   'stick_to_left': 1,
+  \ }
+  \ }
+endif
 " }}}3
 
 " easymotion {{{3
@@ -2104,7 +2159,7 @@ if dein#tap('vim-eft')
   let g:eft_enable = 1
   nnoremap <Leader>f :<C-u>EftToggle<CR>
 
-  function s:eft_toggle()
+  function! s:eft_toggle() abort
     if g:eft_enable == 1
       let g:eft_enable = 0
       call <SID>eft_disable()
@@ -2115,7 +2170,7 @@ if dein#tap('vim-eft')
   endfunction
   command! EftToggle call <SID>eft_toggle()
 
-  function s:eft_enable()
+  function! s:eft_enable() abort
     nmap ;; <Plug>(eft-repeat)
     xmap ;; <Plug>(eft-repeat)
 
@@ -2134,7 +2189,7 @@ if dein#tap('vim-eft')
     omap T <Plug>(eft-T)
   endfunction
 
-  function s:eft_disable()
+  function! s:eft_disable() abort
     nnoremap ;; ;
     nnoremap ;; ;
 
@@ -2156,78 +2211,83 @@ endif
 " }}}3
 
 " expand-region {{{3
-let g:expand_region_text_objects = {
-\ 'iw': 0,
-\ 'i"': 0,
-\ 'a"': 0,
-\ "i'": 0,
-\ "a'": 0,
-\ 'i(': 0,
-\ 'a(': 0,
-\ 'i[': 0,
-\ 'a[': 0,
-\ 'i{': 0,
-\ 'a{': 0,
-\ 'i<': 0,
-\ 'a<': 0,
-\ 'il': 0,
-\ 'ii': 0,
-\ 'ai': 0,
-\ 'ie': 0,
-\ }
+if dein#tap('vim-expand-region')
+  let g:expand_region_text_objects = {
+  \ 'iw': 0,
+  \ 'i"': 1,
+  \ 'a"': 1,
+  \ "i'": 1,
+  \ "a'": 1,
+  \ "i`": 1,
+  \ "a`": 1,
+  \ 'i(': 1,
+  \ 'a(': 1,
+  \ 'i[': 1,
+  \ 'a[': 1,
+  \ 'i{': 1,
+  \ 'if': 1,
+  \ 'af': 1,
+  \ 'ig': 1,
+  \ 'ag': 1,
+  \ 'i$': 1,
+  \ 'a$': 1,
+  \ 'a{': 1,
+  \ 'i<': 1,
+  \ 'a<': 1,
+  \ 'iu': 1,
+  \ 'au': 1,
+  \ 'il': 0,
+  \ 'ii': 1,
+  \ 'ai': 1,
+  \ 'ic': 0,
+  \ "ac": 0,
+  \ 'ie': 0,
+  \ }
 
-" let g:expand_region_text_objects_ruby = {
-" \ 'iw': 0,
-" \ 'i"': 0,
-" \ 'a"': 0,
-" \ "i'": 0,
-" \ "a'": 0,
-" \ 'i(': 0,
-" \ 'a(': 0,
-" \ 'i[': 0,
-" \ 'a[': 0,
-" \ 'i{': 0,
-" \ 'a{': 0,
-" \ 'il': 0,
-" \ 'ir': 0,
-" \ 'ar': 0,
-" \ 'ie': 0,
-" \ }
-
-xmap v <Plug>(expand_region_expand)
-xmap V <Plug>(expand_region_shrink)
+  xmap v <Plug>(expand_region_expand)
+  xmap V <Plug>(expand_region_shrink)
+endif
 " }}}3
 
 " edgemotion {{{3
-nmap <silent> <Leader>j <Plug>(edgemotion-j)
-nmap <silent> <Leader>k <Plug>(edgemotion-k)
-xmap <silent> <Leader>j <Plug>(edgemotion-j)
-xmap <silent> <Leader>k <Plug>(edgemotion-k)
-omap <silent> <Leader>j <Plug>(edgemotion-j)
-omap <silent> <Leader>k <Plug>(edgemotion-k)
+if dein#tap('vim-edgemotion')
+  nmap <silent> <Leader>j <Plug>(edgemotion-j)
+  nmap <silent> <Leader>k <Plug>(edgemotion-k)
+  xmap <silent> <Leader>j <Plug>(edgemotion-j)
+  xmap <silent> <Leader>k <Plug>(edgemotion-k)
+  omap <silent> <Leader>j <Plug>(edgemotion-j)
+  omap <silent> <Leader>k <Plug>(edgemotion-k)
+endif
 " }}}3
 
 " grepper {{{3
-BulkAlterCommand gr[ep] Grepper
+if dein#tap('vim-grepper')
+  BulkAlterCommand gr[ep] Grepper
 
-let g:grepper = {
-\ 'tools': ['rg', 'git', 'ag'],
-\ }
+  let g:grepper = {
+  \ 'tools': ['rg', 'git', 'ag'],
+  \ }
+endif
 " }}}3
 
 " hop {{{3
 if dein#tap('hop.nvim')
-  nnoremap <silent> S  :<C-u>HopChar1<CR>
+lua << EOF
+require'hop'.setup()
+EOF
+  nnoremap <silent> S  :<C-u>HopWord<CR>
   nnoremap <silent> ss :<C-u>HopWord<CR>
 endif
 " }}}3
 
 " jplus {{{3
 if dein#tap('vim-jplus')
-  nmap J         <Plug>(jplus)
-  xmap J         <Plug>(jplus)
-  nmap <Leader>J <Plug>(jplus-input)
-  xmap <Leader>J <Plug>(jplus-input)
+  nmap <silent> J         <Plug>(jplus)
+  xmap <silent> J         <Plug>(jplus)
+  nmap <silent> <Leader>J <Plug>(jplus-input)
+  xmap <silent> <Leader>J <Plug>(jplus-input)
+endif
+" }}}3
 endif
 " }}}3
 
@@ -2399,13 +2459,17 @@ endif
 " }}}3
 
 " replacer {{{3
-BulkAlterCommand repla[cer] lua<Space>require(\"replacer\").run()
+if dein#tap('replacer.nvim')
+  BulkAlterCommand repla[cer] lua<Space>require(\"replacer\").run()
 
-command! Replace lua require("replacer").run()
+  command! Replace lua require("replacer").run()
+endif
 " }}}3
 
 " reword {{{3
-BulkAlterCommand rew[ord] %Reword
+if dein#tap('reword.vim')
+  BulkAlterCommand rew[ord] %Reword
+endif
 " }}}3
 
 " sandwich {{{3
@@ -2545,9 +2609,12 @@ let g:scratch_no_mappings = 1
 " }}}3
 
 " tcomment {{{3
-" let g:tcomment_maps = 0
-"
-" noremap <silent> <Leader>cc :TComment<CR>
+if dein#tap('tcomment_vim')
+  let g:tcomment_maps = 0
+
+  noremap <silent> <Leader>cc :TComment<CR>
+endif
+" }}}3
 " }}}3
 
 " ts-autotag {{{3
@@ -2606,25 +2673,29 @@ endif
 " }}}3
 
 " brightest {{{3
-let g:brightest#enable_filetypes = {
-\ '_':          1,
-\ 'fern':       0,
-\ 'cocactions': 0,
-\ }
+if dein#tap('vim-brightest')
+  let g:brightest#enable_filetypes = {
+  \ '_':          1,
+  \ 'fern':       0,
+  \ 'cocactions': 0,
+  \ }
 
-let g:brightest#highlight = {
-\ 'group': 'BrighTestHighlight',
-\ 'priority': 0
-\ }
-let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat']
+  let g:brightest#highlight = {
+  \ 'group': 'BrighTestHighlight',
+  \ 'priority': 0
+  \ }
+  let g:brightest#ignore_syntax_list = ['Statement', 'Keyword', 'Boolean', 'Repeat']
+endif
 " }}}3
 
 " choosewin {{{3
-let s:choosewin_nord = ['#81A1C1', '#4C566A']
-let g:choosewin_color_label = {
-\ 'gui': s:choosewin_nord + ['bold'],
-\ 'cterm': [4, 8]
-\ }
+if dein#tap('vim-choosewin')
+  let s:choosewin_nord = ['#81A1C1', '#4C566A']
+  let g:choosewin_color_label = {
+  \ 'gui': s:choosewin_nord + ['bold'],
+  \ 'cterm': [4, 8]
+  \ }
+endif
 " }}}3
 
 " comfortable-motion {{{3
@@ -2632,7 +2703,7 @@ if dein#tap('comfortable-motion.vim')
   let g:comfortable_motion_no_default_key_mappings = 1
   let g:comfortable_motion_enable = 0
 
-  function! s:comfortable_motion_toggle()
+  function! s:comfortable_motion_toggle() abort
     if g:comfortable_motion_enable == 1
       let g:comfortable_motion_enable = 0
 
@@ -2655,7 +2726,9 @@ endif
 " }}}3
 
 " context {{{3
-let g:context_enabled = 0
+if dein#tap('context.vim')
+  let g:context_enabled = 0
+endif
 " }}}3
 
 " foldCC {{{3
@@ -2666,10 +2739,31 @@ endif
 
 " highlightedundo {{{3
 if dein#tap('vim-highlightedundo')
+  let g:highlightedundo_enable         = 1
   let g:highlightedundo#highlight_mode = 2
 
-  nmap <silent> u     <Plug>(highlightedundo-undo)
-  nmap <silent> <C-r> <Plug>(highlightedundo-redo)
+  function! s:highlightedundo_toggle() abort
+    if g:highlightedundo_enable == 1
+      let g:highlightedundo_enable = 0
+      call <SID>highlightedundo_disable()
+    else
+      let g:highlightedundo_enable = 1
+      call <SID>highlightedundo_enable()
+    endif
+  endfunction
+  command! HighlightedundoToggle call <SID>highlightedundo_toggle()
+
+  function! s:highlightedundo_enable() abort
+    nmap <silent> u     <Plug>(highlightedundo-undo)
+    nmap <silent> <C-r> <Plug>(highlightedundo-redo)
+  endfunction
+
+  function! s:highlightedundo_disable() abort
+    nunmap u
+    nunmap <C-r>
+  endfunction
+
+  AutoCmd VimEnter * call <SID>highlightedundo_enable()
 endif
 " }}}3
 
@@ -2682,7 +2776,7 @@ if dein#tap('vim-highlightedyank')
   "     autocmd!
   "     autocmd TextYankPost * call highlightedyank#debounce()
   "     autocmd TextYankPost * setlocal list listchars-=eol:$
-  "     autocmd TextYankPost * call timer_start(g:highlightedyank_highlight_duration, function('s:highlight_yank_leave'))
+  "     autocmd TextYankPost * call timer_start(g:highlightedyank_highlight_duration, function('<SID>highlight_yank_leave'))
   "   augroup END
   " endfunction
   "
@@ -2692,7 +2786,7 @@ if dein#tap('vim-highlightedyank')
   "   augroup END
   " endfunction
   "
-  " call timer_start(g:highlightedyank_highlight_duration, function('s:highlight_yank_enter'))
+  " call timer_start(g:highlightedyank_highlight_duration, function('<SID>highlight_yank_enter'))
 endif
 " }}}3
 
@@ -3020,25 +3114,36 @@ if dein#tap('lightline.vim')
   endfunction
 
   AutoCmd User CocDiagnosticChange call lightline#update()
-  AutoCmd VimEnter *               call vista#RunForNearestMethodOrFunction()
 endif
 " }}}3
 
 " matchup {{{3
-let g:matchup_matchparen_status_offscreen = 0
+if dein#tap('vim-matchup')
+  let g:matchup_matchparen_status_offscreen = 0
+endif
+" }}}3
+
 " }}}3
 
 " nvim-colorizer {{{3
 if dein#tap('nvim-colorizer.lua')
-  lua require'colorizer'.setup()
+  lua require('colorizer').setup()
+endif
+" }}}3
+
+" package-info {{{3
+if dein#tap('package-info.nvim')
+  lua require('package-info').setup()
 endif
 " }}}3
 
 " quickr-preview {{{3
-let g:quickr_preview_keymaps = 0
+if dein#tap('quickr-preview.vim')
+  let g:quickr_preview_keymaps = 0
 
-AutoCmd FileType qf nmap <silent> <buffer> p <Plug>(quickr_preview)
-AutoCmd FileType qf nmap <silent> <buffer> q <Plug>(quickr_preview_qf_close)
+  AutoCmd FileType qf nmap <silent> <buffer> p <Plug>(quickr_preview)
+  AutoCmd FileType qf nmap <silent> <buffer> q <Plug>(quickr_preview_qf_close)
+endif
 " }}}3
 
 " rainbow {{{3
@@ -3104,7 +3209,7 @@ if dein#tap('smartnumber.vim')
   let g:snumber_enable_relative = 1
   nnoremap <Leader>n :<C-u>SNToggle<CR>
 
-  function! s:snumber_relative_toggle()
+  function! s:snumber_relative_toggle() abort
     if g:snumber_enable_relative == 1
       windo SNumbersTurnOffRelative
       let g:snumber_enable_relative = 0
@@ -3135,110 +3240,110 @@ if dein#tap('vista.vim')
 endif
 " }}}3
 
-" zenspace {{{3
-let g:zenspace#default_mode = 'on'
-" }}}3
-
 " }}}2
 
 " Util {{{2
 
 " aho-bakaup {{{3
-let g:bakaup_auto_backup = 1
-let g:bakaup_backup_dir  = expand('~/.cache/vim/backup')
+if dein#tap('aho-bakaup.vim')
+  let g:bakaup_auto_backup = 1
+  let g:bakaup_backup_dir  = expand('~/.cache/vim/backup')
+endif
 " }}}3
 
 " automatic {{{
-let g:automatic_config = [
-\ {
-\   'match': {
-\     'filetype': 'help',
-\   },
-\ },
-\ {
-\   'match': {
-\     'filetype': 'man',
-\     'autocmds': ['FileType'],
-\   },
-\   'set': {
-\     'move': 'right',
-\     'width': '35%',
-\   },
-\ },
-\ {
-\   'match': {
-\     'filetype': 'qf',
-\     'autocmds': ['FileType'],
-\   },
-\ },
-\ {
-\   'match': {
-\     'filetype': 'diff',
-\   },
-\   'set': {
-\     'move': 'right',
-\   },
-\ },
-\ {
-\   'match': {
-\     'filetype': 'git',
-\   },
-\ },
-\ {
-\   'match': {
-\     'filetype': 'gina-status',
-\   },
-\   'set': {
-\     'move': 'topleft',
-\     'height': '20%',
-\   },
-\ },
-\ {
-\   'match': {
-\     'filetype': 'gina-commit',
-\   },
-\   'set': {
-\     'move': 'topleft',
-\     'height': '25%',
-\   },
-\ },
-\ {
-\   'match': {
-\     'filetype': 'gina-branch',
-\   },
-\   'set': {
-\     'move': 'topleft',
-\     'height': '30%',
-\   },
-\ },
-\ {
-\   'match': {
-\     'filetype': 'gina-log',
-\   },
-\   'set': {
-\     'move': 'right',
-\   },
-\ },
-\ {
-\   'match': {
-\     'filetype': 'gina-reflog',
-\   },
-\ },
-\ {
-\   'match': {
-\     'filetype': 'gina-grep',
-\   },
-\   'set': {
-\     'move': 'right',
-\   },
-\ },
-\ {
-\   'match': {
-\     'filetype': 'capture',
-\     'autocmds': ['FileType'],
-\   },
-\ }
-\ ]
+if dein#tap('vim-automatic')
+  let g:automatic_config = [
+  \ {
+  \   'match': {
+  \     'filetype': 'help',
+  \   },
+  \ },
+  \ {
+  \   'match': {
+  \     'filetype': 'man',
+  \     'autocmds': ['FileType'],
+  \   },
+  \   'set': {
+  \     'move': 'right',
+  \     'width': '35%',
+  \   },
+  \ },
+  \ {
+  \   'match': {
+  \     'filetype': 'qf',
+  \     'autocmds': ['FileType'],
+  \   },
+  \ },
+  \ {
+  \   'match': {
+  \     'filetype': 'diff',
+  \   },
+  \   'set': {
+  \     'move': 'right',
+  \   },
+  \ },
+  \ {
+  \   'match': {
+  \     'filetype': 'git',
+  \   },
+  \ },
+  \ {
+  \   'match': {
+  \     'filetype': 'gina-status',
+  \   },
+  \   'set': {
+  \     'move': 'topleft',
+  \     'height': '20%',
+  \   },
+  \ },
+  \ {
+  \   'match': {
+  \     'filetype': 'gina-commit',
+  \   },
+  \   'set': {
+  \     'move': 'topleft',
+  \     'height': '25%',
+  \   },
+  \ },
+  \ {
+  \   'match': {
+  \     'filetype': 'gina-branch',
+  \   },
+  \   'set': {
+  \     'move': 'topleft',
+  \     'height': '30%',
+  \   },
+  \ },
+  \ {
+  \   'match': {
+  \     'filetype': 'gina-log',
+  \   },
+  \   'set': {
+  \     'move': 'right',
+  \   },
+  \ },
+  \ {
+  \   'match': {
+  \     'filetype': 'gina-reflog',
+  \   },
+  \ },
+  \ {
+  \   'match': {
+  \     'filetype': 'gina-grep',
+  \   },
+  \   'set': {
+  \     'move': 'right',
+  \   },
+  \ },
+  \ {
+  \   'match': {
+  \     'filetype': 'capture',
+  \     'autocmds': ['FileType'],
+  \   },
+  \ }
+  \ ]
+endif
 " }}}
 
 " auto-session {{{3
@@ -3316,29 +3421,38 @@ endif
 " }}}3
 
 " memolist {{{3
-let g:memolist_path = '~/.config/memolist'
+if dein#tap('memolist.vim')
+  let g:memolist_path = '~/.config/memolist'
+endif
 " }}}3
 
 " previm {{{3
-let g:previm_open_cmd            = 'open -a "Firefox"'
-let g:previm_disable_default_css = 1
-let g:previm_custom_css_path     = '~/.config/previm/gfm.css'
+if dein#tap('previm')
+  let g:previm_open_cmd            = 'open -a "Firefox"'
+  let g:previm_disable_default_css = 1
+  let g:previm_custom_css_path     = '~/.config/previm/gfm.css'
+endif
 " }}}3
 
 " silicon {{{3
-let g:silicon = {
-\   'theme':           'Monokai Extended',
-\   'background':      '#97A1AC',
-\   'shadow-color':    '#555555',
-\   'line-number':     v:false,
-\   'round-corner':    v:true,
-\   'window-controls': v:true,
-\   'output':          '~/Downloads/silicon-{time:%Y-%m-%d-%H%M%S}.png',
-\ }
+if dein#tap('vim-silicon')
+  let g:silicon = {
+  \   'theme':           'Monokai Extended',
+  \   'background':      '#97A1AC',
+  \   'shadow-color':    '#555555',
+  \   'line-number':     v:false,
+  \   'round-corner':    v:true,
+  \   'window-controls': v:true,
+  \   'output':          '~/Downloads/silicon-{time:%Y-%m-%d-%H%M%S}.png',
+  \ }
+endif
+" }}}3
 " }}}3
 
 " undotree {{{3
-nnoremap <silent> <Leader>u :<C-u>UndotreeToggle<CR>
+if dein#tap('undotree')
+  nnoremap <silent> <Leader>u :<C-u>UndotreeToggle<CR>
+endif
 " }}}3
 
 " which-key {{{3
@@ -3353,8 +3467,10 @@ endif
 " }}}3
 
 " windowswap {{{3
-let g:windowswap_map_keys = 0
-nnoremap <silent> <Leader><C-w> :call WindowSwap#EasyWindowSwap()<CR>
+if dein#tap('vim-windowswap')
+  let g:windowswap_map_keys = 0
+  nnoremap <silent> <Leader><C-w> :call WindowSwap#EasyWindowSwap()<CR>
+endif
 " }}}3
 
 " }}}2
@@ -3474,7 +3590,8 @@ endif
 
 " Correct Interference {{{1
 
-" keymaps {{{ function! Set_default_keymap() abort let g:keymap = 'Default'
+" keymaps {{{
+" function! Set_default_keymap() abort let g:keymap = 'Default'
 "   call lightline#update()
 " endfunction
 "
@@ -3507,8 +3624,6 @@ endif
 " }}}1
 
 " Load Colorscheme {{{1
-
-syntax enable
 
 " Highlight {{{2
 
@@ -3712,30 +3827,30 @@ if dein#tap('lightline.vim')
 
   let s:p.normal.left = [
   \ [s:nord0,      s:nord4],
-  \ [s:nord7,      s:grey ],
-  \ [s:blue_green, s:grey ],
-  \ [s:nord4,      s:grey ],
+  \ [s:nord7,      s:grey],
+  \ [s:blue_green, s:grey],
+  \ [s:nord4,      s:grey],
   \ ]
 
   let s:p.insert.left = [
-  \ [s:nord0,      s:nord3 ],
-  \ [s:nord7,      s:grey  ],
-  \ [s:blue_green, s:grey  ],
-  \ [s:nord4,      s:grey  ],
+  \ [s:nord0,      s:nord3],
+  \ [s:nord7,      s:grey],
+  \ [s:blue_green, s:grey],
+  \ [s:nord4,      s:grey],
   \]
 
   let s:p.visual.left = [
   \ [s:nord0,      s:nord5],
-  \ [s:nord7,      s:grey ],
-  \ [s:blue_green, s:grey ],
-  \ [s:nord4,      s:grey ],
+  \ [s:nord7,      s:grey],
+  \ [s:blue_green, s:grey],
+  \ [s:nord4,      s:grey],
   \ ]
 
   let s:p.replace.left = [
   \ [s:nord0,      s:nord1],
-  \ [s:nord7,      s:grey ],
-  \ [s:blue_green, s:grey ],
-  \ [s:nord4,      s:grey ],
+  \ [s:nord7,      s:grey],
+  \ [s:blue_green, s:grey],
+  \ [s:nord4,      s:grey],
   \ ]
 
   let s:p.inactive.left = [
@@ -3745,11 +3860,11 @@ if dein#tap('lightline.vim')
   \ [s:nord4,      s:grey],
   \ ]
 
-  let s:p.normal.right   = [[s:nord7, s:nord0],   [s:nord7, s:grey ]]
+  let s:p.normal.right   = [[s:nord7, s:nord0],   [s:nord7, s:grey]]
   let s:p.inactive.right = [[s:nord0, s:nord7],   [s:nord0, s:nord7]]
-  let s:p.insert.right   = [[s:nord0, s:nord3],   [s:nord7, s:grey ]]
-  let s:p.replace.right  = [[s:nord0, s:nord1],   [s:nord7, s:grey ]]
-  let s:p.visual.right   = [[s:nord0, s:nord5],   [s:nord7, s:grey ]]
+  let s:p.insert.right   = [[s:nord0, s:nord3],   [s:nord7, s:grey]]
+  let s:p.replace.right  = [[s:nord0, s:nord1],   [s:nord7, s:grey]]
+  let s:p.visual.right   = [[s:nord0, s:nord5],   [s:nord7, s:grey]]
 
   let s:p.normal.middle   = [[s:nord7, s:nord0]]
   let s:p.inactive.middle = [[s:nord7, s:grey]]
@@ -3760,11 +3875,11 @@ if dein#tap('lightline.vim')
   let s:p.tabline.right  = [[s:nord7, s:nord8]]
 
   let s:coc_diagnostic = [
-  \ [s:grey, s:nord1 ],
+  \ [s:grey, s:nord1],
   \ [s:grey, s:nord11],
-  \ [s:grey, s:nord3 ],
-  \ [s:grey, s:nord4 ],
-  \ [s:grey, s:nord2 ],
+  \ [s:grey, s:nord3],
+  \ [s:grey, s:nord4],
+  \ [s:grey, s:nord2],
   \ ]
 
   let s:p.normal.error        = s:coc_diagnostic[0:0]
@@ -3815,7 +3930,7 @@ if dein#tap('lightline.vim')
   let s:gruvbox6   = ['#89b482', 6]
   let s:gruvbox7   = ['#d4be98', 7]
   let s:grey       = ['#3A3A3A', 237]
-  let s:blue_green = ['#00AFAF', 37 ]
+  let s:blue_green = ['#00AFAF', 37]
   let s:warning    = ['#FFAF60', 214]
   let s:info       = ['#FFFFAF', 229]
 
@@ -3823,30 +3938,30 @@ if dein#tap('lightline.vim')
 
   let s:p.normal.left = [
   \ [s:gruvbox0,   s:gruvbox4],
-  \ [s:gruvbox7,   s:grey ],
-  \ [s:blue_green, s:grey ],
-  \ [s:gruvbox4,   s:grey ],
+  \ [s:gruvbox7,   s:grey],
+  \ [s:blue_green, s:grey],
+  \ [s:gruvbox4,   s:grey],
   \ ]
 
   let s:p.insert.left = [
-  \ [s:gruvbox0,   s:gruvbox3 ],
-  \ [s:gruvbox7,   s:grey  ],
-  \ [s:blue_green, s:grey  ],
-  \ [s:gruvbox4,   s:grey  ],
-  \]
+  \ [s:gruvbox0,   s:gruvbox3],
+  \ [s:gruvbox7,   s:grey],
+  \ [s:blue_green, s:grey],
+  \ [s:gruvbox4,   s:grey],
+  \ ]
 
   let s:p.visual.left = [
   \ [s:gruvbox0,   s:gruvbox5],
-  \ [s:gruvbox7,   s:grey ],
-  \ [s:blue_green, s:grey ],
-  \ [s:gruvbox4,   s:grey ],
+  \ [s:gruvbox7,   s:grey],
+  \ [s:blue_green, s:grey],
+  \ [s:gruvbox4,   s:grey],
   \ ]
 
   let s:p.replace.left = [
   \ [s:gruvbox0,   s:gruvbox1],
-  \ [s:gruvbox7,   s:grey ],
-  \ [s:blue_green, s:grey ],
-  \ [s:gruvbox4,   s:grey ],
+  \ [s:gruvbox7,   s:grey],
+  \ [s:blue_green, s:grey],
+  \ [s:gruvbox4,   s:grey],
   \ ]
 
   let s:p.inactive.left = [
@@ -3856,11 +3971,11 @@ if dein#tap('lightline.vim')
   \ [s:gruvbox4,   s:grey],
   \ ]
 
-  let s:p.normal.right   = [[s:gruvbox0, s:gruvbox4],   [s:gruvbox7, s:grey ]]
-  let s:p.inactive.right = [[s:gruvbox0, s:gruvbox7],   [s:gruvbox0, s:gruvbox7]]
-  let s:p.insert.right   = [[s:gruvbox0, s:gruvbox3],   [s:gruvbox7, s:grey ]]
-  let s:p.replace.right  = [[s:gruvbox0, s:gruvbox1],   [s:gruvbox7, s:grey ]]
-  let s:p.visual.right   = [[s:gruvbox0, s:gruvbox5],   [s:gruvbox7, s:grey ]]
+  let s:p.normal.right   = [[s:gruvbox0, s:gruvbox4], [s:gruvbox7, s:grey]]
+  let s:p.inactive.right = [[s:gruvbox0, s:gruvbox7], [s:gruvbox0, s:gruvbox7]]
+  let s:p.insert.right   = [[s:gruvbox0, s:gruvbox3], [s:gruvbox7, s:grey]]
+  let s:p.replace.right  = [[s:gruvbox0, s:gruvbox1], [s:gruvbox7, s:grey]]
+  let s:p.visual.right   = [[s:gruvbox0, s:gruvbox5], [s:gruvbox7, s:grey]]
 
   let s:p.normal.middle   = [[s:gruvbox7, s:gruvbox0]]
   let s:p.inactive.middle = [[s:gruvbox7, s:grey]]
