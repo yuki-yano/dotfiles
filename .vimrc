@@ -1075,35 +1075,34 @@ endif
 
 " coc {{{3
 if dein#tap('coc.nvim')
-  BulkAlterCommand OR   OrganizeImport
-  BulkAlterCommand jest       Jest
-  BulkAlterCommand jc[urrent] JestCurrent
-  BulkAlterCommand js[ingle]  JestSingle
+  BulkAlterCommand or[ganizeimport] OrganizeImport
+  BulkAlterCommand ma[rkdown]       CocMarkdownPreview
 
   let g:coc_global_extensions = [
   \ 'coc-deno',
   \ 'coc-eslint',
   \ 'coc-explorer',
+  \ 'coc-git',
   \ 'coc-go',
-  \ 'coc-jest',
   \ 'coc-json',
   \ 'coc-lists',
+  \ 'coc-markdown-preview-enhanced',
   \ 'coc-markdownlint',
   \ 'coc-marketplace',
+  \ 'coc-npm-version',
   \ 'coc-prettier',
   \ 'coc-prisma',
   \ 'coc-python',
   \ 'coc-react-refactor',
   \ 'coc-rust-analyzer',
   \ 'coc-sh',
-  \ 'coc-snippets',
   \ 'coc-solargraph',
   \ 'coc-spell-checker',
   \ 'coc-sql',
   \ 'coc-stylelintplus',
   \ 'coc-tabnine',
-  \ 'coc-tsdetect',
   \ 'coc-tsserver',
+  \ 'coc-ultisnips-select',
   \ 'coc-vimlsp',
   \ 'coc-word',
   \ 'coc-yaml',
@@ -1117,8 +1116,8 @@ if dein#tap('coc.nvim')
   inoremap <silent> <expr> <C-Space> coc#refresh()
 
   " Snippet map
-  let g:coc_snippet_next = '<C-f>'
-  let g:coc_snippet_prev = '<C-b>'
+  " let g:coc_snippet_next = '<C-f>'
+  " let g:coc_snippet_prev = '<C-b>'
 
   " keymap
   nnoremap <silent> K       :<C-u>call <SID>show_documentation()<CR>
@@ -1136,42 +1135,46 @@ if dein#tap('coc.nvim')
   xmap     <silent> <dev>f  <Plug>(coc-format-selected)
   nmap     <silent> <dev>gs <Plug>(coc-git-chunkinfo)
 
-  " nnoremap <silent> <expr> <C-d> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-d>"
-  " nnoremap <silent> <expr> <C-u> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-u>"
-  " inoremap <silent> <expr> <C-d> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(1)\<CR>" : "\<Right>"
-  " inoremap <silent> <expr> <C-u> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(0)\<CR>" : "\<Left>"
+  nnoremap <silent> <expr> <C-d> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-d>"
+  nnoremap <silent> <expr> <C-u> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-u>"
+  inoremap <silent> <expr> <C-d> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(1)\<CR>" : "\<C-d>"
+  inoremap <silent> <expr> <C-u> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(0)\<CR>" : "\<C-u>"
 
   " nnoremap <Leader>e :<C-u>CocCommand explorer<CR>
   " nnoremap <Leader>E :<C-u>CocCommand explorer --reveal expand('%')<CR>
 
-  " nmap <silent> gp <Plug>(coc-git-prevchunk)
-  " nmap <silent> gn <Plug>(coc-git-nextchunk)
+  nmap <silent> gp <Plug>(coc-git-prevchunk)
+  nmap <silent> gn <Plug>(coc-git-nextchunk)
 
   function! s:organize_import_and_eslint() abort
     augroup eslint_with_organize_import
       autocmd!
-      autocmd TextChanged * CocCommand eslint.executeAutofix
+      autocmd TextChanged * call <SID>execute_eslint_fix_and_prettier()
     augroup END
 
-    function! s:orgamize_import_callback(fail, success) abort
+    function! s:execute_eslint_fix_and_prettier() abort
+      CocCommand eslint.executeAutofix
+      CocCommand prettier.formatFile
+    endfunction
+
+    function! s:orgamize_import_callback(...) abort
       autocmd! eslint_with_organize_import
     endfunction
 
     call CocAction('runCommand', 'editor.action.organizeImport', function('<SID>orgamize_import_callback'))
   endfunction
 
-  command! OrganizeImport          call CocAction('runCommand', 'editor.action.organizeImport')
-  command! OrganizeImportAndESLint call <SID>organize_import_and_eslint()
+  " command! OrganizeImport call CocAction('runCommand', 'editor.action.organizeImport')
+  command! OrganizeImport     call <SID>organize_import_and_eslint()
+  command! CocMarkdownPreview CocCommand markdown-preview-enhanced.openPreview
 
-  AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+  " AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
-  function! s:show_documentation()
+  function! s:show_documentation() abort
     if (index(['vim','help'], &filetype) >= 0)
-      execute 'h '.expand('<cword>')
+      execute 'h ' . expand('<cword>')
     elseif (coc#rpc#ready())
       call CocActionAsync('doHover')
-    else
-      execute '!' . &keywordprg . ' ' . expand('<cword>')
     endif
   endfunction
 
@@ -1192,15 +1195,29 @@ if dein#tap('coc.nvim')
 
   function! s:coc_typescript_settings() abort
     setlocal tagfunc=CocTagFunc
-    if s:is_deno()
+    if <SID>is_deno()
+      call coc#config('tsserver.enable', v:false)
+      call coc#config('deno.enable', v:true)
       nnoremap <silent> <buffer> <dev>f :<C-u>call CocAction('format')<CR>
     else
-      nnoremap <silent> <buffer> <dev>f :<C-u>CocCommand eslint.executeAutofix<CR>
+      call coc#config('tsserver.enable', v:true)
+      call coc#config('deno.enable', v:false)
+      nnoremap <silent> <buffer> <dev>f :<C-u>CocCommand eslint.executeAutofix<CR>:CocCommand prettier.formatFile<CR>
     endif
   endfunction
 
   function! s:is_deno() abort
-    return finddir('node_modules', expand('%:p:h') . ';') ==# ''
+    if exists('s:is_deno_cache') && s:is_deno_cache
+      return s:is_deno_cache
+    endif
+
+    if findfile('is_deno', getcwd() . '/.git') !=# '' || finddir('node_modules', getcwd()) ==# ''
+      let s:is_deno_cache = v:true
+      return v:true
+    else
+      let s:is_deno_cache = v:false
+      return v:false
+    endif
   endfunction
 
   function! s:coc_rust_settings() abort
@@ -1208,13 +1225,9 @@ if dein#tap('coc.nvim')
     nnoremap <silent> <buffer> gK :<C-u>CocCommand rust-analyzer.openDocs<CR>
   endfunction
 
-  command! Jest        :call CocAction('runCommand', 'jest.projectTest')
-  command! JestCurrent :call CocAction('runCommand', 'jest.fileTest', ['%'])
-  command! JestSingle  :call CocAction('runCommand', 'jest.singleTest')
-
   " AutoCmd CursorHold * silent call CocActionAsync('highlight')
-  AutoCmd FileType typescript,typescriptreact call s:coc_typescript_settings()
-  AutoCmd FileType rust call s:coc_rust_settings()
+  AutoCmd FileType typescript,typescriptreact call <SID>coc_typescript_settings()
+  AutoCmd FileType rust call <SID>coc_rust_settings()
 endif
 " }}}3
 
