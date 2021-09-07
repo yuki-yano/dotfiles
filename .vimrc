@@ -3790,9 +3790,12 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight DiffChange   ctermfg=233  cte
 " AutoCmd ColorScheme gruvbox-material highlight NormalNC     ctermfg=144  ctermbg=234  guifg=#ABB2BF guibg=#282C34
 AutoCmd ColorScheme gruvbox-material highlight DiffText     ctermfg=NONE ctermbg=223  guifg=NONE    guibg=#716522
 AutoCmd ColorScheme gruvbox-material highlight Folded       ctermfg=245  ctermbg=NONE guifg=#686f9a guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight IncSearch    ctermfg=234  ctermbg=167  guifg=NONE    guibg=#4E1A19
 AutoCmd ColorScheme gruvbox-material highlight Search       ctermfg=68   ctermbg=232  guifg=NONE    guibg=#213F72
 AutoCmd ColorScheme gruvbox-material highlight SignColumn   ctermfg=0    ctermbg=NONE guifg=#32302f guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight Visual       ctermfg=NONE ctermbg=23   guifg=NONE    guibg=#1D4647
+AutoCmd ColorScheme gruvbox-material highlight Pmenu        ctermfg=NONE ctermbg=238  guifg=NONE    guibg=#2C3538
+AutoCmd ColorScheme gruvbox-material highlight PmenuSel     ctermfg=235  ctermbg=142  guifg=#262626 guibg=#84BCB7
 
 " Gina (Vital.Vim.Buffer.ANSI)
 AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor0  ctermfg=0  guifg=#2E3440
@@ -3846,7 +3849,6 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight MatchWordCur            cterm
 AutoCmd ColorScheme nord,onedark,iceberg highlight QuickScopePrimary       ctermfg=68   ctermbg=NONE                      guifg=#5F87D7 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight QuickScopeSecondary     ctermfg=72   ctermbg=NONE                      guifg=#5FAFAF guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
-AutoCmd ColorScheme nord,onedark,iceberg highlight ZenSpace                ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
 
 AutoCmd ColorScheme nord,onedark,iceberg highlight CocErrorSign            ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
 AutoCmd ColorScheme nord,onedark,iceberg highlight CocWarningSign          ctermfg=214  ctermbg=NONE                      guifg=#FFAF00 guibg=NONE
@@ -3888,11 +3890,14 @@ AutoCmd ColorScheme gruvbox-material highlight MatchParenCur           ctermfg=N
 AutoCmd ColorScheme gruvbox-material highlight MatchWord               ctermfg=NONE ctermbg=NONE cterm=underline      guifg=NONE    guibg=NONE    gui=underline
 AutoCmd ColorScheme gruvbox-material highlight MatchWordCur            ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
 AutoCmd ColorScheme gruvbox-material highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
-AutoCmd ColorScheme gruvbox-material highlight ZenSpace                ctermfg=NONE ctermbg=1                         guifg=NONE    guibg=#E98989
 
 AutoCmd ColorScheme gruvbox-material highlight CocErrorSign            ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight CocWarningSign          ctermfg=214  ctermbg=NONE                      guifg=#FFAF60 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight CocInfoSign             ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight CocFloating             ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2C3538
+AutoCmd ColorScheme gruvbox-material highlight CocHoverFloating        ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2A2D2F
+AutoCmd ColorScheme gruvbox-material highlight CocSuggestFloating      ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2A2D2F
+AutoCmd ColorScheme gruvbox-material highlight CocDiagnosticFloating   ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2A2D2F
 
 AutoCmd ColorScheme gruvbox-material highlight Defx_git_Untracked      ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight Defx_git_Modified       ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
@@ -3907,7 +3912,8 @@ AutoCmd ColorScheme gruvbox-material highlight FernGitStatusUnmerged   ctermfg=1
 AutoCmd ColorScheme gruvbox-material highlight FernGitStatusUntracked  ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight link FernGitStatusIgnored Comment
 
-AutoCmd ColorScheme gruvbox-material highlight GitSignsChange  ctermfg=214  ctermbg=NONE guifg=#FFAF60 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight GitSignsChange    ctermfg=214  ctermbg=NONE guifg=#FFAF60 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight CocGitChangedSign ctermfg=214  ctermbg=NONE guifg=#FFAF60 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight link GitSignsCurrentLineBlame Comment
 
 AutoCmd ColorScheme gruvbox-material highlight HlSearchNear            ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#175655
@@ -3916,6 +3922,8 @@ AutoCmd ColorScheme gruvbox-material highlight HlSearchLensNear        ctermfg=6
 AutoCmd ColorScheme gruvbox-material highlight HlSearchFloat           ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#213F72
 
 AutoCmd ColorScheme gruvbox-material highlight ScrollView              ctermbg=159                                                  guibg=#D0D0D0
+
+AutoCmd ColorScheme gruvbox-material highlight VistaFloat ctermbg=237 guibg=#3a3a3a
 
 " TreeSitter
 AutoCmd ColorScheme gruvbox-material highlight link TSPunctBracket Normal
@@ -4038,17 +4046,16 @@ if dein#tap('lightline.vim')
 
   let g:lightline#colorscheme#nord#palette = lightline#colorscheme#flatten(s:p)
 endif
-
 " }}}3
 
 " }}}2
 
 " gruvbox-material {{{2
-
+let g:gruvbox_material_better_performance     = 1
 let g:gruvbox_material_background             = 'hard'
 let g:gruvbox_material_transparent_background = 1
 let g:gruvbox_material_enable_bold            = 1
-let g:gruvbox_material_disable_italic_comment = 1
+let g:gruvbox_material_enable_italic          = 1
 
 colorscheme gruvbox-material
 
