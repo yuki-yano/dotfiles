@@ -2300,8 +2300,6 @@ if dein#tap('nvim-hlslens') &&
   " map /  <Plug>(incsearch-forward)
   " map ?  <Plug>(incsearch-backward)
 
-  nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>:AnzuClearSearchStatus<CR>
-
   if has('nvim')
     lua require('hlslens').setup({auto_enable = true})
 
@@ -4080,6 +4078,21 @@ if dein#tap('vim-quickrun')
 endif
 " }}}3
 
+" }}}2
+
+" Combination Settings {{{2
+function! s:esc_esc() abort
+  if dein#tap('vim-anzu')
+    AnzuClearSearchStatus
+  endif
+
+  if dein#tap('coc.nvim')
+    call coc#float#close_all()
+  endif
+endfunction
+
+command! EscEsc call <SID>esc_esc()
+nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>:EscEsc<CR>
 " }}}2
 
 " Removed Plugin {{{2
