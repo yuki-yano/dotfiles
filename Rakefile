@@ -2,6 +2,7 @@ SRC_DIR       = File.dirname(File.expand_path(__FILE__))
 ZINIT_DIR     = File.join(ENV['HOME'], '.zinit')
 ZGEN_DIR      = File.join(ENV['HOME'], '.zsh/zgen')
 DOTFILES_SRCS = %w[
+  .asdfrc
   .bashrc
   .config
   .ctags.d
@@ -15,7 +16,6 @@ DOTFILES_SRCS = %w[
   .tmux.conf
   .vim
   .vimrc
-  .vsnip
   .zsh
   .zshenv
   .zshrc
@@ -60,13 +60,12 @@ namespace :zsh do
       end
     end
   end
+end
 
-  namespace :zgen do
-    desc 'Update zgen'
-    task :update do
-      sh "curl -fLo #{ZGEN_DIR}/zgen.zsh --create-dirs https://raw.githubusercontent.com/tarjoilija/zgen/master/zgen.zsh"
-      sh "curl -fLo #{ZGEN_DIR}/_zgen --create-dirs https://raw.githubusercontent.com/tarjoilija/zgen/master/_zgen"
-    end
+namespace :tmux do
+  desc 'Enable italic'
+  task install: '.tmux/tmux-256color.terminfo' do |t|
+    sh 'tic -x .tmux/tmux-256color.terminfo'
   end
 end
 
@@ -74,13 +73,11 @@ namespace :gem do
   desc 'Install gem'
   task install: 'GemGlobal' do
     packages = File.readlines('GemGlobal').map(&:chomp).join(' ')
-    sh 'rbenv rehash'
     sh "gem install #{packages}"
   end
 
   desc 'Uninstall gem'
   task :uninstall do
-    sh 'rbenv rehash'
     sh 'gem uninstall --all --ignore-dependencies --executables $(gem list | grep -v "default" | awk "{print $1}")'
     sh 'gem install rake bundler'
   end
@@ -89,7 +86,6 @@ end
 namespace :pip do
   desc 'Install pip'
   task install: 'PipGlobal' do
-    sh 'pyenv rehash'
     sh 'pip  install setuptools'
     sh 'pip  install pip --upgrade'
     sh 'pip  list --outdated --format=legacy | cut -d" " -f1 | xargs pip install --upgrade'
@@ -101,7 +97,6 @@ namespace :pip do
   desc 'Uninstall pip'
   task :uninstall do
     pip3file = '/tmp/piplist3.txt'
-    sh 'pyenv rehash'
     system "pip3 freeze > #{pip3file} && test -f #{pip3file} && yes | pip3 uninstall -r #{pip3file} && rm #{pip3file}"
   end
 end
@@ -110,13 +105,11 @@ namespace :npm do
   desc 'Install node modules'
   task install: 'NpmGlobal' do
     packages = File.readlines('NpmGlobal').map(&:chomp).join(' ')
-    sh 'nodenv rehash'
     sh "yarn global add #{packages}"
   end
 
   desc 'Uninstall node modules'
   task :uninstall do
-    sh 'nodenv rehash'
     sh "rm -rf #{`yarn global dir`}"
   end
 
@@ -171,27 +164,27 @@ namespace :mas do
   end
 end
 
-namespace :vscode do
-  desc 'Override vscode settings file'
-  task settings: ['.config/vscode/settings.json', '.config/vscode/keybindings.json', '.config/vscode/locale.json'] do
-    config_root = '~/Library/Application\ Support/Code/User'
-    sh "ln -sfn ~/.config/vscode/settings.json #{config_root}/settings.json"
-    sh "ln -sfn ~/.config/vscode/keybindings.json #{config_root}/keybindings.json"
-    sh "ln -sfn ~/.config/vscode/locale.json #{config_root}/locale.json"
-  end
-
-  desc 'Install extensions'
-  task extension: 'Codefile' do
-    File.readlines('Codefile').map(&:chomp).each do |extension|
-      sh "code --install-extension #{extension}"
-    end
-  end
-
-  desc 'Export extensions'
-  task :export_extension do
-    File.write('Codefile', `code --list-extensions`)
-  end
-end
+# namespace :vscode do
+#   desc 'Override vscode settings file'
+#   task settings: ['.config/vscode/settings.json', '.config/vscode/keybindings.json', '.config/vscode/locale.json'] do
+#     config_root = '~/Library/Application\ Support/Code/User'
+#     sh "ln -sfn ~/.config/vscode/settings.json #{config_root}/settings.json"
+#     sh "ln -sfn ~/.config/vscode/keybindings.json #{config_root}/keybindings.json"
+#     sh "ln -sfn ~/.config/vscode/locale.json #{config_root}/locale.json"
+#   end
+# 
+#   desc 'Install extensions'
+#   task extension: 'Codefile' do
+#     File.readlines('Codefile').map(&:chomp).each do |extension|
+#       sh "code --install-extension #{extension}"
+#     end
+#   end
+# 
+#   desc 'Export extensions'
+#   task :export_extension do
+#     File.write('Codefile', `code --list-extensions`)
+#   end
+# end
 
 namespace :coteditor do
   desc 'Integrate command line with citeditor'
