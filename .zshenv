@@ -59,8 +59,10 @@ path=(~/.deno/bin(N-/) $path)
 
 
 # Rust
-path=(~/.cargo/bin(N-/) $path)
-source "$HOME/.cargo/env"
+if [[ -d "$HOME/.cargo" ]]; then
+  path=(~/.cargo/bin(N-/) $path)
+  source "$HOME/.cargo/env"
+fi
 
 # go
 export GOPATH=$HOME/.go
