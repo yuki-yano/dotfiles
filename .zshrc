@@ -7,6 +7,7 @@ fi
 
 if [[ ! -d $ZPFX ]]; then
   mkdir -p $ZPFX/bin
+  mkdir -p $ZPFX/man/man1
 fi
 
 if [[ ! -d $ZPLG_HOME/misc ]]; then
@@ -14,6 +15,7 @@ if [[ ! -d $ZPLG_HOME/misc ]]; then
 fi
 
 source $ZPLG_HOME/bin/zinit.zsh
+MANPATH="${ZPFX}/man:${MANPATH}"
 # }}}
 
 # sync loading {{{
@@ -23,6 +25,16 @@ zinit ice depth=1
 zinit light zsh-users/zsh-autosuggestions
 zinit ice lucid
 zinit light woefe/git-prompt.zsh
+
+# fuzzy finder
+zinit ice lucid from"gh-r" as"program" mv"fzf -> ${ZPFX}/bin/fzf"
+zinit light junegunn/fzf
+
+zinit ice lucid as"program"
+zinit snippet 'https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux'
+
+zinit ice lucid as"program" mv"fzf* -> ${ZPFX}/man/man1"
+zinit snippet 'https://github.com/junegunn/fzf/blob/master/man/man1/fzf.1'
 
 zinit light yukiycino-dotfiles/zsh-show-buffer-stack
 # }}}
@@ -56,15 +68,6 @@ zinit light yuki-yano/tms
 
 zinit ice lucid wait"0" depth"1" as"program" src"tmk.plugin.zsh" pick"tmk"
 zinit light yuki-yano/tmk
-
-# fuzzy finder
-zinit ice lucid wait"!0" depth"1" as"program" mv"fzf -> ${ZPFX}/bin/fzf" cp"man/man.1/fzf* -> $ZPFX/share/man/man1"
-zinit light junegunn/fzf
-
-zinit ice lucid wait'0' as"program"
-zinit snippet 'https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux'
-
-zinit snippet 'https://github.com/junegunn/fzf/blob/master/shell/completion.zsh'
 
 # Language Server
 zinit ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd64*" mv"*/efm-langserver -> ${ZPFX}/bin/efm-langserver"
@@ -281,7 +284,7 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 # Project
 function f() {
   local project dir repository session current_session
-  dir=$(ghq list -p | sed -e "s|${HOME}|~|" | fzf --prompt='Project >' --preview "bat \$(eval echo {})/README.md" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up)
+  dir=$(ghq list -p | sed -e "s|${HOME}|~|" | fzf-tmux -p 70%,70% --prompt='Project >' --preview "bat \$(eval echo {})/README.md" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up)
 
   if [[ $dir == "" ]]; then
     return 1
