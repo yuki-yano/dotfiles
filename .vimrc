@@ -12,6 +12,7 @@ endif
 let &runtimepath .= ',' . s:DEIN_PATH
 let g:dein#install_max_processes    = 20
 let g:dein#install_process_timeout  = 300
+" let g:dein#lazy_rplugins  = 1
 let g:dein#install_github_api_token = $DEIN_GITHUB_TOKEN
 " }}}2
 
@@ -20,322 +21,324 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#begin(s:DEIN_BASE_PATH)
 
   " Dein {{{3
-  call dein#add('Shougo/dein.vim', {'merged': 0})
+  call dein#add('Shougo/dein.vim')
 
-  call dein#add('haya14busa/dein-command.vim', {'merged': 0})
+  " call dein#add('haya14busa/dein-command.vim')
   " }}}3
 
   " denops {{{3
-  call dein#add('vim-denops/denops.vim', {'merged': 0})
+  call dein#add('vim-denops/denops.vim')
 
-  call dein#add('kuuote/denops-skkeleton.vim', {'merged': 0})
-  call dein#add('lambdalisue/guise.vim',       {'merged': 0})
+  " call dein#add('kuuote/denops-skkeleton.vim')
+  call dein#add('lambdalisue/guise.vim')
 
   " if isdirectory(expand('~/repos/github.com/yuki-yano/dps-indent-line.vim'))
-  "   call dein#add('~/repos/github.com/yuki-yano/dps-indent-line.vim', {'merged': 0})
+  "   call dein#add('~/repos/github.com/yuki-yano/dps-indent-line.vim')
   " endif
   " }}}3
 
   " Doc {{{3
-  call dein#add('vim-jp/vimdoc-ja', {'merged': 0})
+  call dein#add('vim-jp/vimdoc-ja')
   " }}}3
 
   " IDE {{{3
-  call dein#add('neoclide/coc.nvim', {'merged': 0, 'rev': 'master', 'build': 'yarn install --frozen-lockfile'})
-  " call dein#add('neoclide/coc.nvim', {'merged': 0, 'rev': 'release'})
-  "
+  call dein#add('neoclide/coc.nvim', {'rev': 'master', 'build': 'yarn install --frozen-lockfile'})
+  " call dein#add('neoclide/coc.nvim', {'rev': 'release'})
+
   " if isdirectory(expand('~/repos/github.com/yuki-yano/coc.nvim'))
-  "   call dein#add('~/repos/github.com/yuki-yano/coc.nvim', {'merged': 0})
+  "   call dein#add('~/repos/github.com/yuki-yano/coc.nvim')
   " endif
 
-  " call dein#add('tsuyoshicho/vim-efm-langserver-settings', {'merged': 0})
+  " call dein#add('tsuyoshicho/vim-efm-langserver-settings')
 
-  " call dein#add('prabirshrestha/vim-lsp',              {'merged': 0})
-  " call dein#add('mattn/vim-lsp-settings',              {'merged': 0})
-  " call dein#add('prabirshrestha/asyncomplete.vim',     {'merged': 0})
-  " call dein#add('prabirshrestha/asyncomplete-lsp.vim', {'merged': 0})
-  " call dein#add('kitagry/asyncomplete-tabnine.vim',    {'merged': 0, 'build': './install.sh'  })
-  " call dein#add('Shougo/deoplete.nvim',                {'merged': 0})
-  " call dein#add('lighttiger2505/deoplete-vim-lsp',     {'merged': 0})
-  " call dein#add('tbodt/deoplete-tabnine',              {'merged': 0, 'build': 'bash install.sh'})
-  " call dein#add('hrsh7th/vim-vsnip',                   {'merged': 0})
-  " call dein#add('hrsh7th/vim-vsnip-integ',             {'merged': 0})
+  " call dein#add('prabirshrestha/vim-lsp')
+  " call dein#add('mattn/vim-lsp-settings')
+  " call dein#add('prabirshrestha/asyncomplete.vim')
+  " call dein#add('prabirshrestha/asyncomplete-lsp.vim')
+  " call dein#add('kitagry/asyncomplete-tabnine.vim',    {'build': './install.sh'  })
+  " call dein#add('Shougo/deoplete.nvim')
+  " call dein#add('lighttiger2505/deoplete-vim-lsp')
+  " call dein#add('tbodt/deoplete-tabnine',              {'build': 'bash install.sh'})
+  " call dein#add('hrsh7th/vim-vsnip')
+  " call dein#add('hrsh7th/vim-vsnip-integ')
   " }}}3
 
   " Language {{{3
-  " call dein#add('HerringtonDarkholme/yats.vim',            {'merged': 0})
-  " call dein#add('hail2u/vim-css3-syntax',                  {'merged': 0})
-  " call dein#add('mechatroner/rainbow_csv',                 {'merged': 0})
-  " call dein#add('othree/yajs.vim',                         {'merged': 0})
-  " call dein#add('peitalin/vim-jsx-typescript',             {'merged': 0})
-  " call dein#add('posva/vim-vue',                           {'merged': 0})
-  " call dein#add('styled-components/vim-styled-components', {'merged': 0})
-  " call dein#add('tpope/vim-rails',                         {'merged': 0})
-  " call dein#add('yardnsm/vim-import-cost',                 {'merged': 0, 'build': 'npm install'})
-  call dein#add('chr4/nginx.vim',             {'merged': 0})
-  call dein#add('elzr/vim-json',              {'merged': 0})
-  call dein#add('heavenshell/vim-jsdoc',      {'merged': 0, 'build': 'make install'})
-  call dein#add('jparise/vim-graphql',        {'merged': 0})
-  call dein#add('leafgarland/typescript-vim', {'merged': 0})
-  call dein#add('pantharshit00/vim-prisma',   {'merged': 0})
-  call dein#add('plasticboy/vim-markdown',    {'merged': 0})
-  call dein#add('rhysd/vim-fixjson',          {'merged': 0})
+  " call dein#add('HerringtonDarkholme/yats.vim')
+  " call dein#add('hail2u/vim-css3-syntax')
+  " call dein#add('mechatroner/rainbow_csv')
+  " call dein#add('othree/yajs.vim')
+  " call dein#add('peitalin/vim-jsx-typescript')
+  " call dein#add('posva/vim-vue')
+  " call dein#add('styled-components/vim-styled-components')
+  " call dein#add('tpope/vim-rails')
+  " call dein#add('yardnsm/vim-import-cost', {'build': 'npm install'})
+  " call dein#add('chr4/nginx.vim')
+  " call dein#add('heavenshell/vim-jsdoc',      {'build': 'make install'})
+  " call dein#add('jparise/vim-graphql')
+  " call dein#add('leafgarland/typescript-vim')
+  call dein#add('elzr/vim-json', {'lazy': 1, 'on_ft': ['json']})
+  call dein#add('pantharshit00/vim-prisma', {'lazy': 1, 'on_ft': ['prisma']})
+  call dein#add('plasticboy/vim-markdown',  {'lazy': 1, 'on_ft': ['markdown']})
+  call dein#add('rhysd/vim-fixjson')
 
   if has('nvim')
-    call dein#add('nvim-treesitter/nvim-treesitter', {'merged': 0})
+    call dein#add('nvim-treesitter/nvim-treesitter')
 
-    " call dein#add('David-Kunz/treesitter-unit',                  {'merged': 0})
-    " call dein#add('code-biscuits/nvim-biscuits',                 {'merged': 0})
-    " call dein#add('haringsrob/nvim_context_vt',                  {'merged': 0})
-    " call dein#add('lukas-reineke/indent-blankline.nvim',         {'merged': 0})
-    " call dein#add('nvim-treesitter/nvim-treesitter-refactor',    {'merged': 0})
-    " call dein#add('nvim-treesitter/nvim-treesitter-textobjects', {'merged': 0})
-    " call dein#add('romgrk/nvim-treesitter-context',              {'merged': 0})
-    call dein#add('JoosepAlviste/nvim-ts-context-commentstring', {'merged': 0})
-    call dein#add('p00f/nvim-ts-rainbow',                        {'merged': 0})
+    " call dein#add('David-Kunz/treesitter-unit')
+    " call dein#add('code-biscuits/nvim-biscuits')
+    " call dein#add('haringsrob/nvim_context_vt')
+    " call dein#add('lukas-reineke/indent-blankline.nvim')
+    " call dein#add('nvim-treesitter/nvim-treesitter-refactor')
+    " call dein#add('nvim-treesitter/nvim-treesitter-textobjects')
+    " call dein#add('romgrk/nvim-treesitter-context')
+    call dein#add('JoosepAlviste/nvim-ts-context-commentstring')
+    call dein#add('p00f/nvim-ts-rainbow')
   endif
   " }}}3
 
   " Git {{{3
-  call dein#add('cohama/agit.vim',               {'merged': 0})
-  call dein#add('hotwatermorning/auto-git-diff', {'merged': 0})
-  call dein#add('lambdalisue/gina.vim',          {'merged': 0})
-  call dein#add('rhysd/conflict-marker.vim',     {'merged': 0})
-  call dein#add('tpope/vim-fugitive',            {'merged': 0})
-  call dein#add('wting/gitsessions.vim',         {'merged': 0})
+  " call dein#add('cohama/agit.vim')
+  " call dein#add('hotwatermorning/auto-git-diff')
+  " call dein#add('rhysd/conflict-marker.vim')
+  " call dein#add('tpope/vim-fugitive')
+  call dein#add('lambdalisue/gina.vim')
+  call dein#add('wting/gitsessions.vim', {'lazy': 1, 'on_cmd': ['GitSessionSave', 'GitSessionLoad']})
 
   if has('nvim')
-    " call dein#add('APZelos/blamer.nvim',     {'merged': 0})
-    " call dein#add('f-person/git-blame.nvim', {'merged': 0})
-    " call dein#add('lewis6991/gitsigns.nvim', {'merged': 0})
-    call dein#add('rhysd/git-messenger.vim', {'merged': 0})
+    " call dein#add('APZelos/blamer.nvim')
+    " call dein#add('f-person/git-blame.nvim')
+    " call dein#add('lewis6991/gitsigns.nvim')
+    " call dein#add('rhysd/git-messenger.vim')
   endif
   " }}}3
 
   " Fuzzy Finder {{{3
-  call dein#add('Shougo/denite.nvim', {'merged': 0})
+  " call dein#add('Shougo/denite.nvim')
 
-  call dein#add('junegunn/fzf',         {'merged': 0, 'build': './install --bin'})
-  call dein#add('junegunn/fzf.vim',     {'merged': 0})
-  call dein#add('antoinemadec/coc-fzf', {'merged': 0, 'rev': 'release'})
+  call dein#add('junegunn/fzf', {'build': './install --bin'})
+  " call dein#add('junegunn/fzf.vim')
+  " call dein#add('antoinemadec/coc-fzf', {'rev': 'release'})
 
   if isdirectory(expand('~/repos/github.com/yuki-yano/fzf-preview.vim'))
-    call dein#add('~/repos/github.com/yuki-yano/fzf-preview.vim', {'merged': 0})
+    call dein#add('~/repos/github.com/yuki-yano/fzf-preview.vim')
   endif
 
   " if isdirectory(expand('~/workspace/coc-ultisnips-select'))
-  "   call dein#add('~/workspace/coc-ultisnips-select', {'merged': 0})
+  "   call dein#add('~/workspace/coc-ultisnips-select')
   " endif
 
-  " call dein#add('yuki-yano/fzf-preview.vim', {'merged': 0, 'rev': 'release/rpc'})
+  " call dein#add('yuki-yano/fzf-preview.vim', {'rev': 'release/rpc'})
 
   if has('nvim')
-    call dein#add('nvim-lua/telescope.nvim',      {'merged': 0})
-    call dein#add('kyazdani42/nvim-web-devicons', {'merged': 0})
+    " call dein#add('nvim-lua/telescope.nvim')
+    " call dein#add('kyazdani42/nvim-web-devicons')
   endif
   " }}}3
 
   " filer {{{3
-  call dein#add('lambdalisue/fern.vim',                   {'merged': 0})
+  call dein#add('lambdalisue/fern.vim', {'lazy': 1, 'on_cmd': ['Fern'], 'depends': ['fern-git-status.vim', 'fern-renderer-nerdfont.vim', 'glyph-palette.vim', 'nerdfont.vim', 'fern-preview.vim']})
 
-  call dein#add('LumaKernel/fern-mapping-fzf.vim',        {'merged': 0})
-  call dein#add('LumaKernel/fern-mapping-reload-all.vim', {'merged': 0})
-  call dein#add('lambdalisue/fern-git-status.vim',        {'merged': 0})
-  call dein#add('lambdalisue/fern-renderer-nerdfont.vim', {'merged': 0})
-  call dein#add('lambdalisue/glyph-palette.vim',          {'merged': 0})
-  call dein#add('lambdalisue/nerdfont.vim',               {'merged': 0})
+  " call dein#add('LumaKernel/fern-mapping-fzf.vim')
+  " call dein#add('LumaKernel/fern-mapping-reload-all.vim')
+  call dein#add('lambdalisue/fern-git-status.vim', {'lazy': 1})
+  call dein#add('lambdalisue/fern-renderer-nerdfont.vim', {'lazy': 1})
+  call dein#add('lambdalisue/glyph-palette.vim', {'lazy': 1})
+  call dein#add('lambdalisue/nerdfont.vim', {'lazy': 1})
 
-  call dein#add('~/repos/github.com/yuki-yano/fern-preview.vim', {'merged': 0})
+  if isdirectory(expand('~/repos/github.com/yuki-yano/fern-preview.vim'))
+    call dein#add('~/repos/github.com/yuki-yano/fern-preview.vim', {'lazy': 1})
+  endif
 
   if has('nvim')
-    call dein#add('Shougo/defx.nvim',          {'merged': 0})
-    call dein#add('kristijanhusak/defx-icons', {'merged': 0})
-    call dein#add('kristijanhusak/defx-git',   {'merged': 0})
-    call dein#add('kyazdani42/nvim-tree.lua',  {'merged': 0})
+    " call dein#add('Shougo/defx.nvim')
+    " call dein#add('kristijanhusak/defx-icons')
+    " call dein#add('kristijanhusak/defx-git')
+    " call dein#add('kyazdani42/nvim-tree.lua')
   endif
   " }}}3
 
   " textobj & operator {{{3
-  call dein#add('machakann/vim-sandwich', {'merged': 0}) " ib, ab, is, as
-  call dein#add('machakann/vim-swap',     {'merged': 0}) " g< g> i, a,
+  call dein#add('machakann/vim-sandwich') " ib, ab, is, as
+  call dein#add('machakann/vim-swap') " g< g> i, a,
 
-  call dein#add('kana/vim-textobj-user',  {'merged': 0})
-  call dein#add('kana/vim-operator-user', {'merged': 0})
+  call dein#add('kana/vim-textobj-user')
+  call dein#add('kana/vim-operator-user')
 
-  " call dein#add('rhysd/vim-textobj-ruby',             {'merged': 0}) " ir ar
-  " call dein#add('romgrk/equal.operator',              {'merged': 0}) " i=h a=h i=l a=l
-  " call dein#add('thinca/vim-textobj-between',         {'merged': 0}) " i{char} a{char}
-  call dein#add('kana/vim-textobj-entire',              {'merged': 0}) " ie ae
-  call dein#add('kana/vim-textobj-fold',                {'merged': 0}) " iz az
-  call dein#add('kana/vim-textobj-indent',              {'merged': 0}) " ii ai
-  call dein#add('kana/vim-textobj-line',                {'merged': 0}) " al il
-  call dein#add('machakann/vim-textobj-functioncall',   {'merged': 0}) " if af
-  call dein#add('mattn/vim-textobj-url',                {'merged': 0}) " iu au
-  call dein#add('yuki-yano/vim-textobj-cursor-context', {'merged': 0}) " ic ac
+  " call dein#add('kana/vim-textobj-fold') " iz az
+  " call dein#add('kana/vim-textobj-indent') " ii ai
+  " call dein#add('rhysd/vim-textobj-ruby') " ir ar
+  " call dein#add('romgrk/equal.operator') " i=h a=h i=l a=l
+  " call dein#add('thinca/vim-textobj-between') " i{char} a{char}
+  call dein#add('kana/vim-textobj-entire', {'lazy': 1, 'on_map': ['<Plug>(textobj-entire']}) " ie ae
+  call dein#add('kana/vim-textobj-line', {'lazy': 1, 'on_map': ['<Plug>(textobj-line']}) " al il
+  call dein#add('machakann/vim-textobj-functioncall', {'lazy': 1, 'on_map': ['<Plug>(textobj-functioncall']}) " if af
+  call dein#add('mattn/vim-textobj-url', {'lazy': 1, 'on_map': ['<Plug>(textobj-url']}) " iu au
+  call dein#add('yuki-yano/vim-textobj-cursor-context', {'lazy': 1, 'on_map': ['<Plug>(textobj-cursorcontext']}) " ic ac
 
-  call dein#add('mopp/vim-operator-convert-case', {'merged': 0}) " cy
-  call dein#add('yuki-yano/vim-operator-replace', {'merged': 0})  " _
+  call dein#add('mopp/vim-operator-convert-case', {'lazy': 1, 'on_map': ['<Plug>(operator-convert-case']}) " cy
+  call dein#add('yuki-yano/vim-operator-replace', {'lazy': 1, 'on_map': ['<Plug>(operator-replace']})  " _
   " }}}3
 
   " Edit & Move & Search {{{3
-  " call dein#add('AndrewRadev/splitjoin.vim',     {'merged': 0})
-  " call dein#add('AndrewRadev/tagalong.vim',      {'merged': 0})
-  " call dein#add('deris/vim-shot-f',              {'merged': 0})
-  " call dein#add('easymotion/vim-easymotion',     {'merged': 0})
-  " call dein#add('haya14busa/incsearch.vim',      {'merged': 0})
-  " call dein#add('haya14busa/is.vim',             {'merged': 0})
-  " call dein#add('haya14busa/vim-metarepeat',     {'merged': 0})
-  " call dein#add('inkarkat/vim-EnhancedJumps',    {'merged': 0})
-  " call dein#add('lambdalisue/reword.vim',        {'merged': 0})
-  " call dein#add('mg979/vim-visual-multi',        {'merged': 0, 'rev': 'test'})
-  " call dein#add('mhinz/vim-grepper',             {'merged': 0})
-  " call dein#add('osyo-manga/vim-trip',           {'merged': 0})
-  " call dein#add('rhysd/accelerated-jk',          {'merged': 0})
-  " call dein#add('t9md/vim-choosewin',            {'merged': 0})
-  " call dein#add('tomtom/tcomment_vim',           {'merged': 0})
-  " call dein#add('tpope/vim-commentary',          {'merged': 0})
-  " call dein#add('tpope/vim-repeat',              {'merged': 0})
-  " call dein#add('unblevable/quick-scope',        {'merged': 0})
-  " call dein#add('vim-scripts/Align',             {'merged': 0})
-  " call dein#add('yuki-yano/zero.vim',            {'merged': 0})
-  call dein#add('Bakudankun/BackAndForward.vim', {'merged': 0})
-  call dein#add('LeafCage/yankround.vim',        {'merged': 0})
-  call dein#add('MattesGroeger/vim-bookmarks',   {'merged': 0})
-  call dein#add('SirVer/ultisnips',              {'merged': 0})
-  call dein#add('cohama/lexima.vim',             {'merged': 0})
-  call dein#add('haya14busa/vim-asterisk',       {'merged': 0})
-  call dein#add('haya14busa/vim-edgemotion',     {'merged': 0})
-  call dein#add('hrsh7th/vim-eft',               {'merged': 0})
-  call dein#add('junegunn/vim-easy-align',       {'merged': 0})
-  call dein#add('mattn/vim-maketable',           {'merged': 0})
-  call dein#add('mtth/scratch.vim',              {'merged': 0})
-  call dein#add('osyo-manga/vim-anzu',           {'merged': 0})
-  call dein#add('osyo-manga/vim-jplus',          {'merged': 0})
-  call dein#add('t9md/vim-textmanip',            {'merged': 0})
-  call dein#add('terryma/vim-expand-region',     {'merged': 0})
-  call dein#add('thinca/vim-qfreplace',          {'merged': 0})
-  call dein#add('tommcdo/vim-exchange',          {'merged': 0})
-  call dein#add('tyru/caw.vim',                  {'merged': 0, 'rev': '703db47'})
+  " call dein#add('AndrewRadev/splitjoin.vim')
+  " call dein#add('AndrewRadev/tagalong.vim')
+  " call dein#add('deris/vim-shot-f')
+  " call dein#add('easymotion/vim-easymotion')
+  " call dein#add('haya14busa/incsearch.vim')
+  " call dein#add('haya14busa/is.vim')
+  " call dein#add('haya14busa/vim-metarepeat')
+  " call dein#add('inkarkat/vim-EnhancedJumps')
+  " call dein#add('lambdalisue/reword.vim')
+  " call dein#add('mg979/vim-visual-multi',        {'rev': 'test'})
+  " call dein#add('mhinz/vim-grepper')
+  " call dein#add('mtth/scratch.vim')
+  " call dein#add('osyo-manga/vim-trip')
+  " call dein#add('rhysd/accelerated-jk')
+  " call dein#add('t9md/vim-choosewin')
+  " call dein#add('tomtom/tcomment_vim')
+  " call dein#add('tpope/vim-commentary')
+  " call dein#add('unblevable/quick-scope')
+  " call dein#add('vim-scripts/Align')
+  " call dein#add('yuki-yano/zero.vim')
+  call dein#add('Bakudankun/BackAndForward.vim', {'lazy': 1, 'on_map': ['<Plug>(backandforward-']})
+  call dein#add('LeafCage/yankround.vim')
+  call dein#add('MattesGroeger/vim-bookmarks')
+  call dein#add('SirVer/ultisnips')
+  call dein#add('cohama/lexima.vim', {'lazy': 1, 'on_i': 1, 'hook_post_source': 'call SetupLexima()'})
+  call dein#add('haya14busa/vim-asterisk', {'lazy': 1, 'on_map': ['<Plug>']})
+  call dein#add('haya14busa/vim-edgemotion', {'lazy': 1, 'on_map': ['<Plug>']})
+  call dein#add('hrsh7th/vim-eft', {'lazy': 1, 'on_map': ['<Plug>']})
+  call dein#add('junegunn/vim-easy-align', {'lazy': 1, 'on_map': ['<Plug>(EasyAlign)']})
+  call dein#add('mattn/vim-maketable', {'lazy': 1, 'on_cmd': ['MakeTable']})
+  call dein#add('osyo-manga/vim-anzu', {'lazy': 1, 'on_map': ['<Plug>']})
+  call dein#add('osyo-manga/vim-jplus', {'lazy': 1, 'on_map': ['<Plug>']})
+  call dein#add('t9md/vim-textmanip', {'lazy': 1, 'on_map': ['<Plug>']})
+  call dein#add('terryma/vim-expand-region', {'lazy': 1, 'on_map': ['<Plug>']})
+  call dein#add('thinca/vim-qfreplace', {'lazy': 1, 'on_cmd': ['Qfreplace']})
+  call dein#add('tommcdo/vim-exchange')
+  call dein#add('tpope/vim-repeat')
+  call dein#add('tyru/caw.vim', {'rev': '703db47', 'lazy': 1, 'on_map': ['<Plug>']})
 
   if has('nvim')
-    " call dein#add('b3nj5m1n/kommentary',                         {'merged': 0})
-    " call dein#add('phaazon/hop.nvim',                            {'merged': 0})
-    " call dein#add('rmagatti/auto-session',                       {'merged': 0})
-    " call dein#add('windwp/nvim-ts-autotag',                      {'merged': 0})
-    " call dein#add('winston0410/smart-cursor.nvim',               {'merged': 0})
-    call dein#add('gabrielpoca/replacer.nvim',                   {'merged': 0})
-    call dein#add('ggandor/lightspeed.nvim',                     {'merged': 0})
-    call dein#add('kevinhwang91/nvim-hlslens',                   {'merged': 0})
-    call dein#add('monaqa/dial.nvim',                            {'merged': 0})
-    call dein#add('nacro90/numb.nvim',                           {'merged': 0})
-    call dein#add('windwp/nvim-spectre',                         {'merged': 0})
-    call dein#add('yuki-yano/zero.nvim',                         {'merged': 0})
+    " call dein#add('b3nj5m1n/kommentary')
+    " call dein#add('gabrielpoca/replacer.nvim')
+    " call dein#add('phaazon/hop.nvim')
+    " call dein#add('rmagatti/auto-session')
+    " call dein#add('windwp/nvim-spectre')
+    " call dein#add('windwp/nvim-ts-autotag')
+    " call dein#add('winston0410/smart-cursor.nvim')
+    call dein#add('ggandor/lightspeed.nvim')
+    call dein#add('kevinhwang91/nvim-hlslens')
+    call dein#add('monaqa/dial.nvim')
+    call dein#add('nacro90/numb.nvim')
+    call dein#add('yuki-yano/zero.nvim')
   endif
   " }}}3
 
   " Appearance {{{3
-  " call dein#add('RRethy/vim-hexokinase',          {'merged': 0, 'build': 'make hexokinase'})
-  " call dein#add('Yggdroot/indentLine',            {'merged': 0})
-  " call dein#add('andymass/vim-matchup',           {'merged': 0})
-  " call dein#add('luochen1990/rainbow',            {'merged': 0})
-  " call dein#add('mhinz/vim-startify',             {'merged': 0})
-  " call dein#add('mopp/smartnumber.vim',           {'merged': 0})
-  " call dein#add('ntpeters/vim-better-whitespace', {'merged': 0})
-  " call dein#add('ronakg/quickr-preview.vim',      {'merged': 0})
-  " call dein#add('wellle/context.vim',             {'merged': 0})
-  " call dein#add('yuttie/comfortable-motion.vim',  {'merged': 0})
-  call dein#add('itchyny/lightline.vim',         {'merged': 0})
-  call dein#add('lambdalisue/readablefold.vim',  {'merged': 0})
-  call dein#add('machakann/vim-highlightedundo', {'merged': 0})
-  call dein#add('machakann/vim-highlightedyank', {'merged': 0})
-  call dein#add('ryanoasis/vim-devicons',        {'merged': 0})
+  " call dein#add('RRethy/vim-hexokinase',          {'build': 'make hexokinase'})
+  " call dein#add('Yggdroot/indentLine')
+  " call dein#add('andymass/vim-matchup')
+  " call dein#add('luochen1990/rainbow')
+  " call dein#add('mhinz/vim-startify')
+  " call dein#add('mopp/smartnumber.vim')
+  " call dein#add('ntpeters/vim-better-whitespace')
+  " call dein#add('ronakg/quickr-preview.vim')
+  " call dein#add('wellle/context.vim')
+  " call dein#add('yuttie/comfortable-motion.vim')
+  call dein#add('itchyny/lightline.vim')
+  call dein#add('lambdalisue/readablefold.vim')
+  call dein#add('machakann/vim-highlightedundo', {'lazy': 1, 'on_map': ['<Plug>']})
+  call dein#add('machakann/vim-highlightedyank', {'lazy': 1, 'on_event': ['TextYankPost']})
+  call dein#add('ryanoasis/vim-devicons')
 
   if has('nvim')
-    " call dein#add('Xuyuanp/scrollbar.nvim',      {'merged': 0})
-    " call dein#add('glepnir/indent-guides.nvim',  {'merged': 0})
-    " call dein#add('karb94/neoscroll.nvim',       {'merged': 0})
-    " call dein#add('vuki656/package-info.nvim',   {'merged': 0})
-    call dein#add('dstein64/nvim-scrollview',    {'merged': 0})
-    call dein#add('folke/todo-comments.nvim',    {'merged': 0})
-    call dein#add('kevinhwang91/nvim-bqf',       {'merged': 0})
-    call dein#add('norcalli/nvim-colorizer.lua', {'merged': 0})
-    call dein#add('rcarriga/nvim-notify',        {'merged': 0})
+    " call dein#add('Xuyuanp/scrollbar.nvim')
+    " call dein#add('folke/todo-comments.nvim')
+    " call dein#add('glepnir/indent-guides.nvim')
+    " call dein#add('karb94/neoscroll.nvim')
+    " call dein#add('vuki656/package-info.nvim')
+    call dein#add('dstein64/nvim-scrollview', {'lazy': 1, 'on_event': ['WinScrolled']})
+    call dein#add('kevinhwang91/nvim-bqf', {'lazy': 1, 'on_ft': ['qf']})
+    call dein#add('norcalli/nvim-colorizer.lua')
+    call dein#add('rcarriga/nvim-notify')
   endif
   " }}}3
 
   " tmux {{{3
-  call dein#add('christoomey/vim-tmux-navigator', {'merged': 0})
+  call dein#add('christoomey/vim-tmux-navigator')
   " }}}3
 
   " Util {{{3
-  " call dein#add('antoinemadec/FixCursorHold.nvim',  {'merged': 0})
-  " call dein#add('dhruvasagar/vim-table-mode',       {'merged': 0})
-  " call dein#add('dstein64/vim-startuptime',         {'merged': 0})
-  " call dein#add('kristijanhusak/vim-carbon-now-sh', {'merged': 0})
-  " call dein#add('lambdalisue/vim-pager',            {'merged': 0})
-  " call dein#add('liuchengxu/vim-which-key',         {'merged': 0})
-  " call dein#add('osyo-manga/vim-brightest',         {'merged': 0})
-  " call dein#add('osyo-manga/vim-gift',              {'merged': 0})
-  " call dein#add('pocke/vim-automatic',              {'merged': 0})
-  " call dein#add('thinca/vim-localrc',               {'merged': 0})
-  " call dein#add('thinca/vim-ref',                   {'merged': 0})
-  call dein#add("rcarriga/vim-ultest",          {'merged': 0})
-  call dein#add('AndrewRadev/linediff.vim',     {'merged': 0})
-  call dein#add('aiya000/aho-bakaup.vim',       {'merged': 0})
-  call dein#add('glidenote/memolist.vim',       {'merged': 0})
-  call dein#add('iamcco/markdown-preview.nvim', {'merged': 0, 'build': 'sh -c "cd app && yarn install"'})
-  call dein#add('itchyny/vim-qfedit',           {'merged': 0})
-  call dein#add('jsfaint/gen_tags.vim',         {'merged': 0})
-  call dein#add('kana/vim-niceblock',           {'merged': 0})
-  call dein#add('lambdalisue/suda.vim',         {'merged': 0})
-  call dein#add('lambdalisue/vim-manpager',     {'merged': 0})
-  call dein#add('liuchengxu/vista.vim',         {'merged': 0})
-  call dein#add('mbbill/undotree',              {'merged': 0})
-  call dein#add('moll/vim-bbye',                {'merged': 0})
-  call dein#add('previm/previm',                {'merged': 0})
-  call dein#add('segeljakt/vim-silicon',        {'merged': 0})
-  call dein#add('tyru/capture.vim',             {'merged': 0})
-  call dein#add('tyru/open-browser.vim',        {'merged': 0})
-  call dein#add('tyru/vim-altercmd',            {'merged': 0})
-  call dein#add('vim-test/vim-test',            {'merged': 0})
-  call dein#add('voldikss/vim-floaterm',        {'merged': 0})
-  call dein#add('wesQ3/vim-windowswap',         {'merged': 0})
+  " call dein#add('antoinemadec/FixCursorHold.nvim')
+  " call dein#add('dhruvasagar/vim-table-mode')
+  " call dein#add('dstein64/vim-startuptime')
+  " call dein#add('iamcco/markdown-preview.nvim', {'build': 'sh -c "cd app && yarn install"'})
+  " call dein#add('kristijanhusak/vim-carbon-now-sh')
+  " call dein#add('lambdalisue/vim-pager')
+  " call dein#add('liuchengxu/vim-which-key')
+  " call dein#add('osyo-manga/vim-brightest')
+  " call dein#add('osyo-manga/vim-gift')
+  " call dein#add('pocke/vim-automatic')
+  " call dein#add('previm/previm')
+  " call dein#add('thinca/vim-localrc')
+  " call dein#add('thinca/vim-ref')
+  " call dein#add('tyru/open-browser.vim')
+  call dein#add("rcarriga/vim-ultest")
+  call dein#add('AndrewRadev/linediff.vim', {'lazy': 1, 'on_cmd': ['LineDiff']})
+  call dein#add('aiya000/aho-bakaup.vim', {'lazy': 1, 'on_event': ['InsertEnter', 'TextChanged']})
+  call dein#add('glidenote/memolist.vim')
+  call dein#add('itchyny/vim-qfedit', {'lazy': 1, 'on_ft': ['qf']})
+  call dein#add('jsfaint/gen_tags.vim')
+  call dein#add('kana/vim-niceblock')
+  call dein#add('lambdalisue/suda.vim', {'lazy': 1, 'on_cmd': ['SudaRead', 'SudaWrite']})
+  call dein#add('lambdalisue/vim-manpager', {'lazy': 1, 'on_cmd': ['Man'], 'on_map': ['<Plug>']})
+  call dein#add('liuchengxu/vista.vim', {'lazy': 1, 'on_cmd': ['Vista']})
+  call dein#add('mbbill/undotree', {'lazy': 1, 'on_cmd': ['UndotreeToggle']})
+  call dein#add('moll/vim-bbye')
+  call dein#add('segeljakt/vim-silicon', {'lazy': 1, 'on_cmd': ['Silicon']})
+  call dein#add('thinca/vim-quickrun')
+  call dein#add('tyru/capture.vim')
+  call dein#add('tyru/vim-altercmd')
+  call dein#add('vim-test/vim-test')
+  call dein#add('voldikss/vim-floaterm', {'lazy': 1, 'on_cmd': ['FloatermToggle']})
+  call dein#add('wesQ3/vim-windowswap', {'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap']})
 
   if has('nvim')
-    " call dein#add('notomo/cmdbuf.nvim',    {'merged': 0})
-    " call dein#add('lambdalisue/edita.vim', {'merged': 0})
-    call dein#add('gelguy/wilder.nvim',    {'merged': 0})
-    call dein#add('nvim-lua/plenary.nvim', {'merged': 0})
-    call dein#add('nvim-lua/popup.nvim',   {'merged': 0})
+    " call dein#add('lambdalisue/edita.vim')
+    " call dein#add('notomo/cmdbuf.nvim')
+    " call dein#add('nvim-lua/plenary.nvim')
+    " call dein#add('nvim-lua/popup.nvim')
+    call dein#add('gelguy/wilder.nvim')
   endif
 
   if $ENABLE_WAKATIME == 1
-    call dein#add('wakatime/vim-wakatime', {'merged': 0})
+    call dein#add('wakatime/vim-wakatime')
   endif
   " }}}3
 
   " Develop {{{3
-  call dein#add('hrsh7th/vim-vital-vs',          {'merged': 0})
-  call dein#add('rbtnn/vim-vimscript_lasterror', {'merged': 0})
-  call dein#add('thinca/vim-prettyprint',        {'merged': 0})
-  call dein#add('thinca/vim-quickrun',           {'merged': 0})
-  call dein#add('vim-jp/vital.vim',              {'merged': 0})
+  " call dein#add('hrsh7th/vim-vital-vs')
+  " call dein#add('vim-jp/vital.vim')
+  call dein#add('rbtnn/vim-vimscript_lasterror')
+  call dein#add('thinca/vim-prettyprint')
 
   if has('nvim')
-    call dein#add('lambdalisue/vim-quickrun-neovim-job', {'merged': 0})
+    call dein#add('lambdalisue/vim-quickrun-neovim-job')
   endif
   " }}}3
 
   " Color Theme {{{3
-  call dein#add('NLKNguyen/papercolor-theme',   {'merged': 0})
-  call dein#add('arcticicestudio/nord-vim',     {'merged': 0})
-  call dein#add('cocopon/iceberg.vim',          {'merged': 0})
-  call dein#add('high-moctane/gaming.vim',      {'merged': 0})
-  call dein#add('icymind/NeoSolarized',         {'merged': 0})
-  call dein#add('joshdick/onedark.vim',         {'merged': 0})
-  call dein#add('sainnhe/edge',                 {'merged': 0})
-  call dein#add('sainnhe/gruvbox-material',     {'merged': 0})
-  call dein#add('taohexxx/lightline-solarized', {'merged': 0})
+  " call dein#add('NLKNguyen/papercolor-theme')
+  " call dein#add('arcticicestudio/nord-vim')
+  " call dein#add('cocopon/iceberg.vim')
+  " call dein#add('high-moctane/gaming.vim')
+  " call dein#add('icymind/NeoSolarized')
+  " call dein#add('joshdick/onedark.vim')
+  " call dein#add('taohexxx/lightline-solarized')
+  call dein#add('sainnhe/edge')
+  call dein#add('sainnhe/gruvbox-material')
   " }}}3
 
   call dein#end()
@@ -2142,14 +2145,58 @@ if dein#tap('vim-textobj-between')
 endif
 " }}}3
 
+" textobj-cursorcontext {{{3
+if dein#tap('vim-textobj-cursorcontext')
+  let g:textobj_cursorcontext_no_default_key_mappings = 1
+
+  omap ic <Plug>(textobj-cursorcontext-i)
+  omap ac <Plug>(textobj-cursorcontext-a)
+  xmap ic <Plug>(textobj-cursorcontext-i)
+  xmap ac <Plug>(textobj-cursorcontext-a)
+endif
+" }}}3
+
+" textobj-entire {{{3
+if dein#tap('vim-textobj-entire')
+  let g:textobj_entire_no_default_key_mappings = 1
+
+  omap ie <Plug>(textobj-entire-i)
+  omap ae <Plug>(textobj-entire-a)
+  xmap ie <Plug>(textobj-entire-i)
+  xmap ae <Plug>(textobj-entire-a)
+endif
+" }}}3
+
+" textobj-functioncall {{{3
+if dein#tap('vim-textobj-functioncall')
+  let g:textobj_functioncall_no_default_key_mappings = 1
+
+  omap if <Plug>(textobj-functioncall-i)
+  omap af <Plug>(textobj-functioncall-a)
+  xmap if <Plug>(textobj-functioncall-i)
+  xmap af <Plug>(textobj-functioncall-a)
+endif
+" }}}3
+
+" textobj-line {{{3
+if dein#tap('vim-textobj-line')
+  let g:textobj_line_no_default_key_mappings = 1
+
+  omap il <Plug>(textobj-line-i)
+  omap al <Plug>(textobj-line-a)
+  xmap il <Plug>(textobj-line-i)
+  xmap al <Plug>(textobj-line-a)
+endif
+" }}}3
+
 " textobj-url {{{3
 if dein#tap('vim-textobj-url')
   let g:textobj_url_no_default_key_mappings = 1
 
-  omap iU <Plug>(textobj-url-i)
-  omap aU <Plug>(textobj-url-a)
-  xmap iU <Plug>(textobj-url-i)
-  xmap aU <Plug>(textobj-url-a)
+  omap iu <Plug>(textobj-url-i)
+  omap au <Plug>(textobj-url-a)
+  xmap iu <Plug>(textobj-url-i)
+  xmap au <Plug>(textobj-url-a)
 endif
 " }}}3
 
@@ -2519,161 +2566,163 @@ if dein#tap('lexima.vim')
   let g:lexima_map_escape = ''
   let g:lexima_enable_endwise_rules = 0
 
-  let s:rules = []
+  function! SetupLexima() abort
+    let s:rules = []
 
-  "" Parenthesis
-  let s:rules += [
-  \ { 'char': '<C-h>', 'at': '(\%#)', 'input': '<BS><Del>', },
-  \ { 'char': '<BS>',  'at': '(\%#)', 'input': '<BS><Del>', },
-  \ ]
+    "" Parenthesis
+    let s:rules += [
+    \ { 'char': '<C-h>', 'at': '(\%#)', 'input': '<BS><Del>', },
+    \ { 'char': '<BS>',  'at': '(\%#)', 'input': '<BS><Del>', },
+    \ ]
 
-  "" Brace
-  let s:rules += [
-  \ { 'char': '<C-h>', 'at': '{\%#}', 'input': '<BS><Del>', },
-  \ { 'char': '<BS>',  'at': '{\%#}', 'input': '<BS><Del>', },
-  \ ]
+    "" Brace
+    let s:rules += [
+    \ { 'char': '<C-h>', 'at': '{\%#}', 'input': '<BS><Del>', },
+    \ { 'char': '<BS>',  'at': '{\%#}', 'input': '<BS><Del>', },
+    \ ]
 
-  "" Bracket
-  let s:rules += [
-  \ { 'char': '<C-h>', 'at': '\[\%#\]', 'input': '<BS><Del>', },
-  \ { 'char': '<BS>',  'at': '\[\%#\]', 'input': '<BS><Del>', },
-  \ ]
+    "" Bracket
+    let s:rules += [
+    \ { 'char': '<C-h>', 'at': '\[\%#\]', 'input': '<BS><Del>', },
+    \ { 'char': '<BS>',  'at': '\[\%#\]', 'input': '<BS><Del>', },
+    \ ]
 
-  "" Sinble Quote
-  let s:rules += [
-  \ { 'char': '<C-h>', 'at': "'\\%#'", 'input': '<BS><Del>', },
-  \ { 'char': '<BS>',  'at': "'\\%#'", 'input': '<BS><Del>', },
-  \ ]
+    "" Sinble Quote
+    let s:rules += [
+    \ { 'char': '<C-h>', 'at': "'\\%#'", 'input': '<BS><Del>', },
+    \ { 'char': '<BS>',  'at': "'\\%#'", 'input': '<BS><Del>', },
+    \ ]
 
-  "" Double Quote
-  let s:rules += [
-  \ { 'char': '<C-h>', 'at': '"\%#"', 'input': '<BS><Del>', },
-  \ { 'char': '<BS>',  'at': '"\%#"', 'input': '<BS><Del>', },
-  \ ]
+    "" Double Quote
+    let s:rules += [
+    \ { 'char': '<C-h>', 'at': '"\%#"', 'input': '<BS><Del>', },
+    \ { 'char': '<BS>',  'at': '"\%#"', 'input': '<BS><Del>', },
+    \ ]
 
-  "" Back Quote
-  let s:rules += [
-  \ { 'char': '<C-h>', 'at': '`\%#`', 'input': '<BS><Del>', },
-  \ { 'char': '<BS>',  'at': '`\%#`', 'input': '<BS><Del>', },
-  \ ]
+    "" Back Quote
+    let s:rules += [
+    \ { 'char': '<C-h>', 'at': '`\%#`', 'input': '<BS><Del>', },
+    \ { 'char': '<BS>',  'at': '`\%#`', 'input': '<BS><Del>', },
+    \ ]
 
-  "" Move closing parenthesis
-  let s:rules += [
-  \ { 'char': '<C-f>', 'at': '\%#\s*)',  'input': '<Left><C-o>f)<Right>'  },
-  \ { 'char': '<Tab>', 'at': '\%#\s*)',  'input': '<Left><C-o>f)<Right>'  },
-  \ { 'char': '<C-f>', 'at': '\%#\s*\}', 'input': '<Left><C-o>f}<Right>'  },
-  \ { 'char': '<Tab>', 'at': '\%#\s*\}', 'input': '<Left><C-o>f}<Right>'  },
-  \ { 'char': '<C-f>', 'at': '\%#\s*\]', 'input': '<Left><C-o>f]<Right>'  },
-  \ { 'char': '<Tab>', 'at': '\%#\s*\]', 'input': '<Left><C-o>f]<Right>'  },
-  \ { 'char': '<C-f>', 'at': '\%#\s*>',  'input': '<Left><C-o>f><Right>'  },
-  \ { 'char': '<Tab>', 'at': '\%#\s*>',  'input': '<Left><C-o>f><Right>'  },
-  \ { 'char': '<C-f>', 'at': '\%#\s*`',  'input': '<Left><C-o>f`<Right>'  },
-  \ { 'char': '<Tab>', 'at': '\%#\s*`',  'input': '<Left><C-o>f`<Right>'  },
-  \ { 'char': '<C-f>', 'at': '\%#\s*"',  'input': '<Left><C-o>f"<Right>'  },
-  \ { 'char': '<Tab>', 'at': '\%#\s*"',  'input': '<Left><C-o>f"<Right>'  },
-  \ { 'char': '<C-f>', 'at': '\%#\s*''', 'input': '<Left><C-o>f''<Right>' },
-  \ { 'char': '<Tab>', 'at': '\%#\s*''', 'input': '<Left><C-o>f''<Right>' },
-  \ ]
+    "" Move closing parenthesis
+    let s:rules += [
+    \ { 'char': '<C-f>', 'at': '\%#\s*)',  'input': '<Left><C-o>f)<Right>'  },
+    \ { 'char': '<Tab>', 'at': '\%#\s*)',  'input': '<Left><C-o>f)<Right>'  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*\}', 'input': '<Left><C-o>f}<Right>'  },
+    \ { 'char': '<Tab>', 'at': '\%#\s*\}', 'input': '<Left><C-o>f}<Right>'  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*\]', 'input': '<Left><C-o>f]<Right>'  },
+    \ { 'char': '<Tab>', 'at': '\%#\s*\]', 'input': '<Left><C-o>f]<Right>'  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*>',  'input': '<Left><C-o>f><Right>'  },
+    \ { 'char': '<Tab>', 'at': '\%#\s*>',  'input': '<Left><C-o>f><Right>'  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*`',  'input': '<Left><C-o>f`<Right>'  },
+    \ { 'char': '<Tab>', 'at': '\%#\s*`',  'input': '<Left><C-o>f`<Right>'  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*"',  'input': '<Left><C-o>f"<Right>'  },
+    \ { 'char': '<Tab>', 'at': '\%#\s*"',  'input': '<Left><C-o>f"<Right>'  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*''', 'input': '<Left><C-o>f''<Right>' },
+    \ { 'char': '<Tab>', 'at': '\%#\s*''', 'input': '<Left><C-o>f''<Right>' },
+    \ ]
 
-  "" Insert semicolon at the end of the line
-  let s:rules += [
-  \ { 'char': ';', 'at': '(.*\%#)$',   'input': '<Right>;' },
-  \ { 'char': ';', 'at': '^\s*\%#)$',  'input': '<Right>;' },
-  \ { 'char': ';', 'at': '(.*\%#\}$',  'input': '<Right>;' },
-  \ { 'char': ';', 'at': '^\s*\%#\}$', 'input': '<Right>;' },
-  \ ]
+    "" Insert semicolon at the end of the line
+    let s:rules += [
+    \ { 'char': ';', 'at': '(.*\%#)$',   'input': '<Right>;' },
+    \ { 'char': ';', 'at': '^\s*\%#)$',  'input': '<Right>;' },
+    \ { 'char': ';', 'at': '(.*\%#\}$',  'input': '<Right>;' },
+    \ { 'char': ';', 'at': '^\s*\%#\}$', 'input': '<Right>;' },
+    \ ]
 
-  "" TypeScript
-  let s:rules += [
-  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\s([a-zA-Z, ]*\%#)',            'input': '<Left><C-o>f)<Right>a=> {}<Esc>',                 },
-  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\s([a-zA-Z]\+\%#)',             'input': '<Right> => {}<Left>',              'priority': 10 },
-  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-z]((.*\%#.*))',              'input': '<Left><C-o>f)a => {}<Esc>',                       },
-  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-z]([a-zA-Z]\+\%#)',          'input': ' => {}<Left>',                                    },
-  \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '(.*[a-zA-Z]\+<[a-zA-Z]\+>\%#)', 'input': '<Left><C-o>f)<Right>a=> {}<Left>',                },
-  \ ]
+    "" TypeScript
+    let s:rules += [
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\s([a-zA-Z, ]*\%#)',            'input': '<Left><C-o>f)<Right>a=> {}<Esc>',                 },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\s([a-zA-Z]\+\%#)',             'input': '<Right> => {}<Left>',              'priority': 10 },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-z]((.*\%#.*))',              'input': '<Left><C-o>f)a => {}<Esc>',                       },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-z]([a-zA-Z]\+\%#)',          'input': ' => {}<Left>',                                    },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '(.*[a-zA-Z]\+<[a-zA-Z]\+>\%#)', 'input': '<Left><C-o>f)<Right>a=> {}<Left>',                },
+    \ ]
 
-  "" ruby
-  let s:rules += [
-  \ { 'filetype': 'ruby', 'char': '<CR>',  'at': '^\s*\%(module\|def\|class\|if\|unless\)\s\w\+\((.*)\)\?\%#$', 'input': '<CR>',         'input_after': 'end',          },
-  \ { 'filetype': 'ruby', 'char': '<CR>',  'at': '^\s*\%(begin\)\s*\%#',                                        'input': '<CR>',         'input_after': 'end',          },
-  \ { 'filetype': 'ruby', 'char': '<CR>',  'at': '\%(^\s*#.*\)\@<!do\%(\s*|.*|\)\?\s*\%#',                      'input': '<CR>',         'input_after': 'end',          },
-  \ { 'filetype': 'ruby', 'char': '<Bar>', 'at': 'do\%#',                                                       'input': '<Space><Bar>', 'input_after': '<Bar><CR>end', },
-  \ { 'filetype': 'ruby', 'char': '<Bar>', 'at': 'do\s\%#',                                                     'input': '<Bar>',        'input_after': '<Bar><CR>end', },
-  \ { 'filetype': 'ruby', 'char': '<Bar>', 'at': '{\%#}',                                                       'input': '<Space><Bar>', 'input_after': '<Bar><Space>', },
-  \ { 'filetype': 'ruby', 'char': '<Bar>', 'at': '{\s\%#\s}',                                                   'input': '<Bar>',        'input_after': '<Bar><Space>', },
-  \ ]
+    "" ruby
+    let s:rules += [
+    \ { 'filetype': 'ruby', 'char': '<CR>',  'at': '^\s*\%(module\|def\|class\|if\|unless\)\s\w\+\((.*)\)\?\%#$', 'input': '<CR>',         'input_after': 'end',          },
+    \ { 'filetype': 'ruby', 'char': '<CR>',  'at': '^\s*\%(begin\)\s*\%#',                                        'input': '<CR>',         'input_after': 'end',          },
+    \ { 'filetype': 'ruby', 'char': '<CR>',  'at': '\%(^\s*#.*\)\@<!do\%(\s*|.*|\)\?\s*\%#',                      'input': '<CR>',         'input_after': 'end',          },
+    \ { 'filetype': 'ruby', 'char': '<Bar>', 'at': 'do\%#',                                                       'input': '<Space><Bar>', 'input_after': '<Bar><CR>end', },
+    \ { 'filetype': 'ruby', 'char': '<Bar>', 'at': 'do\s\%#',                                                     'input': '<Bar>',        'input_after': '<Bar><CR>end', },
+    \ { 'filetype': 'ruby', 'char': '<Bar>', 'at': '{\%#}',                                                       'input': '<Space><Bar>', 'input_after': '<Bar><Space>', },
+    \ { 'filetype': 'ruby', 'char': '<Bar>', 'at': '{\s\%#\s}',                                                   'input': '<Bar>',        'input_after': '<Bar><Space>', },
+    \ ]
 
-  "" eruby
-  let s:rules += [
-  \ { 'filetype': 'eruby', 'char': '%',     'at': '<\%#',         'input': '%<Space>',                        'input_after': '<Space>%>',                 },
-  \ { 'filetype': 'eruby', 'char': '=',     'at': '<%\%#',        'input': '=<Space><Right>',                 'input_after': '<Space>%>',                 },
-  \ { 'filetype': 'eruby', 'char': '=',     'at': '<%\s\%#\s%>',  'input': '<Left>=<Right>',                                                              },
-  \ { 'filetype': 'eruby', 'char': '=',     'at': '<%\%#.\+%>',                                                                           'priority': 10, },
-  \ { 'filetype': 'eruby', 'char': '<C-h>', 'at': '<%\s\%#\s%>',  'input': '<BS><BS><BS><Del><Del><Del>',                                                 },
-  \ { 'filetype': 'eruby', 'char': '<BS>',  'at': '<%\s\%#\s%>',  'input': '<BS><BS><BS><Del><Del><Del>',                                                 },
-  \ { 'filetype': 'eruby', 'char': '<C-h>', 'at': '<%=\s\%#\s%>', 'input': '<BS><BS><BS><BS><Del><Del><Del>',                                             },
-  \ { 'filetype': 'eruby', 'char': '<BS>',  'at': '<%=\s\%#\s%>', 'input': '<BS><BS><BS><BS><Del><Del><Del>',                                             },
-  \ ]
+    "" eruby
+    let s:rules += [
+    \ { 'filetype': 'eruby', 'char': '%',     'at': '<\%#',         'input': '%<Space>',                        'input_after': '<Space>%>',                 },
+    \ { 'filetype': 'eruby', 'char': '=',     'at': '<%\%#',        'input': '=<Space><Right>',                 'input_after': '<Space>%>',                 },
+    \ { 'filetype': 'eruby', 'char': '=',     'at': '<%\s\%#\s%>',  'input': '<Left>=<Right>',                                                              },
+    \ { 'filetype': 'eruby', 'char': '=',     'at': '<%\%#.\+%>',                                                                           'priority': 10, },
+    \ { 'filetype': 'eruby', 'char': '<C-h>', 'at': '<%\s\%#\s%>',  'input': '<BS><BS><BS><Del><Del><Del>',                                                 },
+    \ { 'filetype': 'eruby', 'char': '<BS>',  'at': '<%\s\%#\s%>',  'input': '<BS><BS><BS><Del><Del><Del>',                                                 },
+    \ { 'filetype': 'eruby', 'char': '<C-h>', 'at': '<%=\s\%#\s%>', 'input': '<BS><BS><BS><BS><Del><Del><Del>',                                             },
+    \ { 'filetype': 'eruby', 'char': '<BS>',  'at': '<%=\s\%#\s%>', 'input': '<BS><BS><BS><BS><Del><Del><Del>',                                             },
+    \ ]
 
-  "" markdown
-  let s:rules += [
-  \ { 'filetype': 'markdown', 'char': '`',       'at': '``\%#',                                                                        'input_after': '<CR><CR>```', 'priority': 10, },
-  \ { 'filetype': 'markdown', 'char': '#',       'at': '^\%#\%(#\)\@!',                  'input': '#<Space>'                                                                         },
-  \ { 'filetype': 'markdown', 'char': '#',       'at': '#\s\%#',                         'input': '<BS>#<Space>',                                                                    },
-  \ { 'filetype': 'markdown', 'char': '<C-h>',   'at': '^#\s\%#',                        'input': '<BS><BS>'                                                                         },
-  \ { 'filetype': 'markdown', 'char': '<C-h>',   'at': '##\s\%#',                        'input': '<BS><BS><Space>',                                                                 },
-  \ { 'filetype': 'markdown', 'char': '<BS>',    'at': '^#\s\%#',                        'input': '<BS><BS>'                                                                         },
-  \ { 'filetype': 'markdown', 'char': '<BS>',    'at': '##\s\%#',                        'input': '<BS><BS><Space>',                                                                 },
-  \ { 'filetype': 'markdown', 'char': '-',       'at': '^\s*\%#',                        'input': '-<Space>',                                                                        },
-  \ { 'filetype': 'markdown', 'char': '<Tab>',   'at': '^\s*-\s\%#',                     'input': '<Home><Tab><End>',                                                                },
-  \ { 'filetype': 'markdown', 'char': '<Tab>',   'at': '^\s*-\s\w.*\%#',                 'input': '<Home><Tab><End>',                                                                },
-  \ { 'filetype': 'markdown', 'char': '<S-Tab>', 'at': '^\s\+-\s\%#',                    'input': '<Home><Del><Del><End>',                                                           },
-  \ { 'filetype': 'markdown', 'char': '<S-Tab>', 'at': '^\s\+-\s\w.*\%#',                'input': '<Home><Del><Del><End>',                                                           },
-  \ { 'filetype': 'markdown', 'char': '<S-Tab>', 'at': '^-\s\w.*\%#',                    'input': '',                                                                                },
-  \ { 'filetype': 'markdown', 'char': '<C-h>',   'at': '^-\s\%#',                        'input': '<C-w><BS>',                                                                       },
-  \ { 'filetype': 'markdown', 'char': '<C-h>',   'at': '^\s\+-\s\%#',                    'input': '<C-w><C-w><BS>',                                                                  },
-  \ { 'filetype': 'markdown', 'char': '<BS>',    'at': '^-\s\%#',                        'input': '<C-w><BS>',                                                                       },
-  \ { 'filetype': 'markdown', 'char': '<BS>',    'at': '^\s\+-\s\%#',                    'input': '<C-w><C-w><BS>',                                                                  },
-  \ { 'filetype': 'markdown', 'char': '<CR>',    'at': '^-\s\%#',                        'input': '<C-w><CR>',                                                                       },
-  \ { 'filetype': 'markdown', 'char': '<CR>',    'at': '^\s\+-\s\%#',                    'input': '<C-w><C-w><CR>',                                                                  },
-  \ { 'filetype': 'markdown', 'char': '<CR>',    'at': '^\s*-\s\w.*\%#',                 'input': '<CR>-<Space>',                                                                    },
-  \ { 'filetype': 'markdown', 'char': '[',       'at': '^\s*-\s\%#',                     'input': '<Left><Space>[]<Left>',                                                           },
-  \ { 'filetype': 'markdown', 'char': '<Tab>',   'at': '^\s*-\s\[\%#\]\s',               'input': '<Home><Tab><End><Left><Left>',                                                    },
-  \ { 'filetype': 'markdown', 'char': '<S-Tab>', 'at': '^-\s\[\%#\]\s',                  'input': '',                                                                                },
-  \ { 'filetype': 'markdown', 'char': '<S-Tab>', 'at': '^\s\+-\s\[\%#\]\s',              'input': '<Home><Del><Del><End><Left><Left>',                                               },
-  \ { 'filetype': 'markdown', 'char': '<C-h>',   'at': '^\s*-\s\[\%#\]',                 'input': '<BS><Del><Del>',                                                                  },
-  \ { 'filetype': 'markdown', 'char': '<BS>',    'at': '^\s*-\s\[\%#\]',                 'input': '<BS><Del><Del>',                                                                  },
-  \ { 'filetype': 'markdown', 'char': '<Space>', 'at': '^\s*-\s\[\%#\]',                 'input': '<Space><End>',                                                                    },
-  \ { 'filetype': 'markdown', 'char': 'x',       'at': '^\s*-\s\[\%#\]',                 'input': 'x<End>',                                                                          },
-  \ { 'filetype': 'markdown', 'char': '<CR>',    'at': '^-\s\[\%#\]',                    'input': '<End><C-w><C-w><C-w><CR>',                                                        },
-  \ { 'filetype': 'markdown', 'char': '<CR>',    'at': '^\s\+-\s\[\%#\]',                'input': '<End><C-w><C-w><C-w><C-w><CR>',                                                   },
-  \ { 'filetype': 'markdown', 'char': '<Tab>',   'at': '^\s*-\s\[\(\s\|x\)\]\s\%#',      'input': '<Home><Tab><End>',                                                                },
-  \ { 'filetype': 'markdown', 'char': '<Tab>',   'at': '^\s*-\s\[\(\s\|x\)\]\s\w.*\%#',  'input': '<Home><Tab><End>',                                                                },
-  \ { 'filetype': 'markdown', 'char': '<S-Tab>', 'at': '^\s\+-\s\[\(\s\|x\)\]\s\%#',     'input': '<Home><Del><Del><End>',                                                           },
-  \ { 'filetype': 'markdown', 'char': '<S-Tab>', 'at': '^\s\+-\s\[\(\s\|x\)\]\s\w.*\%#', 'input': '<Home><Del><Del><End>',                                                           },
-  \ { 'filetype': 'markdown', 'char': '<S-Tab>', 'at': '^-\s\[\(\s\|x\)\]\s\w.*\%#',     'input': '',                                                                                },
-  \ { 'filetype': 'markdown', 'char': '<C-h>',   'at': '^-\s\[\(\s\|x\)\]\s\%#',         'input': '<C-w><C-w><C-w><BS>',                                                             },
-  \ { 'filetype': 'markdown', 'char': '<C-h>',   'at': '^\s\+-\s\[\(\s\|x\)\]\s\%#',     'input': '<C-w><C-w><C-w><C-w><BS>',                                                        },
-  \ { 'filetype': 'markdown', 'char': '<BS>',    'at': '^-\s\[\(\s\|x\)\]\s\%#',         'input': '<C-w><C-w><C-w><BS>',                                                             },
-  \ { 'filetype': 'markdown', 'char': '<BS>',    'at': '^\s\+-\s\[\(\s\|x\)\]\s\%#',     'input': '<C-w><C-w><C-w><C-w><BS>',                                                        },
-  \ { 'filetype': 'markdown', 'char': '<CR>',    'at': '^-\s\[\(\s\|x\)\]\s\%#',         'input': '<C-w><C-w><C-w><CR>',                                                             },
-  \ { 'filetype': 'markdown', 'char': '<CR>',    'at': '^\s\+-\s\[\(\s\|x\)\]\s\%#',     'input': '<C-w><C-w><C-w><C-w><CR>',                                                        },
-  \ { 'filetype': 'markdown', 'char': '<CR>',    'at': '^\s*-\s\[\(\s\|x\)\]\s\w.*\%#',  'input': '<CR>-<Space>[',                     'input_after': ']<Space>',                    },
-  \ ]
+    "" markdown
+    let s:rules += [
+    \ { 'filetype': 'markdown', 'char': '`',       'at': '``\%#',                                                                        'input_after': '<CR><CR>```', 'priority': 10, },
+    \ { 'filetype': 'markdown', 'char': '#',       'at': '^\%#\%(#\)\@!',                  'input': '#<Space>'                                                                         },
+    \ { 'filetype': 'markdown', 'char': '#',       'at': '#\s\%#',                         'input': '<BS>#<Space>',                                                                    },
+    \ { 'filetype': 'markdown', 'char': '<C-h>',   'at': '^#\s\%#',                        'input': '<BS><BS>'                                                                         },
+    \ { 'filetype': 'markdown', 'char': '<C-h>',   'at': '##\s\%#',                        'input': '<BS><BS><Space>',                                                                 },
+    \ { 'filetype': 'markdown', 'char': '<BS>',    'at': '^#\s\%#',                        'input': '<BS><BS>'                                                                         },
+    \ { 'filetype': 'markdown', 'char': '<BS>',    'at': '##\s\%#',                        'input': '<BS><BS><Space>',                                                                 },
+    \ { 'filetype': 'markdown', 'char': '-',       'at': '^\s*\%#',                        'input': '-<Space>',                                                                        },
+    \ { 'filetype': 'markdown', 'char': '<Tab>',   'at': '^\s*-\s\%#',                     'input': '<Home><Tab><End>',                                                                },
+    \ { 'filetype': 'markdown', 'char': '<Tab>',   'at': '^\s*-\s\w.*\%#',                 'input': '<Home><Tab><End>',                                                                },
+    \ { 'filetype': 'markdown', 'char': '<S-Tab>', 'at': '^\s\+-\s\%#',                    'input': '<Home><Del><Del><End>',                                                           },
+    \ { 'filetype': 'markdown', 'char': '<S-Tab>', 'at': '^\s\+-\s\w.*\%#',                'input': '<Home><Del><Del><End>',                                                           },
+    \ { 'filetype': 'markdown', 'char': '<S-Tab>', 'at': '^-\s\w.*\%#',                    'input': '',                                                                                },
+    \ { 'filetype': 'markdown', 'char': '<C-h>',   'at': '^-\s\%#',                        'input': '<C-w><BS>',                                                                       },
+    \ { 'filetype': 'markdown', 'char': '<C-h>',   'at': '^\s\+-\s\%#',                    'input': '<C-w><C-w><BS>',                                                                  },
+    \ { 'filetype': 'markdown', 'char': '<BS>',    'at': '^-\s\%#',                        'input': '<C-w><BS>',                                                                       },
+    \ { 'filetype': 'markdown', 'char': '<BS>',    'at': '^\s\+-\s\%#',                    'input': '<C-w><C-w><BS>',                                                                  },
+    \ { 'filetype': 'markdown', 'char': '<CR>',    'at': '^-\s\%#',                        'input': '<C-w><CR>',                                                                       },
+    \ { 'filetype': 'markdown', 'char': '<CR>',    'at': '^\s\+-\s\%#',                    'input': '<C-w><C-w><CR>',                                                                  },
+    \ { 'filetype': 'markdown', 'char': '<CR>',    'at': '^\s*-\s\w.*\%#',                 'input': '<CR>-<Space>',                                                                    },
+    \ { 'filetype': 'markdown', 'char': '[',       'at': '^\s*-\s\%#',                     'input': '<Left><Space>[]<Left>',                                                           },
+    \ { 'filetype': 'markdown', 'char': '<Tab>',   'at': '^\s*-\s\[\%#\]\s',               'input': '<Home><Tab><End><Left><Left>',                                                    },
+    \ { 'filetype': 'markdown', 'char': '<S-Tab>', 'at': '^-\s\[\%#\]\s',                  'input': '',                                                                                },
+    \ { 'filetype': 'markdown', 'char': '<S-Tab>', 'at': '^\s\+-\s\[\%#\]\s',              'input': '<Home><Del><Del><End><Left><Left>',                                               },
+    \ { 'filetype': 'markdown', 'char': '<C-h>',   'at': '^\s*-\s\[\%#\]',                 'input': '<BS><Del><Del>',                                                                  },
+    \ { 'filetype': 'markdown', 'char': '<BS>',    'at': '^\s*-\s\[\%#\]',                 'input': '<BS><Del><Del>',                                                                  },
+    \ { 'filetype': 'markdown', 'char': '<Space>', 'at': '^\s*-\s\[\%#\]',                 'input': '<Space><End>',                                                                    },
+    \ { 'filetype': 'markdown', 'char': 'x',       'at': '^\s*-\s\[\%#\]',                 'input': 'x<End>',                                                                          },
+    \ { 'filetype': 'markdown', 'char': '<CR>',    'at': '^-\s\[\%#\]',                    'input': '<End><C-w><C-w><C-w><CR>',                                                        },
+    \ { 'filetype': 'markdown', 'char': '<CR>',    'at': '^\s\+-\s\[\%#\]',                'input': '<End><C-w><C-w><C-w><C-w><CR>',                                                   },
+    \ { 'filetype': 'markdown', 'char': '<Tab>',   'at': '^\s*-\s\[\(\s\|x\)\]\s\%#',      'input': '<Home><Tab><End>',                                                                },
+    \ { 'filetype': 'markdown', 'char': '<Tab>',   'at': '^\s*-\s\[\(\s\|x\)\]\s\w.*\%#',  'input': '<Home><Tab><End>',                                                                },
+    \ { 'filetype': 'markdown', 'char': '<S-Tab>', 'at': '^\s\+-\s\[\(\s\|x\)\]\s\%#',     'input': '<Home><Del><Del><End>',                                                           },
+    \ { 'filetype': 'markdown', 'char': '<S-Tab>', 'at': '^\s\+-\s\[\(\s\|x\)\]\s\w.*\%#', 'input': '<Home><Del><Del><End>',                                                           },
+    \ { 'filetype': 'markdown', 'char': '<S-Tab>', 'at': '^-\s\[\(\s\|x\)\]\s\w.*\%#',     'input': '',                                                                                },
+    \ { 'filetype': 'markdown', 'char': '<C-h>',   'at': '^-\s\[\(\s\|x\)\]\s\%#',         'input': '<C-w><C-w><C-w><BS>',                                                             },
+    \ { 'filetype': 'markdown', 'char': '<C-h>',   'at': '^\s\+-\s\[\(\s\|x\)\]\s\%#',     'input': '<C-w><C-w><C-w><C-w><BS>',                                                        },
+    \ { 'filetype': 'markdown', 'char': '<BS>',    'at': '^-\s\[\(\s\|x\)\]\s\%#',         'input': '<C-w><C-w><C-w><BS>',                                                             },
+    \ { 'filetype': 'markdown', 'char': '<BS>',    'at': '^\s\+-\s\[\(\s\|x\)\]\s\%#',     'input': '<C-w><C-w><C-w><C-w><BS>',                                                        },
+    \ { 'filetype': 'markdown', 'char': '<CR>',    'at': '^-\s\[\(\s\|x\)\]\s\%#',         'input': '<C-w><C-w><C-w><CR>',                                                             },
+    \ { 'filetype': 'markdown', 'char': '<CR>',    'at': '^\s\+-\s\[\(\s\|x\)\]\s\%#',     'input': '<C-w><C-w><C-w><C-w><CR>',                                                        },
+    \ { 'filetype': 'markdown', 'char': '<CR>',    'at': '^\s*-\s\[\(\s\|x\)\]\s\w.*\%#',  'input': '<CR>-<Space>[',                     'input_after': ']<Space>',                    },
+    \ ]
 
-  "" vim
-  let s:rules += [
-  \ { 'filetype': 'vim', 'char': '{', 'at': '^".*{\%#$', 'input': '{{', 'input_after': '<CR>" }}}', 'priority': 10, },
-  \ ]
+    "" vim
+    let s:rules += [
+    \ { 'filetype': 'vim', 'char': '{', 'at': '^".*{\%#$', 'input': '{{', 'input_after': '<CR>" }}}', 'priority': 10, },
+    \ ]
 
-  "" shell
-  let s:rules += [
-  \ { 'filetype': ['sh', 'zsh'], 'char': '[', 'at': '\[\%#\]', 'input': '[<Space>', 'input_after': '<Space>]', 'priority': 10 },
-  \ ]
+    "" shell
+    let s:rules += [
+    \ { 'filetype': ['sh', 'zsh'], 'char': '[', 'at': '\[\%#\]', 'input': '[<Space>', 'input_after': '<Space>]', 'priority': 10 },
+    \ ]
 
-  for s:rule in s:rules
-    call lexima#add_rule(s:rule)
-  endfor
+    for s:rule in s:rules
+      call lexima#add_rule(s:rule)
+    endfor
+  endfunction
 endif
 " }}}3
 
