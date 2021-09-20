@@ -6,58 +6,63 @@ upgrade
 
 ## Casks
 # install --cask bettertouchtool
+# install --cask dash
 # install --cask dropbox
 # install --cask duet
 # install --cask flux
 # install --cask imagealpha
 # install --cask imageoptim
 # install --cask java
+# install --cask kaleidoscope
+# install --cask kindle
 # install --cask kitematic
 # install --cask simplecap
+# install --cask skitch
+# install --cask sourcetree
+# install --cask vimr
 # install --cask virtualbox
+# install --cask vivaldi
 # install --cask xquartz
 install --cask 1password
 install --cask alfred
 install --cask alt-tab
 install --cask appcleaner
 install --cask bartender
+install --cask biscuit
 install --cask charles
 install --cask cleanshot
-install --cask dash
 install --cask default-folder-x
 install --cask discord
 install --cask docker
 install --cask finicky
 install --cask firefox
+install --cask fork
 install --cask google-chrome
-install --cask google-chrome-canary
 install --cask homebrew/cask-versions/discord-canary
+install --cask homebrew/cask-versions/discord-ptb
+install --cask homebrew/cask-versions/google-chrome-canary
 install --cask iterm2
 install --cask jasper
-install --cask java
 install --cask jetbrains-toolbox
-install --cask kaleidoscope
 install --cask kap
 install --cask karabiner-elements
 install --cask keyboard-cleaner
 install --cask keycastr
-install --cask kindle
+install --cask krisp
 install --cask mplayerx
 install --cask ngrok
 install --cask notion
 install --cask paw
 install --cask react-native-debugger
 install --cask sequel-pro
-install --cask skitch
-install --cask sourcetree
-install --cask station
 install --cask sublime-text
+install --cask tableplus
 install --cask tripmode
 install --cask vagrant
-install --cask vimr
+install --cask virtualbox
 install --cask visual-studio-code
-install --cask vivaldi
 install --cask vlc
+install --cask zoom
 
 # Remove outdated versions
 cleanup
