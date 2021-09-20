@@ -397,7 +397,7 @@ noremap <Leader> <Nop>
 noremap <dev>    <Nop>
 map     m        <dev>
 
-"" Move beginning toggle
+"" Zero (Move beginning toggle)
 " noremap <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
 
 "" BackSpace
@@ -500,10 +500,10 @@ nnoremap <silent> <t>l :<C-u>tabnext<CR>
 nnoremap <silent> <t>m <C-w>T
 
 "" resize
-nnoremap <Left>  :vertical resize -1<CR>
-nnoremap <Right> :vertical resize +1<CR>
-nnoremap <Up>    :resize -1<CR>
-nnoremap <Down>  :resize +1<CR>
+nnoremap <Left>  :<C-u>vertical resize -1<CR>
+nnoremap <Right> :<C-u>vertical resize +1<CR>
+nnoremap <Up>    :<C-u>resize -1<CR>
+nnoremap <Down>  :<C-u>resize +1<CR>
 
 "" Macro
 nnoremap Q @q
@@ -631,6 +631,8 @@ AutoCmd InsertLeave * if &l:diff | diffupdate | endif
 "" Undo
 set undofile
 if has('nvim')
+  set undodir=~/.cache/nvim/undo/
+else
   set undodir=~/.cache/vim/undo/
 endif
 
@@ -1387,7 +1389,7 @@ endif
 " }}}3
 
 " import-cost {{{3
-if dein#tap('vim-import-cost') && has('nvim')
+if dein#tap('vim-import-cost')
   AutoCmd InsertLeave *.js,*.jsx,*.ts,*.tsx ImportCost
   AutoCmd BufEnter *.js,*.jsx,*.ts,*.tsx    ImportCost
 endif
@@ -1417,7 +1419,7 @@ endif
 " }}}3
 
 " treesitter {{{3
-if dein#tap('nvim-treesitter') && has('nvim')
+if dein#tap('nvim-treesitter')
   let g:highlightedundo_enable = 1
 
 lua <<EOF
@@ -1596,9 +1598,7 @@ endif
 
 " Denite {{{3
 
-if dein#tap('denite.nvim') && has('nvim')
-  BulkAlterCommand d[enite] Denite
-
+if dein#tap('denite.nvim')
   "" highlight
   call denite#custom#option('default', 'prompt', '>')
   call denite#custom#option('default', 'mode', 'insert')
@@ -1903,7 +1903,6 @@ endif
 if dein#tap('gitsessions.vim')
   BulkAlterCommand gss GitSessionSave
   BulkAlterCommand gsl GitSessionLoad
-  BulkAlterCommand gsd GitSessionDelete
 
   let g:gitsessions_disable_auto_load = 1
 endif
@@ -2212,7 +2211,9 @@ endif
 " }}}3
 
 " hlslens & asterisk & anzu {{{3
-if dein#tap('nvim-hlslens') && dein#tap('vim-asterisk') && dein#tap('vim-anzu')
+if dein#tap('nvim-hlslens') &&
+   \ dein#tap('vim-asterisk') &&
+   \ dein#tap('vim-anzu')
   " let g:incsearch#magic = '\v'
 
   " map /  <Plug>(incsearch-forward)
@@ -2289,21 +2290,25 @@ if dein#tap('caw.vim')
   xmap <silent> <expr> <Leader>cw <SID>caw_wrap_toggle()
 
   function! s:caw_hatpos_toggle() abort
-    if dein#tap('nvim-ts-context-commentstring')
-      lua require('ts_context_commentstring.internal').update_commentstring()
-      call caw#update_comments_from_commentstring(&commentstring)
+    if index(['typescript','typescriptreact'], &filetype) >= 0
+      if dein#tap('nvim-ts-context-commentstring')
+        lua require('ts_context_commentstring.internal').update_commentstring()
+        call caw#update_comments_from_commentstring(&commentstring)
+      endif
     endif
 
     return "\<Plug>(caw:hatpos:toggle)"
   endfunction
 
   function! s:caw_wrap_toggle() abort
-    if dein#tap('nvim-ts-context-commentstring')
-      lua require('ts_context_commentstring.internal').update_commentstring()
-      call caw#update_comments_from_commentstring(&commentstring)
-    endif
+    if index(['typescript','typescriptreact'], &filetype) >= 0 && match(&commentstring, '^\/\/') != -1
+      if dein#tap('nvim-ts-context-commentstring')
+        lua require('ts_context_commentstring.internal').update_commentstring()
+        call caw#update_comments_from_commentstring(&commentstring)
+      endif
 
-    let b:caw_wrap_oneline_comment = ["/*", "*/"]
+      let b:caw_wrap_oneline_comment = ["/*", "*/"]
+    endif
 
     return "\<Plug>(caw:wrap:toggle)"
   endfunction
@@ -2766,7 +2771,8 @@ endif
 " }}}3
 
 " sandwich {{{3
-if dein#tap('vim-sandwich') && dein#tap('vim-textobj-functioncall')
+if dein#tap('vim-sandwich') &&
+   \ dein#tap('vim-textobj-functioncall')
   let g:textobj_sandwich_no_default_key_mappings     = 1
   let g:textobj_functioncall_no_default_key_mappings = 1
 
@@ -3215,7 +3221,7 @@ if dein#tap('lightline.vim')
   \   'linter_warnings':     'warning',
   \   'linter_informations': 'information',
   \   'linter_ok':           'ok',
-  \   'quickrun':    'quickrun',
+  \   'quickrun':            'quickrun',
   \ },
   \ 'component_expand': {
   \   'linter_errors':       'Lightline_coc_errors',
@@ -3823,7 +3829,8 @@ endif
 " }}}3
 
 " test {{{3
-if dein#tap('vim-test') && dein#tap('vim-ultest')
+if dein#tap('vim-test') &&
+   \ dein#tap('vim-ultest')
   BulkAlterCommand te[st]     Ultest
   BulkAlterCommand tn[ear]    UltestNearest
   BulkAlterCommand ts[ummary] UltestSummary
