@@ -822,6 +822,88 @@ endfunction
 command! HighlightInfo call <SID>get_highlight_info()
 " }}}2
 
+" Jump plugin  {{{2
+function! s:plugin_name(line) abort
+  try
+    if len(matchlist(a:line, 'dein#add(''\(.\{-}\)''.*)')) != 0
+      let matches = matchlist(a:line, 'dein#add(''\(.\{-}\)''.*)')
+      return split(matches[1], '/')[-1]
+    elseif len(matchlist(a:line, 'dein#tap(''\(.*\)'')')) != 0
+      let matches = matchlist(a:line, 'dein#tap(''\(.*\)'')')
+      return matches[1]
+    else
+      echomsg 'Plugin not found'
+      return ''
+    endif
+  catch
+    echomsg 'Plugin not found'
+  endtry
+endfunction
+
+function! s:plugin_line(plugin_name, lines, start_line, end_line) abort
+  let i = a:start_line
+  while i < a:end_line
+    if match(a:lines[i], 'dein#add(''.\+/' . a:plugin_name . '''.*)') != -1 || match(a:lines[i], 'dein#tap(''' . a:plugin_name . ''')') != -1
+      call setpos('.', [0, i + 1, 0, 0])
+      return v:true
+    endif
+
+    let i = i + 1
+  endwhile
+
+  return v:false
+endfunction
+
+function! s:plugin_lines(plugin_name, lines) abort
+  let lines = []
+  let i = 1
+  while i < line('$')
+    if match(a:lines[i], 'dein#add(''.\+/' . a:plugin_name . '''.*)') != -1 || match(a:lines[i], 'dein#tap(''' . a:plugin_name . ''')') != -1
+      call add(lines, { 'filename': expand('%'), 'lnum': i + 1, 'text': a:lines[i] })
+    endif
+
+    let i = i + 1
+  endwhile
+
+  call setqflist([], 'r', { 'items': lines })
+  copen
+endfunction
+
+function! s:jump_plugin(mode) abort
+  let line = getline('.')
+  let plugin_name = <SID>plugin_name(line)
+
+  if plugin_name ==# ''
+    return
+  endif
+
+  let current_line = line('.')
+  let lines = getline(0, line('$'))
+
+  if a:mode ==# 'next'
+    let result = <SID>plugin_line(plugin_name, lines, current_line, len(lines))
+    if !result
+      call <SID>plugin_line(plugin_name, lines, 1, current_line)
+    endif
+  elseif a:mode ==# 'prev'
+    let result = <SID>plugin_line(plugin_name, lines, 1, current_line)
+    if !result
+      call <SID>plugin_line(plugin_name, lines, current_line, len(lines))
+    endif
+  elseif a:mode ==# 'qf'
+    call <SID>plugin_lines(plugin_name, lines)
+  endif
+endfunction
+
+command! UsePluginPrev     call <SID>jump_plugin('prev')
+command! UsePluginNext     call <SID>jump_plugin('next')
+command! UsePluginQuickFix call <SID>jump_plugin('qf')
+
+nnoremap <silent> [p        :<C-u>UsePluginPrev<CR>
+nnoremap <silent> ]p        :<C-u>UsePluginNext<CR>
+nnoremap <silent> <Leader>p :<C-u>UsePluginQuickFix<CR>
+" }}}2
+
 " View JSON {{{2
 command! JSON set ft=json | call CocAction('format')
 " }}}2
