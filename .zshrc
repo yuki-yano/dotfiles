@@ -130,12 +130,6 @@ if whence gsed > /dev/null; then
 fi
 # }}}
 
-# vim {{{
-alias vi='nvim'
-alias vr='nvr'
-alias vimdiff='nvim -d'
-# }}}
-
 # du {{{
 if whence dust > /dev/null; then
   alias du=dust

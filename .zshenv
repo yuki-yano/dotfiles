@@ -11,6 +11,8 @@ export LANG=ja_JP.UTF-8
 # editor
 export EDITOR=nvim
 export VISUAL=nvim
+alias vi=nvim
+
 export MANPAGER='nvim -c MANPAGER -'
 
 # Disable path_helper
