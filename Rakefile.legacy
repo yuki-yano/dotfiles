@@ -1,8 +1,3 @@
-DOTFILES_SRCS = %w[
-  .vimperator
-  .vimperatorrc
-].freeze
-VIMPERATOR_DIR = File.join(SRC_DIR, '.vimperator')
 OSX_SCRIPTS = FileList['osx/**/*.sh']
 
 # namespace :bundle do
@@ -20,32 +15,6 @@ OSX_SCRIPTS = FileList['osx/**/*.sh']
 #     sh 'gem uninstall --all --ignore-dependencies --executables --user-install --force'
 #     sh 'gem install bundler'
 #     File.delete('Gemfile.lock') if File.exist?('Gemfile.lock')
-#   end
-# end
-
-# namespace :vimperator do
-#   desc 'Install vimperator plugins'
-#   task install: 'Vimperatorfile' do
-#     # vimperator-plugins
-#     File.readlines('Vimperatorfile').map(&:chomp).each do |plugin|
-#       src  = "~/.vimperator/vimperator-plugins/#{plugin}"
-#       dest = "~/.vimperator/plugin/#{plugin}"
-#       sh "ln -sfn #{src} #{dest}"
-#     end
-#
-#     # local plugins
-#     FileList['.vimperator/local-plugins/*'].each do |plugin|
-#       src = "~/#{plugin}"
-#       dest = "~/.vimperator/plugin/#{File.basename(plugin)}"
-#       sh "ln -sfn #{src} #{dest}"
-#     end
-#   end
-#
-#   desc 'Uninstall vimperator plugins'
-#   task :uninstall do
-#     FileList['.vimperator/plugin/*'].each do |plugin|
-#       sh "rm ~/#{plugin}"
-#     end
 #   end
 # end
 
