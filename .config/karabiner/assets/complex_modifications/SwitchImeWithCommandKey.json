@@ -30,7 +30,7 @@
           "from": {
             "key_code": "spacebar",
             "modifiers": {
-              "mandatory": ["control"]
+              "mandatory": ["command"]
             }
           },
           "to": [

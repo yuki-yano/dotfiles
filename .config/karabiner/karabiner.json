@@ -52,7 +52,7 @@
                                     "key_code": "spacebar",
                                     "modifiers": {
                                         "mandatory": [
-                                            "control"
+                                            "command"
                                         ]
                                     }
                                 },
