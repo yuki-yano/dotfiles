@@ -360,6 +360,9 @@ typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
   show_buffer_stack
 )
 
+function p10k-on-pre-prompt() { p10k display '1'=show }
+function p10k-on-post-prompt() { p10k display '1'=hide }
+
 typeset -g POWERLEVEL9K_BACKGROUND=
 typeset -g POWERLEVEL9K_{LEFT,RIGHT}_{LEFT,RIGHT}_WHITESPACE=
 typeset -g POWERLEVEL9K_{LEFT,RIGHT}_SUBSEGMENT_SEPARATOR=
