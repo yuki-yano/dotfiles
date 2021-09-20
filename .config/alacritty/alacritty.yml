@@ -5,14 +5,13 @@ window:
   dimensions:
     columns: 300
     lines: 120
-
   padding:
     x: 0
     y: 0
-
   decorations: full
-
   dynamic_title: true
+  opacity: 1.0
+
 
 draw_bold_text_with_bright_colors: true
 
@@ -25,7 +24,10 @@ font:
     style: Bold
   italic:
     family: SF Mono Square
-    style: Italic
+    style: Regular Italic
+  bold_italic:
+    family: SF Mono Square
+    style: Bold Italic
 
   size: 16.0
 
@@ -110,9 +112,6 @@ colors:
 bell:
   animation: EaseOutExpo
   duration: 0
-
-# Background opacity
-background_opacity: 1.0
 
 mouse_bindings:
   - { mouse: Middle, action: PasteSelection }
