@@ -1749,151 +1749,156 @@ endif
 " }}}3
 
 " fzf-preview {{{3
-" let g:fzf_preview_rpc_debug = 1
-" let g:fzf_preview_direct_window_option = 'botright 20new'
-let g:fzf_preview_filelist_command    = 'fd --type file --hidden --exclude .git'
-let g:fzf_preview_git_files_command   = 'git ls-files --exclude-standard | while read line; do if [[ ! -L $line ]] && [[ -f $line ]]; then echo $line; fi; done'
-let g:fzf_preview_grep_cmd            = 'rg --line-number --no-heading --color=never --sort=path'
-let g:fzf_preview_mru_limit           = 5000
-let g:fzf_preview_use_dev_icons       = 1
-let g:fzf_preview_default_fzf_options = {
-\ '--reverse': v:true,
-\ '--preview-window': 'wrap',
-\ '--bind': 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,?:toggle-preview,ctrl-n:down,ctrl-p:up,ctrl-j:next-history,ctrl-k:previous-history'
-\ }
+if dein#tap('fzf-preview.vim')
+  " let g:fzf_preview_rpc_debug = 1
+  " let g:fzf_preview_direct_window_option = 'botright 20new'
+  let g:fzf_preview_filelist_command    = 'fd --type file --hidden --exclude .git'
+  let g:fzf_preview_git_files_command   = 'git ls-files --exclude-standard | while read line; do if [[ ! -L $line ]] && [[ -f $line ]]; then echo $line; fi; done'
+  let g:fzf_preview_grep_cmd            = 'rg --line-number --no-heading --color=never --sort=path'
+  let g:fzf_preview_mru_limit           = 5000
+  let g:fzf_preview_use_dev_icons       = 1
+  let g:fzf_preview_default_fzf_options = {
+  \ '--reverse': v:true,
+  \ '--preview-window': 'wrap',
+  \ '--bind': 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,?:toggle-preview,ctrl-n:down,ctrl-p:up,ctrl-j:next-history,ctrl-k:previous-history'
+  \ }
 
-let $BAT_THEME                     = 'gruvbox-dark'
-let $FZF_PREVIEW_PREVIEW_BAT_THEME = 'gruvbox-dark'
-let $BAT_STYLE                     = 'plain'
-let g:fzf_preview_history_dir      = '~/.fzf'
+  let $BAT_THEME                        = 'gruvbox-dark'
+  let $FZF_PREVIEW_PREVIEW_BAT_THEME    = 'gruvbox-dark'
+  let $BAT_STYLE                        = 'plain'
+  let g:fzf_preview_history_dir         = '~/.fzf'
+  let $FZF_PREVIEW_PLUGIN_HELP_ROOT_DIR = '~/.vim/bundle/repos/github.com'
 
-nnoremap <fzf-p> <Nop>
-xnoremap <fzf-p> <Nop>
-nmap     ;       <fzf-p>
-xmap     ;       <fzf-p>
-nnoremap ;;      ;
-xnoremap ;;      ;
+  nnoremap <fzf-p> <Nop>
+  xnoremap <fzf-p> <Nop>
+  nmap     ;       <fzf-p>
+  xmap     ;       <fzf-p>
+  nnoremap ;;      ;
+  xnoremap ;;      ;
 
-nnoremap <silent> <fzf-p>r     :<C-u>CocCommand fzf-preview.FromResources --experimental-fast buffer project_mru<CR>
-nnoremap <silent> <fzf-p>w     :<C-u>FzfPreviewProjectMrwFilesRpc --experimental-fast<CR>
-nnoremap <silent> <fzf-p>a     :<C-u>FzfPreviewFromResourcesRpc --experimental-fast project_mru git<CR>
-nnoremap <silent> <fzf-p>s     :<C-u>FzfPreviewGitStatusRpc --experimental-fast<CR>
-nnoremap <silent> <fzf-p>gg    :<C-u>FzfPreviewGitActionsRpc<CR>
-nnoremap <silent> <fzf-p>b     :<C-u>FzfPreviewBuffersRpc<CR>
-nnoremap <silent> <fzf-p>B     :<C-u>FzfPreviewAllBuffersRpc --experimental-fast<CR>
-nnoremap <silent> <fzf-p><C-o> :<C-u>FzfPreviewJumpsRpc --experimental-fast<CR>
-nnoremap <silent> <fzf-p>g;    :<C-u>FzfPreviewChangesRpc<CR>
-nnoremap <silent> <fzf-p>/     :<C-u>FzfPreviewLinesRpc --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
-nnoremap <silent> <fzf-p>*     :<C-u>FzfPreviewLinesRpc --add-fzf-arg=--exact --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
-xnoremap <silent> <fzf-p>*     "sy:FzfPreviewLinesRpc --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=substitute(@s, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
-nnoremap <silent> <fzf-p>n     :<C-u>FzfPreviewLinesRpc --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=substitute(@/, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
-nnoremap <silent> <fzf-p>?     :<C-u>FzfPreviewBufferLinesRpc --resume --add-fzf-arg=--no-sort<CR>
-nnoremap <silent> <fzf-p>q     :<C-u>FzfPreviewQuickFixRpc --experimental-fast<CR>
-nnoremap <silent> <fzf-p>l     :<C-u>FzfPreviewLocationListRpc --experimental-fast<CR>
-nnoremap <silent> <fzf-p>:     :<C-u>FzfPreviewCommandPaletteRpc --experimental-fast<CR>
-nnoremap <silent> <fzf-p>m     :<C-u>FzfPreviewBookmarksRpc --resume --experimental-fast<CR>
-nnoremap <silent> <fzf-p><C-]> :<C-u>FzfPreviewVistaCtagsRpc --experimental-fast --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
-nnoremap <silent> <fzf-p>o     :<C-u>FzfPreviewVistaBufferCtagsRpc --experimental-fast<CR>
+  nnoremap <silent> <fzf-p>r     :<C-u>FzfPreviewProjectMruFilesRpc --experimental-fast<CR>
+  nnoremap <silent> <fzf-p>w     :<C-u>FzfPreviewProjectMrwFilesRpc --experimental-fast<CR>
+  nnoremap <silent> <fzf-p>a     :<C-u>FzfPreviewFromResourcesRpc --experimental-fast project_mru git<CR>
+  nnoremap <silent> <fzf-p>s     :<C-u>FzfPreviewGitStatusRpc --experimental-fast<CR>
+  nnoremap <silent> <fzf-p>gg    :<C-u>FzfPreviewGitActionsRpc<CR>
+  nnoremap <silent> <fzf-p>b     :<C-u>FzfPreviewBuffersRpc<CR>
+  nnoremap <silent> <fzf-p>B     :<C-u>FzfPreviewAllBuffersRpc --experimental-fast<CR>
+  nnoremap <silent> <fzf-p><C-o> :<C-u>FzfPreviewJumpsRpc --experimental-fast<CR>
+  nnoremap <silent> <fzf-p>g;    :<C-u>FzfPreviewChangesRpc<CR>
+  nnoremap <silent> <fzf-p>/     :<C-u>FzfPreviewLinesRpc --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
+  nnoremap <silent> <fzf-p>*     :<C-u>FzfPreviewLinesRpc --add-fzf-arg=--exact --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
+  xnoremap <silent> <fzf-p>*     "sy:FzfPreviewLinesRpc --add-fzf-arg=--no-sort --add-fzf-arg=--exact --add-fzf-arg=--query="<C-r>=substitute(@s, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
+  nnoremap <silent> <fzf-p>n     :<C-u>FzfPreviewLinesRpc --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=substitute(@/, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
+  nnoremap <silent> <fzf-p>?     :<C-u>FzfPreviewBufferLinesRpc --resume --add-fzf-arg=--no-sort<CR>
+  nnoremap <silent> <fzf-p>q     :<C-u>FzfPreviewQuickFixRpc --experimental-fast<CR>
+  nnoremap <silent> <fzf-p>l     :<C-u>FzfPreviewLocationListRpc --experimental-fast<CR>
+  nnoremap <silent> <fzf-p>:     :<C-u>FzfPreviewCommandPaletteRpc --experimental-fast<CR>
+  nnoremap <silent> <fzf-p>m     :<C-u>FzfPreviewBookmarksRpc --resume --experimental-fast<CR>
+  nnoremap <silent> <fzf-p><C-]> :<C-u>FzfPreviewVistaCtagsRpc --experimental-fast --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
+  nnoremap <silent> <fzf-p>o     :<C-u>FzfPreviewVistaBufferCtagsRpc --experimental-fast<CR>
 
-nnoremap          <fzf-p>f     :<C-u>CocCommand fzf-preview.ProjectGrep --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>
-xnoremap          <fzf-p>f     "sy:CocCommand fzf-preview.ProjectGrep --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-nnoremap <silent> <fzf-p>F     :<C-u>CocCommand fzf-preview.ProjectGrepRecall --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort --resume<CR>
-nnoremap <silent> <fzf-p>p     :<C-u>CocCommand fzf-preview.Yankround --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
+  nnoremap          <fzf-p>f :<C-u>CocCommand fzf-preview.ProjectGrep --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>
+  xnoremap          <fzf-p>f "sy:CocCommand fzf-preview.ProjectGrep --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+  nnoremap <silent> <fzf-p>F :<C-u>CocCommand fzf-preview.ProjectGrepRecall --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort --resume<CR>
+  nnoremap          <fzf-p>h :<C-u>CocCommand fzf-preview.GrepHelp --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>
+  nnoremap <silent> <fzf-p>p :<C-u>CocCommand fzf-preview.Yankround --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
 
-nnoremap <silent> <dev>q  :<C-u>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
-nnoremap <silent> <dev>Q  :<C-u>CocCommand fzf-preview.CocDiagnostics<CR>
-nnoremap <silent> <dev>rf :<C-u>CocCommand fzf-preview.CocReferences<CR>
-nnoremap <silent> <dev>t  :<C-u>CocCommand fzf-preview.CocTypeDefinitions<CR>
-nnoremap <silent> <dev>i  :<C-u>CocCommand fzf-preview.CocImplementations<CR>
+  nnoremap <silent> <dev>q  :<C-u>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
+  nnoremap <silent> <dev>Q  :<C-u>CocCommand fzf-preview.CocDiagnostics<CR>
+  nnoremap <silent> <dev>rf :<C-u>CocCommand fzf-preview.CocReferences<CR>
+  nnoremap <silent> <dev>t  :<C-u>CocCommand fzf-preview.CocTypeDefinitions<CR>
+  nnoremap <silent> <dev>i  :<C-u>CocCommand fzf-preview.CocImplementations<CR>
 
-AutoCmd User fzf_preview#rpc#initialized call <SID>fzf_preview_settings()
+  AutoCmd User fzf_preview#rpc#initialized call <SID>fzf_preview_settings()
 
-BulkAlterCommand tod[o] CocCommand<Space>fzf-preview.TodoComments
+  BulkAlterCommand todo CocCommand<Space>fzf-preview.TodoComments
+  BulkAlterCommand memo CocCommand<Space>fzf-preview.MemoList
 
-function! s:buffers_delete_from_lines(lines) abort
-  for line in a:lines
-    let matches = matchlist(line, '\[\(\d\+\)\]')
-    if len(matches) >= 1
-      execute 'Bdelete! ' . matches[1]
-    endif
-  endfor
-endfunction
+  function! s:buffers_delete_from_lines(lines) abort
+    for line in a:lines
+      let matches = matchlist(line, '\[\(\d\+\)\]')
+      if len(matches) >= 1
+        execute 'Bdelete! ' . matches[1]
+      endif
+    endfor
+  endfunction
 
-"" TODO: fzf Reflection
-" function! FzfColor() abort
-"   if !exists('g:fzf_colors')
-"     return ''
-"   endif
-"
-"   let lines = filter(split(execute('script'), '\n'), { _, v -> v =~# 'junegunn/fzf/plugin/fzf.vim' })
-"   if len(lines) < 1
-"     return ''
-"   endif
-"
-"   let file_nums = matchlist(lines[0], '^\s*\(\d\+\)')
-"   if len(file_nums) <= 1
-"     return ''
-"   endif
-"
-"   let func_name = "\<SNR\>" . file_nums[1] . '_defaults()'
-"   if !exists('*' . func_name)
-"     return ''
-"   endif
-"
-"   let option = matchlist(execute('echo ' . func_name), '''--color=\(.\+\)''')
-"   if len(option) <= 1
-"     return ''
-"   endif
-"
-"   return option[1]
-" endfunction
-"
-" let g:fzf_colors = {
-" \ 'fg':      ['fg', 'Normal'],
-" \ 'bg':      ['bg', 'Normal'],
-" \ 'hl':      ['fg', 'Comment'],
-" \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-" \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-" \ 'hl+':     ['fg', 'Statement'],
-" \ 'info':    ['fg', 'PreProc'],
-" \ 'border':  ['fg', 'Ignore'],
-" \ 'prompt':  ['fg', 'Conditional'],
-" \ 'pointer': ['fg', 'Exception'],
-" \ 'marker':  ['fg', 'Keyword'],
-" \ 'spinner': ['fg', 'Label'],
-" \ 'header':  ['fg', 'Comment']
-" \ }
+  "" TODO: fzf Reflection
+  " function! FzfColor() abort
+  "   if !exists('g:fzf_colors')
+  "     return ''
+  "   endif
+  "
+  "   let lines = filter(split(execute('script'), '\n'), { _, v -> v =~# 'junegunn/fzf/plugin/fzf.vim' })
+  "   if len(lines) < 1
+  "     return ''
+  "   endif
+  "
+  "   let file_nums = matchlist(lines[0], '^\s*\(\d\+\)')
+  "   if len(file_nums) <= 1
+  "     return ''
+  "   endif
+  "
+  "   let func_name = "\<SNR\>" . file_nums[1] . '_defaults()'
+  "   if !exists('*' . func_name)
+  "     return ''
+  "   endif
+  "
+  "   let option = matchlist(execute('echo ' . func_name), '''--color=\(.\+\)''')
+  "   if len(option) <= 1
+  "     return ''
+  "   endif
+  "
+  "   return option[1]
+  " endfunction
+  "
+  " let g:fzf_colors = {
+  " \ 'fg':      ['fg', 'Normal'],
+  " \ 'bg':      ['bg', 'Normal'],
+  " \ 'hl':      ['fg', 'Comment'],
+  " \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  " \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  " \ 'hl+':     ['fg', 'Statement'],
+  " \ 'info':    ['fg', 'PreProc'],
+  " \ 'border':  ['fg', 'Ignore'],
+  " \ 'prompt':  ['fg', 'Conditional'],
+  " \ 'pointer': ['fg', 'Exception'],
+  " \ 'marker':  ['fg', 'Keyword'],
+  " \ 'spinner': ['fg', 'Label'],
+  " \ 'header':  ['fg', 'Comment']
+  " \ }
 
-function! s:fzf_preview_settings() abort
-  let g:fzf_preview_grep_preview_cmd = 'COLORTERM=truecolor ' . g:fzf_preview_grep_preview_cmd
-  let g:fzf_preview_command = 'COLORTERM=truecolor ' . g:fzf_preview_command
-  let g:fzf_preview_git_status_preview_command =  '[[ $(git diff --cached -- {-1}) != "" ]] && git diff --cached --color=always -- {-1} | delta || ' .
-  \ '[[ $(git diff -- {-1}) != "" ]] && git diff --color=always -- {-1} | delta || ' .
-  \ g:fzf_preview_command
+  function! s:fzf_preview_settings() abort
+    let g:fzf_preview_grep_preview_cmd = 'COLORTERM=truecolor ' . g:fzf_preview_grep_preview_cmd
+    let g:fzf_preview_command = 'COLORTERM=truecolor ' . g:fzf_preview_command
+    let g:fzf_preview_git_status_preview_command =  '[[ $(git diff --cached -- {-1}) != "" ]] && git diff --cached --color=always -- {-1} | delta || ' .
+    \ '[[ $(git diff -- {-1}) != "" ]] && git diff --color=always -- {-1} | delta || ' .
+    \ g:fzf_preview_command
 
-  let g:fzf_preview_custom_processes['open-file'] = fzf_preview#remote#process#get_default_processes('open-file', 'rpc')
-  let g:fzf_preview_custom_processes['open-file']['ctrl-s'] = g:fzf_preview_custom_processes['open-file']['ctrl-x']
-  call remove(g:fzf_preview_custom_processes['open-file'], 'ctrl-x')
+    let g:fzf_preview_custom_processes['open-file'] = fzf_preview#remote#process#get_default_processes('open-file', 'rpc')
+    let g:fzf_preview_custom_processes['open-file']['ctrl-s'] = g:fzf_preview_custom_processes['open-file']['ctrl-x']
+    call remove(g:fzf_preview_custom_processes['open-file'], 'ctrl-x')
 
-  let g:fzf_preview_custom_processes['open-buffer'] = fzf_preview#remote#process#get_default_processes('open-buffer', 'rpc')
-  let g:fzf_preview_custom_processes['open-buffer']['ctrl-s'] = g:fzf_preview_custom_processes['open-buffer']['ctrl-x']
-  call remove(g:fzf_preview_custom_processes['open-buffer'], 'ctrl-q')
-  let g:fzf_preview_custom_processes['open-buffer']['ctrl-x'] = get(function('s:buffers_delete_from_lines'), 'name')
+    let g:fzf_preview_custom_processes['open-buffer'] = fzf_preview#remote#process#get_default_processes('open-buffer', 'rpc')
+    let g:fzf_preview_custom_processes['open-buffer']['ctrl-s'] = g:fzf_preview_custom_processes['open-buffer']['ctrl-x']
+    call remove(g:fzf_preview_custom_processes['open-buffer'], 'ctrl-q')
+    let g:fzf_preview_custom_processes['open-buffer']['ctrl-x'] = get(function('s:buffers_delete_from_lines'), 'name')
 
-  let g:fzf_preview_custom_processes['open-bufnr'] = fzf_preview#remote#process#get_default_processes('open-bufnr', 'rpc')
-  let g:fzf_preview_custom_processes['open-bufnr']['ctrl-s'] = g:fzf_preview_custom_processes['open-bufnr']['ctrl-x']
-  call remove(g:fzf_preview_custom_processes['open-bufnr'], 'ctrl-q')
-  let g:fzf_preview_custom_processes['open-bufnr']['ctrl-x'] = get(function('s:buffers_delete_from_lines'), 'name')
+    let g:fzf_preview_custom_processes['open-bufnr'] = fzf_preview#remote#process#get_default_processes('open-bufnr', 'rpc')
+    let g:fzf_preview_custom_processes['open-bufnr']['ctrl-s'] = g:fzf_preview_custom_processes['open-bufnr']['ctrl-x']
+    call remove(g:fzf_preview_custom_processes['open-bufnr'], 'ctrl-q')
+    let g:fzf_preview_custom_processes['open-bufnr']['ctrl-x'] = get(function('s:buffers_delete_from_lines'), 'name')
 
-  let g:fzf_preview_custom_processes['git-status'] = fzf_preview#remote#process#get_default_processes('git-status', 'rpc')
-  let g:fzf_preview_custom_processes['git-status']['ctrl-s'] = g:fzf_preview_custom_processes['git-status']['ctrl-x']
-  call remove(g:fzf_preview_custom_processes['git-status'], 'ctrl-x')
-endfunction
+    let g:fzf_preview_custom_processes['git-status'] = fzf_preview#remote#process#get_default_processes('git-status', 'rpc')
+    let g:fzf_preview_custom_processes['git-status']['ctrl-s'] = g:fzf_preview_custom_processes['git-status']['ctrl-x']
+    call remove(g:fzf_preview_custom_processes['git-status'], 'ctrl-x')
+  endfunction
 
-AutoCmd FileType fzf let b:highlight_cursor = 0
-" if has('nvim')
-"   AutoCmd FileType fzf set winblend=15
-" endif
+  AutoCmd FileType fzf let b:highlight_cursor = 0
+  " if has('nvim')
+  "   AutoCmd FileType fzf set winblend=15
+  " endif
+endif
 " }}}3
 
 " coc-fzf {{{3
