@@ -1214,7 +1214,7 @@ if dein#tap('coc.nvim')
   nmap     <silent> <dev>I  <Plug>(coc-implementation)
   nmap     <silent> <dev>rn <Plug>(coc-rename)
   nmap     <silent> <dev>T  <Plug>(coc-type-definition)
-  nmap     <silent> <dev>a  <Plug>(coc-codeaction-selected)
+  nmap     <silent> <dev>a  <Plug>(coc-codeaction-selected)iw
   nmap     <silent> <dev>A  <Plug>(coc-codeaction)
   nmap     <silent> <dev>l  <Plug>(coc-codelens-action)
   xmap     <silent> <dev>a  <Plug>(coc-codeaction-selected)
@@ -1233,34 +1233,26 @@ if dein#tap('coc.nvim')
   nmap <silent> gp <Plug>(coc-git-prevchunk)
   nmap <silent> gn <Plug>(coc-git-nextchunk)
 
-  function! s:organize_import_and_eslint() abort
-    augroup eslint_with_organize_import
-      autocmd!
-      autocmd TextChanged * call <SID>execute_eslint_fix_and_prettier()
-    augroup END
+  function! s:organize_import_and_format() abort
+    call CocAction('runCommand', 'editor.action.organizeImport')
 
-    function! s:execute_eslint_fix_and_prettier() abort
-      CocCommand eslint.executeAutofix
-      CocCommand prettier.formatFile
-    endfunction
-
-    function! s:orgamize_import_callback(...) abort
-      autocmd! eslint_with_organize_import
-    endfunction
-
-    call CocAction('runCommand', 'editor.action.organizeImport', function('<SID>orgamize_import_callback'))
+    if <SID>is_deno()
+      call CocAction('format')
+    else
+      call CocAction('runCommand', 'eslint.executeAutofix')
+      call CocAction('runCommand', 'prettier.formatFile')
+    endif
   endfunction
 
-  " command! OrganizeImport call CocAction('runCommand', 'editor.action.organizeImport')
-  command! OrganizeImport     call <SID>organize_import_and_eslint()
+  command! OrganizeImport     call <SID>organize_import_and_format()
   command! CocMarkdownPreview CocCommand markdown-preview-enhanced.openPreview
 
   " AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
   function! s:show_documentation() abort
-    if (index(['vim','help'], &filetype) >= 0)
+    if index(['vim','help'], &filetype) >= 0
       execute 'h ' . expand('<cword>')
-    elseif (coc#rpc#ready())
+    elseif coc#rpc#ready()
       call CocActionAsync('doHover')
     endif
   endfunction
@@ -1283,13 +1275,19 @@ if dein#tap('coc.nvim')
   function! s:coc_typescript_settings() abort
     setlocal tagfunc=CocTagFunc
     if <SID>is_deno()
+      nmap <silent> <buffer> <dev>f <Plug>(coc-format)
+    else
+      nnoremap <silent> <buffer> <dev>f :<C-u>CocCommand eslint.executeAutofix<CR>:CocCommand prettier.formatFile<CR>
+    endif
+  endfunction
+
+  function! s:coc_ts_ls_initialize() abort
+    if <SID>is_deno()
       call coc#config('tsserver.enable', v:false)
       call coc#config('deno.enable', v:true)
-      nnoremap <silent> <buffer> <dev>f :<C-u>call CocAction('format')<CR>
     else
       call coc#config('tsserver.enable', v:true)
       call coc#config('deno.enable', v:false)
-      nnoremap <silent> <buffer> <dev>f :<C-u>CocCommand eslint.executeAutofix<CR>:CocCommand prettier.formatFile<CR>
     endif
   endfunction
 
@@ -1313,6 +1311,7 @@ if dein#tap('coc.nvim')
   endfunction
 
   " AutoCmd CursorHold * silent call CocActionAsync('highlight')
+  AutoCmd VimEnter * call <SID>coc_ts_ls_initialize()
   AutoCmd FileType typescript,typescriptreact call <SID>coc_typescript_settings()
   AutoCmd FileType rust call <SID>coc_rust_settings()
 endif
