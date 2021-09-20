@@ -145,6 +145,12 @@ if whence gsed > /dev/null; then
 fi
 # }}}
 
+# find {{{
+if whence gfind > /dev/null; then
+  alias find='gfind'
+fi
+# }}}
+
 # du {{{
 if whence dust > /dev/null; then
   alias du=dust
