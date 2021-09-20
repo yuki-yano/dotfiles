@@ -4136,12 +4136,12 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight DiffChange   ctermfg=233  cte
 " AutoCmd ColorScheme gruvbox-material highlight NormalNC     ctermfg=144  ctermbg=234  guifg=#ABB2BF guibg=#282C34
 AutoCmd ColorScheme gruvbox-material highlight DiffText     ctermfg=NONE ctermbg=223  guifg=NONE    guibg=#716522
 AutoCmd ColorScheme gruvbox-material highlight Folded       ctermfg=245  ctermbg=NONE guifg=#686f9a guibg=NONE
-AutoCmd ColorScheme gruvbox-material highlight IncSearch    ctermfg=234  ctermbg=167  guifg=NONE    guibg=#4E1A19
+AutoCmd ColorScheme gruvbox-material highlight IncSearch    ctermfg=234  ctermbg=167  guifg=NONE    guibg=#4E4A16
 AutoCmd ColorScheme gruvbox-material highlight Search       ctermfg=68   ctermbg=232  guifg=NONE    guibg=#213F72
 AutoCmd ColorScheme gruvbox-material highlight SignColumn   ctermfg=0    ctermbg=NONE guifg=#32302f guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight Visual       ctermfg=NONE ctermbg=23   guifg=NONE    guibg=#1D4647
 AutoCmd ColorScheme gruvbox-material highlight Pmenu        ctermfg=NONE ctermbg=238  guifg=NONE    guibg=#2C3538
-AutoCmd ColorScheme gruvbox-material highlight PmenuSel     ctermfg=235  ctermbg=142  guifg=#262626 guibg=#84BCB7
+AutoCmd ColorScheme gruvbox-material highlight PmenuSel     ctermfg=235  ctermbg=142  guifg=NONE    guibg=#3C6073
 
 " Gina (Vital.Vim.Buffer.ANSI)
 AutoCmd ColorScheme nord,onedark,iceberg highlight AnsiColor0  ctermfg=0  guifg=#2E3440
