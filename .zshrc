@@ -43,6 +43,10 @@ zinit light zsh-users/zsh-completions
 zinit ice lucid wait"0" depth"1" as"program"
 zinit light yuki-yano/zsh-git-sync
 
+# asdf
+zinit ice lucid wait"0" depth"1" atload"init_asdf"
+zinit light asdf-vm/asdf
+
 # rip
 zinit ice lucid wait"0" from"gh-r" as"program" var"0.12.0" mv"rip -> ${ZPFX}/bin/rip"
 zinit light nivekuil/rip
@@ -94,6 +98,14 @@ function set_fast_theme() {
 }
 # }}}
 
+# asdf {{{
+function init_asdf() {
+  if whence ~/.asdf/plugins/nodejs/bin/import-release-team-keyring > /dev/null; then
+    ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
+  fi
+}
+# }}}
+
 # show-buffer-stack {{{
 add-zsh-hook precmd check-buffer-stack
 # }}}
@@ -134,8 +146,6 @@ fi
 if whence dust > /dev/null; then
   alias du=dust
 fi
-# }}}
-
 # }}}
 
 # }}}
@@ -307,25 +317,6 @@ local blue='4'
 local magenta='5'
 local cyan='6'
 local white='7'
-
-function prompt_anyenv() {
-  local ruby_version python_version node_version
-
-  if which rbenv > /dev/null 2>&1; then
-    ruby_version="Ruby-$(rbenv version-name)"
-  fi
-  if which pyenv > /dev/null 2>&1; then
-    if [[ -n "$VIRTUAL_ENV" ]]; then
-      python_version="Python-venv"
-    else
-      python_version="Python-$(pyenv version-name)"
-    fi
-  fi
-  if which nodenv > /dev/null 2>&1; then
-    node_version="Node-$(nodenv version-name)"
-  fi
-  p10k segment -f white -t "[%{$MAGENTA%}${ruby_version}%{$DEFAULT%} %{$GREEN%}${python_version}%{$DEFAULT%} %{$BLUE%}${node_version}%{$DEFAULT%}]"
-}
 
 function prompt_venv() {
   local venv
