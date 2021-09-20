@@ -1,4 +1,4 @@
-snippet for "for of"
+snippet forof "for of"
 for (const ${1:v} of ${2:list}) {
 	${3}
 }
@@ -40,6 +40,14 @@ class ${1:Klass} {
 	constructor(${2:params}) {
 	}
 }
+endsnippet
+
+snippet range "range"
+[...Array(${1:n})].map((_, i) => i)
+endsnippet
+
+snippet range "range"
+[...Array(${1:n})].map((_, i + ${2:start}) => i)
 endsnippet
 
 snippet log "console.log"
