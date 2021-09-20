@@ -1,73 +1,92 @@
 {
+  "hover.floatConfig": {
+    "border": true,
+    "highlight": "CocHoverFloating"
+  },
   "suggest.autoTrigger": "always",
   "suggest.minTriggerInputLength": 1,
   "suggest.asciiCharactersOnly": true,
   "suggest.snippetIndicator": " >>",
   "suggest.languageSourcePriority": 200,
-
+  "suggest.floatConfig": {
+    "border": true,
+    "highlight": "CocSuggestFloating"
+  },
   "tabnine.priority": 100,
-
-  "snippets.priority": 300,
-  "snippets.loadFromExtensions": false,
-  "snippets.textmateSnippetsRoots": ["~/.vsnip"],
-
+  "diagnostic.messageTarget": "float",
   "diagnostic.checkCurrentLine": true,
   "diagnostic.messageDelay": 0,
   "diagnostic.errorSign": "",
   "diagnostic.warningSign": "",
   "diagnostic.infoSign": "",
   "diagnostic.hintSign": "",
-
+  "diagnostic.floatConfig": {
+    "border": true,
+    "highlight": "CocDiagnosticFloating"
+  },
   "coc.preferences.promptInput": true,
-  "coc.preferences.useQuickfixForLocations": true,
-
-  "prettier.disableLanguages": ["markdown"],
-
-  "explorer.sources": [{ "name": "file", "expand": true }],
-  "explorer.icon.enableVimDevicons": true,
+  "coc.preferences.useQuickfixForLocations": false,
+  "diagnostic.locationlistUpdate": false,
+  "prettier.disableLanguages": [
+    "markdown"
+  ],
+  "explorer.sources": [
+    {
+      "name": "file",
+      "expand": true
+    }
+  ],
   "explorer.previewAction.onHover": false,
-  "explorer.activeMode": false,
-  "explorer.file.autoReveal": false,
   "explorer.keyMappings.global": {
     "i": false,
     "<Tab>": "actionMenu",
-
     "k": "nodePrev",
     "j": "nodeNext",
-    "t": ["expanded?", "collapse", "expand"],
+    "t": [
+      "expanded?",
+      "collapse",
+      "expand"
+    ],
     "<CR>": "open",
-
-    "h": ["expanded?", "collapse", "gotoParent"],
-    "l": ["expandable?", "expand", "open"],
-
+    "h": [
+      "expanded?",
+      "collapse",
+      "gotoParent"
+    ],
+    "l": [
+      "expandable?",
+      "expand",
+      "open"
+    ],
     "x": "toggleSelection",
-
     "y": "copyFilepath",
     "Y": "copyFilename",
     "c": "copyFile",
     "p": "pasteFile",
     "d": "delete",
     "D": "deleteForever",
-
     "N": "addFile",
     "K": "addDirectory",
     "r": "rename",
-
     "!": "toggleHidden",
     "R": "refresh",
-
     "?": "help",
     "q": "quit",
     "<esc>": "esc"
   },
-
   "languageserver": {
     "efm": {
       "command": "efm-langserver",
-      "filetypes": ["go", "ruby", "vim", "sh", "zsh", "markdown"]
+      "filetypes": [
+        "go",
+        "ruby",
+        "vim",
+        "sh",
+        "zsh",
+        "markdown"
+      ]
     }
   },
-
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
   "deno.unstable": true,
@@ -82,17 +101,16 @@
   ],
   "prettier.onlyUseLocalVersion": true,
   "prettier.statusItemText": "",
-
-  "rust-analyzer.cargo.loadOutDirsFromCheck": true,
   "rust-analyzer.procMacro.enable": true,
-
   "python.jediEnabled": false,
   "python.linting.flake8Enabled": true,
-
+  "solargraph.diagnostics": true,
   "json.schemas": [
     {
       "url": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/api/json/catalog.json",
-      "fileMatch": ["/*"]
+      "fileMatch": [
+        "/*"
+      ]
     }
   ],
   "yaml.schemas": {
@@ -101,7 +119,6 @@
       "/docker-compose.yml"
     ]
   },
-
   "cSpell.showStatus": false,
   "cSpell.diagnosticLevel": "Hint",
   "cSpell.enabledLanguageIds": [
@@ -123,13 +140,7 @@
     "yaml"
   ],
   "tsserver.enable": false,
-  "deno.enable": true,
+  "deno.enable": false,
   "deno.lint": true,
-  "coc.source.file.trimSameExts": [],
-  "prettier.disableLanguage": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ]
+  "coc.source.file.trimSameExts": []
 }
