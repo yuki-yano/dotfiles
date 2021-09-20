@@ -1,5 +1,5 @@
 {
-  "title": "Switch IME with command key",
+  "title": "Switch IME with command key without Alacritty",
   "rules": [
     {
       "description": "Switch IME only when command key is pressed",
@@ -28,6 +28,26 @@
         {
           "type": "basic",
           "from": {
+            "key_code": "spacebar",
+            "modifiers": {
+              "mandatory": ["control"]
+            }
+          },
+          "to": [
+            {
+              "key_code": "japanese_kana"
+            }
+          ],
+          "conditions": [
+            {
+              "type": "frontmost_application_if",
+              "bundle_identifiers": ["^io\\.alacritty$"]
+            }
+          ]
+        },
+        {
+          "type": "basic",
+          "from": {
             "key_code": "right_command",
             "modifiers": {
               "optional": [
@@ -43,6 +63,14 @@
           "to_if_alone": [
             {
               "key_code": "japanese_kana"
+            }
+          ],
+          "conditions": [
+            {
+              "type": "frontmost_application_unless",
+              "bundle_identifiers": [
+                "^io\\.alacritty$"
+              ]
             }
           ]
         }
