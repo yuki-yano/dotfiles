@@ -12,7 +12,7 @@ endif
 let &runtimepath .= ',' . s:DEIN_PATH
 let g:dein#install_max_processes    = 20
 let g:dein#install_process_timeout  = 300
-" let g:dein#lazy_rplugins  = 1
+let g:dein#lazy_rplugins            = 1
 let g:dein#install_github_api_token = $DEIN_GITHUB_TOKEN
 " }}}2
 
@@ -23,7 +23,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " Dein {{{3
   call dein#add('Shougo/dein.vim')
 
-  " call dein#add('haya14busa/dein-command.vim')
+  call dein#add('haya14busa/dein-command.vim', {'on_cmd': ['Dein']})
   " }}}3
 
   " denops {{{3
@@ -77,13 +77,33 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('heavenshell/vim-jsdoc',      {'build': 'make install'})
   " call dein#add('jparise/vim-graphql')
   " call dein#add('leafgarland/typescript-vim')
-  call dein#add('elzr/vim-json', {'lazy': 1, 'on_ft': ['json']})
-  call dein#add('pantharshit00/vim-prisma', {'lazy': 1, 'on_ft': ['prisma']})
-  call dein#add('plasticboy/vim-markdown',  {'lazy': 1, 'on_ft': ['markdown']})
-  call dein#add('rhysd/vim-fixjson')
+  call dein#add('elzr/vim-json', {'on_ft': ['json']})
+  call dein#add('pantharshit00/vim-prisma', {'on_ft': ['prisma']})
+  call dein#add('plasticboy/vim-markdown', {'on_ft': ['markdown']})
+  call dein#add('rhysd/vim-fixjson', {'on_ft': ['json']})
 
   if has('nvim')
-    call dein#add('nvim-treesitter/nvim-treesitter')
+    let s:treesitter_ft = [
+    \ 'typescript',
+    \ 'typescriptreact',
+    \ 'graphql',
+    \ 'rust',
+    \ 'ruby',
+    \ 'python',
+    \ 'json',
+    \ 'yaml',
+    \ 'dockerfile',
+    \ 'vim',
+    \ 'lua',
+    \ 'html',
+    \ 'css',
+    \ 'comment',
+    \ ]
+    call dein#add('nvim-treesitter/nvim-treesitter', {
+    \ 'on_ft': s:treesitter_ft,
+    \ 'depends': ['nvim-ts-context-commentstring', 'nvim-ts-rainbow'],
+    \ 'hook_post_source': 'call SetupTreesitter()'
+    \ })
 
     " call dein#add('David-Kunz/treesitter-unit')
     " call dein#add('code-biscuits/nvim-biscuits')
@@ -92,8 +112,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
     " call dein#add('nvim-treesitter/nvim-treesitter-refactor')
     " call dein#add('nvim-treesitter/nvim-treesitter-textobjects')
     " call dein#add('romgrk/nvim-treesitter-context')
-    call dein#add('JoosepAlviste/nvim-ts-context-commentstring')
-    call dein#add('p00f/nvim-ts-rainbow')
+    call dein#add('JoosepAlviste/nvim-ts-context-commentstring', {'lazy': 1})
+    call dein#add('p00f/nvim-ts-rainbow', {'lazy': 1})
   endif
   " }}}3
 
@@ -103,7 +123,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('rhysd/conflict-marker.vim')
   " call dein#add('tpope/vim-fugitive')
   call dein#add('lambdalisue/gina.vim')
-  call dein#add('wting/gitsessions.vim', {'lazy': 1, 'on_cmd': ['GitSessionSave', 'GitSessionLoad']})
+  call dein#add('wting/gitsessions.vim', {'on_cmd': ['GitSessionSave', 'GitSessionLoad']})
 
   if has('nvim')
     " call dein#add('APZelos/blamer.nvim')
@@ -121,7 +141,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('antoinemadec/coc-fzf', {'rev': 'release'})
 
   if isdirectory(expand('~/repos/github.com/yuki-yano/fzf-preview.vim'))
-    call dein#add('~/repos/github.com/yuki-yano/fzf-preview.vim')
+    call dein#add('~/repos/github.com/yuki-yano/fzf-preview.vim', {'on_event': ['VimEnter']})
   endif
 
   " if isdirectory(expand('~/workspace/coc-ultisnips-select'))
@@ -137,7 +157,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " filer {{{3
-  call dein#add('lambdalisue/fern.vim', {'lazy': 1, 'on_cmd': ['Fern'], 'depends': ['fern-git-status.vim', 'fern-renderer-nerdfont.vim', 'glyph-palette.vim', 'nerdfont.vim', 'fern-preview.vim']})
+  call dein#add('lambdalisue/fern.vim', {'on_cmd': ['Fern'], 'depends': ['fern-git-status.vim', 'fern-renderer-nerdfont.vim', 'glyph-palette.vim', 'nerdfont.vim', 'fern-preview.vim']})
 
   " call dein#add('LumaKernel/fern-mapping-fzf.vim')
   " call dein#add('LumaKernel/fern-mapping-reload-all.vim')
@@ -159,6 +179,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " textobj & operator {{{3
+  " TODO: lazy load
   call dein#add('machakann/vim-sandwich') " ib, ab, is, as
   call dein#add('machakann/vim-swap') " g< g> i, a,
 
@@ -170,14 +191,14 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('rhysd/vim-textobj-ruby') " ir ar
   " call dein#add('romgrk/equal.operator') " i=h a=h i=l a=l
   " call dein#add('thinca/vim-textobj-between') " i{char} a{char}
-  call dein#add('kana/vim-textobj-entire', {'lazy': 1, 'on_map': ['<Plug>(textobj-entire']}) " ie ae
-  call dein#add('kana/vim-textobj-line', {'lazy': 1, 'on_map': ['<Plug>(textobj-line']}) " al il
-  call dein#add('machakann/vim-textobj-functioncall', {'lazy': 1, 'on_map': ['<Plug>(textobj-functioncall']}) " if af
-  call dein#add('mattn/vim-textobj-url', {'lazy': 1, 'on_map': ['<Plug>(textobj-url']}) " iu au
-  call dein#add('yuki-yano/vim-textobj-cursor-context', {'lazy': 1, 'on_map': ['<Plug>(textobj-cursorcontext']}) " ic ac
+  call dein#add('kana/vim-textobj-entire', {'on_map': {'ox': '<Plug>(textobj-entire'}}) " ie ae
+  call dein#add('kana/vim-textobj-line', {'on_map': {'ox': '<Plug>(textobj-line'}}) " al il
+  call dein#add('machakann/vim-textobj-functioncall', {'on_map': {'ox': '<Plug>(textobj-functioncall'}}) " if af
+  call dein#add('mattn/vim-textobj-url', {'on_map': {'ox': '<Plug>(textobj-url'}}) " iu au
+  call dein#add('yuki-yano/vim-textobj-cursor-context', {'on_map': {'ox': '<Plug>(textobj-cursorcontext'}}) " ic ac
 
-  call dein#add('mopp/vim-operator-convert-case', {'lazy': 1, 'on_map': ['<Plug>(operator-convert-case']}) " cy
-  call dein#add('yuki-yano/vim-operator-replace', {'lazy': 1, 'on_map': ['<Plug>(operator-replace']})  " _
+  call dein#add('mopp/vim-operator-convert-case', {'on_map': ['<Plug>(operator-convert-case']}) " cy
+  call dein#add('yuki-yano/vim-operator-replace', {'on_map': ['<Plug>(operator-replace']})  " _
   " }}}3
 
   " Edit & Move & Search {{{3
@@ -201,24 +222,24 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('unblevable/quick-scope')
   " call dein#add('vim-scripts/Align')
   " call dein#add('yuki-yano/zero.vim')
-  call dein#add('Bakudankun/BackAndForward.vim', {'lazy': 1, 'on_map': ['<Plug>(backandforward-']})
+  call dein#add('Bakudankun/BackAndForward.vim', {'on_map': ['<Plug>(backandforward-']})
   call dein#add('LeafCage/yankround.vim')
   call dein#add('MattesGroeger/vim-bookmarks')
-  call dein#add('SirVer/ultisnips')
-  call dein#add('cohama/lexima.vim', {'lazy': 1, 'on_i': 1, 'hook_post_source': 'call SetupLexima()'})
-  call dein#add('haya14busa/vim-asterisk', {'lazy': 1, 'on_map': ['<Plug>']})
-  call dein#add('haya14busa/vim-edgemotion', {'lazy': 1, 'on_map': ['<Plug>']})
-  call dein#add('hrsh7th/vim-eft', {'lazy': 1, 'on_map': ['<Plug>']})
-  call dein#add('junegunn/vim-easy-align', {'lazy': 1, 'on_map': ['<Plug>(EasyAlign)']})
-  call dein#add('mattn/vim-maketable', {'lazy': 1, 'on_cmd': ['MakeTable']})
-  call dein#add('osyo-manga/vim-anzu', {'lazy': 1, 'on_map': ['<Plug>']})
-  call dein#add('osyo-manga/vim-jplus', {'lazy': 1, 'on_map': ['<Plug>']})
-  call dein#add('t9md/vim-textmanip', {'lazy': 1, 'on_map': ['<Plug>']})
-  call dein#add('terryma/vim-expand-region', {'lazy': 1, 'on_map': ['<Plug>']})
-  call dein#add('thinca/vim-qfreplace', {'lazy': 1, 'on_cmd': ['Qfreplace']})
-  call dein#add('tommcdo/vim-exchange')
+  call dein#add('SirVer/ultisnips', {'on_i': 1})
+  call dein#add('cohama/lexima.vim', {'on_i': 1, 'hook_post_source': 'call SetupLexima()'})
+  call dein#add('haya14busa/vim-asterisk', {'on_map': ['<Plug>']})
+  call dein#add('haya14busa/vim-edgemotion', {'on_map': ['<Plug>']})
+  call dein#add('hrsh7th/vim-eft', {'on_map': ['<Plug>']})
+  call dein#add('junegunn/vim-easy-align', {'on_map': ['<Plug>(EasyAlign)']})
+  call dein#add('mattn/vim-maketable', {'on_cmd': ['MakeTable']})
+  call dein#add('osyo-manga/vim-anzu', {'on_map': ['<Plug>']})
+  call dein#add('osyo-manga/vim-jplus', {'on_map': ['<Plug>']})
+  call dein#add('t9md/vim-textmanip', {'on_map': ['<Plug>']})
+  call dein#add('terryma/vim-expand-region', {'on_map': ['<Plug>']})
+  call dein#add('thinca/vim-qfreplace', {'on_cmd': ['Qfreplace']})
+  call dein#add('tommcdo/vim-exchange', {'on_map': ['<Plug>(Exchange']})
   call dein#add('tpope/vim-repeat')
-  call dein#add('tyru/caw.vim', {'rev': '703db47', 'lazy': 1, 'on_map': ['<Plug>']})
+  call dein#add('tyru/caw.vim', {'rev': '703db47', 'on_map': ['<Plug>']})
 
   if has('nvim')
     " call dein#add('b3nj5m1n/kommentary')
@@ -242,15 +263,15 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('andymass/vim-matchup')
   " call dein#add('luochen1990/rainbow')
   " call dein#add('mhinz/vim-startify')
-  " call dein#add('mopp/smartnumber.vim')
   " call dein#add('ntpeters/vim-better-whitespace')
   " call dein#add('ronakg/quickr-preview.vim')
   " call dein#add('wellle/context.vim')
   " call dein#add('yuttie/comfortable-motion.vim')
   call dein#add('itchyny/lightline.vim')
   call dein#add('lambdalisue/readablefold.vim')
-  call dein#add('machakann/vim-highlightedundo', {'lazy': 1, 'on_map': ['<Plug>']})
-  call dein#add('machakann/vim-highlightedyank', {'lazy': 1, 'on_event': ['TextYankPost']})
+  call dein#add('machakann/vim-highlightedundo', {'on_map': ['<Plug>']})
+  call dein#add('machakann/vim-highlightedyank', {'on_event': ['TextYankPost']})
+  call dein#add('mopp/smartnumber.vim')
   call dein#add('ryanoasis/vim-devicons')
 
   if has('nvim')
@@ -259,8 +280,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
     " call dein#add('glepnir/indent-guides.nvim')
     " call dein#add('karb94/neoscroll.nvim')
     " call dein#add('vuki656/package-info.nvim')
-    call dein#add('dstein64/nvim-scrollview', {'lazy': 1, 'on_event': ['WinScrolled']})
-    call dein#add('kevinhwang91/nvim-bqf', {'lazy': 1, 'on_ft': ['qf']})
+    call dein#add('dstein64/nvim-scrollview', {'on_event': ['WinScrolled']})
+    call dein#add('kevinhwang91/nvim-bqf', {'on_ft': ['qf']})
     call dein#add('norcalli/nvim-colorizer.lua')
     call dein#add('rcarriga/nvim-notify')
   endif
@@ -285,32 +306,33 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('thinca/vim-localrc')
   " call dein#add('thinca/vim-ref')
   " call dein#add('tyru/open-browser.vim')
-  call dein#add("rcarriga/vim-ultest")
-  call dein#add('AndrewRadev/linediff.vim', {'lazy': 1, 'on_cmd': ['LineDiff']})
-  call dein#add('aiya000/aho-bakaup.vim', {'lazy': 1, 'on_event': ['InsertEnter', 'TextChanged']})
+  call dein#add('AndrewRadev/linediff.vim', {'on_cmd': ['LineDiff']})
+  call dein#add('aiya000/aho-bakaup.vim', {'on_event': ['InsertEnter', 'TextChanged']})
   call dein#add('glidenote/memolist.vim')
-  call dein#add('itchyny/vim-qfedit', {'lazy': 1, 'on_ft': ['qf']})
+  call dein#add('itchyny/vim-qfedit', {'on_ft': ['qf']})
   call dein#add('jsfaint/gen_tags.vim')
   call dein#add('kana/vim-niceblock')
-  call dein#add('lambdalisue/suda.vim', {'lazy': 1, 'on_cmd': ['SudaRead', 'SudaWrite']})
-  call dein#add('lambdalisue/vim-manpager', {'lazy': 1, 'on_cmd': ['Man'], 'on_map': ['<Plug>']})
-  call dein#add('liuchengxu/vista.vim', {'lazy': 1, 'on_cmd': ['Vista']})
-  call dein#add('mbbill/undotree', {'lazy': 1, 'on_cmd': ['UndotreeToggle']})
-  call dein#add('moll/vim-bbye')
-  call dein#add('segeljakt/vim-silicon', {'lazy': 1, 'on_cmd': ['Silicon']})
+  call dein#add('lambdalisue/suda.vim', {'on_cmd': ['SudaRead', 'SudaWrite']})
+  call dein#add('lambdalisue/vim-manpager', {'on_cmd': ['Man'], 'on_map': ['<Plug>']})
+  call dein#add('liuchengxu/vista.vim', {'on_cmd': ['Vista']})
+  call dein#add('mbbill/undotree', {'on_cmd': ['UndotreeToggle']})
+  call dein#add('moll/vim-bbye', {'on_cmd': ['Bdelete']})
+  call dein#add('segeljakt/vim-silicon', {'on_cmd': ['Silicon']})
   call dein#add('thinca/vim-quickrun')
   call dein#add('tyru/capture.vim')
   call dein#add('tyru/vim-altercmd')
-  call dein#add('vim-test/vim-test')
-  call dein#add('voldikss/vim-floaterm', {'lazy': 1, 'on_cmd': ['FloatermToggle']})
-  call dein#add('wesQ3/vim-windowswap', {'lazy': 1, 'on_func': ['WindowSwap#EasyWindowSwap']})
+  call dein#add('vim-test/vim-test', {'lazy': 1})
+  call dein#add('voldikss/vim-floaterm', {'on_cmd': ['FloatermToggle']})
+  call dein#add('wesQ3/vim-windowswap', {'on_func': ['WindowSwap#EasyWindowSwap']})
 
   if has('nvim')
     " call dein#add('lambdalisue/edita.vim')
+    " call dein#add('lewis6991/impatient.nvim')
     " call dein#add('notomo/cmdbuf.nvim')
     " call dein#add('nvim-lua/plenary.nvim')
     " call dein#add('nvim-lua/popup.nvim')
-    call dein#add('gelguy/wilder.nvim')
+    call dein#add("rcarriga/vim-ultest", {'on_cmd': ['Ultest', 'UltestNearest', 'UltestSummary'], 'depends': ['vim-test'], 'hook_source': 'call SetUpUltest()'})
+    call dein#add('gelguy/wilder.nvim', {'on_map': [':', '/', '?'], 'hook_source': 'call SetUpWilder()'})
   endif
 
   if $ENABLE_WAKATIME == 1
@@ -939,7 +961,9 @@ function! s:review_start() abort
   let $BAT_THEME_BAK = $BAT_THEME
   let $BAT_THEME = 'papercolor-light'
 
-  " SNumbersTurnOffRelative
+  if dein#tap('smartnumber.vim')
+    SNumbersTurnOffRelative
+  endif
 
   if dein#tap('comfortable-motion.vim')
     let g:comfortable_motion_enable = 0
@@ -969,7 +993,9 @@ function! s:review_end() abort
   let $FZF_DEFAULT_OPTS = $FZF_DEFAULT_OPTS_BAK
   let $BAT_THEME = $BAT_THEME_BAK
 
-  " SNumbersTurnOnRelative
+  if dein#tap('smartnumber.vim')
+    SNumbersTurnOnRelative
+  endif
 
   if dein#tap('comfortable-motion.vim')
     let g:comfortable_motion_enable = 1
@@ -1127,6 +1153,12 @@ if dein#tap('vim-altercmd')
   BulkAlterCommand co[de] VSCode
   BulkAlterCommand fo[rk] !fork
   BulkAlterCommand js[on] JSON
+endif
+" }}}3
+
+" impatient {{{3
+if dein#tap('impatient.nvim')
+  lua require('impatient')
 endif
 " }}}3
 
@@ -1501,7 +1533,8 @@ endif
 
 " treesitter {{{3
 if dein#tap('nvim-treesitter')
-  let g:highlightedundo_enable = 1
+  function! SetupTreesitter() abort
+    let g:highlightedundo_enable = 1
 
 lua <<EOF
 require('nvim-treesitter.configs').setup {
@@ -1511,11 +1544,9 @@ require('nvim-treesitter.configs').setup {
     "javascript",
     "graphql",
     "jsdoc",
-    "go",
     "rust",
     "ruby",
     "python",
-    "bash",
     "json",
     "yaml",
     "dockerfile",
@@ -1524,7 +1555,6 @@ require('nvim-treesitter.configs').setup {
     "html",
     "css",
     "comment",
-    "regex",
   },
   highlight = {
     enable = true,
@@ -1572,98 +1602,99 @@ require('nvim-treesitter.configs').setup {
 -- require('nvim_context_vt').setup()
 EOF
 
-  " omap <silent> <Plug>(textobj-treesitter-unit-i) :<C-u>lua require('treesitter-unit').select(true)<CR>
-  " xmap <silent> <Plug>(textobj-treesitter-unit-i) :lua require('treesitter-unit').select(true)<CR>
-  " omap <silent> <Plug>(textobj-treesitter-unit-a) :<C-u>lua require('treesitter-unit').select()<CR>
-  " xmap <silent> <Plug>(textobj-treesitter-unit-a) :lua require('treesitter-unit').select()<CR>
+    " omap <silent> <Plug>(textobj-treesitter-unit-i) :<C-u>lua require('treesitter-unit').select(true)<CR>
+    " xmap <silent> <Plug>(textobj-treesitter-unit-i) :lua require('treesitter-unit').select(true)<CR>
+    " omap <silent> <Plug>(textobj-treesitter-unit-a) :<C-u>lua require('treesitter-unit').select()<CR>
+    " xmap <silent> <Plug>(textobj-treesitter-unit-a) :lua require('treesitter-unit').select()<CR>
 
-  " omap <silent> iu <Plug>(textobj-treesitter-unit-i)
-  " xmap <silent> iu <Plug>(textobj-treesitter-unit-i)
-  " omap <silent> au <Plug>(textobj-treesitter-unit-a)
-  " xmap <silent> au <Plug>(textobj-treesitter-unit-a)
+    " omap <silent> iu <Plug>(textobj-treesitter-unit-i)
+    " xmap <silent> iu <Plug>(textobj-treesitter-unit-i)
+    " omap <silent> au <Plug>(textobj-treesitter-unit-a)
+    " xmap <silent> au <Plug>(textobj-treesitter-unit-a)
 
 
-  function! s:treesitter_toggle() abort
-    if g:treesitter_enable == 1
-      let g:treesitter_enable = 0
-      call <SID>treesitter_disable()
-    else
-      let g:treesitter_enable = 1
-      call <SID>treesitter_enable()
-    endif
-  endfunction
-  command! TreesitterToggle call <SID>treesitter_toggle()
-
-  function! s:treesitter_enable() abort
-    TSEnableAll highlight
-    TSEnableAll context_commentstring
-    TSEnableAll rainbow
-  endfunction
-
-  function! s:treesitter_disable() abort
-    TSDisableAll highlight
-    TSDisableAll context_commentstring
-    TSDisableAll rainbow
-  endfunction
-
-  function! s:check_large_file() abort
-    let max_file_size = 500 * 1000
-    let fsize = getfsize(@%)
-    let line_num = line('$')
-
-    if fsize > max_file_size
-      if input(printf('"%s" is too large file.(%s lines, %s byte) Continue? [y/N]', @%, line_num, fsize)) !~? '^y\%[es]$'
-        bwipeout
-        return
-      else
-        syntax off
+    function! s:treesitter_toggle() abort
+      if g:treesitter_enable == 1
+        let g:treesitter_enable = 0
         call <SID>treesitter_disable()
+      else
+        let g:treesitter_enable = 1
+        call <SID>treesitter_enable()
       endif
-    endif
+    endfunction
+    command! TreesitterToggle call <SID>treesitter_toggle()
+
+    function! s:treesitter_enable() abort
+      TSEnableAll highlight
+      TSEnableAll context_commentstring
+      TSEnableAll rainbow
+    endfunction
+
+    function! s:treesitter_disable() abort
+      TSDisableAll highlight
+      TSDisableAll context_commentstring
+      TSDisableAll rainbow
+    endfunction
+
+    function! s:check_large_file() abort
+      let max_file_size = 500 * 1000
+      let fsize = getfsize(@%)
+      let line_num = line('$')
+
+      if fsize > max_file_size
+        if input(printf('"%s" is too large file.(%s lines, %s byte) Continue? [y/N]', @%, line_num, fsize)) !~? '^y\%[es]$'
+          bwipeout
+          return
+        else
+          syntax off
+          call <SID>treesitter_disable()
+        endif
+      endif
+    endfunction
+
+    AutoCmd BufReadPre *.ts,*.tsx,*.js call <SID>check_large_file()
+
+    " AutoCmd BufReadPre  *.ts,*.tsx,*.js call <SID>disable_syntax()
+    " AutoCmd BufReadPost *.ts,*.tsx,*.js call <SID>set_syntax()
+    " AutoCmd BufEnter    *.ts,*.tsx,*.js call <SID>enable_tsbuf()
+    "
+    " function! s:disable_syntax() abort
+    "   syntax off
+    "   TSDisableAll highlight
+    "   TSDisableAll context_commentstring
+    "   TSDisableAll rainbow
+    " endfunction
+    " 
+    " function! s:enable_tsbuf() abort
+    "   if exists('b:ts_buf') && b:ts_buf
+    "     TSEnableAll highlight
+    "     TSEnableAll context_commentstring
+    "     TSEnableAll rainbow
+    "     TSBufEnable highlight
+    "     TSBufEnable context_commentstring
+    "     TSBufEnable rainbow
+    "   endif
+    " endfunction
+    "
+    " function! s:set_syntax() abort
+    "   let max_file_size = 500 * 1000
+    "   let fsize = getfsize(@%)
+    "   let line_num = line('$')
+    "
+    "   if fsize > max_file_size && input(printf('"%s" is too large file.(%s lines, %s byte) Continue? [y/N]', @%, line_num, fsize)) !~? '^y\%[es]$'
+    "     bwipeout
+    "     return
+    "   endif
+    "
+    "   if fsize < max_file_size
+    "     syntax on
+    "     let b:ts_buf = v:true
+    "   else
+    "     syntax off
+    "     let b:ts_buf = v:false
+    "   endif
+    " endfunction
   endfunction
-
-  AutoCmd BufReadPre *.ts,*.tsx,*.js call <SID>check_large_file()
-
-  " AutoCmd BufReadPre  *.ts,*.tsx,*.js call <SID>disable_syntax()
-  " AutoCmd BufReadPost *.ts,*.tsx,*.js call <SID>set_syntax()
-  " AutoCmd BufEnter    *.ts,*.tsx,*.js call <SID>enable_tsbuf()
-  "
-  " function! s:disable_syntax() abort
-  "   syntax off
-  "   TSDisableAll highlight
-  "   TSDisableAll context_commentstring
-  "   TSDisableAll rainbow
-  " endfunction
-  " 
-  " function! s:enable_tsbuf() abort
-  "   if exists('b:ts_buf') && b:ts_buf
-  "     TSEnableAll highlight
-  "     TSEnableAll context_commentstring
-  "     TSEnableAll rainbow
-  "     TSBufEnable highlight
-  "     TSBufEnable context_commentstring
-  "     TSBufEnable rainbow
-  "   endif
-  " endfunction
-  "
-  " function! s:set_syntax() abort
-  "   let max_file_size = 500 * 1000
-  "   let fsize = getfsize(@%)
-  "   let line_num = line('$')
-  "
-  "   if fsize > max_file_size && input(printf('"%s" is too large file.(%s lines, %s byte) Continue? [y/N]', @%, line_num, fsize)) !~? '^y\%[es]$'
-  "     bwipeout
-  "     return
-  "   endif
-  "
-  "   if fsize < max_file_size
-  "     syntax on
-  "     let b:ts_buf = v:true
-  "   else
-  "     syntax off
-  "     let b:ts_buf = v:false
-  "   endif
-  " endfunction
 endif
 " }}}3
 
@@ -1717,6 +1748,8 @@ if dein#tap('denite.nvim')
   BulkAlterCommand to[ggle] Denite<Space>menu:toggle
   let s:menus = {}
   let s:menus.toggle = { 'description': 'Toggle Command' }
+
+  " TODO: Add toggle command
   let s:menus.toggle.command_candidates = [
   \ ['Toggle Review            [ReviewToggle]',              'ReviewToggle'           ],
   \ ['Toggle CursorHighlight   [CursorHighlightToggle]',     'CursorHighlightToggle'  ],
@@ -1725,10 +1758,8 @@ if dein#tap('denite.nvim')
   \ ['Toggle IndentLine        [IndentLinesToggle]',         'IndentLinesToggle'      ],
   \ ['Toggle SyntaxHighlight   [SyntaxHighlightToggle]',     'SyntaxHighlightToggle'  ],
   \ ['Toggle TableMode         [TableMode]',                 'TableModeToggle'        ],
+  \ ['Toggle RelNum            [SNToggle]',                  'SNToggle'               ],
   \ ]
-
-  " smartnumber
-  "\ ['Toggle RelNum            [SNToggle]',                  'SNToggle'               ],
 
   call denite#custom#var('menu', 'menus', s:menus)
 endif
@@ -3915,11 +3946,13 @@ endif
 " test {{{3
 if dein#tap('vim-test') &&
    \ dein#tap('vim-ultest')
-  BulkAlterCommand te[st]     Ultest
-  BulkAlterCommand tn[ear]    UltestNearest
-  BulkAlterCommand ts[ummary] UltestSummary
+  function! SetUpUltest() abort
+    BulkAlterCommand te[st]     Ultest
+    BulkAlterCommand tn[ear]    UltestNearest
+    BulkAlterCommand ts[ummary] UltestSummary
 
-  let g:ultest_use_pty = 1
+    let g:ultest_use_pty = 1
+  endfunction
 endif
 " }}}3
 
@@ -3942,34 +3975,36 @@ endif
 
 " wilder {{{3
 if dein#tap('wilder.nvim')
-  let wilder_cmd_line_renderer = wilder#popupmenu_renderer({
-  \ 'winblend': 20,
-  \ 'highlighter': wilder#basic_highlighter(),
-  \ 'left': [wilder#popupmenu_devicons(), wilder#popupmenu_buffer_flags({'flags': ' '})],
-  \ 'right': [' ', wilder#popupmenu_scrollbar()],
-  \ })
+  function! SetUpWilder() abort
+    let wilder_cmd_line_renderer = wilder#popupmenu_renderer({
+    \ 'winblend': 20,
+    \ 'highlighter': wilder#basic_highlighter(),
+    \ 'left': [wilder#popupmenu_devicons(), wilder#popupmenu_buffer_flags({'flags': ' '})],
+    \ 'right': [' ', wilder#popupmenu_scrollbar()],
+    \ })
 
-  let wilder_search_renderer = wilder#wildmenu_renderer({
-  \ 'highlighter': wilder#basic_highlighter(),
-  \ 'separator': '  ',
-  \ 'left': [' '],
-  \ 'right': [' ', wilder#wildmenu_index()],
-  \ })
+    let wilder_search_renderer = wilder#wildmenu_renderer({
+    \ 'highlighter': wilder#basic_highlighter(),
+    \ 'separator': '  ',
+    \ 'left': [' '],
+    \ 'right': [' ', wilder#wildmenu_index()],
+    \ })
 
-  call wilder#setup({
-  \ 'modes': [':', '/', '?'],
-  \ 'accept_key': '<C-e>',
-  \ })
+    call wilder#setup({
+    \ 'modes': [':', '/', '?'],
+    \ 'accept_key': '<C-e>',
+    \ })
 
-  call wilder#set_option(
-  \ 'renderer',
-  \ wilder#renderer_mux({
-  \ ':': wilder_cmd_line_renderer,
-  \ '/': wilder_search_renderer,
-  \ '?': wilder_search_renderer,
-  \ 'substitute': wilder_search_renderer,
-  \ })
-  \ )
+    call wilder#set_option(
+    \ 'renderer',
+    \ wilder#renderer_mux({
+    \ ':': wilder_cmd_line_renderer,
+    \ '/': wilder_search_renderer,
+    \ '?': wilder_search_renderer,
+    \ 'substitute': wilder_search_renderer,
+    \ })
+    \ )
+  endfunction
 endif
 " }}}3
 
