@@ -88,6 +88,8 @@ snippets:
     snippet: GIT_EDITOR=cat git rebase --interactive --autosquash {{branch}}
   - name: git main branch
     snippet: basename "$(git symbolic-ref --short refs/remotes/origin/HEAD)"
+  - name: git rebase conflict resolution
+    snippet: git range-diff @{u} @{1} @
   - name: git tower
     keyword: gitt
     snippet: gittower .
