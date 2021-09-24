@@ -48,8 +48,64 @@ export XDG_CONFIG_HOME=$HOME/.config
 # gtags
 export GTAGSLABEL=pygments
 
+# rbenv
+path=(~/.rbenv/shims(N-/) $path)
+export RBENV_SHELL=zsh
+function rbenv() {
+  local command
+  command="$1"
+  if [[ "$#" -gt 0 ]]; then
+    shift
+  fi
+
+  case "$command" in
+    rehash|shell)
+      eval "$(rbenv "sh-$command" "$@")";;
+    *)
+      command rbenv "$command" "$@";;
+  esac
+}
+
 # python2
 path=(/usr/local/opt/python@2/bin(N-/) $path)
+
+# pyenv
+path=(~/.pyenv/shims(N-/) $path)
+export PYENV_ROOT=~/.pyenv
+export PYENV_SHELL=zsh
+export PYTHON_CONFIGURE_OPTS='--enable-framework'
+pyenv() {
+  local command
+  command="$1"
+  if [[ "$#" -gt 0 ]]; then
+    shift
+  fi
+
+  case "$command" in
+    rehash|shell)
+      eval "$(pyenv "sh-$command" "$@")";;
+    *)
+      command pyenv "$command" "$@";;
+  esac
+}
+
+# nodenv
+path=(~/.nodenv/shims(N-/) $path)
+export NODENV_SHELL=zsh
+nodenv() {
+  local command
+  command="$1"
+  if [[ "$#" -gt 0 ]]; then
+    shift
+  fi
+
+  case "$command" in
+    rehash|shell)
+      eval "$(nodenv "sh-$command" "$@")";;
+    *)
+      command nodenv "$command" "$@";;
+  esac
+}
 
 # deno
 path=(~/.deno/bin(N-/) $path)
