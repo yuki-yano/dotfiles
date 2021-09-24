@@ -49,6 +49,9 @@ zinit light zdharma/fast-syntax-highlighting
 zinit ice lucid wait"0" depth"1" blockf
 zinit light zsh-users/zsh-completions
 
+zinit ice lucid wait"0" depth"1" blockf
+zinit light ress997/zsh-completions-anyenv
+
 # git
 # zinit ice lucid wait"0" as"program" pick"$ZPFX/bin/git-*" src"etc/git-extras-completion.zsh" make"PREFIX=$ZPFX"
 # zinit light tj/git-extras

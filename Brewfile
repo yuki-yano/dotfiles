@@ -28,11 +28,11 @@ install gcc
 install go golangci/tap/golangci-lint
 install java
 install lua
-install node yarn
+install node yarn nodenv
 install openssl
 install perl
-install python
-install ruby
+install python pyenv
+install ruby rbenv
 
 ## Service
 # install asciinema
