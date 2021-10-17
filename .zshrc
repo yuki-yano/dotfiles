@@ -33,9 +33,6 @@ zinit light junegunn/fzf
 zinit ice lucid as"program"
 zinit snippet 'https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux'
 
-zinit ice lucid as"program" mv"fzf* -> ${ZPFX}/man/man1"
-zinit snippet 'https://github.com/junegunn/fzf/blob/master/man/man1/fzf.1'
-
 zinit light yukiycino-dotfiles/zsh-show-buffer-stack
 # }}}
 
@@ -52,15 +49,17 @@ zinit light zsh-users/zsh-completions
 zinit ice lucid wait"0" depth"1" blockf
 zinit light ress997/zsh-completions-anyenv
 
+zinit ice lucid wait"0" as"completion"
+zinit snippet OMZ::plugins/docker/_docker
+
+zinit ice lucid wait"0" as"completion"
+zinit snippet OMZ::plugins/docker-compose/_docker-compose
+
 # git
 # zinit ice lucid wait"0" as"program" pick"$ZPFX/bin/git-*" src"etc/git-extras-completion.zsh" make"PREFIX=$ZPFX"
 # zinit light tj/git-extras
 zinit ice lucid wait"0" depth"1" as"program"
 zinit light yuki-yano/zsh-git-sync
-
-# rip
-zinit ice lucid wait"0" from"gh-r" as"program" var"0.12.0" mv"rip -> ${ZPFX}/bin/rip"
-zinit light nivekuil/rip
 
 zinit ice lucid wait"0" depth"1" as"program" src"tms.plugin.zsh" pick"tms"
 zinit light yuki-yano/tms
@@ -71,6 +70,10 @@ zinit light yuki-yano/tmk
 # Language Server
 zinit ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd64*" mv"*/efm-langserver -> ${ZPFX}/bin/efm-langserver"
 zinit light mattn/efm-langserver
+
+# man
+zinit ice lucid wait"0" as"program" mv"fzf* -> ${ZPFX}/man/man1"
+zinit snippet 'https://github.com/junegunn/fzf/blob/master/man/man1/fzf.1'
 
 # util
 zinit ice lucid wait"0" depth"1"
