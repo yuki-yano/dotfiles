@@ -468,12 +468,6 @@ nnoremap <expr> A len(getline('.')) ? "A" : "\"_cc"
 " Ignore registers
 nnoremap x "_x
 
-"" incsearch
-" nnoremap / /\v
-" nnoremap ? ?\v
-cnoremap <expr> / empty(getcmdline()) <Bar><Bar> getcmdline() ==# '\v' ? '<C-u>\<' : getcmdline() ==# '\<' ? '\><Left><Left>' : '/'
-cnoremap <expr> ? empty(getcmdline()) <Bar><Bar> getcmdline() ==# '\v' ? '<C-u>\<' : getcmdline() ==# '\<' ? '\><Left><Left>' : '?'
-
 "" tagjump
 nnoremap <silent> s<C-]> :<C-u>wincmd ]<CR>
 nnoremap <silent> v<C-]> :<C-u>vertical wincmd ]<CR>
