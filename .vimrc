@@ -3318,6 +3318,15 @@ if dein#tap('foldCC.vim')
 endif
 " }}}3
 
+" highlightedput {{{3
+if dein#tap('vim-highlightedput')
+  nmap p <Plug>(highlightedput-p)
+  xmap p <Plug>(highlightedput-p)
+  nmap P <Plug>(highlightedput-P)
+  xmap P <Plug>(highlightedput-P)
+endif
+" }}}3
+
 " highlightedundo {{{3
 if dein#tap('vim-highlightedundo')
   let g:highlightedundo_enable         = 1
