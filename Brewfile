@@ -25,7 +25,7 @@ install neovim --HEAD
 install boost
 install deno
 install gcc
-install go golangci/tap/golangci-lint
+install go
 install java
 install lua
 install node yarn nodenv
@@ -56,6 +56,7 @@ install delphinus/sfmono-square/sfmono-square
 ## Util
 # install universal-ctags --HEAD
 install curl
+install efm-langserver
 install global
 install graphviz
 install itchyny/tap/mmv
