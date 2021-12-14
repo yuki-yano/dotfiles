@@ -51,3 +51,6 @@ cSpell.json
 
 # VSCode
 .vscode
+
+# IntelliJ
+.idea
