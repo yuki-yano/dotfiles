@@ -11,6 +11,7 @@ DOTFILES_SRCS = %w[
   .gitconfig
   .gitignore_global
   .globalrc
+  .hammerspoon
   .tigrc
   .tmux.conf
   .vim
@@ -40,7 +41,7 @@ namespace :zsh do
       begin
         FileUtils.mkdir(ZINIT_DIR)
         puts ">>> Downloading zinit to #{ZINIT_DIR}/bin"
-        sh "cd #{ZINIT_DIR}; git clone --depth 10 https://github.com/zdharma/zinit.git bin"
+        sh "cd #{ZINIT_DIR}; git clone --depth 10 https://github.com/zdharma-continuum/zinit.git bin"
         puts '>>> Done'
       rescue Errno::EEXIST => _
         puts 'Zinit directory already exists'

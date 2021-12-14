@@ -1,7 +1,7 @@
 # zinit {{{
 if [[ ! -d $ZPLG_HOME/bin ]]; then
   if whence git > /dev/null; then
-    git clone --depth 10 https://github.com/zdharma/zinit.git $ZPLG_HOME/bin
+    git clone --depth 10 https://github.com/zdharma-continuum/zinit.git $ZPLG_HOME/bin
   fi
 fi
 
@@ -40,7 +40,7 @@ zinit light yukiycino-dotfiles/zsh-show-buffer-stack
 
 # PROMPT
 zinit ice lucid wait"!0" depth"1" atinit"zpcompinit; zpcdreplay" atload"set_fast_theme"
-zinit light zdharma/fast-syntax-highlighting
+zinit light zdharma-continuum/fast-syntax-highlighting
 
 # completion
 zinit ice lucid wait"0" depth"1" blockf
