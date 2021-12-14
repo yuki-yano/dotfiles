@@ -13,6 +13,7 @@ export EDITOR=nvim
 export VISUAL=nvim
 alias vi=nvim
 
+# lambdalisue/vim-manpager
 export MANPAGER='nvim -c MANPAGER -'
 
 # Disable path_helper
