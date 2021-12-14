@@ -3869,7 +3869,10 @@ endif
 if dein#tap('vista.vim')
   BulkAlterCommand vis[ta] Vista
 
-  let g:vista_default_executive      = 'coc'
+  if dein#tap('coc.nvim')
+    let g:vista_default_executive = 'coc'
+  endif
+
   let g:vista_sidebar_width          = 50
   let g:vista_echo_cursor_strategy   = 'both'
   let g:vista_update_on_text_changed = 1
