@@ -114,7 +114,7 @@
             },
             {
               "key_code": "h",
-              "modifiers": ["right_command"]
+              "modifiers": ["right_command", "shift"]
             }
           ]
         },

@@ -10,8 +10,7 @@ window:
     y: 0
   decorations: full
   dynamic_title: true
-  opacity: 1.0
-
+  opacity: 1.00
 
 draw_bold_text_with_bright_colors: true
 
@@ -134,6 +133,7 @@ live_config_reload: true
 
 key_bindings:
   - { key: Q,        mods: Command,       action: Quit                        }
+  - { key: H,        mods: Alt,           action: Hide                        }
   - { key: Key0,     mods: Command,       action: ResetFontSize               }
   - { key: Equals,   mods: Command,       action: IncreaseFontSize            }
   - { key: Minus,    mods: Command,       action: DecreaseFontSize            }
@@ -141,6 +141,7 @@ key_bindings:
   - { key: Key6,     mods: Control,       chars: "\x1e"                       }
   - { key: Escape,                        chars: "\x1b"                       }
   - { key: Space,    mods: Control,       chars: "\x00"                       }
+  - { key: H,        mods: Command|Shift, chars: "\x1bh"                      }
   - { key: A,        mods: Command,       chars: "\x1ba"                      }
   - { key: B,        mods: Command,       chars: "\x1bb"                      }
   - { key: C,        mods: Command,       chars: "\x1bc"                      }
@@ -175,7 +176,7 @@ key_bindings:
   - { key: E,        mods: Command|Shift, chars: "\x1bE"                      }
   - { key: F,        mods: Command|Shift, chars: "\x1bF"                      }
   - { key: G,        mods: Command|Shift, chars: "\x1bG"                      }
-  - { key: H,        mods: Command|Shift, chars: "\x1bH"                      }
+  # - { key: H,        mods: Command|Shift, chars: "\x1bH"                      }
   - { key: I,        mods: Command|Shift, chars: "\x1bI"                      }
   - { key: J,        mods: Command|Shift, chars: "\x1bJ"                      }
   - { key: K,        mods: Command|Shift, chars: "\x1bK"                      }
