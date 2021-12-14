@@ -2515,6 +2515,31 @@ if dein#tap('caw.vim')
 endif
 " }}}3
 
+" Comment {{{3
+if dein#tap('Comment.nvim')
+lua << EOF
+require('Comment').setup(
+  {
+    mappings = {
+      basic = true,
+    },
+    toggler = {
+      line = '<Leader>cc',
+      block = '<Leader>bc',
+    },
+    opleader = {
+      line = '<Leader>c',
+      block = '<Leader>b',
+    },
+    pre_hook = function(ctx)
+      return require('ts_context_commentstring.internal').calculate_commentstring()
+    end,
+  }
+)
+EOF
+endif
+" }}}3
+
 " easy-align {{{3
 if dein#tap('vim-easy-align')
   xmap ga <Plug>(EasyAlign)
