@@ -2676,6 +2676,12 @@ if dein#tap('vim-eft')
 endif
 " }}}3
 
+" exchange {{{3
+if dein#tap('vim-exchange')
+  xmap <silent> X <Plug>(Exchange)
+endif
+" }}}3
+
 " expand-region {{{3
 if dein#tap('vim-expand-region')
   let g:expand_region_text_objects = {
