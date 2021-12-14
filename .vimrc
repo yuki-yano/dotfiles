@@ -2299,6 +2299,10 @@ endif
 
 " swap {{{3
 if dein#tap('vim-swap')
+  nmap g< <Plug>(swap-prev)
+  nmap g> <Plug>(swap-next)
+  nmap gs <Plug>(swap-interactive)
+
   omap i, <Plug>(swap-textobject-i)
   xmap i, <Plug>(swap-textobject-i)
   omap a, <Plug>(swap-textobject-a)
