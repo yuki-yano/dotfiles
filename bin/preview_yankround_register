@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-gsed -n "$1,$1p" ~/.cache/vim/yankround/history | gcut -f 2 | gsed -e "s/\x0/\n/g"
