@@ -1840,9 +1840,9 @@ endif
 if dein#tap('fzf-preview.vim')
   " let g:fzf_preview_rpc_debug = 1
   " let g:fzf_preview_direct_window_option = 'botright 20new'
-  let g:fzf_preview_filelist_command    = 'fd --type file --hidden --exclude .git'
+  let g:fzf_preview_filelist_command    = 'fd --type file --hidden --exclude .git --strip-cwd-prefix'
   let g:fzf_preview_git_files_command   = 'git ls-files --exclude-standard | while read line; do if [[ ! -L $line ]] && [[ -f $line ]]; then echo $line; fi; done'
-  let g:fzf_preview_grep_cmd            = 'rg --line-number --no-heading --color=never --sort=path'
+  let g:fzf_preview_grep_cmd            = 'rg --line-number --no-heading --color=never --sort=path --with-filename'
   let g:fzf_preview_mru_limit           = 5000
   let g:fzf_preview_use_dev_icons       = 1
   let g:fzf_preview_default_fzf_options = {
@@ -1874,6 +1874,7 @@ if dein#tap('fzf-preview.vim')
   nnoremap <silent> <fzf-p><C-o> :<C-u>FzfPreviewJumpsRpc --experimental-fast<CR>
   nnoremap <silent> <fzf-p>g;    :<C-u>FzfPreviewChangesRpc<CR>
   nnoremap <silent> <fzf-p>/     :<C-u>FzfPreviewLinesRpc --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
+  nnoremap <silent> <fzf-p>/     :<C-u>FzfPreviewProjectGrepRpc --experimental-fast --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort . <C-r>=expand('%')<CR><CR>
   nnoremap <silent> <fzf-p>*     :<C-u>FzfPreviewLinesRpc --add-fzf-arg=--exact --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
   xnoremap <silent> <fzf-p>*     "sy:FzfPreviewLinesRpc --add-fzf-arg=--no-sort --add-fzf-arg=--exact --add-fzf-arg=--query="<C-r>=substitute(@s, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
   nnoremap <silent> <fzf-p>n     :<C-u>FzfPreviewLinesRpc --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=substitute(@/, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
@@ -1894,8 +1895,10 @@ if dein#tap('fzf-preview.vim')
   nnoremap <silent> <dev>q  :<C-u>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
   nnoremap <silent> <dev>Q  :<C-u>CocCommand fzf-preview.CocDiagnostics<CR>
   nnoremap <silent> <dev>rf :<C-u>CocCommand fzf-preview.CocReferences<CR>
-  nnoremap <silent> <dev>t  :<C-u>CocCommand fzf-preview.CocTypeDefinitions<CR>
+  nnoremap <silent> <dev>d  :<C-u>CocCommand fzf-preview.CocDefinition<CR>
+  nnoremap <silent> <dev>t  :<C-u>CocCommand fzf-preview.CocTypeDefinition<CR>
   nnoremap <silent> <dev>i  :<C-u>CocCommand fzf-preview.CocImplementations<CR>
+  nnoremap <silent> <dev>o  :<C-u>CocCommand fzf-preview.CocOutline --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
 
   AutoCmd User fzf_preview#rpc#initialized call <SID>fzf_preview_settings()
 
@@ -1966,6 +1969,10 @@ if dein#tap('fzf-preview.vim')
     let g:fzf_preview_custom_processes['open-file'] = fzf_preview#remote#process#get_default_processes('open-file', 'rpc')
     let g:fzf_preview_custom_processes['open-file']['ctrl-s'] = g:fzf_preview_custom_processes['open-file']['ctrl-x']
     call remove(g:fzf_preview_custom_processes['open-file'], 'ctrl-x')
+
+    let g:fzf_preview_custom_processes['open-file-with-tag-stack'] = fzf_preview#remote#process#get_default_processes('open-file-with-tag-stack', 'rpc')
+    let g:fzf_preview_custom_processes['open-file-with-tag-stack']['ctrl-s'] = g:fzf_preview_custom_processes['open-file']['ctrl-x']
+    call remove(g:fzf_preview_custom_processes['open-file-with-tag-stack'], 'ctrl-x')
 
     let g:fzf_preview_custom_processes['open-buffer'] = fzf_preview#remote#process#get_default_processes('open-buffer', 'rpc')
     let g:fzf_preview_custom_processes['open-buffer']['ctrl-s'] = g:fzf_preview_custom_processes['open-buffer']['ctrl-x']
