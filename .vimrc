@@ -3387,6 +3387,36 @@ if dein#tap('indentLine')
 endif
 " }}}3
 
+" layout {{{3
+if dein#tap('vim-layout')
+  function! s:project_layout_file() abort
+    return substitute(trim(system('git branch --show-current')), '/', '_', 'g') . '_layout.json'
+  endfunction
+
+  function! s:save_project_layout() abort
+    if isdirectory(getcwd() . '/.git')
+      call layout#save(getcwd() . '/.git/' . <SID>project_layout_file())
+    else
+      echoerr 'Not git project'
+    endif
+  endfunction
+
+  function! s:load_project_layout() abort
+    if filereadable(getcwd() . '/.git/' . <SID>project_layout_file())
+      call layout#load(getcwd() . '/.git/' . <SID>project_layout_file())
+    else
+      echoerr 'Undefined layout file'
+    endif
+  endfunction
+
+  command! SaveProjectLayout call <SID>save_project_layout()
+  command! LoadProjectLayout call <SID>load_project_layout()
+
+  BulkAlterCommand savel SaveProjectLayout
+  BulkAlterCommand loadl LoadProjectLayout
+endif
+" }}}3
+
 " lightline {{{3
 if dein#tap('lightline.vim')
   let g:lightline = {
