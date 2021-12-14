@@ -552,7 +552,7 @@ export FZF_COMPLETION_TRIGGER=';'
 
 # Profile {{{
 
-if (which zprof > /dev/null) ;then
+if whence zprof > /dev/null ;then
   zprof | less
 fi
 
@@ -573,8 +573,6 @@ fi
 # }}}
 
 ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(accept-line)
-
-export ENABLE_WAKATIME=1
 
 # Load local {{{
 
