@@ -2005,7 +2005,7 @@ endif
 
 " telescope {{{3
 if dein#tap('telescope.nvim')
-  nnoremap <silent> (ctrlp) :<C-u>lua require('telescope.builtin').git_files{}<CR>
+  " nnoremap <silent> (ctrlp) :<C-u>lua require('telescope.builtin').git_files{}<CR>
 endif
 " }}}3
 
@@ -2975,7 +2975,7 @@ endif
 
 " replacer {{{3
 if dein#tap('replacer.nvim')
-  BulkAlterCommand repla[cer] lua<Space>require(\"replacer\").run()
+  BulkAlterCommand repla[cer] lua<Space>require('replacr').run()
 
   command! Replace lua require("replacer").run()
 endif
