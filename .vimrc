@@ -2779,7 +2779,7 @@ endif
 
 " lexima {{{3
 if dein#tap('lexima.vim')
-  let g:lexima_map_escape = ''
+  " let g:lexima_map_escape = ''
   let g:lexima_enable_endwise_rules = 0
 
   function! SetupLexima() abort
