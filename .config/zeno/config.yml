@@ -28,10 +28,10 @@ snippets:
     snippet: git diff {{branch}} -- {{file}}
   - name: git diff 2 branch
     keyword: gd
-    snippet: git diff {{branch1}} {{brahcn2}}
+    snippet: git diff {{branch1}} {{branch2}}
   - name: git diff 2 branch file
     keyword: gd
-    snippet: git diff {{branch1}} {{brahcn2}} -- {{file}}
+    snippet: git diff {{branch1}} {{branch2}} -- {{file}}
   - name: git diff cached
     keyword: gdc
     snippet: git diff --cached
@@ -86,13 +86,8 @@ snippets:
   - name: git rebase squash auto
     keyword: squash
     snippet: GIT_EDITOR=cat git rebase --interactive --autosquash {{branch}}
-  - name: git main branch
-    snippet: basename "$(git symbolic-ref --short refs/remotes/origin/HEAD)"
   - name: git rebase conflict resolution
     snippet: git range-diff @{u} @{1} @
-  - name: git tower
-    keyword: gitt
-    snippet: gittower .
 
   - name: tms
     keyword: t
@@ -104,22 +99,41 @@ snippets:
   - name: "null"
     keyword: "null"
     snippet: ">/dev/null 2>&1"
-    enableMiddleOfLine: true
+    context:
+      lbuffer: '.+\s+'
   - name: stdout to null
     keyword: null1
     snippet: ">/dev/null"
-    enableMiddleOfLine: true
+    context:
+      lbuffer: '.+\s+'
   - name: stderr to null
     keyword: null2
     snippet: "2>/dev/null"
-    enableMiddleOfLine: true
+    context:
+      lbuffer: '.+\s+'
 
+  - name: pipe vim
+    keyword: V
+    snippet: "| vi"
+    context:
+      lbuffer: '.+\s'
   - name: pipe xargs
     keyword: pipe_xargs
     snippet: "| xargs -I{} {{command}} {}"
+    context:
+      lbuffer: '.+\s'
   - name: pipe awk
     keyword: pipe_awk
     snippet: "| awk '{ print ${{column}} }'"
+    context:
+      lbuffer: '.+\s'
+
+  - name: branch
+    keyword: OB
+    snippet: zsh -c "echo origin/$(git symbolic-ref --short HEAD)"
+    context:
+      lbuffer: '^git\s+'
+    evaluate: true
 
   - name: disable desktop
     keyword: disable_desktop
