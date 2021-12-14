@@ -586,11 +586,12 @@ endif
 
 "" Appearance
 set belloff=all
-set cmdheight=2
+set cmdheight=1
 set concealcursor=nc
 set conceallevel=2
 set diffopt=internal,filler,algorithm:histogram,indent-heuristic,vertical
 set display=lastline
+set fillchars=diff:/
 set helplang=ja
 set hidden
 set hlsearch
@@ -684,7 +685,7 @@ if $TERM ==# 'screen'
 endif
 
 "" Session
-set sessionoptions=buffers,tabpages,winsize
+set sessionoptions=tabpages
 
 "" Automatically Disable Paste Mode
 AutoCmd InsertLeave * setlocal nopaste
@@ -718,7 +719,7 @@ let g:loaded_netrwFileHandlers = 1
 " Command & Function {{{1
 
 " Move cursor last position {{{2
-AutoCmd BufRead * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g`\"" | endif
+" AutoCmd BufRead * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g`\"" | endif
 " }}}2
 
 " highlight cursorline and cursorcolumn with timer {{{2
