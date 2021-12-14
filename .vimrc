@@ -2203,6 +2203,8 @@ if dein#tap('fern.vim')
   function! s:fern_settings() abort
     nnoremap <silent> <buffer> <Plug>(fern-page-down-wrapper) <C-d>
     nnoremap <silent> <buffer> <Plug>(fern-page-up-wrapper)   <C-u>
+    nmap <silent> <buffer> <expr> <Plug>(fern-page-down-or-scroll-down-preview)   fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:down:half)", "\<Plug>(fern-page-down-wrapper)")
+    nmap <silent> <buffer> <expr> <Plug>(fern-page-down-or-scroll-up-preview)     fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:up:half)", "\<Plug>(fern-page-up-wrapper)")
     nnoremap <silent> <buffer> <Plug>(fern-search-prev)       N
 
     nmap <silent> <buffer> <expr> <Plug>(fern-expand-or-collapse)                 fern#smart#leaf("\<Plug>(fern-action-collapse)", "\<Plug>(fern-action-expand)", "\<Plug>(fern-action-collapse)")
