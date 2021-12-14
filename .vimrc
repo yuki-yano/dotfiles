@@ -2731,8 +2731,10 @@ if dein#tap('vim-grepper')
   BulkAlterCommand gr[ep] Grepper
 
   let g:grepper = {
-  \ 'tools': ['rg', 'git', 'ag'],
+  \ 'tools': ['rg', 'git'],
   \ }
+
+  nnoremap <silent> <Leader>g :<C-u>Grepper<CR>
 endif
 " }}}3
 
