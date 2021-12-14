@@ -2332,7 +2332,7 @@ endif
 " }}}3
 
 " textobj-cursorcontext {{{3
-if dein#tap('vim-textobj-cursorcontext')
+if dein#tap('vim-textobj-cursor-context')
   let g:textobj_cursorcontext_no_default_key_mappings = 1
 
   omap ic <Plug>(textobj-cursorcontext-i)
