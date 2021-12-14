@@ -4095,13 +4095,29 @@ endif
 " test {{{3
 if dein#tap('vim-test') &&
    \ dein#tap('vim-ultest')
-  function! SetUpUltest() abort
-    BulkAlterCommand te[st]     Ultest
-    BulkAlterCommand tn[ear]    UltestNearest
-    BulkAlterCommand ts[ummary] UltestSummary
+  BulkAlterCommand te[st]     Ultest
+  BulkAlterCommand tn[ear]    UltestNearest
+  BulkAlterCommand ts[ummary] UltestSummary
 
-    let g:ultest_use_pty = 1
+  let g:ultest_use_pty = 1
+endif
+" }}}3
+
+" toggleterm {{{3
+if dein#tap('toggleterm.nvim')
+  lua require('toggleterm').setup{}
+
+  nnoremap <silent> <C-s><C-s> :<C-u>ToggleTerm direction=float<CR>
+  nnoremap <silent> <C-s>s     :<C-u>ToggleTerm direction=horizontal size=<C-r>=float2nr(&lines * 0.4)<CR><CR>
+  nnoremap <silent> <C-s>v     :<C-u>ToggleTerm direction=vertical size=<C-r>=float2nr(&columns * 0.3)<CR><CR>
+  nnoremap <silent> <C-s>p     :<C-u>ToggleTerm direction=float<CR>
+
+
+  function! s:toggleterm_settings() abort
+    tnoremap <silent> <nowait> <buffer> <C-s> <C-\><C-n>:close<CR>
   endfunction
+
+  AutoCmd FileType toggleterm call <SID>toggleterm_settings()
 endif
 " }}}3
 
