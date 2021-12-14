@@ -953,19 +953,19 @@ function! s:review_start() abort
   call lightline#enable()
 
   let g:fzf_preview_command_bak = g:fzf_preview_command
-  let g:fzf_preview_command = 'bat --color=always --style=plain --theme="papercolor-light" ''{-1}'''
+  let g:fzf_preview_command = 'bat --color=always --style=plain --theme="Monokai Extended Light" ''{-1}'''
 
   let $FZF_PREVIEW_PREVIEW_BAT_THEME_BAK = $FZF_PREVIEW_PREVIEW_BAT_THEME
-  let $FZF_PREVIEW_PREVIEW_BAT_THEME = 'papercolor-light'
+  let $FZF_PREVIEW_PREVIEW_BAT_THEME = 'Monokai Extended Light'
   let $FZF_DEFAULT_OPTS_BAK = $FZF_DEFAULT_OPTS
   " Edge
-  let $FZF_DEFAULT_OPTS= '--color=fg:#4b505b,bg:#fafafa,hl:#5079be,fg+:#4b505b,bg+:#fafafa,hl+:#3a8b84,info:#88909f,prompt:#d05858,pointer:#b05ccc,marker:#608e32,spinner:#d05858,header:#3a8b84'
+  let $FZF_DEFAULT_OPTS = '--color=fg:#4b505b,bg:#fafafa,hl:#5079be,fg+:#4b505b,bg+:#fafafa,hl+:#3a8b84,info:#88909f,prompt:#d05858,pointer:#b05ccc,marker:#608e32,spinner:#d05858,header:#3a8b84'
   " PaperColor
   " let $FZF_DEFAULT_OPTS= '--color=fg:#4d4d4c,bg:#eeeeee,hl:#d7005f,fg+:#4d4d4c,bg+:#e8e8e8,hl+:#d7005f,info:#4271ae,prompt:#8959a8,pointer:#d7005f,marker:#4271ae,spinner:#4271ae,header:#4271ae'
   " Solarized
   " let $FZF_DEFAULT_OPTS = '--color=fg:240,bg:230,hl:33,fg+:241,bg+:221,hl+:33,info:33,prompt:33,pointer:166,marker:166,spinner:33'
   let $BAT_THEME_BAK = $BAT_THEME
-  let $BAT_THEME = 'papercolor-light'
+  let $BAT_THEME = 'Monokai Extended Light'
 
   if dein#tap('smartnumber.vim')
     SNumbersTurnOffRelative
@@ -979,8 +979,6 @@ function! s:review_start() abort
   if dein#tap('neoscroll.nvim')
     lua require('neoscroll').setup({ mappings = {"<C-u>", "<C-d>"}})
   endif
-
-  set listchars-=eol:$
 endfunction
 
 command! ReviewStart call <SID>review_start()
@@ -1012,8 +1010,6 @@ function! s:review_end() abort
     nunmap <C-d>
     nunmap <C-u>
   endif
-
-  set listchars+=eol:$
 endfunction
 
 command! ReviewEnd call <SID>review_end()
