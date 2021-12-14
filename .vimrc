@@ -3263,6 +3263,12 @@ if dein#tap('vim-brightest')
 endif
 " }}}3
 
+" bufresize {{{3
+if dein#tap('bufresize.nvim')
+  lua require("bufresize").setup()
+endif
+" }}}3
+
 " choosewin {{{3
 if dein#tap('vim-choosewin')
   let s:choosewin_nord = ['#81A1C1', '#4C566A']
