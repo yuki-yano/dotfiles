@@ -3201,10 +3201,9 @@ endif
 
 " ultisnips {{{3
 if dein#tap('ultisnips')
-  let g:UltiSnipsExpandTrigger       = "<C-f>"
-  let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
-  let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
-  let g:UltiSnipsSnippetDirectories  = ["~/.vim/ultisnips"]
+  let g:UltiSnipsSnippetDirectories  = ['~/.vim/ultisnips']
+
+  AutoCmd BufNewFile,BufRead *.snippets setf snippets
 endif
 " }}}3
 
