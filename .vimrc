@@ -1176,17 +1176,49 @@ BulkAlterCommand dein Dein
 
 " denops {{{2
 
-" denops-skkeleton {{{3
-if dein#tap('denops-skkeleton.vim')
-  imap <C-j> <Plug>(skkeleton-enable)
-  cmap <C-j> <Plug>(skkeleton-enable)
+" ddc {{{3
+if dein#tap('ddc.vim')
+  function! SetupDdc() abort
+    call ddc#enable()
+  endfunction
 
-  call skkeleton#config({
-  \ 'globalJisyo': expand('~/.vim/skk/SKK-JISYO.L')
-  \ })
+  function DdcSettings() abort
+    call ddc#custom#patch_global('autoCompleteEvents', ['InsertEnter', 'TextChangedI', 'TextChangedP'])
+    call ddc#custom#patch_global('sources', ['skkeleton'])
+    call ddc#custom#patch_global('sourceOptions', {
+    \ 'skkeleton': {
+    \   'mark': 'skkeleton',
+    \   'matchers': ['skkeleton'],
+    \   'sorterts': [],
+    \ },
+    \ })
+  endfunction
 
-  AutoCmd User skkeleton-enable-pre let b:coc_suggest_disable = v:true
-  AutoCmd User skkeleton-disable-pre let b:coc_suggest_disable = v:false
+  function! EnableDdc() abort
+    let b:coc_suggest_disable = v:true
+    call DdcSettings()
+  endfunction
+
+  function! DisableDdc() abort
+    let b:coc_suggest_disable = v:false
+    call ddc#custom#patch_global('sourceOptions', {})
+  endfunction
+endif
+" }}}3
+
+" skkeleton {{{3
+if dein#tap('skkeleton')
+  imap <C-j> <Plug>(skkeleton-toggle)
+  cmap <C-j> <Plug>(skkeleton-toggle)
+
+  function! SetupSkkeleton() abort
+    call skkeleton#config({
+    \ 'globalJisyo': expand('~/.vim/skk/SKK-JISYO.L')
+    \ })
+  endfunction
+
+  AutoCmd User skkeleton-enable-pre call EnableDdc()
+  AutoCmd User skkeleton-disable-pre call DisableDdc()
 endif
 " }}}3
 
