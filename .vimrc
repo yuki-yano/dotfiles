@@ -4141,12 +4141,35 @@ endif
 " wilder {{{3
 if dein#tap('wilder.nvim')
   function! SetUpWilder() abort
-    let wilder_cmd_line_renderer = wilder#popupmenu_renderer({
+    call wilder#set_option('pipeline', [
+    \ wilder#branch(
+    \   wilder#python_file_finder_pipeline({
+    \     'file_command': {_, arg -> stridx(arg, '.') != -1 ? ['fd', '-tf', '-H'] : ['fd', '-tf']},
+    \     'dir_command': ['fd', '-td'],
+    \   }),
+    \   wilder#cmdline_pipeline({'fuzzy': 1}),
+    \   [
+    \     wilder#check({_, x -> empty(x)}),
+    \     wilder#history(),
+    \   ],
+    \   wilder#python_search_pipeline({
+    \     'pattern': wilder#python_fuzzy_pattern({
+    \       'start_at_boundary': 0,
+    \     }),
+    \   }),
+    \   wilder#vim_search_pipeline()
+    \ ),
+    \ ])
+
+    let wilder_cmd_line_renderer = wilder#popupmenu_renderer(wilder#popupmenu_border_theme({
     \ 'winblend': 20,
     \ 'highlighter': wilder#basic_highlighter(),
-    \ 'left': [wilder#popupmenu_devicons(), wilder#popupmenu_buffer_flags({'flags': ' '})],
-    \ 'right': [' ', wilder#popupmenu_scrollbar()],
-    \ })
+    \ 'highlights': {
+    \   'accent': wilder#make_hl('WilderAccent', 'Pmenu', [{}, {}, {'foreground': '#e27878', 'bold': v:true, 'underline': v:true}]),
+    \   'selected_accent': wilder#make_hl('WilderSelectedAccent', 'PmenuSel', [{}, {}, {'foreground': '#e27878', 'bold': v:true, 'underline': v:true}]),
+    \ },
+    \ 'left': [wilder#popupmenu_devicons({'get_hl': wilder#devicons_get_hl_from_glyph_palette_vim()}), wilder#popupmenu_buffer_flags({'flags': ' '})],
+    \ }))
 
     let wilder_search_renderer = wilder#wildmenu_renderer({
     \ 'highlighter': wilder#basic_highlighter(),
@@ -4166,7 +4189,6 @@ if dein#tap('wilder.nvim')
     \ ':': wilder_cmd_line_renderer,
     \ '/': wilder_search_renderer,
     \ '?': wilder_search_renderer,
-    \ 'substitute': wilder_search_renderer,
     \ })
     \ )
   endfunction
