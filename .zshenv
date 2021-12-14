@@ -28,6 +28,9 @@ fpath=(~/.zsh/completions(N-/) $fpath)
 # library path
 export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/
 
+# homebrew
+alias brew="PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin brew"
+
 # zinit
 ZPLG_HOME=$HOME/.zinit
 ZPFX=$ZPLG_HOME/polaris
