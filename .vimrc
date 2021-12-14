@@ -29,7 +29,20 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " denops {{{3
   call dein#add('vim-denops/denops.vim')
 
-  " call dein#add('kuuote/denops-skkeleton.vim')
+  " call dein#add('Shougo/ddc.vim', {'on_event': ['InsertEnter'], 'hook_post_source': 'call SetupDdc()'})
+  " if isdirectory(expand('~/workspace/coc-ddc'))
+  "   call dein#add('~/workspace/coc-ddc')
+  " endif
+  " call dein#add('Shougo/neco-vim')
+  " call dein#add('Shougo/ddc-cmdline-history')
+  " call dein#add('tani/ddc-fuzzy')
+  " call dein#add('Shougo/ddc-matcher_head')
+  " call dein#add('Shougo/ddc-sorter_rank')
+  " call dein#add('LumaKernel/ddc-file')
+  " call dein#add('Shougo/pum.vim')
+  " call dein#add('matsui54/denops-popup-preview.vim')
+  " call dein#add('vim-skk/skkeleton', {'on_map': {'ic': '<Plug>'}, 'hook_post_source': 'call SetupSkkeleton()'})
+
   call dein#add('lambdalisue/guise.vim')
 
   " if isdirectory(expand('~/repos/github.com/yuki-yano/dps-indent-line.vim'))
@@ -43,6 +56,14 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " IDE {{{3
   call dein#add('neoclide/coc.nvim', {'rev': 'master', 'build': 'yarn install --frozen-lockfile'})
+  if isdirectory(expand('~/workspace/coc-rg'))
+    call dein#add('~/workspace/coc-rg')
+  endif
+  if isdirectory(expand('~/repos/github.com/fannheyward/coc-deno'))
+    call dein#add('~/repos/github.com/fannheyward/coc-deno')
+  endif
+
+  " call dein#add('github/copilot.vim')
   " call dein#add('neoclide/coc.nvim', {'rev': 'release'})
 
   " if isdirectory(expand('~/repos/github.com/yuki-yano/coc.nvim'))
@@ -51,59 +72,40 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " call dein#add('tsuyoshicho/vim-efm-langserver-settings')
 
-  " call dein#add('prabirshrestha/vim-lsp')
-  " call dein#add('mattn/vim-lsp-settings')
-  " call dein#add('prabirshrestha/asyncomplete.vim')
-  " call dein#add('prabirshrestha/asyncomplete-lsp.vim')
-  " call dein#add('kitagry/asyncomplete-tabnine.vim',    {'build': './install.sh'  })
   " call dein#add('Shougo/deoplete.nvim')
-  " call dein#add('lighttiger2505/deoplete-vim-lsp')
-  " call dein#add('tbodt/deoplete-tabnine',              {'build': 'bash install.sh'})
   " call dein#add('hrsh7th/vim-vsnip')
   " call dein#add('hrsh7th/vim-vsnip-integ')
+  " call dein#add('kitagry/asyncomplete-tabnine.vim', {'build': './install.sh'})
+  " call dein#add('lighttiger2505/deoplete-vim-lsp')
+  " call dein#add('mattn/vim-lsp-settings')
+  " call dein#add('prabirshrestha/asyncomplete-lsp.vim')
+  " call dein#add('prabirshrestha/asyncomplete.vim')
+  " call dein#add('prabirshrestha/vim-lsp')
+  " call dein#add('tbodt/deoplete-tabnine', {'build': 'bash install.sh'})
+  " call dein#add('wellle/tmux-complete.vim')
   " }}}3
 
   " Language {{{3
   " call dein#add('HerringtonDarkholme/yats.vim')
+  " call dein#add('chr4/nginx.vim')
   " call dein#add('hail2u/vim-css3-syntax')
+  " call dein#add('jparise/vim-graphql', {'on_ft': ['graphql']})
+  " call dein#add('leafgarland/typescript-vim')
   " call dein#add('mechatroner/rainbow_csv')
   " call dein#add('othree/yajs.vim')
   " call dein#add('peitalin/vim-jsx-typescript')
   " call dein#add('posva/vim-vue')
+  " call dein#add('rhysd/vim-fixjson', {'on_ft': ['json']})
   " call dein#add('styled-components/vim-styled-components')
   " call dein#add('tpope/vim-rails')
   " call dein#add('yardnsm/vim-import-cost', {'build': 'npm install'})
-  " call dein#add('chr4/nginx.vim')
-  " call dein#add('heavenshell/vim-jsdoc',      {'build': 'make install'})
-  " call dein#add('jparise/vim-graphql')
-  " call dein#add('leafgarland/typescript-vim')
   call dein#add('elzr/vim-json', {'on_ft': ['json']})
-  call dein#add('pantharshit00/vim-prisma', {'on_ft': ['prisma']})
+  call dein#add('heavenshell/vim-jsdoc', {'on_ft': ['typescript', 'typescriptreact', 'javascript'], 'build': 'make install'})
+  call dein#add('pantharshit00/vim-prisma', {'on_ft': ['prisma'], 'merge_ftdetect': v:true})
   call dein#add('plasticboy/vim-markdown', {'on_ft': ['markdown']})
-  call dein#add('rhysd/vim-fixjson', {'on_ft': ['json']})
 
   if has('nvim')
-    let s:treesitter_ft = [
-    \ 'typescript',
-    \ 'typescriptreact',
-    \ 'graphql',
-    \ 'rust',
-    \ 'ruby',
-    \ 'python',
-    \ 'json',
-    \ 'yaml',
-    \ 'dockerfile',
-    \ 'vim',
-    \ 'lua',
-    \ 'html',
-    \ 'css',
-    \ 'comment',
-    \ ]
-    call dein#add('nvim-treesitter/nvim-treesitter', {
-    \ 'on_ft': s:treesitter_ft,
-    \ 'depends': ['nvim-ts-context-commentstring', 'nvim-ts-rainbow'],
-    \ 'hook_post_source': 'call SetupTreesitter()'
-    \ })
+    call dein#add('nvim-treesitter/nvim-treesitter')
 
     " call dein#add('David-Kunz/treesitter-unit')
     " call dein#add('code-biscuits/nvim-biscuits')
@@ -112,8 +114,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
     " call dein#add('nvim-treesitter/nvim-treesitter-refactor')
     " call dein#add('nvim-treesitter/nvim-treesitter-textobjects')
     " call dein#add('romgrk/nvim-treesitter-context')
-    call dein#add('JoosepAlviste/nvim-ts-context-commentstring', {'lazy': 1})
-    call dein#add('p00f/nvim-ts-rainbow', {'lazy': 1})
+    call dein#add('JoosepAlviste/nvim-ts-context-commentstring')
+    call dein#add('p00f/nvim-ts-rainbow')
   endif
   " }}}3
 
@@ -122,8 +124,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('hotwatermorning/auto-git-diff')
   " call dein#add('rhysd/conflict-marker.vim')
   " call dein#add('tpope/vim-fugitive')
+  " call dein#add('wting/gitsessions.vim', {'on_cmd': ['GitSessionSave', 'GitSessionLoad']})
   call dein#add('lambdalisue/gina.vim')
-  call dein#add('wting/gitsessions.vim', {'on_cmd': ['GitSessionSave', 'GitSessionLoad']})
 
   if has('nvim')
     " call dein#add('APZelos/blamer.nvim')
@@ -141,7 +143,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('antoinemadec/coc-fzf', {'rev': 'release'})
 
   if isdirectory(expand('~/repos/github.com/yuki-yano/fzf-preview.vim'))
-    call dein#add('~/repos/github.com/yuki-yano/fzf-preview.vim', {'on_event': ['VimEnter']})
+    call dein#add('~/repos/github.com/yuki-yano/fzf-preview.vim')
   endif
 
   " if isdirectory(expand('~/workspace/coc-ultisnips-select'))
@@ -157,13 +159,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " filer {{{3
-  call dein#add('lambdalisue/fern.vim', {'on_cmd': ['Fern'], 'depends': ['fern-git-status.vim', 'fern-renderer-nerdfont.vim', 'glyph-palette.vim', 'nerdfont.vim', 'fern-preview.vim']})
+  call dein#add('lambdalisue/fern.vim', {'on_cmd': ['Fern'], 'depends': ['fern-git-status.vim', 'fern-renderer-nerdfont.vim', 'nerdfont.vim', 'fern-preview.vim']})
 
   " call dein#add('LumaKernel/fern-mapping-fzf.vim')
   " call dein#add('LumaKernel/fern-mapping-reload-all.vim')
   call dein#add('lambdalisue/fern-git-status.vim', {'lazy': 1})
   call dein#add('lambdalisue/fern-renderer-nerdfont.vim', {'lazy': 1})
-  call dein#add('lambdalisue/glyph-palette.vim', {'lazy': 1})
   call dein#add('lambdalisue/nerdfont.vim', {'lazy': 1})
 
   if isdirectory(expand('~/repos/github.com/yuki-yano/fern-preview.vim'))
@@ -179,9 +180,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " textobj & operator {{{3
-  " TODO: lazy load
-  call dein#add('machakann/vim-sandwich') " ib, ab, is, as
-  call dein#add('machakann/vim-swap') " g< g> i, a,
+  call dein#add('machakann/vim-sandwich', {'depends': ['vim-textobj-entire', 'vim-textobj-line', 'vim-textobj-functioncall', 'vim-textobj-url', 'vim-textobj-cursor-context']}) " ib, ab, is, as
+  call dein#add('machakann/vim-swap') " g< g> gs i, a,
 
   call dein#add('kana/vim-textobj-user')
   call dein#add('kana/vim-operator-user')
@@ -193,7 +193,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('thinca/vim-textobj-between') " i{char} a{char}
   call dein#add('kana/vim-textobj-entire', {'on_map': {'ox': '<Plug>(textobj-entire'}}) " ie ae
   call dein#add('kana/vim-textobj-line', {'on_map': {'ox': '<Plug>(textobj-line'}}) " al il
-  call dein#add('machakann/vim-textobj-functioncall', {'on_map': {'ox': '<Plug>(textobj-functioncall'}}) " if af
+  call dein#add('machakann/vim-textobj-functioncall', {'on_map': {'ox': '<Plug>(textobj-functioncall'}}) " if af ig ag
   call dein#add('mattn/vim-textobj-url', {'on_map': {'ox': '<Plug>(textobj-url'}}) " iu au
   call dein#add('yuki-yano/vim-textobj-cursor-context', {'on_map': {'ox': '<Plug>(textobj-cursorcontext'}}) " ic ac
 
@@ -211,8 +211,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('haya14busa/vim-metarepeat')
   " call dein#add('inkarkat/vim-EnhancedJumps')
   " call dein#add('lambdalisue/reword.vim')
-  " call dein#add('mg979/vim-visual-multi',        {'rev': 'test'})
-  " call dein#add('mhinz/vim-grepper')
+  " call dein#add('mg979/vim-visual-multi', {'rev': 'test'})
   " call dein#add('mtth/scratch.vim')
   " call dein#add('osyo-manga/vim-trip')
   " call dein#add('rhysd/accelerated-jk')
@@ -225,25 +224,27 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('Bakudankun/BackAndForward.vim', {'on_map': ['<Plug>(backandforward-']})
   call dein#add('LeafCage/yankround.vim')
   call dein#add('MattesGroeger/vim-bookmarks')
-  call dein#add('SirVer/ultisnips', {'on_event': ['InsertEnter']})
-  call dein#add('cohama/lexima.vim', {'on_event': ['InsertEnter'], 'hook_post_source': 'call SetupLexima()'})
+  call dein#add('SirVer/ultisnips', {'on_ft': ['snippets'], 'on_event': ['InsertEnter']})
+  call dein#add('cohama/lexima.vim', {'rev': 'dev', 'on_event': ['InsertEnter'], 'hook_post_source': 'call SetupLexima()'})
   call dein#add('haya14busa/vim-asterisk', {'on_map': ['<Plug>']})
   call dein#add('haya14busa/vim-edgemotion', {'on_map': ['<Plug>']})
   call dein#add('hrsh7th/vim-eft', {'on_map': ['<Plug>']})
   call dein#add('junegunn/vim-easy-align', {'on_map': ['<Plug>(EasyAlign)']})
   call dein#add('mattn/vim-maketable', {'on_cmd': ['MakeTable']})
+  call dein#add('mhinz/vim-grepper', {'on_cmd': ['Grepper']})
   call dein#add('osyo-manga/vim-anzu', {'on_map': ['<Plug>']})
   call dein#add('osyo-manga/vim-jplus', {'on_map': ['<Plug>']})
   call dein#add('t9md/vim-textmanip', {'on_map': ['<Plug>']})
-  call dein#add('terryma/vim-expand-region', {'on_map': ['<Plug>']})
+  call dein#add('terryma/vim-expand-region', {'on_map': ['<Plug>(expand_region_']})
   call dein#add('thinca/vim-qfreplace', {'on_cmd': ['Qfreplace']})
   call dein#add('tommcdo/vim-exchange', {'on_map': ['<Plug>(Exchange']})
   call dein#add('tpope/vim-repeat')
-  call dein#add('tyru/caw.vim', {'rev': '703db47', 'on_map': ['<Plug>']})
+  call dein#add('tyru/caw.vim')
 
   if has('nvim')
     " call dein#add('b3nj5m1n/kommentary')
     " call dein#add('gabrielpoca/replacer.nvim')
+    " call dein#add('numToStr/Comment.nvim')
     " call dein#add('phaazon/hop.nvim')
     " call dein#add('rmagatti/auto-session')
     " call dein#add('windwp/nvim-spectre')
@@ -258,30 +259,36 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Appearance {{{3
-  " call dein#add('RRethy/vim-hexokinase',          {'build': 'make hexokinase'})
+  " call dein#add('RRethy/vim-hexokinase', {'build': 'make hexokinase'})
   " call dein#add('Yggdroot/indentLine')
   " call dein#add('andymass/vim-matchup')
   " call dein#add('luochen1990/rainbow')
   " call dein#add('mhinz/vim-startify')
+  " call dein#add('miyakogi/seiya.vim')
   " call dein#add('ntpeters/vim-better-whitespace')
+  " call dein#add('obcat/vim-highlightedput', {'on_map': ['<Plug>']})
   " call dein#add('ronakg/quickr-preview.vim')
   " call dein#add('wellle/context.vim')
   " call dein#add('yuttie/comfortable-motion.vim')
   call dein#add('itchyny/lightline.vim')
+  call dein#add('lambdalisue/glyph-palette.vim')
   call dein#add('lambdalisue/readablefold.vim')
-  call dein#add('machakann/vim-highlightedundo', {'on_map': ['<Plug>']})
+  call dein#add('machakann/vim-highlightedundo')
   call dein#add('machakann/vim-highlightedyank', {'on_event': ['TextYankPost']})
   call dein#add('mopp/smartnumber.vim')
+  call dein#add('rbtnn/vim-layout')
   call dein#add('ryanoasis/vim-devicons')
 
   if has('nvim')
     " call dein#add('Xuyuanp/scrollbar.nvim')
-    " call dein#add('folke/todo-comments.nvim')
+    " call dein#add('dstein64/nvim-scrollview', {'on_event': ['WinScrolled']})
     " call dein#add('glepnir/indent-guides.nvim')
     " call dein#add('karb94/neoscroll.nvim')
     " call dein#add('vuki656/package-info.nvim')
-    call dein#add('dstein64/nvim-scrollview', {'on_event': ['WinScrolled']})
+    " call dein#add('windwp/floatline.nvim')
+    call dein#add('folke/todo-comments.nvim')
     call dein#add('kevinhwang91/nvim-bqf', {'on_ft': ['qf']})
+    call dein#add('kwkarlwang/bufresize.nvim')
     call dein#add('norcalli/nvim-colorizer.lua')
     call dein#add('rcarriga/nvim-notify')
   endif
@@ -295,7 +302,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('antoinemadec/FixCursorHold.nvim')
   " call dein#add('dhruvasagar/vim-table-mode')
   " call dein#add('dstein64/vim-startuptime')
-  " call dein#add('iamcco/markdown-preview.nvim', {'build': 'sh -c "cd app && yarn install"'})
   " call dein#add('kristijanhusak/vim-carbon-now-sh')
   " call dein#add('lambdalisue/vim-pager')
   " call dein#add('liuchengxu/vim-which-key')
@@ -305,10 +311,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('previm/previm')
   " call dein#add('thinca/vim-localrc')
   " call dein#add('thinca/vim-ref')
-  " call dein#add('tyru/open-browser.vim')
-  call dein#add('AndrewRadev/linediff.vim', {'on_cmd': ['LineDiff']})
-  call dein#add('aiya000/aho-bakaup.vim', {'on_event': ['InsertEnter', 'TextChanged']})
+  " call dein#add('voldikss/vim-floaterm', {'on_cmd': ['FloatermToggle']})
+  call dein#add('AndrewRadev/linediff.vim')
+  call dein#add('aiya000/aho-bakaup.vim', {'on_event': ['BufWritePre', 'FileWritePre']})
+  call dein#add('farmergreg/vim-lastplace')
   call dein#add('glidenote/memolist.vim')
+  call dein#add('iamcco/markdown-preview.nvim', {'on_cmd': 'MarkdownPreview', 'build': 'sh -c "cd app && yarn install"'})
   call dein#add('itchyny/vim-qfedit', {'on_ft': ['qf']})
   call dein#add('jsfaint/gen_tags.vim')
   call dein#add('kana/vim-niceblock')
@@ -318,11 +326,11 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mbbill/undotree', {'on_cmd': ['UndotreeToggle']})
   call dein#add('moll/vim-bbye', {'on_cmd': ['Bdelete']})
   call dein#add('segeljakt/vim-silicon', {'on_cmd': ['Silicon']})
-  call dein#add('thinca/vim-quickrun')
+  call dein#add('thinca/vim-quickrun', {'depends': ['vim-quickrun-neovim-job', 'open-browser']})
   call dein#add('tyru/capture.vim')
+  call dein#add('tyru/open-browser.vim', {'lazy': 1})
   call dein#add('tyru/vim-altercmd')
   call dein#add('vim-test/vim-test', {'lazy': 1})
-  call dein#add('voldikss/vim-floaterm', {'on_cmd': ['FloatermToggle']})
   call dein#add('wesQ3/vim-windowswap', {'on_func': ['WindowSwap#EasyWindowSwap']})
 
   if has('nvim')
@@ -331,23 +339,25 @@ if dein#load_state(s:DEIN_BASE_PATH)
     " call dein#add('notomo/cmdbuf.nvim')
     " call dein#add('nvim-lua/plenary.nvim')
     " call dein#add('nvim-lua/popup.nvim')
-    call dein#add("rcarriga/vim-ultest", {'on_cmd': ['Ultest', 'UltestNearest', 'UltestSummary'], 'depends': ['vim-test'], 'hook_source': 'call SetUpUltest()'})
-    call dein#add('gelguy/wilder.nvim', {'on_map': [':', '/', '?'], 'hook_source': 'call SetUpWilder()'})
+    " call dein#add('romgrk/fzy-lua-native', {'lazy': 1, 'build': 'make'})
+    call dein#add('akinsho/toggleterm.nvim')
+    call dein#add('gelguy/wilder.nvim', {'on_event': ['CmdlineEnter'], 'hook_post_source': 'call SetUpWilder()'})
+    call dein#add('rcarriga/vim-ultest', {'on_cmd': ['Ultest', 'UltestNearest', 'UltestSummary'], 'depends': ['vim-test']})
   endif
 
-  if $ENABLE_WAKATIME == 1
-    call dein#add('wakatime/vim-wakatime')
-  endif
+  " if $ENABLE_WAKATIME == 1
+  "   call dein#add('wakatime/vim-wakatime')
+  " endif
   " }}}3
 
   " Develop {{{3
   " call dein#add('hrsh7th/vim-vital-vs')
   " call dein#add('vim-jp/vital.vim')
-  call dein#add('rbtnn/vim-vimscript_lasterror')
+  call dein#add('rbtnn/vim-vimscript_lasterror', {'on_cmd': ['VimscriptLastError']})
   call dein#add('thinca/vim-prettyprint')
 
   if has('nvim')
-    call dein#add('lambdalisue/vim-quickrun-neovim-job')
+    call dein#add('lambdalisue/vim-quickrun-neovim-job', {'lazy': 1})
   endif
   " }}}3
 
