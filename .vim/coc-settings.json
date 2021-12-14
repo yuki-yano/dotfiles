@@ -12,6 +12,7 @@
     "border": true,
     "highlight": "CocSuggestFloating"
   },
+  "coc.source.ultisnips-select.priority": 500,
   "tabnine.priority": 100,
   "diagnostic.messageTarget": "float",
   "diagnostic.checkCurrentLine": true,
@@ -119,6 +120,7 @@
       "/docker-compose.yml"
     ]
   },
+  "prisma.prismaFmtBinPath": "",
   "cSpell.showStatus": false,
   "cSpell.diagnosticLevel": "Hint",
   "cSpell.enabledLanguageIds": [

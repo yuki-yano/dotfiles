@@ -26,24 +26,23 @@ snippet fct "FC file template"
 import styled from "@emotion/styled"
 import type { FC } from "react"
 
-type PassedProps = {
+type ContainerProps = {
+	${1}
+}
+
+type Props = ContainerProps & {
 	${2}
 }
 
-type ContainerProps = {
-	${3}
-}
-
-type Props = PassedProps & ContainerProps
-
-const Component: FC<Props> = ({ `!p snip.rv = parse_props(t[2] + "\n" + t[3])` }) => {
+const Component: FC<Props> = ({ `!p snip.rv = parse_props(t[1] + "\n" + t[2])` }) => {
 	return <></>
 }
 
-const StyledComponent = styled(Component)``
+export const StyledComponent = styled(Component)\`\`
 
-const ContainerComponent: FC<PassedProps> = (props) => {
+const ContainerComponent: FC<ContainerProps> = (props) => {
 	const { `!p snip.rv = parse_props(t[2])` } = props
+
 	return <StyledComponent {...props} />
 }
 
