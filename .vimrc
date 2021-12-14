@@ -1233,13 +1233,13 @@ if dein#tap('coc.nvim')
 
   let g:coc_global_extensions = [
   \ 'coc-deno',
-  \ 'coc-eslint',
+  \ 'coc-docker',
+  \ 'coc-eslint8',
   \ 'coc-explorer',
   \ 'coc-git',
   \ 'coc-go',
   \ 'coc-json',
   \ 'coc-lists',
-  \ 'coc-markdown-preview-enhanced',
   \ 'coc-markdownlint',
   \ 'coc-marketplace',
   \ 'coc-npm-version',
@@ -1255,7 +1255,6 @@ if dein#tap('coc.nvim')
   \ 'coc-stylelintplus',
   \ 'coc-tabnine',
   \ 'coc-tsserver',
-  \ 'coc-ultisnips-select',
   \ 'coc-vimlsp',
   \ 'coc-word',
   \ 'coc-yaml',
@@ -1263,6 +1262,10 @@ if dein#tap('coc.nvim')
 
   if !dein#tap('fzf-preview.vim')
     call add(g:coc_global_extensions, 'coc-fzf-preview')
+  endif
+
+  if !dein#tap('coc-ultisnips-select')
+    call add(g:coc_global_extensions, 'coc-ultisnips-select')
   endif
 
   " Manual completion
@@ -1276,8 +1279,9 @@ if dein#tap('coc.nvim')
   nnoremap <silent> K       :<C-u>call <SID>show_documentation()<CR>
   nmap     <silent> <dev>p  <Plug>(coc-diagnostic-prev)
   nmap     <silent> <dev>n  <Plug>(coc-diagnostic-next)
-  nmap     <silent> <dev>d  <Plug>(coc-definition)
+  nmap     <silent> <dev>D  <Plug>(coc-definition)
   nmap     <silent> <dev>I  <Plug>(coc-implementation)
+  nmap     <silent> <dev>rF <Plug>(coc-references)
   nmap     <silent> <dev>rn <Plug>(coc-rename)
   nmap     <silent> <dev>T  <Plug>(coc-type-definition)
   nmap     <silent> <dev>a  <Plug>(coc-codeaction-selected)iw
@@ -1290,7 +1294,7 @@ if dein#tap('coc.nvim')
 
   nnoremap <silent> <expr> <C-d> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-d>"
   nnoremap <silent> <expr> <C-u> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-u>"
-  inoremap <silent> <expr> <C-d> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(1)\<CR>" : "\<C-d>"
+  inoremap <silent> <expr> <C-d> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(1)\<CR>" : "\<Del>"
   inoremap <silent> <expr> <C-u> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(0)\<CR>" : "\<C-u>"
 
   " nnoremap <Leader>e :<C-u>CocCommand explorer<CR>
@@ -1310,8 +1314,8 @@ if dein#tap('coc.nvim')
     endif
   endfunction
 
-  command! OrganizeImport     call <SID>organize_import_and_format()
-  command! CocMarkdownPreview CocCommand markdown-preview-enhanced.openPreview
+  command! OrganizeImport call <SID>organize_import_and_format()
+  " command! CocMarkdownPreview CocCommand markdown-preview-enhanced.openPreview
 
   " AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
