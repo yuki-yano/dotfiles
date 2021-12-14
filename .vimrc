@@ -2475,24 +2475,23 @@ if dein#tap('caw.vim')
   xmap <silent> <expr> <Leader>cw <SID>caw_wrap_toggle()
 
   function! s:caw_hatpos_toggle() abort
-    if index(['typescript','typescriptreact'], &filetype) >= 0
-      if dein#tap('nvim-ts-context-commentstring')
-        lua require('ts_context_commentstring.internal').update_commentstring()
-        call caw#update_comments_from_commentstring(&commentstring)
-      endif
+    if dein#tap('nvim-ts-context-commentstring')
+      lua require('ts_context_commentstring.internal').update_commentstring()
+      call caw#update_comments_from_commentstring(&commentstring)
     endif
 
     return "\<Plug>(caw:hatpos:toggle)"
   endfunction
 
   function! s:caw_wrap_toggle() abort
-    if index(['typescript','typescriptreact'], &filetype) >= 0 && match(&commentstring, '^\/\/') != -1
-      if dein#tap('nvim-ts-context-commentstring')
-        lua require('ts_context_commentstring.internal').update_commentstring()
-        call caw#update_comments_from_commentstring(&commentstring)
-      endif
+    if dein#tap('nvim-ts-context-commentstring')
+      lua require('ts_context_commentstring.internal').update_commentstring()
+      call caw#update_comments_from_commentstring(&commentstring)
+    endif
 
-      let b:caw_wrap_oneline_comment = ["/*", "*/"]
+    " jsx
+    if index(['typescript','typescriptreact'], &filetype) >= 0 && &commentstring !=# '{/* %s */}'
+      let b:caw_wrap_oneline_comment = ['/*', '*/']
     endif
 
     return "\<Plug>(caw:wrap:toggle)"
