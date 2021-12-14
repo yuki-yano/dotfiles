@@ -431,6 +431,7 @@ map     m        <dev>
 
 "" Zero (Move beginning toggle)
 " noremap <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
+noremap ^ 0
 
 "" BackSpace
 imap <C-h> <BS>
