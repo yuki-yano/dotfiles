@@ -47,7 +47,7 @@ zinit ice lucid wait"0" depth"1" blockf
 zinit light zsh-users/zsh-completions
 
 zinit ice lucid wait"0" depth"1" blockf
-zinit light ress997/zsh-completions-anyenv
+zinit light yuki-yano/zsh-completions-anyenv
 
 zinit ice lucid wait"0" as"completion"
 zinit snippet OMZ::plugins/docker/_docker
@@ -67,10 +67,6 @@ zinit light yuki-yano/tms
 zinit ice lucid wait"0" depth"1" as"program" src"tmk.plugin.zsh" pick"tmk"
 zinit light yuki-yano/tmk
 
-# Language Server
-zinit ice lucid wait"0" from"gh-r" as"program" bpick"*darwin_amd64*" mv"*/efm-langserver -> ${ZPFX}/bin/efm-langserver"
-zinit light mattn/efm-langserver
-
 # man
 zinit ice lucid wait"0" as"program" mv"fzf* -> ${ZPFX}/man/man1"
 zinit snippet 'https://github.com/junegunn/fzf/blob/master/man/man1/fzf.1'
@@ -78,9 +74,6 @@ zinit snippet 'https://github.com/junegunn/fzf/blob/master/man/man1/fzf.1'
 # util
 zinit ice lucid wait"0" depth"1"
 zinit light yukiycino-dotfiles/fancy-ctrl-z
-
-zinit ice lucid wait"0"
-zinit snippet 'https://github.com/knu/zsh-git-escape-magic/blob/master/git-escape-magic'
 
 # }}}
 
@@ -128,7 +121,6 @@ fi
 if whence bat > /dev/null; then
   export BAT_THEME='gruvbox'
   alias bat='bat'
-  alias b='bat --color=always --style=plain'
   alias c='bat --color=always --style=plain'
 fi
 # }}}
