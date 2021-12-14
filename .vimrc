@@ -527,10 +527,10 @@ nnoremap <silent> <t>l :<C-u>tabnext<CR>
 nnoremap <silent> <t>m <C-w>T
 
 "" resize
-nnoremap <Left>  :<C-u>vertical resize -1<CR>
-nnoremap <Right> :<C-u>vertical resize +1<CR>
-nnoremap <Up>    :<C-u>resize -1<CR>
-nnoremap <Down>  :<C-u>resize +1<CR>
+nnoremap <silent> <Left>  :<C-u>vertical resize -1<CR>
+nnoremap <silent> <Right> :<C-u>vertical resize +1<CR>
+nnoremap <silent> <Up>    :<C-u>resize -1<CR>
+nnoremap <silent> <Down>  :<C-u>resize +1<CR>
 
 "" Macro
 nnoremap Q @q
