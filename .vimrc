@@ -4265,7 +4265,7 @@ if dein#tap('vim-quickrun')
 
   let g:quickrun_config = {
   \ '_' : {
-  \   'outputter' : 'error',
+  \   'outputter': 'error',
   \   'outputter/error/success': 'buffer',
   \   'outputter/error/error':   'quickfix',
   \   'outputter/buffer/opener': ':botright 15split',
@@ -4283,17 +4283,22 @@ if dein#tap('vim-quickrun')
   \   'outputter': 'quickfix',
   \   'outputter/quickfix/errorformat': '%+A %#%f %#(%l\,%c): %m,%C%m',
   \ },
-  \ 'eslint' : {
+  \ 'eslint': {
   \   'command': 'eslint',
   \   'exec': ['yarn run --silent %C --format unix --ext .ts,.tsx %a 2>/dev/null'],
   \   'outputter': 'quickfix',
   \   'outputter/quickfix/errorformat': '%f:%l:%c:%m,%-G%.%#',
   \ },
-  \ 'yq' : {
-  \   'exec': 'cat %s | yq eval --tojson',
+  \ 'json-browser': {
+  \   'exec': 'cat %s | jq',
+  \   'outputter': 'browser',
+  \   'outputter/browser/name': tempname() . '.json',
   \ },
-  \ 'yq-browser' : {
-  \   'exec': 'cat %s | yq eval --tojson',
+  \ 'yq': {
+  \   'exec': 'cat %s | yq eval --output-format=json',
+  \ },
+  \ 'yq-browser': {
+  \   'exec': 'cat %s | yq eval --output-format=json',
   \   'outputter': 'browser',
   \   'outputter/browser/name': tempname() . '.json',
   \ },
