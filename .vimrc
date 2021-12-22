@@ -3289,9 +3289,7 @@ endif
 
 " ts-autotag {{{3
 if dein#tap('nvim-ts-autotag')
-lua << EOF
-require('nvim-ts-autotag').setup()
-EOF
+  lua require('nvim-ts-autotag').setup()
 endif
 " }}}3
 
