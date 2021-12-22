@@ -466,6 +466,7 @@ nnoremap ;;       ;
 xnoremap ;;       ;
 
 "" Zero (Move beginning toggle)
+"" Use plugin
 " noremap <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
 noremap ^ 0
 
