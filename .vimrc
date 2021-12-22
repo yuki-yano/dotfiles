@@ -618,7 +618,7 @@ if has('nvim')
   let g:terminal_color_14 = '#95c4ce'
   let g:terminal_color_15 = '#d2d4de'
 
-  set pumblend=20
+  set pumblend=10
   set wildoptions+=pum
 endif
 
