@@ -1924,11 +1924,16 @@ if dein#tap('fzf-preview.vim')
   nnoremap <silent> <fzf-p><C-]> :<C-u>FzfPreviewVistaCtagsRpc --experimental-fast --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
   nnoremap <silent> <fzf-p>o     :<C-u>FzfPreviewVistaBufferCtagsRpc --experimental-fast<CR>
 
-  nnoremap          <fzf-p>f :<C-u>CocCommand fzf-preview.ProjectGrep --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>
-  xnoremap          <fzf-p>f "sy:CocCommand fzf-preview.ProjectGrep --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-  nnoremap <silent> <fzf-p>F :<C-u>CocCommand fzf-preview.ProjectGrepRecall --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort --resume<CR>
-  nnoremap          <fzf-p>h :<C-u>CocCommand fzf-preview.GrepHelp --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>
-  nnoremap <silent> <fzf-p>p :<C-u>CocCommand fzf-preview.Yankround --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
+  nnoremap          <fzf-p>f :<C-u>FzfPreviewProjectGrepRpc --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>
+  xnoremap          <fzf-p>f "sy:FzfPreviewProjectGrepRpc --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+  nnoremap <silent> <fzf-p>F :<C-u>FzfPreviewProjectGrepRecallRpc --experimental-fast --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
+  nnoremap          <fzf-p>h :<C-u>FzfPreviewGrepHelpRpc --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>
+
+  if dein#tap('coc.nvim')
+    nnoremap <silent> <fzf-p>p :<C-u>CocCommand fzf-preview.Yankround --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
+  else
+    nnoremap <silent> <fzf-p>p :<C-u>FzfPreviewYankroundRpc --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
+  endif
 
   nnoremap <silent> <dev>q  :<C-u>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
   nnoremap <silent> <dev>Q  :<C-u>CocCommand fzf-preview.CocDiagnostics<CR>
@@ -2009,7 +2014,7 @@ if dein#tap('fzf-preview.vim')
     call remove(g:fzf_preview_custom_processes['open-file'], 'ctrl-x')
 
     let g:fzf_preview_custom_processes['open-file-with-tag-stack'] = fzf_preview#remote#process#get_default_processes('open-file-with-tag-stack', 'rpc')
-    let g:fzf_preview_custom_processes['open-file-with-tag-stack']['ctrl-s'] = g:fzf_preview_custom_processes['open-file']['ctrl-x']
+    let g:fzf_preview_custom_processes['open-file-with-tag-stack']['ctrl-s'] = g:fzf_preview_custom_processes['open-file-with-tag-stack']['ctrl-x']
     call remove(g:fzf_preview_custom_processes['open-file-with-tag-stack'], 'ctrl-x')
 
     let g:fzf_preview_custom_processes['open-buffer'] = fzf_preview#remote#process#get_default_processes('open-buffer', 'rpc')
