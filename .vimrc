@@ -525,7 +525,8 @@ noremap! <C-a> <Home>
 noremap! <C-b> <Left>
 noremap! <C-d> <Del>
 noremap! <C-e> <End>
-noremap! <C-f> <Right>
+" Configure in lexima
+" noremap! <C-f> <Right>
 cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
 
@@ -2858,38 +2859,39 @@ if dein#tap('lexima.vim')
 
     "" Move closing parenthesis
     let s:rules += [
-    \ { 'char': '<C-f>', 'at': '\%#\s*)',  'input': '<Left><C-o>f)<Right>'  },
-    \ { 'char': '<Tab>', 'at': '\%#\s*)',  'input': '<Left><C-o>f)<Right>'  },
-    \ { 'char': '<C-f>', 'at': '\%#\s*\}', 'input': '<Left><C-o>f}<Right>'  },
-    \ { 'char': '<Tab>', 'at': '\%#\s*\}', 'input': '<Left><C-o>f}<Right>'  },
-    \ { 'char': '<C-f>', 'at': '\%#\s*\]', 'input': '<Left><C-o>f]<Right>'  },
-    \ { 'char': '<Tab>', 'at': '\%#\s*\]', 'input': '<Left><C-o>f]<Right>'  },
-    \ { 'char': '<C-f>', 'at': '\%#\s*>',  'input': '<Left><C-o>f><Right>'  },
-    \ { 'char': '<Tab>', 'at': '\%#\s*>',  'input': '<Left><C-o>f><Right>'  },
-    \ { 'char': '<C-f>', 'at': '\%#\s*`',  'input': '<Left><C-o>f`<Right>'  },
-    \ { 'char': '<Tab>', 'at': '\%#\s*`',  'input': '<Left><C-o>f`<Right>'  },
-    \ { 'char': '<C-f>', 'at': '\%#\s*"',  'input': '<Left><C-o>f"<Right>'  },
-    \ { 'char': '<Tab>', 'at': '\%#\s*"',  'input': '<Left><C-o>f"<Right>'  },
-    \ { 'char': '<C-f>', 'at': '\%#\s*''', 'input': '<Left><C-o>f''<Right>' },
-    \ { 'char': '<Tab>', 'at': '\%#\s*''', 'input': '<Left><C-o>f''<Right>' },
+    \ { 'char': '<C-f>',                   'input': '<Right>'                },
+    \ { 'char': '<C-f>', 'at': '\%#\s*)',  'input': '<Left><C-o>f)<Right>',  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*\}', 'input': '<Left><C-o>f}<Right>',  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*\]', 'input': '<Left><C-o>f]<Right>',  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*>',  'input': '<Left><C-o>f><Right>',  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*`',  'input': '<Left><C-o>f`<Right>',  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*"',  'input': '<Left><C-o>f"<Right>',  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*''', 'input': '<Left><C-o>f''<Right>', },
     \ ]
 
     "" Insert semicolon at the end of the line
     let s:rules += [
-    \ { 'char': ';', 'at': '(.*\%#)$',   'input': '<Right>;' },
-    \ { 'char': ';', 'at': '^\s*\%#)$',  'input': '<Right>;' },
-    \ { 'char': ';', 'at': '(.*\%#\}$',  'input': '<Right>;' },
-    \ { 'char': ';', 'at': '^\s*\%#\}$', 'input': '<Right>;' },
+    \ { 'char': ';', 'at': '(.*;\%#)$',   'input': '<BS><Right>;' },
+    \ { 'char': ';', 'at': '^\s*;\%#)$',  'input': '<BS><Right>;' },
+    \ { 'char': ';', 'at': '(.*;\%#\}$',  'input': '<BS><Right>;' },
+    \ { 'char': ';', 'at': '^\s*;\%#\}$', 'input': '<BS><Right>;' },
     \ ]
 
     "" TypeScript
     let s:rules += [
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\s([a-zA-Z, ]*\%#)',            'input': '<Left><C-o>f)<Right>a=> {}<Esc>',                 },
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\s([a-zA-Z]\+\%#)',             'input': '<Right> => {}<Left>',              'priority': 10 },
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-z]((.*\%#.*))',              'input': '<Left><C-o>f)a => {}<Esc>',                       },
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-z]([a-zA-Z]\+\%#)',          'input': ' => {}<Left>',                                    },
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '(.*[a-zA-Z]\+<[a-zA-Z]\+>\%#)', 'input': '<Left><C-o>f)<Right>a=> {}<Left>',                },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\s([a-zA-Z, ]*>\%#)',            'input': '<BS><Left><C-o>f)<Right>a=> {}<Esc>',                 },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\s([a-zA-Z]\+>\%#)',             'input': '<BS><Right> => {}<Left>',              'priority': 10 },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-z]((.*>\%#.*))',              'input': '<BS><Left><C-o>f)a => {}<Esc>',                       },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-z]([a-zA-Z]\+>\%#)',          'input': '<BS> => {}<Left>',                                    },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '(.*[a-zA-Z]\+<[a-zA-Z]\+>>\%#)', 'input': '<BS><Left><C-o>f)<Right>a=> {}<Left>',                },
     \ ]
+
+    "" TSX with nvim-ts-autotag
+    if dein#tap('nvim-ts-autotag')
+      let s:rules += [
+      \ { 'filetype': ['typescriptreact'], 'char': '>', 'input': '<Cmd>lua require(''nvim-ts-autotag.internal'').close_tag()<CR>a', },
+      \ ]
+    endif
 
     "" ruby
     let s:rules += [
