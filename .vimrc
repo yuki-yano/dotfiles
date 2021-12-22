@@ -2826,6 +2826,12 @@ if dein#tap('vim-grepper')
   \ 'tools': ['rg', 'git'],
   \ }
 
+  let g:grepper.rg = {
+  \ 'escape': '\^$.*+?()[]{}|',
+  \ 'grepformat': '%f:%l:%c:%m,%f',
+  \ 'grepprg': 'rg --with-filename --sort=path --no-heading --vimgrep'
+  \ }
+
   nnoremap <silent> <Leader>g :<C-u>Grepper<CR>
 endif
 " }}}3
