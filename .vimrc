@@ -4245,7 +4245,7 @@ if dein#tap('wilder.nvim')
     call wilder#set_option('pipeline', [
     \ wilder#branch(
     \   wilder#python_file_finder_pipeline({
-    \     'file_command': {_, arg -> stridx(arg, '.') != -1 ? ['fd', '-tf', '-H'] : ['fd', '-tf']},
+    \     'file_command': {_, arg -> stridx(arg, '.') != -1 ? ['fd', '-tf', '-H', '--strip-cwd-prefix'] : ['fd', '-tf', '--strip-cwd-prefix']},
     \     'dir_command': ['fd', '-td'],
     \   }),
     \   wilder#cmdline_pipeline({'fuzzy': 1}),
