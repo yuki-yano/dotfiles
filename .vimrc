@@ -1218,29 +1218,77 @@ BulkAlterCommand dein Dein
 if dein#tap('ddc.vim')
   function! SetupDdc() abort
     call ddc#enable()
+
+    if s:enable_vim_lsp
+      call DdcSettings()
+    endif
   endfunction
 
   function DdcSettings() abort
-    call ddc#custom#patch_global('autoCompleteEvents', ['InsertEnter', 'TextChangedI', 'TextChangedP'])
-    call ddc#custom#patch_global('sources', ['skkeleton'])
-    call ddc#custom#patch_global('sourceOptions', {
-    \ 'skkeleton': {
-    \   'mark': 'skkeleton',
-    \   'matchers': ['skkeleton'],
-    \   'sorterts': [],
+    if s:enable_vim_lsp
+      let sources = ['vim-lsp']
+    else 
+      let sources = []
+    endif
+    let sources += ['tabnine', 'around', 'buffer', 'file']
+
+    let source_options = {
+    \ '_': {
+    \   'matchers': ['matcher_fuzzy'],
+    \   'sorters': ['sorter_fuzzy'],
+    \   'converters': ['converter_fuzzy'],
     \ },
-    \ })
+    \ 'tabnine': {
+    \   'mark': 'TN',
+    \   'maxCandidates': 5,
+    \   'isVolatile': v:true,
+    \ },
+    \ 'around': {
+    \   'mark': 'around',
+    \ },
+    \ 'buffer': {
+    \   'mark': 'buffer',
+    \ },
+    \ 'file': {
+    \   'mark': 'file',
+    \   'matchers': ['matcher_head'],
+    \   'sorters': ['sorter_rank'],
+    \   'isVolatile': v:true,
+    \   'forceCompletionPattern': '\S/\S*',
+    \ },
+    \ }
+
+    if s:enable_vim_lsp
+      call extend(source_options, {
+      \ 'vim-lsp': {
+      \   'mark': 'lsp',
+      \ },
+      \ })
+    endif
+
+    call ddc#custom#patch_global('autoCompleteEvents', ['InsertEnter', 'TextChangedI', 'TextChangedP'])
+    call ddc#custom#patch_global('sources', sources)
+    call ddc#custom#patch_global('sourceOptions', source_options)
+
+    call ddc#custom#patch_global('completionMenu', 'pum.vim')
+    call popup_preview#enable()
+
+    inoremap <C-Space> <Cmd>call ddc#manual_complete()<CR>
+    inoremap <C-n>     <Cmd>call pum#map#insert_relative(+1)<CR>
+    inoremap <C-p>     <Cmd>call pum#map#insert_relative(-1)<CR>
+    inoremap <C-y>     <Cmd>call pum#map#confirm()<CR>
+    inoremap <C-e>     <Cmd>call pum#map#cancel()<CR>
   endfunction
 
-  function! EnableDdc() abort
-    let b:coc_suggest_disable = v:true
-    call DdcSettings()
-  endfunction
+  " function! EnableDdc() abort
+  "   let b:coc_suggest_disable = v:true
+  "   call DdcSettings()
+  " endfunction
 
-  function! DisableDdc() abort
-    let b:coc_suggest_disable = v:false
-    call ddc#custom#patch_global('sourceOptions', {})
-  endfunction
+  " function! DisableDdc() abort
+  "   let b:coc_suggest_disable = v:false
+  "   call ddc#custom#patch_global('sourceOptions', {})
+  " endfunction
 endif
 " }}}3
 
@@ -1251,12 +1299,19 @@ if dein#tap('skkeleton')
 
   function! SetupSkkeleton() abort
     call skkeleton#config({
-    \ 'globalJisyo': expand('~/.vim/skk/SKK-JISYO.L')
+    \ 'globalJisyo': expand('~/.vim/skk/SKK-JISYO.L'),
+    \ 'eggLikeNewline': v:true,
     \ })
   endfunction
 
-  AutoCmd User skkeleton-enable-pre call EnableDdc()
-  AutoCmd User skkeleton-disable-pre call DisableDdc()
+  if dein#tap('lexima.vim')
+    inoremap <silent> <expr> <Space> skkeleton#is_enabled() ? "\<Space>" : lexima#expand('<SPACE>', 'i')
+  endif
+
+  " if s:enable_coc
+  "   AutoCmd User skkeleton-enable-pre call EnableDdc()
+  "   AutoCmd User skkeleton-disable-pre call DisableDdc()
+  " endif
 endif
 " }}}3
 
@@ -1425,9 +1480,97 @@ if dein#tap('coc.nvim')
 endif
 " }}}3
 
+" vim-lsp {{{3
+if dein#tap('vim-lsp')
+  let g:lsp_diagnostics_float_cursor         = 1
+  let g:lsp_diagnostics_virtual_text_enabled = 0
+
+  function! s:on_lsp_buffer_enabled() abort
+    setlocal signcolumn=yes
+
+    if exists('+tagfunc')
+      setlocal tagfunc=lsp#tagfunc
+    endif
+
+    nmap <buffer> gd         <Plug>(lsp-definition)
+    nmap <buffer> gr         <Plug>(lsp-references)
+    nmap <buffer> gi         <Plug>(lsp-implementation)
+    nmap <buffer> gt         <Plug>(lsp-type-definition)
+    nmap <buffer> <leader>rn <Plug>(lsp-rename)
+    nmap <buffer> K          <Plug>(lsp-hover)
+  endfunction
+
+  AutoCmd User lsp_buffer_enabled call <SID>on_lsp_buffer_enabled()
+endif
+" }}}3
+
+" nvim-lsp {{{3
+if dein#tap('nvim-lspconfig')
+lua <<EOF
+local on_attach = function(client, bufnr)
+  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+
+  local opts = { noremap=true, silent=true }
+  buf_set_keymap('n', 'mD',  '<Cmd>lua vim.lsp.buf.declaration()<CR>',        opts)
+  buf_set_keymap('n', 'md',  '<Cmd>lua vim.lsp.buf.definition()<CR>',         opts)
+  buf_set_keymap('n', 'K',   '<Cmd>lua vim.lsp.buf.hover()<CR>',              opts)
+  buf_set_keymap('n', 'mi',  '<Cmd>lua vim.lsp.buf.implementation()<CR>',     opts)
+  buf_set_keymap('n', 'mt',  '<Cmd>lua vim.lsp.buf.type_definition()<CR>',    opts)
+  buf_set_keymap('n', 'mrn', '<Cmd>lua vim.lsp.buf.rename()<CR>',             opts)
+  buf_set_keymap('n', 'ma',  '<Cmd>lua vim.lsp.buf.code_action()<CR>',        opts)
+  buf_set_keymap('n', 'mrf', '<Cmd>lua vim.lsp.buf.references()<CR>',         opts)
+  buf_set_keymap('n', 'mq',  '<Cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+  buf_set_keymap('n', 'mf',  '<Cmd>lua vim.lsp.buf.formatting()<CR>',         opts)
+end
+
+local lsp_installer = require('nvim-lsp-installer')
+lsp_installer.on_server_ready(function(server)
+    local opts = {}
+    opts.on_attach = on_attach
+    opts.capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+    server:setup(opts)
+    vim.cmd [[ do User LspAttachBuffers ]]
+end)
+EOF
+endif
+
+if dein#tap('lspsaga.nvim')
+  lua require('lspsaga').setup()
+endif
+" }}}3
+
+" nvim-cmp {{{3
+if dein#tap('nvim-cmp')
+lua <<EOF
+local cmp = require('cmp')
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      vim.fn["vsnip#anonymous"](args.body)
+    end,
+  }, 
+  mapping = {
+    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.close(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+  },
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    { name = 'vsnip' },
+  }, {
+    { name = 'buffer' },
+  })
+})
+EOF
+endif
+" }}}3
+
 " efm-langserver-settings {{{3
 if dein#tap('vim-efm-langserver-settings')
-  let g:efm_langserver_settings#filetype_whitelist = ['ruby', 'json', 'vim', 'sh', 'zsh']
+  let g:efm_langserver_settings#filetype_whitelist = ['typescript']
 endif
 " }}}3
 
