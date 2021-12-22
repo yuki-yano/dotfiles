@@ -578,9 +578,9 @@ nnoremap <Leader>r :<C-u>%s/\v//g<Left><Left><Left>
 xnoremap <Leader>r "sy:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
 
 "" Clipboard
-nnoremap <silent> sc :<C-u>call system("pbcopy", @") <Bar> echo "Copied \" register to OS clipboard"<CR>
-nnoremap <silent> sp :<C-u>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>
-xnoremap <silent> sp <Esc>:let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>gv
+nnoremap <silent> sc <Cmd>call system("pbcopy", @") <Bar> echo "Copied \" register to OS clipboard"<CR>
+nnoremap <silent> sp <Cmd>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>
+xnoremap <silent> sp <Cmd>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>
 " }}}2
 
 " Set Options {{{2
