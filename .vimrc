@@ -2725,6 +2725,7 @@ if dein#tap('vim-eft')
   function! s:eft_enable() abort
     nmap ;; <Plug>(eft-repeat)
     xmap ;; <Plug>(eft-repeat)
+    omap ;; <Plug>(eft-repeat)
 
     nmap f <Plug>(eft-f)
     xmap f <Plug>(eft-f)
