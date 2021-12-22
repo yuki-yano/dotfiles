@@ -2583,6 +2583,49 @@ EOF
 endif
 " }}}3
 
+" dps-dial {{{3
+if dein#tap('dps-dial.vim')
+  nmap <C-a>  <Plug>(dps-dial-increment)
+  nmap <C-x>  <Plug>(dps-dial-decrement)
+  xmap <C-a>  <Plug>(dps-dial-increment)
+  xmap <C-x>  <Plug>(dps-dial-decrement)
+  xmap g<C-a> g<Plug>(dps-dial-increment)
+  xmap g<C-x> g<Plug>(dps-dial-decrement) 
+
+  function! s:dps_dial_settings() abort
+    let g:dps_dial#augends = ['decimal-integer', 'boolean', 'and_or', 'const_let', 'case', 'date', 'date-slash', 'color']
+    call extend(g:dps_dial#aliases, {
+    \ 'boolean': {
+    \   'kind': 'constant',
+    \   'opts': {
+    \     'elements': ['true', 'false'],
+    \     'word': v:true,
+    \     'cyclic': v:true,
+    \   },
+    \ },
+    \ 'and_or': {
+    \   'kind': 'constant',
+    \   'opts': {
+    \     'elements': ['&&', '||'],
+    \     'word': v:false,
+    \     'cyclic': v:true,
+    \   },
+    \ },
+    \ 'const_let': {
+    \   'kind': 'constant',
+    \   'opts': {
+    \     'elements': ['const', 'let'],
+    \     'word': v:true,
+    \     'cyclic': v:true,
+    \   },
+    \ },
+    \ })
+  endfunction
+
+  AutoCmd User DenopsPluginPost:dial call <SID>dps_dial_settings()
+endif
+" }}}3
+
 " easy-align {{{3
 if dein#tap('vim-easy-align')
   xmap ga <Plug>(EasyAlign)
