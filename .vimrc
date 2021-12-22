@@ -1646,6 +1646,7 @@ require('nvim-treesitter.configs').setup {
     "python",
     "json",
     "yaml",
+    "markdown",
     "dockerfile",
     "vim",
     "lua",
