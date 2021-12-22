@@ -1,5 +1,14 @@
 " Plugin Manager {{{1
 
+" Select LSP {{{2
+let s:enable_coc      = v:true
+let s:enable_vim_lsp  = v:false
+let s:enable_nvim_lsp = v:false
+
+let s:enable_ddc = v:false
+let s:enable_cmp = v:false
+" }}}2
+
 " Install & Load Dein {{{2
 let s:DEIN_BASE_PATH = $HOME . '/.vim/bundle/'
 let s:DEIN_PATH      = expand(s:DEIN_BASE_PATH . 'repos/github.com/Shougo/dein.vim')
@@ -26,63 +35,77 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('haya14busa/dein-command.vim', {'on_cmd': ['Dein']})
   " }}}3
 
-  " denops {{{3
-  call dein#add('vim-denops/denops.vim')
-
-  " call dein#add('Shougo/ddc.vim', {'on_event': ['InsertEnter'], 'hook_post_source': 'call SetupDdc()'})
-  " if isdirectory(expand('~/workspace/coc-ddc'))
-  "   call dein#add('~/workspace/coc-ddc')
-  " endif
-  " call dein#add('Shougo/neco-vim')
-  " call dein#add('Shougo/ddc-cmdline-history')
-  " call dein#add('tani/ddc-fuzzy')
-  " call dein#add('Shougo/ddc-matcher_head')
-  " call dein#add('Shougo/ddc-sorter_rank')
-  " call dein#add('LumaKernel/ddc-file')
-  " call dein#add('Shougo/pum.vim')
-  " call dein#add('matsui54/denops-popup-preview.vim')
-  " call dein#add('vim-skk/skkeleton', {'on_map': {'ic': '<Plug>'}, 'hook_post_source': 'call SetupSkkeleton()'})
-
-  call dein#add('lambdalisue/guise.vim')
-
-  " if isdirectory(expand('~/repos/github.com/yuki-yano/dps-indent-line.vim'))
-  "   call dein#add('~/repos/github.com/yuki-yano/dps-indent-line.vim')
-  " endif
-  " }}}3
-
   " Doc {{{3
   call dein#add('vim-jp/vimdoc-ja')
   " }}}3
 
+  " denops {{{3
+  call dein#add('vim-denops/denops.vim')
+  " }}}3
+
   " IDE {{{3
-  call dein#add('neoclide/coc.nvim', {'rev': 'master', 'build': 'yarn install --frozen-lockfile'})
-  if isdirectory(expand('~/workspace/coc-rg'))
-    call dein#add('~/workspace/coc-rg')
-  endif
-  if isdirectory(expand('~/repos/github.com/fannheyward/coc-deno'))
-    call dein#add('~/repos/github.com/fannheyward/coc-deno')
+  if s:enable_coc
+    call dein#add('neoclide/coc.nvim', {'rev': 'master', 'build': 'yarn install --frozen-lockfile'})
+    " call dein#add('neoclide/coc.nvim', {'rev': 'release'})
   endif
 
-  " call dein#add('github/copilot.vim')
-  " call dein#add('neoclide/coc.nvim', {'rev': 'release'})
+  if s:enable_ddc
+    call dein#add('Shougo/ddc.vim', {'on_event': ['InsertEnter'], 'hook_post_source': 'call SetupDdc()'})
 
-  " if isdirectory(expand('~/repos/github.com/yuki-yano/coc.nvim'))
-  "   call dein#add('~/repos/github.com/yuki-yano/coc.nvim')
-  " endif
+    call dein#add('LumaKernel/ddc-file')
+    call dein#add('LumaKernel/ddc-tabnine')
+    call dein#add('Shougo/ddc-around')
+    call dein#add('matsui54/ddc-buffer')
+
+    call dein#add('Shougo/ddc-matcher_head')
+    call dein#add('Shougo/ddc-sorter_rank')
+    call dein#add('tani/ddc-fuzzy')
+
+    call dein#add('Shougo/pum.vim')
+    call dein#add('matsui54/denops-popup-preview.vim')
+  endif
+
+  if s:enable_vim_lsp
+    call dein#add('prabirshrestha/vim-lsp')
+    call dein#add('mattn/vim-lsp-settings')
+
+    if s:enable_ddc
+      call dein#add('shun/ddc-vim-lsp')
+    endif
+  endif
+
+  if s:enable_nvim_lsp
+    call dein#add('neovim/nvim-lspconfig')
+    call dein#add('williamboman/nvim-lsp-installer')
+
+    call dein#add('tami5/lspsaga.nvim')
+  endif
+
+  if s:enable_cmp
+    call dein#add('hrsh7th/nvim-cmp')
+    call dein#add('hrsh7th/vim-vsnip')
+
+    call dein#add('hrsh7th/cmp-nvim-lsp')
+    call dein#add('hrsh7th/cmp-buffer')
+    call dein#add('hrsh7th/cmp-vsnip')
+  endif
+
+  " call dein#add('Shougo/neco-vim')
+  " call dein#add('Shougo/ddc-cmdline-history')
 
   " call dein#add('tsuyoshicho/vim-efm-langserver-settings')
 
-  " call dein#add('Shougo/deoplete.nvim')
-  " call dein#add('hrsh7th/vim-vsnip')
   " call dein#add('hrsh7th/vim-vsnip-integ')
   " call dein#add('kitagry/asyncomplete-tabnine.vim', {'build': './install.sh'})
-  " call dein#add('lighttiger2505/deoplete-vim-lsp')
-  " call dein#add('mattn/vim-lsp-settings')
   " call dein#add('prabirshrestha/asyncomplete-lsp.vim')
   " call dein#add('prabirshrestha/asyncomplete.vim')
-  " call dein#add('prabirshrestha/vim-lsp')
-  " call dein#add('tbodt/deoplete-tabnine', {'build': 'bash install.sh'})
   " call dein#add('wellle/tmux-complete.vim')
+
+  " call dein#add('github/copilot.vim')
+  " }}}3
+
+  " IME {{{3
+  call dein#add('vim-skk/skkeleton', {'on_event': ['InsertEnter'], 'hook_post_source': 'call SetupSkkeleton()'})
   " }}}3
 
   " Language {{{3
@@ -94,6 +117,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('mechatroner/rainbow_csv')
   " call dein#add('othree/yajs.vim')
   " call dein#add('peitalin/vim-jsx-typescript')
+  " call dein#add('plasticboy/vim-markdown', {'on_ft': ['markdown']})
   " call dein#add('posva/vim-vue')
   " call dein#add('rhysd/vim-fixjson', {'on_ft': ['json']})
   " call dein#add('styled-components/vim-styled-components')
@@ -102,7 +126,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('elzr/vim-json', {'on_ft': ['json']})
   call dein#add('heavenshell/vim-jsdoc', {'on_ft': ['typescript', 'typescriptreact', 'javascript'], 'build': 'make install'})
   call dein#add('pantharshit00/vim-prisma', {'on_ft': ['prisma'], 'merge_ftdetect': v:true})
-  call dein#add('plasticboy/vim-markdown', {'on_ft': ['markdown']})
 
   if has('nvim')
     call dein#add('nvim-treesitter/nvim-treesitter')
@@ -163,13 +186,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " call dein#add('LumaKernel/fern-mapping-fzf.vim')
   " call dein#add('LumaKernel/fern-mapping-reload-all.vim')
-  call dein#add('lambdalisue/fern-git-status.vim', {'lazy': 1})
+  call dein#add('lambdalisue/fern-git-status.vim', {'lazy': 1, 'hook_post_source': 'call fern_git_status#init()'})
   call dein#add('lambdalisue/fern-renderer-nerdfont.vim', {'lazy': 1})
   call dein#add('lambdalisue/nerdfont.vim', {'lazy': 1})
-
-  if isdirectory(expand('~/repos/github.com/yuki-yano/fern-preview.vim'))
-    call dein#add('~/repos/github.com/yuki-yano/fern-preview.vim', {'lazy': 1})
-  endif
+  call dein#add('yuki-yano/fern-preview.vim', {'lazy': 1})
 
   if has('nvim')
     " call dein#add('Shougo/defx.nvim')
@@ -228,10 +248,13 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('cohama/lexima.vim', {'rev': 'dev', 'on_event': ['InsertEnter'], 'hook_post_source': 'call SetupLexima()'})
   call dein#add('haya14busa/vim-asterisk', {'on_map': ['<Plug>']})
   call dein#add('haya14busa/vim-edgemotion', {'on_map': ['<Plug>']})
-  call dein#add('hrsh7th/vim-eft', {'on_map': ['<Plug>']})
+  call dein#add('hrsh7th/vim-eft', {'on_map': {'nox': '<Plug>'}})
   call dein#add('junegunn/vim-easy-align', {'on_map': ['<Plug>(EasyAlign)']})
+  call dein#add('kana/vim-smartword', {'on_map': ['<Plug>']})
+  call dein#add('lambdalisue/vim-backslash', {'on_ft': ['vim']})
   call dein#add('mattn/vim-maketable', {'on_cmd': ['MakeTable']})
   call dein#add('mhinz/vim-grepper', {'on_cmd': ['Grepper']})
+  call dein#add('monaqa/dps-dial.vim')
   call dein#add('osyo-manga/vim-anzu', {'on_map': ['<Plug>']})
   call dein#add('osyo-manga/vim-jplus', {'on_map': ['<Plug>']})
   call dein#add('t9md/vim-textmanip', {'on_map': ['<Plug>']})
@@ -244,16 +267,16 @@ if dein#load_state(s:DEIN_BASE_PATH)
   if has('nvim')
     " call dein#add('b3nj5m1n/kommentary')
     " call dein#add('gabrielpoca/replacer.nvim')
+    " call dein#add('ggandor/lightspeed.nvim')
+    " call dein#add('monaqa/dial.nvim')
     " call dein#add('numToStr/Comment.nvim')
-    " call dein#add('phaazon/hop.nvim')
     " call dein#add('rmagatti/auto-session')
     " call dein#add('windwp/nvim-spectre')
-    " call dein#add('windwp/nvim-ts-autotag')
     " call dein#add('winston0410/smart-cursor.nvim')
-    call dein#add('ggandor/lightspeed.nvim')
     call dein#add('kevinhwang91/nvim-hlslens')
-    call dein#add('monaqa/dial.nvim')
     call dein#add('nacro90/numb.nvim')
+    call dein#add('phaazon/hop.nvim')
+    call dein#add('windwp/nvim-ts-autotag')
     call dein#add('yuki-yano/zero.nvim')
   endif
   " }}}3
