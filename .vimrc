@@ -343,12 +343,14 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('itchyny/vim-qfedit', {'on_ft': ['qf']})
   call dein#add('jsfaint/gen_tags.vim')
   call dein#add('kana/vim-niceblock')
+  call dein#add('lambdalisue/guise.vim')
   call dein#add('lambdalisue/suda.vim', {'on_cmd': ['SudaRead', 'SudaWrite']})
   call dein#add('lambdalisue/vim-manpager', {'on_cmd': ['Man'], 'on_map': ['<Plug>']})
   call dein#add('liuchengxu/vista.vim', {'on_cmd': ['Vista']})
   call dein#add('mbbill/undotree', {'on_cmd': ['UndotreeToggle']})
   call dein#add('moll/vim-bbye', {'on_cmd': ['Bdelete']})
   call dein#add('segeljakt/vim-silicon', {'on_cmd': ['Silicon']})
+  call dein#add('thinca/vim-editvar', {'on_cmd': ['Editvar']})
   call dein#add('thinca/vim-quickrun', {'depends': ['vim-quickrun-neovim-job', 'open-browser']})
   call dein#add('tyru/capture.vim')
   call dein#add('tyru/open-browser.vim', {'lazy': 1})
@@ -448,9 +450,20 @@ command! -nargs=* AutoCmd autocmd vimrc <args>
 
 "" Leader
 let g:mapleader = "\<Space>"
-noremap <Leader> <Nop>
-noremap <dev>    <Nop>
-map     m        <dev>
+nnoremap <Leader> <Nop>
+xnoremap <Leader> <Nop>
+nnoremap <t> <Nop>
+nmap     t     <t>
+nnoremap <dev>    <Nop>
+xnoremap <dev>    <Nop>
+nmap     m        <dev>
+xmap     m        <dev>
+nnoremap <fzf-p>  <Nop>
+xnoremap <fzf-p>  <Nop>
+nmap     ;        <fzf-p>
+xmap     ;        <fzf-p>
+nnoremap ;;       ;
+xnoremap ;;       ;
 
 "" Zero (Move beginning toggle)
 " noremap <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
@@ -541,8 +554,6 @@ if has('nvim')
 endif
 
 "" Tab
-nnoremap <t> <Nop>
-nmap     t     <t>
 nnoremap <silent> <t>t :<C-u>tablast <Bar> tabedit<CR>
 nnoremap <silent> <t>d :<C-u>tabclose<CR>
 nnoremap <silent> <t>h :<C-u>tabprevious<CR>
@@ -1879,13 +1890,6 @@ if dein#tap('fzf-preview.vim')
   let $BAT_STYLE                        = 'plain'
   let g:fzf_preview_history_dir         = '~/.fzf'
   let $FZF_PREVIEW_PLUGIN_HELP_ROOT_DIR = '~/.vim/bundle/repos/github.com'
-
-  nnoremap <fzf-p> <Nop>
-  xnoremap <fzf-p> <Nop>
-  nmap     ;       <fzf-p>
-  xmap     ;       <fzf-p>
-  nnoremap ;;      ;
-  xnoremap ;;      ;
 
   nnoremap <silent> <fzf-p>r     :<C-u>FzfPreviewProjectMruFilesRpc --experimental-fast<CR>
   nnoremap <silent> <fzf-p>w     :<C-u>FzfPreviewProjectMrwFilesRpc --experimental-fast<CR>
