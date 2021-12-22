@@ -473,6 +473,9 @@ noremap ^ 0
 imap <C-h> <BS>
 cmap <C-h> <BS>
 
+"" <C-w>
+iunmap <C-w>
+
 "" Buffer
 nnoremap <C-q> <C-^>
 
@@ -480,7 +483,6 @@ nnoremap <C-q> <C-^>
 nnoremap <silent> <Leader>R :<C-u>w<CR>:e!<CR>
 
 "" Yank
-nnoremap Y y$
 function! s:yank_without_indent() abort
   normal! gvy
   let content = getreg(v:register, 1, v:true)
