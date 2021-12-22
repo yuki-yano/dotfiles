@@ -3260,6 +3260,15 @@ if dein#tap('smart-cursor.nvim')
 endif
 " }}}3
 
+" smart-word {{{3
+if dein#tap('vim-smartword')
+  nmap w  <Plug>(smartword-w)
+  nmap b  <Plug>(smartword-b)
+  nmap e  <Plug>(smartword-e)
+  nmap ge <Plug>(smartword-ge)
+endif
+" }}}3
+
 " tcomment {{{3
 if dein#tap('tcomment_vim')
   let g:tcomment_maps = 0
