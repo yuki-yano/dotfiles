@@ -12,6 +12,10 @@
     "border": true,
     "highlight": "CocSuggestFloating"
   },
+  "signature.floatConfig": {
+    "border": true,
+    "highlight": "CocSignatureFloating"
+  },
   "coc.source.ultisnips-select.priority": 500,
   "tabnine.priority": 100,
   "diagnostic.messageTarget": "float",

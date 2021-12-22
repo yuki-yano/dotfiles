@@ -1340,6 +1340,7 @@ if dein#tap('coc.nvim')
   \ 'coc-prisma',
   \ 'coc-python',
   \ 'coc-react-refactor',
+  \ 'coc-rg',
   \ 'coc-rust-analyzer',
   \ 'coc-sh',
   \ 'coc-solargraph',
@@ -1397,20 +1398,19 @@ if dein#tap('coc.nvim')
   nmap <silent> gn <Plug>(coc-git-nextchunk)
 
   function! s:organize_import_and_format() abort
-    call CocAction('runCommand', 'editor.action.organizeImport')
+    function! s:execute_format(...) abort
+      if <SID>is_deno()
+        call CocActionAsync('format')
+      else
+        call CocActionAsync('runCommand', 'eslint.executeAutofix', { err, actions -> CocActionAsync('runCommand', 'prettier.formatFile') })
+      endif
+    endfunction
 
-    if <SID>is_deno()
-      call CocAction('format')
-    else
-      call CocAction('runCommand', 'eslint.executeAutofix')
-      call CocAction('runCommand', 'prettier.formatFile')
-    endif
+    call CocActionAsync('runCommand', 'editor.action.organizeImport', function('<SID>execute_format'))
   endfunction
 
   command! OrganizeImport call <SID>organize_import_and_format()
   " command! CocMarkdownPreview CocCommand markdown-preview-enhanced.openPreview
-
-  " AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
   function! s:show_documentation() abort
     if index(['vim','help'], &filetype) >= 0
@@ -1419,21 +1419,6 @@ if dein#tap('coc.nvim')
       call CocActionAsync('doHover')
     endif
   endfunction
-
-  function! s:coc_float() abort
-    call coc#config('diagnostic.messageTarget', 'float')
-    call coc#config('signature.target', 'float')
-    call coc#config('coc.preferences.hoverTarget', 'float')
-  endfunction
-
-  function! s:coc_echo() abort
-    call coc#config('diagnostic.messageTarget', 'echo')
-    call coc#config('signature.target', 'echo')
-    call coc#config('coc.preferences.hoverTarget', 'echo')
-  endfunction
-
-  command! CocFloat call <SID>coc_float()
-  command! CocEcho  call <SID>coc_echo()
 
   function! s:coc_typescript_settings() abort
     setlocal tagfunc=CocTagFunc
@@ -1459,7 +1444,7 @@ if dein#tap('coc.nvim')
       return s:is_deno_cache
     endif
 
-    if findfile('is_deno', getcwd() . '/.git') !=# '' || finddir('node_modules', getcwd()) ==# ''
+    if filereadable('.git/is_deno') || !isdirectory('node_modules')
       let s:is_deno_cache = v:true
       return v:true
     else
@@ -1474,6 +1459,7 @@ if dein#tap('coc.nvim')
   endfunction
 
   " AutoCmd CursorHold * silent call CocActionAsync('highlight')
+  AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
   AutoCmd VimEnter * call <SID>coc_ts_ls_initialize()
   AutoCmd FileType typescript,typescriptreact call <SID>coc_typescript_settings()
   AutoCmd FileType rust call <SID>coc_rust_settings()
@@ -4621,6 +4607,7 @@ AutoCmd ColorScheme gruvbox-material highlight CocInfoSign             ctermfg=2
 AutoCmd ColorScheme gruvbox-material highlight CocFloating             ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2C3538
 AutoCmd ColorScheme gruvbox-material highlight CocHoverFloating        ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2A2D2F
 AutoCmd ColorScheme gruvbox-material highlight CocSuggestFloating      ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2A2D2F
+AutoCmd ColorScheme gruvbox-material highlight CocSignatureFloating    ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2A2D2F
 AutoCmd ColorScheme gruvbox-material highlight CocDiagnosticFloating   ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2A2D2F
 
 AutoCmd ColorScheme gruvbox-material highlight Defx_git_Untracked      ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
