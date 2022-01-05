@@ -35,50 +35,6 @@
   "prettier.disableLanguages": [
     "markdown"
   ],
-  "explorer.sources": [
-    {
-      "name": "file",
-      "expand": true
-    }
-  ],
-  "explorer.previewAction.onHover": false,
-  "explorer.keyMappings.global": {
-    "i": false,
-    "<Tab>": "actionMenu",
-    "k": "nodePrev",
-    "j": "nodeNext",
-    "t": [
-      "expanded?",
-      "collapse",
-      "expand"
-    ],
-    "<CR>": "open",
-    "h": [
-      "expanded?",
-      "collapse",
-      "gotoParent"
-    ],
-    "l": [
-      "expandable?",
-      "expand",
-      "open"
-    ],
-    "x": "toggleSelection",
-    "y": "copyFilepath",
-    "Y": "copyFilename",
-    "c": "copyFile",
-    "p": "pasteFile",
-    "d": "delete",
-    "D": "deleteForever",
-    "N": "addFile",
-    "K": "addDirectory",
-    "r": "rename",
-    "!": "toggleHidden",
-    "R": "refresh",
-    "?": "help",
-    "q": "quit",
-    "<esc>": "esc"
-  },
   "languageserver": {
     "efm": {
       "command": "efm-langserver",
