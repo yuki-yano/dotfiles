@@ -248,7 +248,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('LeafCage/yankround.vim')
   call dein#add('MattesGroeger/vim-bookmarks')
   call dein#add('SirVer/ultisnips', {'on_ft': ['snippets'], 'on_event': ['InsertEnter']})
-  call dein#add('cohama/lexima.vim', {'rev': 'dev', 'on_event': ['InsertEnter'], 'hook_post_source': 'call SetupLexima()'})
+  call dein#add('cohama/lexima.vim', {'rev': 'dev', 'on_event': ['InsertEnter', 'CmdlineEnter'], 'hook_post_source': 'call SetupLexima()'})
   call dein#add('haya14busa/vim-asterisk', {'on_map': ['<Plug>']})
   call dein#add('haya14busa/vim-edgemotion', {'on_map': ['<Plug>']})
   call dein#add('hrsh7th/vim-eft', {'on_map': {'nox': '<Plug>'}})
@@ -341,6 +341,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('previm/previm')
   " call dein#add('thinca/vim-localrc')
   " call dein#add('thinca/vim-ref')
+  " call dein#add('tyru/vim-altercmd')
   " call dein#add('voldikss/vim-floaterm', {'on_cmd': ['FloatermToggle']})
   call dein#add('AndrewRadev/linediff.vim')
   call dein#add('aiya000/aho-bakaup.vim', {'on_event': ['BufWritePre', 'FileWritePre']})
@@ -361,7 +362,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('thinca/vim-quickrun', {'depends': ['vim-quickrun-neovim-job', 'open-browser']})
   call dein#add('tyru/capture.vim')
   call dein#add('tyru/open-browser.vim', {'lazy': 1})
-  call dein#add('tyru/vim-altercmd')
   call dein#add('vim-test/vim-test', {'lazy': 1})
   call dein#add('wesQ3/vim-windowswap', {'on_func': ['WindowSwap#EasyWindowSwap']})
 
@@ -1284,21 +1284,17 @@ endfunction
 " Eager Load {{{2
 
 " altercmd {{{3
-function! s:bulk_alter_command(original, altanative) abort
-  if exists(':AlterCommand')
-     execute 'AlterCommand ' . a:original . ' ' a:altanative
-     execute 'AlterCommand <cmdwin> ' . a:original . ' ' a:altanative
-  endif
-endfunction
+" function! s:bulk_alter_command(original, altanative) abort
+"   if exists(':AlterCommand')
+"      execute 'AlterCommand ' . a:original . ' ' a:altanative
+"      execute 'AlterCommand <cmdwin> ' . a:original . ' ' a:altanative
+"   endif
+" endfunction
 
-command! -nargs=+ BulkAlterCommand call <SID>bulk_alter_command(<f-args>)
+" command! -nargs=+ BulkAlterCommand call <SID>bulk_alter_command(<f-args>)
 
 if dein#tap('vim-altercmd')
   call altercmd#load()
-  BulkAlterCommand ee     e!
-  BulkAlterCommand co[de] VSCode
-  BulkAlterCommand fo[rk] !fork
-  BulkAlterCommand js[on] JSON
 endif
 " }}}3
 
@@ -1311,10 +1307,6 @@ endif
 " }}}2
 
 " Plugin Manager {{{2
-
-" dein {{{3
-BulkAlterCommand dein Dein
-" }}}3
 
 " }}}2
 
@@ -1427,9 +1419,6 @@ endif
 
 " coc {{{3
 if dein#tap('coc.nvim')
-  BulkAlterCommand or[ganizeimport] OrganizeImport
-  BulkAlterCommand ma[rkdown]       CocMarkdownPreview
-
   let g:coc_global_extensions = [
   \ 'coc-deno',
   \ 'coc-docker',
@@ -1950,8 +1939,6 @@ if dein#tap('denite.nvim')
   AutoCmd FileType denite        call <SID>denite_settings()
   AutoCmd FileType denite-filter call <SID>denite_filter_settings()
 
-  "" menu
-  BulkAlterCommand to[ggle] Denite<Space>menu:toggle
   let s:menus = {}
   let s:menus.toggle = { 'description': 'Toggle Command' }
 
@@ -2048,9 +2035,6 @@ if dein#tap('fzf-preview.vim')
   nnoremap <silent> <Plug>(dev)o  <Cmd>CocCommand fzf-preview.CocOutline --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
 
   AutoCmd User fzf_preview#rpc#initialized call <SID>fzf_preview_settings()
-
-  BulkAlterCommand todo CocCommand<Space>fzf-preview.TodoComments
-  BulkAlterCommand memo CocCommand<Space>fzf-preview.MemoList
 
   function! s:buffers_delete_from_lines(lines) abort
     for line in a:lines
@@ -2183,16 +2167,6 @@ endif
 
 " gina {{{3
 if dein#tap('gina.vim')
-  BulkAlterCommand git   Gina
-  BulkAlterCommand gina  Gina
-  BulkAlterCommand gs    Gina<Space>status
-  BulkAlterCommand gci   Gina<Space>commit<Space>--no-verify
-  BulkAlterCommand gd    Gina<Space>diff
-  BulkAlterCommand gdc   Gina<Space>diff<Space>--cached
-  BulkAlterCommand gco   Gina<Space>checkout
-  BulkAlterCommand log   Gina<Space>log
-  BulkAlterCommand blame Gina<Space>blame
-
   AutoCmd VimEnter * call <SID>gina_settings()
 
   function! s:gina_settings() abort
@@ -2229,9 +2203,6 @@ endif
 
 " gitsessions {{{3
 if dein#tap('gitsessions.vim')
-  BulkAlterCommand gss GitSessionSave
-  BulkAlterCommand gsl GitSessionLoad
-
   let g:gitsessions_disable_auto_load = 1
 endif
 " }}}3
@@ -3076,8 +3047,6 @@ endif
 
 " grepper {{{3
 if dein#tap('vim-grepper')
-  BulkAlterCommand gr[ep] Grepper
-
   let g:grepper = {
   \ 'tools': ['rg', 'git'],
   \ }
@@ -3088,7 +3057,7 @@ if dein#tap('vim-grepper')
   \ 'grepprg': 'rg --with-filename --sort=path --no-heading --vimgrep'
   \ }
 
-  nnoremap <silent> <Leader>g <Cmd>Grepper<CR>
+  nnoremap <silent> <Leader>g <Cmd>GrepperRg<CR>
 endif
 " }}}3
 
@@ -3137,6 +3106,11 @@ if dein#tap('lexima.vim')
   let g:lexima_enable_endwise_rules = 0
 
   function! SetupLexima() abort
+    call <SID>setup_lexima_insert()
+    call <SID>setup_lexima_cmdline()
+  endfunction
+
+  function! s:setup_lexima_insert() abort
     let s:rules = []
 
     "" Parenthesis
@@ -3294,6 +3268,53 @@ if dein#tap('lexima.vim')
       call lexima#add_rule(s:rule)
     endfor
   endfunction
+
+  function! s:setup_lexima_cmdline() abort
+    LeximaAlterCommand ee                 e!
+    LeximaAlterCommand js\%[on]           JSON
+    LeximaAlterCommand dein               Dein
+    LeximaAlterCommand or\%[ganizeimport] OrganizeImport
+    LeximaAlterCommand todo               CocCommand<Space>fzf-preview.TodoComments
+    LeximaAlterCommand memo               CocCommand<Space>fzf-preview.MemoList
+    LeximaAlterCommand git                Gina
+    LeximaAlterCommand gina               Gina
+    LeximaAlterCommand gs                 Gina<Space>status
+    LeximaAlterCommand gci                Gina<Space>commit<Space>--no-verify
+    LeximaAlterCommand gd                 Gina<Space>diff
+    LeximaAlterCommand gdc                Gina<Space>diff<Space>--cached
+    LeximaAlterCommand gco                Gina<Space>checkout
+    LeximaAlterCommand log                Gina<Space>log
+    LeximaAlterCommand blame              Gina<Space>blame
+    LeximaAlterCommand bro\%[wse]         Gina<Space>browse<Space>--exact<Space>:
+    LeximaAlterCommand gss                GitSessionSave
+    LeximaAlterCommand gsl                GitSessionLoad
+    LeximaAlterCommand grep               GrepperRg
+    LeximaAlterCommand replacer           lua<Space>require('replacr').run()
+    LeximaAlterCommand sc\%[ratch]        Scratch
+    LeximaAlterCommand ss                 SaveProjectLayout
+    LeximaAlterCommand sl                 LoadProjectLayout
+    LeximaAlterCommand vis\%[ta]          Vista
+    LeximaAlterCommand cap\%[ture]        Capture
+    LeximaAlterCommand te\%[st]           Ultest
+    LeximaAlterCommand tn\%[ear]          UltestNearest
+    LeximaAlterCommand ts\%[ummary]       UltestSummary
+    LeximaAlterCommand r\%[un]            QuickRun
+  endfunction
+
+  function! s:lexima_alter_command(original, altanative) abort
+    let input_space = '<C-w>' . a:altanative . '<Space>'
+    let input_cr    = '<C-w>' . a:altanative . '<CR>'
+
+    let rule = {
+    \ 'mode': ':',
+    \ 'at': '^\(''<,''>\)\?' . a:original . '\%#',
+    \ }
+
+    call lexima#add_rule(extend(rule, { 'char': '<Space>', 'input': input_space }))
+    call lexima#add_rule(extend(rule, { 'char': '<CR>',    'input': input_cr    }))
+  endfunction
+
+  command! -nargs=+ LeximaAlterCommand call <SID>lexima_alter_command(<f-args>)
 endif
 " }}}3
 
@@ -3320,20 +3341,6 @@ endif
 
 " quick-scope {{{3
 " let g:qs_buftype_blacklist = ['terminal', 'nofile']
-" }}}3
-
-" replacer {{{3
-if dein#tap('replacer.nvim')
-  BulkAlterCommand repla[cer] lua<Space>require('replacr').run()
-
-  command! Replace lua require("replacer").run()
-endif
-" }}}3
-
-" reword {{{3
-if dein#tap('reword.vim')
-  BulkAlterCommand rew[ord] %Reword
-endif
 " }}}3
 
 " sandwich {{{3
@@ -3495,8 +3502,6 @@ endif
 
 " scratch {{{3
 if dein#tap('scratch.vim')
-  BulkAlterCommand sc[ratch] Scratch
-
   let g:scratch_no_mappings = 1
 endif
 " }}}3
@@ -3790,9 +3795,6 @@ if dein#tap('vim-layout')
 
   command! SaveProjectLayout call <SID>save_project_layout()
   command! LoadProjectLayout call <SID>load_project_layout()
-
-  BulkAlterCommand savel SaveProjectLayout
-  BulkAlterCommand loadl LoadProjectLayout
 endif
 " }}}3
 
@@ -4246,8 +4248,6 @@ endif
 
 " vista {{{3
 if dein#tap('vista.vim')
-  BulkAlterCommand vis[ta] Vista
-
   if dein#tap('coc.nvim')
     let g:vista_default_executive = 'coc'
   endif
@@ -4386,7 +4386,6 @@ endif
 
 " capture {{{3
 if dein#tap('capture.vim')
-  BulkAlterCommand cap[ture] Capture
   AutoCmd FileType capture nnoremap <silent> <buffer> q <Cmd>quit<CR>
 endif
 " }}}3
@@ -4474,10 +4473,6 @@ endif
 " test {{{3
 if dein#tap('vim-test') &&
    \ dein#tap('vim-ultest')
-  BulkAlterCommand te[st]     Ultest
-  BulkAlterCommand tn[ear]    UltestNearest
-  BulkAlterCommand ts[ummary] UltestSummary
-
   let g:ultest_use_pty = 1
 endif
 " }}}3
@@ -4587,8 +4582,6 @@ endif
 
 " quickrun {{{3
 if dein#tap('vim-quickrun')
-  BulkAlterCommand r[un] QuickRun
-
   let s:notify_hook = {}
   let g:quickrun_running_message = ''
   let g:quickrun_notify_success_message = ''
@@ -4772,10 +4765,6 @@ nnoremap <silent> <Esc><Esc> <Cmd>nohlsearch<CR><Cmd>EscEsc<CR>
 " let g:VM_maps['c']                  = 'c'
 " let g:VM_maps['C']                  = 'C'
 " let g:VM_maps['Replace Pattern']    = 'R'
-" " }}}3
-
-" " ref {{{3
-" BulkAlterCommand refe Ref<Space>refe
 " " }}}3
 
 " }}}2
