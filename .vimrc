@@ -229,6 +229,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('haya14busa/incsearch.vim')
   " call dein#add('haya14busa/is.vim')
   " call dein#add('haya14busa/vim-metarepeat')
+  " call dein#add('hrsh7th/vim-seak')
   " call dein#add('inkarkat/vim-EnhancedJumps')
   " call dein#add('lambdalisue/reword.vim')
   " call dein#add('mg979/vim-visual-multi', {'rev': 'test'})
@@ -249,6 +250,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('haya14busa/vim-asterisk', {'on_map': ['<Plug>']})
   call dein#add('haya14busa/vim-edgemotion', {'on_map': ['<Plug>']})
   call dein#add('hrsh7th/vim-eft', {'on_map': {'nox': '<Plug>'}})
+  call dein#add('hrsh7th/vim-searchx')
   call dein#add('junegunn/vim-easy-align', {'on_map': ['<Plug>(EasyAlign)']})
   call dein#add('kana/vim-smartword', {'on_map': ['<Plug>']})
   call dein#add('lambdalisue/vim-backslash', {'on_ft': ['vim']})
@@ -263,6 +265,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tommcdo/vim-exchange', {'on_map': ['<Plug>(Exchange']})
   call dein#add('tpope/vim-repeat')
   call dein#add('tyru/caw.vim')
+
+  if isdirectory(expand('~/repos/github.com/yuki-yano/fuzzy-motion.vim'))
+    call dein#add('~/repos/github.com/yuki-yano/fuzzy-motion.vim')
+  endif
 
   if has('nvim')
     " call dein#add('b3nj5m1n/kommentary')
@@ -755,6 +761,100 @@ let g:loaded_netrwFileHandlers = 1
 " }}}1
 
 " Command & Function {{{1
+
+" Vital {{{2
+function! s:has(list, value) abort
+  return index(a:list, a:value) isnot -1
+endfunction
+
+function! s:_get_unary_caller(f) abort
+  return type(a:f) is type(function('function')) ? function('call') : function('s:_call_string_expr')
+endfunction
+
+function! s:_call_string_expr(expr, args) abort
+  return map([a:args[0]], a:expr)[0]
+endfunction
+
+function! s:sort(list, f) abort
+  if type(a:f) is type(function('function'))
+    return sort(a:list, a:f)
+  else
+    let s:sort_expr = a:f
+    return sort(a:list, 's:_compare_by_string_expr')
+  endif
+endfunction
+
+function! s:_compare_by_string_expr(a, b) abort
+  return eval(s:sort_expr)
+endfunction
+
+function! s:uniq(list) abort
+  return s:uniq_by(a:list, 'v:val')
+endfunction
+
+function! s:uniq_by(list, f) abort
+  let l:Call  = s:_get_unary_caller(a:f)
+  let applied = []
+  let result  = []
+  for x in a:list
+    let y = l:Call(a:f, [x])
+    if !s:has(applied, y)
+      call add(result, x)
+      call add(applied, y)
+    endif
+    unlet x y
+  endfor
+  return result
+endfunction
+
+function! s:product(lists) abort
+  let result = [[]]
+  for pool in a:lists
+    let tmp = []
+    for x in result
+      let tmp += map(copy(pool), 'x + [v:val]')
+    endfor
+    let result = tmp
+  endfor
+  return result
+endfunction
+
+function! s:permutations(list, ...) abort
+  if a:0 > 1
+    throw 'vital: Data.List: too many arguments'
+  endif
+  let r = a:0 == 1 ? a:1 : len(a:list)
+  if r > len(a:list)
+    return []
+  elseif r < 0
+    throw 'vital: Data.List: {r} must be non-negative integer'
+  endif
+  let n = len(a:list)
+  let result = []
+  for indices in s:product(map(range(r), 'range(n)'))
+    if len(s:uniq(indices)) == r
+      call add(result, map(indices, 'a:list[v:val]'))
+    endif
+  endfor
+  return result
+endfunction
+
+function! s:combinations(list, r) abort
+  if a:r > len(a:list)
+    return []
+  elseif a:r < 0
+    throw 'vital: Data.List: {r} must be non-negative integer'
+  endif
+  let n = len(a:list)
+  let result = []
+  for indices in s:permutations(range(n), a:r)
+    if s:sort(copy(indices), 'a:a - a:b') == indices
+      call add(result, map(indices, 'a:list[v:val]'))
+    endif
+  endfor
+  return result
+endfunction
+" }}}2
 
 " Move cursor last position {{{2
 " AutoCmd BufRead * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g`\"" | endif
@@ -2443,25 +2543,153 @@ endif
 " hlslens & asterisk & anzu {{{3
 if dein#tap('nvim-hlslens') &&
    \ dein#tap('vim-asterisk') &&
-   \ dein#tap('vim-anzu')
-  " let g:incsearch#magic = '\v'
-
-  " map /  <Plug>(incsearch-forward)
-  " map ?  <Plug>(incsearch-backward)
-
+   \ dein#tap('vim-anzu') &&
+   \ dein#tap('vim-searchx')
   if has('nvim')
+    let g:searchx = {}
+    let g:searchx.auto_accept = v:true
+    let g:searchx.markers = split('ASDFGHJKLQWERTYUIOPZXCVBNM', '.\zs')
+
+    function! g:searchx.convert(input) abort
+      if a:input !~# '\k'
+        return '\V' .. a:input
+      endif
+
+      if dein#tap('fuzzy-motion.vim') && a:input =~# ';'
+        let max_score = 0
+        let fuzzy_input = ''
+
+        for q in s:fuzzy_query(a:input)
+          let targets = denops#request('fuzzy-motion', 'targets', [q])
+
+          if len(targets) > 0 && targets[0].score > max_score
+            let max_score = targets[0].score
+            let fuzzy_input = join(split(q, ' '), '.\{-}')
+          endif
+
+          " let total_score = 0
+          " for target in targets
+          "   let total_score += target.score
+          " endfor
+          "
+          " if total_score > max_score
+          "   let max_score = total_score
+          "   let fuzzy_input = join(split(q, ' '), '.\{-}')
+          " endif
+        endfor
+
+        return fuzzy_input ==# '' ? a:input : fuzzy_input
+      endif
+
+      return a:input
+    endfunction
+
+    function! s:fuzzy_query(input) abort
+      if match(a:input, ';') == -1
+        return [a:input]
+      endif
+
+      let input = substitute(a:input, ';', '', 'g')
+      let trigger_count = len(a:input) - len(input)
+
+      let arr = range(1, len(input) - 1)
+
+      let result = []
+      for ps in s:combinations(arr, trigger_count)
+        let ps = reverse(ps)
+        let str = input
+        for p in ps
+          let str = str[0 : p - 1] . ' ' . str[p : -1]
+        endfor
+        let result += [str]
+      endfor
+
+      return result
+    endfunction
+
     lua require('hlslens').setup({auto_enable = true})
 
-    nmap <silent> n  :<C-u>execute('normal! ' . v:count1 . 'n')<CR>:lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)zzzv
-    nmap <silent> N  :<C-u>execute('normal! ' . v:count1 . 'N')<CR>:lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)zzzv
-    nmap <silent> *  <Plug>(asterisk-z*):lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
-    xmap <silent> *  <Plug>(asterisk-z*):lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
-    nmap <silent> #  <Plug>(asterisk-z#):lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
-    xmap <silent> #  <Plug>(asterisk-z#):lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
-    nmap <silent> g* <Plug>(asterisk-gz*):lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
-    xmap <silent> g* <Plug>(asterisk-gz*):lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
-    nmap <silent> g# <Plug>(asterisk-gz#):lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
-    xmap <silent> g# <Plug>(asterisk-gz#):lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
+    nnoremap / <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 1})<CR>
+    nnoremap ? <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 0})<CR>
+    onoremap / <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 1})<CR>
+    onoremap ? <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 0})<CR>
+    xnoremap / <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 1})<CR>
+    xnoremap ? <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 0})<CR>
+
+    nnoremap ' <Cmd>call searchx#select()<CR>
+
+    nnoremap <silent> n  <Cmd>call searchx#next_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
+    nnoremap <silent> N  <Cmd>call searchx#prev_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
+    nnoremap <silent> *  <Cmd>call Asterisk(1)<CR><Cmd>call SearchInfo(1, 1)<CR>
+    xnoremap <silent> *  <Cmd>call Asterisk(1)<CR><Cmd>call SearchInfo(1, 1)<CR>
+    nnoremap <silent> g* <Cmd>call Asterisk(0)<CR><Cmd>call SearchInfo(1, 1)<CR>
+    xnoremap <silent> g* <Cmd>call Asterisk(0)<CR><Cmd>call SearchInfo(1, 1)<CR>
+
+    function! SearchInfo(hlslens_start, anzu_update) abort
+      lua require('hlslens').enable()
+      if a:hlslens_start
+        lua require('hlslens').start()
+      endif
+
+      if a:anzu_update
+        AnzuUpdateSearchStatus
+      endif
+    endfunction
+
+    function! Asterisk(is_whole) abort
+      call feedkeys(asterisk#do(mode(1), {'direction': 1, 'do_jump': 0, 'is_whole': a:is_whole}), 'nit')
+    endfunction
+
+    function! s:change_fuzzy_motion() abort
+      let input = getcmdline()
+      call feedkeys("\<Esc>", 'nit')
+      call timer_start(0, { -> feedkeys("\<Cmd>FuzzyMotion\<CR>" . substitute(input, ';', '', 'g'), 'nit') })
+    endfunction
+
+    function! s:search_enter() abort
+      lua require('hlslens').start(true)
+
+      cnoremap <C-s> <Cmd>call <SID>change_fuzzy_motion()<CR>
+    endfunction
+
+    function! s:search_leave() abort
+      AnzuUpdateSearchStatus
+
+      try
+        cunmap <C-j>
+        cunmap <C-k>
+        cunmap <C-s>
+      catch /.*/
+      endtry
+    endfunction
+
+    function! s:search_changed() abort
+      lua require('hlslens').disable()
+      lua require('hlslens').enable()
+      lua require('hlslens').start(true)
+    endfunction
+
+    function! s:search_cancel() abort
+      lua require('hlslens').disable()
+      AnzuClearSearchStatus
+
+      try
+        cunmap <C-j>
+        cunmap <C-k>
+        cunmap <C-s>
+      catch /.*/
+      endtry
+    endfunction
+
+    function! s:search_accept() abort
+      call feedkeys("\<Cmd>set hlsearch\<CR>", 'n')
+    endfunction
+
+    AutoCmd User SearchxEnter                      call <SID>search_enter()
+    AutoCmd User SearchxLeave                      call <SID>search_leave()
+    AutoCmd User SearchxInputChanged               call <SID>search_changed()
+    AutoCmd User SearchxCancel                     call <SID>search_cancel()
+    AutoCmd User SearchxAccept,SearchxAcceptReturn call <SID>search_accept()
   endif
 endif
 " }}}3
@@ -2816,6 +3044,30 @@ if dein#tap('vim-edgemotion')
   xmap <silent> <Leader>k <Plug>(edgemotion-k)
   omap <silent> <Leader>j <Plug>(edgemotion-j)
   omap <silent> <Leader>k <Plug>(edgemotion-k)
+
+" fuzzy-motion {{{3
+if dein#tap('fuzzy-motion.vim')
+  let g:fuzzy_motion_word_regexp_list = ['[0-9a-zA-Z_-]+',  '([0-9a-zA-Z_-]|[.])+', '([0-9a-zA-Z]|[()<>.-_#''"]|(\s=+\s)|(,\s)|(:\s)|(\s=>\s))+']
+
+  nnoremap <silent> ss <Cmd>FuzzyMotion<CR>
+  onoremap <silent> ss <Cmd>FuzzyMotion<CR>
+  xnoremap <silent> ss <Cmd>FuzzyMotion<CR>
+endif
+" }}}3
+
+" gomove {{{3
+if dein#tap('nvim-gomove')
+lua << EOF
+require("gomove").setup {
+  map_defaults = true,
+  reindent_mode = 'none',
+}
+EOF
+
+  xmap <silent> <C-h> <Plug>GoVSMLeft
+  xmap <silent> <C-k> <Plug>GoVSMUp
+  xmap <silent> <C-j> <Plug>GoVSMDown
+  xmap <silent> <C-l> <Plug>GoVSMRight
 endif
 " }}}3
 
@@ -3243,6 +3495,14 @@ if dein#tap('scratch.vim')
   BulkAlterCommand sc[ratch] Scratch
 
   let g:scratch_no_mappings = 1
+endif
+" }}}3
+
+" seak {{{3
+if dein#tap('vim-seak')
+  let g:seak_enabled     = v:true
+  let g:seak_marks       = split('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '.\zs')
+  let g:seak_auto_accept = { 'nohlsearch': v:true }
 endif
 " }}}3
 
@@ -4563,7 +4823,7 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight DiffChange   ctermfg=233  cte
 AutoCmd ColorScheme gruvbox-material highlight Normal       ctermfg=233  ctermbg=NONE guifg=#d4be98 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight DiffText     ctermfg=NONE ctermbg=223  guifg=NONE    guibg=#716522
 AutoCmd ColorScheme gruvbox-material highlight Folded       ctermfg=245  ctermbg=NONE guifg=#686f9a guibg=NONE
-AutoCmd ColorScheme gruvbox-material highlight IncSearch    ctermfg=234  ctermbg=167  guifg=NONE    guibg=#4E4A16
+AutoCmd ColorScheme gruvbox-material highlight IncSearch    ctermfg=68   ctermbg=232  guifg=NONE    guibg=#175655
 AutoCmd ColorScheme gruvbox-material highlight Search       ctermfg=68   ctermbg=232  guifg=NONE    guibg=#213F72
 AutoCmd ColorScheme gruvbox-material highlight SignColumn   ctermfg=0    ctermbg=NONE guifg=#32302f guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight Visual       ctermfg=NONE ctermbg=23   guifg=NONE    guibg=#1D4647
@@ -4690,7 +4950,7 @@ AutoCmd ColorScheme gruvbox-material highlight GitSignsChange    ctermfg=214  ct
 AutoCmd ColorScheme gruvbox-material highlight CocGitChangedSign ctermfg=214  ctermbg=NONE guifg=#FFAF60 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight link GitSignsCurrentLineBlame Comment
 
-AutoCmd ColorScheme gruvbox-material highlight HlSearchNear            ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#175655
+AutoCmd ColorScheme gruvbox-material highlight link HlSearchNear IncSearch
 AutoCmd ColorScheme gruvbox-material highlight HlSearchLens            ctermfg=68   ctermbg=232                       guifg=#889eb5 guibg=#283642
 AutoCmd ColorScheme gruvbox-material highlight HlSearchLensNear        ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#213F72
 AutoCmd ColorScheme gruvbox-material highlight HlSearchFloat           ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#213F72
@@ -4698,6 +4958,11 @@ AutoCmd ColorScheme gruvbox-material highlight HlSearchFloat           ctermfg=6
 AutoCmd ColorScheme gruvbox-material highlight ScrollView              ctermbg=159                                                  guibg=#D0D0D0
 
 AutoCmd ColorScheme gruvbox-material highlight VistaFloat ctermbg=237 guibg=#3a3a3a
+
+AutoCmd ColorScheme gruvbox-material highlight SearchxMarkerCurrent ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#E27878 guibg=NONE    gui=underline,bold
+AutoCmd ColorScheme gruvbox-material highlight SearchxMarker        ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#FFAF60 guibg=NONE    gui=NONE
+
+AutoCmd ColorScheme gruvbox-material highlight link SearchxIncSearch IncSearch
 
 " TreeSitter
 AutoCmd ColorScheme gruvbox-material highlight link TSPunctBracket Normal
