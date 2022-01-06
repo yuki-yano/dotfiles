@@ -325,7 +325,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " tmux {{{3
-  call dein#add('christoomey/vim-tmux-navigator')
+  " call dein#add('christoomey/vim-tmux-navigator')
+  if has('nvim')
+    call dein#add('aserowy/tmux.nvim')
+  endif
   " }}}3
 
   " Util {{{3
@@ -2176,12 +2179,12 @@ if dein#tap('gina.vim')
 
     call gina#custom#command#option('/\%(status\|changes\)', '--ignore-submodules')
     call gina#custom#command#option('status', '--branch')
-    call gina#custom#mapping#nmap('status', '<C-j>', ':TmuxNavigateDown<CR>', {'noremap': 1, 'silent': 1})
-    call gina#custom#mapping#nmap('status', '<C-k>', ':TmuxNavigateUp<CR>',   {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('status', '<C-j>', '<Cmd>lua require("tmux").move_bottom()<CR>', {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('status', '<C-k>', '<Cmd>lua require("tmux").move_top()<CR>',    {'noremap': 1, 'silent': 1})
 
     call gina#custom#mapping#nmap('diff', '<CR>', '<Plug>(gina-diff-jump-vsplit)', {'silent': 1})
 
-    call gina#custom#mapping#nmap('blame', '<C-l>', ':TmuxNavigateRight<CR>',    {'noremap': 1, 'silent': 1})
+    call gina#custom#mapping#nmap('blame', '<C-l>', '<Cmd>lua require("tmux").move_right()<CR>',    {'noremap': 1, 'silent': 1})
     call gina#custom#mapping#nmap('blame', '<C-r>', '<Plug>(gina-blame-redraw)', {'noremap': 1, 'silent': 1})
     call gina#custom#mapping#nmap('blame', 'j',     'j<Plug>(gina-blame-echo)')
     call gina#custom#mapping#nmap('blame', 'k',     'k<Plug>(gina-blame-echo)')
@@ -4256,6 +4259,29 @@ if dein#tap('vista.vim')
   nnoremap <silent> <Leader>v <Cmd>Vista<CR>
 
   AutoCmd VimEnter * call vista#RunForNearestMethodOrFunction()
+endif
+" }}}3
+
+" }}}2
+
+" tmux {{{2
+"
+" tmux.nvim {{{3
+if dein#tap('tmux.nvim')
+lua << EOF
+require("tmux").setup({
+  copy_sync = {
+    enable = false,
+  },
+  navigation = {
+    enable_default_keybindings = true,
+    cycle_navigation = true,
+  },
+  resize = {
+    enable_default_keybindings = false,
+  }
+})
+EOF
 endif
 " }}}3
 
