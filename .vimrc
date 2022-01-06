@@ -491,7 +491,7 @@ iunmap <C-w>
 nnoremap <C-q> <C-^>
 
 "" Save and reload (for treesitter)
-nnoremap <silent> <Leader>R <Cmd>w<CR><Cmd>e!<CR>
+nnoremap <silent> <Leader>R <Cmd>update<CR><Cmd>e!<CR>
 
 "" Yank
 function! s:yank_without_indent() abort
@@ -3271,6 +3271,8 @@ if dein#tap('lexima.vim')
 
   function! s:setup_lexima_cmdline() abort
     LeximaAlterCommand ee                 e!
+    LeximaAlterCommand er                 update<Space><Bar><Space>e!
+    LeximaAlterCommand dp                 diffput
     LeximaAlterCommand js\%[on]           JSON
     LeximaAlterCommand dein               Dein
     LeximaAlterCommand or\%[ganizeimport] OrganizeImport
@@ -3286,8 +3288,6 @@ if dein#tap('lexima.vim')
     LeximaAlterCommand log                Gina<Space>log
     LeximaAlterCommand blame              Gina<Space>blame
     LeximaAlterCommand bro\%[wse]         Gina<Space>browse<Space>--exact<Space>:
-    LeximaAlterCommand gss                GitSessionSave
-    LeximaAlterCommand gsl                GitSessionLoad
     LeximaAlterCommand grep               GrepperRg
     LeximaAlterCommand replacer           lua<Space>require('replacr').run()
     LeximaAlterCommand sc\%[ratch]        Scratch
@@ -3833,22 +3833,22 @@ if dein#tap('lightline.vim')
   \   'paste': "%{&paste ? 'PASTE' : ''}",
   \  },
   \ 'component_function': {
-  \   'mode':             'Lightline_mode',
-  \   'filepath':         'Lightline_filepath',
-  \   'filename':         'Lightline_filename',
-  \   'modified_buffers': 'Lightline_modified_buffers',
-  \   'filetype':         'Lightline_filetype',
-  \   'lineinfo':         'Lightline_lineinfo',
-  \   'fileencoding':     'Lightline_fileencoding',
-  \   'fileformat':       'Lightline_fileformat',
-  \   'special_mode':     'Lightline_special_mode',
-  \   'coc_status':       'Lightline_coc_status',
+  \   'mode':             'LightlineMode',
+  \   'filepath':         'LightlineFilePath',
+  \   'filename':         'LightlineFileName',
+  \   'modified_buffers': 'LightlineModifiedBuffers',
+  \   'filetype':         'LightlineFileType',
+  \   'lineinfo':         'LightlineLineInfo',
+  \   'fileencoding':     'LightlineFileEncoding',
+  \   'fileformat':       'LightlineFileFormat',
+  \   'special_mode':     'LightlineSpecialMode',
+  \   'coc_status':       'LightlineCocStatus',
   \   'anzu':             'anzu#search_status',
-  \   'quickrun':         'Lightline_quickrun_runnning',
+  \   'quickrun':         'LightlineQuickrunRunnning',
   \   'vm_regions':       'Lightline_vm_regions',
   \ },
   \ 'tab_component_function': {
-  \   'tabwinnum': 'Lightline_tab_win_num',
+  \   'tabwinnum': 'LightlineTabWinNum',
   \ },
   \ 'component_visible_condition': {
   \   'anzu':       "%{anzu#search_status !=# ''}",
@@ -3866,12 +3866,12 @@ if dein#tap('lightline.vim')
   \   'quickrun':            'quickrun',
   \ },
   \ 'component_expand': {
-  \   'linter_errors':       'Lightline_coc_errors',
-  \   'linter_warnings':     'Lightline_coc_warnings',
-  \   'linter_informations': 'Lightline_coc_information',
-  \   'linter_hint':         'Lightline_coc_hint',
-  \   'linter_ok':           'Lightline_coc_ok',
-  \   'quickrun':            'Lightline_quickrun_runnning',
+  \   'linter_errors':       'LightlineCocErrors',
+  \   'linter_warnings':     'LightlineCocWarnings',
+  \   'linter_informations': 'LightlineCocInformations',
+  \   'linter_hint':         'LightlineCocHint',
+  \   'linter_ok':           'LightlineCocOk',
+  \   'quickrun':            'LightlineQuickrunRunnning',
   \ },
   \ 'enable': {
   \   'statusline': 1,
@@ -3957,26 +3957,26 @@ if dein#tap('lightline.vim')
   \ 'gina-blame',
   \ ]
 
-  function! Lightline_is_visible(width) abort
+  function! LightlineIsVisible(width) abort
     return a:width < winwidth(0)
   endfunction
 
-  function! Lightline_mode() abort
+  function! LightlineMode() abort
     return lightline#mode()
   endfunction
 
-  function! Lightline_special_mode() abort
+  function! LightlineSpecialMode() abort
     let special_mode = get(s:lightline_ft_to_mode_hash, &filetype, '')
     let win = getwininfo(win_getid())[0]
     return special_mode !=# '' ? special_mode :
     \ anzu#search_status() !=# '' ? 'Anzu' :
-    \ Lightline_filetype() ==# '' ? '' :
+    \ LightlineFileType() ==# '' ? '' :
     \ win.loclist ? '[Location List] ' . get(w:, 'quickfix_title', ''):
     \ win.quickfix ? '[QuickFix] ' . get(w:, 'quickfix_title', '') :
     \ ''
   endfunction
 
-  function! Lightline_filepath() abort
+  function! LightlineFilePath() abort
     if count(s:lightline_ignore_filepath_ft, &filetype) || expand('%:t') ==# '[Command Line]'
       return ''
     endif
@@ -3992,7 +3992,7 @@ if dein#tap('lightline.vim')
     return len(dirs) ? not_home_prefix . join(dirs, '/') . '/' . last_dir : last_dir
   endfunction
 
-  function! Lightline_filename() abort
+  function! LightlineFileName() abort
     let filename = fnamemodify(expand('%'), ':t')
 
     if count(s:lightline_ignore_filename_ft, &filetype)
@@ -4014,7 +4014,7 @@ if dein#tap('lightline.vim')
     return filename
   endfunction
 
-  function! Lightline_modified_buffers() abort
+  function! LightlineModifiedBuffers() abort
     let modified_background_buffers = filter(range(1, bufnr('$')),
     \ { _, bufnr -> bufexists(bufnr) && buflisted(bufnr) && getbufvar(bufnr, 'buftype') ==# '' && filereadable(expand('#' . bufnr . ':p')) && bufnr != bufnr('%') && getbufvar(bufnr, '&modified') == 1 }
     \ )
@@ -4030,7 +4030,7 @@ if dein#tap('lightline.vim')
     endif
   endfunction
 
-  function! Lightline_filetype() abort
+  function! LightlineFileType() abort
     if has_key(s:lightline_ft_to_mode_hash, &filetype)
       return ''
     endif
@@ -4044,8 +4044,8 @@ if dein#tap('lightline.vim')
     endif
   endfunction
 
-  function! Lightline_lineinfo() abort
-    if !Lightline_is_visible(100)
+  function! LightlineLineInfo() abort
+    if !LightlineIsVisible(100)
       return ''
     endif
 
@@ -4054,8 +4054,8 @@ if dein#tap('lightline.vim')
     \ ''
   endfunction
 
-  function! Lightline_fileencoding() abort
-    if !Lightline_is_visible(140)
+  function! LightlineFileEncoding() abort
+    if !LightlineIsVisible(140)
       return ''
     endif
 
@@ -4066,8 +4066,8 @@ if dein#tap('lightline.vim')
     \ ''
   endfunction
 
-  function! Lightline_fileformat() abort
-    if !Lightline_is_visible(140)
+  function! LightlineFileFormat() abort
+    if !LightlineIsVisible(140)
       return ''
     endif
 
@@ -4076,47 +4076,43 @@ if dein#tap('lightline.vim')
     \ ''
   endfunction
 
-  function! Lightline_tab_win_num(n) abort
+  function! LightlineTabWinNum(n) abort
     return a:n . ':' . len(tabpagebuflist(a:n))
   endfunction
 
-  function! Lightline_coc_errors() abort
+  function! LightlineCocErrors() abort
     return b:coc_diagnostic_info['error'] != 0 ? ' ' . b:coc_diagnostic_info['error'] : ''
   endfunction
 
-  function! Lightline_coc_warnings() abort
+  function! LightlineCocWarnings() abort
     return b:coc_diagnostic_info['warning'] != 0 ? ' ' . b:coc_diagnostic_info['warning'] : ''
   endfunction
 
-  function! Lightline_coc_information() abort
+  function! LightlineCocInformations() abort
     return b:coc_diagnostic_info['information'] != 0 ? ' ' . b:coc_diagnostic_info['information'] : ''
   endfunction
 
-  function! Lightline_coc_hint() abort
+  function! LightlineCocHint() abort
     return b:coc_diagnostic_info['hint'] != 0 ? ' ' . b:coc_diagnostic_info['hint'] : ''
   endfunction
 
-  function! Lightline_coc_ok() abort
+  function! LightlineCocOk() abort
     return b:coc_diagnostic_info['error'] == 0 &&
     \ b:coc_diagnostic_info['warning'] == 0 &&
     \ b:coc_diagnostic_info['information'] == 0 ?
     \ ' ' : ''
   endfunction
 
-  function! Lightline_quickrun_runnning() abort
-    return g:quickrun_running_message
-  endfunction
-
-  function! Lightline_coc_status() abort
+  function! LightlineCocStatus() abort
     return get(g:, 'coc_status', '')
   endfunction
 
-  " function! Lightline_denite() abort
-  "   return (&filetype !=# 'denite') ? '' : (substitute(denite#get_status_mode(), '[- ]', '', 'g'))
-  " endfunction
+  function! LightlineQuickrunRunnning() abort
+    return g:quickrun_running_message
+  endfunction
 
   function! NearestMethodOrFunction() abort
-    if !Lightline_is_visible(140)
+    if !LightlineIsVisible(140)
       return ''
     endif
     return get(b:, 'vista_nearest_method_or_function', '')
