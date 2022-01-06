@@ -701,6 +701,10 @@ set foldmethod=manual
 "" FileType
 set viewoptions=cursor,folds
 set suffixesadd=.js,.ts,.rb
+if has('nvim')
+  let g:do_filetype_lua    = 1
+  let g:did_load_filetypes = 0
+endif
 
 "" sign
 set signcolumn=yes
