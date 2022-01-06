@@ -280,11 +280,11 @@ if dein#load_state(s:DEIN_BASE_PATH)
     " call dein#add('rmagatti/auto-session')
     " call dein#add('windwp/nvim-spectre')
     " call dein#add('winston0410/smart-cursor.nvim')
+    " call dein#add('yuki-yano/zero.nvim')
     call dein#add('booperlv/nvim-gomove')
     call dein#add('kevinhwang91/nvim-hlslens')
     call dein#add('nacro90/numb.nvim')
     call dein#add('windwp/nvim-ts-autotag')
-    call dein#add('yuki-yano/zero.nvim')
   endif
   " }}}3
 
@@ -479,9 +479,12 @@ nmap     M                <Plug>(bookmark)
 
 
 "" Zero (Move beginning toggle)
-"" Use plugin
-" noremap <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
-noremap ^ 0
+nnoremap <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
+onoremap <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
+xnoremap <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
+nnoremap ^ 0
+onoremap ^ 0
+xnoremap ^ 0
 
 "" BackSpace
 imap <C-h> <BS>
