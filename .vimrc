@@ -2720,12 +2720,17 @@ endif
 
 " caw {{{3
 if dein#tap('caw.vim')
-  let g:caw_integrated_plugin = 'ts_context_commentstring'
+  let g:caw_no_default_keymappings = 1
+  " let g:caw_integrated_plugin      = 'ts_context_commentstring'
 
-  nmap <silent> <expr> <Leader>cc <SID>caw_hatpos_toggle()
-  xmap <silent> <expr> <Leader>cc <SID>caw_hatpos_toggle()
-  nmap <silent> <expr> <Leader>cw <SID>caw_wrap_toggle()
-  xmap <silent> <expr> <Leader>cw <SID>caw_wrap_toggle()
+  " omap <SID>(line) <Cmd>normal! v^og_<CR>0
+
+  nmap <silent> <expr> gcc <SID>caw_hatpos_toggle() . 'il0'
+  nmap <silent> <expr> gc  <SID>caw_hatpos_toggle()
+  xmap <silent> <expr> gc  <SID>caw_hatpos_toggle()
+  nmap <silent> <expr> gww <SID>caw_wrap_toggle() . 'il0'
+  nmap <silent> <expr> gw  <SID>caw_wrap_toggle()
+  xmap <silent> <expr> gw  <SID>caw_wrap_toggle()
 
   function! s:caw_hatpos_toggle() abort
     if dein#tap('nvim-ts-context-commentstring')
@@ -2733,7 +2738,7 @@ if dein#tap('caw.vim')
       call caw#update_comments_from_commentstring(&commentstring)
     endif
 
-    return "\<Plug>(caw:hatpos:toggle)"
+    return "\<Plug>(caw:hatpos:toggle:operator)"
   endfunction
 
   function! s:caw_wrap_toggle() abort
@@ -2747,7 +2752,7 @@ if dein#tap('caw.vim')
       let b:caw_wrap_oneline_comment = ['/*', '*/']
     endif
 
-    return "\<Plug>(caw:wrap:toggle)"
+    return "\<Plug>(caw:wrap:toggle:operator)"
   endfunction
 
   " function! s:caw_hatpos_toggle(mode) abort
