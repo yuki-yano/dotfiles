@@ -3025,12 +3025,12 @@ endif
 
 " edgemotion {{{3
 if dein#tap('vim-edgemotion')
-  nmap <silent> <Leader>j <Cmd>normal! m`<CR><Plug>(edgemotion-j)
-  nmap <silent> <Leader>k <Cmd>normal! m`<CR><Plug>(edgemotion-k)
-  xmap <silent> <Leader>j <Cmd>normal! m`<CR><Plug>(edgemotion-j)
-  xmap <silent> <Leader>k <Cmd>normal! m`<CR><Plug>(edgemotion-k)
-  omap <silent> <Leader>j <Cmd>normal! m`<CR><Plug>(edgemotion-j)
-  omap <silent> <Leader>k <Cmd>normal! m`<CR><Plug>(edgemotion-k)
+  nnoremap <silent> <expr> <Leader>j 'm`' . edgemotion#move(1)
+  onoremap <silent> <expr> <Leader>j edgemotion#move(1)
+  xnoremap <silent> <expr> <Leader>j edgemotion#move(1)
+  nnoremap <silent> <expr> <Leader>k 'm`' . edgemotion#move(0)
+  onoremap <silent> <expr> <Leader>k edgemotion#move(0)
+  xnoremap <silent> <expr> <Leader>k edgemotion#move(0)
 endif
 " }}}3
 
