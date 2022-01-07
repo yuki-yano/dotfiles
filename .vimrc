@@ -241,6 +241,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('t9md/vim-textmanip', {'on_map': ['<Plug>']})
   " call dein#add('tomtom/tcomment_vim')
   " call dein#add('tpope/vim-commentary')
+  " call dein#add('tpope/vim-repeat')
   " call dein#add('unblevable/quick-scope')
   " call dein#add('vim-scripts/Align')
   " call dein#add('yuki-yano/zero.vim')
@@ -263,7 +264,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('terryma/vim-expand-region', {'on_map': ['<Plug>(expand_region_']})
   call dein#add('thinca/vim-qfreplace', {'on_cmd': ['Qfreplace']})
   call dein#add('tommcdo/vim-exchange', {'on_map': ['<Plug>(Exchange']})
-  call dein#add('tpope/vim-repeat')
   call dein#add('tyru/caw.vim')
 
   if isdirectory(expand('~/repos/github.com/yuki-yano/fuzzy-motion.vim'))
@@ -303,7 +303,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('itchyny/lightline.vim')
   call dein#add('lambdalisue/glyph-palette.vim')
   call dein#add('lambdalisue/readablefold.vim')
-  call dein#add('machakann/vim-highlightedundo')
+  call dein#add('machakann/vim-highlightedundo', {'on_map': ['<Plug>']})
   call dein#add('machakann/vim-highlightedyank', {'on_event': ['TextYankPost']})
   call dein#add('mopp/smartnumber.vim')
   call dein#add('rbtnn/vim-layout')
@@ -3726,6 +3726,9 @@ if dein#tap('vim-highlightedundo')
   let g:highlightedundo_enable         = 1
   let g:highlightedundo#highlight_mode = 2
 
+  nmap <silent> u     <Plug>(highlightedundo-undo)
+  nmap <silent> <C-r> <Plug>(highlightedundo-redo)
+
   function! s:highlightedundo_toggle() abort
     if g:highlightedundo_enable == 1
       let g:highlightedundo_enable = 0
@@ -3746,8 +3749,6 @@ if dein#tap('vim-highlightedundo')
     nunmap u
     nunmap <C-r>
   endfunction
-
-  AutoCmd VimEnter * call <SID>highlightedundo_enable()
 endif
 " }}}3
 
