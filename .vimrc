@@ -249,7 +249,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('LeafCage/yankround.vim')
   call dein#add('MattesGroeger/vim-bookmarks')
   call dein#add('SirVer/ultisnips', {'on_ft': ['snippets'], 'on_event': ['InsertEnter']})
-  call dein#add('cohama/lexima.vim', {'rev': 'dev', 'on_event': ['InsertEnter', 'CmdlineEnter'], 'hook_post_source': 'call SetupLexima()'})
+  call dein#add('cohama/lexima.vim', {'on_event': ['InsertEnter', 'CmdlineEnter'], 'hook_post_source': 'call SetupLexima()'})
   call dein#add('haya14busa/vim-asterisk', {'on_map': ['<Plug>']})
   call dein#add('haya14busa/vim-edgemotion', {'on_map': ['<Plug>']})
   call dein#add('hrsh7th/vim-eft', {'on_map': {'nox': '<Plug>'}})
@@ -3161,14 +3161,14 @@ if dein#tap('lexima.vim')
 
     "" Move closing parenthesis
     let s:rules += [
-    \ { 'char': '<C-f>',                   'input': '<Right>'                },
-    \ { 'char': '<C-f>', 'at': '\%#\s*)',  'input': '<Left><C-o>f)<Right>',  },
-    \ { 'char': '<C-f>', 'at': '\%#\s*\}', 'input': '<Left><C-o>f}<Right>',  },
-    \ { 'char': '<C-f>', 'at': '\%#\s*\]', 'input': '<Left><C-o>f]<Right>',  },
-    \ { 'char': '<C-f>', 'at': '\%#\s*>',  'input': '<Left><C-o>f><Right>',  },
-    \ { 'char': '<C-f>', 'at': '\%#\s*`',  'input': '<Left><C-o>f`<Right>',  },
-    \ { 'char': '<C-f>', 'at': '\%#\s*"',  'input': '<Left><C-o>f"<Right>',  },
-    \ { 'char': '<C-f>', 'at': '\%#\s*''', 'input': '<Left><C-o>f''<Right>', },
+    \ { 'char': '<C-f>',                   'input': '<Right>'                         },
+    \ { 'char': '<C-f>', 'at': '\%#\s*)',  'input': '<Left><C-o>:normal! f)<Right>',  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*\}', 'input': '<Left><C-o>:normal! f}<Right>',  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*\]', 'input': '<Left><C-o>:normal! f]<Right>',  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*>',  'input': '<Left><C-o>:normal! f><Right>',  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*`',  'input': '<Left><C-o>:normal! f`<Right>',  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*"',  'input': '<Left><C-o>:normal! f"<Right>',  },
+    \ { 'char': '<C-f>', 'at': '\%#\s*''', 'input': '<Left><C-o>:normal! f''<Right>', },
     \ ]
 
     "" Insert semicolon at the end of the line
@@ -3179,13 +3179,18 @@ if dein#tap('lexima.vim')
     \ { 'char': ';', 'at': '^\s*;\%#\}$', 'input': '<BS><Right>;' },
     \ ]
 
+    "" Surround function
+    let s:rules += [
+    \ { 'char': '>', 'at': ')\%#', 'input': '<BS><C-o>:normal! f(%a)<Esc>' },
+    \ ]
+
     "" TypeScript
     let s:rules += [
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\s([a-zA-Z, ]*>\%#)',            'input': '<BS><Left><C-o>f)<Right>a=> {}<Esc>',                 },
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\s([a-zA-Z]\+>\%#)',             'input': '<BS><Right> => {}<Left>',              'priority': 10 },
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-z]((.*>\%#.*))',              'input': '<BS><Left><C-o>f)a => {}<Esc>',                       },
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-z]([a-zA-Z]\+>\%#)',          'input': '<BS> => {}<Left>',                                    },
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '(.*[a-zA-Z]\+<[a-zA-Z]\+>>\%#)', 'input': '<BS><Left><C-o>f)<Right>a=> {}<Left>',                },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\s([a-zA-Z, ]*>\%#)',           'delete': ')', 'input': '<BS>) => {', 'input_after': '}',                },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\s([a-zA-Z]\+>\%#)',            'delete': ')', 'input': '<BS>) => {', 'input_after': '}', 'priority': 10 },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-z]((.*>\%#.*))',             'delete': ')', 'input': '<BS>) => {', 'input_after': '}',                },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-z]([a-zA-Z]\+>\%#)',         'delete': ')', 'input': '<BS>) => {', 'input_after': '}',                },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '(.*[a-zA-Z]\+<[a-zA-Z]\+>\%#)', 'delete': ')', 'input': '<BS>) => {', 'input_after': '}',                },
     \ ]
 
     "" TSX with nvim-ts-autotag
