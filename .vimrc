@@ -4503,11 +4503,10 @@ if dein#tap('toggleterm.nvim')
     lua require('toggleterm').setup{}
   endfunction
 
-  nnoremap <silent> <C-s><C-s> <Cmd>ToggleTerm direction=float<CR>
-  nnoremap <silent> <C-s>s     <Cmd>ToggleTerm direction=horizontal size=<C-r>=float2nr(&lines * 0.4)<CR><CR>
-  nnoremap <silent> <C-s>v     <Cmd>ToggleTerm direction=vertical size=<C-r>=float2nr(&columns * 0.3)<CR><CR>
-  nnoremap <silent> <C-s>p     <Cmd>ToggleTerm direction=float<CR>
-
+  nnoremap <silent> <C-s><C-s> :<C-u>ToggleTerm direction=float<CR>
+  nnoremap <silent> <C-s>s     :<C-u>ToggleTerm direction=horizontal size=<C-r>=float2nr(&lines * 0.4)<CR><CR>
+  nnoremap <silent> <C-s>v     :<C-u>ToggleTerm direction=vertical size=<C-r>=float2nr(&columns * 0.3)<CR><CR>
+  nnoremap <silent> <C-s><C-v> :<C-u>ToggleTerm direction=vertical size=<C-r>=float2nr(&columns * 0.3)<CR><CR>
 
   function! s:toggleterm_settings() abort
     tnoremap <silent> <nowait> <buffer> <C-s> <C-\><C-n>:close<CR>
