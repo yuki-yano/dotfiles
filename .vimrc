@@ -1638,7 +1638,7 @@ cmp.setup({
     expand = function(args)
       vim.fn["UltiSnips#Anon"](args.body)
     end,
-  }, 
+  },
   mapping = {
     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
@@ -2593,11 +2593,18 @@ if dein#tap('nvim-hlslens') &&
 
     nnoremap ' <Cmd>call searchx#select()<CR>
 
-    nnoremap <silent> n  <Cmd>call searchx#next_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
-    nnoremap <silent> N  <Cmd>call searchx#prev_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
+    nnoremap <silent> n     <Cmd>call searchx#next_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
+    nnoremap <silent> N     <Cmd>call searchx#prev_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
+    onoremap <silent> n     <Cmd>call searchx#next_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
+    onoremap <silent> N     <Cmd>call searchx#prev_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
+    xnoremap <silent> n     <Cmd>call searchx#next_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
+    xnoremap <silent> N     <Cmd>call searchx#prev_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
+    cnoremap <silent> <C-j> <Cmd>call searchx#next_dir()<CR>
+    cnoremap <silent> <C-k> <Cmd>call searchx#prev_dir()<CR>
+
     nnoremap <silent> *  <Cmd>call Asterisk(1)<CR><Cmd>call SearchInfo(1, 1)<CR>
-    xnoremap <silent> *  <Cmd>call Asterisk(1)<CR><Cmd>call SearchInfo(1, 1)<CR>
     nnoremap <silent> g* <Cmd>call Asterisk(0)<CR><Cmd>call SearchInfo(1, 1)<CR>
+    xnoremap <silent> *  <Cmd>call Asterisk(1)<CR><Cmd>call SearchInfo(1, 1)<CR>
     xnoremap <silent> g* <Cmd>call Asterisk(0)<CR><Cmd>call SearchInfo(1, 1)<CR>
 
     function! SearchInfo(hlslens_start, anzu_update) abort
@@ -2628,11 +2635,10 @@ if dein#tap('nvim-hlslens') &&
     endfunction
 
     function! s:search_leave() abort
+      normal! zv
       AnzuUpdateSearchStatus
 
       try
-        cunmap <C-j>
-        cunmap <C-k>
         cunmap <C-s>
       catch /.*/
       endtry
@@ -2649,8 +2655,6 @@ if dein#tap('nvim-hlslens') &&
       AnzuClearSearchStatus
 
       try
-        cunmap <C-j>
-        cunmap <C-k>
         cunmap <C-s>
       catch /.*/
       endtry
