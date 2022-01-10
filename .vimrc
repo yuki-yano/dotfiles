@@ -2699,14 +2699,7 @@ if dein#tap('vim-bookmarks')
 
     if isdirectory('.git')
       let location = getcwd() . '/.git'
-    else
-      let location = finddir('.git', '.;')
-    endif
-
-    if len(location) > 0
       return location . '/' . filename
-    else
-      return getcwd() . '/.' . filename
     endif
   endfunction
 endif
@@ -2799,7 +2792,7 @@ if dein#tap('dps-dial.vim')
   xmap <C-a>  <Plug>(dps-dial-increment)
   xmap <C-x>  <Plug>(dps-dial-decrement)
   xmap g<C-a> g<Plug>(dps-dial-increment)
-  xmap g<C-x> g<Plug>(dps-dial-decrement) 
+  xmap g<C-x> g<Plug>(dps-dial-decrement)
 
   function! s:dps_dial_settings() abort
     let g:dps_dial#augends = ['decimal-integer', 'boolean', 'and_or', 'const_let', 'case', 'date', 'date-slash', 'color']
