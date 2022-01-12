@@ -1087,7 +1087,7 @@ nnoremap <silent> <Leader>p <Cmd>UsePluginQuickFix<CR>
 " }}}2
 
 " View JSON {{{2
-command! JSON set ft=json | call CocAction('format')
+command! JSON setfiletype json | call CocAction('format')
 " }}}2
 
 " VSCode {{{2
@@ -2351,7 +2351,7 @@ if dein#tap('fern.vim')
     nmap <silent> <buffer> <nowait> m       <Plug>(fern-action-move)
     nmap <silent> <buffer> <nowait> M       <Plug>(fern-action-clipboard-move)
     nmap <silent> <buffer> <nowait> P       <Plug>(fern-action-clipboard-paste)
-    nmap <silent> <buffer> <nowait> !       <Plug>(fern-action-hidden-toggle)
+    nmap <silent> <buffer> <nowait> !       <Plug>(fern-action-hidden:toggle)
     nmap <silent> <buffer> <nowait> y       <Plug>(fern-action-yank)
     nmap <silent> <buffer> <nowait> <C-g>   <Plug>(fern-action-debug)
     nmap <silent> <buffer> <nowait> ?       <Plug>(fern-action-help)
@@ -2708,14 +2708,14 @@ endif
 " caw {{{3
 if dein#tap('caw.vim')
   let g:caw_no_default_keymappings = 1
-  " let g:caw_integrated_plugin      = 'ts_context_commentstring'
+  " let g:caw_integrated_plugin = 'ts_context_commentstring'
 
   " omap <SID>(line) <Cmd>normal! v^og_<CR>0
 
-  nmap <silent> <expr> gcc <SID>caw_hatpos_toggle() . 'il0'
+  nmap <silent> <expr> gcc <SID>caw_hatpos_toggle() . '<Plug>(textobj-line-i)0'
   nmap <silent> <expr> gc  <SID>caw_hatpos_toggle()
   xmap <silent> <expr> gc  <SID>caw_hatpos_toggle()
-  nmap <silent> <expr> gww <SID>caw_wrap_toggle() . 'il0'
+  nmap <silent> <expr> gww <SID>caw_wrap_toggle() . '<Plug>(textobj-line-i)0'
   nmap <silent> <expr> gw  <SID>caw_wrap_toggle()
   xmap <silent> <expr> gw  <SID>caw_wrap_toggle()
 
@@ -2741,22 +2741,6 @@ if dein#tap('caw.vim')
 
     return "\<Plug>(caw:wrap:toggle:operator)"
   endfunction
-
-  " function! s:caw_hatpos_toggle(mode) abort
-  "   if dein#tap('nvim-ts-context-commentstring')
-  "     lua require('ts_context_commentstring.internal').update_commentstring()
-  "   endif
-  "
-  "   call caw#keymapping_stub(a:mode, 'hatpos', 'toggle')
-  " endfunction
-
-  " function! s:caw_wrap_toggle(mode) abort
-  "   let b:caw_wrap_oneline_comment = ["/*", "*/"]
-  "   call caw#keymapping_stub(a:mode, 'wrap', 'toggle')
-  "   unlet b:caw_wrap_oneline_comment
-  " endfunction
-
-  " autocmd FileType typescript,typescriptreact let b:caw_wrap_oneline_comment = ['/*', '*/']
 endif
 " }}}3
 
@@ -3992,7 +3976,7 @@ if dein#tap('lightline.vim')
     let not_home_prefix = match(path, '^/') != -1 ? '/' : ''
     let dirs            = split(path, '/')
     let last_dir        = remove(dirs, -1)
-    call map(dirs, 'v:val[0]')
+    call map(dirs, { _, v -> v[0] })
 
     return len(dirs) ? not_home_prefix . join(dirs, '/') . '/' . last_dir : last_dir
   endfunction
