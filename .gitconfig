@@ -91,9 +91,6 @@
   pushInsteadOf = git://github.com/
   pushInsteadOf = https://github.com/
 
-[url "git://github.com/"]
-  insteadOf = https://github.com/
-
 [browse-remote "github.com"]
   top  = https://{host}/{path}
   ref  = https://{host}/{path}/tree/{short_ref}
