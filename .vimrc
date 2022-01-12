@@ -2535,7 +2535,7 @@ if dein#tap('nvim-hlslens') &&
         let fuzzy_input = ''
 
         for q in s:fuzzy_query(a:input)
-          let targets = denops#request('fuzzy-motion', 'targets', [q])
+          let targets = fuzzy_motion#targets(q)
 
           if len(targets) > 0 && targets[0].score > max_score
             let max_score = targets[0].score
