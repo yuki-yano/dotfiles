@@ -148,7 +148,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('rhysd/conflict-marker.vim')
   " call dein#add('tpope/vim-fugitive')
   " call dein#add('wting/gitsessions.vim', {'on_cmd': ['GitSessionSave', 'GitSessionLoad']})
-  call dein#add('lambdalisue/gina.vim')
+  call dein#add('lambdalisue/gina.vim', {'on_cmd': ['Gina'], 'on_ft': ['fzf']})
 
   if has('nvim')
     " call dein#add('APZelos/blamer.nvim')
@@ -267,7 +267,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('tyru/caw.vim', {'on_map': ['<Plug>']})
 
   if isdirectory(expand('~/repos/github.com/yuki-yano/fuzzy-motion.vim'))
-    call dein#add('~/repos/github.com/yuki-yano/fuzzy-motion.vim', {'on_cmd': ['FuzzyMotion']})
+    call dein#add('~/repos/github.com/yuki-yano/fuzzy-motion.vim', {'on_cmd': ['FuzzyMotion'], 'on_func': ['fuzzy_motion#targets']})
   endif
 
   if has('nvim')
