@@ -1558,11 +1558,16 @@ if dein#tap('coc.nvim')
     Keymap n <silent> <buffer> gK <Cmd>CocCommand rust-analyzer.openDocs<CR>
   endfunction
 
+  function! s:coc_vim_settings() abort
+    setlocal tagfunc=CocTagFunc
+  endfunction
+
   " AutoCmd CursorHold * silent call CocActionAsync('highlight')
   AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
   AutoCmd VimEnter * call <SID>coc_ts_ls_initialize()
   AutoCmd FileType typescript,typescriptreact call <SID>coc_typescript_settings()
   AutoCmd FileType rust call <SID>coc_rust_settings()
+  AutoCmd FileType vim call <SID>coc_vim_settings()
 endif
 " }}}3
 
@@ -1797,12 +1802,11 @@ require('nvim-treesitter.configs').setup {
     "rust",
     "ruby",
     "python",
+    "lua",
     "json",
     "yaml",
     "markdown",
     "dockerfile",
-    "vim",
-    "lua",
     "html",
     "css",
     "comment",
