@@ -278,6 +278,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
     " call dein#add('monaqa/dial.nvim')
     " call dein#add('numToStr/Comment.nvim')
     " call dein#add('phaazon/hop.nvim')
+    " call dein#add('rlane/pounce.nvim', {'on_cmd': ['Pounce']})
     " call dein#add('rmagatti/auto-session')
     " call dein#add('windwp/nvim-spectre')
     " call dein#add('winston0410/smart-cursor.nvim')
@@ -3312,6 +3313,12 @@ if dein#tap('numb.nvim')
   function! SetupNumb() abort
     lua require('numb').setup()
   endfunction
+endif
+" }}}3
+
+" pounce {{{3
+if dein#tap('pounce.nvim')
+  Keymap nox <silent> ss <Cmd>Pounce<CR>
 endif
 " }}}3
 
