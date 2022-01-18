@@ -361,6 +361,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('mbbill/undotree', {'on_cmd': ['UndotreeToggle']})
   call dein#add('moll/vim-bbye', {'on_cmd': ['Bdelete']})
   call dein#add('segeljakt/vim-silicon', {'on_cmd': ['Silicon']})
+  call dein#add('thinca/vim-ambicmd', {'on_func': ['ambicmd#expand']})
   call dein#add('thinca/vim-editvar', {'on_cmd': ['Editvar']})
   call dein#add('thinca/vim-quickrun', {'depends': ['vim-quickrun-neovim-job', 'open-browser', 'nvim-notify']})
   call dein#add('tyru/capture.vim')
@@ -3060,12 +3061,13 @@ if dein#tap('lexima.vim')
 
     "" Move closing parenthesis
     let s:rules += [
-    \ { 'char': '<C-f>', 'at': '\%#\s*)',  'leave': ')',  },
-    \ { 'char': '<C-f>', 'at': '\%#\s*\}', 'leave': '}',  },
-    \ { 'char': '<C-f>', 'at': '\%#\s*\]', 'leave': ']',  },
-    \ { 'char': '<C-f>', 'at': '\%#\s*''', 'leave': '''', },
-    \ { 'char': '<C-f>', 'at': '\%#\s*"',  'leave': '"',  },
-    \ { 'char': '<C-f>', 'at': '\%#\s*`',  'leave': '`',  },
+    \ { 'char': '<C-f>',                                 'input': '<Right>' },
+    \ { 'char': '<C-f>', 'at': '\%#\s*)',  'leave': ')',                    },
+    \ { 'char': '<C-f>', 'at': '\%#\s*\}', 'leave': '}',                    },
+    \ { 'char': '<C-f>', 'at': '\%#\s*\]', 'leave': ']',                    },
+    \ { 'char': '<C-f>', 'at': '\%#\s*''', 'leave': '''',                   },
+    \ { 'char': '<C-f>', 'at': '\%#\s*"',  'leave': '"',                    },
+    \ { 'char': '<C-f>', 'at': '\%#\s*`',  'leave': '`',                    },
     \ ]
 
     "" Insert semicolon at the end of the line
@@ -3078,7 +3080,7 @@ if dein#tap('lexima.vim')
 
     "" Surround function
     let s:rules += [
-    \ { 'char': '>', 'at': ')\%#', 'input': '<BS><C-o>normal! f(%a)<Esc>' },
+    \ { 'char': '>', 'at': ')\%#', 'input': '<BS><C-o>:normal! f(%a)<Esc>' },
     \ ]
 
     "" TypeScript
@@ -3200,6 +3202,11 @@ if dein#tap('lexima.vim')
     LeximaAlterCommand tn\%[ear]          UltestNearest
     LeximaAlterCommand ts\%[ummary]       UltestSummary
     LeximaAlterCommand r\%[un]            QuickRun
+
+    if dein#tap('vim-ambicmd')
+      Keymap c <expr> <Space> <SID>expand_command("\<Space>")
+      Keymap c <expr> <CR>    <SID>expand_command("\<CR>")
+    endif
   endfunction
 
   function! s:lexima_alter_command(original, altanative) abort
@@ -3216,6 +3223,24 @@ if dein#tap('lexima.vim')
   endfunction
 
   command! -nargs=+ LeximaAlterCommand call <SID>lexima_alter_command(<f-args>)
+
+  function! s:expand_command(key) abort
+    let key2char   = { "\<Space>": ' ', "\<CR>": "\r" }
+    let key2lexima = { "\<Space>": '<Space>', "\<CR>": '<CR>' }
+
+    let lexima = lexima#expand(key2lexima[a:key], ':')
+    if lexima !=# key2char[a:key]
+      return lexima
+    endif
+
+    let ambicmd = ambicmd#expand(a:key)
+    if ambicmd !=# key2char[a:key]
+      redraw
+      return ambicmd
+    endif
+
+    return a:key
+  endfunction
 endif
 " }}}3
 
