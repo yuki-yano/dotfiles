@@ -773,6 +773,7 @@ let g:loaded_netrw             = 1
 let g:loaded_netrwPlugin       = 1
 let g:loaded_netrwSettings     = 1
 let g:loaded_netrwFileHandlers = 1
+let g:loaded_matchit           = 1
 
 " }}}2
 
@@ -876,6 +877,35 @@ endfunction
 
 " Move cursor last position {{{2
 " AutoCmd BufRead * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g`\"" | endif
+" }}}2
+
+" Jump match quote {{{2
+function! s:matchit_quote() abort
+  let curr_char = getline('.')[col('.') - 1]
+  if curr_char == '"'
+    if col('.') == col('''>')
+      return "v2i\"o\<Esc>"
+    else
+      return "v2i\"\<Esc>"
+    endif
+  elseif curr_char == "'"
+    if col('.') == col('''>')
+      return "v2i'o\<Esc>"
+    else
+      return "v2i'\<Esc>"
+    endif
+  elseif curr_char == '`'
+    if col('.') == col('''>')
+      return "v2i`o\<Esc>"
+    else
+      return "v2i`\<Esc>"
+    endif
+  else
+    return '%'
+  endif
+endfunction
+
+Keymap nox <expr> % <SID>matchit_quote()
 " }}}2
 
 " highlight cursorline and cursorcolumn with timer {{{2
