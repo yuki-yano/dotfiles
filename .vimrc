@@ -441,6 +441,22 @@ augroup END
 command! -nargs=* AutoCmd autocmd vimrc <args>
 " }}}2
 
+" Keymap {{{2
+function! s:keymap(force_map, modes, ...) abort
+  let arg = join(a:000, ' ')
+  let cmd = (a:force_map || arg =~? '<Plug>') ? 'map' : 'noremap'
+  for mode in split(a:modes, '.\zs')
+    if index(split('nvsxoilct', '.\zs'), mode) < 0
+      echoerr 'Invalid mode is detected: ' . mode
+      continue
+    endif
+    execute mode . cmd arg
+  endfor
+endfunction
+
+command! -nargs=+ -bang Keymap call <SID>keymap(<bang>0, <f-args>)
+" }}}2
+
 " Mappings {{{2
 
 "-------------------------------------------------------------------------------------------|
@@ -460,44 +476,31 @@ command! -nargs=* AutoCmd autocmd vimrc <args>
 
 "" Leader
 let g:mapleader = "\<Space>"
-nnoremap <Leader>         <Nop>
-xnoremap <Leader>         <Nop>
-nnoremap <Plug>(t)        <Nop>
-nmap     t                <Plug>(t)
-nnoremap <Plug>(dev)      <Nop>
-xnoremap <Plug>(dev)      <Nop>
-nmap     m                <Plug>(dev)
-xmap     m                <Plug>(dev)
-nnoremap <Plug>(fzf-p)    <Nop>
-xnoremap <Plug>(fzf-p)    <Nop>
-nmap     ;                <Plug>(fzf-p)
-xmap     ;                <Plug>(fzf-p)
-nnoremap ;;               ;
-xnoremap ;;               ;
-nnoremap <Plug>(bookmark) <Nop>
-nmap     M                <Plug>(bookmark)
+Keymap nx  <Leader>         <Nop>
+Keymap n   <Plug>(t)        <Nop>
+Keymap n   t                <Plug>(t)
+Keymap nx  <Plug>(dev)      <Nop>
+Keymap nx  m                <Plug>(dev)
+Keymap nx  <Plug>(fzf-p)    <Nop>
+Keymap nx  ;                <Plug>(fzf-p)
+Keymap nx  ;;               ;
+Keymap n   <Plug>(bookmark) <Nop>
+Keymap n   M                <Plug>(bookmark)
+Keymap nox s                <Nop>
 
 
 "" Zero (Move beginning toggle)
-nnoremap <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
-onoremap <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
-xnoremap <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
-nnoremap ^ 0
-onoremap ^ 0
-xnoremap ^ 0
+Keymap nox <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
+Keymap nox ^ 0
 
 "" BackSpace
-imap <C-h> <BS>
-cmap <C-h> <BS>
+Keymap ic <C-h> <BS>
 
-"" <C-w>
+"" Neovim default <C-w>
 iunmap <C-w>
 
 "" Buffer
-nnoremap <C-q> <C-^>
-
-"" Save and reload (for treesitter)
-nnoremap <silent> <Leader>R <Cmd>update<CR><Cmd>e!<CR>
+Keymap n <C-q> <C-^>
 
 "" Yank
 function! s:yank_without_indent() abort
@@ -507,52 +510,49 @@ function! s:yank_without_indent() abort
   call map(content, { _, v -> v[leading :] })
   call setreg(v:register, content, getregtype(v:register))
 endfunction
-xnoremap gy <Esc><Cmd>call <SID>yank_without_indent()<CR>
-
-"" Disable s
-noremap s <Nop>
+Keymap x gy <Esc><Cmd>call <SID>yank_without_indent()<CR>
 
 "" Save
-nnoremap <silent> <Leader>w <Cmd>update<CR>
-nnoremap <silent> <Leader>W <Cmd>update!<CR>
+Keymap n <silent> <Leader>w <Cmd>update<CR>
+Keymap n <silent> <Leader>W <Cmd>update!<CR>
 
 "" Automatically indent with i and A
-nnoremap <expr> i len(getline('.')) ? "i" : "\"_cc"
-nnoremap <expr> A len(getline('.')) ? "A" : "\"_cc"
+Keymap n <expr> i len(getline('.')) ? "i" : "\"_cc"
+Keymap n <expr> A len(getline('.')) ? "A" : "\"_cc"
 
 " Ignore registers
-nnoremap x "_x
+Keymap n x "_x
 
 "" tagjump
-nnoremap <silent> s<C-]> <Cmd>wincmd ]<CR>
-nnoremap <silent> v<C-]> <Cmd>vertical wincmd ]<CR>
-nnoremap <silent> t<C-]> <Cmd>tab wincmd ]<CR>
-nnoremap <silent> r<C-]> <C-w>}
+Keymap n <silent> s<C-]> <Cmd>wincmd ]<CR>
+Keymap n <silent> v<C-]> <Cmd>vertical wincmd ]<CR>
+Keymap n <silent> t<C-]> <Cmd>tab wincmd ]<CR>
+Keymap n <silent> r<C-]> <C-w>}
 
 "" QuickFix
-nnoremap [c :cprevious<CR>
-nnoremap ]c :cnext<CR>
+Keymap n [c :cprevious<CR>
+Keymap n ]c :cnext<CR>
 
 "" Location List
-nnoremap [l :lprevious<CR>
-nnoremap ]l :lnext<CR>
+Keymap n [l :lprevious<CR>
+Keymap n ]l :lnext<CR>
 
 "" CommandLine
-noremap! <C-a> <Home>
-noremap! <C-b> <Left>
-noremap! <C-d> <Del>
-noremap! <C-e> <End>
+Keymap ic <C-a> <Home>
+Keymap ic <C-b> <Left>
+Keymap ic <C-d> <Del>
+Keymap ic <C-e> <End>
 " Configure in lexima
-" noremap! <C-f> <Right>
-cnoremap <C-f> <Right>
-cnoremap <C-n> <Down>
-cnoremap <C-p> <Up>
+" Keymap ic <C-f> <Right>
+Keymap c <C-f> <Right>
+Keymap c <C-n> <Down>
+Keymap c <C-p> <Up>
 
 "" Indent
-nnoremap < <<
-nnoremap > >>
-xnoremap < <gv
-xnoremap > >gv|
+Keymap n < <<
+Keymap n > >>
+Keymap x < <gv
+Keymap x > >gv|
 
 "" Window
 if has('nvim')
@@ -571,33 +571,32 @@ if has('nvim')
     endfor
     execute "normal! \<C-w>\<C-w>"
   endfunction
-  nnoremap <silent> <C-w><C-w> <Cmd>call <SID>focus_floating()<CR>
+  Keymap n <silent> <C-w><C-w> <Cmd>call <SID>focus_floating()<CR>
 endif
 
 "" Tab
-nnoremap <silent> <Plug>(t)t <Cmd>tablast <Bar> tabedit<CR>
-nnoremap <silent> <Plug>(t)d <Cmd>tabclose<CR>
-nnoremap <silent> <Plug>(t)h <Cmd>tabprevious<CR>
-nnoremap <silent> <Plug>(t)l <Cmd>tabnext<CR>
-nnoremap <silent> <Plug>(t)m <C-w>T
+Keymap n <silent> <Plug>(t)t <Cmd>tablast <Bar> tabedit<CR>
+Keymap n <silent> <Plug>(t)d <Cmd>tabclose<CR>
+Keymap n <silent> <Plug>(t)h <Cmd>tabprevious<CR>
+Keymap n <silent> <Plug>(t)l <Cmd>tabnext<CR>
+Keymap n <silent> <Plug>(t)m <C-w>T
 
 "" resize
-nnoremap <silent> <Left>  <Cmd>vertical resize -1<CR>
-nnoremap <silent> <Right> <Cmd>vertical resize +1<CR>
-nnoremap <silent> <Up>    <Cmd>resize -1<CR>
-nnoremap <silent> <Down>  <Cmd>resize +1<CR>
+Keymap n <silent> <Left>  <Cmd>vertical resize -1<CR>
+Keymap n <silent> <Right> <Cmd>vertical resize +1<CR>
+Keymap n <silent> <Up>    <Cmd>resize -1<CR>
+Keymap n <silent> <Down>  <Cmd>resize +1<CR>
 
 "" Macro
-nnoremap Q @q
+Keymap n Q @q
 
 "" regexp
-nnoremap <Leader>r :<C-u>%s/\v//g<Left><Left><Left>
-xnoremap <Leader>r "sy:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
+Keymap n <Leader>r :<C-u>%s/\v//g<Left><Left><Left>
+Keymap x <Leader>r "sy:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
 
 "" Clipboard
-nnoremap <silent> sc <Cmd>call system("pbcopy", @") <Bar> echo "Copied \" register to OS clipboard"<CR>
-nnoremap <silent> sp <Cmd>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>
-xnoremap <silent> sp <Cmd>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>
+Keymap n  <silent> sc <Cmd>call system("pbcopy", @") <Bar> echo "Copied \" register to OS clipboard"<CR>
+Keymap nx <silent> sp <Cmd>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>
 " }}}2
 
 " Set Options {{{2
@@ -611,7 +610,7 @@ if has('nvim')
 
   set inccommand=nosplit
 
-  tnoremap <Esc> <C-\><C-n>
+  Keymap t <Esc> <C-\><C-n>
   AutoCmd TermOpen * set nonumber | set norelativenumber
 
   " block cursor for insert
@@ -950,7 +949,7 @@ function! s:quickfix_toggle() abort
 endfunction
 
 command! QuickfixToggle call <SID>quickfix_toggle()
-nnoremap <silent> <Leader>q <Cmd>QuickfixToggle<CR>
+Keymap n <silent> <Leader>q <Cmd>QuickfixToggle<CR>
 " }}}2
 
 " ToggleLocationList {{{2
@@ -964,7 +963,7 @@ function! s:location_list_toggle() abort
 endfunction
 
 command! LocationListToggle call <SID>location_list_toggle()
-nnoremap <silent> <Leader>l <Cmd>LocationListToggle<CR>
+Keymap n <silent> <Leader>l <Cmd>LocationListToggle<CR>
 " }}}2
 
 " HelpEdit & HelpView {{{2
@@ -1081,9 +1080,9 @@ command! UsePluginPrev     call <SID>jump_plugin('prev')
 command! UsePluginNext     call <SID>jump_plugin('next')
 command! UsePluginQuickFix call <SID>jump_plugin('qf')
 
-nnoremap <silent> [p        <Cmd>UsePluginPrev<CR>
-nnoremap <silent> ]p        <Cmd>UsePluginNext<CR>
-nnoremap <silent> <Leader>p <Cmd>UsePluginQuickFix<CR>
+Keymap n <silent> [p        <Cmd>UsePluginPrev<CR>
+Keymap n <silent> ]p        <Cmd>UsePluginNext<CR>
+Keymap n <silent> <Leader>p <Cmd>UsePluginQuickFix<CR>
 " }}}2
 
 " View JSON {{{2
@@ -1228,25 +1227,25 @@ let g:vimsyn_embed = 'l'
 
 " HTML & eruby {{{2
 function! s:map_html_keys() abort
-  inoremap <silent> <buffer> \\ \
-  inoremap <silent> <buffer> \& &amp;
-  inoremap <silent> <buffer> \< &lt;
-  inoremap <silent> <buffer> \> &gt;
-  inoremap <silent> <buffer> \- &#8212;
-  inoremap <silent> <buffer> \<Space> &nbsp;
-  inoremap <silent> <buffer> \` &#8216;
-  inoremap <silent> <buffer> \' &#8217;
-  inoremap <silent> <buffer> \" &#8221;
+  Keymap i <silent> <buffer> \\ \
+  Keymap i <silent> <buffer> \& &amp;
+  Keymap i <silent> <buffer> \< &lt;
+  Keymap i <silent> <buffer> \> &gt;
+  Keymap i <silent> <buffer> \- &#8212;
+  Keymap i <silent> <buffer> \<Space> &nbsp;
+  Keymap i <silent> <buffer> \` &#8216;
+  Keymap i <silent> <buffer> \' &#8217;
+  Keymap i <silent> <buffer> \" &#8221;
 endfunction
 AutoCmd FileType html,eruby call <SID>map_html_keys()
 " }}}2
 
 " Set quit {{{2
-AutoCmd FileType qf   nnoremap <silent> <nowait> <buffer> q <Cmd>quit<CR>
-AutoCmd FileType help nnoremap <silent> <nowait> <buffer> q <Cmd>quit<CR>
-AutoCmd FileType diff nnoremap <silent> <nowait> <buffer> q <Cmd>quit<CR>
-AutoCmd FileType man  nnoremap <silent> <nowait> <buffer> q <Cmd>quit<CR>
-AutoCmd FileType git  nnoremap <silent> <nowait> <buffer> q <Cmd>quit<CR>
+AutoCmd FileType qf   Keymap n <silent> <nowait> <buffer> q <Cmd>quit<CR>
+AutoCmd FileType help Keymap n <silent> <nowait> <buffer> q <Cmd>quit<CR>
+AutoCmd FileType diff Keymap n <silent> <nowait> <buffer> q <Cmd>quit<CR>
+AutoCmd FileType man  Keymap n <silent> <nowait> <buffer> q <Cmd>quit<CR>
+AutoCmd FileType git  Keymap n <silent> <nowait> <buffer> q <Cmd>quit<CR>
 " }}}2
 
 " }}}1
@@ -1254,19 +1253,17 @@ AutoCmd FileType git  nnoremap <silent> <nowait> <buffer> q <Cmd>quit<CR>
 " Command Line Window {{{1
 set cedit=\<C-c>
 
-" nnoremap : q:
-" xnoremap : q:
-" nnoremap q: :
-" xnoremap q: :
+" Keymap nx : q:
+" Keymap nx q: :
 
 AutoCmd CmdwinEnter * call <SID>init_cmdwin()
 AutoCmd CmdwinLeave * call <SID>deinit_cmdwin()
 
 function! s:init_cmdwin() abort
   setlocal number | setlocal norelativenumber
-  nnoremap <buffer> <CR> <CR>
-  nnoremap <buffer> <silent> <nowait> q <Cmd>quit<CR>
-  inoremap <buffer> <C-c> <Esc>l<C-c>
+  Keymap n <buffer> <CR> <CR>
+  Keymap n <buffer> <silent> <nowait> q <Cmd>quit<CR>
+  Keymap i <buffer> <C-c> <Esc>l<C-c>
 
   if dein#tap('coc.nvim')
     call coc#config('suggest.floatEnable', v:false)
@@ -1275,7 +1272,7 @@ function! s:init_cmdwin() abort
     call coc#config('coc.preferences.hoverTarget', 'echo')
   endif
 
-  " nnoremap <silent> <buffer> dd <Cmd>rviminfo<CR><Cmd>call histdel(getcmdwintype(), line('.') - line('$'))<CR><Cmd>wviminfo!<CR>dd
+  " Keymap n <silent> <buffer> dd <Cmd>rviminfo<CR><Cmd>call histdel(getcmdwintype(), line('.') - line('$'))<CR><Cmd>wviminfo!<CR>dd
   startinsert!
 endfunction
 
@@ -1381,11 +1378,11 @@ if dein#tap('ddc.vim')
     call ddc#custom#patch_global('completionMenu', 'pum.vim')
     call popup_preview#enable()
 
-    inoremap <C-Space> <Cmd>call ddc#manual_complete()<CR>
-    inoremap <C-n>     <Cmd>call pum#map#insert_relative(+1)<CR>
-    inoremap <C-p>     <Cmd>call pum#map#insert_relative(-1)<CR>
-    inoremap <C-y>     <Cmd>call pum#map#confirm()<CR>
-    inoremap <C-e>     <Cmd>call pum#map#cancel()<CR>
+    Keymap i <C-Space> <Cmd>call ddc#manual_complete()<CR>
+    Keymap i <C-n>     <Cmd>call pum#map#insert_relative(+1)<CR>
+    Keymap i <C-p>     <Cmd>call pum#map#insert_relative(-1)<CR>
+    Keymap i <C-y>     <Cmd>call pum#map#confirm()<CR>
+    Keymap i <C-e>     <Cmd>call pum#map#cancel()<CR>
   endfunction
 
   " function! EnableDdc() abort
@@ -1402,8 +1399,7 @@ endif
 
 " skkeleton {{{3
 if dein#tap('skkeleton')
-  imap <C-j> <Plug>(skkeleton-toggle)
-  cmap <C-j> <Plug>(skkeleton-toggle)
+  Keymap ic <C-j> <Plug>(skkeleton-toggle)
 
   function! SetupSkkeleton() abort
     call skkeleton#config({
@@ -1413,7 +1409,7 @@ if dein#tap('skkeleton')
   endfunction
 
   if dein#tap('lexima.vim')
-    inoremap <silent> <expr> <Space> skkeleton#is_enabled() ? "\<Space>" : lexima#expand('<SPACE>', 'i')
+    Keymap i <silent> <expr> <Space> skkeleton#is_enabled() ? "\<Space>" : lexima#expand('<SPACE>', 'i')
   endif
 
   " if s:enable_coc
@@ -1466,39 +1462,37 @@ if dein#tap('coc.nvim')
   endif
 
   " Manual completion
-  inoremap <silent> <expr> <C-Space> coc#refresh()
+  Keymap i <silent> <expr> <C-Space> coc#refresh()
 
   " Snippet map
   " let g:coc_snippet_next = '<C-f>'
   " let g:coc_snippet_prev = '<C-b>'
 
   " keymap
-  nnoremap <silent> K             <Cmd>call <SID>show_documentation()<CR>
-  nmap     <silent> <Plug>(dev)p  <Plug>(coc-diagnostic-prev)
-  nmap     <silent> <Plug>(dev)n  <Plug>(coc-diagnostic-next)
-  nmap     <silent> <Plug>(dev)D  <Plug>(coc-definition)
-  nmap     <silent> <Plug>(dev)I  <Plug>(coc-implementation)
-  nmap     <silent> <Plug>(dev)rF <Plug>(coc-references)
-  nmap     <silent> <Plug>(dev)rn <Plug>(coc-rename)
-  nmap     <silent> <Plug>(dev)T  <Plug>(coc-type-definition)
-  nmap     <silent> <Plug>(dev)a  <Plug>(coc-codeaction-selected)iw
-  nmap     <silent> <Plug>(dev)A  <Plug>(coc-codeaction)
-  nmap     <silent> <Plug>(dev)l  <Plug>(coc-codelens-action)
-  xmap     <silent> <Plug>(dev)a  <Plug>(coc-codeaction-selected)
-  nmap     <silent> <Plug>(dev)f  <Plug>(coc-format)
-  xmap     <silent> <Plug>(dev)f  <Plug>(coc-format-selected)
-  nmap     <silent> <Plug>(dev)gs <Plug>(coc-git-chunkinfo)
+  Keymap n <silent> K             <Cmd>call <SID>show_documentation()<CR>
+  Keymap n <silent> <Plug>(dev)p  <Plug>(coc-diagnostic-prev)
+  Keymap n <silent> <Plug>(dev)n  <Plug>(coc-diagnostic-next)
+  Keymap n <silent> <Plug>(dev)D  <Plug>(coc-definition)
+  Keymap n <silent> <Plug>(dev)I  <Plug>(coc-implementation)
+  Keymap n <silent> <Plug>(dev)rF <Plug>(coc-references)
+  Keymap n <silent> <Plug>(dev)rn <Plug>(coc-rename)
+  Keymap n <silent> <Plug>(dev)T  <Plug>(coc-type-definition)
+  Keymap n <silent> <Plug>(dev)a  <Plug>(coc-codeaction-selected)iw
+  Keymap n <silent> <Plug>(dev)A  <Plug>(coc-codeaction)
+  Keymap n <silent> <Plug>(dev)l  <Plug>(coc-codelens-action)
+  Keymap n <silent> <Plug>(dev)f  <Plug>(coc-format)
+  Keymap n <silent> <Plug>(dev)gs <Plug>(coc-git-chunkinfo)
 
-  nnoremap <silent> <expr> <C-d> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-d>"
-  nnoremap <silent> <expr> <C-u> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-u>"
-  inoremap <silent> <expr> <C-d> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(1)\<CR>" : "\<Del>"
-  inoremap <silent> <expr> <C-u> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(0)\<CR>" : "\<C-u>"
+  Keymap n <silent> <expr> <C-d> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-d>"
+  Keymap n <silent> <expr> <C-u> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-u>"
+  Keymap i <silent> <expr> <C-d> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(1)\<CR>" : "\<Del>"
+  Keymap i <silent> <expr> <C-u> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(0)\<CR>" : "\<C-u>"
 
-  " nnoremap <Leader>e <Cmd>CocCommand explorer<CR>
-  " nnoremap <Leader>E <Cmd>CocCommand explorer --reveal expand('%')<CR>
+  " Keymap n <Leader>e <Cmd>CocCommand explorer<CR>
+  " Keymap n <Leader>E <Cmd>CocCommand explorer --reveal expand('%')<CR>
 
-  nmap <silent> gp <Plug>(coc-git-prevchunk)
-  nmap <silent> gn <Plug>(coc-git-nextchunk)
+  Keymap n <silent> gp <Plug>(coc-git-prevchunk)
+  Keymap n <silent> gn <Plug>(coc-git-nextchunk)
 
   function! s:organize_import_and_format() abort
     function! s:execute_format(...) abort
@@ -1526,9 +1520,9 @@ if dein#tap('coc.nvim')
   function! s:coc_typescript_settings() abort
     setlocal tagfunc=CocTagFunc
     if <SID>is_deno()
-      nmap <silent> <buffer> <Plug>(dev)f <Plug>(coc-format)
+      Keymap n <silent> <buffer> <Plug>(dev)f <Plug>(coc-format)
     else
-      nnoremap <silent> <buffer> <Plug>(dev)f <Cmd>CocCommand eslint.executeAutofix<CR><Cmd>CocCommand prettier.formatFile<CR>
+      Keymap n <silent> <buffer> <Plug>(dev)f <Cmd>CocCommand eslint.executeAutofix<CR><Cmd>CocCommand prettier.formatFile<CR>
     endif
   endfunction
 
@@ -1558,7 +1552,7 @@ if dein#tap('coc.nvim')
 
   function! s:coc_rust_settings() abort
     setlocal tagfunc=CocTagFunc
-    nnoremap <silent> <buffer> gK <Cmd>CocCommand rust-analyzer.openDocs<CR>
+    Keymap n <silent> <buffer> gK <Cmd>CocCommand rust-analyzer.openDocs<CR>
   endfunction
 
   " AutoCmd CursorHold * silent call CocActionAsync('highlight')
@@ -1581,12 +1575,12 @@ if dein#tap('vim-lsp')
       setlocal tagfunc=lsp#tagfunc
     endif
 
-    nmap <buffer> <Plug>(dev)d  <Plug>(lsp-definition)
-    nmap <buffer> <Plug>(dev)r  <Plug>(lsp-references)
-    nmap <buffer> <Plug>(dev)i  <Plug>(lsp-implementation)
-    nmap <buffer> <Plug>(dev)t  <Plug>(lsp-type-definition)
-    nmap <buffer> <Plug>(dev)rn <Plug>(lsp-rename)
-    nmap <buffer> K             <Plug>(lsp-hover)
+    Keymap n <buffer> <Plug>(dev)d  <Plug>(lsp-definition)
+    Keymap n <buffer> <Plug>(dev)r  <Plug>(lsp-references)
+    Keymap n <buffer> <Plug>(dev)i  <Plug>(lsp-implementation)
+    Keymap n <buffer> <Plug>(dev)t  <Plug>(lsp-type-definition)
+    Keymap n <buffer> <Plug>(dev)rn <Plug>(lsp-rename)
+    Keymap n <buffer> K             <Plug>(lsp-hover)
   endfunction
 
   AutoCmd User lsp_buffer_enabled call <SID>on_lsp_buffer_enabled()
@@ -1600,16 +1594,16 @@ local on_attach = function(client, bufnr)
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
 
   local opts = { noremap=true, silent=true }
-  buf_set_keymap('n', 'mD',  '<Cmd>lua vim.lsp.buf.declaration()<CR>',        opts)
-  buf_set_keymap('n', 'md',  '<Cmd>lua vim.lsp.buf.definition()<CR>',         opts)
-  buf_set_keymap('n', 'K',   '<Cmd>lua vim.lsp.buf.hover()<CR>',              opts)
-  buf_set_keymap('n', 'mi',  '<Cmd>lua vim.lsp.buf.implementation()<CR>',     opts)
-  buf_set_keymap('n', 'mt',  '<Cmd>lua vim.lsp.buf.type_definition()<CR>',    opts)
-  buf_set_keymap('n', 'mrn', '<Cmd>lua vim.lsp.buf.rename()<CR>',             opts)
-  buf_set_keymap('n', 'ma',  '<Cmd>lua vim.lsp.buf.code_action()<CR>',        opts)
-  buf_set_keymap('n', 'mrf', '<Cmd>lua vim.lsp.buf.references()<CR>',         opts)
-  buf_set_keymap('n', 'mq',  '<Cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-  buf_set_keymap('n', 'mf',  '<Cmd>lua vim.lsp.buf.formatting()<CR>',         opts)
+  buf_set_keymap('n', '<Plug>(dev)D',  '<Cmd>lua vim.lsp.buf.declaration()<CR>',        opts)
+  buf_set_keymap('n', '<Plug>(dev)d',  '<Cmd>lua vim.lsp.buf.definition()<CR>',         opts)
+  buf_set_keymap('n', 'K',             '<Cmd>lua vim.lsp.buf.hover()<CR>',              opts)
+  buf_set_keymap('n', '<Plug>(dev)i',  '<Cmd>lua vim.lsp.buf.implementation()<CR>',     opts)
+  buf_set_keymap('n', '<Plug>(dev)t',  '<Cmd>lua vim.lsp.buf.type_definition()<CR>',    opts)
+  buf_set_keymap('n', '<Plug>(dev)rn', '<Cmd>lua vim.lsp.buf.rename()<CR>',             opts)
+  buf_set_keymap('n', '<Plug>(dev)a',  '<Cmd>lua vim.lsp.buf.code_action()<CR>',        opts)
+  buf_set_keymap('n', '<Plug>(dev)rf', '<Cmd>lua vim.lsp.buf.references()<CR>',         opts)
+  buf_set_keymap('n', '<Plug>(dev)q',  '<Cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+  buf_set_keymap('n', '<Plug>(dev)f',  '<Cmd>lua vim.lsp.buf.formatting()<CR>',         opts)
 end
 
 local lsp_installer = require('nvim-lsp-installer')
@@ -1926,24 +1920,24 @@ if dein#tap('denite.nvim')
 
   " Define mappings
   function! s:denite_settings() abort
-    nnoremap <silent> <expr> <buffer>          i       denite#do_map('open_filter_buffer')
-    nnoremap <silent> <expr> <buffer>          <CR>    denite#do_map('do_action')
-    nnoremap <silent> <expr> <buffer>          <Tab>   denite#do_map('choose_action')
-    nnoremap <silent> <expr> <buffer>          <C-g>   denite#do_map('quit')
-    nnoremap <silent> <expr> <buffer>          q       denite#do_map('quit')
-    nnoremap <silent> <expr> <buffer>          ZQ      denite#do_map('quit')
-    nnoremap <silent>        <buffer>          <C-n>   j
-    nnoremap <silent>        <buffer>          <C-p>   k
-    nnoremap <silent> <expr> <buffer> <nowait> <Space> denite#do_map('toggle_select') . 'j'
-    nnoremap <silent> <expr> <buffer>          d       denite#do_map('do_action', 'delete')
-    nnoremap <silent> <expr> <buffer>          p       denite#do_map('do_action', 'preview')
+    Keymap n <silent> <expr> <buffer>          i       denite#do_map('open_filter_buffer')
+    Keymap n <silent> <expr> <buffer>          <CR>    denite#do_map('do_action')
+    Keymap n <silent> <expr> <buffer>          <Tab>   denite#do_map('choose_action')
+    Keymap n <silent> <expr> <buffer>          <C-g>   denite#do_map('quit')
+    Keymap n <silent> <expr> <buffer>          q       denite#do_map('quit')
+    Keymap n <silent> <expr> <buffer>          ZQ      denite#do_map('quit')
+    Keymap n <silent>        <buffer>          <C-n>   j
+    Keymap n <silent>        <buffer>          <C-p>   k
+    Keymap n <silent> <expr> <buffer> <nowait> <Space> denite#do_map('toggle_select') . 'j'
+    Keymap n <silent> <expr> <buffer>          d       denite#do_map('do_action', 'delete')
+    Keymap n <silent> <expr> <buffer>          p       denite#do_map('do_action', 'preview')
   endfunction
 
   function! s:denite_filter_settings() abort
-    nnoremap <silent> <expr> <buffer> <C-g> denite#do_map('quit')
-    nnoremap <silent> <expr> <buffer> q     denite#do_map('quit')
-    nnoremap <silent> <expr> <buffer> ZQ    denite#do_map('quit')
-    inoremap <silent>        <buffer> <C-g> <Esc>
+    Keymap n <silent> <expr> <buffer> <C-g> denite#do_map('quit')
+    Keymap n <silent> <expr> <buffer> q     denite#do_map('quit')
+    Keymap n <silent> <expr> <buffer> ZQ    denite#do_map('quit')
+    Keymap i <silent>        <buffer> <C-g> <Esc>
   endfunction
 
   AutoCmd FileType denite        call <SID>denite_settings()
@@ -2003,46 +1997,46 @@ if dein#tap('fzf-preview.vim')
   let g:fzf_preview_history_dir         = '~/.fzf'
   let $FZF_PREVIEW_PLUGIN_HELP_ROOT_DIR = '~/.vim/bundle/repos/github.com'
 
-  nnoremap <silent> <Plug>(fzf-p)r     <Cmd>FzfPreviewProjectMruFilesRpc --experimental-fast<CR>
-  nnoremap <silent> <Plug>(fzf-p)w     <Cmd>FzfPreviewProjectMrwFilesRpc --experimental-fast<CR>
-  nnoremap <silent> <Plug>(fzf-p)a     <Cmd>FzfPreviewFromResourcesRpc --experimental-fast project_mru git<CR>
-  nnoremap <silent> <Plug>(fzf-p)s     <Cmd>FzfPreviewGitStatusRpc --experimental-fast<CR>
-  nnoremap <silent> <Plug>(fzf-p)gg    <Cmd>FzfPreviewGitActionsRpc<CR>
-  nnoremap <silent> <Plug>(fzf-p)b     <Cmd>FzfPreviewBuffersRpc<CR>
-  nnoremap <silent> <Plug>(fzf-p)B     <Cmd>FzfPreviewAllBuffersRpc --experimental-fast<CR>
-  nnoremap <silent> <Plug>(fzf-p)<C-o> <Cmd>FzfPreviewJumpsRpc --experimental-fast<CR>
-  nnoremap <silent> <Plug>(fzf-p)g;    <Cmd>FzfPreviewChangesRpc<CR>
-  nnoremap <silent> <Plug>(fzf-p)/     <Cmd>FzfPreviewLinesRpc --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
-  nnoremap <silent> <Plug>(fzf-p)/     :<C-u>FzfPreviewProjectGrepRpc --experimental-fast --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort . <C-r>=expand('%')<CR><CR>
-  nnoremap <silent> <Plug>(fzf-p)*     :<C-u>FzfPreviewLinesRpc --add-fzf-arg=--exact --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
-  xnoremap <silent> <Plug>(fzf-p)*     "sy:FzfPreviewLinesRpc --add-fzf-arg=--no-sort --add-fzf-arg=--exact --add-fzf-arg=--query="<C-r>=substitute(@s, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
-  nnoremap <silent> <Plug>(fzf-p)n     :<C-u>FzfPreviewLinesRpc --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=substitute(@/, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
-  nnoremap <silent> <Plug>(fzf-p)?     <Cmd>FzfPreviewBufferLinesRpc --resume --add-fzf-arg=--no-sort<CR>
-  nnoremap <silent> <Plug>(fzf-p)q     <Cmd>FzfPreviewQuickFixRpc --experimental-fast<CR>
-  nnoremap <silent> <Plug>(fzf-p)l     <Cmd>FzfPreviewLocationListRpc --experimental-fast<CR>
-  nnoremap <silent> <Plug>(fzf-p):     <Cmd>FzfPreviewCommandPaletteRpc --experimental-fast<CR>
-  nnoremap <silent> <Plug>(fzf-p)m     <Cmd>FzfPreviewBookmarksRpc --resume --experimental-fast<CR>
-  nnoremap <silent> <Plug>(fzf-p)<C-]> :<C-u>FzfPreviewVistaCtagsRpc --experimental-fast --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
-  nnoremap <silent> <Plug>(fzf-p)o     <Cmd>FzfPreviewVistaBufferCtagsRpc --experimental-fast<CR>
+  Keymap n <silent> <Plug>(fzf-p)r     <Cmd>FzfPreviewProjectMruFilesRpc --experimental-fast<CR>
+  Keymap n <silent> <Plug>(fzf-p)w     <Cmd>FzfPreviewProjectMrwFilesRpc --experimental-fast<CR>
+  Keymap n <silent> <Plug>(fzf-p)a     <Cmd>FzfPreviewFromResourcesRpc --experimental-fast project_mru git<CR>
+  Keymap n <silent> <Plug>(fzf-p)s     <Cmd>FzfPreviewGitStatusRpc --experimental-fast<CR>
+  Keymap n <silent> <Plug>(fzf-p)gg    <Cmd>FzfPreviewGitActionsRpc<CR>
+  Keymap n <silent> <Plug>(fzf-p)b     <Cmd>FzfPreviewBuffersRpc<CR>
+  Keymap n <silent> <Plug>(fzf-p)B     <Cmd>FzfPreviewAllBuffersRpc --experimental-fast<CR>
+  Keymap n <silent> <Plug>(fzf-p)<C-o> <Cmd>FzfPreviewJumpsRpc --experimental-fast<CR>
+  Keymap n <silent> <Plug>(fzf-p)g;    <Cmd>FzfPreviewChangesRpc<CR>
+  Keymap n <silent> <Plug>(fzf-p)/     <Cmd>FzfPreviewLinesRpc --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
+  Keymap n <silent> <Plug>(fzf-p)/     :<C-u>FzfPreviewProjectGrepRpc --experimental-fast --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort . <C-r>=expand('%')<CR><CR>
+  Keymap n <silent> <Plug>(fzf-p)*     :<C-u>FzfPreviewLinesRpc --add-fzf-arg=--exact --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
+  Keymap x <silent> <Plug>(fzf-p)*     "sy:FzfPreviewLinesRpc --add-fzf-arg=--no-sort --add-fzf-arg=--exact --add-fzf-arg=--query="<C-r>=substitute(@s, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
+  Keymap n <silent> <Plug>(fzf-p)n     :<C-u>FzfPreviewLinesRpc --add-fzf-arg=--no-sort --add-fzf-arg=--query="<C-r>=substitute(@/, '\(^\\v\)\\|\\\(<\\|>\)', '', 'g')<CR>"<CR>
+  Keymap n <silent> <Plug>(fzf-p)?     <Cmd>FzfPreviewBufferLinesRpc --resume --add-fzf-arg=--no-sort<CR>
+  Keymap n <silent> <Plug>(fzf-p)q     <Cmd>FzfPreviewQuickFixRpc --experimental-fast<CR>
+  Keymap n <silent> <Plug>(fzf-p)l     <Cmd>FzfPreviewLocationListRpc --experimental-fast<CR>
+  Keymap n <silent> <Plug>(fzf-p):     <Cmd>FzfPreviewCommandPaletteRpc --experimental-fast<CR>
+  Keymap n <silent> <Plug>(fzf-p)m     <Cmd>FzfPreviewBookmarksRpc --resume --experimental-fast<CR>
+  Keymap n <silent> <Plug>(fzf-p)<C-]> :<C-u>FzfPreviewVistaCtagsRpc --experimental-fast --add-fzf-arg=--query="<C-r>=expand('<cword>')<CR>"<CR>
+  Keymap n <silent> <Plug>(fzf-p)o     <Cmd>FzfPreviewVistaBufferCtagsRpc --experimental-fast<CR>
 
-  nnoremap          <Plug>(fzf-p)f :<C-u>FzfPreviewProjectGrepRpc --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>
-  xnoremap          <Plug>(fzf-p)f "sy:FzfPreviewProjectGrepRpc --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-  nnoremap <silent> <Plug>(fzf-p)F <Cmd>FzfPreviewProjectGrepRecallRpc --experimental-fast --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
-  nnoremap          <Plug>(fzf-p)h :<C-u>FzfPreviewGrepHelpRpc --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>
+  Keymap n          <Plug>(fzf-p)f :<C-u>FzfPreviewProjectGrepRpc --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>
+  Keymap x          <Plug>(fzf-p)f "sy:FzfPreviewProjectGrepRpc --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+  Keymap n <silent> <Plug>(fzf-p)F <Cmd>FzfPreviewProjectGrepRecallRpc --experimental-fast --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
+  Keymap n          <Plug>(fzf-p)h :<C-u>FzfPreviewGrepHelpRpc --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>
 
   if dein#tap('coc.nvim')
-    nnoremap <silent> <Plug>(fzf-p)p <Cmd>CocCommand fzf-preview.Yankround --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
+    Keymap n <silent> <Plug>(fzf-p)p <Cmd>CocCommand fzf-preview.Yankround --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
   else
-    nnoremap <silent> <Plug>(fzf-p)p <Cmd>FzfPreviewYankroundRpc --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
+    Keymap n <silent> <Plug>(fzf-p)p <Cmd>FzfPreviewYankroundRpc --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
   endif
 
-  nnoremap <silent> <Plug>(dev)q  <Cmd>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
-  nnoremap <silent> <Plug>(dev)Q  <Cmd>CocCommand fzf-preview.CocDiagnostics<CR>
-  nnoremap <silent> <Plug>(dev)rf <Cmd>CocCommand fzf-preview.CocReferences<CR>
-  nnoremap <silent> <Plug>(dev)d  <Cmd>CocCommand fzf-preview.CocDefinition<CR>
-  nnoremap <silent> <Plug>(dev)t  <Cmd>CocCommand fzf-preview.CocTypeDefinition<CR>
-  nnoremap <silent> <Plug>(dev)i  <Cmd>CocCommand fzf-preview.CocImplementations<CR>
-  nnoremap <silent> <Plug>(dev)o  <Cmd>CocCommand fzf-preview.CocOutline --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
+  Keymap n <silent> <Plug>(dev)q  <Cmd>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
+  Keymap n <silent> <Plug>(dev)Q  <Cmd>CocCommand fzf-preview.CocDiagnostics<CR>
+  Keymap n <silent> <Plug>(dev)rf <Cmd>CocCommand fzf-preview.CocReferences<CR>
+  Keymap n <silent> <Plug>(dev)d  <Cmd>CocCommand fzf-preview.CocDefinition<CR>
+  Keymap n <silent> <Plug>(dev)t  <Cmd>CocCommand fzf-preview.CocTypeDefinition<CR>
+  Keymap n <silent> <Plug>(dev)i  <Cmd>CocCommand fzf-preview.CocImplementations<CR>
+  Keymap n <silent> <Plug>(dev)o  <Cmd>CocCommand fzf-preview.CocOutline --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
 
   AutoCmd User fzf_preview#rpc#initialized call <SID>fzf_preview_settings()
 
@@ -2146,7 +2140,7 @@ endif
 
 " telescope {{{3
 if dein#tap('telescope.nvim')
-  " nnoremap <silent> <Plug>(ctrlp) <Cmd>lua require('telescope.builtin').git_files{}<CR>
+  " Keymap n <silent> <Plug>(ctrlp) <Cmd>lua require('telescope.builtin').git_files{}<CR>
 endif
 " }}}3
 
@@ -2171,7 +2165,7 @@ endif
 if dein#tap('git-messenger.vim')
   let g:git_messenger_no_default_mappings = 1
 
-  nnoremap <silent> gm <Cmd>GitMessenger<CR>
+  Keymap n <silent> gm <Cmd>GitMessenger<CR>
 endif
 " }}}3
 
@@ -2219,8 +2213,8 @@ endif
 
 " gitsigns {{{3
 if dein#tap('gitsigns.nvim')
-  nnoremap <silent> gp <Cmd>lua require('gitsigns').prev_hunk()<CR>
-  nnoremap <silent> gn <Cmd>lua require('gitsigns').next_hunk()<CR>
+  Keymap n <silent> gp <Cmd>lua require('gitsigns').prev_hunk()<CR>
+  Keymap n <silent> gn <Cmd>lua require('gitsigns').next_hunk()<CR>
 
 lua <<EOF
 require('gitsigns').setup {
@@ -2250,40 +2244,40 @@ if dein#tap('defx.nvim')
   let g:defx_git#raw_mode        = 1
   let g:defx_icons_column_length = 2
 
-  nnoremap <silent> <Leader><Leader>e :Defx -columns=mark:git:indent:icons:filename:type -split=vertical -winwidth=40 -direction=topleft<CR>
-  nnoremap <silent> <Leader><Leader>E :Defx -columns=mark:git:indent:icons:filename:type -split=vertical -winwidth=40 -direction=topleft -search=`expand('%:p')`<CR>
+  Keymap n <silent> <Leader><Leader>e :Defx -columns=mark:git:indent:icons:filename:type -split=vertical -winwidth=40 -direction=topleft<CR>
+  Keymap n <silent> <Leader><Leader>E :Defx -columns=mark:git:indent:icons:filename:type -split=vertical -winwidth=40 -direction=topleft -search=`expand('%:p')`<CR>
 
   let g:defx_ignore_filtype = ['denite', 'defx']
 
   function! s:defx_settings() abort
-    nnoremap <silent> <buffer> <expr> <nowait> j       line('.') == line('$') ? 'gg' : 'j'
-    nnoremap <silent> <buffer> <expr> <nowait> k       line('.') == 1 ? 'G' : 'k'
-    nnoremap <silent> <buffer> <expr> <nowait> t       defx#do_action('open_or_close_tree')
-    nnoremap <silent> <buffer> <expr> <nowait> h       defx#do_action('cd', ['..'])
-    nnoremap <silent> <buffer> <expr> <nowait> l       defx#is_directory() ? defx#do_action('open_tree') : 0
-    nnoremap <silent> <buffer> <expr> <nowait> L       defx#do_action('open_tree_recursive')
-    nnoremap <silent> <buffer> <expr> <nowait> .       defx#do_action('toggle_ignored_files')
-    nnoremap <silent> <buffer> <expr> <nowait> ~       defx#do_action('cd')
+    Keymap n <silent> <buffer> <expr> <nowait> j       line('.') == line('$') ? 'gg' : 'j'
+    Keymap n <silent> <buffer> <expr> <nowait> k       line('.') == 1 ? 'G' : 'k'
+    Keymap n <silent> <buffer> <expr> <nowait> t       defx#do_action('open_or_close_tree')
+    Keymap n <silent> <buffer> <expr> <nowait> h       defx#do_action('cd', ['..'])
+    Keymap n <silent> <buffer> <expr> <nowait> l       defx#is_directory() ? defx#do_action('open_tree') : 0
+    Keymap n <silent> <buffer> <expr> <nowait> L       defx#do_action('open_tree_recursive')
+    Keymap n <silent> <buffer> <expr> <nowait> .       defx#do_action('toggle_ignored_files')
+    Keymap n <silent> <buffer> <expr> <nowait> ~       defx#do_action('cd')
 
-    nnoremap <silent> <buffer> <expr> <nowait> <CR>    defx#is_directory() ? 0 : defx#do_action('open', 'choose')
-    nnoremap <silent> <buffer> <expr> <nowait> x       defx#do_action('toggle_select') . 'j'
-    nnoremap <silent> <buffer> <expr> <nowait> <Space> defx#do_action('toggle_select') . 'j'
-    nnoremap <silent> <buffer> <expr> <nowait> *       defx#do_action('toggle_select_all')
-    nnoremap <silent> <buffer> <expr> <nowait> N       defx#do_action('new_file')
-    nnoremap <silent> <buffer> <expr> <nowait> N       defx#do_action('new_multiple_files')
-    nnoremap <silent> <buffer> <expr> <nowait> K       defx#do_action('new_directory')
-    nnoremap <silent> <buffer> <expr> <nowait> c       defx#do_action('copy')
-    nnoremap <silent> <buffer> <expr> <nowait> m       defx#do_action('move')
-    nnoremap <silent> <buffer> <expr> <nowait> p       defx#do_action('paste')
-    nnoremap <silent> <buffer> <expr> <nowait> d       defx#do_action('remove')
-    nnoremap <silent> <buffer> <expr> <nowait> r       defx#do_action('rename')
-    nnoremap <silent> <buffer> <expr> <nowait> yy      defx#do_action('yank_path')
+    Keymap n <silent> <buffer> <expr> <nowait> <CR>    defx#is_directory() ? 0 : defx#do_action('open', 'choose')
+    Keymap n <silent> <buffer> <expr> <nowait> x       defx#do_action('toggle_select') . 'j'
+    Keymap n <silent> <buffer> <expr> <nowait> <Space> defx#do_action('toggle_select') . 'j'
+    Keymap n <silent> <buffer> <expr> <nowait> *       defx#do_action('toggle_select_all')
+    Keymap n <silent> <buffer> <expr> <nowait> N       defx#do_action('new_file')
+    Keymap n <silent> <buffer> <expr> <nowait> N       defx#do_action('new_multiple_files')
+    Keymap n <silent> <buffer> <expr> <nowait> K       defx#do_action('new_directory')
+    Keymap n <silent> <buffer> <expr> <nowait> c       defx#do_action('copy')
+    Keymap n <silent> <buffer> <expr> <nowait> m       defx#do_action('move')
+    Keymap n <silent> <buffer> <expr> <nowait> p       defx#do_action('paste')
+    Keymap n <silent> <buffer> <expr> <nowait> d       defx#do_action('remove')
+    Keymap n <silent> <buffer> <expr> <nowait> r       defx#do_action('rename')
+    Keymap n <silent> <buffer> <expr> <nowait> yy      defx#do_action('yank_path')
 
-    nnoremap <silent> <buffer> <expr> <nowait> q       defx#do_action('quit')
-    nnoremap <silent> <buffer> <expr> <nowait> R       defx#do_action('redraw')
-    nnoremap <silent> <buffer> <expr> <nowait> <C-g>   defx#do_action('print')
+    Keymap n <silent> <buffer> <expr> <nowait> q       defx#do_action('quit')
+    Keymap n <silent> <buffer> <expr> <nowait> R       defx#do_action('redraw')
+    Keymap n <silent> <buffer> <expr> <nowait> <C-g>   defx#do_action('print')
 
-    nnoremap <silent> <buffer> <expr> <nowait> p       defx#do_action('preview')
+    Keymap n <silent> <buffer> <expr> <nowait> p       defx#do_action('preview')
   endfunction
 
   AutoCmd FileType defx call <SID>defx_settings()
@@ -2315,58 +2309,56 @@ if dein#tap('fern.vim')
   \ 'width': function('s:fern_preview_width')
   \ }
 
-  nnoremap <silent> <Leader>e <Cmd>Fern . -drawer<CR><C-w>=
-  nnoremap <silent> <Leader>E <Cmd>Fern . -drawer -reveal=%<CR><C-w>=
+  Keymap n <silent> <Leader>e <Cmd>Fern . -drawer<CR><C-w>=
+  Keymap n <silent> <Leader>E <Cmd>Fern . -drawer -reveal=%<CR><C-w>=
 
   function! s:fern_settings() abort
-    nnoremap <silent> <buffer>        <Plug>(fern-page-down-wrapper)                <C-d>
-    nnoremap <silent> <buffer>        <Plug>(fern-page-up-wrapper)                  <C-u>
-    nmap     <silent> <buffer> <expr> <Plug>(fern-page-down-or-scroll-down-preview) fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:down:half)", "\<Plug>(fern-page-down-wrapper)")
-    nmap     <silent> <buffer> <expr> <Plug>(fern-page-down-or-scroll-up-preview)   fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:up:half)", "\<Plug>(fern-page-up-wrapper)")
-    nnoremap <silent> <buffer>        <Plug>(fern-search-prev)                      N
+    Keymap n <silent> <buffer>        <Plug>(fern-page-down-wrapper)                <C-d>
+    Keymap n <silent> <buffer>        <Plug>(fern-page-up-wrapper)                  <C-u>
+    Keymap n <silent> <buffer> <expr> <Plug>(fern-page-down-or-scroll-down-preview) fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:down:half)", "\<Plug>(fern-page-down-wrapper)")
+    Keymap n <silent> <buffer> <expr> <Plug>(fern-page-down-or-scroll-up-preview)   fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:up:half)", "\<Plug>(fern-page-up-wrapper)")
+    Keymap n <silent> <buffer>        <Plug>(fern-search-prev)                      N
 
-    nmap <silent> <buffer> <expr> <Plug>(fern-expand-or-collapse)                 fern#smart#leaf("\<Plug>(fern-action-collapse)", "\<Plug>(fern-action-expand)", "\<Plug>(fern-action-collapse)")
-    nmap <silent> <buffer> <expr> <Plug>(fern-open-system-directory-or-open-file) fern#smart#leaf("\<Plug>(fern-action-open:select)", "\<Plug>(fern-action-open:system)")
-    nmap <silent> <buffer> <expr> <Plug>(fern-quit-or-close-preview)              fern_preview#smart_preview("\<Plug>(fern-action-preview:close)\<Plug>(fern-action-preview:auto:disable)", ":q\<CR>")
-    nmap <silent> <buffer> <expr> <Plug>(fern-wipe-or-close-preview)              fern_preview#smart_preview("\<Plug>(fern-action-preview:close)\<Plug>(fern-action-preview:auto:disable)", ":bwipe!\<CR>")
-    nmap <silent> <buffer> <expr> <Plug>(fern-page-down-or-scroll-down-preview)   fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:down:half)", "\<Plug>(fern-page-down-wrapper)")
-    nmap <silent> <buffer> <expr> <Plug>(fern-page-down-or-scroll-up-preview)     fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:up:half)", "\<Plug>(fern-page-up-wrapper)")
-    nmap <silent> <buffer> <expr> <Plug>(fern-new-file-or-search-prev)            v:hlsearch ? "\<Plug>(fern-search-prev)" : "\<Plug>(fern-action-new-file)"
+    Keymap n <silent> <buffer> <expr> <Plug>(fern-expand-or-collapse)                 fern#smart#leaf("\<Plug>(fern-action-collapse)", "\<Plug>(fern-action-expand)", "\<Plug>(fern-action-collapse)")
+    Keymap n <silent> <buffer> <expr> <Plug>(fern-open-system-directory-or-open-file) fern#smart#leaf("\<Plug>(fern-action-open:select)", "\<Plug>(fern-action-open:system)")
+    Keymap n <silent> <buffer> <expr> <Plug>(fern-quit-or-close-preview)              fern_preview#smart_preview("\<Plug>(fern-action-preview:close)\<Plug>(fern-action-preview:auto:disable)", ":q\<CR>")
+    Keymap n <silent> <buffer> <expr> <Plug>(fern-wipe-or-close-preview)              fern_preview#smart_preview("\<Plug>(fern-action-preview:close)\<Plug>(fern-action-preview:auto:disable)", ":bwipe!\<CR>")
+    Keymap n <silent> <buffer> <expr> <Plug>(fern-page-down-or-scroll-down-preview)   fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:down:half)", "\<Plug>(fern-page-down-wrapper)")
+    Keymap n <silent> <buffer> <expr> <Plug>(fern-page-down-or-scroll-up-preview)     fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:up:half)", "\<Plug>(fern-page-up-wrapper)")
+    Keymap n <silent> <buffer> <expr> <Plug>(fern-new-file-or-search-prev)            v:hlsearch ? "\<Plug>(fern-search-prev)" : "\<Plug>(fern-action-new-file)"
 
-    nmap <silent> <buffer> <nowait> a       <Plug>(fern-choice)
-    nmap <silent> <buffer> <nowait> <CR>    <Plug>(fern-open-system-directory-or-open-file)
-    nmap <silent> <buffer> <nowait> t       <Plug>(fern-expand-or-collapse)
-    nmap <silent> <buffer> <nowait> l       <Plug>(fern-open-or-enter)
-    nmap <silent> <buffer> <nowait> h       <Plug>(fern-action-leave)
-    nmap <silent> <buffer> <nowait> x       <Plug>(fern-action-mark:toggle)j
-    xmap <silent> <buffer> <nowait> x       <Plug>(fern-action-mark:toggle)j
-    nmap <silent> <buffer> <nowait> <Space> <Plug>(fern-action-mark:toggle)j
-    xmap <silent> <buffer> <nowait> <Space> <Plug>(fern-action-mark:toggle)j
-    nmap <silent> <buffer> <nowait> N       <Plug>(fern-new-file-or-search-prev)
-    nmap <silent> <buffer> <nowait> K       <Plug>(fern-action-new-dir)
-    nmap <silent> <buffer> <nowait> d       <Plug>(fern-action-trash)
-    nmap <silent> <buffer> <nowait> r       <Plug>(fern-action-rename)
-    nmap <silent> <buffer> <nowait> c       <Plug>(fern-action-copy)
-    nmap <silent> <buffer> <nowait> C       <Plug>(fern-action-clipboard-copy)
-    nmap <silent> <buffer> <nowait> m       <Plug>(fern-action-move)
-    nmap <silent> <buffer> <nowait> M       <Plug>(fern-action-clipboard-move)
-    nmap <silent> <buffer> <nowait> P       <Plug>(fern-action-clipboard-paste)
-    nmap <silent> <buffer> <nowait> !       <Plug>(fern-action-hidden:toggle)
-    nmap <silent> <buffer> <nowait> y       <Plug>(fern-action-yank)
-    nmap <silent> <buffer> <nowait> <C-g>   <Plug>(fern-action-debug)
-    nmap <silent> <buffer> <nowait> ?       <Plug>(fern-action-help)
-    nmap <silent> <buffer> <nowait> <C-c>   <Plug>(fern-action-cancel)
-    nmap <silent> <buffer> <nowait> .       <Plug>(fern-repeat)
-    nmap <silent> <buffer> <nowait> q       <Plug>(fern-quit-or-close-preview)
-    nmap <silent> <buffer> <nowait> Q       <Plug>(fern-wipe-or-close-preview)
-    nmap <silent> <buffer> <nowait> p       <Plug>(fern-action-preview:toggle)
-    nmap <silent> <buffer> <nowait> <C-p>   <Plug>(fern-action-preview:auto:toggle)
-    nmap <silent> <buffer> <nowait> <C-d>   <Plug>(fern-page-down-or-scroll-down-preview)
-    nmap <silent> <buffer> <nowait> <C-u>   <Plug>(fern-page-down-or-scroll-up-preview)
-    nmap <silent> <buffer> <nowait> R       <Plug>(fern-action-reload:all)
-    nmap <silent> <buffer> <nowait> ;f      <Plug>(fern-action-fzf-root-files)
-    nmap <silent> <buffer> <nowait> ;d      <Plug>(fern-action-fzf-root-dirs)
-    nmap <silent> <buffer> <nowait> ;a      <Plug>(fern-action-fzf-root-both)
+    Keymap n  <silent> <buffer> <nowait> a       <Plug>(fern-choice)
+    Keymap n  <silent> <buffer> <nowait> <CR>    <Plug>(fern-open-system-directory-or-open-file)
+    Keymap n  <silent> <buffer> <nowait> t       <Plug>(fern-expand-or-collapse)
+    Keymap n  <silent> <buffer> <nowait> l       <Plug>(fern-open-or-enter)
+    Keymap n  <silent> <buffer> <nowait> h       <Plug>(fern-action-leave)
+    Keymap nx <silent> <buffer> <nowait> x       <Plug>(fern-action-mark:toggle)j
+    Keymap nx <silent> <buffer> <nowait> <Space> <Plug>(fern-action-mark:toggle)j
+    Keymap n  <silent> <buffer> <nowait> N       <Plug>(fern-new-file-or-search-prev)
+    Keymap n  <silent> <buffer> <nowait> K       <Plug>(fern-action-new-dir)
+    Keymap n  <silent> <buffer> <nowait> d       <Plug>(fern-action-trash)
+    Keymap n  <silent> <buffer> <nowait> r       <Plug>(fern-action-rename)
+    Keymap n  <silent> <buffer> <nowait> c       <Plug>(fern-action-copy)
+    Keymap n  <silent> <buffer> <nowait> C       <Plug>(fern-action-clipboard-copy)
+    Keymap n  <silent> <buffer> <nowait> m       <Plug>(fern-action-move)
+    Keymap n  <silent> <buffer> <nowait> M       <Plug>(fern-action-clipboard-move)
+    Keymap n  <silent> <buffer> <nowait> P       <Plug>(fern-action-clipboard-paste)
+    Keymap n  <silent> <buffer> <nowait> !       <Plug>(fern-action-hidden:toggle)
+    Keymap n  <silent> <buffer> <nowait> y       <Plug>(fern-action-yank)
+    Keymap n  <silent> <buffer> <nowait> <C-g>   <Plug>(fern-action-debug)
+    Keymap n  <silent> <buffer> <nowait> ?       <Plug>(fern-action-help)
+    Keymap n  <silent> <buffer> <nowait> <C-c>   <Plug>(fern-action-cancel)
+    Keymap n  <silent> <buffer> <nowait> .       <Plug>(fern-repeat)
+    Keymap n  <silent> <buffer> <nowait> q       <Plug>(fern-quit-or-close-preview)
+    Keymap n  <silent> <buffer> <nowait> Q       <Plug>(fern-wipe-or-close-preview)
+    Keymap n  <silent> <buffer> <nowait> p       <Plug>(fern-action-preview:toggle)
+    Keymap n  <silent> <buffer> <nowait> <C-p>   <Plug>(fern-action-preview:auto:toggle)
+    Keymap n  <silent> <buffer> <nowait> <C-d>   <Plug>(fern-page-down-or-scroll-down-preview)
+    Keymap n  <silent> <buffer> <nowait> <C-u>   <Plug>(fern-page-down-or-scroll-up-preview)
+    Keymap n  <silent> <buffer> <nowait> R       <Plug>(fern-action-reload:all)
+    Keymap n  <silent> <buffer> <nowait> ;f      <Plug>(fern-action-fzf-root-files)
+    Keymap n  <silent> <buffer> <nowait> ;d      <Plug>(fern-action-fzf-root-dirs)
+    Keymap n  <silent> <buffer> <nowait> ;a      <Plug>(fern-action-fzf-root-both)
 
     setlocal nonumber norelativenumber
     augroup fern-cursor-moved
@@ -2388,43 +2380,33 @@ endif
 if dein#tap('equal.operator')
   let equal_operator_default_mappings = 0
 
-  omap i=h <Plug>(operator-lhs)
-  omap a=h <Plug>(operator-Lhs)
-  xmap i=h <Plug>(visual-lhs)
-  xmap a=h <Plug>(visual-Lhs)
-
-  omap i=l <Plug>(operator-rhs)
-  omap a=l <Plug>(operator-Rhs)
-  xmap i=l <Plug>(visual-rhs)
-  xmap a=l <Plug>(visual-Rhs)
+  Keymap o i=h <Plug>(operator-lhs)
+  Keymap x i=h <Plug>(visual-lhs)
+  Keymap o i=l <Plug>(operator-rhs)
+  Keymap x i=l <Plug>(visual-rhs)
 endif
 " }}}3
 
 " operator-convert-case {{{3
 if dein#tap('vim-operator-convert-case')
-  nmap cy <Plug>(operator-convert-case-loop)
-  xmap cy <Plug>(operator-convert-case-loop)
+  Keymap nx cy <Plug>(operator-convert-case-loop)
 endif
 " }}}3
 
 " operator-replace {{{3
 if dein#tap('vim-operator-replace')
-  nmap _ <Plug>(operator-replace)
-  xmap _ <Plug>(operator-replace)
-  omap _ <Plug>(operator-replace)
+  Keymap nx _ <Plug>(operator-replace)
 endif
 " }}}3
 
 " swap {{{3
 if dein#tap('vim-swap')
-  nmap g< <Plug>(swap-prev)
-  nmap g> <Plug>(swap-next)
-  nmap gs <Plug>(swap-interactive)
+  Keymap n g< <Plug>(swap-prev)
+  Keymap n g> <Plug>(swap-next)
+  Keymap n gs <Plug>(swap-interactive)
 
-  omap i, <Plug>(swap-textobject-i)
-  xmap i, <Plug>(swap-textobject-i)
-  omap a, <Plug>(swap-textobject-a)
-  xmap a, <Plug>(swap-textobject-a)
+  Keymap ox i, <Plug>(swap-textobject-i)
+  Keymap ox a, <Plug>(swap-textobject-a)
 endif
 " }}}3
 
@@ -2432,20 +2414,12 @@ endif
 if dein#tap('vim-textobj-between')
   let g:textobj_between_no_default_key_mappings = 1
 
-  omap i/ <Plug>(textobj-between-i)/
-  omap a/ <Plug>(textobj-between-a)/
-  xmap i/ <Plug>(textobj-between-i)/
-  xmap a/ <Plug>(textobj-between-a)/
-
-  omap i_ <Plug>(textobj-between-i)_
-  omap a_ <Plug>(textobj-between-a)_
-  xmap i_ <Plug>(textobj-between-i)_
-  xmap a_ <Plug>(textobj-between-a)_
-
-  omap i- <Plug>(textobj-between-i)-
-  omap a- <Plug>(textobj-between-a)-
-  xmap i- <Plug>(textobj-between-i)-
-  xmap a- <Plug>(textobj-between-a)-
+  Keymap ox i/ <Plug>(textobj-between-i)/
+  Keymap ox a/ <Plug>(textobj-between-a)/
+  Keymap ox i_ <Plug>(textobj-between-i)_
+  Keymap ox a_ <Plug>(textobj-between-a)_
+  Keymap ox i- <Plug>(textobj-between-i)-
+  Keymap ox a- <Plug>(textobj-between-a)-
 endif
 " }}}3
 
@@ -2453,10 +2427,8 @@ endif
 if dein#tap('vim-textobj-cursor-context')
   let g:textobj_cursorcontext_no_default_key_mappings = 1
 
-  omap ic <Plug>(textobj-cursorcontext-i)
-  omap ac <Plug>(textobj-cursorcontext-a)
-  xmap ic <Plug>(textobj-cursorcontext-i)
-  xmap ac <Plug>(textobj-cursorcontext-a)
+  Keymap ox ic <Plug>(textobj-cursorcontext-i)
+  Keymap ox ac <Plug>(textobj-cursorcontext-a)
 endif
 " }}}3
 
@@ -2464,10 +2436,8 @@ endif
 if dein#tap('vim-textobj-entire')
   let g:textobj_entire_no_default_key_mappings = 1
 
-  omap ie <Plug>(textobj-entire-i)
-  omap ae <Plug>(textobj-entire-a)
-  xmap ie <Plug>(textobj-entire-i)
-  xmap ae <Plug>(textobj-entire-a)
+  Keymap ox ie <Plug>(textobj-entire-i)
+  Keymap ox ae <Plug>(textobj-entire-a)
 endif
 " }}}3
 
@@ -2475,10 +2445,8 @@ endif
 if dein#tap('vim-textobj-functioncall')
   let g:textobj_functioncall_no_default_key_mappings = 1
 
-  omap if <Plug>(textobj-functioncall-i)
-  omap af <Plug>(textobj-functioncall-a)
-  xmap if <Plug>(textobj-functioncall-i)
-  xmap af <Plug>(textobj-functioncall-a)
+  Keymap ox if <Plug>(textobj-functioncall-i)
+  Keymap ox af <Plug>(textobj-functioncall-a)
 endif
 " }}}3
 
@@ -2486,10 +2454,8 @@ endif
 if dein#tap('vim-textobj-line')
   let g:textobj_line_no_default_key_mappings = 1
 
-  omap il <Plug>(textobj-line-i)
-  omap al <Plug>(textobj-line-a)
-  xmap il <Plug>(textobj-line-i)
-  xmap al <Plug>(textobj-line-a)
+  Keymap ox il <Plug>(textobj-line-i)
+  Keymap ox al <Plug>(textobj-line-a)
 endif
 " }}}3
 
@@ -2497,10 +2463,8 @@ endif
 if dein#tap('vim-textobj-url')
   let g:textobj_url_no_default_key_mappings = 1
 
-  omap iu <Plug>(textobj-url-i)
-  omap au <Plug>(textobj-url-a)
-  xmap iu <Plug>(textobj-url-i)
-  xmap au <Plug>(textobj-url-a)
+  Keymap ox iu <Plug>(textobj-url-i)
+  Keymap ox au <Plug>(textobj-url-a)
 endif
 " }}}3
 
@@ -2510,8 +2474,8 @@ endif
 
 " accelerated-jk {{{3
 if dein#tap('accelerated-jk')
-  nmap j <Plug>(accelerated_jk_j)
-  nmap k <Plug>(accelerated_jk_k)
+  Keymap n j <Plug>(accelerated_jk_j)
+  Keymap n k <Plug>(accelerated_jk_k)
 endif
 " }}}3
 
@@ -2584,28 +2548,17 @@ if dein#tap('nvim-hlslens') &&
 
     lua require('hlslens').setup({auto_enable = true})
 
-    nnoremap / <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 1})<CR>
-    nnoremap ? <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 0})<CR>
-    onoremap / <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 1})<CR>
-    onoremap ? <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 0})<CR>
-    xnoremap / <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 1})<CR>
-    xnoremap ? <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 0})<CR>
+    Keymap nox /          <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 1})<CR>
+    Keymap nox ?          <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 0})<CR>
+    Keymap nox <silent> n <Cmd>call searchx#next_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
+    Keymap nox <silent> N <Cmd>call searchx#prev_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
 
-    nnoremap ' <Cmd>call searchx#select()<CR>
+    Keymap nx <silent> *  <Cmd>call Asterisk(1)<CR><Cmd>call SearchInfo(1, 1)<CR>
+    Keymap nx <silent> g* <Cmd>call Asterisk(0)<CR><Cmd>call SearchInfo(1, 1)<CR>
 
-    nnoremap <silent> n     <Cmd>call searchx#next_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
-    nnoremap <silent> N     <Cmd>call searchx#prev_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
-    onoremap <silent> n     <Cmd>call searchx#next_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
-    onoremap <silent> N     <Cmd>call searchx#prev_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
-    xnoremap <silent> n     <Cmd>call searchx#next_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
-    xnoremap <silent> N     <Cmd>call searchx#prev_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
-    cnoremap <silent> <C-j> <Cmd>call searchx#next_dir()<CR>
-    cnoremap <silent> <C-k> <Cmd>call searchx#prev_dir()<CR>
-
-    nnoremap <silent> *  <Cmd>call Asterisk(1)<CR><Cmd>call SearchInfo(1, 1)<CR>
-    nnoremap <silent> g* <Cmd>call Asterisk(0)<CR><Cmd>call SearchInfo(1, 1)<CR>
-    xnoremap <silent> *  <Cmd>call Asterisk(1)<CR><Cmd>call SearchInfo(1, 1)<CR>
-    xnoremap <silent> g* <Cmd>call Asterisk(0)<CR><Cmd>call SearchInfo(1, 1)<CR>
+    Keymap n          '     <Cmd>call searchx#select()<CR>
+    Keymap c <silent> <C-j> <Cmd>call searchx#next_dir()<CR>
+    Keymap c <silent> <C-k> <Cmd>call searchx#prev_dir()<CR>
 
     function! SearchInfo(hlslens_start, anzu_update) abort
       lua require('hlslens').enable()
@@ -2631,7 +2584,7 @@ if dein#tap('nvim-hlslens') &&
     function! s:search_enter() abort
       lua require('hlslens').start(true)
 
-      cnoremap <C-s> <Cmd>call <SID>change_fuzzy_motion()<CR>
+      Keymap c <C-s> <Cmd>call <SID>change_fuzzy_motion()<CR>
     endfunction
 
     function! s:search_leave() abort
@@ -2675,8 +2628,8 @@ endif
 
 " BackAndForward {{{3
 if dein#tap('BackAndForward.vim')
-  nmap <C-b> <Plug>(backandforward-back)
-  nmap <C-f> <Plug>(backandforward-forward)
+  Keymap n <C-b> <Plug>(backandforward-back)
+  Keymap n <C-f> <Plug>(backandforward-forward)
 endif
 " }}}3
 
@@ -2685,13 +2638,13 @@ if dein#tap('vim-bookmarks')
   let g:bookmark_no_default_key_mappings = 1
   let g:bookmark_save_per_working_dir    = 1
 
-  nnoremap <silent> <Plug>(bookmark)m <Cmd>BookmarkToggle<CR>
-  nnoremap <silent> <Plug>(bookmark)i <Cmd>BookmarkAnnotate<CR>
-  nnoremap <silent> <Plug>(bookmark)n <Cmd>BookmarkNext<CR>
-  nnoremap <silent> <Plug>(bookmark)p <Cmd>BookmarkPrev<CR>
-  nnoremap <silent> <Plug>(bookmark)a <Cmd>BookmarkShowAll<CR>
-  nnoremap <silent> <Plug>(bookmark)c <Cmd>BookmarkClear<CR>
-  nnoremap <silent> <Plug>(bookmark)x <Cmd>BookmarkClearAll<CR>
+  Keymap n <silent> <Plug>(bookmark)m <Cmd>BookmarkToggle<CR>
+  Keymap n <silent> <Plug>(bookmark)i <Cmd>BookmarkAnnotate<CR>
+  Keymap n <silent> <Plug>(bookmark)n <Cmd>BookmarkNext<CR>
+  Keymap n <silent> <Plug>(bookmark)p <Cmd>BookmarkPrev<CR>
+  Keymap n <silent> <Plug>(bookmark)a <Cmd>BookmarkShowAll<CR>
+  Keymap n <silent> <Plug>(bookmark)c <Cmd>BookmarkClear<CR>
+  Keymap n <silent> <Plug>(bookmark)x <Cmd>BookmarkClearAll<CR>
 
   function! g:BMWorkDirFileLocation() abort
     let filename = 'bookmarks'
@@ -2712,12 +2665,10 @@ if dein#tap('caw.vim')
 
   " omap <SID>(line) <Cmd>normal! v^og_<CR>0
 
-  nmap <silent> <expr> gcc <SID>caw_hatpos_toggle() . '<Plug>(textobj-line-i)0'
-  nmap <silent> <expr> gc  <SID>caw_hatpos_toggle()
-  xmap <silent> <expr> gc  <SID>caw_hatpos_toggle()
-  nmap <silent> <expr> gww <SID>caw_wrap_toggle() . '<Plug>(textobj-line-i)0'
-  nmap <silent> <expr> gw  <SID>caw_wrap_toggle()
-  xmap <silent> <expr> gw  <SID>caw_wrap_toggle()
+  Keymap! n  <silent> <expr> gcc <SID>caw_hatpos_toggle() . '<Plug>(textobj-line-i)0'
+  Keymap! nx <silent> <expr> gc  <SID>caw_hatpos_toggle()
+  Keymap! n  <silent> <expr> gww <SID>caw_wrap_toggle() . '<Plug>(textobj-line-i)0'
+  Keymap! nx <silent> <expr> gw  <SID>caw_wrap_toggle()
 
   function! s:caw_hatpos_toggle() abort
     if dein#tap('nvim-ts-context-commentstring')
@@ -2771,12 +2722,10 @@ endif
 
 " dps-dial {{{3
 if dein#tap('dps-dial.vim')
-  nmap <C-a>  <Plug>(dps-dial-increment)
-  nmap <C-x>  <Plug>(dps-dial-decrement)
-  xmap <C-a>  <Plug>(dps-dial-increment)
-  xmap <C-x>  <Plug>(dps-dial-decrement)
-  xmap g<C-a> g<Plug>(dps-dial-increment)
-  xmap g<C-x> g<Plug>(dps-dial-decrement)
+  Keymap nx <C-a>  <Plug>(dps-dial-increment)
+  Keymap nx <C-a>  <Plug>(dps-dial-increment)
+  Keymap nx <C-x>  <Plug>(dps-dial-decrement)
+  Keymap nx <C-x>  <Plug>(dps-dial-decrement)
 
   function! s:dps_dial_settings() abort
     let g:dps_dial#augends = ['decimal-integer', 'boolean', 'and_or', 'const_let', 'case', 'date', 'date-slash', 'color']
@@ -2814,7 +2763,7 @@ endif
 
 " easy-align {{{3
 if dein#tap('vim-easy-align')
-  xmap ga <Plug>(EasyAlign)
+  Keymap x ga <Plug>(EasyAlign)
 
   let g:easy_align_delimiters = {
   \ '>': {
@@ -2879,23 +2828,17 @@ if dein#tap('vim-easymotion')
   let g:EasyMotion_space_jump_first = 1
   let g:EasyMotion_prompt           = 'Search by EasyMotion ({n} character(s)) > '
 
-  nmap <silent> S  <Plug>(easymotion-overwin-f)
-  omap <silent> S  <Plug>(easymotion-bd-f)
-  xmap <silent> S  <Plug>(easymotion-bd-f)
-  nmap <silent> ss <Plug>(easymotion-overwin-w)
-  omap <silent> ss <Plug>(easymotion-bd-w)
-  xmap <silent> ss <Plug>(easymotion-bd-w)
-  " omap <silent> f  <Plug>(easymotion-fl)
-  " omap <silent> t  <Plug>(easymotion-tl)
-  " omap <silent> F  <Plug>(easymotion-Fl)
-  " omap <silent> T  <Plug>(easymotion-Tl)
+  Keymap n  <silent> S  <Plug>(easymotion-overwin-f)
+  Keymap ox <silent> S  <Plug>(easymotion-bd-f)
+  Keymap n  <silent> ss <Plug>(easymotion-overwin-w)
+  Keymap ox <silent> ss <Plug>(easymotion-bd-w)
 endif
 " }}}3
 
 " eft {{{3
 if dein#tap('vim-eft')
   let g:eft_enable = 1
-  nnoremap <Leader>f <Cmd>EftToggle<CR>
+  Keymap n <Leader>f <Cmd>EftToggle<CR>
 
   function! s:eft_toggle() abort
     if g:eft_enable == 1
@@ -2909,28 +2852,17 @@ if dein#tap('vim-eft')
   command! EftToggle call <SID>eft_toggle()
 
   function! s:eft_enable() abort
-    nmap ;; <Plug>(eft-repeat)
-    xmap ;; <Plug>(eft-repeat)
-    omap ;; <Plug>(eft-repeat)
+    Keymap nox ;; <Plug>(eft-repeat)
 
-    nmap f <Plug>(eft-f)
-    xmap f <Plug>(eft-f)
-    omap f <Plug>(eft-f)
-    nmap F <Plug>(eft-F)
-    xmap F <Plug>(eft-F)
-    omap F <Plug>(eft-F)
-
-    " nmap t <Plug>(eft-t)
-    xmap t <Plug>(eft-t)
-    omap t <Plug>(eft-t)
-    " nmap T <Plug>(eft-T)
-    xmap T <Plug>(eft-T)
-    omap T <Plug>(eft-T)
+    Keymap nox f <Plug>(eft-f)
+    Keymap nox F <Plug>(eft-F)
+    Keymap ox  t <Plug>(eft-t)
+    Keymap ox  T <Plug>(eft-T)
   endfunction
 
   function! s:eft_disable() abort
-    nnoremap ;; ;
-    nnoremap ;; ;
+    Keymap n ;; ;
+    Keymap n ;; ;
 
     nunmap f
     xunmap f
@@ -2951,7 +2883,7 @@ endif
 
 " exchange {{{3
 if dein#tap('vim-exchange')
-  xmap <silent> X <Plug>(Exchange)
+  Keymap x <silent> X <Plug>(Exchange)
 endif
 " }}}3
 
@@ -2989,19 +2921,17 @@ if dein#tap('vim-expand-region')
   \ 'ie': 0,
   \ }
 
-  xmap v <Plug>(expand_region_expand)
-  xmap V <Plug>(expand_region_shrink)
+  Keymap x v <Plug>(expand_region_expand)
+  Keymap x V <Plug>(expand_region_shrink)
 endif
 " }}}3
 
 " edgemotion {{{3
 if dein#tap('vim-edgemotion')
-  nnoremap <silent> <expr> <Leader>j 'm`' . edgemotion#move(1)
-  onoremap <silent> <expr> <Leader>j edgemotion#move(1)
-  xnoremap <silent> <expr> <Leader>j edgemotion#move(1)
-  nnoremap <silent> <expr> <Leader>k 'm`' . edgemotion#move(0)
-  onoremap <silent> <expr> <Leader>k edgemotion#move(0)
-  xnoremap <silent> <expr> <Leader>k edgemotion#move(0)
+  Keymap n  <silent> <expr> <Leader>j 'm`' . edgemotion#move(1)
+  Keymap ox <silent> <expr> <Leader>j edgemotion#move(1)
+  Keymap n  <silent> <expr> <Leader>k 'm`' . edgemotion#move(0)
+  Keymap ox <silent> <expr> <Leader>k edgemotion#move(0)
 endif
 " }}}3
 
@@ -3009,9 +2939,7 @@ endif
 if dein#tap('fuzzy-motion.vim')
   let g:fuzzy_motion_word_regexp_list = ['[0-9a-zA-Z_-]+',  '([0-9a-zA-Z_-]|[.])+', '([0-9a-zA-Z]|[()<>.-_#''"]|(\s=+\s)|(,\s)|(:\s)|(\s=>\s))+']
 
-  nnoremap <silent> ss <Cmd>FuzzyMotion<CR>
-  onoremap <silent> ss <Cmd>FuzzyMotion<CR>
-  xnoremap <silent> ss <Cmd>FuzzyMotion<CR>
+  Keymap nox <silent> ss <Cmd>FuzzyMotion<CR>
 endif
 " }}}3
 
@@ -3021,10 +2949,10 @@ if dein#tap('nvim-gomove')
     lua require("gomove").setup { map_defaults = true, reindent_mode = 'none' }
   endfunction
 
-  xmap <silent> <C-h> <Plug>GoVSMLeft
-  xmap <silent> <C-k> <Plug>GoVSMUp
-  xmap <silent> <C-j> <Plug>GoVSMDown
-  xmap <silent> <C-l> <Plug>GoVSMRight
+  Keymap x <silent> <C-h> <Plug>GoVSMLeft
+  Keymap x <silent> <C-k> <Plug>GoVSMUp
+  Keymap x <silent> <C-j> <Plug>GoVSMDown
+  Keymap x <silent> <C-l> <Plug>GoVSMRight
 endif
 " }}}3
 
@@ -3040,7 +2968,7 @@ if dein#tap('vim-grepper')
   \ 'grepprg': 'rg --with-filename --sort=path --no-heading --vimgrep'
   \ }
 
-  nnoremap <silent> <Leader>g <Cmd>GrepperRg<CR>
+  Keymap n <silent> <Leader>g <Cmd>GrepperRg<CR>
 endif
 " }}}3
 
@@ -3049,17 +2977,15 @@ if dein#tap('hop.nvim')
 lua << EOF
 require'hop'.setup()
 EOF
-  nnoremap <silent> S  <Cmd>HopWord<CR>
-  nnoremap <silent> ss <Cmd>HopWord<CR>
+  Keymap n <silent> S  <Cmd>HopWord<CR>
+  Keymap n <silent> ss <Cmd>HopWord<CR>
 endif
 " }}}3
 
 " jplus {{{3
 if dein#tap('vim-jplus')
-  nmap <silent> J         <Plug>(jplus)
-  xmap <silent> J         <Plug>(jplus)
-  nmap <silent> <Leader>J <Plug>(jplus-input)
-  xmap <silent> <Leader>J <Plug>(jplus-input)
+  Keymap nx <silent> J         <Plug>(jplus)
+  Keymap nx <silent> <Leader>J <Plug>(jplus-input)
 endif
 " }}}3
 
@@ -3067,9 +2993,9 @@ endif
 if dein#tap('kommentary')
   let g:kommentary_create_default_mappings = v:false
 
-  nmap <silent> <Leader>cc <Plug>kommentary_line_default
-  nmap <silent> <Leader>c  <Plug>kommentary_motion_default
-  xmap <silent> <Leader>cc <Plug>kommentary_visual_default
+  Keymap n <silent> <Leader>cc <Plug>kommentary_line_default
+  Keymap n <silent> <Leader>c  <Plug>kommentary_motion_default
+  Keymap x <silent> <Leader>cc <Plug>kommentary_visual_default
 
 lua << EOF
 require('kommentary.config').configure_language('typescriptreact', {
@@ -3297,12 +3223,8 @@ endif
 if dein#tap('lightspeed.nvim')
   lua require('lightspeed').setup({})
 
-  nmap <silent> ss <Plug>Lightspeed_s
-  xmap <silent> ss <Plug>Lightspeed_s
-  omap <silent> ss <Plug>Lightspeed_s
-  nmap <silent> S  <Plug>Lightspeed_S
-  xmap <silent> S  <Plug>Lightspeed_S
-  omap <silent> S  <Plug>Lightspeed_S
+  Keymap nox <silent> ss <Plug>Lightspeed_s
+  Keymap nox <silent> S  <Plug>Lightspeed_S
 endif
 " }}}3
 
@@ -3324,10 +3246,8 @@ if dein#tap('vim-sandwich') &&
   let g:textobj_sandwich_no_default_key_mappings     = 1
   let g:textobj_functioncall_no_default_key_mappings = 1
 
-  omap <silent> ib <Plug>(textobj-sandwich-auto-i)
-  xmap <silent> ib <Plug>(textobj-sandwich-auto-i)
-  omap <silent> ab <Plug>(textobj-sandwich-auto-a)
-  xmap <silent> ab <Plug>(textobj-sandwich-auto-a)
+  Keymap ox <silent> ib <Plug>(textobj-sandwich-auto-i)
+  Keymap ox <silent> ab <Plug>(textobj-sandwich-auto-a)
 
   let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
   let g:sandwich#recipes += [
@@ -3392,10 +3312,8 @@ if dein#tap('vim-sandwich') &&
   \ },
   \ ]
 
-  omap <silent> if <Plug>(textobj-functioncall-innerparen-i)
-  xmap <silent> if <Plug>(textobj-functioncall-innerparen-i)
-  omap <silent> af <Plug>(textobj-functioncall-i)
-  xmap <silent> af <Plug>(textobj-functioncall-i)
+  Keymap ox <silent> if <Plug>(textobj-functioncall-innerparen-i)
+  Keymap ox <silent> af <Plug>(textobj-functioncall-i)
 
   let g:sandwich#magicchar#f#patterns = [
   \ {
@@ -3406,7 +3324,7 @@ if dein#tap('vim-sandwich') &&
   \ },
   \ ]
 
-  " nmap <silent> srf <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)ff
+  " Keymap n <silent> srf <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)ff
 
   let g:textobj_functioncall_generics_patterns = [
   \ {
@@ -3417,15 +3335,11 @@ if dein#tap('vim-sandwich') &&
   \ },
   \ ]
 
-  onoremap <silent> <Plug>(textobj-functioncall-generics-i) :<C-u>call textobj#functioncall#ip('o', g:textobj_functioncall_generics_patterns)<CR>
-  xnoremap <silent> <Plug>(textobj-functioncall-generics-i) :<C-u>call textobj#functioncall#ip('x', g:textobj_functioncall_generics_patterns)<CR>
-  onoremap <silent> <Plug>(textobj-functioncall-generics-a) :<C-u>call textobj#functioncall#i('o', g:textobj_functioncall_generics_patterns)<CR>
-  xnoremap <silent> <Plug>(textobj-functioncall-generics-a) :<C-u>call textobj#functioncall#i('x', g:textobj_functioncall_generics_patterns)<CR>
+  Keymap ox <silent> <Plug>(textobj-functioncall-generics-i) :<C-u>call textobj#functioncall#ip('o', g:textobj_functioncall_generics_patterns)<CR>
+  Keymap ox <silent> <Plug>(textobj-functioncall-generics-a) :<C-u>call textobj#functioncall#i('o', g:textobj_functioncall_generics_patterns)<CR>
 
-  omap <silent> ig <Plug>(textobj-functioncall-generics-i)
-  xmap <silent> ig <Plug>(textobj-functioncall-generics-i)
-  omap <silent> ag <Plug>(textobj-functioncall-generics-a)
-  xmap <silent> ag <Plug>(textobj-functioncall-generics-a)
+  Keymap ox <silent> ig <Plug>(textobj-functioncall-generics-i)
+  Keymap ox <silent> ag <Plug>(textobj-functioncall-generics-a)
 
   let g:sandwich#recipes += [
   \ {
@@ -3452,7 +3366,7 @@ if dein#tap('vim-sandwich') &&
     return genericsname . '<'
   endfunction
 
-  " nmap <silent> srg <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)gg
+  " Keymap n <silent> srg <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)gg
 
   let g:textobj_functioncall_ts_string_variable_patterns = [
   \ {
@@ -3463,15 +3377,11 @@ if dein#tap('vim-sandwich') &&
   \ },
   \ ]
 
-  onoremap <silent> <Plug>(textobj-functioncall-ts-string-variable-i) :<C-u>call textobj#functioncall#i('o', g:textobj_functioncall_ts_string_variable_patterns)<CR>
-  xnoremap <silent> <Plug>(textobj-functioncall-ts-string-variable-i) :<C-u>call textobj#functioncall#i('x', g:textobj_functioncall_ts_string_variable_patterns)<CR>
-  onoremap <silent> <Plug>(textobj-functioncall-ts-string-variable-a) :<C-u>call textobj#functioncall#a('o', g:textobj_functioncall_ts_string_variable_patterns)<CR>
-  xnoremap <silent> <Plug>(textobj-functioncall-ts-string-variable-a) :<C-u>call textobj#functioncall#a('x', g:textobj_functioncall_ts_string_variable_patterns)<CR>
+  Keymap ox <silent> <Plug>(textobj-functioncall-ts-string-variable-i) :<C-u>call textobj#functioncall#i('o', g:textobj_functioncall_ts_string_variable_patterns)<CR>
+  Keymap ox <silent> <Plug>(textobj-functioncall-ts-string-variable-a) :<C-u>call textobj#functioncall#a('o', g:textobj_functioncall_ts_string_variable_patterns)<CR>
 
-  omap <silent> i$ <Plug>(textobj-functioncall-ts-string-variable-i)
-  xmap <silent> i$ <Plug>(textobj-functioncall-ts-string-variable-i)
-  omap <silent> a$ <Plug>(textobj-functioncall-ts-string-variable-a)
-  xmap <silent> a$ <Plug>(textobj-functioncall-ts-string-variable-a)
+  Keymap ox <silent> i$ <Plug>(textobj-functioncall-ts-string-variable-i)
+  Keymap ox <silent> a$ <Plug>(textobj-functioncall-ts-string-variable-a)
 endif
 " }}}3
 
@@ -3492,24 +3402,24 @@ endif
 " shot-f {{{3
 if dein#tap('vim-shot-f')
   let g:shot_f_no_default_key_mappings = 1
-  nmap <silent> f <Plug>(shot-f-f)
-  nmap <silent> F <Plug>(shot-f-F)
+  Keymap n <silent> f <Plug>(shot-f-f)
+  Keymap n <silent> F <Plug>(shot-f-F)
 endif
 " }}}3
 
 " smart-cursor {{{3
 if dein#tap('smart-cursor.nvim')
-  nnoremap <silent> o o<Esc>:lua require('smart-cursor').indent_cursor()<CR>i
-  nnoremap <silent> O O<Esc>:lua require('smart-cursor').indent_cursor()<CR>i
+  Keymap n <silent> o o<Esc>:lua require('smart-cursor').indent_cursor()<CR>i
+  Keymap n <silent> O O<Esc>:lua require('smart-cursor').indent_cursor()<CR>i
 endif
 " }}}3
 
 " smart-word {{{3
 if dein#tap('vim-smartword')
-  nmap w  <Plug>(smartword-w)
-  nmap b  <Plug>(smartword-b)
-  nmap e  <Plug>(smartword-e)
-  nmap ge <Plug>(smartword-ge)
+  Keymap n w  <Plug>(smartword-w)
+  Keymap n b  <Plug>(smartword-b)
+  Keymap n e  <Plug>(smartword-e)
+  Keymap n ge <Plug>(smartword-ge)
 endif
 " }}}3
 
@@ -3517,16 +3427,16 @@ endif
 if dein#tap('tcomment_vim')
   let g:tcomment_maps = 0
 
-  noremap <silent> <Leader>cc :TComment<CR>
+  Keymap nx <silent> <Leader>cc :TComment<CR>
 endif
 " }}}3
 
 " textmanip {{{3
 if dein#tap('vim-textmanip')
-  xmap <C-j> <Plug>(textmanip-move-down)
-  xmap <C-k> <Plug>(textmanip-move-up)
-  xmap <C-h> <Plug>(textmanip-move-left)
-  xmap <C-l> <Plug>(textmanip-move-right)
+  Keymap x <C-j> <Plug>(textmanip-move-down)
+  Keymap x <C-k> <Plug>(textmanip-move-up)
+  Keymap x <C-h> <Plug>(textmanip-move-left)
+  Keymap x <C-l> <Plug>(textmanip-move-right)
 endif
 " }}}3
 
@@ -3540,8 +3450,8 @@ endif
 
 " trip {{{3
 if dein#tap('vim-trip')
-  nmap <C-a> <Plug>(trip-increment)
-  nmap <C-x> <Plug>(trip-decrement)
+  Keymap n <C-a> <Plug>(trip-increment)
+  Keymap n <C-x> <Plug>(trip-decrement)
 endif
 " }}}3
 
@@ -3558,10 +3468,10 @@ if dein#tap('vim-backslash')
   let g:vim_backslash_disable_default_mappings = 1
 
   function! s:vim_backslash_settings() abort
-    nmap <silent> <buffer> o <Plug>(vim-backslash-o)
-    nmap <silent> <buffer> O <Plug>(vim-backslash-O)
+    Keymap n <silent> <buffer> o <Plug>(vim-backslash-o)
+    Keymap n <silent> <buffer> O <Plug>(vim-backslash-O)
 
-    imap <silent> <expr> <buffer> <CR> pumvisible() ? '<C-y>' : vim_backslash#is_continuous_cr() ? '<Plug>(vim-backslash-smart-CR-i)' : lexima#expand('<CR>', 'i')
+    Keymap i <silent> <expr> <buffer> <CR> pumvisible() ? '<C-y>' : vim_backslash#is_continuous_cr() ? '<Plug>(vim-backslash-smart-CR-i)' : lexima#expand('<CR>', 'i')
   endfunction
 
   AutoCmd FileType vim call <SID>vim_backslash_settings()
@@ -3574,11 +3484,11 @@ if dein#tap('yankround.vim')
   let g:yankround_use_region_hl = 1
   let g:yankround_dir           = '~/.cache/vim/yankround'
 
-  nmap p <Plug>(yankround-p)
-  xmap p <Plug>(yankround-p)
-  nmap P <Plug>(yankround-P)
-  nmap <silent> <expr> <C-p> yankround#is_active() ? '<Plug>(yankround-prev)' : '<Plug>(ctrlp)'
-  nmap <silent> <expr> <C-n> yankround#is_active() ? '<Plug>(yankround-next)' : ""
+  Keymap nx p <Plug>(yankround-p)
+  Keymap n  P <Plug>(yankround-P)
+
+  Keymap n <silent> <expr> <C-p> yankround#is_active() ? '<Plug>(yankround-prev)' : '<Plug>(ctrlp)'
+  Keymap n <silent> <expr> <C-n> yankround#is_active() ? '<Plug>(yankround-next)' : ""
 endif
 " }}}3
 
@@ -3654,10 +3564,10 @@ if dein#tap('comfortable-motion.vim')
     else
       let g:comfortable_motion_enable = 1
 
-      nnoremap <silent> <C-d> :call comfortable_motion#flick(100)<CR>
-      nnoremap <silent> <C-u> :call comfortable_motion#flick(-100)<CR>
-      nnoremap <silent> <C-f> :call comfortable_motion#flick(200)<CR>
-      nnoremap <silent> <C-b> :call comfortable_motion#flick(-200)<CR>
+      Keymap n <silent> <C-d> :call comfortable_motion#flick(100)<CR>
+      Keymap n <silent> <C-u> :call comfortable_motion#flick(-100)<CR>
+      Keymap n <silent> <C-f> :call comfortable_motion#flick(200)<CR>
+      Keymap n <silent> <C-b> :call comfortable_motion#flick(-200)<CR>
     endif
   endfunction
 
@@ -3679,10 +3589,8 @@ endif
 
 " highlightedput {{{3
 if dein#tap('vim-highlightedput')
-  nmap p <Plug>(highlightedput-p)
-  xmap p <Plug>(highlightedput-p)
-  nmap P <Plug>(highlightedput-P)
-  xmap P <Plug>(highlightedput-P)
+  Keymap nx p <Plug>(highlightedput-p)
+  Keymap nx P <Plug>(highlightedput-P)
 endif
 " }}}3
 
@@ -3691,8 +3599,8 @@ if dein#tap('vim-highlightedundo')
   let g:highlightedundo_enable         = 1
   let g:highlightedundo#highlight_mode = 2
 
-  nmap <silent> u     <Plug>(highlightedundo-undo)
-  nmap <silent> <C-r> <Plug>(highlightedundo-redo)
+  Keymap n <silent> u     <Plug>(highlightedundo-undo)
+  Keymap n <silent> <C-r> <Plug>(highlightedundo-redo)
 
   function! s:highlightedundo_toggle() abort
     if g:highlightedundo_enable == 1
@@ -3706,8 +3614,8 @@ if dein#tap('vim-highlightedundo')
   command! HighlightedundoToggle call <SID>highlightedundo_toggle()
 
   function! s:highlightedundo_enable() abort
-    nmap <silent> u     <Plug>(highlightedundo-undo)
-    nmap <silent> <C-r> <Plug>(highlightedundo-redo)
+    Keymap n <silent> u     <Plug>(highlightedundo-undo)
+    Keymap n <silent> <C-r> <Plug>(highlightedundo-redo)
   endfunction
 
   function! s:highlightedundo_disable() abort
@@ -4192,7 +4100,7 @@ endif
 if dein#tap('smartnumber.vim')
   let g:snumber_enable_startup = 1
   let g:snumber_enable_relative = 1
-  nnoremap <Leader>n <Cmd>SNToggle<CR>
+  Keymap n <Leader>n <Cmd>SNToggle<CR>
 
   function! s:snumber_relative_toggle() abort
     if g:snumber_enable_relative == 1
@@ -4225,7 +4133,7 @@ if dein#tap('vista.vim')
   let g:vista_update_on_text_changed = 1
   let g:vista_blink                  = [1, 100]
 
-  nnoremap <silent> <Leader>v <Cmd>Vista<CR>
+  Keymap n <silent> <Leader>v <Cmd>Vista<CR>
 
   AutoCmd VimEnter * call vista#RunForNearestMethodOrFunction()
 endif
@@ -4371,13 +4279,13 @@ endif
 
 " bbye {{{3
 if dein#tap('vim-bbye')
-  nnoremap <silent> <Leader>d <Cmd>Bdelete!<CR>
+  Keymap n <silent> <Leader>d <Cmd>Bdelete!<CR>
 endif
 " }}}3
 
 " capture {{{3
 if dein#tap('capture.vim')
-  AutoCmd FileType capture nnoremap <silent> <buffer> q <Cmd>quit<CR>
+  AutoCmd FileType capture Keymap n <silent> <buffer> q <Cmd>quit<CR>
 endif
 " }}}3
 
@@ -4414,13 +4322,13 @@ if dein#tap('vim-floaterm')
   let g:floaterm_winblend    = 15
   let g:floaterm_position    = 'center'
 
-  nnoremap <silent> <C-s> <Cmd>FloatermToggle<CR>
+  Keymap n <silent> <C-s> <Cmd>FloatermToggle<CR>
 
   AutoCmd FileType floaterm call <SID>floaterm_settings()
   AutoCmd FileType gitrebase call <SID>set_git_rebase_settings()
 
   function! s:floaterm_settings() abort
-    tnoremap <silent> <buffer> <C-s> <C-\><C-n>:FloatermToggle<CR>
+    Keymap t <silent> <buffer> <C-s> <C-\><C-n>:FloatermToggle<CR>
     let b:highlight_cursor = 0
   endfunction
 
@@ -4428,7 +4336,7 @@ if dein#tap('vim-floaterm')
     set winhighlight=Normal:GitRebase
     set winblend=30
 
-    nnoremap <silent> <buffer> <Leader>d :bdelete!<Space><Bar><Space>close<CR>
+    Keymap n <silent> <buffer> <Leader>d :bdelete!<Space><Bar><Space>close<CR>
   endfunction
 endif
 " }}}3
@@ -4474,13 +4382,13 @@ if dein#tap('toggleterm.nvim')
     lua require('toggleterm').setup{}
   endfunction
 
-  nnoremap <silent> <C-s><C-s> :<C-u>ToggleTerm direction=float<CR>
-  nnoremap <silent> <C-s>s     :<C-u>ToggleTerm direction=horizontal size=<C-r>=float2nr(&lines * 0.4)<CR><CR>
-  nnoremap <silent> <C-s>v     :<C-u>ToggleTerm direction=vertical size=<C-r>=float2nr(&columns * 0.3)<CR><CR>
-  nnoremap <silent> <C-s><C-v> :<C-u>ToggleTerm direction=vertical size=<C-r>=float2nr(&columns * 0.3)<CR><CR>
+  Keymap n <silent> <C-s><C-s> :<C-u>ToggleTerm direction=float<CR>
+  Keymap n <silent> <C-s>s     :<C-u>ToggleTerm direction=horizontal size=<C-r>=float2nr(&lines * 0.4)<CR><CR>
+  Keymap n <silent> <C-s>v     :<C-u>ToggleTerm direction=vertical size=<C-r>=float2nr(&columns * 0.3)<CR><CR>
+  Keymap n <silent> <C-s><C-v> :<C-u>ToggleTerm direction=vertical size=<C-r>=float2nr(&columns * 0.3)<CR><CR>
 
   function! s:toggleterm_settings() abort
-    tnoremap <silent> <nowait> <buffer> <C-s> <C-\><C-n>:close<CR>
+    Keymap t <silent> <nowait> <buffer> <C-s> <C-\><C-n>:close<CR>
   endfunction
 
   AutoCmd FileType toggleterm call <SID>toggleterm_settings()
@@ -4489,18 +4397,18 @@ endif
 
 " undotree {{{3
 if dein#tap('undotree')
-  nnoremap <silent> <Leader>u <Cmd>UndotreeToggle<CR>
+  Keymap n <silent> <Leader>u <Cmd>UndotreeToggle<CR>
 endif
 " }}}3
 
 " which-key {{{3
 if dein#tap('vim-which-key')
-  nnoremap <silent> <Leader><CR>      <Cmd>WhichKey '<Leader>'<CR>
-  nnoremap <silent> <Plug>(dev)<CR>   <Cmd>WhichKey '<Plug>(dev)'<CR>
-  nnoremap <silent> <Plug>(fzf-p)<CR> <Cmd>WhichKey '<Plug>(fzf-p)'<CR>
-  nnoremap <silent> <Plug>(t)<CR>     <Cmd>WhichKey '<Plug>(t)'<CR>
-  nnoremap <silent> s<CR>             <Cmd>WhichKey 's'<CR>
-  nnoremap <silent> <bookmark><CR>    <Cmd>WhichKey '<bookmark>'<CR>
+  Keymap n <silent> <Leader><CR>      <Cmd>WhichKey '<Leader>'<CR>
+  Keymap n <silent> <Plug>(dev)<CR>   <Cmd>WhichKey '<Plug>(dev)'<CR>
+  Keymap n <silent> <Plug>(fzf-p)<CR> <Cmd>WhichKey '<Plug>(fzf-p)'<CR>
+  Keymap n <silent> <Plug>(t)<CR>     <Cmd>WhichKey '<Plug>(t)'<CR>
+  Keymap n <silent> s<CR>             <Cmd>WhichKey 's'<CR>
+  Keymap n <silent> <bookmark><CR>    <Cmd>WhichKey '<bookmark>'<CR>
 endif
 " }}}3
 
@@ -4564,7 +4472,7 @@ endif
 " windowswap {{{3
 if dein#tap('vim-windowswap')
   let g:windowswap_map_keys = 0
-  nnoremap <silent> <Leader><C-w> :call WindowSwap#EasyWindowSwap()<CR>
+  Keymap n <silent> <Leader><C-w> :call WindowSwap#EasyWindowSwap()<CR>
 endif
 " }}}3
 
@@ -4698,7 +4606,7 @@ function! s:esc_esc() abort
 endfunction
 
 command! EscEsc call <SID>esc_esc()
-nnoremap <silent> <Esc><Esc> <Cmd>nohlsearch<CR><Cmd>EscEsc<CR>
+Keymap n <silent> <Esc><Esc> <Cmd>nohlsearch<CR><Cmd>EscEsc<CR>
 " }}}2
 
 " Removed Plugin {{{2
@@ -4774,16 +4682,16 @@ nnoremap <silent> <Esc><Esc> <Cmd>nohlsearch<CR><Cmd>EscEsc<CR>
 "   let g:keymap = 'QuickFix'
 "   call lightline#update()
 "
-"   nnoremap <silent> cp <Cmd>cprev<CR>
-"   nnoremap <silent> cn <Cmd>cnext<CR>
+"   Keymap n <silent> cp <Cmd>cprev<CR>
+"   Keymap n <silent> cn <Cmd>cnext<CR>
 " endfunction
 "
 " function! Set_locationlist_keymap() abort
 "   let g:keymap = 'LocationList'
 "   call lightline#update()
 "
-"   nnoremap <silent> cp <Cmd>lprev<CR>
-"   nnoremap <silent> cn <Cmd>lnext<CR>
+"   Keymap n <silent> cp <Cmd>lprev<CR>
+"   Keymap n <silent> cn <Cmd>lnext<CR>
 " endfunction
 "
 " AutoCmd FileType qf
