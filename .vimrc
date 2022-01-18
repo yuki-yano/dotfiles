@@ -78,6 +78,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('neovim/nvim-lspconfig')
     call dein#add('williamboman/nvim-lsp-installer')
 
+    call dein#add('onsails/lspkind-nvim')
     call dein#add('tami5/lspsaga.nvim')
   endif
 
@@ -1628,6 +1629,7 @@ endif
 if dein#tap('nvim-cmp')
 lua <<EOF
 local cmp = require('cmp')
+local lspkind = require('lspkind')
 cmp.setup({
   snippet = {
     expand = function(args)
@@ -1646,7 +1648,59 @@ cmp.setup({
     { name = 'ultisnips' },
   }, {
     { name = 'buffer' },
-  })
+  }),
+  formatting = {
+    format = lspkind.cmp_format({
+      with_text = true,
+      maxwidth = 50,
+    })
+  },
+  window = {
+    completion = {
+      border = 'rounded',
+      scrollbar = '║',
+    },
+  },
+  mapping = {
+    ['<CR>'] = function(fallback)
+      if cmp.visible() then
+        cmp.confirm()
+      else
+        fallback() -- If you are using vim-endwise, this fallback function will be behaive as the vim-endwise.
+      end
+    end
+  }
+})
+
+require('lspkind').init({
+  preset = 'codicons',
+  symbol_map = {
+    Text = " ",
+    Method = " ",
+    Function = " ",
+    Constructor = " ",
+    Field = " ",
+    Variable = " ",
+    Class = " ",
+    Interface = " ",
+    Module = " ",
+    Property = " ",
+    Unit = " ",
+    Value = " ",
+    Enum = " ",
+    Keyword = " ",
+    Snippet = " ",
+    Color = " ",
+    File = " ",
+    Reference = " ",
+    Folder = " ",
+    EnumMember = " ",
+    Constant = " ",
+    Struct = " ",
+    Event = " ",
+    Operator = " ",
+    TypeParameter = " ",
+  },
 })
 EOF
 endif
