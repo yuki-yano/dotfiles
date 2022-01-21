@@ -3174,7 +3174,9 @@ if dein#tap('lexima.vim')
 
     "" TypeScript
     let s:rules += [
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\s([a-zA-Z, ]*>\%#)',             'delete': ')', 'input': '<BS>) => {', 'input_after': '}' },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '([a-zA-Z]*>\%#)',                                'input': '<BS> => {', 'input_after': '}'  },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '(([a-zA-Z, ]*)>\%#)',             'delete': ')', 'input': '<BS>) => {', 'input_after': '}' },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-zA-Z<>]\+([a-zA-Z, ]*>\%#)',                  'input': '<BS> => {', 'input_after': '}'  },
     \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-zA-Z<>]\+(([a-zA-Z, ]*>\%#))', 'delete': ')', 'input': '<BS>) => {', 'input_after': '}' },
     \ ]
 
