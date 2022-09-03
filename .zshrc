@@ -26,6 +26,9 @@ zinit light zsh-users/zsh-autosuggestions
 zinit ice lucid
 zinit light woefe/git-prompt.zsh
 
+# zinit ice lucid
+# zinit light romkatv/zsh-prompt-benchmark
+
 # fuzzy finder
 zinit ice lucid from"gh-r" as"program" mv"fzf -> ${ZPFX}/bin/fzf"
 zinit light junegunn/fzf
@@ -119,7 +122,7 @@ fi
 
 # bat {{{
 if whence bat > /dev/null; then
-  export BAT_THEME='gruvbox'
+  export BAT_THEME='gruvbox-dark'
   alias bat='bat'
   alias c='bat --color=always --style=plain'
 fi
