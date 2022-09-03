@@ -44,8 +44,8 @@ install --cask homebrew/cask-versions/google-chrome-canary
 install --cask iterm2
 install --cask jasper
 install --cask jetbrains-toolbox
-install --cask kap
 install --cask karabiner-elements
+install --cask keka
 install --cask keyboard-cleaner
 install --cask keycastr
 install --cask krisp
