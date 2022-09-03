@@ -99,8 +99,6 @@
   file = "https://{host}/{path}/{file.directory? and :tree or :blob}/{short_rev}/{file}{lines && \"#L%s\" % lines.join(\"-\")}"
 
 [delta]
-  # theme = Nord
-  theme = gruvbox
   features = line-numbers decorations
 
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:
