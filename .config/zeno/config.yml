@@ -118,7 +118,7 @@ snippets:
     context:
       lbuffer: '.+\s'
   - name: pipe xargs
-    keyword: pipe_xargs
+    keyword: X
     snippet: "| xargs -I{} {{command}} {}"
     context:
       lbuffer: '.+\s'
@@ -128,9 +128,9 @@ snippets:
     context:
       lbuffer: '.+\s'
 
-  - name: branch
-    keyword: OB
-    snippet: zsh -c "echo origin/$(git symbolic-ref --short HEAD)"
+  - name: default branch
+    keyword: B
+    snippet: zsh -c "git symbolic-ref --short refs/remotes/origin/HEAD | sed 's!.*/!!'"
     context:
       lbuffer: '^git\s+'
     evaluate: true
