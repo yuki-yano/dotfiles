@@ -1,25 +1,65 @@
 {
   "hover.floatConfig": {
     "border": true,
-    "highlight": "CocHoverFloating"
+    "highlight": "CocHoverFloating",
+    "winblend": 10
   },
   "suggest.autoTrigger": "always",
-  "suggest.minTriggerInputLength": 1,
   "suggest.asciiCharactersOnly": true,
   "suggest.snippetIndicator": " >>",
   "suggest.languageSourcePriority": 200,
   "suggest.floatConfig": {
     "border": true,
-    "highlight": "CocSuggestFloating"
+    "highlight": "CocSuggestFloating",
+    "winblend": 10
+  },
+  "suggest.noselect": true,
+  "suggest.enablePreselect": false,
+  "suggest.completionItemKindLabels": {
+    "keyword": " ",
+    "variable": " ",
+    "value": " ",
+    "operator": " ",
+    "constructor": " ",
+    "function": " ",
+    "reference": " ",
+    "constant": " ",
+    "method": " ",
+    "struct": " ",
+    "class": " ",
+    "interface": " ",
+    "text": " ",
+    "enum": " ",
+    "enumMember": " ",
+    "module": " ",
+    "color": " ",
+    "property": " ",
+    "field": " ",
+    "unit": " ",
+    "event": " ",
+    "file": " ",
+    "folder": " ",
+    "snippet": "",
+    "typeParameter": " ",
+    "default": "  "
   },
   "signature.floatConfig": {
     "border": true,
-    "highlight": "CocSignatureFloating"
+    "highlight": "CocSignatureFloating",
+    "winblend": 10
   },
+  "coc.source.around.shortcut": "around",
+  "coc.source.buffer.shortcut": "buffer",
+  "coc.source.word.shortcut": "word",
+  "coc.source.file.shortcut": "file",
+  "copilot.priority": 1000,
   "coc.source.ultisnips-select.priority": 500,
+  "tabnine.shortcut": "tabnine",
   "tabnine.priority": 100,
+  "dialog.floatHighlight": "CocFloating",
+  "dialog.floatBorderHighlight": "CocFloating",
   "diagnostic.messageTarget": "float",
-  "diagnostic.checkCurrentLine": true,
+  "diagnostic.checkCurrentLine": false,
   "diagnostic.messageDelay": 0,
   "diagnostic.errorSign": "",
   "diagnostic.warningSign": "",
@@ -27,10 +67,11 @@
   "diagnostic.hintSign": "",
   "diagnostic.floatConfig": {
     "border": true,
-    "highlight": "CocDiagnosticFloating"
+    "highlight": "CocDiagnosticFloating",
+    "winblend": 10
   },
-  "coc.preferences.promptInput": true,
   "coc.preferences.useQuickfixForLocations": false,
+  "coc.preferences.currentFunctionSymbolAutoUpdate": true,
   "diagnostic.locationlistUpdate": false,
   "prettier.disableLanguages": [
     "markdown"
@@ -63,7 +104,6 @@
   "prettier.onlyUseLocalVersion": true,
   "prettier.statusItemText": "",
   "rust-analyzer.procMacro.enable": true,
-  "python.jediEnabled": false,
   "python.linting.flake8Enabled": true,
   "solargraph.diagnostics": true,
   "json.schemas": [
@@ -104,5 +144,5 @@
   "tsserver.enable": false,
   "deno.enable": false,
   "deno.lint": true,
-  "coc.source.file.trimSameExts": []
+  "prettier.enable": false
 }

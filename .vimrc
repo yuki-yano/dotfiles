@@ -1,12 +1,15 @@
 " Plugin Manager {{{1
 
 " Select LSP {{{2
-let s:enable_coc      = v:true
-let s:enable_vim_lsp  = v:false
-let s:enable_nvim_lsp = v:false
+let g:enable_coc      = v:true
+let g:enable_vim_lsp  = v:false
+let g:enable_nvim_lsp = v:false
 
-let s:enable_ddc = v:false
-let s:enable_cmp = v:false
+let g:enable_ddc = v:false
+let g:enable_cmp = v:true
+
+let g:enable_nvim_lsp = g:enable_nvim_lsp && has('nvim')
+let g:enable_cmp      = g:enable_cmp && has('nvim')
 " }}}2
 
 " Install & Load Dein {{{2
@@ -31,8 +34,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Dein {{{3
   call dein#add('Shougo/dein.vim')
-
-  call dein#add('haya14busa/dein-command.vim', {'on_cmd': ['Dein']})
+  call dein#add('haya14busa/dein-command.vim', { 'on_cmd': ['Dein'] })
   " }}}3
 
   " Doc {{{3
@@ -41,15 +43,37 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " denops {{{3
   call dein#add('vim-denops/denops.vim')
+
+  call dein#add('Shougo/ddu.vim')
+  call dein#add('Shougo/ddu-source-line')
+  call dein#add('Shougo/ddu-kind-file')
+  call dein#add('Shougo/ddu-filter-matcher_substring')
+  call dein#add('Shougo/ddu-source-file')
+  call dein#add('Shougo/ddu-ui-ff')
+
+  if isdirectory(expand('~/repos/github.com/yuki-yano/ddu-filter-fzf'))
+    call dein#add('~/repos/github.com/yuki-yano/ddu-filter-fzf')
+  endif
   " }}}3
 
   " IDE {{{3
-  if s:enable_coc
-    call dein#add('neoclide/coc.nvim', {'rev': 'master', 'build': 'yarn install --frozen-lockfile'})
-    " call dein#add('neoclide/coc.nvim', {'rev': 'release'})
+  if g:enable_coc || (g:enable_cmp && !isdirectory(expand($HOME . '.config/github-copilot')))
+    call dein#add('github/copilot.vim')
   endif
 
-  if s:enable_ddc
+  if g:enable_coc
+    call dein#add('neoclide/coc.nvim', {'build': 'yarn install --frozen-lockfile'})
+    if isdirectory(expand('~/repos/github.com/yuki-yano/coc-copilot'))
+      call dein#add('~/repos/github.com/yuki-yano/coc-copilot')
+    endif
+
+    " call dein#add('neoclide/coc.nvim', {'rev': 'release'})
+    " if isdirectory(expand('~/repos/github.com/yuki-yano/coc.nvim'))
+    "   call dein#add('~/repos/github.com/yuki-yano/coc.nvim')
+    " endif
+  endif
+
+  if g:enable_ddc
     call dein#add('Shougo/ddc.vim', {'on_event': ['InsertEnter'], 'hook_post_source': 'call SetupDdc()'})
 
     call dein#add('LumaKernel/ddc-file')
@@ -65,30 +89,39 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('matsui54/denops-popup-preview.vim')
   endif
 
-  if s:enable_vim_lsp
+  if g:enable_vim_lsp
     call dein#add('prabirshrestha/vim-lsp')
     call dein#add('mattn/vim-lsp-settings')
 
-    if s:enable_ddc
+    if g:enable_ddc
       call dein#add('shun/ddc-vim-lsp')
     endif
   endif
 
-  if s:enable_nvim_lsp
+  if g:enable_nvim_lsp
     call dein#add('neovim/nvim-lspconfig')
-    call dein#add('williamboman/nvim-lsp-installer')
+    call dein#add('williamboman/mason.nvim')
+    call dein#add('williamboman/mason-lspconfig.nvim')
 
-    call dein#add('onsails/lspkind-nvim')
+    call dein#add('b0o/SchemaStore.nvim')
+    call dein#add('j-hui/fidget.nvim')
+    call dein#add('ray-x/lsp_signature.nvim')
     call dein#add('tami5/lspsaga.nvim')
   endif
 
-  if s:enable_cmp
+  if g:enable_cmp
     call dein#add('hrsh7th/nvim-cmp')
-    call dein#add('hrsh7th/vim-vsnip')
 
-    call dein#add('hrsh7th/cmp-nvim-lsp')
     call dein#add('hrsh7th/cmp-buffer')
+    call dein#add('hrsh7th/cmp-cmdline')
+    call dein#add('hrsh7th/cmp-nvim-lsp')
+    call dein#add('hrsh7th/cmp-path')
+    call dein#add('onsails/lspkind-nvim')
     call dein#add('quangnguyen30192/cmp-nvim-ultisnips')
+    call dein#add('tzachar/cmp-fuzzy-path')
+    call dein#add('tzachar/cmp-tabnine', {'build': './install.sh'})
+    call dein#add('zbirenbaum/copilot-cmp')
+    call dein#add('zbirenbaum/copilot.lua')
   endif
 
   " call dein#add('Shougo/neco-vim')
@@ -101,8 +134,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('prabirshrestha/asyncomplete-lsp.vim')
   " call dein#add('prabirshrestha/asyncomplete.vim')
   " call dein#add('wellle/tmux-complete.vim')
-
-  " call dein#add('github/copilot.vim')
   " }}}3
 
   " IME {{{3
@@ -124,22 +155,28 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('styled-components/vim-styled-components')
   " call dein#add('tpope/vim-rails')
   " call dein#add('yardnsm/vim-import-cost', {'build': 'npm install'})
-  call dein#add('elzr/vim-json', {'on_ft': ['json']})
-  call dein#add('heavenshell/vim-jsdoc', {'on_ft': ['typescript', 'typescriptreact', 'javascript'], 'build': 'make install'})
-  call dein#add('pantharshit00/vim-prisma', {'on_ft': ['prisma'], 'merge_ftdetect': v:true})
+  call dein#add('elzr/vim-json')
+  call dein#add('heavenshell/vim-jsdoc', {'build': 'make install'})
+  call dein#add('pantharshit00/vim-prisma', {'merge_ftdetect': 1})
 
   if has('nvim')
     call dein#add('nvim-treesitter/nvim-treesitter')
 
-    " call dein#add('David-Kunz/treesitter-unit')
+    " call dein#add('SmiteshP/nvim-gps')
     " call dein#add('code-biscuits/nvim-biscuits')
+    " call dein#add('ggandor/leap-ast.nvim')
+    " call dein#add('ggandor/leap.nvim')
     " call dein#add('haringsrob/nvim_context_vt')
-    " call dein#add('lukas-reineke/indent-blankline.nvim')
     " call dein#add('nvim-treesitter/nvim-treesitter-refactor')
     " call dein#add('nvim-treesitter/nvim-treesitter-textobjects')
-    " call dein#add('romgrk/nvim-treesitter-context')
-    call dein#add('JoosepAlviste/nvim-ts-context-commentstring', {'depends': ['caw.vim']})
+    call dein#add('David-Kunz/treesitter-unit')
+    call dein#add('JoosepAlviste/nvim-ts-context-commentstring')
+    call dein#add('lukas-reineke/indent-blankline.nvim')
+    call dein#add('m-demare/hlargs.nvim')
+    call dein#add('mfussenegger/nvim-treehopper')
+    call dein#add('nvim-treesitter/nvim-treesitter-context')
     call dein#add('p00f/nvim-ts-rainbow')
+    call dein#add('yioneko/nvim-yati')
   endif
   " }}}3
 
@@ -149,45 +186,45 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('rhysd/conflict-marker.vim')
   " call dein#add('tpope/vim-fugitive')
   " call dein#add('wting/gitsessions.vim', {'on_cmd': ['GitSessionSave', 'GitSessionLoad']})
-  call dein#add('lambdalisue/gina.vim', {'on_cmd': ['Gina'], 'on_ft': ['fzf']})
+  call dein#add('lambdalisue/gina.vim', {'on_cmd': ['Gina'], 'on_func': ['fzf#run']})
 
   if has('nvim')
     " call dein#add('APZelos/blamer.nvim')
     " call dein#add('f-person/git-blame.nvim')
-    " call dein#add('lewis6991/gitsigns.nvim')
     " call dein#add('rhysd/git-messenger.vim')
+    call dein#add('lewis6991/gitsigns.nvim')
   endif
   " }}}3
 
   " Fuzzy Finder {{{3
   " call dein#add('Shougo/denite.nvim')
 
-  call dein#add('junegunn/fzf', {'build': './install --bin'})
-  " call dein#add('junegunn/fzf.vim')
+  call dein#add('junegunn/fzf', {'build': './install --bin', 'merged': 0})
+  " call dein#add('junegunn/fzf.vim', {'merged': 0})
   " call dein#add('antoinemadec/coc-fzf', {'rev': 'release'})
 
   if isdirectory(expand('~/repos/github.com/yuki-yano/fzf-preview.vim'))
     call dein#add('~/repos/github.com/yuki-yano/fzf-preview.vim')
   endif
 
-  " if isdirectory(expand('~/workspace/coc-ultisnips-select'))
-  "   call dein#add('~/workspace/coc-ultisnips-select')
+  " if isdirectory(expand('~/repos/github.com/yuki-yano/coc-ultisnips-select'))
+  "   call dein#add('~/repos/github.com/yuki-yano/coc-ultisnips-select')
   " endif
 
   " call dein#add('yuki-yano/fzf-preview.vim', {'rev': 'release/rpc'})
 
   if has('nvim')
-    " call dein#add('nvim-lua/telescope.nvim')
-    " call dein#add('kyazdani42/nvim-web-devicons')
+    call dein#add('nvim-lua/telescope.nvim')
   endif
   " }}}3
 
   " filer {{{3
-  call dein#add('lambdalisue/fern.vim', {'on_cmd': ['Fern'], 'depends': ['fern-mapping-reload-all.vim', 'fern-git-status.vim', 'fern-renderer-nerdfont.vim', 'nerdfont.vim', 'fern-preview.vim']})
+  call dein#add('lambdalisue/fern.vim', {'on_cmd': ['Fern'], 'depends': ['fern-mapping-reload-all.vim', 'fern-git-status.vim', 'fern-hijack.vim', 'fern-renderer-nerdfont.vim', 'nerdfont.vim', 'fern-preview.vim']})
 
   " call dein#add('LumaKernel/fern-mapping-fzf.vim')
   call dein#add('LumaKernel/fern-mapping-reload-all.vim', {'lazy': 1})
   call dein#add('lambdalisue/fern-git-status.vim', {'lazy': 1, 'hook_post_source': 'call fern_git_status#init()'})
+  call dein#add('lambdalisue/fern-hijack.vim')
   call dein#add('lambdalisue/fern-renderer-nerdfont.vim', {'lazy': 1})
   call dein#add('lambdalisue/nerdfont.vim', {'lazy': 1})
   call dein#add('yuki-yano/fern-preview.vim', {'lazy': 1})
@@ -201,20 +238,20 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " textobj & operator {{{3
-  call dein#add('machakann/vim-sandwich', {'depends': ['vim-textobj-entire', 'vim-textobj-line', 'vim-textobj-functioncall', 'vim-textobj-url', 'vim-textobj-cursor-context']}) " ib, ab, is, as
+  call dein#add('machakann/vim-sandwich') " ib, ab, is, as
   call dein#add('machakann/vim-swap', {'on_map': {'nox': '<Plug>'}}) " g< g> gs i, a,
 
   call dein#add('kana/vim-textobj-user')
   call dein#add('kana/vim-operator-user')
 
   " call dein#add('kana/vim-textobj-fold') " iz az
-  " call dein#add('kana/vim-textobj-indent') " ii ai
+  " call dein#add('kana/vim-textobj-indent', {'on_map': {'ox': '<Plug>(textobj-indent'}}) " ii ai
+  " call dein#add('mattn/vim-textobj-url', {'on_map': {'ox': '<Plug>(textobj-url'}}) " iu au
   " call dein#add('rhysd/vim-textobj-ruby') " ir ar
   " call dein#add('romgrk/equal.operator') " i=h a=h i=l a=l
   call dein#add('kana/vim-textobj-entire', {'on_map': {'ox': '<Plug>(textobj-entire'}}) " ie ae
   call dein#add('kana/vim-textobj-line', {'on_map': {'ox': '<Plug>(textobj-line'}}) " al il
   call dein#add('machakann/vim-textobj-functioncall', {'on_map': {'ox': '<Plug>(textobj-functioncall'}}) " if af ig ag
-  call dein#add('mattn/vim-textobj-url', {'on_map': {'ox': '<Plug>(textobj-url'}}) " iu au
   call dein#add('thinca/vim-textobj-between', {'on_map': {'ox': '<Plug>(textobj-between'}}) " i{char} a{char}
   call dein#add('yuki-yano/vim-textobj-cursor-context', {'on_map': {'ox': '<Plug>(textobj-cursorcontext'}}) " ic ac
 
@@ -231,10 +268,13 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('haya14busa/is.vim')
   " call dein#add('haya14busa/vim-metarepeat')
   " call dein#add('hrsh7th/vim-seak')
+  " call dein#add('hrsh7th/vim-searchx', {'on_func': ['searchx#start', 'searchx#select', 'searchx#next_dir', 'searchx#prev_dir']})
   " call dein#add('inkarkat/vim-EnhancedJumps')
   " call dein#add('kana/vim-smartword', {'on_map': ['<Plug>']})
   " call dein#add('lambdalisue/reword.vim')
   " call dein#add('mg979/vim-visual-multi', {'rev': 'test'})
+  " call dein#add('mhinz/vim-grepper', {'on_cmd': ['Grepper']})
+  " call dein#add('monaqa/dps-dial.vim', {'on_map': ['<Plug>(dps-dial-']})
   " call dein#add('mtth/scratch.vim')
   " call dein#add('osyo-manga/vim-trip')
   " call dein#add('rhysd/accelerated-jk')
@@ -242,30 +282,29 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('t9md/vim-textmanip', {'on_map': ['<Plug>']})
   " call dein#add('tomtom/tcomment_vim')
   " call dein#add('tpope/vim-commentary')
-  " call dein#add('tpope/vim-repeat')
   " call dein#add('unblevable/quick-scope')
   " call dein#add('vim-scripts/Align')
   " call dein#add('yuki-yano/zero.vim')
   call dein#add('Bakudankun/BackAndForward.vim', {'on_map': ['<Plug>(backandforward-']})
-  call dein#add('LeafCage/yankround.vim', {'on_map': ['<Plug>']})
+  call dein#add('LeafCage/yankround.vim')
   call dein#add('MattesGroeger/vim-bookmarks', {'on_cmd': ['BookmarkToggle', 'BookmarkAnnotate', 'BookmarkNext', 'BookmarkPrev', 'BookmarkShowAll', 'BookmarkClear', 'BookmarkClearAll']})
   call dein#add('SirVer/ultisnips', {'on_ft': ['snippets'], 'on_event': ['InsertEnter']})
-  call dein#add('cohama/lexima.vim', {'on_event': ['InsertEnter', 'CmdlineEnter'], 'hook_post_source': 'call SetupLexima()'})
+  call dein#add('cohama/lexima.vim', {'on_event': ['InsertEnter', 'CmdlineEnter'], 'hook_post_source': 'call SetupLexima()', 'rev': 'feature/feedkeys'})
   call dein#add('haya14busa/vim-asterisk', {'on_map': ['<Plug>']})
   call dein#add('haya14busa/vim-edgemotion', {'on_map': ['<Plug>']})
   call dein#add('hrsh7th/vim-eft', {'on_map': {'nox': '<Plug>'}})
-  call dein#add('hrsh7th/vim-searchx', {'on_func': ['searchx#start', 'searchx#select', 'searchx#next_dir', 'searchx#prev_dir']})
   call dein#add('junegunn/vim-easy-align', {'on_map': ['<Plug>(EasyAlign)']})
-  call dein#add('lambdalisue/vim-backslash', {'on_ft': ['vim']})
+  call dein#add('kyoh86/vim-ripgrep')
+  call dein#add('lambdalisue/vim-backslash', {'on_ft': ['vim'], 'on_map': ['<Plug>']})
   call dein#add('mattn/vim-maketable', {'on_cmd': ['MakeTable']})
-  call dein#add('mhinz/vim-grepper', {'on_cmd': ['Grepper']})
-  call dein#add('monaqa/dps-dial.vim', {'on_map': ['<Plug>(dps-dial-']})
   call dein#add('osyo-manga/vim-anzu', {'on_map': ['<Plug>']})
   call dein#add('osyo-manga/vim-jplus', {'on_map': ['<Plug>']})
   call dein#add('terryma/vim-expand-region', {'on_map': ['<Plug>(expand_region_']})
   call dein#add('thinca/vim-qfreplace', {'on_cmd': ['Qfreplace']})
   call dein#add('tommcdo/vim-exchange', {'on_map': ['<Plug>(Exchange']})
+  call dein#add('tpope/vim-repeat')
   call dein#add('tyru/caw.vim', {'on_map': ['<Plug>']})
+  call dein#add('yuki-yano/deindent-yank.vim', {'on_map': ['<Plug>']})
 
   if isdirectory(expand('~/repos/github.com/yuki-yano/fuzzy-motion.vim'))
     call dein#add('~/repos/github.com/yuki-yano/fuzzy-motion.vim', {'on_cmd': ['FuzzyMotion'], 'on_func': ['fuzzy_motion#targets']})
@@ -273,9 +312,10 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   if has('nvim')
     " call dein#add('b3nj5m1n/kommentary')
+    " call dein#add('delphinus/emcl.nvim')
     " call dein#add('gabrielpoca/replacer.nvim')
+    " call dein#add('gbprod/yanky.nvim')
     " call dein#add('ggandor/lightspeed.nvim')
-    " call dein#add('monaqa/dial.nvim')
     " call dein#add('numToStr/Comment.nvim')
     " call dein#add('phaazon/hop.nvim')
     " call dein#add('rlane/pounce.nvim', {'on_cmd': ['Pounce']})
@@ -285,44 +325,62 @@ if dein#load_state(s:DEIN_BASE_PATH)
     " call dein#add('yuki-yano/zero.nvim')
     call dein#add('booperlv/nvim-gomove', {'on_map': ['<Plug>Go'], 'hook_post_source': 'call SetupGomove()'})
     call dein#add('kevinhwang91/nvim-hlslens')
+    call dein#add('monaqa/dial.nvim')
     call dein#add('nacro90/numb.nvim', {'on_event': ['CmdlineEnter'], 'hook_post_source': 'call SetupNumb()'})
+    call dein#add('ray-x/sad.nvim')
+    call dein#add('tkmpypy/chowcho.nvim')
     call dein#add('windwp/nvim-ts-autotag')
+
+    if isdirectory(expand('~/repos/github.com/yuki-yano/tsnip.nvim'))
+      call dein#add('~/repos/github.com/yuki-yano/tsnip.nvim', {'depends': ['nui.nvim'], 'on_event': ['InsertEnter'], 'on_cmd': ['TSnip']})
+    endif
   endif
   " }}}3
 
   " Appearance {{{3
   " call dein#add('RRethy/vim-hexokinase', {'build': 'make hexokinase'})
   " call dein#add('Yggdroot/indentLine')
-  " call dein#add('andymass/vim-matchup')
+  " call dein#add('lambdalisue/readablefold.vim')
   " call dein#add('luochen1990/rainbow')
   " call dein#add('mhinz/vim-startify')
   " call dein#add('miyakogi/seiya.vim')
+  " call dein#add('mopp/smartnumber.vim')
   " call dein#add('ntpeters/vim-better-whitespace')
   " call dein#add('obcat/vim-highlightedput', {'on_map': ['<Plug>']})
   " call dein#add('ronakg/quickr-preview.vim')
+  " call dein#add('utubo/vim-auto-hide-cmdline')
   " call dein#add('wellle/context.vim')
   " call dein#add('yuttie/comfortable-motion.vim')
+  call dein#add('andymass/vim-matchup')
   call dein#add('itchyny/lightline.vim')
   call dein#add('lambdalisue/glyph-palette.vim')
-  call dein#add('lambdalisue/readablefold.vim')
   call dein#add('machakann/vim-highlightedundo', {'on_map': ['<Plug>']})
   call dein#add('machakann/vim-highlightedyank', {'on_event': ['TextYankPost']})
-  call dein#add('mopp/smartnumber.vim')
   call dein#add('rbtnn/vim-layout', {'on_func': ['layout#save', 'layout#load']})
   call dein#add('ryanoasis/vim-devicons')
 
   if has('nvim')
+    " call dein#add('Maan2003/lsp_lines.nvim')
     " call dein#add('Xuyuanp/scrollbar.nvim')
     " call dein#add('dstein64/nvim-scrollview', {'on_event': ['WinScrolled']})
     " call dein#add('glepnir/indent-guides.nvim')
     " call dein#add('karb94/neoscroll.nvim')
+    " call dein#add('mvllow/modes.nvim')
+    " call dein#add('nvim-lualine/lualine.nvim')
     " call dein#add('vuki656/package-info.nvim')
     " call dein#add('windwp/floatline.nvim')
-    call dein#add('folke/todo-comments.nvim')
+    call dein#add('B4mbus/todo-comments.nvim')
+    call dein#add('akinsho/bufferline.nvim')
+    call dein#add('anuvyklack/hydra.nvim')
+    call dein#add('b0o/incline.nvim')
+    call dein#add('bennypowers/nvim-regexplainer')
     call dein#add('kevinhwang91/nvim-bqf', {'on_ft': ['qf']})
+    call dein#add('kevinhwang91/nvim-ufo')
     call dein#add('kwkarlwang/bufresize.nvim')
     call dein#add('norcalli/nvim-colorizer.lua')
-    call dein#add('rcarriga/nvim-notify', {'lazy': 1})
+    call dein#add('petertriho/nvim-scrollbar')
+    call dein#add('rcarriga/nvim-notify')
+    call dein#add('stevearc/aerial.nvim')
   endif
   " }}}3
 
@@ -334,7 +392,6 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " }}}3
 
   " Util {{{3
-  " call dein#add('antoinemadec/FixCursorHold.nvim')
   " call dein#add('dhruvasagar/vim-table-mode')
   " call dein#add('dstein64/vim-startuptime')
   " call dein#add('kristijanhusak/vim-carbon-now-sh')
@@ -347,6 +404,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('thinca/vim-localrc')
   " call dein#add('thinca/vim-ref')
   " call dein#add('tyru/vim-altercmd')
+  " call dein#add('vim-test/vim-test')
   " call dein#add('voldikss/vim-floaterm', {'on_cmd': ['FloatermToggle']})
   call dein#add('AndrewRadev/linediff.vim', {'on_cmd': ['Linediff']})
   call dein#add('aiya000/aho-bakaup.vim', {'on_event': ['BufWritePre', 'FileWritePre']})
@@ -355,48 +413,59 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('iamcco/markdown-preview.nvim', {'on_cmd': 'MarkdownPreview', 'build': 'sh -c "cd app && yarn install"'})
   call dein#add('itchyny/vim-qfedit', {'on_ft': ['qf']})
   call dein#add('jsfaint/gen_tags.vim')
-  call dein#add('kana/vim-niceblock', {'on_event': ['InsertEnter']})
+  call dein#add('kana/vim-niceblock')
+  call dein#add('lambdalisue/file-protocol.vim')
   call dein#add('lambdalisue/guise.vim')
   call dein#add('lambdalisue/suda.vim', {'on_cmd': ['SudaRead', 'SudaWrite']})
-  call dein#add('lambdalisue/vim-manpager', {'on_cmd': ['Man'], 'on_map': ['<Plug>']})
-  call dein#add('liuchengxu/vista.vim', {'on_cmd': ['Vista']})
+  call dein#add('lambdalisue/vim-manpager', {'on_cmd': ['ASMANPAGER']})
+  call dein#add('lambdalisue/vim-quickrun-neovim-job')
+  call dein#add('liuchengxu/vista.vim')
   call dein#add('mbbill/undotree', {'on_cmd': ['UndotreeToggle']})
   call dein#add('moll/vim-bbye', {'on_cmd': ['Bdelete']})
   call dein#add('segeljakt/vim-silicon', {'on_cmd': ['Silicon']})
   call dein#add('thinca/vim-ambicmd', {'on_func': ['ambicmd#expand']})
   call dein#add('thinca/vim-editvar', {'on_cmd': ['Editvar']})
-  call dein#add('thinca/vim-quickrun', {'depends': ['vim-quickrun-neovim-job', 'open-browser', 'nvim-notify']})
+  call dein#add('thinca/vim-quickrun')
+  call dein#add('thinca/vim-scouter', {'on_cmd': ['Scouter']})
   call dein#add('tyru/capture.vim')
-  call dein#add('tyru/open-browser.vim', {'lazy': 1})
-  call dein#add('vim-test/vim-test', {'lazy': 1})
+  call dein#add('tyru/open-browser.vim')
   call dein#add('wesQ3/vim-windowswap', {'on_func': ['WindowSwap#EasyWindowSwap']})
 
   if has('nvim')
     " call dein#add('lambdalisue/edita.vim')
     " call dein#add('lewis6991/impatient.nvim')
     " call dein#add('notomo/cmdbuf.nvim')
-    " call dein#add('nvim-lua/plenary.nvim')
     " call dein#add('nvim-lua/popup.nvim')
+    " call dein#add('nvim-neotest/neotest-vim-test')
+    " call dein#add('rcarriga/vim-ultest', {'on_cmd': ['Ultest', 'UltestNearest', 'UltestSummary'], 'depends': ['vim-test']})
     " call dein#add('romgrk/fzy-lua-native', {'lazy': 1, 'build': 'make'})
-    call dein#add('akinsho/toggleterm.nvim', {'on_cmd': ['ToggleTerm'], 'hook_post_source': 'call SetupToggleterm()'})
-    call dein#add('gelguy/wilder.nvim', {'on_event': ['CmdlineEnter'], 'hook_post_source': 'call SetUpWilder()'})
-    call dein#add('rcarriga/vim-ultest', {'on_cmd': ['Ultest', 'UltestNearest', 'UltestSummary'], 'depends': ['vim-test']})
+    call dein#add('MunifTanjim/nui.nvim')
+    call dein#add('akinsho/toggleterm.nvim')
+    call dein#add('antoinemadec/FixCursorHold.nvim')
+    call dein#add('haydenmeade/neotest-jest')
+    call dein#add('kevinhwang91/promise-async')
+    call dein#add('kyazdani42/nvim-web-devicons')
+    call dein#add('nvim-lua/plenary.nvim')
+    call dein#add('nvim-neotest/neotest')
+    call dein#add('nvim-telescope/telescope-fzf-native.nvim', {'build': 'make'})
+    call dein#add('ray-x/guihua.lua')
+    call dein#add('tzachar/fuzzy.nvim')
   endif
 
-  " if $ENABLE_WAKATIME == 1
-  "   call dein#add('wakatime/vim-wakatime')
-  " endif
+  if $ENABLE_WAKATIME == 1
+    call dein#add('wakatime/vim-wakatime')
+  endif
+
+  if !g:enable_cmp && has('nvim')
+    call dein#add('gelguy/wilder.nvim', {'on_event': ['CmdlineEnter'], 'hook_post_source': 'call SetUpWilder()'})
+  endif
   " }}}3
 
   " Develop {{{3
   " call dein#add('hrsh7th/vim-vital-vs')
   " call dein#add('vim-jp/vital.vim')
   call dein#add('rbtnn/vim-vimscript_lasterror', {'on_cmd': ['VimscriptLastError']})
-  call dein#add('thinca/vim-prettyprint', {'on_cmd': ['PP'], 'on_func': ['PP']})
-
-  if has('nvim')
-    call dein#add('lambdalisue/vim-quickrun-neovim-job', {'lazy': 1})
-  endif
+  call dein#add('thinca/vim-prettyprint')
   " }}}3
 
   " Color Theme {{{3
@@ -409,13 +478,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('taohexxx/lightline-solarized')
   call dein#add('sainnhe/edge')
   call dein#add('sainnhe/gruvbox-material')
+  call dein#add('ellisonleao/gruvbox.nvim')
   " }}}3
 
   call dein#end()
   call dein#save_state()
 endif
-
-filetype plugin indent on
 " }}}2
 
 " Install Plugin {{{2
@@ -427,6 +495,11 @@ endif
 " }}}1
 
 " Global Settings {{{1
+
+" FileType {{{2
+filetype plugin indent on
+syntax enable
+" }}}2
 
 " Encoding {{{2
 set encoding=utf-8
@@ -482,22 +555,23 @@ let g:mapleader = "\<Space>"
 Keymap nx  <Leader>         <Nop>
 Keymap n   <Plug>(t)        <Nop>
 Keymap n   t                <Plug>(t)
-Keymap nx  <Plug>(dev)      <Nop>
-Keymap nx  m                <Plug>(dev)
+Keymap nx  <Plug>(lsp)      <Nop>
+Keymap nx  m                <Plug>(lsp)
 Keymap nx  <Plug>(fzf-p)    <Nop>
 Keymap nx  ;                <Plug>(fzf-p)
 Keymap nx  ;;               ;
 Keymap n   <Plug>(bookmark) <Nop>
 Keymap n   M                <Plug>(bookmark)
 Keymap nox s                <Nop>
+Keymap n   <Plug>(ctrl-n)   <Nop>
+Keymap n   <C-n>            <Plug>(ctrl-n)
+Keymap n   <Plug>(ctrl-p)   <Nop>
+Keymap n   <C-p>            <Plug>(ctrl-p)
 
 
 "" Zero (Move beginning toggle)
 Keymap nox <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
 Keymap nox ^ 0
-
-"" BackSpace
-Keymap ic <C-h> <BS>
 
 "" Neovim default <C-w>
 iunmap <C-w>
@@ -505,26 +579,26 @@ iunmap <C-w>
 "" Buffer
 Keymap n <C-q> <C-^>
 
-"" Yank
-function! s:yank_without_indent() abort
-  normal! gvy
-  let content = getreg(v:register, 1, v:true)
-  let leading = min(map(filter(copy(content), { _, v -> len(v) != 0 }), { _, v -> len(matchstr(v, '^\s*')) }))
-  call map(content, { _, v -> v[leading :] })
-  call setreg(v:register, content, getregtype(v:register))
-endfunction
-Keymap x gy <Esc><Cmd>call <SID>yank_without_indent()<CR>
-
 "" Save
 Keymap n <silent> <Leader>w <Cmd>update<CR>
 Keymap n <silent> <Leader>W <Cmd>update!<CR>
 
 "" Automatically indent with i and A
-Keymap n <expr> i len(getline('.')) ? "i" : "\"_cc"
-Keymap n <expr> A len(getline('.')) ? "A" : "\"_cc"
+Keymap n <expr> i  len(getline('.')) ? 'i' : '"_cc'
+Keymap n <expr> A  len(getline('.')) ? 'A' : '"_cc'
+Keymap n        gi i
 
-" Ignore registers
+"" Ignore registers
 Keymap n x "_x
+
+"" operator snake case & camel case
+function! s:search_line(pattern, num, opt)
+  for i in range(a:num)
+    call search(a:pattern, a:opt, line('.'))
+  endfor
+endfunction
+
+Keymap o s <Cmd>call <SID>search_line('[A-Z_]', v:count1, '')<CR>
 
 "" tagjump
 Keymap n <silent> s<C-]> <Cmd>wincmd ]<CR>
@@ -535,19 +609,26 @@ Keymap n <silent> r<C-]> <C-w>}
 "" QuickFix
 Keymap n [c :cprevious<CR>
 Keymap n ]c :cnext<CR>
+Keymap n [q :colder<CR>
+Keymap n ]q :cnewer<CR>
 
 "" Location List
 Keymap n [l :lprevious<CR>
 Keymap n ]l :lnext<CR>
 
-"" CommandLine
-Keymap ic <C-a> <Home>
-Keymap ic <C-b> <Left>
+"" Insert and cmdline
+Keymap ic <C-h> <BS>
 Keymap ic <C-d> <Del>
-Keymap ic <C-e> <End>
+
+Keymap i <C-a> <C-g>U<Home>
+" Keymap i <C-e> <C-g>U<End>
+Keymap i <C-b> <C-g>U<Left>
 " Configure in lexima
-" Keymap ic <C-f> <Right>
+" Keymap i <C-f> <C-g>U<Right>
+
+Keymap c <C-b> <Left>
 Keymap c <C-f> <Right>
+Keymap c <C-a> <Home>
 Keymap c <C-n> <Down>
 Keymap c <C-p> <Up>
 
@@ -598,8 +679,8 @@ Keymap n <Leader>r :<C-u>%s/\v//g<Left><Left><Left>
 Keymap x <Leader>r "sy:%s/\v<C-r>=substitute(@s, '/', '\\/', 'g')<CR>//g<Left><Left>
 
 "" Clipboard
-Keymap n  <silent> sc <Cmd>call system("pbcopy", @") <Bar> echo "Copied \" register to OS clipboard"<CR>
-Keymap nx <silent> sp <Cmd>let @" = substitute(system("pbpaste"), "\n\+$", "", "") <Bar> echo "Copied from OS clipboard to \" register"<CR>
+Keymap n  <silent> sc <Cmd>call system('pbcopy', @") <Bar> echo 'Copied " register to OS clipboard'<CR>
+Keymap nx <silent> sp <Cmd>let @" = substitute(system('pbpaste'), "\n\+$", '', '') <Bar> echo 'Copied from OS clipboard to " register'<CR>
 " }}}2
 
 " Set Options {{{2
@@ -614,7 +695,7 @@ if has('nvim')
   set inccommand=nosplit
 
   Keymap t <Esc> <C-\><C-n>
-  AutoCmd TermOpen * set nonumber | set norelativenumber
+  AutoCmd TermOpen * set nonumber norelativenumber
 
   " block cursor for insert
   " set guicursor=
@@ -642,22 +723,23 @@ if has('nvim')
 endif
 
 "" Appearance
+" set list listchars=tab:^\ ,trail:_,extends:>,precedes:<,eol:$
 set belloff=all
 set cmdheight=1
 set concealcursor=nc
 set conceallevel=2
 set diffopt=internal,filler,algorithm:histogram,indent-heuristic,vertical
 set display=lastline
-set fillchars=diff:/
+set fillchars=diff:/,eob:\\x20
+set foldtext=''
+set guifont=SF\ Mono\ Square:h18
 set helplang=ja
 set hidden
 set hlsearch
-set laststatus=2
-" set list listchars=tab:^\ ,trail:_,extends:>,precedes:<,eol:$
 set list listchars=tab:^\ ,trail:_,extends:>,precedes:<
 set matchpairs+=<:>
 set matchtime=1
-set number
+set noshowmode
 set pumheight=40
 set scrolloff=5
 set showtabline=2
@@ -666,7 +748,14 @@ set spelllang=en,cjk
 set synmaxcol=300
 set termguicolors
 set virtualedit=all
-set guifont=SF\ Mono\ Square:h18
+language messages C
+language time C
+
+if has('nvim')
+  set laststatus=3
+else
+  set laststatus=2
+endif
 
 "" Indent
 set autoindent
@@ -678,8 +767,11 @@ set shiftwidth=2
 set smartindent
 set tabstop=2
 
-set formatoptions-=ro
-set formatoptions+=jBn
+function s:set_format_options() abort
+  set formatoptions-=c formatoptions-=r formatoptions-=o
+  set formatoptions+=jBn
+endfunction
+AutoCmd BufWinEnter * call <SID>set_format_options()
 
 "" viminfo
 set viminfo='1000,:1000
@@ -700,16 +792,8 @@ set wrapscan
 
 "" Folding
 set foldcolumn=1
-set nofoldenable
+set foldenable
 set foldmethod=manual
-
-"" FileType
-set viewoptions=cursor,folds
-set suffixesadd=.js,.ts,.rb
-if has('nvim')
-  let g:do_filetype_lua    = 1
-  let g:did_load_filetypes = 0
-endif
 
 "" sign
 set signcolumn=yes
@@ -879,35 +963,6 @@ endfunction
 " AutoCmd BufRead * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g`\"" | endif
 " }}}2
 
-" Jump match quote {{{2
-function! s:matchit_quote() abort
-  let curr_char = getline('.')[col('.') - 1]
-  if curr_char == '"'
-    if col('.') == col('''>')
-      return "v2i\"o\<Esc>"
-    else
-      return "v2i\"\<Esc>"
-    endif
-  elseif curr_char == "'"
-    if col('.') == col('''>')
-      return "v2i'o\<Esc>"
-    else
-      return "v2i'\<Esc>"
-    endif
-  elseif curr_char == '`'
-    if col('.') == col('''>')
-      return "v2i`o\<Esc>"
-    else
-      return "v2i`\<Esc>"
-    endif
-  else
-    return '%'
-  endif
-endfunction
-
-Keymap nox <expr> % <SID>matchit_quote()
-" }}}2
-
 " highlight cursorline and cursorcolumn with timer {{{2
 let g:highlight_cursor      = 1
 let s:highlight_cursor_wait = 500
@@ -971,13 +1026,85 @@ endfunction
 " command! SyntaxHighlightToggle call <SID>syntax_highlight_toggle()
 " }}}2
 
-" QuickfixToggle {{{2
+" LineNumber {{{2
+let g:enable_number          = v:true
+let g:enable_relative_number = v:true
+set number relativenumber
+
+Keymap n <Leader>n <Cmd>ToggleNumber<CR>
+
+function! s:set_number(...) abort
+  if a:0 == 0
+    let winnrs = range(1, winnr('$'))
+  else
+    let winnrs = [winnr()]
+  endif
+
+  for winnr in winnrs
+    let winid = win_getid(winnr)
+    if nvim_win_get_config(winid).relative !=# ''
+      break
+    endif
+
+    if !g:enable_number && !g:enable_relative_number
+      call setwinvar(winid, '&number', 0)
+      call setwinvar(winid, '&relativenumber', 0)
+    elseif g:enable_number && !g:enable_relative_number
+      call setwinvar(winid, '&number', 1)
+      call setwinvar(winid, '&relativenumber', 0)
+    elseif g:enable_number && g:enable_relative_number
+      call setwinvar(winid, '&number', 1)
+      call setwinvar(winid, '&relativenumber', 1)
+    endif
+  endfor
+endfunction
+
+function! s:toggle_number() abort
+  if !g:enable_number && !g:enable_relative_number
+    let g:enable_number = v:true
+  elseif g:enable_number && !g:enable_relative_number
+    let g:enable_relative_number = v:true
+  elseif g:enable_number && g:enable_relative_number
+    let g:enable_number = v:false
+    let g:enable_relative_number = v:false
+  endif
+  call <SID>set_number()
+endfunction
+
+function! s:enable_number() abort
+  let g:enable_number = v:true
+  let g:enable_relative_number = v:false
+  call <SID>set_number()
+endfunction
+
+function! s:enable_relative_number() abort
+  let g:enable_number = v:true
+  let g:enable_relative_number = v:false
+  call <SID>set_number()
+endfunction
+
+
+function! s:disable_number() abort
+  let g:enable_number = v:false
+  let g:enable_relative_number = v:false
+  call <SID>set_number()
+endfunction
+
+command! ToggleNumber         call <SID>toggle_number()
+command! EnableNumber         call <SID>enable_number()
+command! EnableRelativeNumber call <SID>enable_relative_number()
+command! DisableNumber        call <SID>disable_number()
+
+AutoCmd InsertEnter * if filereadable(expand('#' . bufnr('') . ':p')) | set number norelativenumber | endif
+AutoCmd InsertLeave * if filereadable(expand('#' . bufnr('') . ':p')) | call <SID>set_number(1) | endif
+" }}}2
+
+" ToggleQuickfix {{{2
 function! s:quickfix_toggle() abort
   let _ = winnr('$')
   cclose
   if _ == winnr('$')
     botright copen
-    " call g:Set_quickfix_keymap()
   endif
 endfunction
 
@@ -990,8 +1117,13 @@ function! s:location_list_toggle() abort
   let _ = winnr('$')
   lclose
   if _ == winnr('$')
-    botright lopen
-    " call g:Set_locationlist_keymap()
+    try
+      botright lopen
+    catch
+      echohl ErrorMsg
+      echomsg 'No LocationList'
+      echohl None
+    endtry
   endif
 endfunction
 
@@ -1036,7 +1168,25 @@ endfunction
 command! HighlightInfo call <SID>get_highlight_info()
 " }}}2
 
-" Jump plugin  {{{2
+" MouseCursor {{{2
+function! s:on_focus_gained() abort
+  autocmd CursorMoved,CursorMovedI,ModeChanged,WinScrolled * ++once call <SID>eneble_left_mouse()
+  Keymap ni <LeftMouse> <Cmd>call <SID>eneble_left_mouse()<CR>
+endfunction
+
+function! s:eneble_left_mouse() abort
+  Keymap ni <LeftMouse> <LeftMouse>
+endfunction
+
+function! s:on_focus_lost() abort
+  Keymap ni <LeftMouse> <Nop>
+endfunction
+
+AutoCmd FocusGained * call <SID>on_focus_gained()
+AutoCmd FocusLost   * call <SID>on_focus_lost()
+" }}}2
+
+" JumpPlugin  {{{2
 function! s:plugin_name(line) abort
   try
     if len(matchlist(a:line, 'dein#add(''\(.\{-}\)''.*)')) != 0
@@ -1058,6 +1208,7 @@ function! s:plugin_line(plugin_name, lines, start_line, end_line) abort
   let i = a:start_line
   while i < a:end_line
     if match(a:lines[i], 'dein#add(''.\+/' . a:plugin_name . '''.*)') != -1 || match(a:lines[i], 'dein#tap(''' . a:plugin_name . ''')') != -1
+      normal! m`
       call setpos('.', [0, i + 1, 0, 0])
       return v:true
     endif
@@ -1153,6 +1304,10 @@ function! s:review_start() abort
   let $BAT_THEME_BAK = $BAT_THEME
   let $BAT_THEME = 'Monokai Extended Light'
 
+  if exists(':EnableNumber')
+    EnableNumber
+  endif
+
   if dein#tap('smartnumber.vim')
     SNumbersTurnOffRelative
   endif
@@ -1182,6 +1337,10 @@ function! s:review_end() abort
   let $FZF_PREVIEW_PREVIEW_BAT_THEME = $FZF_PREVIEW_PREVIEW_BAT_THEME_BAK
   let $FZF_DEFAULT_OPTS = $FZF_DEFAULT_OPTS_BAK
   let $BAT_THEME = $BAT_THEME_BAK
+
+  if exists(':EnableRelativeNumber')
+    EnableRelativeNumber
+  endif
 
   if dein#tap('smartnumber.vim')
     SNumbersTurnOnRelative
@@ -1233,13 +1392,19 @@ AutoCmd FileType css             setlocal expandtab   shiftwidth=2 softtabstop=2
 AutoCmd FileType vim             setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType sh              setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
 AutoCmd FileType zsh             setlocal expandtab   shiftwidth=2 softtabstop=2 tabstop=2
+AutoCmd FileType snippet         setlocal noexpandtab shiftwidth=2 softtabstop=2 tabstop=2
 " }}}3
 
 " Fold {{{3
-AutoCmd FileType javascript      setlocal foldmethod=syntax foldlevel=100
-AutoCmd FileType typescript      setlocal foldmethod=syntax foldlevel=100
-AutoCmd FileType typescriptreact setlocal foldmethod=syntax foldlevel=100
-AutoCmd FileType ruby            setlocal foldmethod=syntax foldlevel=100
+AutoCmd FileType javascript      setlocal foldlevel=100
+AutoCmd FileType typescript      setlocal foldlevel=100
+AutoCmd FileType typescriptreact setlocal foldlevel=100
+AutoCmd FileType vim             setlocal foldlevel=100
+AutoCmd FileType markdown        setlocal foldlevel=100
+" }}}3
+
+" ConcealLevel {{{3
+AutoCmd FileType markdown setlocal conceallevel=0
 " }}}3
 
 " iskeyword {{{3
@@ -1279,6 +1444,8 @@ AutoCmd FileType help Keymap n <silent> <nowait> <buffer> q <Cmd>quit<CR>
 AutoCmd FileType diff Keymap n <silent> <nowait> <buffer> q <Cmd>quit<CR>
 AutoCmd FileType man  Keymap n <silent> <nowait> <buffer> q <Cmd>quit<CR>
 AutoCmd FileType git  Keymap n <silent> <nowait> <buffer> q <Cmd>quit<CR>
+
+AutoCmd FileType markdown Keymap n <silent> <buffer> <expr> <nowait> q &previewwindow ? '<Cmd>quit<CR>' : 'q'
 " }}}2
 
 " }}}1
@@ -1290,38 +1457,489 @@ set cedit=\<C-c>
 " Keymap nx q: :
 
 AutoCmd CmdwinEnter * call <SID>init_cmdwin()
-AutoCmd CmdwinLeave * call <SID>deinit_cmdwin()
 
 function! s:init_cmdwin() abort
-  setlocal number | setlocal norelativenumber
+  set number norelativenumber
   Keymap n <buffer> <CR> <CR>
   Keymap n <buffer> <silent> <nowait> q <Cmd>quit<CR>
   Keymap i <buffer> <C-c> <Esc>l<C-c>
 
-  if dein#tap('coc.nvim')
-    call coc#config('suggest.floatEnable', v:false)
-    call coc#config('diagnostic.messageTarget', 'echo')
-    call coc#config('signature.target', 'echo')
-    call coc#config('coc.preferences.hoverTarget', 'echo')
-  endif
-
   " Keymap n <silent> <buffer> dd <Cmd>rviminfo<CR><Cmd>call histdel(getcmdwintype(), line('.') - line('$'))<CR><Cmd>wviminfo!<CR>dd
   startinsert!
-endfunction
-
-function! s:deinit_cmdwin() abort
-  if dein#tap('coc.nvim')
-    call coc#config('suggest.floatEnable', v:true)
-    call coc#config('diagnostic.messageTarget', 'float')
-    call coc#config('signature.target', 'float')
-    call coc#config('coc.preferences.hoverTarget', 'float')
-  endif
 endfunction
 " }}}1
 
 " Plugin Settings {{{1
 
 " Eager Load {{{2
+
+" nvim-web-devicons {{{3
+if dein#tap('nvim-web-devicons')
+lua << EOF
+local black      = '#32302f'
+local red        = '#ea6962'
+local green      = '#a9b665'
+local yellow     = '#d8a657'
+local blue       = '#7daea3'
+local magenta    = '#d3869b'
+local cyan       = '#89b482'
+local white      = '#d4be98'
+local grey       = '#807569'
+local background = '#1D2021'
+local empty      = '#1C1C1C'
+local info       = '#FFFFAF'
+local vert_split = '#504945'
+
+require('nvim-web-devicons').setup({
+  override = {
+    ['.babelrc'] = {
+      icon = ' ﬥ',
+      color = yellow,
+      cterm_color = '185',
+      name = 'Babelrc',
+    },
+    ['.gitignore'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '59',
+      name = 'GitIgnore',
+    },
+    ['.vimrc'] = {
+      icon = ' ',
+      color = green,
+      cterm_color = '29',
+      name = 'Vimrc',
+    },
+    ['.zshenv'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '113',
+      name = 'Zshenv',
+    },
+    ['.zshrc'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '113',
+      name = 'Zshrc',
+    },
+    ['Brewfile'] = {
+      icon = ' ',
+      color = green,
+      cterm_color = '113',
+      name = 'Brewfile',
+    },
+    ['COMMIT_EDITMSG'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '59',
+      name = 'GitCommit',
+    },
+    ['Dockerfile'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '59',
+      name = 'Dockerfile',
+    },
+    ['Gemfile$'] = {
+      icon = ' ',
+      color = red,
+      cterm_color = '52',
+      name = 'Gemfile',
+    },
+    ['LICENSE'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '179',
+      name = 'LICENSE',
+    },
+    ['ai'] = {
+      icon = ' ',
+      color = yellow,
+      cterm_color = '185',
+      name = 'Ai',
+    },
+    ['bash'] = {
+      icon = ' ',
+      color = green,
+      cterm_color = '113',
+      name = 'Bash',
+    },
+    ['bmp'] = {
+      icon = ' ',
+      color = cyan,
+      cterm_color = '140',
+      name = 'Bmp',
+    },
+    ['coffee'] = {
+      icon = ' ',
+      color = yellow,
+      cterm_color = '185',
+      name = 'Coffee',
+    },
+    ['conf'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '66',
+      name = 'Conf',
+    },
+    ['config.ru'] = {
+      icon = ' ',
+      color = red,
+      cterm_color = '52',
+      name = 'ConfigRu',
+    },
+    ['css'] = {
+      icon = ' ',
+      color = blue,
+      cterm_color = '39',
+      name = 'Css',
+    },
+    ['csv'] = {
+      icon = ' ',
+      color = blue,
+      cterm_color = '113',
+      name = 'Csv',
+    },
+    ['diff'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '59',
+      name = 'Diff',
+    },
+    ['doc'] = {
+      icon = '  ',
+      color = blue,
+      cterm_color = '25',
+      name = 'Doc',
+    },
+    ['dockerfile'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '59',
+      name = 'Dockerfile',
+    },
+    ['ejs'] = {
+      icon = ' ',
+      color = yellow,
+      cterm_color = '185',
+      name = 'Ejs',
+    },
+    ['erb'] = {
+      icon = ' ',
+      color = red,
+      cterm_color = '52',
+      name = 'Erb',
+    },
+    ['favicon.ico'] = {
+      icon = ' ',
+      color = yellow,
+      cterm_color = '185',
+      name = 'Favicon',
+    },
+    ['gemspec'] = {
+      icon = ' ',
+      color = red,
+      cterm_color = '52',
+      name = 'Gemspec',
+    },
+    ['gif'] = {
+      icon = ' ',
+      color = cyan,
+      cterm_color = '140',
+      name = 'Gif',
+    },
+    ['git'] = {
+      icon = ' ',
+      color = magenta,
+      cterm_color = '202',
+      name = 'GitLogo',
+    },
+    ['go'] = {
+      icon = ' ',
+      color = blue,
+      cterm_color = '67',
+      name = 'Go',
+    },
+    ['htm'] = {
+      icon = ' ',
+      color = magenta,
+      cterm_color = '166',
+      name = 'Htm',
+    },
+    ['html'] = {
+      icon = ' ',
+      color = magenta,
+      cterm_color = '202',
+      name = 'Html',
+    },
+    ['ico'] = {
+      icon = ' ',
+      color = yellow,
+      cterm_color = '185',
+      name = 'Ico',
+    },
+    ['ini'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '66',
+      name = 'Ini',
+    },
+    ['jpeg'] = {
+      icon = ' ',
+      color = cyan,
+      cterm_color = '140',
+      name = 'Jpeg',
+    },
+    ['jpg'] = {
+      icon = ' ',
+      color = cyan,
+      cterm_color = '140',
+      name = 'Jpg',
+    },
+    ['js'] = {
+      icon = ' ',
+      color = yellow,
+      cterm_color = '185',
+      name = 'Js',
+    },
+    ['json'] = {
+      icon = ' ',
+      color = yellow,
+      cterm_color = '185',
+      name = 'Json',
+    },
+    ['jsx'] = {
+      icon = ' ',
+      color = blue,
+      cterm_color = '67',
+      name = 'Jsx',
+    },
+    ['license'] = {
+      icon = ' ',
+      color = yellow,
+      cterm_color = '185',
+      name = 'License',
+    },
+    ['lua'] = {
+      icon = ' ',
+      color = blue,
+      cterm_color = '74',
+      name = 'Lua',
+    },
+    ['makefile'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '66',
+      name = 'Makefile',
+    },
+    ['markdown'] = {
+      icon = ' ',
+      color = yellow,
+      cterm_color = '67',
+      name = 'Markdown',
+    },
+    ['md'] = {
+      icon = ' ',
+      color = yellow,
+      cterm_color = '67',
+      name = 'Markdown',
+    },
+    ['mdx'] = {
+      icon = ' ',
+      color = yellow,
+      cterm_color = '67',
+      name = 'Mdx',
+    },
+    ['mjs'] = {
+      icon = ' ',
+      color = yellow,
+      cterm_color = '221',
+      name = 'Mjs',
+    },
+    ['node_modules'] = {
+      icon = ' ',
+      color = yellow,
+      cterm_color = '161',
+      name = 'NodeModules',
+    },
+    ['package.json'] = {
+      icon = ' ',
+      color = yellow,
+      name = 'PackageJson'
+    },
+    ['package-lock.json'] = {
+      icon = ' ',
+      color = yellow,
+      name = 'PackageLockJson'
+    },
+    ['pdf'] = {
+      icon = '  ',
+      color = red,
+      cterm_color = '124',
+      name = 'Pdf',
+    },
+    ['png'] = {
+      icon = ' ',
+      color = cyan,
+      cterm_color = '140',
+      name = 'Png',
+    },
+    ['psd'] = {
+      icon = ' ',
+      color = blue,
+      cterm_color = '67',
+      name = 'Psd',
+    },
+    ['py'] = {
+      icon = '',
+      color = yellow,
+      cterm_color = '61',
+      name = 'Py',
+    },
+    ['rake'] = {
+      icon = ' ',
+      color = red,
+      cterm_color = '52',
+      name = 'Rake',
+    },
+    ['Rakefile'] = {
+      icon = ' ',
+      color = red,
+      cterm_color = '52',
+      name = 'Rakefile',
+    },
+    ['rb'] = {
+      icon = ' ',
+      color = red,
+      cterm_color = '52',
+      name = 'Rb',
+    },
+    ['rs'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '180',
+      name = 'Rs',
+    },
+    ['scss'] = {
+      icon = ' ',
+      color = magenta,
+      cterm_color = '204',
+      name = 'Scss',
+    },
+    ['sh'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '59',
+      name = 'Sh',
+    },
+    ['sql'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '188',
+      name = 'Sql',
+    },
+    ['sqlite'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '188',
+      name = 'Sql',
+    },
+    ['svg'] = {
+      icon = 'ﰟ ',
+      color = yellow,
+      cterm_color = '215',
+      name = 'Svg',
+    },
+    ['tex'] = {
+      icon = 'ﭨ ',
+      color = green,
+      cterm_color = '58',
+      name = 'Tex',
+    },
+    ['toml'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '66',
+      name = 'Toml',
+    },
+    ['ts'] = {
+      icon = ' ',
+      color = blue,
+      cterm_color = '67',
+      name = 'Ts',
+    },
+    ['tsx'] = {
+      icon = ' ',
+      color = blue,
+      cterm_color = '67',
+      name = 'Tsx',
+    },
+    ['txt'] = {
+      icon = ' ',
+      color = green,
+      cterm_color = '113',
+      name = 'Txt',
+    },
+    ['vim'] = {
+      icon = ' ',
+      color = green,
+      cterm_color = '29',
+      name = 'Vim',
+    },
+    ['vue'] = {
+      icon = '  ',
+      color = green,
+      cterm_color = '107',
+      name = 'Vue',
+    },
+    ['webp'] = {
+      icon = ' ',
+      color = cyan,
+      cterm_color = '140',
+      name = 'Webp',
+    },
+    ['xml'] = {
+      icon = ' ',
+      color = yellow,
+      cterm_color = '173',
+      name = 'Xml',
+    },
+    ['yaml'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '66',
+      name = 'Yaml',
+    },
+    ['yml'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = '66',
+      name = 'Yml',
+    },
+    ['zsh'] = {
+      icon = ' ',
+      color = green,
+      cterm_color = '113',
+      name = 'Zsh',
+    },
+    ['.env'] = {
+      icon = ' ',
+      color = yellow,
+      cterm_color = '226',
+      name = 'Env',
+    },
+    ['prisma'] = {
+      icon = ' ',
+      color = white,
+      cterm_color = 'white',
+      name = 'Prisma',
+    },
+  },
+})
+require('nvim-web-devicons').set_default_icon(' ', white)
+EOF
+endif
+" }}}3
 
 " altercmd {{{3
 " function! s:bulk_alter_command(original, altanative) abort
@@ -1346,29 +1964,23 @@ endif
 
 " }}}2
 
-" Plugin Manager {{{2
-
-" }}}2
-
 " denops {{{2
 
 " ddc {{{3
 if dein#tap('ddc.vim')
   function! SetupDdc() abort
-    call ddc#enable()
-
-    if s:enable_vim_lsp
-      call DdcSettings()
-    endif
+    call DdcSettings()
   endfunction
 
   function DdcSettings() abort
-    if s:enable_vim_lsp
+    call ddc#enable()
+
+    if g:enable_vim_lsp
       let sources = ['vim-lsp']
-    else 
+    else
       let sources = []
     endif
-    let sources += ['tabnine', 'around', 'buffer', 'file']
+    let sources += ['tsnip', 'tabnine', 'around', 'buffer', 'file', 'copilot']
 
     let source_options = {
     \ '_': {
@@ -1396,7 +2008,7 @@ if dein#tap('ddc.vim')
     \ },
     \ }
 
-    if s:enable_vim_lsp
+    if g:enable_vim_lsp
       call extend(source_options, {
       \ 'vim-lsp': {
       \   'mark': 'lsp',
@@ -1407,15 +2019,18 @@ if dein#tap('ddc.vim')
     call ddc#custom#patch_global('autoCompleteEvents', ['InsertEnter', 'TextChangedI', 'TextChangedP'])
     call ddc#custom#patch_global('sources', sources)
     call ddc#custom#patch_global('sourceOptions', source_options)
+    call ddc#custom#patch_global('backspaceCompletion', v:true)
 
     call ddc#custom#patch_global('completionMenu', 'pum.vim')
     call popup_preview#enable()
 
-    Keymap i <C-Space> <Cmd>call ddc#manual_complete()<CR>
+    Keymap i <C-Space> <Cmd>call ddc#map#manual_complete()<CR>
     Keymap i <C-n>     <Cmd>call pum#map#insert_relative(+1)<CR>
     Keymap i <C-p>     <Cmd>call pum#map#insert_relative(-1)<CR>
     Keymap i <C-y>     <Cmd>call pum#map#confirm()<CR>
     Keymap i <C-e>     <Cmd>call pum#map#cancel()<CR>
+
+    AutoCmd InsertEnter * Keymap i <expr> <CR> pum#visible() ? '<Cmd>call pum#map#confirm()<CR>' : lexima#expand('<CR>', 'i')
   endfunction
 
   " function! EnableDdc() abort
@@ -1442,10 +2057,10 @@ if dein#tap('skkeleton')
   endfunction
 
   if dein#tap('lexima.vim')
-    Keymap i <silent> <expr> <Space> skkeleton#is_enabled() ? "\<Space>" : lexima#expand('<SPACE>', 'i')
+    Keymap i <silent> <expr> <Space> skkeleton#is_enabled() ? '<Space>' : lexima#expand('<SPACE>', 'i')
   endif
 
-  " if s:enable_coc
+  " if g:enable_coc
   "   AutoCmd User skkeleton-enable-pre call EnableDdc()
   "   AutoCmd User skkeleton-disable-pre call DisableDdc()
   " endif
@@ -1460,27 +2075,24 @@ endif
 if dein#tap('coc.nvim')
   let g:coc_global_extensions = [
   \ 'coc-deno',
-  \ 'coc-docker',
   \ 'coc-eslint',
-  \ 'coc-git',
   \ 'coc-json',
   \ 'coc-lists',
+  \ 'coc-lua',
   \ 'coc-markdownlint',
-  \ 'coc-marketplace',
   \ 'coc-npm-version',
   \ 'coc-prettier',
   \ 'coc-prisma',
-  \ 'coc-python',
-  \ 'coc-react-refactor',
-  \ 'coc-rg',
+  \ 'coc-pyright',
   \ 'coc-rust-analyzer',
   \ 'coc-sh',
   \ 'coc-solargraph',
   \ 'coc-spell-checker',
-  \ 'coc-sql',
   \ 'coc-stylelintplus',
   \ 'coc-tabnine',
+  \ 'coc-tsnip',
   \ 'coc-tsserver',
+  \ 'coc-ultisnips-select',
   \ 'coc-vimlsp',
   \ 'coc-word',
   \ 'coc-yaml',
@@ -1494,32 +2106,40 @@ if dein#tap('coc.nvim')
     call add(g:coc_global_extensions, 'coc-ultisnips-select')
   endif
 
-  " Manual completion
-  Keymap i <silent> <expr> <C-Space> coc#refresh()
+  Keymap i <silent> <expr> <C-Space> <SID>coc_refresh()
+  function! s:coc_refresh() abort
+    if dein#tap('copilot.vim')
+      call copilot#Next()
+      call copilot#Previous()
+    endif
+
+    return coc#refresh()
+  endfunction
 
   " Snippet map
   " let g:coc_snippet_next = '<C-f>'
   " let g:coc_snippet_prev = '<C-b>'
 
   " keymap
-  Keymap n <silent> K             <Cmd>call <SID>show_documentation()<CR>
-  Keymap n <silent> <Plug>(dev)p  <Plug>(coc-diagnostic-prev)
-  Keymap n <silent> <Plug>(dev)n  <Plug>(coc-diagnostic-next)
-  Keymap n <silent> <Plug>(dev)D  <Plug>(coc-definition)
-  Keymap n <silent> <Plug>(dev)I  <Plug>(coc-implementation)
-  Keymap n <silent> <Plug>(dev)rF <Plug>(coc-references)
-  Keymap n <silent> <Plug>(dev)rn <Plug>(coc-rename)
-  Keymap n <silent> <Plug>(dev)T  <Plug>(coc-type-definition)
-  Keymap n <silent> <Plug>(dev)a  <Plug>(coc-codeaction-selected)iw
-  Keymap n <silent> <Plug>(dev)A  <Plug>(coc-codeaction)
-  Keymap n <silent> <Plug>(dev)l  <Plug>(coc-codelens-action)
-  Keymap n <silent> <Plug>(dev)f  <Plug>(coc-format)
-  Keymap n <silent> <Plug>(dev)gs <Plug>(coc-git-chunkinfo)
+  Keymap n <silent> K             <Cmd>call <SID>coc_show_documentation()<CR>
+  Keymap n <silent> <Leader>K     <Cmd>call CocActionAsync('doHover', 'preview')<CR>
+  Keymap n <silent> <Plug>(lsp)p  <Plug>(coc-diagnostic-prev)
+  Keymap n <silent> <Plug>(lsp)n  <Plug>(coc-diagnostic-next)
+  Keymap n <silent> <Plug>(lsp)D  <Plug>(coc-definition)
+  Keymap n <silent> <Plug>(lsp)I  <Plug>(coc-implementation)
+  Keymap n <silent> <Plug>(lsp)rF <Plug>(coc-references)
+  Keymap n <silent> <Plug>(lsp)rn <Plug>(coc-rename)
+  Keymap n <silent> <Plug>(lsp)T  <Plug>(coc-type-definition)
+  Keymap n <silent> <Plug>(lsp)a  <Plug>(coc-codeaction-selected)iw
+  Keymap n <silent> <Plug>(lsp)A  <Plug>(coc-codeaction)
+  Keymap n <silent> <Plug>(lsp)l  <Plug>(coc-codelens-action)
+  Keymap n <silent> <Plug>(lsp)f  <Plug>(coc-format)
+  Keymap n <silent> <Plug>(lsp)gs <Plug>(coc-git-chunkinfo)
 
-  Keymap n <silent> <expr> <C-d> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-d>"
-  Keymap n <silent> <expr> <C-u> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-u>"
-  Keymap i <silent> <expr> <C-d> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(1)\<CR>" : "\<Del>"
-  Keymap i <silent> <expr> <C-u> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(0)\<CR>" : "\<C-u>"
+  Keymap n <silent> <expr> <C-d> coc#float#has_scroll() ? coc#float#scroll(1) : '<C-d>'
+  Keymap n <silent> <expr> <C-u> coc#float#has_scroll() ? coc#float#scroll(0) : '<C-u>'
+  Keymap i <silent> <expr> <C-d> coc#float#has_scroll() ? '<Cmd>call coc#float#scroll(1)<CR>' : '<Del>'
+  Keymap i <silent> <expr> <C-u> coc#float#has_scroll() ? '<Cmd>call coc#float#scroll(0)<CR>' : '<C-u>'
 
   " Keymap n <Leader>e <Cmd>CocCommand explorer<CR>
   " Keymap n <Leader>E <Cmd>CocCommand explorer --reveal expand('%')<CR>
@@ -1540,10 +2160,13 @@ if dein#tap('coc.nvim')
   endfunction
 
   command! OrganizeImport call <SID>organize_import_and_format()
-  " command! CocMarkdownPreview CocCommand markdown-preview-enhanced.openPreview
 
-  function! s:show_documentation() abort
-    if index(['vim','help'], &filetype) >= 0
+  function! s:coc_show_documentation() abort
+    if dein#tap('nvim-ufo') && luaeval('require("ufo").peekFoldedLinesUnderCursor()')
+      return
+    endif
+
+    if index(['vim', 'help'], &filetype) >= 0
       execute 'h ' . expand('<cword>')
     elseif coc#rpc#ready()
       call CocActionAsync('doHover')
@@ -1553,9 +2176,9 @@ if dein#tap('coc.nvim')
   function! s:coc_typescript_settings() abort
     setlocal tagfunc=CocTagFunc
     if <SID>is_deno()
-      Keymap n <silent> <buffer> <Plug>(dev)f <Plug>(coc-format)
+      Keymap n <silent> <buffer> <Plug>(lsp)f <Plug>(coc-format)
     else
-      Keymap n <silent> <buffer> <Plug>(dev)f <Cmd>CocCommand eslint.executeAutofix<CR><Cmd>CocCommand prettier.formatFile<CR>
+      Keymap n <silent> <buffer> <Plug>(lsp)f <Cmd>CocCommand eslint.executeAutofix<CR><Cmd>CocCommand prettier.formatFile<CR>
     endif
   endfunction
 
@@ -1563,9 +2186,11 @@ if dein#tap('coc.nvim')
     if <SID>is_deno()
       call coc#config('tsserver.enable', v:false)
       call coc#config('deno.enable', v:true)
+      call coc#config('prettier.enable', v:false)
     else
       call coc#config('tsserver.enable', v:true)
       call coc#config('deno.enable', v:false)
+      call coc#config('prettier.enable', v:true)
     endif
   endfunction
 
@@ -1588,16 +2213,37 @@ if dein#tap('coc.nvim')
     Keymap n <silent> <buffer> gK <Cmd>CocCommand rust-analyzer.openDocs<CR>
   endfunction
 
-  function! s:coc_vim_settings() abort
-    setlocal tagfunc=CocTagFunc
+  function! s:coc_pum_lexima_enter() abort
+    let key = lexima#expand('<CR>', 'i')
+    call coc#on_enter()
+    return "\<C-g>u" . key
   endfunction
 
-  " AutoCmd CursorHold * silent call CocActionAsync('highlight')
-  AutoCmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-  AutoCmd VimEnter * call <SID>coc_ts_ls_initialize()
-  AutoCmd FileType typescript,typescriptreact call <SID>coc_typescript_settings()
-  AutoCmd FileType rust call <SID>coc_rust_settings()
-  AutoCmd FileType vim call <SID>coc_vim_settings()
+  " Initialize coc completion map
+  Keymap i <expr> <CR> coc#pum#visible() ? '' : ''
+
+  " Resetting coc completion map
+  AutoCmd InsertEnter,CmdlineLeave * Keymap i <silent> <expr> <C-n> coc#pum#visible() ? coc#pum#next(1) : ''
+  AutoCmd InsertEnter,CmdlineLeave * Keymap i <silent> <expr> <C-p> coc#pum#visible() ? coc#pum#prev(1) : ''
+  AutoCmd InsertEnter,CmdlineLeave * Keymap i <silent> <expr> <CR>  coc#pum#visible() ? coc#pum#confirm() : <SID>coc_pum_lexima_enter()
+
+  AutoCmd CursorHold  *                          silent call CocActionAsync('highlight')
+  AutoCmd User        CocJumpPlaceholder         call CocActionAsync('showSignatureHelp')
+  AutoCmd VimEnter    *                          call <SID>coc_ts_ls_initialize()
+  AutoCmd FileType    typescript,typescriptreact call <SID>coc_typescript_settings()
+  AutoCmd FileType    rust                       call <SID>coc_rust_settings()
+  AutoCmd FileType    vim                        setlocal tagfunc=CocTagFunc
+  AutoCmd FileType    lua                        setlocal tagfunc=CocTagFunc
+  AutoCmd BufEnter    deno:/*.ts                 filetype detect
+endif
+" }}}3
+
+" copilot {{{3
+if dein#tap('copilot.vim')
+  AutoCmd InsertEnter * Keymap i <silent> <expr> <Tab> copilot#Accept()
+
+  " Debug
+  " Keymap i <C-g> <Cmd>PP b:_copilot<CR>
 endif
 " }}}3
 
@@ -1613,12 +2259,12 @@ if dein#tap('vim-lsp')
       setlocal tagfunc=lsp#tagfunc
     endif
 
-    Keymap n <buffer> <Plug>(dev)d  <Plug>(lsp-definition)
-    Keymap n <buffer> <Plug>(dev)r  <Plug>(lsp-references)
-    Keymap n <buffer> <Plug>(dev)i  <Plug>(lsp-implementation)
-    Keymap n <buffer> <Plug>(dev)t  <Plug>(lsp-type-definition)
-    Keymap n <buffer> <Plug>(dev)rn <Plug>(lsp-rename)
     Keymap n <buffer> K             <Plug>(lsp-hover)
+    Keymap n <buffer> <Plug>(lsp)d  <Plug>(lsp-definition)
+    Keymap n <buffer> <Plug>(lsp)r  <Plug>(lsp-references)
+    Keymap n <buffer> <Plug>(lsp)i  <Plug>(lsp-implementation)
+    Keymap n <buffer> <Plug>(lsp)t  <Plug>(lsp-type-definition)
+    Keymap n <buffer> <Plug>(lsp)rn <Plug>(lsp-rename)
   endfunction
 
   AutoCmd User lsp_buffer_enabled call <SID>on_lsp_buffer_enabled()
@@ -1626,118 +2272,311 @@ endif
 " }}}3
 
 " nvim-lsp {{{3
-if dein#tap('nvim-lspconfig')
+if dein#tap('nvim-lspconfig') &&
+   \ dein#tap('mason.nvim') &&
+   \ dein#tap('mason-lspconfig.nvim') &&
+   \ dein#tap('lspsaga.nvim')
+  Keymap n <silent> K             <Cmd>call <SID>nvim_lsp_show_documentation()<CR>
+  Keymap n <silent> <Plug>(lsp)a  <Cmd>Lspsaga code_action<CR>
+  Keymap n <silent> <Plug>(lsp)rn <Cmd>Lspsaga rename<CR>
+  Keymap n <silent> <Plug>(lsp)n  <Cmd>Lspsaga diagnostic_jump_next<CR>
+  Keymap n <silent> <Plug>(lsp)p  <Cmd>Lspsaga diagnostic_jump_prev<CR>
+
+  Keymap n <silent> <Plug>(lsp)I <Cmd>lua vim.lsp.buf.implementation()<CR>
+  Keymap n <silent> <Plug>(lsp)T <Cmd>lua vim.lsp.buf.type_definition()<CR>
+  Keymap n <silent> <Plug>(lsp)q <Cmd>lua vim.lsp.diagnostic.set_loclist()<CR>
+  Keymap n <silent> <Plug>(lsp)f <Cmd>lua vim.lsp.buf.format()<CR>
+
+  function! s:nvim_lsp_show_documentation() abort
+    if index(['vim', 'help'], &filetype) >= 0
+      execute 'h ' . expand('<cword>')
+    else
+      lua require('lspsaga.hover').render_hover_doc()
+    endif
+  endfunction
+
+  AutoCmd CursorHold * Lspsaga show_line_diagnostics
+
 lua <<EOF
-local on_attach = function(client, bufnr)
-  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+local lsp_config = require('lspconfig')
+local mason = require('mason')
+local mason_lspconfig = require('mason-lspconfig')
+local lsp_saga = require('lspsaga')
 
-  local opts = { noremap=true, silent=true }
-  buf_set_keymap('n', '<Plug>(dev)D',  '<Cmd>lua vim.lsp.buf.declaration()<CR>',        opts)
-  buf_set_keymap('n', '<Plug>(dev)d',  '<Cmd>lua vim.lsp.buf.definition()<CR>',         opts)
-  buf_set_keymap('n', 'K',             '<Cmd>lua vim.lsp.buf.hover()<CR>',              opts)
-  buf_set_keymap('n', '<Plug>(dev)i',  '<Cmd>lua vim.lsp.buf.implementation()<CR>',     opts)
-  buf_set_keymap('n', '<Plug>(dev)t',  '<Cmd>lua vim.lsp.buf.type_definition()<CR>',    opts)
-  buf_set_keymap('n', '<Plug>(dev)rn', '<Cmd>lua vim.lsp.buf.rename()<CR>',             opts)
-  buf_set_keymap('n', '<Plug>(dev)a',  '<Cmd>lua vim.lsp.buf.code_action()<CR>',        opts)
-  buf_set_keymap('n', '<Plug>(dev)rf', '<Cmd>lua vim.lsp.buf.references()<CR>',         opts)
-  buf_set_keymap('n', '<Plug>(dev)q',  '<Cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-  buf_set_keymap('n', '<Plug>(dev)f',  '<Cmd>lua vim.lsp.buf.formatting()<CR>',         opts)
-end
+vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
+  vim.lsp.diagnostic.on_publish_diagnostics, {
+  virtual_text = false,
+})
 
-local lsp_installer = require('nvim-lsp-installer')
-lsp_installer.on_server_ready(function(server)
-    local opts = {}
-    opts.on_attach = on_attach
-    opts.capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+require('lsp_signature').setup({ hint_enable = false })
+require('fidget').setup()
 
-    server:setup(opts)
-    vim.cmd [[ do User LspAttachBuffers ]]
-end)
+mason.setup({
+  ui = {
+    icons = {
+      package_installed = '✓',
+      package_pending = '➜',
+      package_uninstalled = '✗'
+    }
+  }
+})
+
+mason_lspconfig.setup({
+  ensure_installed = {
+    'tsserver',
+    'eslint',
+    'denols',
+    'prismals',
+    'vimls',
+    'jsonls',
+    'yamlls',
+  },
+  automatic_installation = true,
+})
+
+mason_lspconfig.setup_handlers({
+  function(server_name)
+    local opts = {
+      capabilities = require('cmp_nvim_lsp').update_capabilities(
+        vim.lsp.protocol.make_client_capabilities()
+      )
+    }
+
+    if server_name == 'tsserver' then
+      opts.settings = {
+        format = { enable = false }
+      }
+    end
+
+    if server_name == 'eslint' then
+      opts.settings = {
+        format = { enable = true }
+      }
+    end
+
+    if server_name == 'jsonls' then
+      opts.settings = {
+        json = { schemas = require('schemastore').json.schemas() }
+      }
+    end
+
+    if server_name == 'yamlls' then
+      opts.settings = {
+        yaml = { schemas = require('schemastore').json.schemas() }
+      }
+    end
+
+    lsp_config[server_name].setup(opts)
+  end
+})
+
+lsp_config['denols'].setup({
+  root_dir = lsp_config.util.root_pattern('deno.json'),
+  init_options = {
+    lint = true,
+    unstable = true,
+    suggest = {
+      imports = {
+        hosts = {
+          ['https://deno.land'] = true,
+          ['https://cdn.nest.land'] = true,
+          ['https://crux.land'] = true,
+        },
+      },
+    },
+  },
+})
+
+lsp_config['tsserver'].setup({
+  root_dir = lsp_config.util.root_pattern('package.json'),
+})
+
+lsp_saga.setup({
+  error_sign = " ",
+  warn_sign  = " ",
+  hint_sign  = " ",
+  infor_sign = " ",
+})
 EOF
-endif
-
-if dein#tap('lspsaga.nvim')
-  lua require('lspsaga').setup()
 endif
 " }}}3
 
 " nvim-cmp {{{3
-if dein#tap('nvim-cmp')
+if dein#tap('nvim-cmp') &&
+   \ dein#tap('lspkind-nvim')
+  Keymap c <silent> <C-Space> <Cmd>lua require('cmp').complete()<CR>
+  Keymap c <silent> <C-u>     <Cmd>lua require('cmp').mapping.scroll_docs(-4)<CR>
+  Keymap c <silent> <C-d>     <Cmd>lua require('cmp').mapping.scroll_docs(4)<CR>
 lua <<EOF
 local cmp = require('cmp')
 local lspkind = require('lspkind')
+
+local mapping = cmp.mapping.preset.insert({
+  ['<C-u>']     = cmp.mapping.scroll_docs(-4),
+  ['<C-d>']     = cmp.mapping.scroll_docs(4),
+  ['<C-Space>'] = cmp.mapping.complete(),
+  ['<C-e>']     = cmp.mapping.close(),
+  ['<CR>']      = cmp.mapping.confirm({ select = true }),
+})
+
 cmp.setup({
+  enabled = not vim.g.enable_coc,
+  mapping = vim.g.enable_coc and {} or mapping,
+  window = {
+    completion    = cmp.config.window.bordered({ winhighlight = 'Normal:Pmenu,FloatBorder:Pmenu,CursorLine:PmenuSel,Search:None' }),
+    documentation = cmp.config.window.bordered({ winhighlight = 'Normal:Pmenu,FloatBorder:Pmenu,CursorLine:PmenuSel,Search:None' }),
+  },
+  sources = cmp.config.sources({
+    { name = 'ultisnips'   },
+    { name = 'nvim_lsp'    },
+    { name = 'cmp_tabnine' },
+    { name = 'buffer'      },
+    { name = 'path'        },
+    { name = 'copilot'     },
+  }),
+  formatting = {
+    fields = { 'abbr', 'kind', 'menu' },
+    format = lspkind.cmp_format({
+      with_text = false,
+      menu = {
+        ultisnips   = '[ultisnips]',
+        nvim_lsp    = '[LSP]',
+        cmp_tabnine = '[Tabnine]',
+        buffer      = '[Buffer]',
+        path        = '[Path]',
+        copilot     = '[Copilot]',
+      },
+    }),
+  },
   snippet = {
     expand = function(args)
       vim.fn["UltiSnips#Anon"](args.body)
     end,
   },
-  mapping = {
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete(),
-    ['<C-e>'] = cmp.mapping.close(),
-    ['<CR>'] = cmp.mapping.confirm({ select = true }),
-  },
-  sources = cmp.config.sources({
-    { name = 'nvim_lsp' },
-    { name = 'ultisnips' },
-  }, {
+})
+
+local incsearch_settings = {
+  mapping = cmp.mapping.preset.cmdline({
+    ['<C-n>'] = vim.NIL,
+    ['<C-p>'] = vim.NIL,
+    ['<C-e>'] = vim.NIL,
+  }),
+  sources = {
     { name = 'buffer' },
+  },
+  formatting = {
+    fields = { 'abbr' },
+    format = lspkind.cmp_format({ with_text = false })
+  },
+  incseach_redraw_keys = '<C-r><BS>',
+}
+
+cmp.setup.cmdline('/', incsearch_settings)
+cmp.setup.cmdline('?', incsearch_settings)
+cmp.setup.cmdline(':', {
+  mapping = cmp.mapping.preset.cmdline({
+    ['<C-n>'] = vim.NIL,
+    ['<C-p>'] = vim.NIL,
+    ['<C-e>'] = vim.NIL,
+  }),
+  sources = cmp.config.sources({
+    { name = 'cmdline' },
+    {
+      name = 'fuzzy_path',
+      trigger_characters = { ' ', '.', '/', '~' },
+      options = {
+        fd_cmd = {
+          'fd',
+          '--hidden',
+          '--max-depth',
+          '20',
+          '--full-path',
+          '--exclude',
+          '.git',
+        },
+      },
+    },
   }),
   formatting = {
-    format = lspkind.cmp_format({
-      with_text = true,
-      maxwidth = 50,
-    })
-  },
-  window = {
-    completion = {
-      border = 'rounded',
-      scrollbar = '║',
-    },
-  },
-  mapping = {
-    ['<CR>'] = function(fallback)
-      if cmp.visible() then
-        cmp.confirm()
-      else
-        fallback() -- If you are using vim-endwise, this fallback function will be behaive as the vim-endwise.
+    fields = { 'kind', 'abbr', 'menu' },
+    format = function(entry, vim_item)
+      if vim.tbl_contains({ 'fuzzy_path' }, entry.source.name) then
+        local icon, hl_group = require('nvim-web-devicons').get_icon(entry:get_completion_item().label)
+        if icon then
+          vim_item.kind = icon
+          vim_item.kind_hl_group = hl_group
+        else
+          vim_item.kind = ' '
+        end
+      elseif vim.tbl_contains({ 'cmdline' }, entry.source.name) then
+        vim_item.kind = ' '
+        vim_item.dup = true
       end
+
+      return lspkind.cmp_format()(entry, vim_item)
     end
-  }
+  },
 })
+
+vim.api.nvim_create_autocmd({ 'CmdlineEnter' }, {
+  callback = function()
+    cmp.setup({
+      enabled = true,
+    })
+  end
+})
+vim.api.nvim_create_autocmd({ 'CmdlineLeave' }, {
+  callback = function()
+    cmp.setup({
+      enabled = not vim.g.enable_coc,
+    })
+  end
+})
+
+vim.api.nvim_create_autocmd({ 'CmdWinEnter' }, {
+  callback = function()
+    cmp.setup.buffer({
+      enabled = true,
+      mapping = mapping,
+    })
+  end
+})
+
+require('cmp.utils.misc').redraw.incsearch_redraw_keys = '<C-r><BS>'
 
 require('lspkind').init({
   preset = 'codicons',
   symbol_map = {
-    Text = " ",
-    Method = " ",
-    Function = " ",
-    Constructor = " ",
-    Field = " ",
-    Variable = " ",
-    Class = " ",
-    Interface = " ",
-    Module = " ",
-    Property = " ",
-    Unit = " ",
-    Value = " ",
-    Enum = " ",
-    Keyword = " ",
-    Snippet = " ",
-    Color = " ",
-    File = " ",
-    Reference = " ",
-    Folder = " ",
-    EnumMember = " ",
-    Constant = " ",
-    Struct = " ",
-    Event = " ",
-    Operator = " ",
-    TypeParameter = " ",
+    Text          = ' ',
+    Method        = ' ',
+    Function      = ' ',
+    Constructor   = ' ',
+    Field         = ' ',
+    Variable      = ' ',
+    Class         = ' ',
+    Interface     = ' ',
+    Module        = ' ',
+    Property      = ' ',
+    Unit          = ' ',
+    Value         = ' ',
+    Enum          = ' ',
+    Keyword       = ' ',
+    Snippet       = ' ',
+    Color         = ' ',
+    File          = ' ',
+    Reference     = ' ',
+    Folder        = ' ',
+    EnumMember    = ' ',
+    Constant      = ' ',
+    Struct        = ' ',
+    Event         = ' ',
+    Operator      = ' ',
+    TypeParameter = ' ',
+    Copilot       = ' ',
   },
 })
+
+require('copilot').setup()
 EOF
 endif
 " }}}3
@@ -1840,6 +2679,7 @@ require('nvim-treesitter.configs').setup {
     "html",
     "css",
     "comment",
+    "regex",
   },
   highlight = {
     enable = true,
@@ -1851,53 +2691,49 @@ require('nvim-treesitter.configs').setup {
   rainbow = {
     enable = true,
   },
-  -- refactor = {
-  --   highlight_current_scope = {
-  --     enable = true
-  --   },
-  -- },
+  yati = {
+    enable = true,
+  },
+  matchup = {
+    enable = true,
+    disable_virtual_text = true,
+  },
 }
 
--- require('nvim-biscuits').setup({
---   default_config = {
---     prefix_string = " => "
---   },
--- })
-
--- require "nvim-treesitter.highlight"
--- local hlmap = vim.treesitter.highlighter.hl_map
-
--- hlmap.error = nil
--- hlmap["punctuation.delimiter"] = "Delimiter"
--- hlmap["punctuation.bracket"] = nil
-
--- require('treesitter-context').setup{
---   enable = true,
---   throttle = true,
--- }
-
--- require('treesitter-unit').select()
 -- require('treesitter-unit').enable_highlighting()
 
--- require("indent_blankline").setup {
---   show_current_context = true,
---   space_char_blankline = " ",
---   char = '▏', -- '▏', '┊', '│', '⎸'
--- }
+require('indent_blankline').setup({
+  show_current_context       = true,
+  show_current_context_start = true,
+})
 
--- require('nvim_context_vt').setup()
+require('treesitter-context').setup()
+-- require('leap').opts.safe_labels = {}
 EOF
+  AutoCmd VimEnter * lua require('hlargs').setup()
 
-  " omap <silent> <Plug>(textobj-treesitter-unit-i) <Cmd><C-u>lua require('treesitter-unit').select(true)<CR>
-  " xmap <silent> <Plug>(textobj-treesitter-unit-i) :lua require('treesitter-unit').select(true)<CR>
-  " omap <silent> <Plug>(textobj-treesitter-unit-a) <Cmd>lua require('treesitter-unit').select()<CR>
-  " xmap <silent> <Plug>(textobj-treesitter-unit-a) :lua require('treesitter-unit').select()<CR>
+  " function! s:leap_fold() abort
+  "   lua require('leap-ast').leap()
+  " endfunction
+  " Keymap n <silent> zf zf<Cmd>call <SID>leap_fold()<CR>
+  " AutoCmd User LeapEnter lua require('hlargs').disable()
+  " AutoCmd User LeapLeave lua require('hlargs').enable()
 
-  " omap <silent> iu <Plug>(textobj-treesitter-unit-i)
-  " xmap <silent> iu <Plug>(textobj-treesitter-unit-i)
-  " omap <silent> au <Plug>(textobj-treesitter-unit-a)
-  " xmap <silent> au <Plug>(textobj-treesitter-unit-a)
+  function! s:fold_treehopper() abort
+    lua require('hlargs').disable()
+    lua pcall(function() require('tsht').nodes() vim.cmd('normal! zf') end)
+    lua require('hlargs').enable()
+  endfunction
+  Keymap n <silent> zf <Cmd>call <SID>fold_treehopper()<CR>
 
+  Keymap ox <silent> <Plug>(textobj-treesitter-unit-i) :lua require('treesitter-unit').select()<CR>
+  Keymap ox <silent> <Plug>(textobj-treesitter-unit-a) :lua require('treesitter-unit').select(true)<CR>
+
+  Keymap ox <silent> iu <Plug>(textobj-treesitter-unit-i)
+  Keymap ox <silent> au <Plug>(textobj-treesitter-unit-a)
+
+  let g:indent_blankline_enabled = v:false
+  Keymap n <silent> <Leader>i <Cmd>IndentBlanklineToggle!<CR>
 
   function! s:treesitter_toggle() abort
     if g:treesitter_enable == 1
@@ -1954,7 +2790,7 @@ EOF
   "   TSDisableAll context_commentstring
   "   TSDisableAll rainbow
   " endfunction
-  " 
+  "
   " function! s:enable_tsbuf() abort
   "   if exists('b:ts_buf') && b:ts_buf
   "     TSEnableAll highlight
@@ -2056,7 +2892,7 @@ endif
 " fzf {{{3
 if dein#tap('fzf')
   let g:fzf_files_options = '--layout=reverse'
-  let g:fzf_layout      = { 'window': { 'width': 0.9, 'height': 0.9 } }
+  let g:fzf_layout        = { 'window': { 'width': 0.9, 'height': 0.9 } }
   " let g:fzf_history_dir = '~/.local/share/fzf-history'
 
   " Nord
@@ -2069,7 +2905,7 @@ endif
 " fzf-preview {{{3
 if dein#tap('fzf-preview.vim')
   " let g:fzf_preview_rpc_debug = 1
-  " let g:fzf_preview_direct_window_option = 'botright 20new'
+  " let g:fzf_preview_direct_window_option = { 'width': 0.3, 'height': 0.3 }
   let g:fzf_preview_filelist_command    = 'fd --type file --hidden --exclude .git --strip-cwd-prefix'
   let g:fzf_preview_git_files_command   = 'git ls-files --exclude-standard | while read line; do if [[ ! -L $line ]] && [[ -f $line ]]; then echo $line; fi; done'
   let g:fzf_preview_grep_cmd            = 'rg --line-number --no-heading --color=never --sort=path --with-filename'
@@ -2120,13 +2956,14 @@ if dein#tap('fzf-preview.vim')
     Keymap n <silent> <Plug>(fzf-p)p <Cmd>FzfPreviewYankroundRpc --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
   endif
 
-  Keymap n <silent> <Plug>(dev)q  <Cmd>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
-  Keymap n <silent> <Plug>(dev)Q  <Cmd>CocCommand fzf-preview.CocDiagnostics<CR>
-  Keymap n <silent> <Plug>(dev)rf <Cmd>CocCommand fzf-preview.CocReferences<CR>
-  Keymap n <silent> <Plug>(dev)d  <Cmd>CocCommand fzf-preview.CocDefinition<CR>
-  Keymap n <silent> <Plug>(dev)t  <Cmd>CocCommand fzf-preview.CocTypeDefinition<CR>
-  Keymap n <silent> <Plug>(dev)i  <Cmd>CocCommand fzf-preview.CocImplementations<CR>
-  Keymap n <silent> <Plug>(dev)o  <Cmd>CocCommand fzf-preview.CocOutline --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
+  Keymap n <silent> <Plug>(lsp)q  <Cmd>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
+  Keymap n <silent> <Plug>(lsp)Q  <Cmd>CocCommand fzf-preview.CocDiagnostics<CR>
+  Keymap n <silent> <Plug>(lsp)rf <Cmd>CocCommand fzf-preview.CocReferences<CR>
+  Keymap n <silent> <Plug>(lsp)d  <Cmd>CocCommand fzf-preview.CocDefinition<CR>
+  Keymap n <silent> <Plug>(lsp)t  <Cmd>CocCommand fzf-preview.CocTypeDefinition<CR>
+  Keymap n <silent> <Plug>(lsp)i  <Cmd>CocCommand fzf-preview.CocImplementations<CR>
+  Keymap n <silent> <Plug>(lsp)o  <Cmd>CocCommand fzf-preview.CocOutline --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
+  Keymap n <silent> <Plug>(lsp)s  <Cmd>CocCommand fzf-preview.CocTsServerSourceDefinition<CR>
 
   AutoCmd User fzf_preview#rpc#initialized call <SID>fzf_preview_settings()
 
@@ -2213,11 +3050,6 @@ if dein#tap('fzf-preview.vim')
     let g:fzf_preview_custom_processes['git-status']['ctrl-s'] = g:fzf_preview_custom_processes['git-status']['ctrl-x']
     call remove(g:fzf_preview_custom_processes['git-status'], 'ctrl-x')
   endfunction
-
-  AutoCmd FileType fzf let b:highlight_cursor = 0
-  " if has('nvim')
-  "   AutoCmd FileType fzf set winblend=15
-  " endif
 endif
 " }}}3
 
@@ -2230,7 +3062,7 @@ endif
 
 " telescope {{{3
 if dein#tap('telescope.nvim')
-  " Keymap n <silent> <Plug>(ctrlp) <Cmd>lua require('telescope.builtin').git_files{}<CR>
+  lua require('telescope').setup()
 endif
 " }}}3
 
@@ -2247,7 +3079,7 @@ endif
 
 " git-blame {{{3
 if dein#tap('git-blame.nvim')
-  let g:gitblame_enabled = 0 
+  let g:gitblame_enabled = 0
 endif
 " }}}3
 
@@ -2305,6 +3137,7 @@ endif
 if dein#tap('gitsigns.nvim')
   Keymap n <silent> gp <Cmd>lua require('gitsigns').prev_hunk()<CR>
   Keymap n <silent> gn <Cmd>lua require('gitsigns').next_hunk()<CR>
+  Keymap n <silent> gh <Cmd>lua require('gitsigns').preview_hunk()<CR>
 
 lua <<EOF
 require('gitsigns').setup {
@@ -2316,9 +3149,6 @@ require('gitsigns').setup {
     changedelete = {hl = 'GitSignsChange', text = '~', numhl='GitSignsChangeNr', linehl='GitSignsChangeLn'},
   },
   word_diff = false,
-  keymaps = {
-    noremap = false,
-  },
   current_line_blame = false,
 }
 EOF
@@ -2380,19 +3210,16 @@ if dein#tap('fern.vim')
     execute 'FernReveal' a:dict.relative_path
   endfunction
 
-  let g:fern#disable_default_mappings             = 1
-  let g:fern#drawer_width                         = 40
-  let g:fern#renderer                             = 'nerdfont'
-  let g:fern#renderer#nerdfont#padding            = '  '
-  let g:fern#hide_cursor                          = 1
-  let g:fern#mapping#fzf#disable_default_mappings = 1
-  let g:Fern_mapping_fzf_file_sink                = function('s:fern_reveal')
-  let g:Fern_mapping_fzf_dir_sink                 = function('s:fern_reveal')
+  let g:fern#disable_default_mappings  = 1
+  let g:fern#drawer_width              = 40
+  let g:fern#renderer                  = 'nerdfont'
+  let g:fern#renderer#nerdfont#padding = '  '
+  let g:fern#hide_cursor               = 1
+  let g:fern#window_selector_use_popup = 1
+  let g:fern_preview_window_highlight  = 'Normal:Normal,FloatBorder:Normal'
 
   function! s:fern_preview_width() abort
-    let width = float2nr(&columns * 0.8)
-    let width = min([width, 200])
-    return width
+    return min([float2nr(&columns * 0.8), 200])
   endfunction
 
   let g:fern_preview_window_calculator = {
@@ -2403,52 +3230,47 @@ if dein#tap('fern.vim')
   Keymap n <silent> <Leader>E <Cmd>Fern . -drawer -reveal=%<CR><C-w>=
 
   function! s:fern_settings() abort
-    Keymap n <silent> <buffer>        <Plug>(fern-page-down-wrapper)                <C-d>
-    Keymap n <silent> <buffer>        <Plug>(fern-page-up-wrapper)                  <C-u>
-    Keymap n <silent> <buffer> <expr> <Plug>(fern-page-down-or-scroll-down-preview) fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:down:half)", "\<Plug>(fern-page-down-wrapper)")
-    Keymap n <silent> <buffer> <expr> <Plug>(fern-page-down-or-scroll-up-preview)   fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:up:half)", "\<Plug>(fern-page-up-wrapper)")
-    Keymap n <silent> <buffer>        <Plug>(fern-search-prev)                      N
+    nnoremap <silent>        <buffer> <Plug>(fern-page-down-wrapper) <C-d>
+    nnoremap <silent>        <buffer> <Plug>(fern-page-up-wrapper)   <C-u>
+    nnoremap <silent> <expr> <buffer> <Plug>(fern-page-down-or-scroll-down-preview) fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:down:half)", "\<Plug>(fern-page-down-wrapper)")
+    nnoremap <silent> <expr> <buffer> <Plug>(fern-page-down-or-scroll-up-preview)   fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:up:half)", "\<Plug>(fern-page-up-wrapper)")
 
-    Keymap n <silent> <buffer> <expr> <Plug>(fern-expand-or-collapse)                 fern#smart#leaf("\<Plug>(fern-action-collapse)", "\<Plug>(fern-action-expand)", "\<Plug>(fern-action-collapse)")
-    Keymap n <silent> <buffer> <expr> <Plug>(fern-open-system-directory-or-open-file) fern#smart#leaf("\<Plug>(fern-action-open:select)", "\<Plug>(fern-action-open:system)")
-    Keymap n <silent> <buffer> <expr> <Plug>(fern-quit-or-close-preview)              fern_preview#smart_preview("\<Plug>(fern-action-preview:close)\<Plug>(fern-action-preview:auto:disable)", ":q\<CR>")
-    Keymap n <silent> <buffer> <expr> <Plug>(fern-wipe-or-close-preview)              fern_preview#smart_preview("\<Plug>(fern-action-preview:close)\<Plug>(fern-action-preview:auto:disable)", ":bwipe!\<CR>")
-    Keymap n <silent> <buffer> <expr> <Plug>(fern-page-down-or-scroll-down-preview)   fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:down:half)", "\<Plug>(fern-page-down-wrapper)")
-    Keymap n <silent> <buffer> <expr> <Plug>(fern-page-down-or-scroll-up-preview)     fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:up:half)", "\<Plug>(fern-page-up-wrapper)")
-    Keymap n <silent> <buffer> <expr> <Plug>(fern-new-file-or-search-prev)            v:hlsearch ? "\<Plug>(fern-search-prev)" : "\<Plug>(fern-action-new-file)"
+    Keymap n <silent> <expr> <buffer> <Plug>(fern-action-expand-or-collapse)               fern#smart#leaf("\<Plug>(fern-action-collapse)", "\<Plug>(fern-action-expand)", "\<Plug>(fern-action-collapse)")
+    Keymap n <silent> <expr> <buffer> <Plug>(fern-action-open-system-or-open-file)         fern#smart#leaf("\<Plug>(fern-action-open:select)", "\<Plug>(fern-action-open:system)")
+    Keymap n <silent> <expr> <buffer> <Plug>(fern-action-quit-or-close-preview)            fern_preview#smart_preview("\<Plug>(fern-action-preview:close)\<Plug>(fern-action-preview:auto:disable)", ":q\<CR>")
+    Keymap n <silent> <expr> <buffer> <Plug>(fern-action-wipe-or-close-preview)            fern_preview#smart_preview("\<Plug>(fern-action-preview:close)\<Plug>(fern-action-preview:auto:disable)", ":bwipe!\<CR>")
+    Keymap n <silent> <expr> <buffer> <Plug>(fern-action-page-down-or-scroll-down-preview) fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:down:half)", "\<Plug>(fern-page-down-wrapper)")
+    Keymap n <silent> <expr> <buffer> <Plug>(fern-action-page-down-or-scroll-up-preview)   fern_preview#smart_preview("\<Plug>(fern-action-preview:scroll:up:half)", "\<Plug>(fern-page-up-wrapper)")
 
-    Keymap n  <silent> <buffer> <nowait> a       <Plug>(fern-choice)
-    Keymap n  <silent> <buffer> <nowait> <CR>    <Plug>(fern-open-system-directory-or-open-file)
-    Keymap n  <silent> <buffer> <nowait> t       <Plug>(fern-expand-or-collapse)
-    Keymap n  <silent> <buffer> <nowait> l       <Plug>(fern-open-or-enter)
-    Keymap n  <silent> <buffer> <nowait> h       <Plug>(fern-action-leave)
-    Keymap nx <silent> <buffer> <nowait> x       <Plug>(fern-action-mark:toggle)j
-    Keymap nx <silent> <buffer> <nowait> <Space> <Plug>(fern-action-mark:toggle)j
-    Keymap n  <silent> <buffer> <nowait> N       <Plug>(fern-new-file-or-search-prev)
-    Keymap n  <silent> <buffer> <nowait> K       <Plug>(fern-action-new-dir)
-    Keymap n  <silent> <buffer> <nowait> d       <Plug>(fern-action-trash)
-    Keymap n  <silent> <buffer> <nowait> r       <Plug>(fern-action-rename)
-    Keymap n  <silent> <buffer> <nowait> c       <Plug>(fern-action-copy)
-    Keymap n  <silent> <buffer> <nowait> C       <Plug>(fern-action-clipboard-copy)
-    Keymap n  <silent> <buffer> <nowait> m       <Plug>(fern-action-move)
-    Keymap n  <silent> <buffer> <nowait> M       <Plug>(fern-action-clipboard-move)
-    Keymap n  <silent> <buffer> <nowait> P       <Plug>(fern-action-clipboard-paste)
-    Keymap n  <silent> <buffer> <nowait> !       <Plug>(fern-action-hidden:toggle)
-    Keymap n  <silent> <buffer> <nowait> y       <Plug>(fern-action-yank)
-    Keymap n  <silent> <buffer> <nowait> <C-g>   <Plug>(fern-action-debug)
-    Keymap n  <silent> <buffer> <nowait> ?       <Plug>(fern-action-help)
-    Keymap n  <silent> <buffer> <nowait> <C-c>   <Plug>(fern-action-cancel)
-    Keymap n  <silent> <buffer> <nowait> .       <Plug>(fern-repeat)
-    Keymap n  <silent> <buffer> <nowait> q       <Plug>(fern-quit-or-close-preview)
-    Keymap n  <silent> <buffer> <nowait> Q       <Plug>(fern-wipe-or-close-preview)
-    Keymap n  <silent> <buffer> <nowait> p       <Plug>(fern-action-preview:toggle)
-    Keymap n  <silent> <buffer> <nowait> <C-p>   <Plug>(fern-action-preview:auto:toggle)
-    Keymap n  <silent> <buffer> <nowait> <C-d>   <Plug>(fern-page-down-or-scroll-down-preview)
-    Keymap n  <silent> <buffer> <nowait> <C-u>   <Plug>(fern-page-down-or-scroll-up-preview)
-    Keymap n  <silent> <buffer> <nowait> R       <Plug>(fern-action-reload:all)
-    Keymap n  <silent> <buffer> <nowait> ;f      <Plug>(fern-action-fzf-root-files)
-    Keymap n  <silent> <buffer> <nowait> ;d      <Plug>(fern-action-fzf-root-dirs)
-    Keymap n  <silent> <buffer> <nowait> ;a      <Plug>(fern-action-fzf-root-both)
+    Keymap n  <silent>        <buffer> <nowait> a       <Plug>(fern-action-choice)
+    Keymap n  <silent>        <buffer> <nowait> <CR>    <Plug>(fern-action-open-system-or-open-file)
+    Keymap n  <silent>        <buffer> <nowait> t       <Plug>(fern-action-expand-or-collapse)
+    Keymap n  <silent>        <buffer> <nowait> l       <Plug>(fern-action-open-or-enter)
+    Keymap n  <silent>        <buffer> <nowait> h       <Plug>(fern-action-leave)
+    Keymap nx <silent>        <buffer> <nowait> x       <Plug>(fern-action-mark:toggle)j
+    Keymap nx <silent>        <buffer> <nowait> <Space> <Plug>(fern-action-mark:toggle)j
+    Keymap n  <silent> <expr> <buffer> <nowait> N       v:hlsearch ? 'N' : '<Plug>(fern-action-new-file)'
+    Keymap n  <silent>        <buffer> <nowait> K       <Plug>(fern-action-new-dir)
+    Keymap n  <silent>        <buffer> <nowait> d       <Plug>(fern-action-trash)
+    Keymap n  <silent>        <buffer> <nowait> r       <Plug>(fern-action-rename)
+    Keymap n  <silent>        <buffer> <nowait> c       <Plug>(fern-action-copy)
+    Keymap n  <silent>        <buffer> <nowait> C       <Plug>(fern-action-clipboard-copy)
+    Keymap n  <silent>        <buffer> <nowait> m       <Plug>(fern-action-move)
+    Keymap n  <silent>        <buffer> <nowait> M       <Plug>(fern-action-clipboard-move)
+    Keymap n  <silent>        <buffer> <nowait> P       <Plug>(fern-action-clipboard-paste)
+    Keymap n  <silent>        <buffer> <nowait> !       <Plug>(fern-action-hidden:toggle)
+    Keymap n  <silent>        <buffer> <nowait> y       <Plug>(fern-action-yank)
+    Keymap n  <silent>        <buffer> <nowait> <C-g>   <Plug>(fern-action-debug)
+    Keymap n  <silent>        <buffer> <nowait> ?       <Plug>(fern-action-help)
+    Keymap n  <silent>        <buffer> <nowait> <C-c>   <Plug>(fern-action-cancel)
+    Keymap n  <silent>        <buffer> <nowait> .       <Plug>(fern-repeat)
+    Keymap n  <silent>        <buffer> <nowait> q       <Plug>(fern-action-quit-or-close-preview)
+    Keymap n  <silent>        <buffer> <nowait> Q       <Plug>(fern-action-wipe-or-close-preview)
+    Keymap n  <silent>        <buffer> <nowait> p       <Plug>(fern-action-preview:toggle)
+    Keymap n  <silent>        <buffer> <nowait> <C-p>   <Plug>(fern-action-preview:auto:toggle)
+    Keymap n  <silent>        <buffer> <nowait> <C-d>   <Plug>(fern-action-page-down-or-scroll-down-preview)
+    Keymap n  <silent>        <buffer> <nowait> <C-u>   <Plug>(fern-action-page-down-or-scroll-up-preview)
+    Keymap n  <silent>        <buffer> <nowait> R       <Plug>(fern-action-reload:all)
 
     setlocal nonumber norelativenumber
     augroup fern-cursor-moved
@@ -2479,7 +3301,7 @@ endif
 
 " operator-convert-case {{{3
 if dein#tap('vim-operator-convert-case')
-  Keymap nx cy <Plug>(operator-convert-case-loop)
+  Keymap n cy <Plug>(operator-convert-case-loop)iw
 endif
 " }}}3
 
@@ -2513,7 +3335,7 @@ if dein#tap('vim-textobj-between')
 endif
 " }}}3
 
-" textobj-cursorcontext {{{3
+" textobj-cursor-context {{{3
 if dein#tap('vim-textobj-cursor-context')
   let g:textobj_cursorcontext_no_default_key_mappings = 1
 
@@ -2537,6 +3359,15 @@ if dein#tap('vim-textobj-functioncall')
 
   Keymap ox if <Plug>(textobj-functioncall-i)
   Keymap ox af <Plug>(textobj-functioncall-a)
+endif
+" }}}3
+
+" textobj-indent {{{3
+if dein#tap('vim-textobj-indent')
+  let g:textobj_indent_no_default_key_mappings = 1
+
+  Keymap ox ii <Plug>(textobj-indent-i)
+  Keymap ox ai <Plug>(textobj-indent-a)
 endif
 " }}}3
 
@@ -2569,150 +3400,155 @@ if dein#tap('accelerated-jk')
 endif
 " }}}3
 
-" hlslens & asterisk & anzu {{{3
+" hlslens & asterisk & anzu & searchx {{{3
 if dein#tap('nvim-hlslens') &&
    \ dein#tap('vim-asterisk') &&
    \ dein#tap('vim-anzu') &&
-   \ dein#tap('vim-searchx')
-  if has('nvim')
-    let g:searchx = {}
-    let g:searchx.auto_accept = v:true
-    let g:searchx.markers = split('ASDFGHJKLQWERTYUIOPZXCVBNM', '.\zs')
+   \ dein#tap('vim-searchx') &&
+   \ has('nvim')
+  lua require('hlslens').setup({ auto_enable = true })
 
-    function! g:searchx.convert(input) abort
-      if a:input !~# '\k'
-        return '\V' .. a:input
-      endif
+  let g:searchx             = {}
+  let g:searchx.auto_accept = v:false
+  let g:searchx.markers     = split('ASDFGHJKLQWERTYUIOPZXCVBNM', '.\zs')
+  let g:searchx.scrolloff   = &scrolloff
 
-      if dein#tap('fuzzy-motion.vim') && a:input =~# ';'
-        let max_score = 0
-        let fuzzy_input = ''
+  function! g:searchx.convert(input) abort
+    if a:input !~# '\k'
+      return '\V' .. a:input
+    endif
 
-        for q in s:fuzzy_query(a:input)
-          let targets = fuzzy_motion#targets(q)
+    if dein#tap('fuzzy-motion.vim') && a:input =~# ';'
+      let max_score = 0
+      let fuzzy_input = ''
 
-          if len(targets) > 0 && targets[0].score > max_score
-            let max_score = targets[0].score
-            let fuzzy_input = join(split(q, ' '), '.\{-}')
-          endif
+      for q in s:fuzzy_query(a:input)
+        let targets = fuzzy_motion#targets(q)
 
-          " let total_score = 0
-          " for target in targets
-          "   let total_score += target.score
-          " endfor
-          "
-          " if total_score > max_score
-          "   let max_score = total_score
-          "   let fuzzy_input = join(split(q, ' '), '.\{-}')
-          " endif
-        endfor
-
-        return fuzzy_input ==# '' ? a:input : fuzzy_input
-      endif
-
-      return a:input
-    endfunction
-
-    function! s:fuzzy_query(input) abort
-      if match(a:input, ';') == -1
-        return [a:input]
-      endif
-
-      let input = substitute(a:input, ';', '', 'g')
-      let trigger_count = len(a:input) - len(input)
-
-      let arr = range(1, len(input) - 1)
-
-      let result = []
-      for ps in s:combinations(arr, trigger_count)
-        let ps = reverse(ps)
-        let str = input
-        for p in ps
-          let str = str[0 : p - 1] . ' ' . str[p : -1]
-        endfor
-        let result += [str]
+        if len(targets) > 0 && targets[0].score > max_score
+          let max_score = targets[0].score
+          let fuzzy_input = join(split(q, ' '), '.\{-}')
+        endif
       endfor
 
-      return result
-    endfunction
+      return fuzzy_input ==# '' ? a:input : fuzzy_input
+    endif
 
-    lua require('hlslens').setup({auto_enable = true})
+    return a:input
+  endfunction
 
-    Keymap nox /          <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 1})<CR>
-    Keymap nox ?          <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 0})<CR>
-    Keymap nox <silent> n <Cmd>call searchx#next_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
-    Keymap nox <silent> N <Cmd>call searchx#prev_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
+  function! s:fuzzy_query(input) abort
+    if match(a:input, ';') == -1
+      return [a:input]
+    endif
 
-    Keymap nx <silent> *  <Cmd>call Asterisk(1)<CR><Cmd>call SearchInfo(1, 1)<CR>
-    Keymap nx <silent> g* <Cmd>call Asterisk(0)<CR><Cmd>call SearchInfo(1, 1)<CR>
+    let input = substitute(a:input, ';', '', 'g')
+    let trigger_count = len(a:input) - len(input)
 
-    Keymap n          '     <Cmd>call searchx#select()<CR>
-    Keymap c <silent> <C-j> <Cmd>call searchx#next_dir()<CR>
-    Keymap c <silent> <C-k> <Cmd>call searchx#prev_dir()<CR>
+    let arr = range(1, len(input) - 1)
 
-    function! SearchInfo(hlslens_start, anzu_update) abort
+    let result = []
+    for ps in s:combinations(arr, trigger_count)
+      let ps = reverse(ps)
+      let str = input
+      for p in ps
+        let str = str[0 : p - 1] . ' ' . str[p : -1]
+      endfor
+      let result += [str]
+    endfor
+
+    return result
+  endfunction
+
+  Keymap nox /          <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 1})<CR>
+  Keymap nox ?          <Cmd>call SearchInfo(0, 0)<CR><Cmd>call searchx#start({'dir': 0})<CR>
+  Keymap nox <silent> n <Cmd>call searchx#next_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
+  Keymap nox <silent> N <Cmd>call searchx#prev_dir()<CR><Cmd>call SearchInfo(1, 1)<CR>zzzv
+
+  Keymap nx <silent> *  <Cmd>call Asterisk(1)<CR><Cmd>call SearchInfo(1, 1)<CR>
+  Keymap nx <silent> g* <Cmd>call Asterisk(0)<CR><Cmd>call SearchInfo(1, 1)<CR>
+
+  Keymap n          '     <Cmd>call searchx#select()<CR>
+  Keymap c <silent> <C-j> <Cmd>call searchx#next_dir()<CR>
+  Keymap c <silent> <C-k> <Cmd>call searchx#prev_dir()<CR>
+
+  function! SearchInfo(hlslens_start, anzu_update) abort
+    if a:hlslens_start
       lua require('hlslens').enable()
-      if a:hlslens_start
-        lua require('hlslens').start()
-      endif
+      lua require('hlslens').start()
+    endif
 
-      if a:anzu_update
-        AnzuUpdateSearchStatus
-      endif
-    endfunction
-
-    function! Asterisk(is_whole) abort
-      call feedkeys(asterisk#do(mode(1), {'direction': 1, 'do_jump': 0, 'is_whole': a:is_whole}), 'nit')
-    endfunction
-
-    function! s:change_fuzzy_motion() abort
-      let input = getcmdline()
-      call feedkeys("\<Esc>", 'nit')
-      call timer_start(0, { -> feedkeys("\<Cmd>FuzzyMotion\<CR>" . substitute(input, ';', '', 'g'), 'nit') })
-    endfunction
-
-    function! s:search_enter() abort
-      lua require('hlslens').start(true)
-
-      Keymap c <C-s> <Cmd>call <SID>change_fuzzy_motion()<CR>
-    endfunction
-
-    function! s:search_leave() abort
-      normal! zv
+    if a:anzu_update
       AnzuUpdateSearchStatus
+    endif
+  endfunction
 
-      try
-        cunmap <C-s>
-      catch /.*/
-      endtry
-    endfunction
+  function! Asterisk(is_whole) abort
+    call feedkeys(asterisk#do(mode(1), {'direction': 1, 'do_jump': 0, 'is_whole': a:is_whole}), 'nit')
+  endfunction
 
-    function! s:search_changed() abort
-      lua require('hlslens').disable()
-      lua require('hlslens').enable()
-      lua require('hlslens').start(true)
-    endfunction
+  function! s:change_fuzzy_motion() abort
+    let input = getcmdline()
+    call feedkeys("\<Esc>", 'nit')
+    call timer_start(0, { -> feedkeys("\<Cmd>FuzzyMotion\<CR>" . substitute(input, ';', '', 'g'), 'nit') })
+  endfunction
 
-    function! s:search_cancel() abort
-      lua require('hlslens').disable()
-      AnzuClearSearchStatus
+  function! s:search_enter() abort
+    " lua require('hlslens').start(true)
 
-      try
-        cunmap <C-s>
-      catch /.*/
-      endtry
-    endfunction
+    Keymap c <C-s> <Cmd>call <SID>change_fuzzy_motion()<CR>
+  endfunction
 
-    function! s:search_accept() abort
-      call feedkeys("\<Cmd>set hlsearch\<CR>", 'n')
-    endfunction
+  function! s:search_leave() abort
+    lua require('hlslens').enable()
+    lua require('hlslens').start()
 
-    AutoCmd User SearchxEnter                      call <SID>search_enter()
-    AutoCmd User SearchxLeave                      call <SID>search_leave()
-    AutoCmd User SearchxInputChanged               call <SID>search_changed()
-    AutoCmd User SearchxCancel                     call <SID>search_cancel()
-    AutoCmd User SearchxAccept,SearchxAcceptReturn call <SID>search_accept()
-  endif
+    normal! zv
+    AnzuUpdateSearchStatus
+
+    try
+      cunmap <C-s>
+    catch /.*/
+    endtry
+  endfunction
+
+  function! s:search_cancel() abort
+    lua require('hlslens').disable()
+    AnzuClearSearchStatus
+
+    try
+      cunmap <C-s>
+    catch /.*/
+    endtry
+  endfunction
+
+  function! s:search_accept() abort
+    call feedkeys("\<Cmd>set hlsearch\<CR>", 'n')
+  endfunction
+
+  AutoCmd User SearchxEnter                      call <SID>search_enter()
+  AutoCmd User SearchxLeave                      call <SID>search_leave()
+  AutoCmd User SearchxCancel                     call <SID>search_cancel()
+  AutoCmd User SearchxAccept,SearchxAcceptReturn call <SID>search_accept()
+endif
+" }}}3
+
+" hlslens & asterisk & anzu & !searchx {{{3
+if dein#tap('nvim-hlslens') &&
+   \ dein#tap('vim-asterisk') &&
+   \ dein#tap('vim-anzu') &&
+   \ !dein#tap('vim-searchx') &&
+   \ has('nvim')
+  lua require('hlslens').setup({ calm_down = true })
+
+  Keymap n           /  <Cmd>lua require('hlslens').enable()<CR>/
+  Keymap n           ?  <Cmd>lua require('hlslens').enable()<CR>?
+  Keymap n  <silent> n  <Cmd>lua require('hlslens').enable()<CR><Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)zzzv
+  Keymap n  <silent> N  <Cmd>lua require('hlslens').enable()<CR><Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)zzzv
+  Keymap nx <silent> *  <Cmd>lua require('hlslens').enable()<CR><Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
+  Keymap nx <silent> #  <Cmd>lua require('hlslens').enable()<CR><Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
+  Keymap nx <silent> g* <Cmd>lua require('hlslens').enable()<CR><Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
+  Keymap nx <silent> g# <Cmd>lua require('hlslens').enable()<CR><Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR><Plug>(anzu-update-search-status)
 endif
 " }}}3
 
@@ -2753,11 +3589,11 @@ if dein#tap('caw.vim')
   let g:caw_no_default_keymappings = 1
   " let g:caw_integrated_plugin = 'ts_context_commentstring'
 
-  " omap <SID>(line) <Cmd>normal! v^og_<CR>0
+  omap <Plug>(line) <Cmd>normal! v^og_<CR><Cmd>normal! 0<CR>
 
-  Keymap! n  <silent> <expr> gcc <SID>caw_hatpos_toggle() . '<Plug>(textobj-line-i)0'
+  Keymap! n  <silent> <expr> gcc <SID>caw_hatpos_toggle() . '<Plug>(line)'
   Keymap! nx <silent> <expr> gc  <SID>caw_hatpos_toggle()
-  Keymap! n  <silent> <expr> gww <SID>caw_wrap_toggle() . '<Plug>(textobj-line-i)0'
+  Keymap! n  <silent> <expr> gww <SID>caw_wrap_toggle() . '<Plug>(line)'
   Keymap! nx <silent> <expr> gw  <SID>caw_wrap_toggle()
 
   function! s:caw_hatpos_toggle() abort
@@ -2810,6 +3646,13 @@ EOF
 endif
 " }}}3
 
+" deindent-yank {{{3
+if dein#tap('deindent-yank.vim')
+  Keymap n <silent> gy <Plug>(deindent-yank-normal)
+  Keymap x <silent> gy <Plug>(deindent-yank-visual)
+endif
+" }}}3
+
 " dps-dial {{{3
 if dein#tap('dps-dial.vim')
   Keymap nx <C-a>  <Plug>(dps-dial-increment)
@@ -2818,7 +3661,7 @@ if dein#tap('dps-dial.vim')
   Keymap nx <C-x>  <Plug>(dps-dial-decrement)
 
   function! s:dps_dial_settings() abort
-    let g:dps_dial#augends = ['decimal-integer', 'boolean', 'and_or', 'const_let', 'case', 'date', 'date-slash', 'color']
+    let g:dps_dial#augends = ['decimal-integer', 'boolean', 'and_or', 'const_let', 'date', 'date-slash', 'color']
     call extend(g:dps_dial#aliases, {
     \ 'boolean': {
     \   'kind': 'constant',
@@ -2927,15 +3770,15 @@ endif
 
 " eft {{{3
 if dein#tap('vim-eft')
-  let g:eft_enable = 1
+  let g:eft_enable = v:true
   Keymap n <Leader>f <Cmd>EftToggle<CR>
 
   function! s:eft_toggle() abort
-    if g:eft_enable == 1
-      let g:eft_enable = 0
+    if g:eft_enable
+      let g:eft_enable = v:false
       call <SID>eft_disable()
     else
-      let g:eft_enable = 1
+      let g:eft_enable = v:true
       call <SID>eft_enable()
     endif
   endfunction
@@ -2968,6 +3811,12 @@ if dein#tap('vim-eft')
   endfunction
 
   AutoCmd VimEnter * call <SID>eft_enable()
+endif
+" }}}3
+
+" emcl {{{3
+if dein#tap('emcl.nvim')
+  lua require('emcl').setup({})
 endif
 " }}}3
 
@@ -3027,9 +3876,9 @@ endif
 
 " fuzzy-motion {{{3
 if dein#tap('fuzzy-motion.vim')
-  let g:fuzzy_motion_word_regexp_list = ['[0-9a-zA-Z_-]+',  '([0-9a-zA-Z_-]|[.])+', '([0-9a-zA-Z]|[()<>.-_#''"]|(\s=+\s)|(,\s)|(:\s)|(\s=>\s))+']
+  let g:fuzzy_motion_word_regexp_list = ['[0-9a-zA-Z_-]+', '([0-9a-zA-Z_-]|[.])+', '([0-9a-zA-Z]|[()<>.-_#''"]|(\s=+\s)|(,\s)|(:\s)|(\s=>\s))+']
 
-  Keymap nox <silent> ss <Cmd>FuzzyMotion<CR>
+  Keymap nx <silent> ss <Cmd>FuzzyMotion<CR>
 endif
 " }}}3
 
@@ -3150,41 +3999,41 @@ if dein#tap('lexima.vim')
 
     "" Move closing parenthesis
     let s:rules += [
-    \ { 'char': '<C-f>',                                 'input': '<Right>' },
-    \ { 'char': '<C-f>', 'at': '\%#\s*)',  'leave': ')',                    },
-    \ { 'char': '<C-f>', 'at': '\%#\s*\}', 'leave': '}',                    },
-    \ { 'char': '<C-f>', 'at': '\%#\s*\]', 'leave': ']',                    },
-    \ { 'char': '<C-f>', 'at': '\%#\s*''', 'leave': '''',                   },
-    \ { 'char': '<C-f>', 'at': '\%#\s*"',  'leave': '"',                    },
-    \ { 'char': '<C-f>', 'at': '\%#\s*`',  'leave': '`',                    },
+    \ { 'char': '<C-f>',                                 'input': '<C-g>U<Right>' },
+    \ { 'char': '<C-f>', 'at': '\%#\s*)',  'leave': ')',                          },
+    \ { 'char': '<C-f>', 'at': '\%#\s*\}', 'leave': '}',                          },
+    \ { 'char': '<C-f>', 'at': '\%#\s*\]', 'leave': ']',                          },
+    \ { 'char': '<C-f>', 'at': '\%#\s*''', 'leave': '''',                         },
+    \ { 'char': '<C-f>', 'at': '\%#\s*"',  'leave': '"',                          },
+    \ { 'char': '<C-f>', 'at': '\%#\s*`',  'leave': '`',                          },
     \ ]
 
     "" Insert semicolon at the end of the line
     let s:rules += [
-    \ { 'char': ';', 'at': '(.*;\%#)$',   'input': '<BS><Right>;' },
-    \ { 'char': ';', 'at': '^\s*;\%#)$',  'input': '<BS><Right>;' },
-    \ { 'char': ';', 'at': '(.*;\%#\}$',  'input': '<BS><Right>;' },
-    \ { 'char': ';', 'at': '^\s*;\%#\}$', 'input': '<BS><Right>;' },
+    \ { 'char': ';', 'at': '(.*;\%#)$',   'input': '<BS><C-g>U<Right>;' },
+    \ { 'char': ';', 'at': '^\s*;\%#)$',  'input': '<BS><C-g>U<Right>;' },
+    \ { 'char': ';', 'at': '(.*;\%#\}$',  'input': '<BS><C-g>U<Right>;' },
+    \ { 'char': ';', 'at': '^\s*;\%#\}$', 'input': '<BS><C-g>U<Right>;' },
     \ ]
 
     "" Surround function
     let s:rules += [
-    \ { 'char': '>', 'at': ')\%#', 'input': '<BS><C-o>:normal! f(%a)<Esc>' },
+    \ { 'char': '>', 'at': ')>\%#', 'input': '<BS><BS><C-o>:normal! f(<CR><C-o>:normal %<CR>)' },
     \ ]
 
     "" TypeScript
     let s:rules += [
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '([a-zA-Z]*>\%#)',                                'input': '<BS> => {', 'input_after': '}'  },
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '(([a-zA-Z, ]*)>\%#)',             'delete': ')', 'input': '<BS>) => {', 'input_after': '}' },
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-zA-Z<>]\+([a-zA-Z, ]*>\%#)',                  'input': '<BS> => {', 'input_after': '}'  },
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '[a-zA-Z<>]\+(([a-zA-Z, ]*>\%#))', 'delete': ')', 'input': '<BS>) => {', 'input_after': '}' },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\.[a-zA-Z]\+([a-zA-Z,]*>\%#)',       'input': '<BS> => {', 'input_after': '}'                           },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\.[a-zA-Z]\+(([a-zA-Z, :<>]*>\%#))', 'input': '<BS><C-g>U<Right> => {', 'input_after': '}'              },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '([a-zA-Z, :<>]*>\%#)',               'input': '<BS><C-g>U<Right> => {', 'input_after': '}'              },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '({[a-zA-Z, :<>]\+>\%#\s\?})',        'input': '<BS><C-o>:normal! f)<CR><C-g>U<Right> => {}<C-g>U<Left>' },
     \ ]
 
     "" TSX with nvim-ts-autotag
     if dein#tap('nvim-ts-autotag')
       let s:rules += [
-     \ { 'filetype': ['typescriptreact'], 'char': '>', 'at': '<[a-zA-Z.]\+\(\s\)\?.*\%#', 'input': '><Esc>:lua require(''nvim-ts-autotag.internal'').close_tag()<CR>a', },
-     \ ]
+      \ { 'filetype': ['typescriptreact'], 'char': '>', 'at': '<[a-zA-Z.]\+\(\s\)\?.*\%#', 'input': '><Esc>:lua require(''nvim-ts-autotag.internal'').close_tag()<CR>a', },
+      \ ]
     endif
 
     "" ruby
@@ -3201,8 +4050,8 @@ if dein#tap('lexima.vim')
     "" eruby
     let s:rules += [
     \ { 'filetype': 'eruby', 'char': '%',     'at': '<\%#',         'input': '%<Space>',                        'input_after': '<Space>%>',                 },
-    \ { 'filetype': 'eruby', 'char': '=',     'at': '<%\%#',        'input': '=<Space><Right>',                 'input_after': '<Space>%>',                 },
-    \ { 'filetype': 'eruby', 'char': '=',     'at': '<%\s\%#\s%>',  'input': '<Left>=<Right>',                                                              },
+    \ { 'filetype': 'eruby', 'char': '=',     'at': '<%\%#',        'input': '=<Space><C-g>U<Right>',           'input_after': '<Space>%>',                 },
+    \ { 'filetype': 'eruby', 'char': '=',     'at': '<%\s\%#\s%>',  'input': '<C-g>U<Left>=<C-g>U<Right>',                                                  },
     \ { 'filetype': 'eruby', 'char': '=',     'at': '<%\%#.\+%>',                                                                           'priority': 10, },
     \ { 'filetype': 'eruby', 'char': '<C-h>', 'at': '<%\s\%#\s%>',  'input': '<BS><BS><BS><Del><Del><Del>',                                                 },
     \ { 'filetype': 'eruby', 'char': '<BS>',  'at': '<%\s\%#\s%>',  'input': '<BS><BS><BS><Del><Del><Del>',                                                 },
@@ -3268,7 +4117,7 @@ if dein#tap('lexima.vim')
     LeximaAlterCommand js\%[on]           JSON
     LeximaAlterCommand dein               Dein
     LeximaAlterCommand dre\%[cache]       call<Space>dein#recache_runtimepath()
-    LeximaAlterCommand dup\%[date]        call<Space>dein#check_update()
+    LeximaAlterCommand dup\%[date]        call<Space>dein#update()
     LeximaAlterCommand c\%[oc]re\%[s]     CocRestart
     LeximaAlterCommand or\%[ganizeimport] OrganizeImport
     LeximaAlterCommand todo               CocCommand<Space>fzf-preview.TodoComments
@@ -3289,10 +4138,9 @@ if dein#tap('lexima.vim')
     LeximaAlterCommand sl                 LoadProjectLayout
     LeximaAlterCommand vis\%[ta]          Vista
     LeximaAlterCommand cap\%[ture]        Capture
-    LeximaAlterCommand te\%[st]           Ultest
-    LeximaAlterCommand tn\%[ear]          UltestNearest
-    LeximaAlterCommand ts\%[ummary]       UltestSummary
     LeximaAlterCommand r\%[un]            QuickRun
+    LeximaAlterCommand test\%[summary]    TestSummary
+    LeximaAlterCommand testo\%[pen]       TestOpen
 
     if dein#tap('vim-ambicmd')
       Keymap c <expr> <Space> <SID>expand_command("\<Space>")
@@ -3362,11 +4210,29 @@ endif
 " let g:qs_buftype_blacklist = ['terminal', 'nofile']
 " }}}3
 
+" ripgrep {{{3
+if dein#tap('vim-ripgrep')
+  command! -nargs=* -complete=file Rg call ripgrep#search(<q-args>)
+endif
+" }}}3
+
+" sad {{{3
+if dein#tap('sad.nvim')
+  lua require('sad').setup({ vsplit = false })
+endif
+" }}}3
+
 " sandwich {{{3
 if dein#tap('vim-sandwich') &&
    \ dein#tap('vim-textobj-functioncall')
-  let g:textobj_sandwich_no_default_key_mappings     = 1
+  let g:sandwich_no_default_key_mappings             = 1
   let g:textobj_functioncall_no_default_key_mappings = 1
+
+  Keymap nx <silent> sa  <Plug>(sandwich-add)
+  Keymap nx <silent> sd  <Plug>(sandwich-delete)
+  Keymap nx <silent> sdb <Plug>(sandwich-delete-auto)
+  Keymap nx <silent> sr  <Plug>(sandwich-replace)
+  Keymap nx <silent> srb <Plug>(sandwich-replace-auto)
 
   Keymap ox <silent> ib <Plug>(textobj-sandwich-auto-i)
   Keymap ox <silent> ab <Plug>(textobj-sandwich-auto-a)
@@ -3593,24 +4459,85 @@ if dein#tap('vim-backslash')
     Keymap n <silent> <buffer> o <Plug>(vim-backslash-o)
     Keymap n <silent> <buffer> O <Plug>(vim-backslash-O)
 
-    Keymap i <silent> <expr> <buffer> <CR> pumvisible() ? '<C-y>' : vim_backslash#is_continuous_cr() ? '<Plug>(vim-backslash-smart-CR-i)' : lexima#expand('<CR>', 'i')
+    if dein#tap('pum.vim') && getcmdwintype() ==# ''
+      Keymap i <silent> <expr> <buffer> <CR> pum#visible() ? '<C-y>' : vim_backslash#is_continuous_cr() ? '<Plug>(vim-backslash-smart-CR-i)' : lexima#expand('<CR>', 'i')
+    elseif dein#tap('coc.nvim') && getcmdwintype() ==# ''
+      Keymap i <silent> <expr> <buffer> <CR> coc#pum#visible() ? coc#pum#confirm() : vim_backslash#is_continuous_cr() ? '<Plug>(vim-backslash-smart-CR-i)' : lexima#expand('<CR>', 'i')
+    else
+      Keymap i <silent> <expr> <buffer> <CR> pumvisible() ? '<C-y>' : vim_backslash#is_continuous_cr() ? '<Plug>(vim-backslash-smart-CR-i)' : lexima#expand('<CR>', 'i')
+    endif
   endfunction
 
-  AutoCmd FileType vim call <SID>vim_backslash_settings()
+  AutoCmd BufWinEnter *.vim,.vimrc call <SID>vim_backslash_settings()
 endif
 " }}}3
 
 " yankround {{{3
 if dein#tap('yankround.vim')
-  let g:yankround_max_history   = 10000
+  let g:yankround_max_history   = 1000
   let g:yankround_use_region_hl = 1
   let g:yankround_dir           = '~/.cache/vim/yankround'
 
   Keymap nx p <Plug>(yankround-p)
   Keymap n  P <Plug>(yankround-P)
 
-  Keymap n <silent> <expr> <C-p> yankround#is_active() ? '<Plug>(yankround-prev)' : '<Plug>(ctrlp)'
-  Keymap n <silent> <expr> <C-n> yankround#is_active() ? '<Plug>(yankround-next)' : ""
+  Keymap n <silent> <expr> <C-p> yankround#is_active() ? '<Plug>(yankround-prev)' : '<Plug>(ctrl-p)'
+  Keymap n <silent> <expr> <C-n> yankround#is_active() ? '<Plug>(yankround-next)' : '<Plug>(ctrl-n)'
+endif
+" }}}3
+
+" yanky {{{3
+if dein#tap('yanky.nvim')
+  " Keymap nx p <Plug>(yankround-p)
+  " Keymap n  P <Plug>(yankround-P)
+
+  " Keymap n <silent> <expr> <C-p> yankround#is_active() ? '<Plug>(yankround-prev)' : '<Plug>(ctrl-p)'
+  " Keymap n <silent> <expr> <C-n> yankround#is_active() ? '<Plug>(yankround-next)' : '<Plug>(ctrl-n)'
+
+  Keymap nx <silent> y  <Plug>(YankyYank)
+
+  Keymap nx <silent> p  <Plug>(YankyPutAfter)
+  Keymap nx <silent> P  <Plug>(YankyPutBefore)
+  Keymap nx <silent> gp <Plug>(YankyGPutAfter)
+  Keymap nx <silent> gP <Plug>(YankyGPutBefore)
+
+  Keymap n <silent> <expr> <C-p> luaeval('require("yanky").can_cycle()') ? '<Plug>(YankyCycleForward)'  : '<Plug>(ctrl-p)'
+  Keymap n <silent> <expr> <C-n> luaeval('require("yanky").can_cycle()') ? '<Plug>(YankyCycleBackward)' : '<Plug>(ctrl-n)'
+
+lua << EOF
+local utils = require('yanky.utils')
+local mapping = require('yanky.telescope.mapping')
+
+require('yanky').setup({
+   ring = {
+    history_length = 1000,
+    sync_with_numbered_registers = false,
+  },
+  highlight = {
+    on_yank = false,
+    timer = 300,
+  },
+  picker = {
+    telescope = {
+      mappings = {
+        default = mapping.set_register('p'),
+        i = {
+          ["<C-p>"] = mapping.put('p'),
+          ["<C-k>"] = mapping.put('P'),
+          ["<C-x>"] = mapping.delete(),
+          ["<C-r>"] = mapping.set_register(utils.get_default_register()),
+        },
+        n = {
+          p = mapping.put('p'),
+          P = mapping.put('P'),
+          d = mapping.delete(),
+          r = mapping.set_register(utils.get_default_register())
+        },
+      }
+    }
+  }
+})
+EOF
 endif
 " }}}3
 
@@ -3623,6 +4550,12 @@ endif
 " }}}2
 
 " Appearance {{{2
+
+" aerial {{{3
+if dein#tap('aerial.nvim')
+  lua require('aerial').setup({ backends = { 'treesitter', 'markdown' } })
+endif
+" }}}3
 
 " better-whitespace {{{3
 if dein#tap('vim-better-whitespace')
@@ -3654,9 +4587,351 @@ if dein#tap('vim-brightest')
 endif
 " }}}3
 
+" bufferline {{{3
+if dein#tap('bufferline.nvim')
+  Keymap n <silent> <Plug>(ctrl-n) <Cmd>BufferLineCycleNext<CR>
+  Keymap n <silent> <Plug>(ctrl-p) <Cmd>BufferLineCyclePrev<CR>
+lua << EOF
+local black      = '#32302f'
+local red        = '#ea6962'
+local green      = '#a9b665'
+local yellow     = '#d8a657'
+local blue       = '#7daea3'
+local magenta    = '#d3869b'
+local cyan       = '#89b482'
+local white      = '#d4be98'
+local grey       = '#807569'
+local background = '#1D2021'
+local empty      = '#1C1C1C'
+local info       = '#FFFFAF'
+local vert_split = '#504945'
+
+local coc_diagnostic_results = {}
+
+require('bufferline').setup({
+  options = {
+    mode = 'tabs',
+    numbers = 'ordinal',
+    buffer_close_icon = '×',
+    show_close_icon = false,
+    diagnostics = 'coc',
+    show_buffer_default_icon = false,
+    separator_style = { '|', ' ' },
+    modified_icon = '[+]',
+    diagnostics_indicator = function(_, _, _, context)
+      local success, result = pcall(function()
+        local buf = vim.api.nvim_get_current_buf()
+        if context.buffer.id ~= buf then
+          return coc_diagnostic_results[context.buffer.id] or ''
+        end
+
+        local coc_diagnostic_info = vim.api.nvim_buf_get_var(buf, 'coc_diagnostic_info')
+
+        local error = ''
+        if coc_diagnostic_info.error ~= 0 then
+          error = ' ' .. coc_diagnostic_info.error
+        end
+
+        local warning = ''
+        if coc_diagnostic_info.warning ~= 0 then
+          warning = ' ' .. coc_diagnostic_info.warning
+        end
+
+        local result = ''
+        if error ~= '' then
+          result = ' ' .. error
+        end
+        if warning ~= '' then
+          result = ' ' .. warning
+        end
+
+        coc_diagnostic_results[buf] = result
+        return result
+      end)
+
+      if success then
+        return result
+      else
+        return ''
+      end
+    end,
+    offsets = {
+      {
+        filetype = 'fern',
+        text = 'Fern',
+        highlight = 'Directory',
+        separator = true
+      },
+      {
+        filetype = 'vista',
+        text = 'Vista',
+        highlight = 'Directory',
+        separator = true
+      },
+    },
+  },
+  highlights = {
+    fill = {
+      fg = grey,
+      bg = empty,
+    },
+    background = {
+      fg = grey,
+      bg = background,
+    },
+    tab = {
+      fg = grey,
+      bg = black,
+    },
+    buffer = {
+      fg = grey,
+      bg = black,
+    },
+    close_button = {
+      fg = grey,
+      bg = background,
+    },
+    numbers = {
+      fg = grey,
+      bg = background,
+    },
+    separator = {
+      fg = background,
+      bg = background,
+    },
+    duplicate = {
+      fg = green,
+      bg = background,
+      bold = false,
+      italic = false,
+    },
+    diagnostic = {
+      fg = white,
+      bg = black,
+    },
+    error = {
+      fg = grey,
+      bg = background,
+    },
+    warning = {
+      fg = grey,
+      bg = background,
+    },
+    info = {
+      fg = grey,
+      bg = background,
+    },
+    hint = {
+      fg = grey,
+      bg = background,
+    },
+    error_diagnostic = {
+      fg = red,
+      bg = background,
+    },
+    warning_diagnostic = {
+      fg = yellow,
+      bg = background,
+    },
+    info_diagnostic = {
+      fg = info,
+      bg = background,
+    },
+    hint_diagnostic = {
+      fg = white,
+      bg = background,
+    },
+    modified = {
+      fg = yellow,
+      bg = background,
+    },
+    tab_selected = {
+      fg = white,
+      bg = black,
+      bold = true,
+      italic = false,
+    },
+    buffer_selected = {
+      fg = white,
+      bg = black,
+      bold = true,
+      italic = false,
+    },
+    close_button_selected = {
+      fg = white,
+      bg = black,
+      bold = false,
+      italic = false,
+    },
+    numbers_selected = {
+      fg = white,
+      bg = black,
+      bold = false,
+      italic = false,
+    },
+    indicator_selected = {
+      fg = blue,
+      bg = black,
+      bold = true,
+      italic = false,
+    },
+    duplicate_selected = {
+      fg = green,
+      bg = black,
+      bold = false,
+      italic = false,
+    },
+    error_selected = {
+      fg = white,
+      bg = black,
+      bold = true,
+      italic = false,
+    },
+    warning_selected = {
+      fg = white,
+      bg = black,
+      bold = true,
+      italic = false,
+    },
+    info_selected = {
+      fg = white,
+      bg = black,
+      bold = true,
+      italic = false,
+    },
+    hint_selected = {
+      fg = white,
+      bg = black,
+      bold = true,
+      italic = false,
+    },
+    error_diagnostic_selected = {
+      fg = red,
+      bg = black,
+      bold = false,
+      italic = false,
+    },
+    warning_diagnostic_selected = {
+      fg = yellow,
+      bg = black,
+      bold = false,
+      italic = false,
+    },
+    info_diagnostic_selected = {
+      fg = info,
+      bg = black,
+      bold = false,
+      italic = false,
+    },
+    hint_diagnostic_selected = {
+      fg = white,
+      bg = black,
+      bold = false,
+      italic = false,
+    },
+    modified_selected = {
+      fg = yellow,
+      bg = black,
+      bold = false,
+      italic = false,
+    },
+    buffer_visible = {
+      fg = white,
+      bg = background,
+      bold = false,
+      italic = false,
+    },
+    close_button_visible = {
+      fg = white,
+      bg = background,
+      bold = false,
+      italic = false,
+    },
+    numbers_visible = {
+      fg = white,
+      bg = background,
+      bold = false,
+      italic = false,
+    },
+    indicator_visible = {
+      fg = white,
+      bg = background,
+      bold = false,
+      italic = false,
+    },
+    duplicate_visible = {
+      fg = green,
+      bg = background,
+      bold = false,
+      italic = false,
+    },
+    error_visible = {
+      fg = white,
+      bg = background,
+      bold = false,
+      italic = false,
+    },
+    warning_visible = {
+      fg = white,
+      bg = background,
+      bold = false,
+      italic = false,
+    },
+    info_visible = {
+      fg = info,
+      bg = background,
+      bold = false,
+      italic = false,
+    },
+    hint_visible = {
+      fg = white,
+      bg = background,
+      bold = false,
+      italic = false,
+    },
+    error_diagnostic_visible = {
+      fg = red,
+      bg = background,
+      bold = false,
+      italic = false,
+    },
+    warning_diagnostic_visible = {
+      fg = yellow,
+      bg = background,
+      bold = false,
+      italic = false,
+    },
+    info_diagnostic_visible = {
+      fg = info,
+      bg = background,
+      bold = false,
+      italic = false,
+    },
+    hint_diagnostic_visible = {
+      fg = white,
+      bg = background,
+      bold = false,
+      italic = false,
+    },
+    modified_visible = {
+      fg = yellow,
+      bg = background,
+      bold = false,
+      italic = false,
+    },
+    offset_separator = {
+      fg = vert_split,
+      bg = background,
+    },
+  },
+})
+EOF
+endif
+" }}}3
+
 " bufresize {{{3
 if dein#tap('bufresize.nvim')
-  lua require("bufresize").setup()
+  lua require('bufresize').setup()
 endif
 " }}}3
 
@@ -3681,15 +4956,11 @@ if dein#tap('comfortable-motion.vim')
 
       nunmap <C-d>
       nunmap <C-u>
-      nunmap <C-f>
-      nunmap <C-b>
     else
       let g:comfortable_motion_enable = 1
 
       Keymap n <silent> <C-d> :call comfortable_motion#flick(100)<CR>
       Keymap n <silent> <C-u> :call comfortable_motion#flick(-100)<CR>
-      Keymap n <silent> <C-f> :call comfortable_motion#flick(200)<CR>
-      Keymap n <silent> <C-b> :call comfortable_motion#flick(-200)<CR>
     endif
   endfunction
 
@@ -3718,18 +4989,18 @@ endif
 
 " highlightedundo {{{3
 if dein#tap('vim-highlightedundo')
-  let g:highlightedundo_enable         = 1
+  let g:highlightedundo_enable         = v:true
   let g:highlightedundo#highlight_mode = 2
 
   Keymap n <silent> u     <Plug>(highlightedundo-undo)
   Keymap n <silent> <C-r> <Plug>(highlightedundo-redo)
 
   function! s:highlightedundo_toggle() abort
-    if g:highlightedundo_enable == 1
-      let g:highlightedundo_enable = 0
+    if g:highlightedundo_enable
+      let g:highlightedundo_enable = v:false
       call <SID>highlightedundo_disable()
     else
-      let g:highlightedundo_enable = 1
+      let g:highlightedundo_enable = v:true
       call <SID>highlightedundo_enable()
     endif
   endfunction
@@ -3767,6 +5038,143 @@ if dein#tap('vim-highlightedyank')
   " endfunction
   "
   " call timer_start(g:highlightedyank_highlight_duration, function('<SID>highlight_yank_enter'))
+endif
+" }}}3
+
+" hydra {{{3
+if dein#tap('hydra.nvim')
+lua << EOF
+local hydra = require('hydra')
+
+hydra({
+  name = 'Change list',
+  mode = 'n',
+  body = 'g',
+  heads = {
+    { ';', 'g;', { desc = '<=' } },
+    { ',', 'g,', { desc = '=>' } },
+  },
+})
+
+local hint = [[
+        Toggle
+
+ _n_: %{number} Number
+ _q_: %{quickfix} QuickFix
+ _l_: %{location_list} LocationList
+ _f_: %{eft} Eft
+ _u_: %{highlighted_undo} HighlightedUndo
+ _R_: %{review} Review
+                         _<Esc>_
+]]
+
+hydra({
+  name = 'Toggle',
+  hint = hint,
+  mode = 'n',
+  body = 'T',
+  config = {
+    invoke_on_body = true,
+    hint = {
+      position = 'middle',
+      border = 'rounded',
+      funcs = {
+        number = function()
+          if vim.o.number and vim.o.relativenumber then
+            return '[r]'
+          elseif vim.o.number then
+            return '[n]'
+          else
+            return '[ ]'
+          end
+        end,
+        quickfix = function()
+          for _, win in ipairs(vim.fn.getwininfo()) do
+            if win.quickfix == 1 then
+              return '[x]'
+            end
+          end
+
+          return '[ ]'
+        end,
+        location_list = function()
+          for _, win in ipairs(vim.fn.getwininfo()) do
+            if win.loclist == 1 then
+              return '[x]'
+            end
+          end
+
+          return '[ ]'
+        end,
+        eft = function()
+          if vim.g.eft_enable then
+            return '[x]'
+          else
+            return '[ ]'
+          end
+        end,
+        highlighted_undo = function()
+          if vim.g.highlightedundo_enable then
+            return '[x]'
+          else
+            return '[ ]'
+          end
+        end,
+        review = function()
+          if vim.g.review_status then
+            return '[x]'
+          else
+            return '[ ]'
+          end
+        end,
+      },
+    },
+  },
+  heads = {
+    { 'n',     function() vim.cmd([[ToggleNumber]]) end,          { silent = true, desc = 'Number'                      } },
+    { 'q',     function() vim.cmd([[QuickfixToggle]]) end,        { silent = true, desc = 'QuickFix'                    } },
+    { 'l',     function() vim.cmd([[LocationListToggle]]) end,    { silent = true, desc = 'LocationList'                } },
+    { 'f',     function() vim.cmd([[EftToggle]]) end,             { silent = true, desc = 'Eft'                         } },
+    { 'u',     function() vim.cmd([[HighlightedundoToggle]]) end, { silent = true, desc = 'HighlightedUndo'             } },
+    { 'R',     function() vim.cmd([[ReviewToggle]]) end,          { silent = true, desc = 'Review',         exit = true } },
+    { '<Esc>', nil,                                               {                                         exit = true } },
+  },
+})
+EOF
+endif
+" }}}3
+
+" incline {{{3
+if dein#tap('incline.nvim')
+lua << EOF
+require('incline').setup({
+  window = {
+    width = 'fit',
+    placement = { horizontal = 'right', vertical = 'top' },
+    margin = {
+      horizontal = { left = 1, right = 0 },
+      vertical = { bottom = 0, top = 1 },
+    },
+    padding = { left = 1, right = 1 },
+    padding_char = ' ',
+    winhighlight = {
+      Normal = 'TreesitterContext',
+    },
+  },
+  hide = {
+    -- focused_win = true,
+  },
+  render = function(props)
+    local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ':t')
+    local icon, color = require('nvim-web-devicons').get_icon_color(filename)
+    return {
+      { icon, guifg = color },
+      { ' ' },
+      { filename },
+    }
+  end
+})
+EOF
 endif
 " }}}3
 
@@ -3811,8 +5219,8 @@ if dein#tap('lightline.vim')
   \ 'active': {
   \   'left': [
   \     ['mode', 'spell', 'paste'],
-  \     ['filepath', 'filename', 'modified_buffers'],
-  \     ['special_mode', 'anzu', 'vm_regions'],
+  \     ['filepath', 'filename', 'modified_buffers', 'gps'],
+  \     ['special_mode', 'anzu'],
   \    ],
   \   'right': [
   \     ['lineinfo'],
@@ -3851,14 +5259,13 @@ if dein#tap('lightline.vim')
   \   'coc_status':       'LightlineCocStatus',
   \   'anzu':             'anzu#search_status',
   \   'quickrun':         'LightlineQuickrunRunnning',
-  \   'vm_regions':       'Lightline_vm_regions',
+  \   'gps':              'LightlineNvimGps',
   \ },
   \ 'tab_component_function': {
   \   'tabwinnum': 'LightlineTabWinNum',
   \ },
   \ 'component_visible_condition': {
   \   'anzu':       "%{anzu#search_status !=# ''}",
-  \   'vm_regions': "%{Lightline_vm_regions() !=# ''}",
   \ },
   \ 'component_function_visible_condition': {
   \   'spell': '&spell',
@@ -3881,7 +5288,7 @@ if dein#tap('lightline.vim')
   \ },
   \ 'enable': {
   \   'statusline': 1,
-  \   'tabline':    1,
+  \   'tabline':    0,
   \ },
   \ 'separator': { 'left': '', 'right': '' },
   \ 'subseparator': { 'left': '', 'right': '' }
@@ -4117,6 +5524,18 @@ if dein#tap('lightline.vim')
     return g:quickrun_running_message
   endfunction
 
+  function! LightlineNvimGps() abort
+    if !dein#tap('nvim-gps')
+      return ''
+    endif
+
+    if !LightlineIsVisible(140)
+      return ''
+    endif
+
+    return luaeval("require'nvim-gps'.is_available()") ? luaeval("require'nvim-gps'.get_location()") : ''
+  endfunction
+
   function! NearestMethodOrFunction() abort
     if !LightlineIsVisible(140)
       return ''
@@ -4125,12 +5544,117 @@ if dein#tap('lightline.vim')
   endfunction
 
   AutoCmd User CocDiagnosticChange call lightline#update()
+
+  let s:gruvbox0   = ['#32302f', 0]
+  let s:gruvbox1   = ['#ea6962', 1]
+  let s:gruvbox2   = ['#a9b665', 2]
+  let s:gruvbox3   = ['#d8a657', 3]
+  let s:gruvbox4   = ['#7daea3', 4]
+  let s:gruvbox5   = ['#d3869b', 5]
+  let s:gruvbox6   = ['#89b482', 6]
+  let s:gruvbox7   = ['#d4be98', 7]
+  let s:grey       = ['#3A3A3A', 237]
+  let s:blue_green = ['#00AFAF', 37]
+  let s:warning    = ['#FFAF60', 214]
+  let s:info       = ['#FFFFAF', 229]
+
+  let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
+
+  let s:p.normal.left = [
+  \ [s:gruvbox0,   s:gruvbox4],
+  \ [s:gruvbox7,   s:grey],
+  \ [s:blue_green, s:grey],
+  \ [s:gruvbox4,   s:grey],
+  \ ]
+
+  let s:p.insert.left = [
+  \ [s:gruvbox0,   s:gruvbox3],
+  \ [s:gruvbox7,   s:grey],
+  \ [s:blue_green, s:grey],
+  \ [s:gruvbox4,   s:grey],
+  \ ]
+
+  let s:p.visual.left = [
+  \ [s:gruvbox0,   s:gruvbox5],
+  \ [s:gruvbox7,   s:grey],
+  \ [s:blue_green, s:grey],
+  \ [s:gruvbox4,   s:grey],
+  \ ]
+
+  let s:p.replace.left = [
+  \ [s:gruvbox0,   s:gruvbox1],
+  \ [s:gruvbox7,   s:grey],
+  \ [s:blue_green, s:grey],
+  \ [s:gruvbox4,   s:grey],
+  \ ]
+
+  let s:p.inactive.left = [
+  \ [s:blue_green, s:grey],
+  \ [s:gruvbox7,   s:grey],
+  \ [s:blue_green, s:grey],
+  \ [s:gruvbox4,   s:grey],
+  \ ]
+
+  let s:p.normal.right   = [[s:gruvbox0, s:gruvbox4], [s:gruvbox7, s:grey]]
+  let s:p.inactive.right = [[s:gruvbox0, s:gruvbox7], [s:gruvbox0, s:gruvbox7]]
+  let s:p.insert.right   = [[s:gruvbox0, s:gruvbox3], [s:gruvbox7, s:grey]]
+  let s:p.replace.right  = [[s:gruvbox0, s:gruvbox1], [s:gruvbox7, s:grey]]
+  let s:p.visual.right   = [[s:gruvbox0, s:gruvbox5], [s:gruvbox7, s:grey]]
+
+  let s:p.normal.middle   = [[s:gruvbox7, s:gruvbox0]]
+  let s:p.inactive.middle = [[s:gruvbox7, s:grey]]
+
+  let s:p.tabline.left   = [[s:gruvbox7, s:grey]]
+  let s:p.tabline.tabsel = [[s:gruvbox0, s:gruvbox4]]
+  let s:p.tabline.middle = [[s:gruvbox7, s:gruvbox0]]
+  let s:p.tabline.right  = [[s:gruvbox7, s:grey]]
+
+  let s:coc_diagnostic = [
+  \ [s:grey, s:gruvbox1],
+  \ [s:grey, s:warning],
+  \ [s:grey, s:info],
+  \ [s:grey, s:gruvbox4],
+  \ ]
+
+  let s:p.normal.error        = s:coc_diagnostic[0:0]
+  let s:p.insert.error        = s:coc_diagnostic[0:0]
+  let s:p.replace.error       = s:coc_diagnostic[0:0]
+  let s:p.visual.error        = s:coc_diagnostic[0:0]
+  let s:p.normal.warning      = s:coc_diagnostic[1:1]
+  let s:p.insert.warning      = s:coc_diagnostic[1:1]
+  let s:p.replace.warning     = s:coc_diagnostic[1:1]
+  let s:p.visual.warning      = s:coc_diagnostic[1:1]
+  let s:p.normal.information  = s:coc_diagnostic[2:2]
+  let s:p.insert.information  = s:coc_diagnostic[2:2]
+  let s:p.replace.information = s:coc_diagnostic[2:2]
+  let s:p.visual.information  = s:coc_diagnostic[2:2]
+  let s:p.normal.hint         = s:coc_diagnostic[2:2]
+  let s:p.insert.hint         = s:coc_diagnostic[2:2]
+  let s:p.replace.hint        = s:coc_diagnostic[2:2]
+  let s:p.visual.hint         = s:coc_diagnostic[2:2]
+  let s:p.normal.ok           = s:coc_diagnostic[3:3]
+  let s:p.insert.ok           = s:coc_diagnostic[3:3]
+  let s:p.replace.ok          = s:coc_diagnostic[3:3]
+  let s:p.visual.ok           = s:coc_diagnostic[3:3]
+
+  let s:p.normal.quickrun  = [[s:gruvbox0, s:info]]
+  let s:p.insert.quickrun  = [[s:gruvbox0, s:info]]
+  let s:p.replace.quickrun = [[s:gruvbox0, s:info]]
+  let s:p.visual.quickrun  = [[s:gruvbox0, s:info]]
+
+  let g:lightline#colorscheme#gruvbox#palette = lightline#colorscheme#flatten(s:p)
 endif
 " }}}3
 
 " matchup {{{3
 if dein#tap('vim-matchup')
   let g:matchup_matchparen_status_offscreen = 0
+endif
+" }}}3
+
+" modes {{{3
+if dein#tap('modes.nvim')
+  lua require('modes').setup()
 endif
 " }}}3
 
@@ -4143,6 +5667,18 @@ endif
 " nvim-colorizer {{{3
 if dein#tap('nvim-colorizer.lua')
   lua require('colorizer').setup()
+endif
+" }}}3
+
+" notify {{{3
+if dein#tap('nvim-notify')
+lua << EOF
+require('notify').setup({
+  background_colour = (function()
+    return '#26282F'
+  end)
+})
+EOF
 endif
 " }}}3
 
@@ -4205,7 +5741,26 @@ if dein#tap('rainbow')
 endif
 " }}}3
 
-" scrollbar {{{3
+" regexplainer {{{3
+if dein#tap('nvim-regexplainer')
+lua << EOF
+require('regexplainer').setup({
+  auto = true,
+  popup = {
+    border = {
+      padding = { 0, 0 },
+      style = 'rounded',
+    },
+    win_options = {
+      winhighlight = 'Normal:CocFloating,FloatBorder:CocFloating',
+    },
+  },
+})
+EOF
+endif
+" }}}3
+
+" scrollbar.nvim {{{3
 if dein#tap('scrollbar.nvim')
   AutoCmd BufEnter    * silent! lua require('scrollbar').show()
   AutoCmd BufLeave    * silent! lua require('scrollbar').clear()
@@ -4215,6 +5770,85 @@ if dein#tap('scrollbar.nvim')
 
   AutoCmd FocusGained * silent! lua require('scrollbar').show()
   AutoCmd FocusLost   * silent! lua require('scrollbar').clear()
+endif
+" }}}3
+
+" nvim-scrollbar {{{3
+if dein#tap('nvim-scrollbar')
+lua << EOF
+require('scrollbar').setup({
+  handle = {
+    color = "#3a3a3a",
+  },
+  handlers = {
+    search = true,
+    diagnostic = true,
+  },
+  marks = {
+    Search = {
+      priority = 5,
+      color = "#00AFAF",
+    },
+    Error = {
+      priority = 1,
+      color = "#EA6962",
+    },
+    Warn = {
+      priority = 2,
+      color = "#FFAF60",
+    },
+    Info = {
+      priority = 3,
+      color = "#FFFFAF",
+    },
+    Hint = {
+      priority = 4,
+      color = "#7DAEA3",
+    },
+  },
+})
+
+local severity_map = { Error = 1, Warning = 2, Information = 3, Hint = 4 }
+local lsp_handler = require('scrollbar.handlers.diagnostic').lsp_handler
+
+local uri_diagnostics = {}
+local function handler(error, diagnosticList)
+  if error ~= vim.NIL then
+    return
+  end
+  if type(diagnosticList) ~= 'table' then
+    diagnosticList = {}
+  end
+
+  for uri in pairs(uri_diagnostics) do
+    uri_diagnostics[uri] = {}
+  end
+
+  for _, diagnostic in ipairs(diagnosticList) do
+    local uri = diagnostic.location.uri
+    local diagnostics = uri_diagnostics[uri] or {}
+    table.insert(diagnostics, {
+      range = diagnostic.location.range,
+      severity = severity_map[diagnostic.severity],
+    })
+    uri_diagnostics[uri] = diagnostics
+  end
+
+  for uri, diagnostics in pairs(uri_diagnostics) do
+    lsp_handler(nil, { uri = uri, diagnostics = diagnostics })
+    if vim.tbl_count(diagnostics) == 0 then
+      uri_diagnostics[uri] = nil
+    end
+  end
+end
+
+vim.api.nvim_create_autocmd('User', {
+  callback = function()
+    vim.fn.CocActionAsync('diagnosticList', handler)
+  end,
+  pattern = 'CocDiagnosticChange',
+})
+EOF
 endif
 " }}}3
 
@@ -4244,12 +5878,81 @@ if dein#tap('todo-comments.nvim')
 endif
 " }}}3
 
+" ufo {{{3
+if dein#tap('nvim-ufo')
+  function! UfoWidth() abort
+    let width = 0
+    for winnr in range(1, winnr('$'))
+      let win_width = nvim_win_get_width(win_getid(winnr))
+      let width = win_width > width ? win_width : width
+    endfor
+    return width
+  endfunction
+
+lua << EOF
+local enable_file_type = { 'typescript', 'typescriptreact', 'vim', 'markdown' }
+
+require('ufo').setup({
+  open_fold_hl_timeout = 0,
+  provider_selector = function(bufnr, filetype, buftype)
+    if vim.tbl_contains(enable_file_type, filetype) then
+      return { 'treesitter', 'indent' }
+    end
+
+    return ''
+  end,
+  preview = {
+    win_config = {
+      winhighlight = 'Normal:Normal,FloatBorder:Normal',
+      winblend = 0,
+    },
+    mappings = {
+      scrollU = '<C-u>',
+      scrollD = '<C-d>',
+    },
+  },
+  enable_fold_and_virt_text = true,
+  fold_virt_text_handler = function(virt_text, lnum, end_lnum, width, truncate)
+    local new_virt_text = {}
+    local suffix = (' ↲ %d '):format(end_lnum - lnum)
+    local suf_width = vim.fn.strdisplaywidth(suffix)
+    local target_width = width - suf_width
+    local cur_width = 0
+
+    for _, chunk in ipairs(virt_text) do
+      local chunk_text = chunk[1]
+      local chunk_width = vim.fn.strdisplaywidth(chunk_text)
+      if target_width > cur_width + chunk_width then
+        table.insert(new_virt_text, chunk)
+      else
+        chunk_text = truncate(chunk_text, target_width - cur_width)
+        local hl_group = chunk[2]
+        table.insert(new_virt_text, { chunk_text, hl_group })
+        chunk_width = vim.fn.strdisplaywidth(chunk_text)
+        if cur_width + chunk_width < target_width then
+          suffix = suffix .. ('.'):rep(target_width - cur_width - chunk_width)
+        end
+        break
+      end
+      cur_width = cur_width + chunk_width
+    end
+
+    table.insert(new_virt_text, { suffix, 'UfoFoldVirtText' })
+    table.insert(new_virt_text, { ('.'):rep(vim.fn.UfoWidth()), 'Comment' })
+    return new_virt_text
+  end,
+})
+EOF
+endif
+" }}}3
+
 " vista {{{3
 if dein#tap('vista.vim')
   if dein#tap('coc.nvim')
     let g:vista_default_executive = 'coc'
   endif
 
+  let g:vista_no_mappings            = 1
   let g:vista_sidebar_width          = 50
   let g:vista_echo_cursor_strategy   = 'both'
   let g:vista_update_on_text_changed = 1
@@ -4257,14 +5960,21 @@ if dein#tap('vista.vim')
 
   Keymap n <silent> <Leader>v <Cmd>Vista<CR>
 
-  AutoCmd VimEnter * call vista#RunForNearestMethodOrFunction()
+  function! s:vista_settings() abort
+     Keymap n <silent> <buffer> <nowait> q    <Cmd>quit<CR>
+     Keymap n <silent> <buffer>          <CR> <Cmd>call vista#cursor#FoldOrJump()<CR>
+     Keymap n <silent> <buffer>          p    <Cmd>call vista#cursor#TogglePreview()<CR>
+  endfunction
+
+  AutoCmd FileType vista,vista_markdown call <SID>vista_settings()
+  " AutoCmd VimEnter * call vista#RunForNearestMethodOrFunction()
 endif
 " }}}3
 
 " }}}2
 
 " tmux {{{2
-"
+
 " tmux.nvim {{{3
 if dein#tap('tmux.nvim')
 lua << EOF
@@ -4407,7 +6117,59 @@ endif
 
 " capture {{{3
 if dein#tap('capture.vim')
-  AutoCmd FileType capture Keymap n <silent> <buffer> q <Cmd>quit<CR>
+  AutoCmd FileType capture Keymap n <silent> <nowait> <buffer> q <Cmd>quit<CR>
+endif
+" }}}3
+
+" cmdbuf {{{3
+if dein#tap('cmdbuf.nvim')
+  Keymap n <silent> q:    <Cmd>lua require('cmdbuf').split_open(vim.o.cmdwinheight)<CR><Cmd>startinsert<CR>
+  Keymap c <silent> <C-c> <Cmd>call <SID>cmdbuf_cedit_c()<CR>
+
+  function! s:cmdbuf_cedit_c() abort
+    for winnr in range(1, winnr('$'))
+      let s:cmdbuf_winid = win_getid(winnr)
+      let wininfo = getwininfo(s:cmdbuf_winid)
+      let bufinfo = getbufinfo(wininfo[0].bufnr)
+
+      if bufinfo[0].name ==# 'cmdbuf://vim/cmd-buffer'
+        let s:cmdbuf_cmd = getcmdline()
+        let s:cmdbuf_cmdpos = getcmdpos()
+        let s:cmdbuf_pos = getcurpos(s:cmdbuf_winid)
+        call feedkeys("\<Esc>", 'nit')
+        autocmd CmdlineLeave * ++once call <SID>cmdbuf_reuse(s:cmdbuf_cmd, s:cmdbuf_winid, s:cmdbuf_pos[1], s:cmdbuf_cmdpos)
+        return
+      endif
+    endfor
+
+    lua require('cmdbuf').split_open(vim.o.cmdwinheight, { line = vim.fn.getcmdline(), column = vim.fn.getcmdpos() })
+    call feedkeys("\<C-c>\<Cmd>startinsert\<CR>", 'nit')
+  endfunction
+
+  function! s:cmdbuf_cedit_n() abort
+    let cmd = getline('.')
+    let pos = getcurpos('.')
+    call feedkeys(':' . cmd . "\<C-r>=setcmdpos( " . pos[2] . " )[-1]\<CR>", 'nit')
+  endfunction
+
+  function! s:cmdbuf_cedit_i() abort
+    let cmd = getline('.')
+    let pos = getcurpos('.')
+    call feedkeys("\<Esc>:" . cmd . "\<C-r>=setcmdpos( " . pos[2] . " )[-1]\<CR>", 'nit')
+  endfunction
+
+  function! s:cmdbuf_reuse(cmd, winid, lnum, col) abort
+    call win_gotoid(a:winid)
+    call setline(a:lnum, a:cmd)
+    call setpos('.', [0, a:lnum, a:col])
+    startinsert
+  endfunction
+
+  AutoCmd User CmdbufNew set bufhidden=wipe nonumber norelativenumber
+  AutoCmd User CmdbufNew Keymap n <silent> <nowait> <buffer> q     <Cmd>quit<CR>
+  AutoCmd User CmdbufNew Keymap n <silent>          <buffer> dd    <Cmd>lua require('cmdbuf').delete()<CR>
+  AutoCmd User CmdbufNew Keymap n <silent>          <buffer> <C-c> <Cmd>call <SID>cmdbuf_cedit_n()<CR>
+  AutoCmd User CmdbufNew Keymap i <silent>          <buffer> <C-c> <Cmd>call <SID>cmdbuf_cedit_i()<CR>
 endif
 " }}}3
 
@@ -4417,22 +6179,38 @@ if dein#tap('dial.nvim')
   nmap <C-x>  <Plug>(dial-decrement)
   xmap <C-a>  <Plug>(dial-increment)
   xmap <C-x>  <Plug>(dial-decrement)
-  xmap g<C-a> <Plug>(dial-increment-additional)
-  xmap g<C-x> <Plug>(dial-decrement-additional)
-lua << EOF
-local dial = require("dial")
+  xmap g<C-a> g<Plug>(dial-increment)
+  xmap g<C-x> g<Plug>(dial-decrement)
 
-dial.augends["custom#boolean"] = dial.common.enum_cyclic{
-  name = "boolean",
-  strlist = {"true", "false"},
-}
-dial.augends["custom#and_or"] = dial.common.enum_cyclic{
-  name = "and_or",
-  strlist = {"&&", "||"},
-  ptn_format = "\\C\\M\\(%s\\)",
-}
-table.insert(dial.config.searchlist.normal, "custom#boolean")
-table.insert(dial.config.searchlist.normal, "custom#and_or")
+lua << EOF
+local config = require('dial.config')
+local augend = require('dial.augend')
+
+config.augends:register_group({
+  default= {
+    augend.integer.alias.decimal_int,
+    augend.integer.alias.hex,
+    augend.constant.alias.bool,
+    augend.constant.new({
+      elements = { '&&', '||' },
+      word = false,
+      cyclic = true,
+    }),
+    augend.semver.alias.semver,
+  },
+})
+
+-- dial.augends['custom#boolean'] = dial.common.enum_cyclic({
+--   name = 'boolean',
+--   strlist = { 'true', 'false' },
+-- })
+-- dial.augends['custom#and_or'] = dial.common.enum_cyclic({
+--   name = 'and_or',
+--   strlist = { '&&', '||' },
+--   ptn_format = '\\C\\M\\(%s\\)',
+-- })
+-- table.insert(dial.config.searchlist.normal, 'custom#boolean')
+-- table.insert(dial.config.searchlist.normal, 'custom#and_or')
 EOF
 endif
 " }}}3
@@ -4469,6 +6247,24 @@ if dein#tap('memolist.vim')
 endif
 " }}}3
 
+" neotest {{{3
+if dein#tap('neotest')
+lua << EOF
+require('neotest').setup({
+  adapters = {
+    require('neotest-jest'),
+  },
+})
+EOF
+  Keymap n <silent> <Leader>t <Cmd>TestSummary<CR>
+
+  command! TestSummary lua require('neotest').summary.toggle()
+  command! TestOpen    lua require('neotest').output.open({ enter = true })
+
+  AutoCmd FileType neotest-summary Keymap n <silent> <nowait> <buffer> q <Cmd>quit<CR>
+endif
+" }}}3
+
 " previm {{{3
 if dein#tap('previm')
   let g:previm_open_cmd            = 'open -a "Firefox"'
@@ -4491,18 +6287,9 @@ if dein#tap('vim-silicon')
 endif
 " }}}3
 
-" test {{{3
-if dein#tap('vim-test') &&
-   \ dein#tap('vim-ultest')
-  let g:ultest_use_pty = 1
-endif
-" }}}3
-
 " toggleterm {{{3
 if dein#tap('toggleterm.nvim')
-  function! SetupToggleterm() abort
-    lua require('toggleterm').setup{}
-  endfunction
+  lua require('toggleterm').setup{}
 
   Keymap n <silent> <C-s><C-s> :<C-u>ToggleTerm direction=float<CR>
   Keymap n <silent> <C-s>s     :<C-u>ToggleTerm direction=horizontal size=<C-r>=float2nr(&lines * 0.4)<CR><CR>
@@ -4526,7 +6313,7 @@ endif
 " which-key {{{3
 if dein#tap('vim-which-key')
   Keymap n <silent> <Leader><CR>      <Cmd>WhichKey '<Leader>'<CR>
-  Keymap n <silent> <Plug>(dev)<CR>   <Cmd>WhichKey '<Plug>(dev)'<CR>
+  Keymap n <silent> <Plug>(lsp)<CR>   <Cmd>WhichKey '<Plug>(lsp)'<CR>
   Keymap n <silent> <Plug>(fzf-p)<CR> <Cmd>WhichKey '<Plug>(fzf-p)'<CR>
   Keymap n <silent> <Plug>(t)<CR>     <Cmd>WhichKey '<Plug>(t)'<CR>
   Keymap n <silent> s<CR>             <Cmd>WhichKey 's'<CR>
@@ -4535,7 +6322,7 @@ endif
 " }}}3
 
 " wilder {{{3
-if dein#tap('wilder.nvim')
+if dein#tap('wilder.nvim') && !g:enable_cmp
   function! SetUpWilder() abort
     call wilder#set_option('pipeline', [
     \ wilder#branch(
@@ -4543,7 +6330,10 @@ if dein#tap('wilder.nvim')
     \     'file_command': {_, arg -> stridx(arg, '.') != -1 ? ['fd', '-tf', '-H', '--strip-cwd-prefix'] : ['fd', '-tf', '--strip-cwd-prefix']},
     \     'dir_command': ['fd', '-td'],
     \   }),
-    \   wilder#cmdline_pipeline({'fuzzy': 1}),
+    \   wilder#cmdline_pipeline({
+    \     'fuzzy': 2,
+    \     'fuzzy_filter': wilder#vim_fuzzy_filter(),
+    \   }),
     \   [
     \     wilder#check({_, x -> empty(x)}),
     \     wilder#history(),
@@ -4553,7 +6343,6 @@ if dein#tap('wilder.nvim')
     \       'start_at_boundary': 0,
     \     }),
     \   }),
-    \   wilder#vim_search_pipeline()
     \ ),
     \ ])
 
@@ -4564,7 +6353,7 @@ if dein#tap('wilder.nvim')
     \   'accent': wilder#make_hl('WilderAccent', 'Pmenu', [{}, {}, {'foreground': '#e27878', 'bold': v:true, 'underline': v:true}]),
     \   'selected_accent': wilder#make_hl('WilderSelectedAccent', 'PmenuSel', [{}, {}, {'foreground': '#e27878', 'bold': v:true, 'underline': v:true}]),
     \ },
-    \ 'left': [wilder#popupmenu_devicons({'get_hl': wilder#devicons_get_hl_from_glyph_palette_vim()}), wilder#popupmenu_buffer_flags({'flags': ' '})],
+    \ 'left': [wilder#popupmenu_devicons({'min_width': 2}), wilder#popupmenu_buffer_flags({'flags': ' '})],
     \ }))
 
     let wilder_search_renderer = wilder#wildmenu_renderer({
@@ -4701,6 +6490,8 @@ if dein#tap('vim-quickrun')
   if dein#tap('vim-quickrun-neovim-job')
     let g:quickrun_config._.runner = 'neovim_job'
   endif
+
+  AutoCmd FileType quickrun Keymap n <silent> <nowait> <buffer> q <Cmd>quit<CR>
 endif
 " }}}3
 
@@ -4718,6 +6509,10 @@ function! s:esc_esc() abort
     lua require('hlslens').disable()
   endif
 
+  if dein#tap('nvim-scrollbar')
+    lua require('scrollbar.handlers.search').handler.hide()
+  endif
+
   if dein#tap('vim-anzu')
     AnzuClearSearchStatus
   endif
@@ -4725,106 +6520,23 @@ function! s:esc_esc() abort
   if dein#tap('coc.nvim')
     call coc#float#close_all()
   endif
+
+  if dein#tap('lspsaga.nvim')
+    lua require("lspsaga.window").nvim_win_try_close()
+  endif
+
+  if dein#tap('nvim-ufo')
+    lua require('ufo.lib.event'):emit('onBufRemap', 1, 'close')
+  endif
+
+  if dein#tap('hlargs.nvim')
+    lua require('hlargs').enable()
+  endif
 endfunction
 
 command! EscEsc call <SID>esc_esc()
 Keymap n <silent> <Esc><Esc> <Cmd>nohlsearch<CR><Cmd>EscEsc<CR>
 " }}}2
-
-" Removed Plugin {{{2
-
-" " splitjoin {{{3
-" let g:splitjoin_align             = 1
-" let g:splitjoin_trailing_comma    = 1
-" let g:splitjoin_ruby_curly_braces = 0
-" let g:splitjoin_ruby_hanging_args = 0
-" " }}}3
-
-" " visual-multi {{{3
-" let g:VM_set_statusline             = 0
-" let g:VM_leader                     = '\'
-" let g:VM_default_mappings           = 0
-" let g:VM_sublime_mappings           = 0
-" let g:VM_mouse_mappings             = 0
-" let g:VM_extended_mappings          = 0
-" let g:VM_no_meta_mappings           = 1
-" let g:VM_reselect_first_insert      = 0
-" let g:VM_reselect_first_always      = 0
-" let g:VM_case_setting               = 'smart'
-" let g:VM_pick_first_after_n_cursors = 0
-" let g:VM_dynamic_synmaxcol          = 20
-" let g:VM_disable_syntax_in_imode    = 0
-" let g:VM_exit_on_1_cursor_left      = 0
-" let g:VM_manual_infoline            = 1
-"
-" nmap <silent> (ctrln) <Plug>(VM-Find-Under)
-" xmap <silent> <C-n>   <Plug>(VM-Find-Subword-Under)
-"
-" let g:VM_maps = {}
-" "
-" let g:VM_maps['Find Under']         = ''
-" let g:VM_maps['Find Subword Under'] = ''
-" let g:VM_maps['Skip Region']        = '<C-s>'
-" let g:VM_maps['Remove Region']      = '<C-q>'
-" let g:VM_maps['Start Regex Search'] = 'g/'
-" let g:VM_maps['Select All']         = '<A-a>'
-" let g:VM_maps['Add Cursor Down']    = '<A-S-j>'
-" let g:VM_maps['Add Cursor Up']      = '<A-S-k>'
-" let g:VM_maps['Select l']           = '<A-S-l>'
-" let g:VM_maps['Select h']           = '<A-S-h>'
-"
-" let g:VM_maps['Find Next']          = ']'
-" let g:VM_maps['Find Prev']          = '['
-" let g:VM_maps['Goto Next']          = '}'
-" let g:VM_maps['Goto Prev']          = '{'
-" let g:VM_maps['Seek Next']          = '<C-d>'
-" let g:VM_maps['Seek Prev']          = '<C-u>'
-"
-" let g:VM_maps['Surround']           = 'S'
-" let g:VM_maps['D']                  = 'D'
-" let g:VM_maps['J']                  = 'J'
-" let g:VM_maps['Dot']                = '.'
-" let g:VM_maps['c']                  = 'c'
-" let g:VM_maps['C']                  = 'C'
-" let g:VM_maps['Replace Pattern']    = 'R'
-" " }}}3
-
-" }}}2
-
-" }}}1
-
-" Correct Interference {{{1
-
-" keymaps {{{
-" function! Set_default_keymap() abort let g:keymap = 'Default'
-"   call lightline#update()
-" endfunction
-"
-" function! Set_quickfix_keymap() abort
-"   let g:keymap = 'QuickFix'
-"   call lightline#update()
-"
-"   Keymap n <silent> cp <Cmd>cprev<CR>
-"   Keymap n <silent> cn <Cmd>cnext<CR>
-" endfunction
-"
-" function! Set_locationlist_keymap() abort
-"   let g:keymap = 'LocationList'
-"   call lightline#update()
-"
-"   Keymap n <silent> cp <Cmd>lprev<CR>
-"   Keymap n <silent> cn <Cmd>lnext<CR>
-" endfunction
-"
-" AutoCmd FileType qf
-" \ if getwininfo(win_getid())[0].loclist |
-" \   call Set_default_keymap()      |
-" \   call Set_locationlist_keymap() |
-" \ elseif getwininfo(win_getid())[0].quickfix |
-" \   call Set_default_keymap()  |
-" \   call Set_quickfix_keymap() |
-" \ endif
-" }}}
 
 " }}}1
 
@@ -4858,8 +6570,10 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight DiffChange   ctermfg=233  cte
 " AutoCmd ColorScheme gruvbox-material highlight Identifier   ctermfg=10   ctermbg=NONE guifg=#C0CA8E guibg=NONE
 " AutoCmd ColorScheme gruvbox-material highlight LineNr       ctermfg=241  ctermbg=NONE guifg=#626262 guibg=NONE
 " AutoCmd ColorScheme gruvbox-material highlight NonText      ctermfg=60   ctermbg=NONE guifg=#5F5F87 guibg=NONE
-" AutoCmd ColorScheme gruvbox-material highlight NormalNC     ctermfg=144  ctermbg=234  guifg=#ABB2BF guibg=#282C34
 AutoCmd ColorScheme gruvbox-material highlight Normal       ctermfg=233  ctermbg=NONE guifg=#d4be98 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight NormalNC     ctermfg=233  ctermbg=NONE guifg=#d4be98 guibg=#191B1D
+AutoCmd ColorScheme gruvbox-material highlight NormalFloat  ctermfg=NONE ctermbg=238  guifg=NONE    guibg=#232526
+AutoCmd ColorScheme gruvbox-material highlight FloatBorder  ctermfg=NONE ctermbg=238  guifg=NONE    guibg=#232526
 AutoCmd ColorScheme gruvbox-material highlight DiffText     ctermfg=NONE ctermbg=223  guifg=NONE    guibg=#716522
 AutoCmd ColorScheme gruvbox-material highlight Folded       ctermfg=245  ctermbg=NONE guifg=#686f9a guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight IncSearch    ctermfg=68   ctermbg=232  guifg=NONE    guibg=#175655
@@ -4962,15 +6676,20 @@ AutoCmd ColorScheme gruvbox-material highlight MatchParenCur           ctermfg=N
 AutoCmd ColorScheme gruvbox-material highlight MatchWord               ctermfg=NONE ctermbg=NONE cterm=underline      guifg=NONE    guibg=NONE    gui=underline
 AutoCmd ColorScheme gruvbox-material highlight MatchWordCur            ctermfg=NONE ctermbg=NONE cterm=bold           guifg=NONE    guibg=NONE    gui=bold
 AutoCmd ColorScheme gruvbox-material highlight YankRoundRegion         ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
+AutoCmd ColorScheme gruvbox-material highlight YankyPut                ctermfg=209  ctermbg=237                       guifg=#FF875F guibg=#3A3A3A
 
 AutoCmd ColorScheme gruvbox-material highlight CocErrorSign            ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight CocWarningSign          ctermfg=214  ctermbg=NONE                      guifg=#FFAF60 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight CocInfoSign             ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight CocErrorVirtualText     ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight CocWarningVirtualText   ctermfg=214  ctermbg=NONE                      guifg=#FFAF60 guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight CocInfoVirtualText      ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight CocFloating             ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2C3538
 AutoCmd ColorScheme gruvbox-material highlight CocHoverFloating        ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2A2D2F
 AutoCmd ColorScheme gruvbox-material highlight CocSuggestFloating      ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2A2D2F
 AutoCmd ColorScheme gruvbox-material highlight CocSignatureFloating    ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2A2D2F
 AutoCmd ColorScheme gruvbox-material highlight CocDiagnosticFloating   ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2A2D2F
+AutoCmd ColorScheme gruvbox-material highlight CocMenuSel              ctermfg=235  ctermbg=142                       guifg=NONE    guibg=#3C6073
 
 AutoCmd ColorScheme gruvbox-material highlight Defx_git_Untracked      ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight Defx_git_Modified       ctermfg=1    ctermbg=NONE                      guifg=#e27878 guibg=NONE
@@ -4990,11 +6709,11 @@ AutoCmd ColorScheme gruvbox-material highlight CocGitChangedSign ctermfg=214  ct
 AutoCmd ColorScheme gruvbox-material highlight link GitSignsCurrentLineBlame Comment
 
 AutoCmd ColorScheme gruvbox-material highlight link HlSearchNear IncSearch
-AutoCmd ColorScheme gruvbox-material highlight HlSearchLens            ctermfg=68   ctermbg=232                       guifg=#889eb5 guibg=#283642
-AutoCmd ColorScheme gruvbox-material highlight HlSearchLensNear        ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#213F72
-AutoCmd ColorScheme gruvbox-material highlight HlSearchFloat           ctermfg=68   ctermbg=232                       guifg=NONE    guibg=#213F72
+AutoCmd ColorScheme gruvbox-material highlight HlSearchLens     ctermfg=68 ctermbg=232 guifg=#889eb5 guibg=#283642
+AutoCmd ColorScheme gruvbox-material highlight HlSearchLensNear ctermfg=68 ctermbg=232 guifg=NONE    guibg=#213F72
+AutoCmd ColorScheme gruvbox-material highlight HlSearchFloat    ctermfg=68 ctermbg=232 guifg=NONE    guibg=#213F72
 
-AutoCmd ColorScheme gruvbox-material highlight ScrollView              ctermbg=159                                                  guibg=#D0D0D0
+AutoCmd ColorScheme gruvbox-material highlight ScrollView ctermbg=159 guibg=#D0D0D0
 
 AutoCmd ColorScheme gruvbox-material highlight VistaFloat ctermbg=237 guibg=#3a3a3a
 
@@ -5006,7 +6725,8 @@ AutoCmd ColorScheme gruvbox-material highlight link SearchxIncSearch IncSearch
 " TreeSitter
 AutoCmd ColorScheme gruvbox-material highlight link TSPunctBracket Normal
 AutoCmd ColorScheme gruvbox-material highlight link BiscuitColor   Comment
-
+AutoCmd ColorScheme gruvbox-material highlight TSNodeKey       ctermfg=209 ctermbg=NONE cterm=underline,bold guifg=#FFAF60 guibg=NONE gui=NONE
+AutoCmd ColorScheme gruvbox-material highlight UfoFoldVirtText ctermfg=109 ctermbg=NONE cterm=underline,bold guifg=#74A097 guibg=NONE gui=NONE
 " }}}2
 
 " nord {{{2
@@ -5136,112 +6856,10 @@ let g:gruvbox_material_enable_bold            = 1
 let g:gruvbox_material_enable_italic          = 1
 
 colorscheme gruvbox-material
-
-" lightline highlight {{{3
-if dein#tap('lightline.vim')
-  let s:gruvbox0   = ['#32302f', 0]
-  let s:gruvbox1   = ['#ea6962', 1]
-  let s:gruvbox2   = ['#a9b665', 2]
-  let s:gruvbox3   = ['#d8a657', 3]
-  let s:gruvbox4   = ['#7daea3', 4]
-  let s:gruvbox5   = ['#d3869b', 5]
-  let s:gruvbox6   = ['#89b482', 6]
-  let s:gruvbox7   = ['#d4be98', 7]
-  let s:grey       = ['#3A3A3A', 237]
-  let s:blue_green = ['#00AFAF', 37]
-  let s:warning    = ['#FFAF60', 214]
-  let s:info       = ['#FFFFAF', 229]
-
-  let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
-
-  let s:p.normal.left = [
-  \ [s:gruvbox0,   s:gruvbox4],
-  \ [s:gruvbox7,   s:grey],
-  \ [s:blue_green, s:grey],
-  \ [s:gruvbox4,   s:grey],
-  \ ]
-
-  let s:p.insert.left = [
-  \ [s:gruvbox0,   s:gruvbox3],
-  \ [s:gruvbox7,   s:grey],
-  \ [s:blue_green, s:grey],
-  \ [s:gruvbox4,   s:grey],
-  \ ]
-
-  let s:p.visual.left = [
-  \ [s:gruvbox0,   s:gruvbox5],
-  \ [s:gruvbox7,   s:grey],
-  \ [s:blue_green, s:grey],
-  \ [s:gruvbox4,   s:grey],
-  \ ]
-
-  let s:p.replace.left = [
-  \ [s:gruvbox0,   s:gruvbox1],
-  \ [s:gruvbox7,   s:grey],
-  \ [s:blue_green, s:grey],
-  \ [s:gruvbox4,   s:grey],
-  \ ]
-
-  let s:p.inactive.left = [
-  \ [s:blue_green, s:grey],
-  \ [s:gruvbox7,   s:grey],
-  \ [s:blue_green, s:grey],
-  \ [s:gruvbox4,   s:grey],
-  \ ]
-
-  let s:p.normal.right   = [[s:gruvbox0, s:gruvbox4], [s:gruvbox7, s:grey]]
-  let s:p.inactive.right = [[s:gruvbox0, s:gruvbox7], [s:gruvbox0, s:gruvbox7]]
-  let s:p.insert.right   = [[s:gruvbox0, s:gruvbox3], [s:gruvbox7, s:grey]]
-  let s:p.replace.right  = [[s:gruvbox0, s:gruvbox1], [s:gruvbox7, s:grey]]
-  let s:p.visual.right   = [[s:gruvbox0, s:gruvbox5], [s:gruvbox7, s:grey]]
-
-  let s:p.normal.middle   = [[s:gruvbox7, s:gruvbox0]]
-  let s:p.inactive.middle = [[s:gruvbox7, s:grey]]
-
-  let s:p.tabline.left   = [[s:gruvbox7, s:grey]]
-  let s:p.tabline.tabsel = [[s:gruvbox0, s:gruvbox4]]
-  let s:p.tabline.middle = [[s:gruvbox7, s:gruvbox0]]
-  let s:p.tabline.right  = [[s:gruvbox7, s:grey]]
-
-  let s:coc_diagnostic = [
-  \ [s:grey, s:gruvbox1],
-  \ [s:grey, s:warning],
-  \ [s:grey, s:info],
-  \ [s:grey, s:gruvbox4],
-  \ ]
-
-  let s:p.normal.error        = s:coc_diagnostic[0:0]
-  let s:p.insert.error        = s:coc_diagnostic[0:0]
-  let s:p.replace.error       = s:coc_diagnostic[0:0]
-  let s:p.visual.error        = s:coc_diagnostic[0:0]
-  let s:p.normal.warning      = s:coc_diagnostic[1:1]
-  let s:p.insert.warning      = s:coc_diagnostic[1:1]
-  let s:p.replace.warning     = s:coc_diagnostic[1:1]
-  let s:p.visual.warning      = s:coc_diagnostic[1:1]
-  let s:p.normal.information  = s:coc_diagnostic[2:2]
-  let s:p.insert.information  = s:coc_diagnostic[2:2]
-  let s:p.replace.information = s:coc_diagnostic[2:2]
-  let s:p.visual.information  = s:coc_diagnostic[2:2]
-  let s:p.normal.hint         = s:coc_diagnostic[2:2]
-  let s:p.insert.hint         = s:coc_diagnostic[2:2]
-  let s:p.replace.hint        = s:coc_diagnostic[2:2]
-  let s:p.visual.hint         = s:coc_diagnostic[2:2]
-  let s:p.normal.ok           = s:coc_diagnostic[3:3]
-  let s:p.insert.ok           = s:coc_diagnostic[3:3]
-  let s:p.replace.ok          = s:coc_diagnostic[3:3]
-  let s:p.visual.ok           = s:coc_diagnostic[3:3]
-
-  let s:p.normal.quickrun  = [[s:gruvbox0, s:info]]
-  let s:p.insert.quickrun  = [[s:gruvbox0, s:info]]
-  let s:p.replace.quickrun = [[s:gruvbox0, s:info]]
-  let s:p.visual.quickrun  = [[s:gruvbox0, s:info]]
-
-  let g:lightline#colorscheme#gruvbox#palette = lightline#colorscheme#flatten(s:p)
-endif
 " }}}3
 
 " }}}2
 
 " }}}1
 
-" vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:
+" vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker foldlevel=0:
