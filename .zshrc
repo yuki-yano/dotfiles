@@ -82,6 +82,7 @@ zinit light yukiycino-dotfiles/fancy-ctrl-z
 
 # zsh-autosuggestions {{{
 ZSH_AUTOSUGGEST_USE_ASYNC=1
+ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(accept-line)
 # }}}
 
 # fast-syntax-highlighting {{{
@@ -545,7 +546,7 @@ function git_auto_save() {
 
 # }}}
 
-# Loading fzf {{{
+# fzf {{{
 
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 export FZF_DEFAULT_OPTS='--reverse --color=hl:#81A1C1,hl+:#81A1C1,info:#EACB8A,prompt:#81A1C1,pointer:#B48DAC,marker:#A3BE8B,spinner:#B48DAC,header:#A3BE8B'
@@ -569,13 +570,11 @@ if [[ ! -f ~/.zshrc.zwc ]] || [[ "$(readlink ~/.zshrc)" -nt ~/.zshrc.zwc ]]; the
 fi
 
 # zinit
-if [[ ! -f ~/.zinit/bin/zinit.zsh.zwc ]] || [[ ~/.zinit/bin/zinit.zsh -nt ~/.zinit/bin/zinit.zsh.zwc ]]; then
-  zcompile ~/.zinit/bin/zinit.zsh
-fi
+# if [[ ! -f ~/.zinit/bin/zinit.zsh.zwc ]] || [[ ~/.zinit/bin/zinit.zsh -nt ~/.zinit/bin/zinit.zsh.zwc ]]; then
+#   zcompile ~/.zinit/bin/zinit.zsh
+# fi
 
 # }}}
-
-ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(accept-line)
 
 # Load local {{{
 
