@@ -305,6 +305,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   if isdirectory(expand('~/repos/github.com/yuki-yano/fuzzy-motion.vim'))
     call dein#add('~/repos/github.com/yuki-yano/fuzzy-motion.vim', {'on_cmd': ['FuzzyMotion'], 'on_func': ['fuzzy_motion#targets']})
+  else
+    call dein#add('yuki-yano/fuzzy-motion.vim', {'on_cmd': ['FuzzyMotion'], 'on_func': ['fuzzy_motion#targets']})
   endif
 
   if has('nvim')
@@ -330,6 +332,8 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
     if isdirectory(expand('~/repos/github.com/yuki-yano/tsnip.nvim'))
       call dein#add('~/repos/github.com/yuki-yano/tsnip.nvim', {'depends': ['nui.nvim'], 'on_event': ['InsertEnter'], 'on_cmd': ['TSnip']})
+    else
+      call dein#add('yuki-yano/tsnip.nvim', {'depends': ['nui.nvim'], 'on_event': ['InsertEnter'], 'on_cmd': ['TSnip']})
     endif
   endif
   " }}}3
