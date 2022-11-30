@@ -13,8 +13,8 @@ let g:enable_cmp      = g:enable_cmp && has('nvim')
 " }}}2
 
 " Install & Load Dein {{{2
-let s:DEIN_BASE_PATH = $HOME . '/.vim/bundle/'
-let s:DEIN_PATH      = expand(s:DEIN_BASE_PATH . 'repos/github.com/Shougo/dein.vim')
+let s:DEIN_BASE_PATH = expand('~/.cache/vim/dein/')
+let s:DEIN_PATH      = s:DEIN_BASE_PATH . 'repos/github.com/Shougo/dein.vim'
 if !isdirectory(s:DEIN_PATH)
   if executable('git') && confirm('Install dein.vim or Launch vim immediately', "&Yes\n&No", 1)
     execute '!git clone --depth=1 https://github.com/Shougo/dein.vim' s:DEIN_PATH
@@ -44,28 +44,22 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " denops {{{3
   call dein#add('vim-denops/denops.vim')
 
-  call dein#add('Shougo/ddu.vim')
-  call dein#add('Shougo/ddu-source-line')
-  call dein#add('Shougo/ddu-kind-file')
   call dein#add('Shougo/ddu-filter-matcher_substring')
+  call dein#add('Shougo/ddu-kind-file')
   call dein#add('Shougo/ddu-source-file')
+  call dein#add('Shougo/ddu-source-line')
   call dein#add('Shougo/ddu-ui-ff')
-
-  if isdirectory(expand('~/repos/github.com/yuki-yano/ddu-filter-fzf'))
-    call dein#add('~/repos/github.com/yuki-yano/ddu-filter-fzf')
-  endif
+  call dein#add('Shougo/ddu.vim')
+  call dein#add('yuki-yano/denops-http-file-protocol.vim')
   " }}}3
 
   " IDE {{{3
-  if g:enable_coc || (g:enable_cmp && !isdirectory(expand($HOME . '.config/github-copilot')))
+  if g:enable_coc || (g:enable_cmp && !isdirectory(expand('~/.config/github-copilot')))
     call dein#add('github/copilot.vim')
   endif
 
   if g:enable_coc
     call dein#add('neoclide/coc.nvim', {'build': 'yarn install --frozen-lockfile'})
-    if isdirectory(expand('~/repos/github.com/yuki-yano/coc-copilot'))
-      call dein#add('~/repos/github.com/yuki-yano/coc-copilot')
-    endif
 
     " call dein#add('neoclide/coc.nvim', {'rev': 'release'})
     " if isdirectory(expand('~/repos/github.com/yuki-yano/coc.nvim'))
@@ -112,6 +106,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   if g:enable_cmp
     call dein#add('hrsh7th/nvim-cmp')
 
+    call dein#add('dmitmel/cmp-cmdline-history')
     call dein#add('hrsh7th/cmp-buffer')
     call dein#add('hrsh7th/cmp-cmdline')
     call dein#add('hrsh7th/cmp-nvim-lsp')
@@ -182,11 +177,12 @@ if dein#load_state(s:DEIN_BASE_PATH)
 
   " Git {{{3
   " call dein#add('cohama/agit.vim')
-  " call dein#add('hotwatermorning/auto-git-diff')
   " call dein#add('rhysd/conflict-marker.vim')
-  " call dein#add('tpope/vim-fugitive')
   " call dein#add('wting/gitsessions.vim', {'on_cmd': ['GitSessionSave', 'GitSessionLoad']})
+  call dein#add('hotwatermorning/auto-git-diff')
+  call dein#add('lambdalisue/gin.vim')
   call dein#add('lambdalisue/gina.vim', {'on_cmd': ['Gina'], 'on_func': ['fzf#run']})
+  call dein#add('tpope/vim-fugitive', {'on_cmd': ['Git'], 'on_func': ['fzf#run']})
 
   if has('nvim')
     " call dein#add('APZelos/blamer.nvim')
@@ -214,6 +210,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('yuki-yano/fzf-preview.vim', {'rev': 'release/rpc'})
 
   if has('nvim')
+    call dein#add('ibhagwan/fzf-lua')
     call dein#add('nvim-lua/telescope.nvim')
   endif
   " }}}3
@@ -251,7 +248,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
   " call dein#add('romgrk/equal.operator') " i=h a=h i=l a=l
   call dein#add('kana/vim-textobj-entire', {'on_map': {'ox': '<Plug>(textobj-entire'}}) " ie ae
   call dein#add('kana/vim-textobj-line', {'on_map': {'ox': '<Plug>(textobj-line'}}) " al il
-  call dein#add('machakann/vim-textobj-functioncall', {'on_map': {'ox': '<Plug>(textobj-functioncall'}}) " if af ig ag
+  call dein#add('machakann/vim-textobj-functioncall') " if af ig ag
   call dein#add('thinca/vim-textobj-between', {'on_map': {'ox': '<Plug>(textobj-between'}}) " i{char} a{char}
   call dein#add('yuki-yano/vim-textobj-cursor-context', {'on_map': {'ox': '<Plug>(textobj-cursorcontext'}}) " ic ac
 
@@ -289,13 +286,13 @@ if dein#load_state(s:DEIN_BASE_PATH)
   call dein#add('LeafCage/yankround.vim')
   call dein#add('MattesGroeger/vim-bookmarks', {'on_cmd': ['BookmarkToggle', 'BookmarkAnnotate', 'BookmarkNext', 'BookmarkPrev', 'BookmarkShowAll', 'BookmarkClear', 'BookmarkClearAll']})
   call dein#add('SirVer/ultisnips', {'on_ft': ['snippets'], 'on_event': ['InsertEnter']})
-  call dein#add('cohama/lexima.vim', {'on_event': ['InsertEnter', 'CmdlineEnter'], 'hook_post_source': 'call SetupLexima()', 'rev': 'feature/feedkeys'})
+  call dein#add('cohama/lexima.vim', {'on_event': ['InsertEnter', 'CmdlineEnter'], 'hook_post_source': 'call SetupLexima()'})
   call dein#add('haya14busa/vim-asterisk', {'on_map': ['<Plug>']})
   call dein#add('haya14busa/vim-edgemotion', {'on_map': ['<Plug>']})
   call dein#add('hrsh7th/vim-eft', {'on_map': {'nox': '<Plug>'}})
   call dein#add('junegunn/vim-easy-align', {'on_map': ['<Plug>(EasyAlign)']})
   call dein#add('kyoh86/vim-ripgrep')
-  call dein#add('lambdalisue/vim-backslash', {'on_ft': ['vim'], 'on_map': ['<Plug>']})
+  call dein#add('lambdalisue/vim-backslash')
   call dein#add('mattn/vim-maketable', {'on_cmd': ['MakeTable']})
   call dein#add('osyo-manga/vim-anzu', {'on_map': ['<Plug>']})
   call dein#add('osyo-manga/vim-jplus', {'on_map': ['<Plug>']})
@@ -366,21 +363,24 @@ if dein#load_state(s:DEIN_BASE_PATH)
     " call dein#add('glepnir/indent-guides.nvim')
     " call dein#add('karb94/neoscroll.nvim')
     " call dein#add('mvllow/modes.nvim')
+    " call dein#add('norcalli/nvim-colorizer.lua')
     " call dein#add('nvim-lualine/lualine.nvim')
+    " call dein#add('stevearc/aerial.nvim')
     " call dein#add('vuki656/package-info.nvim')
     " call dein#add('windwp/floatline.nvim')
-    call dein#add('B4mbus/todo-comments.nvim')
     call dein#add('akinsho/bufferline.nvim')
     call dein#add('anuvyklack/hydra.nvim')
     call dein#add('b0o/incline.nvim')
     call dein#add('bennypowers/nvim-regexplainer')
+    call dein#add('folke/todo-comments.nvim')
+    call dein#add('gen740/SmoothCursor.nvim')
     call dein#add('kevinhwang91/nvim-bqf', {'on_ft': ['qf']})
     call dein#add('kevinhwang91/nvim-ufo')
     call dein#add('kwkarlwang/bufresize.nvim')
-    call dein#add('norcalli/nvim-colorizer.lua')
+    call dein#add('levouh/tint.nvim')
     call dein#add('petertriho/nvim-scrollbar')
     call dein#add('rcarriga/nvim-notify')
-    call dein#add('stevearc/aerial.nvim')
+    call dein#add('tiagovla/scope.nvim')
   endif
   " }}}3
 
@@ -435,6 +435,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
     " call dein#add('lambdalisue/edita.vim')
     " call dein#add('lewis6991/impatient.nvim')
     " call dein#add('notomo/cmdbuf.nvim')
+    " call dein#add('nvim-colortils/colortils.nvim')
     " call dein#add('nvim-lua/popup.nvim')
     " call dein#add('nvim-neotest/neotest-vim-test')
     " call dein#add('rcarriga/vim-ultest', {'on_cmd': ['Ultest', 'UltestNearest', 'UltestSummary'], 'depends': ['vim-test']})
@@ -450,6 +451,7 @@ if dein#load_state(s:DEIN_BASE_PATH)
     call dein#add('nvim-telescope/telescope-fzf-native.nvim', {'build': 'make'})
     call dein#add('ray-x/guihua.lua')
     call dein#add('tzachar/fuzzy.nvim')
+    call dein#add('uga-rosa/ccc.nvim')
   endif
 
   if $ENABLE_WAKATIME == 1
@@ -567,7 +569,6 @@ Keymap n   <Plug>(ctrl-n)   <Nop>
 Keymap n   <C-n>            <Plug>(ctrl-n)
 Keymap n   <Plug>(ctrl-p)   <Nop>
 Keymap n   <C-p>            <Plug>(ctrl-p)
-
 
 "" Zero (Move beginning toggle)
 Keymap nox <expr> 0 getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^'
@@ -720,6 +721,7 @@ if has('nvim')
 
   set pumblend=10
   set wildoptions+=pum
+  set splitkeep=screen
 endif
 
 "" Appearance
@@ -771,7 +773,7 @@ function s:set_format_options() abort
   set formatoptions-=c formatoptions-=r formatoptions-=o
   set formatoptions+=jBn
 endfunction
-AutoCmd BufWinEnter * call <SID>set_format_options()
+AutoCmd FileType,BufReadPost,WinEnter * call <SID>set_format_options()
 
 "" viminfo
 set viminfo='1000,:1000
@@ -963,6 +965,18 @@ endfunction
 " AutoCmd BufRead * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g`\"" | endif
 " }}}2
 
+" Reset scroll {{{2
+lua << EOF
+vim.on_key(function(key)
+  local c_d = vim.api.nvim_replace_termcodes('<C-d>', true, true, true)
+  local c_u = vim.api.nvim_replace_termcodes('<C-u>', true, true, true)
+  if key == c_d or key == c_u then
+    vim.cmd([[set scroll=0]])
+  end
+end, nil)
+EOF
+" }}}2
+
 " highlight cursorline and cursorcolumn with timer {{{2
 let g:highlight_cursor      = 1
 let s:highlight_cursor_wait = 500
@@ -1099,6 +1113,269 @@ AutoCmd InsertEnter * if filereadable(expand('#' . bufnr('') . ':p')) | set numb
 AutoCmd InsertLeave * if filereadable(expand('#' . bufnr('') . ':p')) | call <SID>set_number(1) | endif
 " }}}2
 
+" My Normal {{{2
+function! s:normal(bang, key) abort range
+  let code = nvim_replace_termcodes(a:key, v:true, v:true, v:true)
+  for i in range(a:firstline, a:lastline)
+    execute i . 'normal' . a:bang . ' ' . code
+  endfor
+endfunction
+
+command! -range -bang -nargs=1 Normal <line1>,<line2>call <SID>normal(<q-bang>, <f-args>)
+" }}}2
+
+" Execute <Plug> map {{{2
+function! s:execute_plug_map(map) abort range
+  let map = nvim_replace_termcodes(a:map, v:true, v:true, v:true)
+  call nvim_feedkeys(map, 'n', v:false)
+endfunction
+
+command! -nargs=1 ExecutePlugMap call <SID>execute_plug_map(<f-args>)
+" }}}2
+
+" Statusline Util {{{2
+let g:statusline_ignore_right_ft = [
+\ 'qf',
+\ 'help',
+\ 'diff',
+\ 'man',
+\ 'fzf',
+\ 'defx',
+\ 'fern',
+\ 'coc-explorer',
+\ 'capture',
+\ 'gina-status',
+\ 'gina-branch',
+\ 'gina-log',
+\ 'gina-reflog',
+\ 'gina-blame',
+\ ]
+
+let g:statusline_ft_to_mode_hash = {
+\ 'help':         'Help',
+\ 'diff':         'Diff',
+\ 'man':          'Man',
+\ 'fzf':          'FZF',
+\ 'defx':         'Defx',
+\ 'fern':         'Fern',
+\ 'coc-explorer': 'Explorer',
+\ 'capture':      'Capture',
+\ 'gina-status':  'Git Status',
+\ 'gina-branch':  'Git Branch',
+\ 'gina-log':     'Git Log',
+\ 'gina-reflog':  'Git Reflog',
+\ 'gina-blame':   'Git Blame',
+\ }
+
+let g:statusline_ignore_modifiable_ft = [
+\ 'qf',
+\ 'help',
+\ 'man',
+\ 'fzf',
+\ 'defx',
+\ 'fern',
+\ 'coc-explorer',
+\ 'capture',
+\ 'gina-status',
+\ 'gina-branch',
+\ 'gina-log',
+\ 'gina-reflog',
+\ 'gina-blame',
+\ ]
+
+let g:statusline_ignore_filename_ft = [
+\ 'qf',
+\ 'fzf',
+\ 'defx',
+\ 'fern',
+\ 'coc-explorer',
+\ 'gina-status',
+\ 'gina-branch',
+\ 'gina-log',
+\ 'gina-reflog',
+\ 'gina-blame',
+\ ]
+
+let g:statusline_ignore_filepath_ft = [
+\ 'qf',
+\ 'fzf',
+\ 'defx',
+\ 'fern',
+\ 'coc-explorer',
+\ 'gina-status',
+\ 'gina-branch',
+\ 'gina-log',
+\ 'gina-reflog',
+\ 'gina-blame',
+\ ]
+
+function! StatusLineIsVisible(width) abort
+  return a:width < winwidth(0)
+endfunction
+
+function! StatusLineMode() abort
+  return lightline#mode()
+endfunction
+
+function! StatusLineSpecialMode() abort
+  let special_mode = get(g:statusline_ft_to_mode_hash, &filetype, '')
+  let win = getwininfo(win_getid())[0]
+  return special_mode !=# '' ? special_mode :
+  \ anzu#search_status() !=# '' ? 'Anzu' :
+  \ StatusLineFileType() ==# '' ? '' :
+  \ win.loclist ? '[Location List] ' . get(w:, 'quickfix_title', ''):
+  \ win.quickfix ? '[QuickFix] ' . get(w:, 'quickfix_title', '') :
+  \ ''
+endfunction
+
+function! StatusLineFilePath() abort
+  if count(g:statusline_ignore_filepath_ft, &filetype) || expand('%:t') ==# '[Command Line]'
+    return ''
+  endif
+
+  let path = fnamemodify(expand('%'), ':p:.:h')
+  return path ==# '.' ? '' : path
+
+  let not_home_prefix = match(path, '^/') != -1 ? '/' : ''
+  let dirs            = split(path, '/')
+  let last_dir        = remove(dirs, -1)
+  call map(dirs, { _, v -> v[0] })
+
+  return len(dirs) ? not_home_prefix . join(dirs, '/') . '/' . last_dir : last_dir
+endfunction
+
+function! StatusLineFileName() abort
+  let filename = fnamemodify(expand('%'), ':t')
+
+  if count(g:statusline_ignore_filename_ft, &filetype)
+    return ''
+  endif
+
+  if filename ==# ''
+    let filename = '[No Name]'
+  endif
+
+  if &readonly
+    let filename = filename . ' [-]'
+  endif
+
+  if &modifiable && &modified
+    let filename = filename . ' [+]'
+  endif
+
+  if !&modifiable
+    let filename = filename . ' [x]'
+  endif
+
+  return filename
+endfunction
+
+function! StatusLineModifiedBuffers() abort
+  let modified_background_buffers = filter(range(1, bufnr('$')),
+  \ { _, bufnr -> bufexists(bufnr) && buflisted(bufnr) && getbufvar(bufnr, 'buftype') ==# '' && filereadable(expand('#' . bufnr . ':p')) && bufnr != bufnr('%') && getbufvar(bufnr, '&modified') == 1 }
+  \ )
+
+  if count(g:statusline_ignore_filename_ft, &filetype)
+    return ''
+  endif
+
+  if len(modified_background_buffers) > 0
+    return '!' . len(modified_background_buffers)
+  else
+    return ''
+  endif
+endfunction
+
+function! StatusLineFileType() abort
+  if has_key(g:statusline_ft_to_mode_hash, &filetype)
+    return ''
+  endif
+
+  if &filetype ==? 'qf' && getwininfo(win_getid())[0].loclist
+    return 'LocationList'
+  elseif &filetype ==? 'qf' && getwininfo(win_getid())[0].quickfix
+    return 'QuickFix'
+  else
+    return &filetype . ' ' . WebDevIconsGetFileTypeSymbol() . ' '
+  endif
+endfunction
+
+function! StatusLineLineInfo() abort
+  if !StatusLineIsVisible(100)
+    return ''
+  endif
+
+  return !count(g:statusline_ignore_right_ft, &filetype) ?
+  \ printf(' %3d:%2d / %d lines [%d%%]', line('.'), col('.'), line('$'), float2nr((1.0 * line('.')) / line('$') * 100.0)) :
+  \ ''
+endfunction
+
+function! StatusLineFileEncoding() abort
+  if !StatusLineIsVisible(140)
+    return ''
+  endif
+
+  return !count(g:statusline_ignore_right_ft, &filetype) ?
+  \ strlen(&fileencoding) ?
+  \   &fileencoding :
+  \   &encoding :
+  \ ''
+endfunction
+
+function! StatusLineFileFormat() abort
+  if !StatusLineIsVisible(140)
+    return ''
+  endif
+
+  return !count(g:statusline_ignore_right_ft, &filetype) ?
+  \ &fileformat :
+  \ ''
+endfunction
+
+function! StatusLineTabCount() abort
+  if len(gettabinfo()) == 1
+    return ''
+  else
+    return tabpagenr() . '/' . tabpagenr('$')
+endif
+endfunction
+
+function! StatusLineTabWinNum(n) abort
+  return a:n . ':' . len(tabpagebuflist(a:n))
+endfunction
+
+function! StatusLineCocErrors() abort
+  return b:coc_diagnostic_info['error'] != 0 ? ' ' . b:coc_diagnostic_info['error'] : ''
+endfunction
+
+function! StatusLineCocWarnings() abort
+  return b:coc_diagnostic_info['warning'] != 0 ? ' ' . b:coc_diagnostic_info['warning'] : ''
+endfunction
+
+function! StatusLineCocInformations() abort
+  return b:coc_diagnostic_info['information'] != 0 ? ' ' . b:coc_diagnostic_info['information'] : ''
+endfunction
+
+function! StatusLineCocHint() abort
+  return b:coc_diagnostic_info['hint'] != 0 ? ' ' . b:coc_diagnostic_info['hint'] : ''
+endfunction
+
+function! StatusLineCocOk() abort
+  return b:coc_diagnostic_info['error'] == 0 &&
+  \ b:coc_diagnostic_info['warning'] == 0 &&
+  \ b:coc_diagnostic_info['information'] == 0 ?
+  \ ' ' : ''
+endfunction
+
+function! StatusLineCocStatus() abort
+  return get(g:, 'coc_status', '')
+endfunction
+
+function! StatusLineQuickrunRunnning() abort
+  return g:quickrun_running_message
+endfunction
+" }}}2
+
 " ToggleQuickfix {{{2
 function! s:quickfix_toggle() abort
   let _ = winnr('$')
@@ -1186,7 +1463,7 @@ AutoCmd FocusGained * call <SID>on_focus_gained()
 AutoCmd FocusLost   * call <SID>on_focus_lost()
 " }}}2
 
-" JumpPlugin  {{{2
+" Jump Plugin  Settings {{{2
 function! s:plugin_name(line) abort
   try
     if len(matchlist(a:line, 'dein#add(''\(.\{-}\)''.*)')) != 0
@@ -1234,7 +1511,7 @@ function! s:plugin_lines(plugin_name, lines) abort
   copen
 endfunction
 
-function! s:jump_plugin(mode) abort
+function! s:jump_plugin_settings(mode) abort
   let line = getline('.')
   let plugin_name = <SID>plugin_name(line)
 
@@ -1260,9 +1537,9 @@ function! s:jump_plugin(mode) abort
   endif
 endfunction
 
-command! UsePluginPrev     call <SID>jump_plugin('prev')
-command! UsePluginNext     call <SID>jump_plugin('next')
-command! UsePluginQuickFix call <SID>jump_plugin('qf')
+command! UsePluginPrev     call <SID>jump_plugin_settings('prev')
+command! UsePluginNext     call <SID>jump_plugin_settings('next')
+command! UsePluginQuickFix call <SID>jump_plugin_settings('qf')
 
 Keymap n <silent> [p        <Cmd>UsePluginPrev<CR>
 Keymap n <silent> ]p        <Cmd>UsePluginNext<CR>
@@ -1936,6 +2213,7 @@ require('nvim-web-devicons').setup({
     },
   },
 })
+
 require('nvim-web-devicons').set_default_icon(' ', white)
 EOF
 endif
@@ -2074,12 +2352,14 @@ endif
 " coc {{{3
 if dein#tap('coc.nvim')
   let g:coc_global_extensions = [
+  \ 'coc-copilot',
   \ 'coc-deno',
   \ 'coc-eslint',
   \ 'coc-json',
   \ 'coc-lists',
   \ 'coc-lua',
   \ 'coc-markdownlint',
+  \ 'coc-nav',
   \ 'coc-npm-version',
   \ 'coc-prettier',
   \ 'coc-prisma',
@@ -2130,7 +2410,7 @@ if dein#tap('coc.nvim')
   Keymap n <silent> <Plug>(lsp)rF <Plug>(coc-references)
   Keymap n <silent> <Plug>(lsp)rn <Plug>(coc-rename)
   Keymap n <silent> <Plug>(lsp)T  <Plug>(coc-type-definition)
-  Keymap n <silent> <Plug>(lsp)a  <Plug>(coc-codeaction-selected)iw
+  Keymap n <silent> <Plug>(lsp)a  <Plug>(coc-codeaction-cursor)
   Keymap n <silent> <Plug>(lsp)A  <Plug>(coc-codeaction)
   Keymap n <silent> <Plug>(lsp)l  <Plug>(coc-codelens-action)
   Keymap n <silent> <Plug>(lsp)f  <Plug>(coc-format)
@@ -2216,7 +2496,7 @@ if dein#tap('coc.nvim')
   function! s:coc_pum_lexima_enter() abort
     let key = lexima#expand('<CR>', 'i')
     call coc#on_enter()
-    return "\<C-g>u" . key
+    return key
   endfunction
 
   " Initialize coc completion map
@@ -2232,8 +2512,7 @@ if dein#tap('coc.nvim')
   AutoCmd VimEnter    *                          call <SID>coc_ts_ls_initialize()
   AutoCmd FileType    typescript,typescriptreact call <SID>coc_typescript_settings()
   AutoCmd FileType    rust                       call <SID>coc_rust_settings()
-  AutoCmd FileType    vim                        setlocal tagfunc=CocTagFunc
-  AutoCmd FileType    lua                        setlocal tagfunc=CocTagFunc
+  AutoCmd FileType    vim,lua                    setlocal tagfunc=CocTagFunc
   AutoCmd BufEnter    deno:/*.ts                 filetype detect
 endif
 " }}}3
@@ -2525,6 +2804,7 @@ vim.api.nvim_create_autocmd({ 'CmdlineEnter' }, {
     })
   end
 })
+
 vim.api.nvim_create_autocmd({ 'CmdlineLeave' }, {
   callback = function()
     cmp.setup({
@@ -2642,36 +2922,19 @@ endif
 
 " treesitter {{{3
 if dein#tap('nvim-treesitter')
-  " let g:indent_blankline_context_patterns = [
-  " \ 'class',
-  " \ 'function',
-  " \ 'method',
-  " \ '^if',
-  " \ 'while',
-  " \ 'for',
-  " \ 'with',
-  " \ 'func_literal',
-  " \ 'block',
-  " \ 'try',
-  " \ 'except',
-  " \ 'argument_list',
-  " \ 'object',
-  " \ 'dictionary',
-  " \ 'element'
-  " \ ]
-
 lua <<EOF
 require('nvim-treesitter.configs').setup {
   ensure_installed = {
     "typescript",
     "tsx",
-    "javascript",
+    -- "javascript",
     "graphql",
     "jsdoc",
     "rust",
     "ruby",
     "python",
     "lua",
+    "vim",
     "json",
     "yaml",
     "markdown",
@@ -2681,6 +2944,23 @@ require('nvim-treesitter.configs').setup {
     "comment",
     "regex",
   },
+  disable = function(lang, bufnr)
+    local byte_size = vim.fn.getfsize(vim.api.nvim_buf_get_name(bufnr))
+    if byte_size > 1024 * 1024 then
+      return true
+    end
+    local ok = true
+    ok = pcall(function()
+      vim.treesitter.get_parser(bufnr, lang):parse()
+    end) and ok
+    ok = pcall(function()
+      vim.treesitter.get_query(lang, 'highlights')
+    end) and ok
+    if not ok then
+      return true
+    end
+    return false
+  end,
   highlight = {
     enable = true,
   },
@@ -2735,91 +3015,20 @@ EOF
   let g:indent_blankline_enabled = v:false
   Keymap n <silent> <Leader>i <Cmd>IndentBlanklineToggle!<CR>
 
-  function! s:treesitter_toggle() abort
-    if g:treesitter_enable == 1
-      let g:treesitter_enable = 0
-      call <SID>treesitter_disable()
-    else
-      let g:treesitter_enable = 1
-      call <SID>treesitter_enable()
-    endif
-  endfunction
-  command! TreesitterToggle call <SID>treesitter_toggle()
-
-  function! s:treesitter_enable() abort
-    TSEnableAll highlight
-    TSEnableAll context_commentstring
-    TSEnableAll rainbow
-  endfunction
-
-  function! s:treesitter_disable() abort
-    TSDisableAll highlight
-    TSDisableAll context_commentstring
-    TSDisableAll rainbow
-  endfunction
-
   function! s:check_large_file() abort
-    let max_file_size = 500 * 1000
+    let max_file_size = 1024 * 1024
     let fsize = getfsize(@%)
     let line_num = line('$')
 
     if fsize > max_file_size
       if input(printf('"%s" is too large file.(%s lines, %s byte) Continue? [y/N]', @%, line_num, fsize)) !~? '^y\%[es]$'
-        if dein#tap('vim-bbye')
-          Bwipeout
-        else
-          bwipeout
-        endif
-        return
-      else
-        syntax off
-        call <SID>treesitter_disable()
+        setlocal syntax=off
+        call interrupt()
       endif
     endif
   endfunction
 
-  AutoCmd BufReadPre *.ts,*.tsx,*.js call <SID>check_large_file()
-
-  " AutoCmd BufReadPre  *.ts,*.tsx,*.js call <SID>disable_syntax()
-  " AutoCmd BufReadPost *.ts,*.tsx,*.js call <SID>set_syntax()
-  " AutoCmd BufEnter    *.ts,*.tsx,*.js call <SID>enable_tsbuf()
-  "
-  " function! s:disable_syntax() abort
-  "   syntax off
-  "   TSDisableAll highlight
-  "   TSDisableAll context_commentstring
-  "   TSDisableAll rainbow
-  " endfunction
-  "
-  " function! s:enable_tsbuf() abort
-  "   if exists('b:ts_buf') && b:ts_buf
-  "     TSEnableAll highlight
-  "     TSEnableAll context_commentstring
-  "     TSEnableAll rainbow
-  "     TSBufEnable highlight
-  "     TSBufEnable context_commentstring
-  "     TSBufEnable rainbow
-  "   endif
-  " endfunction
-  "
-  " function! s:set_syntax() abort
-  "   let max_file_size = 500 * 1000
-  "   let fsize = getfsize(@%)
-  "   let line_num = line('$')
-  "
-  "   if fsize > max_file_size && input(printf('"%s" is too large file.(%s lines, %s byte) Continue? [y/N]', @%, line_num, fsize)) !~? '^y\%[es]$'
-  "     bwipeout
-  "     return
-  "   endif
-  "
-  "   if fsize < max_file_size
-  "     syntax on
-  "     let b:ts_buf = v:true
-  "   else
-  "     syntax off
-  "     let b:ts_buf = v:false
-  "   endif
-  " endfunction
+  AutoCmd BufEnter *.js call <SID>check_large_file()
 endif
 " }}}3
 
@@ -2916,12 +3125,13 @@ if dein#tap('fzf-preview.vim')
   \ '--preview-window': 'wrap',
   \ '--bind': 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,?:toggle-preview,ctrl-n:down,ctrl-p:up,ctrl-j:next-history,ctrl-k:previous-history'
   \ }
+  " let g:fzf_preview_update_statusline = v:false
 
   let $BAT_THEME                        = 'gruvbox-dark'
   let $FZF_PREVIEW_PREVIEW_BAT_THEME    = 'gruvbox-dark'
   let $BAT_STYLE                        = 'plain'
   let g:fzf_preview_history_dir         = '~/.fzf'
-  let $FZF_PREVIEW_PLUGIN_HELP_ROOT_DIR = '~/.vim/bundle/repos/github.com'
+  let $FZF_PREVIEW_PLUGIN_HELP_ROOT_DIR = '~/.cache/vim/dein/bundle/repos/github.com'
 
   Keymap n <silent> <Plug>(fzf-p)r     <Cmd>FzfPreviewProjectMruFilesRpc --experimental-fast<CR>
   Keymap n <silent> <Plug>(fzf-p)w     <Cmd>FzfPreviewProjectMrwFilesRpc --experimental-fast<CR>
@@ -3277,6 +3487,10 @@ if dein#tap('fern.vim')
       autocmd! * <buffer>
       autocmd CursorMoved <buffer> echo matchstr(getline('.'), '[-./[:alnum:]_]\+')
     augroup END
+
+    if dein#tap('tint.nvim')
+      lua require('tint').refresh()
+    endif
   endfunction
 
   AutoCmd FileType fern call <SID>fern_settings()
@@ -3307,7 +3521,8 @@ endif
 
 " operator-replace {{{3
 if dein#tap('vim-operator-replace')
-  Keymap nx _ <Plug>(operator-replace)
+  Keymap n  <silent> RR R
+  Keymap nx <silent> R <Plug>(operator-replace)
 endif
 " }}}3
 
@@ -3406,7 +3621,6 @@ if dein#tap('nvim-hlslens') &&
    \ dein#tap('vim-anzu') &&
    \ dein#tap('vim-searchx') &&
    \ has('nvim')
-  lua require('hlslens').setup({ auto_enable = true })
 
   let g:searchx             = {}
   let g:searchx.auto_accept = v:false
@@ -3539,7 +3753,10 @@ if dein#tap('nvim-hlslens') &&
    \ dein#tap('vim-anzu') &&
    \ !dein#tap('vim-searchx') &&
    \ has('nvim')
-  lua require('hlslens').setup({ calm_down = true })
+  if !dein#tap('nvim-scrollbar')
+    lua require('hlslens').setup()
+  endif
+
 
   Keymap n           /  <Cmd>lua require('hlslens').enable()<CR>/
   Keymap n           ?  <Cmd>lua require('hlslens').enable()<CR>?
@@ -3914,7 +4131,7 @@ endif
 " hop {{{3
 if dein#tap('hop.nvim')
 lua << EOF
-require'hop'.setup()
+require('hop').setup()
 EOF
   Keymap n <silent> S  <Cmd>HopWord<CR>
   Keymap n <silent> ss <Cmd>HopWord<CR>
@@ -4006,6 +4223,12 @@ if dein#tap('lexima.vim')
     \ { 'char': '<C-f>', 'at': '\%#\s*''', 'leave': '''',                         },
     \ { 'char': '<C-f>', 'at': '\%#\s*"',  'leave': '"',                          },
     \ { 'char': '<C-f>', 'at': '\%#\s*`',  'leave': '`',                          },
+    \ { 'char': '<Tab>', 'at': '\%#\s*)',  'leave': ')',                          },
+    \ { 'char': '<Tab>', 'at': '\%#\s*\}', 'leave': '}',                          },
+    \ { 'char': '<Tab>', 'at': '\%#\s*\]', 'leave': ']',                          },
+    \ { 'char': '<Tab>', 'at': '\%#\s*''', 'leave': '''',                         },
+    \ { 'char': '<Tab>', 'at': '\%#\s*"',  'leave': '"',                          },
+    \ { 'char': '<Tab>', 'at': '\%#\s*`',  'leave': '`',                          },
     \ ]
 
     "" Insert semicolon at the end of the line
@@ -4016,18 +4239,37 @@ if dein#tap('lexima.vim')
     \ { 'char': ';', 'at': '^\s*;\%#\}$', 'input': '<BS><C-g>U<Right>;' },
     \ ]
 
+    "" Abbreviation else if
+    let s:rules += [
+    \ { 'filetype': ['typescript', 'typescriptreact'], 'char': '<Space>', 'at': '\s*} elif\%#$', 'input': '<C-w>else if(', 'input_after': ') {<CR>}',     },
+    \ { 'filetype': ['ruby'],                          'char': '<Space>', 'at': '\s*elif\%#$',   'input': '<C-w>elsif ',   'input_after': ' <CR>end',     },
+    \ { 'filetype': ['lua'],                           'char': '<Space>', 'at': '\s*elif\%#$',   'input': '<C-w>elseif ',  'input_after': ' then<CR>end', },
+    \ { 'filetype': ['vim'],                           'char': '<Space>', 'at': '\s*elif\%#$',   'input': '<C-w>elseif ',  'input_after': '<CR>endif',    },
+    \ ]
+
     "" Surround function
     let s:rules += [
-    \ { 'char': '>', 'at': ')>\%#', 'input': '<BS><BS><C-o>:normal! f(<CR><C-o>:normal %<CR>)' },
+    \ { 'char': ';', 'at': ');\%#',      'input': '<BS><BS><C-o>:normal! $<CR>a)<Esc>'               },
+    \ { 'char': ';', 'at': ');\%#.*(.*', 'input': '<BS><BS><C-o>:normal! f(<CR>:normal %<CR>a)<Esc>' },
     \ ]
+    " let s:rules += [
+    " \ { 'char': '>', 'at': ')>\%#',      'input': '<BS><BS><C-o>:normal! $<CR><C-g>U<Right>)'       },
+    " \ { 'char': '>', 'at': ')>\%#.*(.*', 'input': '<BS><BS><C-o>:normal! f(<CR><C-o>:normal %<CR>)' },
+    " \ ]
 
     "" TypeScript
     let s:rules += [
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\.[a-zA-Z]\+([a-zA-Z,]*>\%#)',       'input': '<BS> => {', 'input_after': '}'                           },
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\.[a-zA-Z]\+(([a-zA-Z, :<>]*>\%#))', 'input': '<BS><C-g>U<Right> => {', 'input_after': '}'              },
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '([a-zA-Z, :<>]*>\%#)',               'input': '<BS><C-g>U<Right> => {', 'input_after': '}'              },
-    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '({[a-zA-Z, :<>]\+>\%#\s\?})',        'input': '<BS><C-o>:normal! f)<CR><C-g>U<Right> => {}<C-g>U<Left>' },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': ';', 'at': '\.[a-zA-Z]\+([a-zA-Z,]*;\%#)',       'input': '<BS> => {', 'input_after': '}'                           },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': ';', 'at': '\.[a-zA-Z]\+(([a-zA-Z, :<>]*;\%#))', 'input': '<BS><C-g>U<Right> => {', 'input_after': '}'              },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': ';', 'at': '([a-zA-Z, :<>]*;\%#)',               'input': '<BS><C-g>U<Right> => {', 'input_after': '}'              },
+    \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': ';', 'at': '({[a-zA-Z, :<>]\+;\%#\s\?})',        'input': '<BS><C-o>:normal! f)<CR>a<C-g>U<Right> => {}<Esc>' },
     \ ]
+    " let s:rules += [
+    " \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\.[a-zA-Z]\+([a-zA-Z,]*>\%#)',       'input': '<BS> => {', 'input_after': '}'                           },
+    " \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '\.[a-zA-Z]\+(([a-zA-Z, :<>]*>\%#))', 'input': '<BS><C-g>U<Right> => {', 'input_after': '}'              },
+    " \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '([a-zA-Z, :<>]*>\%#)',               'input': '<BS><C-g>U<Right> => {', 'input_after': '}'              },
+    " \ { 'filetype': ['typescript', 'typescriptreact', 'javascript'], 'char': '>', 'at': '({[a-zA-Z, :<>]\+>\%#\s\?})',        'input': '<BS><C-o>:normal! f)<CR><C-g>U<Right> => {}<C-g>U<Left>' },
+    " \ ]
 
     "" TSX with nvim-ts-autotag
     if dein#tap('nvim-ts-autotag')
@@ -4038,9 +4280,9 @@ if dein#tap('lexima.vim')
 
     "" ruby
     let s:rules += [
-    \ { 'filetype': 'ruby', 'char': '<CR>',  'at': '^\s*\%(module\|def\|class\|if\|unless\)\s\w\+\((.*)\)\?\%#$', 'input': '<CR>',         'input_after': 'end',          },
-    \ { 'filetype': 'ruby', 'char': '<CR>',  'at': '^\s*\%(begin\)\s*\%#',                                        'input': '<CR>',         'input_after': 'end',          },
-    \ { 'filetype': 'ruby', 'char': '<CR>',  'at': '\%(^\s*#.*\)\@<!do\%(\s*|.*|\)\?\s*\%#',                      'input': '<CR>',         'input_after': 'end',          },
+    \ { 'filetype': 'ruby', 'char': '<CR>',  'at': '^\s*\%(module\|def\|class\|if\|unless\)\s\w\+\((.*)\)\?\%#$', 'input': '<CR>',         'input_after': '<CR>end',      },
+    \ { 'filetype': 'ruby', 'char': '<CR>',  'at': '^\s*\%(begin\)\s*\%#',                                        'input': '<CR>',         'input_after': '<CR>end',      },
+    \ { 'filetype': 'ruby', 'char': '<CR>',  'at': '\%(^\s*#.*\)\@<!do\%(\s*|.*|\)\?\s*\%#',                      'input': '<CR>',         'input_after': '<CR>end',      },
     \ { 'filetype': 'ruby', 'char': '<Bar>', 'at': 'do\%#',                                                       'input': '<Space><Bar>', 'input_after': '<Bar><CR>end', },
     \ { 'filetype': 'ruby', 'char': '<Bar>', 'at': 'do\s\%#',                                                     'input': '<Bar>',        'input_after': '<Bar><CR>end', },
     \ { 'filetype': 'ruby', 'char': '<Bar>', 'at': '{\%#}',                                                       'input': '<Space><Bar>', 'input_after': '<Bar><Space>', },
@@ -4057,6 +4299,13 @@ if dein#tap('lexima.vim')
     \ { 'filetype': 'eruby', 'char': '<BS>',  'at': '<%\s\%#\s%>',  'input': '<BS><BS><BS><Del><Del><Del>',                                                 },
     \ { 'filetype': 'eruby', 'char': '<C-h>', 'at': '<%=\s\%#\s%>', 'input': '<BS><BS><BS><BS><Del><Del><Del>',                                             },
     \ { 'filetype': 'eruby', 'char': '<BS>',  'at': '<%=\s\%#\s%>', 'input': '<BS><BS><BS><BS><Del><Del><Del>',                                             },
+    \ ]
+
+    "" vim
+    let s:rules += [
+    \ { 'filetype': 'vim', 'char': '<CR>', 'at': '^\s*if\s.\+\%#$',                                                              'input': '<CR>', 'input_after': '<CR>endif',  },
+    \ { 'filetype': 'vim', 'char': '<CR>', 'at': '^\s*for\s.\+\%#$',                                                             'input': '<CR>', 'input_after': '<CR>endfor', },
+    \ { 'filetype': 'vim', 'char': '<CR>', 'at': '^\s*function\(\!\)\?\s\([a-zA-Z_:\#]\)\+(\([a-zA-Z_, .]\)*)\(\sabort\)\?\%#$', 'input': '<CR>', 'input_after': '<CR>endfunction', },
     \ ]
 
     "" markdown
@@ -4323,8 +4572,10 @@ if dein#tap('vim-sandwich') &&
   \ },
   \ ]
 
-  Keymap ox <silent> <Plug>(textobj-functioncall-generics-i) :<C-u>call textobj#functioncall#ip('o', g:textobj_functioncall_generics_patterns)<CR>
-  Keymap ox <silent> <Plug>(textobj-functioncall-generics-a) :<C-u>call textobj#functioncall#i('o', g:textobj_functioncall_generics_patterns)<CR>
+  onoremap <silent> <Plug>(textobj-functioncall-generics-i) :<C-u>call textobj#functioncall#ip('o', g:textobj_functioncall_generics_patterns)<CR>
+  xnoremap <silent> <Plug>(textobj-functioncall-generics-i) :<C-u>call textobj#functioncall#ip('x', g:textobj_functioncall_generics_patterns)<CR>
+  onoremap <silent> <Plug>(textobj-functioncall-generics-a) :<C-u>call textobj#functioncall#i('o', g:textobj_functioncall_generics_patterns)<CR>
+  xnoremap <silent> <Plug>(textobj-functioncall-generics-a) :<C-u>call textobj#functioncall#i('x', g:textobj_functioncall_generics_patterns)<CR>
 
   Keymap ox <silent> ig <Plug>(textobj-functioncall-generics-i)
   Keymap ox <silent> ag <Plug>(textobj-functioncall-generics-a)
@@ -4370,6 +4621,10 @@ if dein#tap('vim-sandwich') &&
 
   Keymap ox <silent> i$ <Plug>(textobj-functioncall-ts-string-variable-i)
   Keymap ox <silent> a$ <Plug>(textobj-functioncall-ts-string-variable-a)
+
+  call operator#sandwich#set('add', 'char', 'skip_space', 1)
+  AutoCmd ModeChanged [vV\x16]*:* call operator#sandwich#set('add', 'char', 'skip_space', 1)
+  AutoCmd ModeChanged *:[vV\x16]* call operator#sandwich#set('add', 'char', 'skip_space', 0)
 endif
 " }}}3
 
@@ -4456,16 +4711,19 @@ if dein#tap('vim-backslash')
   let g:vim_backslash_disable_default_mappings = 1
 
   function! s:vim_backslash_settings() abort
-    Keymap n <silent> <buffer> o <Plug>(vim-backslash-o)
-    Keymap n <silent> <buffer> O <Plug>(vim-backslash-O)
+    Keymap n <silent> <buffer> o  <Plug>(vim-backslash-o)
+    Keymap n <silent> <buffer> O  <Plug>(vim-backslash-O)
+    Keymap n <silent> <buffer> go o
+    Keymap n <silent> <buffer> gO O
 
-    if dein#tap('pum.vim') && getcmdwintype() ==# ''
-      Keymap i <silent> <expr> <buffer> <CR> pum#visible() ? '<C-y>' : vim_backslash#is_continuous_cr() ? '<Plug>(vim-backslash-smart-CR-i)' : lexima#expand('<CR>', 'i')
-    elseif dein#tap('coc.nvim') && getcmdwintype() ==# ''
-      Keymap i <silent> <expr> <buffer> <CR> coc#pum#visible() ? coc#pum#confirm() : vim_backslash#is_continuous_cr() ? '<Plug>(vim-backslash-smart-CR-i)' : lexima#expand('<CR>', 'i')
-    else
-      Keymap i <silent> <expr> <buffer> <CR> pumvisible() ? '<C-y>' : vim_backslash#is_continuous_cr() ? '<Plug>(vim-backslash-smart-CR-i)' : lexima#expand('<CR>', 'i')
-    endif
+    " conflict lexima
+    " if dein#tap('pum.vim') && getcmdwintype() ==# ''
+    "   Keymap i <silent> <expr> <buffer> <CR> pum#visible() ? '<C-y>' : vim_backslash#is_continuous_cr() ? '<Plug>(vim-backslash-smart-CR-i)' : lexima#expand('<CR>', 'i')
+    " elseif dein#tap('coc.nvim') && getcmdwintype() ==# ''
+    "   Keymap i <silent> <expr> <buffer> <CR> coc#pum#visible() ? coc#pum#confirm() : vim_backslash#is_continuous_cr() ? '<Plug>(vim-backslash-smart-CR-i)' : lexima#expand('<CR>', 'i')
+    " else
+    "   Keymap i <silent> <expr> <buffer> <CR> pumvisible() ? '<C-y>' : vim_backslash#is_continuous_cr() ? '<Plug>(vim-backslash-smart-CR-i)' : lexima#expand('<CR>', 'i')
+    " endif
   endfunction
 
   AutoCmd BufWinEnter *.vim,.vimrc call <SID>vim_backslash_settings()
@@ -4483,17 +4741,20 @@ if dein#tap('yankround.vim')
 
   Keymap n <silent> <expr> <C-p> yankround#is_active() ? '<Plug>(yankround-prev)' : '<Plug>(ctrl-p)'
   Keymap n <silent> <expr> <C-n> yankround#is_active() ? '<Plug>(yankround-next)' : '<Plug>(ctrl-n)'
+
+  let g:yankround_use_region_hl = 1
+
+  nnoremap p <Plug>(yankround-p)
+  xnoremap p <Plug>(yankround-p)
+  nnoremap P <Plug>(yankround-P)
+
+  nnoremap <silent> <expr> <C-p> yankround#is_active() ? '<Plug>(yankround-prev)' : '<Plug>(ctrl-p)'
+  nnoremap <silent> <expr> <C-n> yankround#is_active() ? '<Plug>(yankround-next)' : '<Plug>(ctrl-n)'
 endif
 " }}}3
 
 " yanky {{{3
 if dein#tap('yanky.nvim')
-  " Keymap nx p <Plug>(yankround-p)
-  " Keymap n  P <Plug>(yankround-P)
-
-  " Keymap n <silent> <expr> <C-p> yankround#is_active() ? '<Plug>(yankround-prev)' : '<Plug>(ctrl-p)'
-  " Keymap n <silent> <expr> <C-n> yankround#is_active() ? '<Plug>(yankround-next)' : '<Plug>(ctrl-n)'
-
   Keymap nx <silent> y  <Plug>(YankyYank)
 
   Keymap nx <silent> p  <Plug>(YankyPutAfter)
@@ -4610,7 +4871,7 @@ local coc_diagnostic_results = {}
 
 require('bufferline').setup({
   options = {
-    mode = 'tabs',
+    -- mode = 'tabs',
     numbers = 'ordinal',
     buffer_close_icon = '×',
     show_close_icon = false,
@@ -4668,6 +4929,35 @@ require('bufferline').setup({
         highlight = 'Directory',
         separator = true
       },
+      {
+        filetype = 'neotest-summary',
+        text = 'Test',
+        highlight = 'Directory',
+        separator = true
+      },
+    },
+    custom_areas = {
+      -- TODO: Format the display of tab information
+      left = function()
+        local count = #vim.fn.gettabinfo()
+
+        if count == 1 then
+          return {}
+        else
+          return {
+            {
+              text = '▎',
+              fg = yellow,
+              bg = empty,
+            },
+            {
+              text = ' ' .. vim.fn.tabpagenr() .. '/' .. vim.fn.tabpagenr('$') .. ' ',
+              fg = white,
+              bg = empty,
+            },
+          }
+        end
+      end,
     },
   },
   highlights = {
@@ -5056,10 +5346,11 @@ hydra({
   },
 })
 
-local hint = [[
-        Toggle
+local toggle_hint = [[
+           Toggle
 
  _n_: %{number} Number
+ _i_: %{indent} Indent
  _q_: %{quickfix} QuickFix
  _l_: %{location_list} LocationList
  _f_: %{eft} Eft
@@ -5070,7 +5361,7 @@ local hint = [[
 
 hydra({
   name = 'Toggle',
-  hint = hint,
+  hint = toggle_hint,
   mode = 'n',
   body = 'T',
   config = {
@@ -5084,6 +5375,13 @@ hydra({
             return '[r]'
           elseif vim.o.number then
             return '[n]'
+          else
+            return '[ ]'
+          end
+        end,
+        indent = function()
+          if vim.g.indent_blankline_enabled then
+            return '[x]'
           else
             return '[ ]'
           end
@@ -5131,14 +5429,113 @@ hydra({
     },
   },
   heads = {
-    { 'n',     function() vim.cmd([[ToggleNumber]]) end,          { silent = true, desc = 'Number'                      } },
-    { 'q',     function() vim.cmd([[QuickfixToggle]]) end,        { silent = true, desc = 'QuickFix'                    } },
-    { 'l',     function() vim.cmd([[LocationListToggle]]) end,    { silent = true, desc = 'LocationList'                } },
-    { 'f',     function() vim.cmd([[EftToggle]]) end,             { silent = true, desc = 'Eft'                         } },
-    { 'u',     function() vim.cmd([[HighlightedundoToggle]]) end, { silent = true, desc = 'HighlightedUndo'             } },
-    { 'R',     function() vim.cmd([[ReviewToggle]]) end,          { silent = true, desc = 'Review',         exit = true } },
-    { '<Esc>', nil,                                               {                                         exit = true } },
+    { 'n',     function() vim.cmd([[ToggleNumber]]) end,           { silent = true,             } },
+    { 'i',     function() vim.cmd([[IndentBlanklineToggle!]]) end, { silent = true,             } },
+    { 'q',     function() vim.cmd([[QuickfixToggle]]) end,         { silent = true,             } },
+    { 'l',     function() vim.cmd([[LocationListToggle]]) end,     { silent = true,             } },
+    { 'f',     function() vim.cmd([[EftToggle]]) end,              { silent = true,             } },
+    { 'u',     function() vim.cmd([[HighlightedundoToggle]]) end,  { silent = true,             } },
+    { 'R',     function() vim.cmd([[ReviewToggle]]) end,           { silent = true, exit = true } },
+    { '<Esc>', nil,                                                {                exit = true } },
   },
+})
+
+local fold_hint = [[
+            Fold
+
+_o_: open       _O_: open recursive
+_c_: close      _C_: close recursive
+_a_: toggle     _A_: toggle recursive
+
+          Fold Count
+
+_r_: open       _R_: open recursive
+_m_: close      _M_: close recursive
+
+            Misc
+
+_x_: reload
+
+                             _<Esc>_
+]]
+
+hydra({
+  name = 'Fold',
+  hint = fold_hint,
+  mode = 'n',
+  body = '<Leader>z',
+  config = {
+    invoke_on_body = true,
+    hint = {
+      position = 'middle',
+      border = 'rounded',
+    },
+  },
+  heads = {
+    { 'o',     '<Cmd>normal! zo<CR>', { silent = true,             } },
+    { 'O',     '<Cmd>normal! zO<CR>', { silent = true,             } },
+    { 'c',     '<Cmd>normal! zc<CR>', { silent = true,             } },
+    { 'C',     '<Cmd>normal! zC<CR>', { silent = true,             } },
+    { 'a',     '<Cmd>normal! za<CR>', { silent = true,             } },
+    { 'A',     '<Cmd>normal! zA<CR>', { silent = true,             } },
+    { 'r',     '<Cmd>normal! zr<CR>', { silent = true,             } },
+    { 'R',     '<Cmd>normal! zR<CR>', { silent = true,             } },
+    { 'm',     '<Cmd>normal! zm<CR>', { silent = true,             } },
+    { 'M',     '<Cmd>normal! zM<CR>', { silent = true,             } },
+    { 'x',     '<Cmd>normal! zx<CR>', { silent = true,             } },
+    { '<Esc>', nil,                   {                exit = true } },
+  },
+})
+
+local neotest_hint = [[
+          Test
+
+ _<Enter>_: expand
+ _e_: expand all
+ _i_: jump to
+ _m_: mark
+ _o_: output
+ _r_: run
+ _R_: run marked
+ _u_: stop
+
+                   _<Esc>_
+]]
+
+local neotest_cmd = function(keys)
+  vim.cmd('normal ' .. vim.api.nvim_replace_termcodes(keys, true, true, true))
+end
+
+vim.api.nvim_create_autocmd('FileType', {
+  callback = function()
+    hydra({
+      name = 'NeoTest',
+      hint = neotest_hint,
+      mode = 'n',
+      body = '?',
+      config = {
+        invoke_on_body = true,
+        hint = {
+          position = 'middle',
+          border = 'rounded',
+        },
+        buffer = true,
+        exit = true,
+      },
+      heads = {
+        { '<Enter>', function() neotest_cmd('<CR>') end, { silent = true, nowait = true } },
+        { 'e',       function() neotest_cmd('e') end,    { silent = true, nowait = true } },
+        { 'i',       function() neotest_cmd('i') end,    { silent = true, nowait = true } },
+        { 'm',       function() neotest_cmd('m') end,    { silent = true, nowait = true } },
+        { 'o',       function() neotest_cmd('o') end,    { silent = true, nowait = true } },
+        { 'r',       function() neotest_cmd('r') end,    { silent = true, nowait = true } },
+        { 'R',       function() neotest_cmd('R') end,    { silent = true, nowait = true } },
+        { 'u',       function() neotest_cmd('u') end,    { silent = true, nowait = true } },
+        { '<Esc>',   nil,                                {                nowait = true } },
+      },
+    })
+  end,
+  pattern = 'neotest-summary',
 })
 EOF
 endif
@@ -5167,12 +5564,38 @@ require('incline').setup({
   render = function(props)
     local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ':t')
     local icon, color = require('nvim-web-devicons').get_icon_color(filename)
+
+    local nav = {}
+    local ok, nav_var = pcall(function() return vim.api.nvim_buf_get_var(props.buf, 'coc_nav') end)
+    if ok then
+      for _, v in ipairs(nav_var) do
+        table.insert(nav, {
+          '  ',
+        })
+        table.insert(nav, {
+          v.label,
+          group = v.highlight,
+        })
+        table.insert(nav, {
+          v.name,
+        })
+      end
+    end
+
     return {
       { icon, guifg = color },
       { ' ' },
       { filename },
+      nav,
     }
   end
+})
+
+vim.api.nvim_create_autocmd('User', {
+  callback = function()
+    require('incline.manager').update.fn({ refresh = true })
+  end,
+  pattern = 'CocNavChanged',
 })
 EOF
 endif
@@ -5218,8 +5641,8 @@ if dein#tap('lightline.vim')
   \ 'colorscheme': 'gruvbox',
   \ 'active': {
   \   'left': [
-  \     ['mode', 'spell', 'paste'],
-  \     ['filepath', 'filename', 'modified_buffers', 'gps'],
+  \     ['mode'],
+  \     ['filepath', 'filename', 'modified_buffers'],
   \     ['special_mode', 'anzu'],
   \    ],
   \   'right': [
@@ -5242,30 +5665,26 @@ if dein#tap('lightline.vim')
   \   'active':   ['tabwinnum', 'filename'],
   \   'inactive': ['tabwinnum', 'filename'],
   \ },
-  \ 'component': {
-  \   'spell': "%{&spell ? 'SPELL' : ''}",
-  \   'paste': "%{&paste ? 'PASTE' : ''}",
-  \  },
   \ 'component_function': {
-  \   'mode':             'LightlineMode',
-  \   'filepath':         'LightlineFilePath',
-  \   'filename':         'LightlineFileName',
-  \   'modified_buffers': 'LightlineModifiedBuffers',
-  \   'filetype':         'LightlineFileType',
-  \   'lineinfo':         'LightlineLineInfo',
-  \   'fileencoding':     'LightlineFileEncoding',
-  \   'fileformat':       'LightlineFileFormat',
-  \   'special_mode':     'LightlineSpecialMode',
-  \   'coc_status':       'LightlineCocStatus',
+  \   'mode':             'StatusLineMode',
+  \   'filepath':         'StatusLineFilePath',
+  \   'filename':         'StatusLineFileName',
+  \   'modified_buffers': 'StatusLineModifiedBuffers',
+  \   'filetype':         'StatusLineFileType',
+  \   'lineinfo':         'StatusLineLineInfo',
+  \   'fileencoding':     'StatusLineFileEncoding',
+  \   'fileformat':       'StatusLineFileFormat',
+  \   'special_mode':     'StatusLineSpecialMode',
+  \   'tab_count':        'StatusLineTabCount',
+  \   'coc_status':       'StatusLineCocStatus',
   \   'anzu':             'anzu#search_status',
-  \   'quickrun':         'LightlineQuickrunRunnning',
-  \   'gps':              'LightlineNvimGps',
+  \   'quickrun':         'StatusLineQuickrunRunnning',
   \ },
   \ 'tab_component_function': {
-  \   'tabwinnum': 'LightlineTabWinNum',
+  \   'tabwinnum': 'StatusLineTabWinNum',
   \ },
   \ 'component_visible_condition': {
-  \   'anzu':       "%{anzu#search_status !=# ''}",
+  \   'anzu': "anzu#search_status !=# ''",
   \ },
   \ 'component_function_visible_condition': {
   \   'spell': '&spell',
@@ -5279,12 +5698,12 @@ if dein#tap('lightline.vim')
   \   'quickrun':            'quickrun',
   \ },
   \ 'component_expand': {
-  \   'linter_errors':       'LightlineCocErrors',
-  \   'linter_warnings':     'LightlineCocWarnings',
-  \   'linter_informations': 'LightlineCocInformations',
-  \   'linter_hint':         'LightlineCocHint',
-  \   'linter_ok':           'LightlineCocOk',
-  \   'quickrun':            'LightlineQuickrunRunnning',
+  \   'linter_errors':       'StatusLineCocErrors',
+  \   'linter_warnings':     'StatusLineCocWarnings',
+  \   'linter_informations': 'StatusLineCocInformations',
+  \   'linter_hint':         'StatusLineCocHint',
+  \   'linter_ok':           'StatusLineCocOk',
+  \   'quickrun':            'StatusLineQuickrunRunnning',
   \ },
   \ 'enable': {
   \   'statusline': 1,
@@ -5294,254 +5713,8 @@ if dein#tap('lightline.vim')
   \ 'subseparator': { 'left': '', 'right': '' }
   \ }
 
-  " Disable lineinfo, fileencoding and fileformat
-  let s:lightline_ignore_right_ft = [
-  \ 'qf',
-  \ 'help',
-  \ 'diff',
-  \ 'man',
-  \ 'fzf',
-  \ 'defx',
-  \ 'fern',
-  \ 'coc-explorer',
-  \ 'capture',
-  \ 'gina-status',
-  \ 'gina-branch',
-  \ 'gina-log',
-  \ 'gina-reflog',
-  \ 'gina-blame',
-  \ ]
-
-  let s:lightline_ft_to_mode_hash = {
-  \ 'help':         'Help',
-  \ 'diff':         'Diff',
-  \ 'man':          'Man',
-  \ 'fzf':          'FZF',
-  \ 'defx':         'Defx',
-  \ 'fern':         'Fern',
-  \ 'coc-explorer': 'Explorer',
-  \ 'capture':      'Capture',
-  \ 'gina-status':  'Git Status',
-  \ 'gina-branch':  'Git Branch',
-  \ 'gina-log':     'Git Log',
-  \ 'gina-reflog':  'Git Reflog',
-  \ 'gina-blame':   'Git Blame',
-  \ }
-
-  let s:lightline_ignore_modifiable_ft = [
-  \ 'qf',
-  \ 'help',
-  \ 'man',
-  \ 'fzf',
-  \ 'defx',
-  \ 'fern',
-  \ 'coc-explorer',
-  \ 'capture',
-  \ 'gina-status',
-  \ 'gina-branch',
-  \ 'gina-log',
-  \ 'gina-reflog',
-  \ 'gina-blame',
-  \ ]
-
-  let s:lightline_ignore_filename_ft = [
-  \ 'qf',
-  \ 'fzf',
-  \ 'defx',
-  \ 'fern',
-  \ 'coc-explorer',
-  \ 'gina-status',
-  \ 'gina-branch',
-  \ 'gina-log',
-  \ 'gina-reflog',
-  \ 'gina-blame',
-  \ ]
-
-  let s:lightline_ignore_filepath_ft = [
-  \ 'qf',
-  \ 'fzf',
-  \ 'defx',
-  \ 'fern',
-  \ 'coc-explorer',
-  \ 'gina-status',
-  \ 'gina-branch',
-  \ 'gina-log',
-  \ 'gina-reflog',
-  \ 'gina-blame',
-  \ ]
-
-  function! LightlineIsVisible(width) abort
-    return a:width < winwidth(0)
-  endfunction
-
-  function! LightlineMode() abort
-    return lightline#mode()
-  endfunction
-
-  function! LightlineSpecialMode() abort
-    let special_mode = get(s:lightline_ft_to_mode_hash, &filetype, '')
-    let win = getwininfo(win_getid())[0]
-    return special_mode !=# '' ? special_mode :
-    \ anzu#search_status() !=# '' ? 'Anzu' :
-    \ LightlineFileType() ==# '' ? '' :
-    \ win.loclist ? '[Location List] ' . get(w:, 'quickfix_title', ''):
-    \ win.quickfix ? '[QuickFix] ' . get(w:, 'quickfix_title', '') :
-    \ ''
-  endfunction
-
-  function! LightlineFilePath() abort
-    if count(s:lightline_ignore_filepath_ft, &filetype) || expand('%:t') ==# '[Command Line]'
-      return ''
-    endif
-
-    let path = fnamemodify(expand('%'), ':p:.:h')
-    return path ==# '.' ? '' : path
-
-    let not_home_prefix = match(path, '^/') != -1 ? '/' : ''
-    let dirs            = split(path, '/')
-    let last_dir        = remove(dirs, -1)
-    call map(dirs, { _, v -> v[0] })
-
-    return len(dirs) ? not_home_prefix . join(dirs, '/') . '/' . last_dir : last_dir
-  endfunction
-
-  function! LightlineFileName() abort
-    let filename = fnamemodify(expand('%'), ':t')
-
-    if count(s:lightline_ignore_filename_ft, &filetype)
-      return ''
-    endif
-
-    if filename ==# ''
-      let filename = '[No Name]'
-    endif
-
-    if &modifiable && &modified
-      let filename = filename . ' [+]'
-    endif
-
-    if !&modifiable
-      let filename = filename . ' [X]'
-    endif
-
-    return filename
-  endfunction
-
-  function! LightlineModifiedBuffers() abort
-    let modified_background_buffers = filter(range(1, bufnr('$')),
-    \ { _, bufnr -> bufexists(bufnr) && buflisted(bufnr) && getbufvar(bufnr, 'buftype') ==# '' && filereadable(expand('#' . bufnr . ':p')) && bufnr != bufnr('%') && getbufvar(bufnr, '&modified') == 1 }
-    \ )
-
-    if count(s:lightline_ignore_filename_ft, &filetype)
-      return ''
-    endif
-
-    if len(modified_background_buffers) > 0
-      return '!' . len(modified_background_buffers)
-    else
-      return ''
-    endif
-  endfunction
-
-  function! LightlineFileType() abort
-    if has_key(s:lightline_ft_to_mode_hash, &filetype)
-      return ''
-    endif
-
-    if &filetype ==? 'qf' && getwininfo(win_getid())[0].loclist
-      return 'LocationList'
-    elseif &filetype ==? 'qf' && getwininfo(win_getid())[0].quickfix
-      return 'QuickFix'
-    else
-      return &filetype . ' ' . WebDevIconsGetFileTypeSymbol() . ' '
-    endif
-  endfunction
-
-  function! LightlineLineInfo() abort
-    if !LightlineIsVisible(100)
-      return ''
-    endif
-
-    return !count(s:lightline_ignore_right_ft, &filetype) ?
-    \ printf(' %3d:%2d / %d lines [%d%%]', line('.'), col('.'), line('$'), float2nr((1.0 * line('.')) / line('$') * 100.0)) :
-    \ ''
-  endfunction
-
-  function! LightlineFileEncoding() abort
-    if !LightlineIsVisible(140)
-      return ''
-    endif
-
-    return !count(s:lightline_ignore_right_ft, &filetype) ?
-    \ strlen(&fileencoding) ?
-    \   &fileencoding :
-    \   &encoding :
-    \ ''
-  endfunction
-
-  function! LightlineFileFormat() abort
-    if !LightlineIsVisible(140)
-      return ''
-    endif
-
-    return !count(s:lightline_ignore_right_ft, &filetype) ?
-    \ &fileformat :
-    \ ''
-  endfunction
-
-  function! LightlineTabWinNum(n) abort
-    return a:n . ':' . len(tabpagebuflist(a:n))
-  endfunction
-
-  function! LightlineCocErrors() abort
-    return b:coc_diagnostic_info['error'] != 0 ? ' ' . b:coc_diagnostic_info['error'] : ''
-  endfunction
-
-  function! LightlineCocWarnings() abort
-    return b:coc_diagnostic_info['warning'] != 0 ? ' ' . b:coc_diagnostic_info['warning'] : ''
-  endfunction
-
-  function! LightlineCocInformations() abort
-    return b:coc_diagnostic_info['information'] != 0 ? ' ' . b:coc_diagnostic_info['information'] : ''
-  endfunction
-
-  function! LightlineCocHint() abort
-    return b:coc_diagnostic_info['hint'] != 0 ? ' ' . b:coc_diagnostic_info['hint'] : ''
-  endfunction
-
-  function! LightlineCocOk() abort
-    return b:coc_diagnostic_info['error'] == 0 &&
-    \ b:coc_diagnostic_info['warning'] == 0 &&
-    \ b:coc_diagnostic_info['information'] == 0 ?
-    \ ' ' : ''
-  endfunction
-
-  function! LightlineCocStatus() abort
-    return get(g:, 'coc_status', '')
-  endfunction
-
-  function! LightlineQuickrunRunnning() abort
-    return g:quickrun_running_message
-  endfunction
-
-  function! LightlineNvimGps() abort
-    if !dein#tap('nvim-gps')
-      return ''
-    endif
-
-    if !LightlineIsVisible(140)
-      return ''
-    endif
-
-    return luaeval("require'nvim-gps'.is_available()") ? luaeval("require'nvim-gps'.get_location()") : ''
-  endfunction
-
-  function! NearestMethodOrFunction() abort
-    if !LightlineIsVisible(140)
-      return ''
-    endif
-    return get(b:, 'vista_nearest_method_or_function', '')
-  endfunction
+  let g:lightline.separator = { 'left': '', 'right': '' }
+  let g:lightline.subseparator = { 'left': '', 'right': '' }
 
   AutoCmd User CocDiagnosticChange call lightline#update()
 
@@ -5753,6 +5926,7 @@ require('regexplainer').setup({
     },
     win_options = {
       winhighlight = 'Normal:CocFloating,FloatBorder:CocFloating',
+      winblend = 10,
     },
   },
 })
@@ -5778,35 +5952,42 @@ if dein#tap('nvim-scrollbar')
 lua << EOF
 require('scrollbar').setup({
   handle = {
-    color = "#3a3a3a",
+    color = "#3A3A3A",
   },
   handlers = {
     search = true,
+    cursor = false,
     diagnostic = true,
   },
   marks = {
     Search = {
+      text = { "-", "=" }, 
       priority = 5,
-      color = "#00AFAF",
+      color= '#00AFAF'
     },
     Error = {
       priority = 1,
-      color = "#EA6962",
+      highlight = 'CocErrorSign',
     },
     Warn = {
       priority = 2,
-      color = "#FFAF60",
+      highlight = 'CocWarningSign',
     },
     Info = {
       priority = 3,
-      color = "#FFFFAF",
+      highlight = 'CocInfoSign',
     },
     Hint = {
       priority = 4,
-      color = "#7DAEA3",
+      highlight = 'CocHintSign',
     },
   },
 })
+
+if vim.fn['dein#tap']('nvim-hlslens') == 1 then
+  require("scrollbar.handlers.search").setup()
+end
+require("scrollbar.handlers.gitsigns").setup()
 
 local severity_map = { Error = 1, Warning = 2, Information = 3, Hint = 4 }
 local lsp_handler = require('scrollbar.handlers.diagnostic').lsp_handler
@@ -5852,6 +6033,12 @@ EOF
 endif
 " }}}3
 
+" scope {{{3
+if dein#tap('scope.nvim')
+  lua require('scope').setup()
+endif
+" }}}3
+
 " smartnumber {{{3
 if dein#tap('smartnumber.vim')
   let g:snumber_enable_startup = 1
@@ -5869,6 +6056,18 @@ if dein#tap('smartnumber.vim')
   endfunction
 
   command! SNToggle call <SID>snumber_relative_toggle()
+endif
+" }}}3
+
+" SmoothCursor {{{3
+if dein#tap('SmoothCursor.nvim')
+  lua require('SmoothCursor').setup({ cursor = '>', priority = 10 })
+endif
+" }}}3
+
+" tint {{{3
+if dein#tap('tint.nvim')
+  lua require('tint').setup({ highlight_ignore_patterns = { 'WinSeparator', 'VertSplit', 'Status.*' } })
 endif
 " }}}3
 
@@ -6173,14 +6372,40 @@ if dein#tap('cmdbuf.nvim')
 endif
 " }}}3
 
+" ccc {{{3
+if dein#tap('ccc.nvim')
+lua <<EOF
+local ccc = require('ccc')
+ccc.setup({
+  bar_len = 50,
+  bar_char = '█',
+  point_char = '|',
+  highlighter = {
+    auto_enable = true,
+    max_byte = 1000 * 1024
+  },
+  pickers = {
+    ccc.picker.hex,
+    ccc.picker.css_rgb,
+    ccc.picker.css_hsl,
+  },
+})
+EOF
+endif
+" }}}3
+
+" colortils {{{3
+if dein#tap('colortils.nvim')
+  lua require('colortils').setup()
+endif
+" }}}3
+
 " dial {{{3
 if dein#tap('dial.nvim')
-  nmap <C-a>  <Plug>(dial-increment)
-  nmap <C-x>  <Plug>(dial-decrement)
-  xmap <C-a>  <Plug>(dial-increment)
-  xmap <C-x>  <Plug>(dial-decrement)
-  xmap g<C-a> g<Plug>(dial-increment)
-  xmap g<C-x> g<Plug>(dial-decrement)
+  Keymap nx <C-a>  <Plug>(dial-increment)
+  Keymap nx <C-x>  <Plug>(dial-decrement)
+  Keymap x  g<C-a> g<Plug>(dial-increment)
+  Keymap x  g<C-x> g<Plug>(dial-decrement)
 
 lua << EOF
 local config = require('dial.config')
@@ -6254,6 +6479,10 @@ require('neotest').setup({
   adapters = {
     require('neotest-jest'),
   },
+  icons = {
+    running = 'R',
+    skipped = 'S',
+  },
 })
 EOF
   Keymap n <silent> <Leader>t <Cmd>TestSummary<CR>
@@ -6276,7 +6505,7 @@ endif
 " silicon {{{3
 if dein#tap('vim-silicon')
   let g:silicon = {
-  \   'theme':           'Monokai Extended',
+  \   'theme':           'gruvbox',
   \   'background':      '#97A1AC',
   \   'shadow-color':    '#555555',
   \   'line-number':     v:false,
@@ -6506,7 +6735,9 @@ function! s:esc_esc() abort
   endif
 
   if dein#tap('nvim-hlslens')
-    lua require('hlslens').disable()
+    if exists('#HlSearchLensRender')
+      HlSearchLensDisable
+    endif
   endif
 
   if dein#tap('nvim-scrollbar')
@@ -6535,7 +6766,7 @@ function! s:esc_esc() abort
 endfunction
 
 command! EscEsc call <SID>esc_esc()
-Keymap n <silent> <Esc><Esc> <Cmd>nohlsearch<CR><Cmd>EscEsc<CR>
+nnoremap <silent> <Esc><Esc> <Cmd>nohlsearch<CR><Cmd>EscEsc<CR>
 " }}}2
 
 " }}}1
@@ -6571,7 +6802,7 @@ AutoCmd ColorScheme nord,onedark,iceberg highlight DiffChange   ctermfg=233  cte
 " AutoCmd ColorScheme gruvbox-material highlight LineNr       ctermfg=241  ctermbg=NONE guifg=#626262 guibg=NONE
 " AutoCmd ColorScheme gruvbox-material highlight NonText      ctermfg=60   ctermbg=NONE guifg=#5F5F87 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight Normal       ctermfg=233  ctermbg=NONE guifg=#d4be98 guibg=NONE
-AutoCmd ColorScheme gruvbox-material highlight NormalNC     ctermfg=233  ctermbg=NONE guifg=#d4be98 guibg=#191B1D
+" AutoCmd ColorScheme gruvbox-material highlight NormalNC     ctermfg=233  ctermbg=NONE guifg=#d4be98 guibg=#191B1D
 AutoCmd ColorScheme gruvbox-material highlight NormalFloat  ctermfg=NONE ctermbg=238  guifg=NONE    guibg=#232526
 AutoCmd ColorScheme gruvbox-material highlight FloatBorder  ctermfg=NONE ctermbg=238  guifg=NONE    guibg=#232526
 AutoCmd ColorScheme gruvbox-material highlight DiffText     ctermfg=NONE ctermbg=223  guifg=NONE    guibg=#716522
@@ -6681,10 +6912,11 @@ AutoCmd ColorScheme gruvbox-material highlight YankyPut                ctermfg=2
 AutoCmd ColorScheme gruvbox-material highlight CocErrorSign            ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight CocWarningSign          ctermfg=214  ctermbg=NONE                      guifg=#FFAF60 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight CocInfoSign             ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
+AutoCmd ColorScheme gruvbox-material highlight CocHintSign             ctermfg=229  ctermbg=NONE                      guifg=#7DAEA3 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight CocErrorVirtualText     ctermfg=9    ctermbg=NONE                      guifg=#E98989 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight CocWarningVirtualText   ctermfg=214  ctermbg=NONE                      guifg=#FFAF60 guibg=NONE
 AutoCmd ColorScheme gruvbox-material highlight CocInfoVirtualText      ctermfg=229  ctermbg=NONE                      guifg=#FFFFAF guibg=NONE
-AutoCmd ColorScheme gruvbox-material highlight CocFloating             ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2C3538
+AutoCmd ColorScheme gruvbox-material highlight CocFloating             ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2A2D2F
 AutoCmd ColorScheme gruvbox-material highlight CocHoverFloating        ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2A2D2F
 AutoCmd ColorScheme gruvbox-material highlight CocSuggestFloating      ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2A2D2F
 AutoCmd ColorScheme gruvbox-material highlight CocSignatureFloating    ctermfg=NONE ctermbg=238                       guifg=NONE    guibg=#2A2D2F
@@ -6721,6 +6953,8 @@ AutoCmd ColorScheme gruvbox-material highlight SearchxMarkerCurrent ctermfg=209 
 AutoCmd ColorScheme gruvbox-material highlight SearchxMarker        ctermfg=209  ctermbg=NONE cterm=underline,bold guifg=#FFAF60 guibg=NONE    gui=NONE
 
 AutoCmd ColorScheme gruvbox-material highlight link SearchxIncSearch IncSearch
+
+AutoCmd ColorScheme gruvbox-material highlight SmoothCursor ctermfg=229 ctermbg=NONE guifg=#7DAEA3 guibg=NONE
 
 " TreeSitter
 AutoCmd ColorScheme gruvbox-material highlight link TSPunctBracket Normal
@@ -6856,8 +7090,6 @@ let g:gruvbox_material_enable_bold            = 1
 let g:gruvbox_material_enable_italic          = 1
 
 colorscheme gruvbox-material
-" }}}3
-
 " }}}2
 
 " }}}1

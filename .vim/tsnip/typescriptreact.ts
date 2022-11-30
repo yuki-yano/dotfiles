@@ -16,9 +16,7 @@ const state: Snippet = {
   ],
   render: ({ state, default_value }) =>
     `const [${state?.text ?? ""}, set${
-      state != null
-        ? `${state.text?.charAt(0).toUpperCase()}${state.text?.slice(1)}`
-        : ""
+      state?.text != null ? `${pascalCase(state.text)}` : ""
     }] = useState(${default_value?.text ?? ""})`,
 };
 
