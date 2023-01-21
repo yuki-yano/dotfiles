@@ -1,0 +1,13 @@
+{
+  "effect": {
+    "prefix": [
+      "effect"
+    ],
+    "body": [
+      "useEffect(() => {",
+      "\t${1}",
+      "}, [])"
+    ],
+    "description": "useEffect hooks"
+  }
+}

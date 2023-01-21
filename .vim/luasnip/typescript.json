@@ -1,0 +1,91 @@
+{
+  "forof": {
+    "prefix": ["forof"],
+    "body": ["for (const ${1:v} of ${2:list}) {", "\t${3}", "}"],
+    "description": "for of loop"
+  },
+  "switch": {
+    "prefix": ["switch"],
+    "body": [
+      "switch(${1:expr}) {",
+      "\tcase ${2:match}: {",
+      "\t\t${3}",
+      "\t\tbreak",
+      "\t}",
+      "",
+      "\tdefault: {",
+      "\t\t${4}",
+      "\t}",
+      "}"
+    ],
+    "description": "Switch case"
+  },
+  "try": {
+    "prefix": ["try"],
+    "body": ["try {", "\t${1}", "} catch(e: Error) {", "\t${2}", "}"],
+    "description": "try catch"
+  },
+  "tryf": {
+    "prefix": ["tryf"],
+    "body": [
+      "try {",
+      "\t${1}",
+      "} catch(e: Error) {",
+      "\t${2}",
+      "} finally {",
+      "\t${3}",
+      "}"
+    ],
+    "description": "try catch finally"
+  },
+  "class": {
+    "prefix": ["class"],
+    "body": ["class ${1:Klass} {", "\tconstructor(${2:params}) {", "\t}", "}"],
+    "description": "class"
+  },
+  "range": {
+    "prefix": ["range"],
+    "body": ["[...Array(${1:n})].map((_, i + ${2:start}) => i)"],
+    "description": "range"
+  },
+  "log": {
+    "prefix": ["log"],
+    "body": ["console.log(${1})"],
+    "description": "console.log"
+  },
+  "debug": {
+    "prefix": ["debug"],
+    "body": ["console.debug(${1})"],
+    "description": "console.debug"
+  },
+  "info": {
+    "prefix": ["info"],
+    "body": ["console.info(${1})"],
+    "description": "console.info"
+  },
+  "warn": {
+    "prefix": ["warn"],
+    "body": ["console.warn(${1})"],
+    "description": "console.warn"
+  },
+  "error": {
+    "prefix": ["error"],
+    "body": ["console.error(${1})"],
+    "description": "console.error"
+  },
+  "trace": {
+    "prefix": ["trace"],
+    "body": ["console.trace(${1})"],
+    "description": "console.trace"
+  },
+  "table": {
+    "prefix": ["table"],
+    "body": ["console.table(${1})"],
+    "description": "console.table"
+  },
+  "group": {
+    "prefix": ["group"],
+    "body": ["console.group()", "console.log(${1})", "console.group()"],
+    "description": "console.group"
+  }
+}
