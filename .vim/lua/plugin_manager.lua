@@ -1,8 +1,9 @@
+local misc_icons = require('font').misc_icons
+
 local M = {}
 
 local function confirm(manager)
-  return vim.fn.confirm('Install ' .. manager .. ' or Launch Neovim immediately', '&Yes\n&No', 1)
-    == 1
+  return vim.fn.confirm('Install ' .. manager .. ' or Launch Neovim immediately', '&Yes\n&No', 1) == 1
 end
 
 local lazy_enabled = false
@@ -47,12 +48,17 @@ local lazy_setup_default_opts = {
   },
   checker = {
     enable = true,
+    concurrency = 100,
   },
   dev = { path = '~/repos/github.com/yuki-yano' },
   ui = {
+    border = 'rounded',
     icons = {
-      lazy = ' ',
-      runtime = ' ',
+      lazy = misc_icons.lazy .. ' ',
+      runtime = misc_icons.vim,
+      cmd = misc_icons.cmd,
+      import = misc_icons.file,
+      ft = misc_icons.folder,
     },
   },
   performance = {

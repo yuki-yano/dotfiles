@@ -1,3 +1,4 @@
+-- Cache base settings by using lazy.nvim plugin loading
 require('options')
 require('func')
 require('highlight')

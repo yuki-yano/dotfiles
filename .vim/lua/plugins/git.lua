@@ -1,4 +1,18 @@
 return {
+  -- TODO: migrate from gina
+  {
+    'lambdalisue/gin.vim',
+    enabled = true,
+    dependencies = {
+      { 'vim-denops/denops.vim' },
+      { 'yuki-yano/denops-lazy.nvim' },
+    },
+    cmd = { 'Gin', 'GinBuffer', 'GinDiff', 'GinPatch', 'GinChaperon' },
+    init = function() end,
+    config = function()
+      require('denops-lazy').load('gin.vim')
+    end,
+  },
   {
     'lambdalisue/gina.vim',
     cmd = { 'Gina' },
@@ -46,12 +60,14 @@ return {
   },
   {
     'rhysd/committia.vim',
+    -- FIX: git information in Neovim is corrupted when used with `Gin commit`
+    enabled = false,
     ft = { 'gitcommit' },
     init = function()
       vim.g.committia_hooks = {
         edit_open = function(info)
           if info.vcs == 'git' and vim.fn.getline(1) == '' then
-            vim.cmd.startinsert()
+            vim.cmd([[startinsert]])
           end
         end,
       }
@@ -65,9 +81,11 @@ return {
   },
   {
     'sindrets/diffview.nvim',
-    dependencies = { 'nvim-lua/plenary.nvim' },
+    dependencies = {
+      { 'nvim-lua/plenary.nvim' },
+    },
     cmd = {
-      'DiffviewLogDiffviewOpen',
+      'DiffviewOpen',
       'DiffviewClose',
       'DiffviewRefresh',
       'DiffviewFocusFiles',

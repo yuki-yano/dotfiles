@@ -1,3 +1,9 @@
+local base_colors = require('color').base_colors
+local misc_colors = require('color').misc_colors
+local diagnostic_icons = require('font').diagnostic_icons
+local todo_icons = require('font').todo_icons
+local enable_noice = require('plugin_utils').enable_noice
+local enable_lsp_lines = require('plugin_utils').enable_lsp_lines
 local get_lsp_lines_status = require('plugin_utils').get_lsp_lines_status
 
 return {
@@ -9,24 +15,29 @@ return {
       vim.opt.showtabline = 0
     end,
     config = function()
-      local theme_table = {
-        ['gruvbox-material'] = function()
-          local custom_gruvbox = require('lualine.themes.gruvbox-material')
-          custom_gruvbox.normal.a.fg = '#32302F'
-          custom_gruvbox.normal.a.bg = '#7DAEA3'
-          custom_gruvbox.insert.a.fg = '#32302F'
-          custom_gruvbox.insert.a.bg = '#D8A657'
-          custom_gruvbox.visual.a.fg = '#32302F'
-          custom_gruvbox.visual.a.bg = '#D3869B'
-          custom_gruvbox.replace.a.fg = '#32302F'
-          custom_gruvbox.replace.a.bg = '#EA6962'
-          return custom_gruvbox
-        end,
-        ['tokyonight'] = function()
-          return 'tokyonight'
-        end,
-      }
+      local theme_table = function(theme)
+        local table = {
+          ['gruvbox-material'] = function()
+            local custom_gruvbox = require('lualine.themes.gruvbox-material')
+            custom_gruvbox.normal.a.fg = base_colors.black
+            custom_gruvbox.normal.a.bg = base_colors.blue
+            custom_gruvbox.insert.a.fg = base_colors.black
+            custom_gruvbox.insert.a.bg = base_colors.yellow
+            custom_gruvbox.visual.a.fg = base_colors.black
+            custom_gruvbox.visual.a.bg = base_colors.magenta
+            custom_gruvbox.replace.a.fg = base_colors.black
+            custom_gruvbox.replace.a.bg = base_colors.red
+            return custom_gruvbox
+          end,
+          ['tokyonight'] = function()
+            return 'tokyonight'
+          end,
+        }
 
+        return table[theme] and table[theme]() or 'auto'
+      end
+
+      -- Displays the number of unsaved files other than the current buffer
       local function modified_buffers()
         local modified_background_buffers = vim.tbl_filter(function(bufnr)
           return vim.api.nvim_buf_is_valid(bufnr)
@@ -45,13 +56,17 @@ return {
         end
       end
 
-      local function lsp_line_mode()
+      local function lsp_lines_mode()
+        if not enable_lsp_lines then
+          return ''
+        end
+
         local mode = ''
-        if get_lsp_lines_status() == 'current' then
+        if get_lsp_lines_status().mode == 'current' then
           mode = 'C'
-        elseif get_lsp_lines_status() == 'all' then
+        elseif get_lsp_lines_status().mode == 'all' then
           mode = 'A'
-        elseif get_lsp_lines_status() == 'none' then
+        elseif get_lsp_lines_status().mode == 'none' then
           mode = 'N'
         end
         return 'LspLines: [' .. mode .. ']'
@@ -59,7 +74,7 @@ return {
 
       require('lualine').setup({
         options = {
-          theme = theme_table[vim.env.NVIM_COLORSCHEME](),
+          theme = theme_table(vim.env.NVIM_COLORSCHEME),
           globalstatus = true,
         },
         sections = {
@@ -67,8 +82,16 @@ return {
           lualine_b = { 'branch', 'diff' },
           lualine_c = { { 'filename', path = 1 }, modified_buffers },
           lualine_x = {
-            { 'diagnostics', symbols = { error = ' ', warn = '  ', info = ' ', hint = ' ' } },
-            { lsp_line_mode },
+            {
+              'diagnostics',
+              symbols = {
+                error = diagnostic_icons.error .. ' ',
+                warn = diagnostic_icons.warn .. ' ',
+                info = diagnostic_icons.info .. ' ',
+                hint = diagnostic_icons.hint .. ' ',
+              },
+            },
+            { lsp_lines_mode },
             { 'filetype', colored = true, icon_only = false },
           },
           lualine_y = { 'progress' },
@@ -87,26 +110,26 @@ return {
   },
   {
     'akinsho/bufferline.nvim',
-    dependencies = { 'tiagovla/scope.nvim' },
+    dependencies = {
+      { 'tiagovla/scope.nvim' },
+    },
     event = { 'BufRead' },
     init = function()
       vim.keymap.set({ 'n' }, '<Plug>(ctrl-n)', '<Cmd>BufferLineCycleNext<CR>')
       vim.keymap.set({ 'n' }, '<Plug>(ctrl-p)', '<Cmd>BufferLineCyclePrev<CR>')
     end,
     config = function()
-      local black = '#32302F'
-      local red = '#EA6962'
-      local green = '#A9B665'
-      local yellow = '#D8A657'
-      local blue = '#7DAEA3'
-      local magenta = '#D3869B'
-      local cyan = '#89B482'
-      local white = '#D4BE98'
-      local grey = '#807569'
-      local background = '#1D2021'
-      local empty = '#1C1C1C'
-      local info = '#FFFFAF'
-      local vert_split = '#504945'
+      local black = base_colors.black
+      local red = base_colors.red
+      local green = base_colors.green
+      local yellow = base_colors.yellow
+      local blue = base_colors.blue
+      local white = base_colors.white
+      local grey = base_colors.grey
+      local background = base_colors.background
+      local empty = base_colors.empty
+      local info = base_colors.yellow
+      local vert_split = misc_colors.vert_split
 
       require('scope').setup()
 
@@ -127,11 +150,11 @@ return {
 
             if vim.env.LSP == 'nvim' then
               if diagnostics_dict.error then
-                error = ' ' .. diagnostics_dict.error
+                error = diagnostic_icons.error .. ' ' .. diagnostics_dict.error
               end
 
               if diagnostics_dict.warning then
-                warning = '  ' .. diagnostics_dict.warning
+                warning = diagnostic_icons.warn .. ' ' .. diagnostics_dict.warning
               end
             else
               local buf = vim.api.nvim_get_current_buf()
@@ -142,11 +165,11 @@ return {
               local coc_diagnostic_info = vim.api.nvim_buf_get_var(buf, 'coc_diagnostic_info')
 
               if coc_diagnostic_info.error ~= 0 then
-                error = ' ' .. coc_diagnostic_info.error
+                error = diagnostic_icons.error .. ' ' .. coc_diagnostic_info.error
               end
 
               if coc_diagnostic_info.warning ~= 0 then
-                warning = '  ' .. coc_diagnostic_info.warning
+                warning = diagnostic_icons.warn .. ' ' .. coc_diagnostic_info.warning
               end
             end
 
@@ -164,6 +187,12 @@ return {
             {
               filetype = 'fern',
               text = 'Fern',
+              highlight = 'Directory',
+              separator = true,
+            },
+            {
+              filetype = 'DiffviewFiles',
+              text = 'Diffview',
               highlight = 'Directory',
               separator = true,
             },
@@ -510,15 +539,16 @@ return {
       })
     end,
   },
-  -- {
-  --   'luukvbaal/statuscol.nvim',
-  --   event = { 'BufRead' },
-  --   config = function()
-  --     require('statuscol').setup({
-  --       setopt = true,
-  --     })
-  --   end,
-  -- },
+  {
+    'luukvbaal/statuscol.nvim',
+    enabled = false,
+    event = { 'BufRead' },
+    config = function()
+      require('statuscol').setup({
+        setopt = true,
+      })
+    end,
+  },
   {
     'levouh/tint.nvim',
     event = { 'BufRead' },
@@ -542,16 +572,14 @@ return {
   {
     'petertriho/nvim-scrollbar',
     dependencies = {
-      {
-        'petertriho/nvim-scrollbar',
-        'lewis6991/gitsigns.nvim',
-      },
+      { 'petertriho/nvim-scrollbar' },
+      { 'lewis6991/gitsigns.nvim' },
     },
     event = { 'BufRead' },
     config = function()
       require('scrollbar').setup({
         handle = {
-          color = '#3A3A3A',
+          color = misc_colors.scrollbar.bar,
         },
         handlers = {
           search = true,
@@ -562,7 +590,7 @@ return {
           Search = {
             text = { '-', '=' },
             priority = 5,
-            color = '#00AFAF',
+            color = misc_colors.scrollbar.search,
           },
           Error = {
             priority = 1,
@@ -594,7 +622,7 @@ return {
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { 'gruvbox-material' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'SmoothCursor', { fg = '#7DAEA3', bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'SmoothCursor', { fg = base_colors.blue, bg = 'NONE' })
         end,
       })
     end,
@@ -628,37 +656,32 @@ return {
       })
     end,
   },
-  -- {
-  --   "luukvbaal/statuscol.nvim",
-  --   event = { 'BufRead' },
-  --   config = function()
-  --     require("statuscol").setup()
-  --   end
-  -- },
   {
     'folke/todo-comments.nvim',
     event = { 'BufReadPost' },
     config = function()
       require('todo-comments').setup({
         keywords = {
-          FIX = { icon = '', color = '#E98989', alt = { 'FIXME', 'BUG', 'ISSUE' } },
-          TODO = { icon = '', color = '#B4BE82' },
-          WARN = { icon = '', color = '#FFAF60', alt = { 'WARNING', 'XXX' } },
-          NOTE = { icon = '', color = '#7DAEA3', alt = { 'INFO' } },
-          TEST = { icon = '', color = '#7DAEA3', alt = { 'TESTING', 'PASSED', 'FAILED' } },
+          TODO = { icon = todo_icons.todo, color = base_colors.green },
+          FIX = { icon = todo_icons.fix, color = base_colors.magenta, alt = { 'FIXME', 'BUG', 'ISSUE' } },
+          WARN = { icon = todo_icons.warn, color = base_colors.orange, alt = { 'WARNING' } },
+          TEST = { icon = todo_icons.test, color = base_colors.yellow, alt = { 'TESTING', 'PASSED', 'FAILED' } },
+          NOTE = { icon = todo_icons.note, color = base_colors.blue, alt = { 'INFO' } },
         },
       })
     end,
   },
   {
     'kevinhwang91/nvim-ufo',
-    dependencies = { 'kevinhwang91/promise-async' },
+    dependencies = {
+      { 'kevinhwang91/promise-async' },
+    },
     event = { 'FocusLost', 'CursorHold' },
     init = function()
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { 'gruvbox-material' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'UfoFoldVirtText', { fg = '#74A097' })
+          vim.api.nvim_set_hl(0, 'UfoFoldVirtText', { fg = base_colors.blue })
         end,
       })
     end,
@@ -771,9 +794,11 @@ return {
       })
     end,
   },
+  -- TODO: Setting key mappings
   {
     'uga-rosa/ccc.nvim',
     event = { 'BufRead' },
+    cmd = { 'CccPick', 'CccHighlighterToggle', 'CccHighlighterEnable' },
     config = function()
       local ccc = require('ccc')
       local ColorInput = require('ccc.input')
@@ -877,7 +902,31 @@ return {
     end,
   },
   {
+    'yuki-yano/highlight-undo.nvim',
+    -- dir = '~/repos/github.com/yuki-yano/highlight-undo.nvim',
+    dependencies = {
+      { 'vim-denops/denops.vim' },
+      { 'yuki-yano/denops-lazy.nvim' },
+    },
+    keys = {
+      { 'u', mode = { 'n' } },
+      { '<C-r>', mode = { 'n' } },
+    },
+    config = function()
+      -- TODO: map is not done on first undo and redo
+      vim.api.nvim_create_autocmd({ 'User' }, {
+        pattern = { 'DenopsPluginPost:highlight-undo' },
+        callback = function()
+          require('highlight-undo').setup()
+        end,
+      })
+      require('denops-lazy').load('highlight-undo.nvim', { wait_load = false })
+    end,
+  },
+  {
     'machakann/vim-highlightedundo',
+    -- NOTE: Use highlight-undo.nvim
+    enabled = false,
     keys = {
       { '<Plug>(highlightedundo-undo)', mode = { 'n' } },
       { '<Plug>(highlightedundo-redo)', mode = { 'n' } },
@@ -922,36 +971,37 @@ return {
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { 'gruvbox-material' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'HighlightedyankRegion', { fg = '#E27878', bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'HighlightedyankRegion', { fg = base_colors.red, bg = base_colors.black })
         end,
       })
     end,
   },
-  -- {
-  --   'folke/noice.nvim',
-  --   dependencies = {
-  --     'MunifTanjim/nui.nvim',
-  --     'rcarriga/nvim-notify',
-  --   },
-  --   event = { 'VeryLazy' },
-  --   config = function()
-  --     require('noice').setup({
-  --       lsp = {
-  --         signature = {
-  --           enabled = false,
-  --         },
-  --         override = {
-  --           ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
-  --           ['vim.lsp.util.stylize_markdown'] = true,
-  --         },
-  --       },
-  --       presets = {
-  --         command_palette = true,
-  --         long_message_to_split = true,
-  --       },
-  --     })
-  --   end,
-  -- },
+  {
+    'folke/noice.nvim',
+    enabled = enable_noice,
+    dependencies = {
+      { 'MunifTanjim/nui.nvim' },
+      { 'rcarriga/nvim-notify' },
+    },
+    event = { 'VeryLazy' },
+    config = function()
+      require('noice').setup({
+        lsp = {
+          signature = {
+            enabled = false,
+          },
+          override = {
+            ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
+            ['vim.lsp.util.stylize_markdown'] = true,
+          },
+        },
+        presets = {
+          command_palette = true,
+          long_message_to_split = true,
+        },
+      })
+    end,
+  },
   {
     'anuvyklack/hydra.nvim',
     keys = {
@@ -1146,13 +1196,13 @@ _x_: reload
   {
     'kyazdani42/nvim-web-devicons',
     config = function()
-      local red = '#EA6962'
-      local green = '#A9B665'
-      local yellow = '#D8A657'
-      local blue = '#7DAEA3'
-      local magenta = '#D3869B'
-      local cyan = '#89B482'
-      local white = '#D4BE98'
+      local red = base_colors.red
+      local green = base_colors.green
+      local yellow = base_colors.yellow
+      local blue = base_colors.blue
+      local magenta = base_colors.magenta
+      local cyan = base_colors.cyan
+      local white = base_colors.white
 
       require('nvim-web-devicons').set_default_icon('󾩻 ', white)
       require('nvim-web-devicons').setup({

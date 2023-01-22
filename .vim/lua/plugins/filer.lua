@@ -1,3 +1,5 @@
+local base_colors = require('color').base_colors
+
 return {
   {
     'lambdalisue/fern.vim',
@@ -28,10 +30,10 @@ return {
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { 'gruvbox-material' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'FernGitStatusWorktree', { fg = '#E27878', bg = 'NONE' })
-          vim.api.nvim_set_hl(0, 'FernGitStatusIndex', { fg = '#B4BE82', bg = 'NONE' })
-          vim.api.nvim_set_hl(0, 'FernGitStatusUnmerged', { fg = '#E27878', bg = 'NONE' })
-          vim.api.nvim_set_hl(0, 'FernGitStatusUntracked', { fg = '#E27878', bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'FernGitStatusWorktree', { fg = base_colors.red, bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'FernGitStatusIndex', { fg = base_colors.green, bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'FernGitStatusUnmerged', { fg = base_colors.red, bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'FernGitStatusUntracked', { fg = base_colors.red, bg = 'NONE' })
           vim.api.nvim_set_hl(0, 'FernGitStatusIgnored', { link = 'Comment' })
         end,
       })

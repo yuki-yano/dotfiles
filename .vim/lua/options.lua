@@ -9,7 +9,7 @@ vim.cmd.termencoding = 'utf-8'
 
 -- Neovim
 vim.opt.inccommand = 'nosplit'
--- vim.opt.pumblend = 10
+vim.opt.pumblend = 10
 vim.opt.splitkeep = 'screen'
 vim.opt.laststatus = 3
 
@@ -127,24 +127,6 @@ vim.api.nvim_create_autocmd({ 'FocusGained' }, {
     vim.cmd([[checktime]])
   end,
 })
-
--- Terminal
-vim.g.terminal_color_0 = '#1E2132'
-vim.g.terminal_color_1 = '#E27878'
-vim.g.terminal_color_2 = '#B4BE82'
-vim.g.terminal_color_3 = '#E2A478'
-vim.g.terminal_color_4 = '#84A0C6'
-vim.g.terminal_color_5 = '#A093C7'
-vim.g.terminal_color_6 = '#89B8C2'
-vim.g.terminal_color_7 = '#C6C8D1'
-vim.g.terminal_color_8 = '#6B7089'
-vim.g.terminal_color_9 = '#E98989'
-vim.g.terminal_color_10 = '#C0CA8E'
-vim.g.terminal_color_11 = '#E9B189'
-vim.g.terminal_color_12 = '#91ACD1'
-vim.g.terminal_color_13 = '#ADA0D3'
-vim.g.terminal_color_14 = '#95C4CE'
-vim.g.terminal_color_15 = '#D2D4DE'
 
 -- Remote Plugin
 vim.g.loaded_node_provider = 0

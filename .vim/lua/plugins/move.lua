@@ -1,3 +1,5 @@
+local misc_colors = require('color').misc_colors
+
 return {
   {
     'haya14busa/vim-edgemotion',
@@ -27,28 +29,31 @@ return {
       { '<Plug>(eft-repeat)', mode = { 'n', 'o', 'x' } },
     },
     init = function()
-      vim.g.eft_enable = true
-      vim.keymap.set({ 'n', 'o', 'x' }, ';;', '<Plug>(eft-repeat)')
-      vim.keymap.set({ 'n', 'o', 'x' }, 'f', '<Plug>(eft-f)')
-      vim.keymap.set({ 'n', 'o', 'x' }, 'F', '<Plug>(eft-F)')
-      vim.keymap.set({ 'o', 'x' }, 't', '<Plug>(eft-t)')
-      vim.keymap.set({ 'o', 'x' }, 'T', '<Plug>(eft-T)')
+      local function enable_eft()
+        vim.g.eft_enable = true
+        vim.keymap.set({ 'n', 'o', 'x' }, ';;', '<Plug>(eft-repeat)')
+        vim.keymap.set({ 'n', 'o', 'x' }, 'f', '<Plug>(eft-f)')
+        vim.keymap.set({ 'n', 'o', 'x' }, 'F', '<Plug>(eft-F)')
+        vim.keymap.set({ 'o', 'x' }, 't', '<Plug>(eft-t)')
+        vim.keymap.set({ 'o', 'x' }, 'T', '<Plug>(eft-T)')
+      end
+
+      local function disable_eft()
+        vim.g.eft_enable = false
+        vim.keymap.set({ 'n', 'x' }, ';;', ';')
+        vim.keymap.del({ 'n', 'o', 'x' }, 'f')
+        vim.keymap.del({ 'n', 'o', 'x' }, 'F')
+        vim.keymap.del({ 'o', 'x' }, 't')
+        vim.keymap.del({ 'o', 'x' }, 'T')
+      end
+
+      enable_eft()
 
       local function eft_toggle()
         if vim.g.eft_enable then
-          vim.g.eft_enable = false
-          vim.keymap.set({ 'n', 'x' }, ';;', ';')
-          vim.keymap.del({ 'n', 'o', 'x' }, 'f')
-          vim.keymap.del({ 'n', 'o', 'x' }, 'F')
-          vim.keymap.del({ 'o', 'x' }, 't')
-          vim.keymap.del({ 'o', 'x' }, 'T')
+          disable_eft()
         else
-          vim.g.eft_enable = true
-          vim.keymap.set({ 'n', 'o', 'x' }, ';;', '<Plug>(eft-repeat)')
-          vim.keymap.set({ 'n', 'o', 'x' }, 'f', '<Plug>(eft-f)')
-          vim.keymap.set({ 'n', 'o', 'x' }, 'F', '<Plug>(eft-F)')
-          vim.keymap.set({ 'o', 'x' }, 't', '<Plug>(eft-t)')
-          vim.keymap.set({ 'o', 'x' }, 'T', '<Plug>(eft-T)')
+          enable_eft()
         end
       end
 
@@ -58,8 +63,8 @@ return {
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { 'gruvbox-material' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'EftChar', { fg = '#E27878' })
-          vim.api.nvim_set_hl(0, 'EftSubChar', { fg = '#5F87D7' })
+          vim.api.nvim_set_hl(0, 'EftChar', { fg = misc_colors.pointer.red })
+          vim.api.nvim_set_hl(0, 'EftSubChar', { fg = misc_colors.pointer.blue })
         end,
       })
     end,
@@ -108,14 +113,22 @@ return {
         pattern = { 'gruvbox-material' },
         callback = function()
           vim.api.nvim_set_hl(0, 'HlSearchLensNear', { link = 'IncSearch' })
-          vim.api.nvim_set_hl(0, 'HlSearchLens', { fg = '#889EB5', bg = '#283642' })
-          vim.api.nvim_set_hl(0, 'HlSearchLensNear', { fg = 'NONE', bg = '#213F72' })
-          vim.api.nvim_set_hl(0, 'HlSearchFloat', { fg = 'NONE', bg = '#213F72' })
+          vim.api.nvim_set_hl(0, 'HlSearchLens', { fg = misc_colors.hlslens.lens.fg, bg = misc_colors.hlslens.lens.bg })
+          vim.api.nvim_set_hl(
+            0,
+            'HlSearchLensNear',
+            { fg = misc_colors.hlslens.near.fg, bg = misc_colors.hlslens.near.bg }
+          )
+          vim.api.nvim_set_hl(
+            0,
+            'HlSearchFloat',
+            { fg = misc_colors.hlslens.float.fg, bg = misc_colors.hlslens.float.bg }
+          )
         end,
       })
     end,
     config = function()
-      -- require from nvim-scrollbar
+      -- NOTE: setup from nvim-scrollbar
       -- require('hlslens').setup()
     end,
   },
@@ -134,6 +147,7 @@ return {
     'yuki-yano/fuzzy-motion.vim',
     dependencies = {
       { 'vim-denops/denops.vim' },
+      { 'yuki-yano/denops-lazy.nvim' },
       { 'lambdalisue/kensaku.vim' },
     },
     cmd = { 'FuzzyMotion' },
@@ -149,9 +163,33 @@ return {
     'lambdalisue/kensaku.vim',
     dependencies = {
       { 'vim-denops/denops.vim' },
+      { 'yuki-yano/denops-lazy.nvim' },
     },
     config = function()
       require('denops-lazy').load('kensaku.vim', { wait_load = false })
+    end,
+  },
+  {
+    'hrsh7th/nvim-gtd',
+    -- FIX: lazy load now working?
+    --      Is it removed from the map when it fails to run?
+    enabled = false,
+    keys = {
+      { 'gf', mode = { 'n' } },
+    },
+    init = function()
+      vim.keymap.set({ 'n' }, 'gf', function()
+        require('gtd').exec({ command = 'edit' })
+      end)
+    end,
+    config = function()
+      require('gtd').setup({
+        sources = {
+          { name = 'lsp' },
+          { name = 'findup' },
+          -- { name = 'walk' },
+        },
+      })
     end,
   },
 }

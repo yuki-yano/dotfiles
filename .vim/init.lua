@@ -10,5 +10,11 @@ end
 
 require('plugin_manager').lazy_init()
 require('preload')
+-- NOTE: lazy.nvim auto load lua/plugins/config.lua
+--       unnecessary `require('plugins/config')`
+--       config.lua load base settings with cache. (from lazy.nvim)
+--         - lua/options.lua
+--         - lua/func.lua
+--         - lua/highlight.lua
 require('plugin_manager').lazy_setup()
 require('postload')

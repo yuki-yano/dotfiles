@@ -43,10 +43,17 @@
     "body": ["class ${1:Klass} {", "\tconstructor(${2:params}) {", "\t}", "}"],
     "description": "class"
   },
-  "range": {
+  "range1": {
     "prefix": ["range"],
-    "body": ["[...Array(${1:n})].map((_, i + ${2:start}) => i)"],
-    "description": "range"
+    "body": ["[...Array(${1:n}) as Array<never>].map((_, i) => i)"],
+    "description": "range from 0"
+  },
+  "range2": {
+    "prefix": ["range"],
+    "body": [
+      "[...Array(${1:n}) as Array<never>].map((_, i) => i + ${2:start})"
+    ],
+    "description": "range with start"
   },
   "log": {
     "prefix": ["log"],

@@ -1,4 +1,7 @@
-local icons = require('font').icons
+local get_disable_cmp_filetypes = require('plugin_utils').get_disable_cmp_filetypes
+local base_colors = require('color').base_colors
+local codicons = require('font').codicons
+local misc_icons = require('font').misc_icons
 local list_concat = require('utils').list_concat
 
 return {
@@ -17,17 +20,33 @@ return {
       { 'onsails/lspkind-nvim' },
       { 'L3MON4D3/LuaSnip' },
       { 'saadparwaiz1/cmp_luasnip' },
-      { 'kento-ogata/cmp-tsnip', dependencies = { 'yuki-yano/tsnip.nvim' } },
+      {
+        'kento-ogata/cmp-tsnip',
+        dependencies = {
+          { 'yuki-yano/tsnip.nvim' },
+        },
+      },
       { 'tzachar/cmp-tabnine', build = './install.sh' },
-      { 'zbirenbaum/copilot-cmp' },
+      {
+        'zbirenbaum/copilot-cmp',
+        dependencies = {
+          { 'zbirenbaum/copilot.lua' },
+        },
+      },
       { 'hrsh7th/cmp-cmdline' },
       {
         'tzachar/cmp-fuzzy-path',
-        dependencies = { 'tzachar/fuzzy.nvim', dependencies = { { 'romgrk/fzy-lua-native' } } },
+        dependencies = {
+          {
+            'tzachar/fuzzy.nvim',
+            dependencies = {
+              { 'romgrk/fzy-lua-native' },
+            },
+          },
+        },
       },
-      { 'hrsh7th/cmp-nvim-lsp-document-symbol' },
       { 'kyazdani42/nvim-web-devicons' },
-      { 'cohama/lexima.vim' }, -- Before loading cmp
+      { 'cohama/lexima.vim' }, -- NOTE: Load before cmp
     },
     init = function()
       vim.api.nvim_create_autocmd({ 'CmdlineEnter' }, {
@@ -46,52 +65,43 @@ return {
         end,
       })
 
-      vim.api.nvim_create_autocmd({ 'FileType' }, {
-        pattern = 'TelescopePrompt',
-        callback = function()
-          require('cmp').setup.buffer({
-            completion = { autocomplete = false },
-          })
-        end,
-      })
-
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { 'gruvbox-material' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'CmpItemKindUnit', { fg = '#D8A657' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindNumber', { fg = '#D3869B' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindFunction', { fg = '#A9B665' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindKey', { fg = '#7DAEA3' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindKeyword', { fg = '#EA6962' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindReference', { fg = '#89B482' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindFolder', { fg = '#D8A657' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindVariable', { fg = '#D3869B' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindNull', { fg = '#D8A657' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindValue', { fg = '#D8A657' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindConstant', { fg = '#D4BE98' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindText', { fg = '#A9B665' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindModule', { fg = '#EA6962' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindPackage', { fg = '#EA6962' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindClass', { fg = '#A9B665' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindOperator', { fg = '#E78A4E' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindStruct', { fg = '#EA6962' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindObject', { fg = '#D8A657' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindMethod', { fg = '#A9B665' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindArray', { fg = '#D8A657' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindEnum', { fg = '#D8A657' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindField', { fg = '#7DAEA3' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindInterface', { fg = '#D8A657' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindProperty', { fg = '#7DAEA3' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindColor', { fg = '#D3869B' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindFile', { fg = '#EA6962' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindEvent', { fg = '#D4BE98' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindTypeParameter', { fg = '#D4BE98' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindConstructor', { fg = '#A9B665' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindSnippet', { fg = '#D8A657' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindBoolean', { fg = '#D3869B' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindNamespace', { fg = '#D8A657' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindString', { fg = '#89B482' })
-          vim.api.nvim_set_hl(0, 'CmpItemKindEnumMember', { fg = '#7DAEA3' })
+          vim.api.nvim_set_hl(0, 'CmpItemKindUnit', { fg = base_colors.yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindNumber', { fg = base_colors.magenta })
+          vim.api.nvim_set_hl(0, 'CmpItemKindFunction', { fg = base_colors.green })
+          vim.api.nvim_set_hl(0, 'CmpItemKindKey', { fg = base_colors.blue })
+          vim.api.nvim_set_hl(0, 'CmpItemKindKeyword', { fg = base_colors.red })
+          vim.api.nvim_set_hl(0, 'CmpItemKindReference', { fg = base_colors.cyan })
+          vim.api.nvim_set_hl(0, 'CmpItemKindFolder', { fg = base_colors.yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindVariable', { fg = base_colors.magenta })
+          vim.api.nvim_set_hl(0, 'CmpItemKindNull', { fg = base_colors.yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindValue', { fg = base_colors.yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindConstant', { fg = base_colors.white })
+          vim.api.nvim_set_hl(0, 'CmpItemKindText', { fg = base_colors.green })
+          vim.api.nvim_set_hl(0, 'CmpItemKindModule', { fg = base_colors.red })
+          vim.api.nvim_set_hl(0, 'CmpItemKindPackage', { fg = base_colors.red })
+          vim.api.nvim_set_hl(0, 'CmpItemKindClass', { fg = base_colors.green })
+          vim.api.nvim_set_hl(0, 'CmpItemKindOperator', { fg = base_colors.orange })
+          vim.api.nvim_set_hl(0, 'CmpItemKindStruct', { fg = base_colors.red })
+          vim.api.nvim_set_hl(0, 'CmpItemKindObject', { fg = base_colors.yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindMethod', { fg = base_colors.green })
+          vim.api.nvim_set_hl(0, 'CmpItemKindArray', { fg = base_colors.yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindEnum', { fg = base_colors.yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindField', { fg = base_colors.blue })
+          vim.api.nvim_set_hl(0, 'CmpItemKindInterface', { fg = base_colors.yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindProperty', { fg = base_colors.blue })
+          vim.api.nvim_set_hl(0, 'CmpItemKindColor', { fg = base_colors.magenta })
+          vim.api.nvim_set_hl(0, 'CmpItemKindFile', { fg = base_colors.red })
+          vim.api.nvim_set_hl(0, 'CmpItemKindEvent', { fg = base_colors.white })
+          vim.api.nvim_set_hl(0, 'CmpItemKindTypeParameter', { fg = base_colors.white })
+          vim.api.nvim_set_hl(0, 'CmpItemKindConstructor', { fg = base_colors.green })
+          vim.api.nvim_set_hl(0, 'CmpItemKindSnippet', { fg = base_colors.yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindBoolean', { fg = base_colors.magenta })
+          vim.api.nvim_set_hl(0, 'CmpItemKindNamespace', { fg = base_colors.yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindString', { fg = base_colors.cyan })
+          vim.api.nvim_set_hl(0, 'CmpItemKindEnumMember', { fg = base_colors.blue })
         end,
       })
     end,
@@ -100,7 +110,33 @@ return {
       local luasnip = require('luasnip')
       local lspkind = require('lspkind')
 
-      -- force_keyword_length is used from manual complete
+      require('cmp.utils.misc').redraw.incsearch_redraw_keys = '<C-r><BS>'
+      lspkind.init({
+        preset = 'codicons',
+        symbol_map = codicons,
+      })
+
+      -- NOTE: After load lexima key mappings
+      require('copilot').setup({
+        suggestion = {
+          auto_trigger = true,
+          keymap = {
+            accept = '<Tab>',
+            -- <C-]> is used for insx
+            dismiss = false,
+          },
+        },
+        filetypes = {
+          ['.'] = true,
+          -- typescript = true,
+          -- typescriptreact = true,
+          -- lua = true,
+          -- vim = true,
+        },
+      })
+      require('copilot_cmp').setup()
+
+      -- NOTE: force_keyword_length is used from manual complete
       local sources = {
         { name = 'luasnip', keyword_length = 2, force_keyword_length = true },
         { name = 'tsnip', keyword_length = 2, force_keyword_length = true },
@@ -146,7 +182,13 @@ return {
                 })()
               end),
               ['<C-e>'] = cmp.mapping.abort(),
-              ['<CR>'] = cmp.mapping.confirm({ select = true }),
+              ['<CR>'] = cmp.mapping(function(fallback)
+                if cmp.visible() and cmp.get_selected_entry() then
+                  cmp.confirm({ select = true })
+                else
+                  fallback()
+                end
+              end),
               ['<C-f>'] = cmp.mapping(function(fallback)
                 if luasnip.jumpable(1) then
                   luasnip.jump(1)
@@ -164,8 +206,8 @@ return {
             })
           or {},
         window = {
-          completion = cmp.config.window.bordered(),
-          documentation = cmp.config.window.bordered(),
+          completion = cmp.config.window.bordered({}),
+          documentation = cmp.config.window.bordered({}),
         },
         sources = cmp.config.sources(sources),
         formatting = {
@@ -195,13 +237,6 @@ return {
         },
       })
 
-      lspkind.init({
-        preset = 'codicons',
-        symbol_map = icons,
-      })
-
-      require('cmp.utils.misc').redraw.incsearch_redraw_keys = '<C-r><BS>'
-
       local incsearch_settings = {
         mapping = cmp.mapping.preset.cmdline({
           ['<C-n>'] = vim.NIL,
@@ -209,8 +244,6 @@ return {
           ['<C-e>'] = vim.NIL,
         }),
         sources = cmp.config.sources({
-          { name = 'nvim_lsp_document_symbol' },
-        }, {
           { name = 'buffer' },
         }),
         formatting = {
@@ -229,6 +262,7 @@ return {
         }),
         sources = cmp.config.sources({
           { name = 'cmdline' },
+          { name = 'path' },
           {
             name = 'fuzzy_path',
             trigger_characters = { ' ', '.', '/', '~' },
@@ -251,16 +285,16 @@ return {
         formatting = {
           fields = { 'kind', 'abbr', 'menu' },
           format = function(entry, vim_item)
-            if 'fuzzy_path' == entry.source.name then
+            if vim.tbl_contains({ 'path', 'fuzzy_path' }, entry.source.name) then
               local icon, hl_group = require('nvim-web-devicons').get_icon(entry:get_completion_item().label)
               if icon then
                 vim_item.kind = icon
                 vim_item.kind_hl_group = hl_group
               else
-                vim_item.kind = '󾩻 '
+                vim_item.kind = misc_icons.file
               end
             elseif 'cmdline' == entry.source.name then
-              vim_item.kind = '󾪌 '
+              vim_item.kind = misc_icons.cmd
               vim_item.dup = true
             end
 
@@ -268,34 +302,50 @@ return {
           end,
         },
       })
-    end,
-  },
-  {
-    'zbirenbaum/copilot.lua',
-    config = function()
-      require('copilot').setup({
-        suggestion = {
-          auto_trigger = true,
-          keymap = {
-            accept = '<Tab>',
-          },
-        },
-        filetypes = {
-          typescript = true,
-          typescriptreact = true,
-          lua = true,
-          vim = true,
-        },
+
+      -- Insert '(' after confirm function or method item
+      cmp.event:on('confirm_done', function(evt)
+        local Kind = cmp.lsp.CompletionItemKind
+
+        -- TypeScript imported functions are completed as variable with the format `(alias) function {func_name} ...`.
+        local ts_extra_matcher = function(item)
+          return item.kind == Kind.Variable and string.match(item.detail, '^%(alias%) function ') ~= nil
+        end
+        local rules = {
+          -- NOTE: Disabled because vtsls returns snippet
+          -- typescript = {
+          --   ['('] = {
+          --     kind = { Kind.Function, Kind.Method },
+          --     extra_matcher = ts_extra_matcher,
+          --   },
+          -- },
+          -- typescriptreact = {
+          --   ['('] = {
+          --     kind = { Kind.Function, Kind.Method },
+          --     extra_matcher = ts_extra_matcher,
+          --   },
+          -- },
+        }
+
+        local filetype = vim.o.filetype
+        local item = evt.entry:get_completion_item()
+        if rules[filetype] then
+          for key, rule in pairs(rules[filetype]) do
+            if vim.tbl_contains(rule.kind, item.kind) or rule.extra_matcher(item) then
+              vim.api.nvim_feedkeys(key, 'i', true)
+            end
+          end
+        end
+      end)
+
+      vim.api.nvim_create_autocmd({ 'FileType' }, {
+        pattern = get_disable_cmp_filetypes(),
+        callback = function()
+          cmp.setup.buffer({
+            completion = { autocomplete = false },
+          })
+        end,
       })
-    end,
-  },
-  {
-    'zbirenbaum/copilot-cmp',
-    dependencies = {
-      { 'zbirenbaum/copilot.lua' },
-    },
-    config = function()
-      require('copilot_cmp').setup()
     end,
   },
   {
@@ -307,8 +357,9 @@ return {
   {
     'yuki-yano/tsnip.nvim',
     dependencies = {
-      'vim-denops/denops.vim',
-      'MunifTanjim/nui.nvim',
+      { 'vim-denops/denops.vim' },
+      { 'yuki-yano/denops-lazy.nvim' },
+      { 'MunifTanjim/nui.nvim' },
     },
     event = { 'InsertEnter' },
     cmd = { 'TSnip' },
@@ -456,12 +507,25 @@ return {
   },
   {
     'cohama/lexima.vim',
-    dependencies = { { 'windwp/nvim-ts-autotag' } },
+    dependencies = {
+      { 'windwp/nvim-ts-autotag' },
+    },
     event = { 'InsertEnter', 'CmdlineEnter' },
+    init = function()
+      vim.g.lexima_enable_space_rules = false
+    end,
     config = function()
       local vimx = require('artemis')
 
       local rules = {}
+
+      -- Base rule
+      rules = list_concat({
+        rules,
+        {
+          { char = '<C-f>', input = '<C-g>U<Right>', priority = 10 },
+        },
+      })
 
       -- Parenthesis
       rules = list_concat({
@@ -478,6 +542,8 @@ return {
         {
           { char = '<C-h>', at = [[{\%#}]], input = '<BS><Del>' },
           { char = '<BS>', at = [[{\%#}]], input = '<BS><Del>' },
+          { char = '<Space>', at = [[{\%#}]], input_after = '<Space>' },
+          { char = '<BS>', at = [[{\ \%# }]], delete = 1 },
         },
       })
 
@@ -518,7 +584,7 @@ return {
       })
 
       -- Surround function
-      -- Use nvim-insx
+      -- NOTE: Use nvim-insx fast_wrap
       -- rules = list_concat({
       --   rules,
       --   {
@@ -528,33 +594,191 @@ return {
       -- })
 
       -- TypeScript
+      -- NOTE: `<Esc>a` is a workaround to disable copilot
+      rules = list_concat({
+        rules,
+        -- const
+        {
+          {
+            filetype = { 'typescript', 'typescriptreact' },
+            char = '<Space>',
+            at = [[^\s*c\%#$]],
+            input = '<C-w>const ',
+            input_after = ' = ',
+          },
+          {
+            filetype = { 'typescript', 'typescriptreact' },
+            char = '<C-f>',
+            at = [[^\s*const \S\+\%# = $]],
+            input = '<Esc>a<End>',
+          },
+        },
+        -- const arrow function
+        {
+          {
+            filetype = { 'typescript', 'typescriptreact' },
+            char = '<Space>',
+            at = [[^\s*cf\%#$]],
+            input = '<C-w>const ',
+            input_after = ' = () => {<CR>}',
+          },
+          {
+            filetype = { 'typescript', 'typescriptreact' },
+            char = '<C-f>',
+            at = [[^\s*const \S\+\%# = () => {$]],
+            input = '<Esc>a<C-o>:normal! f)a<Esc>',
+          },
+          {
+            filetype = { 'typescript', 'typescriptreact' },
+            char = '<C-f>',
+            at = [[^\s*const \S\+ = (.*\%#) => {$]],
+            input = '<Esc>a<End><CR>',
+          },
+        },
+        -- function
+        {
+          {
+            filetype = { 'typescript', 'typescriptreact' },
+            char = '<Space>',
+            at = [[^\s*f\%#$]],
+            input = '<C-w>function ',
+            input_after = '() {<CR>}',
+          },
+          {
+            filetype = { 'typescript', 'typescriptreact' },
+            char = '<C-f>',
+            at = [[^\s*function \S\+(.*\%#) {$]],
+            input = '<Esc>a<End><CR>',
+          },
+        },
+        -- if
+        {
+          {
+            filetype = { 'typescript', 'typescriptreact' },
+            char = '<Space>',
+            at = [[^\s*if\%#$]],
+            input = '<C-w>if (',
+            input_after = ') {<CR>}',
+          },
+          {
+            filetype = { 'typescript', 'typescriptreact' },
+            char = '<C-f>',
+            at = [[^\s*if (.*\%#) {$]],
+            input = '<Esc>a<End><CR>',
+          },
+        },
+        -- expand arrow function
+        -- NOTE: Try `cf` shorthand
+        -- {
+        --   {
+        --     filetype = { 'typescript', 'typescriptreact' },
+        --     char = ';',
+        --     at = [[\.[a-zA-Z]\+([a-zA-Z,]*;\%#)]],
+        --     input = '<BS> => {',
+        --     input_after = '}',
+        --   },
+        --   {
+        --     filetype = { 'typescript', 'typescriptreact' },
+        --     char = ';',
+        --     at = [[\.[a-zA-Z]\+(([a-zA-Z, :<>]*;\%#))]],
+        --     input = '<BS><C-g>U<Right> => {',
+        --     input_after = '}',
+        --   },
+        --   {
+        --     filetype = { 'typescript', 'typescriptreact' },
+        --     char = ';',
+        --     at = [[([a-zA-Z, :<>]*;\%#)]],
+        --     input = '<BS><C-g>U<Right> => {',
+        --     input_after = '}',
+        --   },
+        --   {
+        --     filetype = { 'typescript', 'typescriptreact' },
+        --     char = ';',
+        --     at = [[({[a-zA-Z, :<>]\+;\%#\s\?})]],
+        --     input = '<BS><C-o>:normal! f)<CR>a<C-g>U<Right> => {}<Esc>',
+        --   },
+        -- },
+      })
+
+      -- pp
       rules = list_concat({
         rules,
         {
-          { char = ';', at = [[\.[a-zA-Z]\+([a-zA-Z,]*;\%#)]], input = '<BS> => {', input_after = '}' },
           {
-            char = ';',
-            at = [[\.[a-zA-Z]\+(([a-zA-Z, :<>]*;\%#))]],
-            input = '<BS><C-g>U<Right> => {',
-            input_after = '}',
-          },
-          { char = ';', at = [[([a-zA-Z, :<>]*;\%#)]], input = '<BS><C-g>U<Right> => {', input_after = '}' },
-          {
-            char = ';',
-            at = [[({[a-zA-Z, :<>]\+;\%#\s\?})]],
-            input = '<BS><C-o>:normal! f)<CR>a<C-g>U<Right> => {}<Esc>',
+            filetype = { 'typescript', 'typescriptreact' },
+            char = 'p',
+            at = [[^\s*p\%#$]],
+            input = '<C-w>console.log(',
+            input_after = ')',
           },
         },
       })
+
+      -- log level rotate
+      for level, next_level in pairs({
+        log = {
+          next = 'warn',
+          prev = 'info',
+        },
+        warn = {
+          next = 'error',
+          prev = 'log',
+        },
+        error = {
+          next = 'debug',
+          prev = 'warn',
+        },
+        debug = {
+          next = 'info',
+          prev = 'error',
+        },
+        info = {
+          next = 'log',
+          prev = 'debug',
+        },
+      }) do
+        rules = list_concat({
+          rules,
+          {
+            {
+              filetype = { 'typescript', 'typescriptreact' },
+              at = [[console\.]] .. level .. [[(\%#]],
+              char = '<C-a>',
+              input = '<C-w><C-w>' .. next_level.next .. '(',
+            },
+            {
+              filetype = { 'typescript', 'typescriptreact' },
+              at = [[console\.]] .. level .. [[(\%#]],
+              char = '<C-x>',
+              input = '<C-w><C-w>' .. next_level.prev .. '(',
+            },
+          },
+        })
+      end
 
       -- TSX with nvim-ts-autotag
       rules = list_concat({
         rules,
         {
           {
+            filetype = { 'typescript', 'typescriptreact' },
             char = '>',
             at = [[<[a-zA-Z.]\+\(\s\)\?.*\%#]],
             input = [[><Esc>:lua require('nvim-ts-autotag.internal').close_tag()<CR>a]],
+          },
+        },
+      })
+
+      -- Lua
+      rules = list_concat({
+        rules,
+        {
+          {
+            filetype = { 'lua' },
+            char = 'p',
+            at = [[^\s*p\%#]],
+            input = '<C-w>vim.pretty_print(',
+            input_after = ')',
           },
         },
       })
@@ -563,46 +787,186 @@ return {
       rules = list_concat({
         rules,
         {
-          { filetype = 'markdown', char = '#', at = [=[^\%#\%(#\)\@!]=], input = '#<Space>' },
-          { filetype = 'markdown', char = '#', at = [=[#\s\%#]=], input = '<BS>#<Space>' },
-          { filetype = 'markdown', char = '<C-h>', at = [=[^#\s\%#]=], input = '<BS><BS>' },
-          { filetype = 'markdown', char = '<C-h>', at = [=[##\s\%#]=], input = '<BS><BS><Space>' },
-          { filetype = 'markdown', char = '<BS>', at = [=[^#\s\%#]=], input = '<BS><BS>' },
-          { filetype = 'markdown', char = '<BS>', at = [=[##\s\%#]=], input = '<BS><BS><Space>' },
-          { filetype = 'markdown', char = '-', at = [=[^\s*\%#]=], input = '-<Space>' },
-          { filetype = 'markdown', char = '<Tab>', at = [=[^\s*-\s\%#]=], input = '<Home><Tab><End>' },
-          { filetype = 'markdown', char = '<Tab>', at = [=[^\s*-\s\w.*\%#]=], input = '<Home><Tab><End>' },
-          { filetype = 'markdown', char = '<S-Tab>', at = [=[^\s\+-\s\%#]=], input = '<Home><Del><Del><End>' },
-          { filetype = 'markdown', char = '<S-Tab>', at = [=[^\s\+-\s\w.*\%#]=], input = '<Home><Del><Del><End>' },
-          { filetype = 'markdown', char = '<S-Tab>', at = [=[^-\s\w.*\%#]=], input = '' },
-          { filetype = 'markdown', char = '<C-h>', at = [=[^-\s\%#]=], input = '<C-w><BS>' },
-          { filetype = 'markdown', char = '<C-h>', at = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><BS>' },
-          { filetype = 'markdown', char = '<BS>', at = [=[^-\s\%#]=], input = '<C-w><BS>' },
-          { filetype = 'markdown', char = '<BS>', at = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><BS>' },
-          { filetype = 'markdown', char = '<CR>', at = [=[^-\s\%#]=], input = '<C-w><CR>' },
-          { filetype = 'markdown', char = '<CR>', at = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><CR>' },
-          { filetype = 'markdown', char = '<CR>', at = [=[^\s*-\s\w.*\%#]=], input = '<CR>-<Space>' },
-          { filetype = 'markdown', char = '[', at = [=[^\s*-\s\%#]=], input = '<Left><Space>[]<Left>' },
+          {
+            filetype = 'markdown',
+            char = '#',
+            at = [=[^\%#\%(#\)\@!]=],
+            input = '#<Space>',
+          },
+          {
+            filetype = 'markdown',
+            char = '#',
+            at = [=[#\s\%#]=],
+            input = '<BS>#<Space>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<C-h>',
+            at = [=[^#\s\%#]=],
+            input = '<BS><BS>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<C-h>',
+            at = [=[##\s\%#]=],
+            input = '<BS><BS><Space>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<BS>',
+            at = [=[^#\s\%#]=],
+            input = '<BS><BS>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<BS>',
+            at = [=[##\s\%#]=],
+            input = '<BS><BS><Space>',
+          },
+          {
+            filetype = 'markdown',
+            char = '-',
+            at = [=[^\s*\%#]=],
+            input = '-<Space>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<Tab>',
+            at = [=[^\s*-\s\%#]=],
+            input = '<Home><Tab><End>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<Tab>',
+            at = [=[^\s*-\s\w.*\%#]=],
+            input = '<Home><Tab><End>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<S-Tab>',
+            at = [=[^\s\+-\s\%#]=],
+            input = '<Home><Del><Del><End>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<S-Tab>',
+            at = [=[^\s\+-\s\w.*\%#]=],
+            input = '<Home><Del><Del><End>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<S-Tab>',
+            at = [=[^-\s\w.*\%#]=],
+            input = '',
+          },
+          {
+            filetype = 'markdown',
+            char = '<C-h>',
+            at = [=[^-\s\%#]=],
+            input = '<C-w><BS>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<C-h>',
+            at = [=[^\s\+-\s\%#]=],
+            input = '<C-w><C-w><BS>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<BS>',
+            at = [=[^-\s\%#]=],
+            input = '<C-w><BS>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<BS>',
+            at = [=[^\s\+-\s\%#]=],
+            input = '<C-w><C-w><BS>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<CR>',
+            at = [=[^-\s\%#]=],
+            input = '<C-w><CR>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<CR>',
+            at = [=[^\s\+-\s\%#]=],
+            input = '<C-w><C-w><CR>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<CR>',
+            at = [=[^\s*-\s\w.*\%#]=],
+            input = '<CR>-<Space>',
+          },
+          {
+            filetype = 'markdown',
+            char = '[',
+            at = [=[^\s*-\s\%#]=],
+            input = '<Left><Space>[]<Left>',
+          },
           {
             filetype = 'markdown',
             char = '<Tab>',
             at = [=[^\s*-\s\[\%#\]\s]=],
             input = '<Home><Tab><End><Left><Left>',
           },
-          { filetype = 'markdown', char = '<S-Tab>', at = [=[^-\s\[\%#\]\s]=], input = '' },
+          {
+            filetype = 'markdown',
+            char = '<S-Tab>',
+            at = [=[^-\s\[\%#\]\s]=],
+            input = '',
+          },
           {
             filetype = 'markdown',
             char = '<S-Tab>',
             at = [=[^\s\+-\s\[\%#\]\s]=],
             input = '<Home><Del><Del><End><Left><Left>',
           },
-          { filetype = 'markdown', char = '<C-h>', at = [=[^\s*-\s\[\%#\]]=], input = '<BS><Del><Del>' },
-          { filetype = 'markdown', char = '<BS>', at = [=[^\s*-\s\[\%#\]]=], input = '<BS><Del><Del>' },
-          { filetype = 'markdown', char = '<Space>', at = [=[^\s*-\s\[\%#\]]=], input = '<Space><End>' },
-          { filetype = 'markdown', char = 'x', at = [=[^\s*-\s\[\%#\]]=], input = 'x<End>' },
-          { filetype = 'markdown', char = '<CR>', at = [=[^-\s\[\%#\]]=], input = '<End><C-w><C-w><C-w><CR>' },
-          { filetype = 'markdown', char = '<CR>', at = [=[^\s\+-\s\[\%#\]]=], input = '<End><C-w><C-w><C-w><C-w><CR>' },
-          { filetype = 'markdown', char = '<Tab>', at = [=[^\s*-\s\[\(\s\|x\)\]\s\%#]=], input = '<Home><Tab><End>' },
+          {
+            filetype = 'markdown',
+            char = '<C-h>',
+            at = [=[^\s*-\s\[\%#\]]=],
+            input = '<BS><Del><Del>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<BS>',
+            at = [=[^\s*-\s\[\%#\]]=],
+            input = '<BS><Del><Del>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<Space>',
+            at = [=[^\s*-\s\[\%#\]]=],
+            input = '<Space><End>',
+          },
+          {
+            filetype = 'markdown',
+            char = 'x',
+            at = [=[^\s*-\s\[\%#\]]=],
+            input = 'x<End>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<CR>',
+            at = [=[^-\s\[\%#\]]=],
+            input = '<End><C-w><C-w><C-w><CR>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<CR>',
+            at = [=[^\s\+-\s\[\%#\]]=],
+            input = '<End><C-w><C-w><C-w><C-w><CR>',
+          },
+          {
+            filetype = 'markdown',
+            char = '<Tab>',
+            at = [=[^\s*-\s\[\(\s\|x\)\]\s\%#]=],
+            input = '<Home><Tab><End>',
+          },
           {
             filetype = 'markdown',
             char = '<Tab>',
@@ -621,22 +985,42 @@ return {
             at = [=[^\s\+-\s\[\(\s\|x\)\]\s\w.*\%#]=],
             input = '<Home><Del><Del><End>',
           },
-          { filetype = 'markdown', char = '<S-Tab>', at = [=[^-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '' },
-          { filetype = 'markdown', char = '<C-h>', at = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><BS>' },
+          {
+            filetype = 'markdown',
+            char = '<S-Tab>',
+            at = [=[^-\s\[\(\s\|x\)\]\s\w.*\%#]=],
+            input = '',
+          },
+          {
+            filetype = 'markdown',
+            char = '<C-h>',
+            at = [=[^-\s\[\(\s\|x\)\]\s\%#]=],
+            input = '<C-w><C-w><C-w><BS>',
+          },
           {
             filetype = 'markdown',
             char = '<C-h>',
             at = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=],
             input = '<C-w><C-w><C-w><C-w><BS>',
           },
-          { filetype = 'markdown', char = '<BS>', at = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><BS>' },
+          {
+            filetype = 'markdown',
+            char = '<BS>',
+            at = [=[^-\s\[\(\s\|x\)\]\s\%#]=],
+            input = '<C-w><C-w><C-w><BS>',
+          },
           {
             filetype = 'markdown',
             char = '<BS>',
             at = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=],
             input = '<C-w><C-w><C-w><C-w><BS>',
           },
-          { filetype = 'markdown', char = '<CR>', at = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><CR>' },
+          {
+            filetype = 'markdown',
+            char = '<CR>',
+            at = [=[^-\s\[\(\s\|x\)\]\s\%#]=],
+            input = '<C-w><C-w><C-w><CR>',
+          },
           {
             filetype = 'markdown',
             char = '<CR>',
@@ -655,32 +1039,23 @@ return {
       for _, rule in ipairs(rules) do
         vimx.fn.lexima.add_rule(rule)
       end
-
-      local function lexima_alter_command(original, alternative)
-        local input_space = '<C-w>' .. alternative .. '<Space>'
-        local input_cr = '<C-w>' .. alternative .. '<CR>'
-
-        local rule = {
-          mode = ':',
-          at = [[^\('<,'>\)\?]] .. original .. [[\%#$]],
-        }
-
-        vimx.fn.lexima.add_rule(vim.tbl_extend('force', rule, { char = '<Space>', input = input_space }))
-        vimx.fn.lexima.add_rule(vim.tbl_extend('force', rule, { char = '<CR>', input = input_cr }))
-      end
-
-      vim.api.nvim_create_user_command('LeximaAlterCommand', function(opts)
-        lexima_alter_command(opts.fargs[1], opts.fargs[2])
-      end, { nargs = '+' })
-
+    end,
+  },
+  {
+    'yuki-yano/lexima-alter-command.vim',
+    dependencies = {
+      { 'cohama/lexima.vim' },
+    },
+    event = { 'CmdlineEnter' },
+    config = function()
       vim.cmd([[
         LeximaAlterCommand ee                 e!
-        LeximaAlterCommand re                 update<Space><Bar><Space>e!
         LeximaAlterCommand dp                 diffput
         LeximaAlterCommand la\%[zy]           Lazy
         LeximaAlterCommand rg                 Rg
         LeximaAlterCommand or\%[ganizeimport] OrganizeImport
-        LeximaAlterCommand git                Gina
+        LeximaAlterCommand gina               Gina
+        LeximaAlterCommand gin                Gin
         LeximaAlterCommand blame              Gina<Space>blame
         LeximaAlterCommand bro\%[wse]         Gina<Space>browse<Space>--exact<Space>:
         LeximaAlterCommand cap\%[ture]        Capture
@@ -689,6 +1064,7 @@ return {
         LeximaAlterCommand ss                 SaveProjectLayout
         LeximaAlterCommand sl                 LoadProjectLayout
         LeximaAlterCommand re\%[view]         AiReview
+        LeximaAlterCommand pr\%[ompt]         AiPrompt
         LeximaAlterCommand yr                 YR
         LeximaAlterCommand te\%[lescope]      Telescope
       ]])
@@ -696,13 +1072,98 @@ return {
   },
   {
     'hrsh7th/nvim-insx',
-    dependencies = { { 'cohama/lexima.vim' } },
-    event = { 'InsertEnter' },
+    dependencies = {
+      { 'cohama/lexima.vim' }, -- NOTE: Load before insx
+    },
+    event = { 'InsertEnter', 'CmdlineEnter' },
     config = function()
       local insx = require('insx')
+      local esc = require('insx.helper.regex').esc
       local fast_wrap = require('insx.recipe.fast_wrap')
-      insx.add(')', fast_wrap({ close = ')' }))
-      insx.add('}', fast_wrap({ close = '}' }))
+      local fast_break = require('insx.recipe.fast_break')
+
+      -- Alias <C-h> to <BS>
+      vim.keymap.set({ 'i', 'c' }, '<C-h>', '<BS>', { remap = true })
+
+      -- Not use insert mode preset
+      require('insx.preset.standard').setup_cmdline_mode({
+        cmdline = {
+          enabled = true,
+        },
+      })
+
+      -- NOTE: Preset maps to `<` and `>`, so set the mappings manually
+      -- quote
+      for _, quote in ipairs({ '"', "'", '`' }) do
+        -- jump next
+        insx.add(
+          quote,
+          require('insx.recipe.jump_next')({
+            jump_pat = { [[\\\@<!\%#]] .. esc(quote) .. [[\zs]] },
+          })
+        )
+
+        -- auto pair
+        insx.add(
+          quote,
+          insx.with(
+            require('insx.recipe.auto_pair')({
+              open = quote,
+              close = quote,
+              ignore_pat = [[\\\%#]],
+            }),
+            {
+              enabled = function(enabled, ctx)
+                return enabled(ctx) and not insx.helper.syntax.in_string_or_comment()
+              end,
+            }
+          )
+        )
+
+        -- delete pair
+        insx.add(
+          '<BS>',
+          require('insx.recipe.delete_pair')({
+            open_pat = esc(quote),
+            close_pat = esc(quote),
+            ignore_pat = ([[\\%s\%%#]]):format(esc(quote)),
+          })
+        )
+      end
+
+      -- bracket
+      for open, close in pairs({ ['('] = ')', ['['] = ']', ['{'] = '}' }) do
+        -- jump next
+        insx.add(close, require('insx.recipe.jump_next')({ jump_pat = { [[\%#]] .. esc(close) .. [[\zs]] } }))
+        -- auto pair
+        insx.add(open, require('insx.recipe.auto_pair')({ open = open, close = close }))
+        -- delete pair
+        insx.add('<BS>', require('insx.recipe.delete_pair')({ open_pat = esc(open), close_pat = esc(close) }))
+        -- fast wrap
+        insx.add('<C-]>', fast_wrap({ close = close }))
+        -- fast break
+        insx.add('<CR>', fast_break({ open_pat = esc(open), close_pat = esc(close), split = true }))
+      end
+
+      -- spacing `()` and `{}` (ignore `[]`)
+      for open, close in pairs({ ['('] = ')', ['{'] = '}' }) do
+        insx.add(
+          '<Space>',
+          require('insx.recipe.pair_spacing').increase({ open_pat = esc(open), close_pat = esc(close) })
+        )
+        insx.add('<BS>', require('insx.recipe.pair_spacing').decrease({ open_pat = esc(open), close_pat = esc(close) }))
+      end
+
+      -- Use lexima when markdown
+      insx.add('<CR>', {
+        priority = -1,
+        action = function(ctx)
+          ctx.send(vim.fn.keytrans(vim.fn['lexima#expand']('<CR>', 'i')))
+        end,
+        enabled = function()
+          return vim.o.filetype == 'markdown'
+        end,
+      })
     end,
   },
   {
@@ -775,7 +1236,9 @@ return {
   },
   {
     'kana/vim-textobj-entire',
-    dependencies = { 'kana/vim-textobj-user' },
+    dependencies = {
+      { 'kana/vim-textobj-user' },
+    },
     event = { 'ModeChanged' },
     init = function()
       vim.g.textobj_entire_no_default_key_mappings = true
@@ -786,7 +1249,9 @@ return {
   },
   {
     'kana/vim-textobj-line',
-    dependencies = { 'kana/vim-textobj-user' },
+    dependencies = {
+      { 'kana/vim-textobj-user' },
+    },
     event = { 'ModeChanged' },
     init = function()
       vim.g.textobj_line_no_default_key_mappings = true
@@ -797,7 +1262,9 @@ return {
   },
   {
     'thinca/vim-textobj-between',
-    dependencies = { 'kana/vim-textobj-user' },
+    dependencies = {
+      { 'kana/vim-textobj-user' },
+    },
     event = { 'ModeChanged' },
     init = function()
       vim.g.textobj_between_no_default_key_mappings = true
@@ -812,7 +1279,9 @@ return {
   },
   {
     'yuki-yano/vim-textobj-cursor-context',
-    dependencies = { 'kana/vim-textobj-user' },
+    dependencies = {
+      { 'kana/vim-textobj-user' },
+    },
     event = { 'ModeChanged' },
     init = function()
       vim.g.textobj_cursorcontext_no_default_key_mappings = true
@@ -865,8 +1334,11 @@ return {
     end,
   },
   {
+    -- NOTE: Use my fork
     'yuki-yano/vim-operator-replace',
-    dependencies = { 'kana/vim-operator-user' },
+    dependencies = {
+      { 'kana/vim-operator-user' },
+    },
     keys = {
       { '<Plug>(operator-replace)', mode = { 'n', 'x' } },
     },
@@ -877,7 +1349,9 @@ return {
   },
   {
     'mopp/vim-operator-convert-case',
-    dependencies = { 'kana/vim-operator-user' },
+    dependencies = {
+      { 'kana/vim-operator-user' },
+    },
     keys = {
       { '<Plug>(operator-convert-case-loop)', mode = { 'n' } },
     },
@@ -886,6 +1360,7 @@ return {
     end,
   },
   {
+    -- NOTE: Use my fork
     'yuki-yano/caw.vim',
     dependencies = {
       { 'kana/vim-operator-user' },
@@ -900,6 +1375,7 @@ return {
       vim.g.caw_no_mappings = 1
     end,
     config = function()
+      -- NOTE: Workaround for comment out in jsx
       local function caw_hatpos_toggle()
         require('ts_context_commentstring.internal').update_commentstring()
         if
@@ -960,7 +1436,7 @@ return {
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { 'gruvbox-material' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'YankRoundRegion', { fg = '#FF875F', bg = '#3A3A3A' })
+          vim.api.nvim_set_hl(0, 'YankRoundRegion', { fg = base_colors.orange, bg = base_colors.black })
         end,
       })
     end,
@@ -988,6 +1464,11 @@ return {
           augend.constant.alias.bool,
           augend.constant.new({
             elements = { '&&', '||' },
+            word = false,
+            cyclic = true,
+          }),
+          augend.constant.new({
+            elements = { 'log', 'warn', 'error', 'debug', 'info' },
             word = false,
             cyclic = true,
           }),

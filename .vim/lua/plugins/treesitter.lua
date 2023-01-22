@@ -1,3 +1,5 @@
+local base_colors = require('color').base_colors
+
 return {
   {
     'nvim-treesitter/nvim-treesitter',
@@ -18,7 +20,8 @@ return {
         ensure_installed = {
           'typescript',
           'tsx',
-          'javascript',
+          -- NOTE: Minified JS files are too slow when opened, so they are not used
+          -- 'javascript',
           'graphql',
           'jsdoc',
           'ruby',
@@ -64,6 +67,7 @@ return {
         textobjects = {
           select = {
             enable = true,
+            -- NOTE: Not yet supported for jsx attributes
             -- keymaps = {
             --   ['ax'] = '@tag.attribute',
             --   ['ix'] = '@tag.attribute',
@@ -91,7 +95,9 @@ return {
   },
   {
     'David-Kunz/treesitter-unit',
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    dependencies = {
+      { 'nvim-treesitter/nvim-treesitter' },
+    },
     event = { 'ModeChanged' },
     config = function()
       vim.keymap.set({ 'x' }, 'iu', [[:lua require('treesitter-unit').select()<CR>]])
@@ -102,7 +108,9 @@ return {
   },
   {
     'm-demare/hlargs.nvim',
-    dependencies = { { 'nvim-treesitter/nvim-treesitter' } },
+    dependencies = {
+      { 'nvim-treesitter/nvim-treesitter' },
+    },
     event = { 'BufRead' },
     config = function()
       require('hlargs').setup()
@@ -121,7 +129,7 @@ return {
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { 'gruvbox-material' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'TSNodeKey', { fg = '#FFAF60', underline = true, bold = true })
+          vim.api.nvim_set_hl(0, 'TSNodeKey', { fg = base_colors.yellow, underline = true, bold = true })
         end,
       })
     end,

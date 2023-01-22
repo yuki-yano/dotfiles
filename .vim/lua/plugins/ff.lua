@@ -1,3 +1,5 @@
+local add_disable_cmp_filetypes = require('plugin_utils').add_disable_cmp_filetypes
+
 return {
   {
     'yuki-yano/fzf-preview.vim',
@@ -53,7 +55,7 @@ return {
         vim.env.BAT_THEME = 'gruvbox-dark'
         vim.env.FZF_PREVIEW_PREVIEW_BAT_THEME = 'gruvbox-dark'
         vim.env.FZF_DEFAULT_OPTS =
-          '--color=bg+:#1D2021,bg:#1d2021,spinner:#D8A657,hl:#a9b665,fg:#d4be98,header:#928374,info:#89b482,pointer:#7daea3,marker:#d8a657,fg+:#d4be98,prompt:#e78a4e,hl+:#89b482'
+          '--reverse --no-separator --color=bg+:#1D2021,bg:#1d2021,spinner:#D8A657,hl:#a9b665,fg:#d4be98,header:#928374,info:#89b482,pointer:#7daea3,marker:#d8a657,fg+:#d4be98,prompt:#e78a4e,hl+:#89b482'
       end
 
       vim.keymap.set({ 'n' }, '<Plug>(ff)r', '<Cmd>FzfPreviewProjectMruFilesRpc --experimental-fast<CR>')
@@ -139,21 +141,25 @@ return {
       { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
     },
     cmd = { 'Telescope' },
+    init = function()
+      add_disable_cmp_filetypes({ 'TelescopePrompt' })
+    end,
     config = function()
       local telescope = require('telescope')
+      local actions = require('telescope.actions')
       telescope.setup({
         defaults = {
           theme = 'ivy',
           mappings = {
             n = {
-              ['<Esc>'] = { require('telescope.actions').close, type = 'action', opts = { nowait = true } },
-              ['<C-c>'] = require('telescope.actions').close,
-              ['<C-g>'] = require('telescope.actions').close,
-              ['q'] = require('telescope.actions').close,
+              ['<Esc>'] = { actions.close, type = 'action', opts = { nowait = true } },
+              ['<C-c>'] = actions.close,
+              ['<C-g>'] = actions.close,
+              ['q'] = actions.close,
             },
             i = {
-              ['<C-g>'] = require('telescope.actions').close,
-              ['<C-c>'] = require('telescope.actions').close,
+              ['<C-g>'] = actions.close,
+              ['<C-c>'] = actions.close,
             },
           },
         },

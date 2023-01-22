@@ -1,10 +1,16 @@
-local icons = require('font').icons
+local add_disable_cmp_filetypes = require('plugin_utils').add_disable_cmp_filetypes
+local base_colors = require('color').base_colors
+local lsp_icons = require('font').lsp_icons
+local codicons = require('font').codicons
+local diagnostic_icons = require('font').diagnostic_icons
+local enable_lsp_lines = require('plugin_utils').enable_lsp_lines
+local get_lsp_lines_status = require('plugin_utils').get_lsp_lines_status
 local cycle_lsp_lines = require('plugin_utils').cycle_lsp_lines
 
 local plugins = {
   {
     'neovim/nvim-lspconfig',
-    event = { 'BufReadPre' },
+    event = { 'BufReadPre', 'BufWrite' },
     -- Use onetime deno file
     ft = { 'typescript', 'typescriptreact' },
     dependencies = {
@@ -24,7 +30,12 @@ local plugins = {
         },
         severity_sort = true,
       })
-      local signs = { Error = '', Warn = '', Info = '', Hint = '' }
+      local signs = {
+        Error = diagnostic_icons.error,
+        Warn = diagnostic_icons.warn,
+        Info = diagnostic_icons.info,
+        Hint = diagnostic_icons.hint,
+      }
       for type, icon in pairs(signs) do
         local hl = 'DiagnosticSign' .. type
         vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
@@ -53,6 +64,8 @@ local plugins = {
             })
           end
 
+          client.server_capabilities.semanticTokensProvider = nil
+
           if client.server_capabilities.documentSymbolProvider then
             require('nvim-navic').attach(client, bufnr)
           end
@@ -64,20 +77,23 @@ local plugins = {
 
       mason_lspconfig.setup_handlers({
         function(server_name)
-          if server_name == 'tsserver' then
+          -- NOTE: vtsls added to mason and lspconfig
+          --       Try to always enable vtsls
+          if server_name == 'vtsls' then
             if not is_node_repo then
               return
             end
 
-            -- Use nvim-vtsls or typescript.nvim
-            if vim.fn.executable('vtsls') == 1 then
-              require('lspconfig.configs').vtsls = require('vtsls').lspconfig
-              require('lspconfig').vtsls.setup(opts)
-            else
-              require('typescript').setup({ server = opts })
-            end
+            -- Load nvim-vtsls
+            require('vtsls')
 
-            return
+            opts.settings = {
+              typescript = {
+                suggest = {
+                  completeFunctionCalls = true,
+                },
+              },
+            }
           end
 
           if server_name == 'eslint' then
@@ -163,7 +179,9 @@ local plugins = {
       vim.keymap.set({ 'n' }, '<Plug>(lsp)f', vim.lsp.buf.format)
       vim.keymap.set({ 'n' }, '<Plug>(lsp)d', '<Cmd>FzfPreviewNvimLspDefinitionRpc<CR>')
       vim.keymap.set({ 'n' }, '<Plug>(lsp)i', '<Cmd>FzfPreviewNvimLspImplementationRpc<CR>')
+      vim.keymap.set({ 'n' }, '<Plug>(lsp)I', vim.lsp.buf.implementation)
       vim.keymap.set({ 'n' }, '<Plug>(lsp)t', '<Cmd>FzfPreviewNvimLspTypeDefinitionRpc<CR>')
+      vim.keymap.set({ 'n' }, '<Plug>(lsp)T', vim.lsp.buf.type_definition)
       vim.keymap.set({ 'n' }, '<Plug>(lsp)rf', '<Cmd>FzfPreviewNvimLspReferencesRpc<CR>')
 
       -- tagjump does not work with Deno
@@ -178,7 +196,9 @@ local plugins = {
               vim.lsp.buf.format({ name = 'null-ls' })
             end)
           else
-            vim.keymap.set({ 'n' }, '<Plug>(lsp)f', vim.lsp.buf.format)
+            vim.keymap.set({ 'n' }, '<Plug>(lsp)f', function()
+              vim.lsp.buf.format({ name = 'denols' })
+            end)
           end
         end,
       })
@@ -205,7 +225,8 @@ local plugins = {
 
       require('mason-lspconfig').setup({
         ensure_installed = {
-          'tsserver',
+          -- 'tsserver',
+          'vtsls',
           'eslint',
           'denols',
           'sumneko_lua',
@@ -228,14 +249,23 @@ local plugins = {
   },
   {
     'glepnir/lspsaga.nvim',
+    -- NOTE: Use versions earlier than 0.2.3
     commit = 'b7b477',
     -- dir = '~/repos/github.com/yuki-yano/lspsaga.nvim',
     event = { 'LspAttach' },
+    init = function()
+      add_disable_cmp_filetypes({ 'sagarename' })
+    end,
     config = function()
       require('lspsaga').init_lsp_saga({
         border_style = 'rounded',
         -- saga_winblend = 10,
-        diagnostic_header = { ' ', ' ', ' ', ' ' },
+        diagnostic_header = {
+          diagnostic_icons.error .. ' ',
+          diagnostic_icons.warn .. ' ',
+          diagnostic_icons.info .. ' ',
+          diagnostic_icons.hint .. ' ',
+        },
         code_action_lightbulb = {
           enable = false,
         },
@@ -244,27 +274,30 @@ local plugins = {
       -- TODO: new version settings
       -- require('lspsaga').setup({
       --   ui = {
+      --     theme = 'round',
       --     border = 'rounded',
-      --     winblend = 10,
-      --     code_action = ' ',
-      --     diagnostic = ' ',
-      --     incoming = ' ',
-      --     outgoing = ' ',
+      --     title = true,
+      --     code_action = lsp_icons.code_action,
+      --     diagnostic = lsp_icons.diagnostics,
+      --     incoming = lsp_icons.incoming,
+      --     outgoing = lsp_icons.outgoing,
       --     colors = {
-      --       normal_bg = '#1D1536',
-      --       title_bg = '#B4BE82',
-      --       red = '#EA6962',
-      --       magenta = '#D3869B',
-      --       orange = '#FFAF60',
-      --       yellow = '#D8A657',
-      --       green = '#A9B665',
-      --       cyan = '#89B482',
-      --       blue = '#7DAEA3',
-      --       purple = '#CBA6F7',
-      --       white = '#D4BE98',
-      --       black = '#32302F',
+      --       normal_bg = base_colors.black,
+      --       title_bg = base_colors.green,
+      --       red = base_colors.red,
+      --       magenta = base_colors.magenta,
+      --       orange = base_colors.orange,
+      --       yellow = base_colors.yellow,
+      --       green = base_colors.green,
+      --       cyan = base_colors.cyan,
+      --       blue = base_colors.blue,
+      --       purple = base_colors.purple,
+      --       white = base_colors.white,
+      --       black = base_colors.black,
       --     },
-      --     kind = {},
+      --   },
+      --   diagnostic = {
+      --     show_code_action = false,
       --   },
       --   lightbulb = {
       --     enable = false,
@@ -274,14 +307,7 @@ local plugins = {
       --   },
       -- })
 
-      -- different window is previewed than when jumped
-      -- vim.api.nvim_create_autocmd({ 'CursorHold' }, {
-      --   pattern = { '*' },
-      --   callback = function()
-      --     vim.cmd([[Lspsaga show_cursor_diagnostics]])
-      --   end,
-      -- })
-
+      -- TODO: Integrate with nvim-ufo
       vim.keymap.set({ 'n' }, 'K', function()
         local ft = vim.o.filetype
         if ft == 'vim' or ft == 'help' then
@@ -303,12 +329,16 @@ local plugins = {
   },
   {
     'zbirenbaum/neodim',
-    dependencies = { { 'nvim-treesitter/nvim-treesitter' } },
+    dependencies = {
+      { 'nvim-treesitter/nvim-treesitter' },
+    },
     event = { 'LspAttach' },
     init = function()
-      -- TODO: workaround
-      vim.api.nvim_set_hl(0, 'TSPunctuationBracket', { link = 'TSPunctBracket' })
-      vim.api.nvim_set_hl(0, 'TSPunctuationDelimiter', { link = 'TSPunctDelimiter' })
+      -- FIX: Workaround, highlighted group does not exist error
+      --      TSPunctuation{Xxx} where it should be defined as TSPunct{Xxx}.
+      vim.api.nvim_set_hl(0, 'TSPunctuationBracket', { link = '@punctuation.bracket' })
+      vim.api.nvim_set_hl(0, 'TSPunctuationDelimiter', { link = '@punctuation.delimiter' })
+      vim.api.nvim_set_hl(0, 'TSPunctuationSpecial', { link = '@punctuation.special' })
       vim.api.nvim_set_hl(0, 'TSSpell', { link = '@spell' })
     end,
     config = function()
@@ -368,24 +398,32 @@ local plugins = {
     end,
   },
   {
+    -- Load from lspconfig
     'SmiteshP/nvim-navic',
     config = function()
       require('nvim-navic').setup({
-        icons = icons,
+        icons = codicons,
       })
     end,
   },
   {
     'yioneko/nvim-vtsls',
     config = function()
-      vim.keymap.set({ 'n' }, '<Plug>(lsp)s', '<Cmd>VtsExec goto_source_definition<CR>')
+      vim.api.nvim_create_autocmd({ 'FileType' }, {
+        pattern = { 'typescript', 'typescriptreact' },
+        callback = function()
+          vim.keymap.set({ 'n' }, '<Plug>(lsp)s', '<Cmd>VtsExec goto_source_definition<CR>')
+        end,
+      })
       vim.api.nvim_create_user_command('OrganizeImport', function()
         vim.cmd([[VtsExec organize_imports]])
       end, {})
     end,
   },
   {
+    -- NOTE: Use my fork
     'yuki-yano/lsp_lines.nvim',
+    enabled = enable_lsp_lines,
     event = { 'LspAttach' },
     init = function()
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
@@ -398,7 +436,7 @@ local plugins = {
       })
     end,
     config = function()
-      local virtual_lines = { mode = 'current', value = { only_current_line = true } }
+      local virtual_lines = get_lsp_lines_status()
       require('lsp_lines').setup()
       vim.diagnostic.config({ virtual_lines = virtual_lines.value })
 

@@ -1,6 +1,30 @@
+-- TODO: Memo char codes
+
 local M = {}
 
-M.icons = {
+M.diagnostic_icons = {
+  error = '󾪇',
+  warn = '󾩬',
+  info = '󾩴',
+  hint = '󾩳',
+}
+
+M.lsp_icons = {
+  diagnostic = '󾫘',
+  code_action = '',
+  incoming = ' ',
+  outgoing = ' ',
+}
+
+-- TODO: Add more icons
+--       - String
+--       - Number
+--       - Boolean
+--       - Package
+--       - Namespace
+--       - Object
+--       - Array
+M.codicons = {
   Text = '󾪓 ', -- 0xFEA93
   Method = '󾪌 ', -- 0xFEA8C
   Function = '󾪌 ', -- 0xFEA8C
@@ -15,7 +39,7 @@ M.icons = {
   Value = '󾪕 ', -- 0xFEA95
   Enum = '󾪕 ', -- 0xFEA95
   Keyword = '󾭢 ', -- 0xFEB62
-  Snippet = '󾭦 ', -- 0xFEB66
+  Snippet = '󾩻 ', -- 0xFEB66
   Color = '󾭜 ', -- 0xFEB5C
   File = '󾩻 ', -- 0xFEA7B
   Reference = '󾪔 ', -- 0xFEA94
@@ -26,7 +50,24 @@ M.icons = {
   Event = '󾪆 ', -- 0xFEA86
   Operator = '󾭤 ', -- 0xFEB64
   TypeParameter = '󾪒 ', -- 0xFEA92
+  Null = ' ', -- 0xEBE0
   Copilot = ' ',
+}
+
+M.todo_icons = {
+  todo = '󾪲',
+  fix = '󾫘',
+  warn = '󾩬',
+  test = '󾮨',
+  note = '󾩻',
+}
+
+M.misc_icons = {
+  file = '󾩻',
+  folder = '󾪃',
+  cmd = '󾪌',
+  vim = '',
+  lazy = ''
 }
 
 return M

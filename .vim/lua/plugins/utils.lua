@@ -1,3 +1,5 @@
+local base_colors = require('color').base_colors
+
 return {
   { 'farmergreg/vim-lastplace', event = { 'BufReadPre' } },
   { 'kana/vim-niceblock', event = { 'ModeChanged' } },
@@ -7,6 +9,7 @@ return {
       { 'nvim-treesitter/nvim-treesitter' },
     },
     event = { 'BufRead' },
+    -- TODO: Disable in cmdwin
     init = function()
       vim.g.matchup_matchparen_offscreen = { method = 'popup' }
 
@@ -133,7 +136,7 @@ return {
       local vimx = require('artemis')
 
       vim.api.nvim_create_user_command('Rg', function(opts)
-        vimx.fn.ripgrep.search(opts.qargs)
+        vimx.fn.ripgrep.search(opts.args)
       end, {
         nargs = '*',
         complete = 'file',
@@ -228,6 +231,7 @@ return {
   {
     'wesQ3/vim-windowswap',
     keys = {
+      -- Load from keys because `on_func` does not support
       { '<Leader><C-w>', mode = { 'n' } },
     },
     init = function()
@@ -280,7 +284,9 @@ return {
   },
   {
     'tyru/capture.vim',
-    dependencies = { { 'thinca/vim-prettyprint' } },
+    dependencies = {
+      { 'thinca/vim-prettyprint' },
+    },
     cmd = { 'Capture' },
     config = function()
       vim.api.nvim_create_autocmd({ 'FileType' }, {
@@ -326,6 +332,7 @@ return {
         end,
       })
 
+      -- yarn run command
       local function package_json_scripts(_, _, _)
         if vim.fn.filereadable('package.json') == 0 then
           return
@@ -359,31 +366,40 @@ return {
       vim.g.silicon = {
         font = 'UDEV Gothic 35NF',
         theme = 'OneHalfDark',
-        background = '#3D3D3D',
+        background = base_colors.black,
         output = '~/Downloads/silicon-{time:%Y-%m-%d-%H%M%S}.png',
       }
     end,
   },
-  -- {
-  --   'skanehira/denops-silicon.vim',
-  --   dependencies = { 'vim-denops/denops.vim' },
-  --   cmd = { 'Silicon' },
-  --   config = function()
-  --     require('denops-lazy').load('denops-silicon.vim')
-  --
-  --     vim.g.silicon_options = {
-  --       font = 'UDEV Gothic 35NF',
-  --       theme = 'OneHalfDark',
-  --       background_color = '#3D3D3D',
-  --     }
-  --   end,
-  -- },
+  {
+    'skanehira/denops-silicon.vim',
+    -- Use vim-silicon
+    enabled = false,
+    dependencies = {
+      { 'vim-denops/denops.vim' },
+      { 'yuki-yano/denops-lazy.nvim' },
+    },
+    cmd = { 'Silicon' },
+    config = function()
+      require('denops-lazy').load('denops-silicon.vim')
+
+      vim.g.silicon_options = {
+        font = 'UDEV Gothic 35NF',
+        theme = 'OneHalfDark',
+        background_color = base_colors.black,
+      }
+    end,
+  },
   { 'powerman/vim-plugin-AnsiEsc', cmd = { 'AnsiEsc' } },
   {
+    -- WIP
     'yuki-yano/ai-review.vim',
     -- dir = '~/repos/github.com/yuki-yano/ai-review.vim',
-    dependencies = { 'vim-denops/denops.vim' },
-    cmd = { 'AiReview' },
+    dependencies = {
+      { 'vim-denops/denops.vim' },
+      { 'yuki-yano/denops-lazy.nvim' },
+    },
+    cmd = { 'AiReview', 'AiPrompt' },
     config = function()
       require('denops-lazy').load('ai-review.vim')
 
@@ -392,7 +408,9 @@ return {
         callback = function(ctx)
           local clients = vim.lsp.get_active_clients({ bufnr = ctx.buf })
           for _, client in ipairs(clients) do
-            vim.lsp.buf_detach_client(ctx.buf, client.id)
+            -- FIX: Using vim.lsp.buf_detach_client in lua, the message is output, use silent in vim.cmd to suppress
+            --      Fix not use vim.cmd
+            vim.cmd('silent lua vim.lsp.buf_detach_client(' .. ctx.buf .. ', ' .. client.id .. ')')
           end
         end,
       })
@@ -400,28 +418,33 @@ return {
   },
   {
     'lambdalisue/guise.vim',
-    dependencies = { { 'vim-denops/denops.vim' } },
+    dependencies = {
+      { 'vim-denops/denops.vim' },
+    },
     event = { 'User DenopsReady' },
   },
   {
     'yuki-yano/denops-open-http.vim',
-    dependencies = { { 'vim-denops/denops.vim' } },
+    dependencies = {
+      { 'vim-denops/denops.vim' },
+    },
     event = { 'CmdLineEnter' },
   },
   {
     'yuki-yano/denops-http-file-protocol.vim',
     dependencies = {
-      'vim-denops/denops.vim',
-      'lambdalisue/file-protocol.vim',
+      { 'vim-denops/denops.vim' },
+      { 'lambdalisue/file-protocol.vim' },
     },
     event = { 'User DenopsReady' },
   },
   -- TODO: try later
-  -- {
-  --   'hachy/cmdpalette.nvim',
-  --   cmd = { 'CmdPalette' },
-  --   config = function()
-  --     require('cmdpalette').setup({})
-  --   end,
-  -- },
+  {
+    'hachy/cmdpalette.nvim',
+    enabled = false,
+    cmd = { 'CmdPalette' },
+    config = function()
+      require('cmdpalette').setup({})
+    end,
+  },
 }

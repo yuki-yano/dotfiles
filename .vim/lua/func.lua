@@ -13,15 +13,18 @@ vim.api.nvim_create_user_command('EscEsc', function()
 end, {})
 vim.keymap.set({ 'n' }, '<Esc><Esc>', '<Cmd>nohlsearch<CR><Cmd>EscEsc<CR>')
 
--- TODO: Crash factors?
 -- Reset scroll
--- vim.on_key(function(key)
---   local c_d = vim.api.nvim_replace_termcodes('<C-d>', true, true, true)
---   local c_u = vim.api.nvim_replace_termcodes('<C-u>', true, true, true)
---   if vim.fn.mode() == 'n' and key == c_d or key == c_u then
---     vim.opt.scroll = 0
---   end
--- end, nil)
+vim.on_key(function(key)
+  if vim.fn.mode() ~= 'n' then
+    return
+  end
+
+  local c_d = vim.api.nvim_replace_termcodes('<C-d>', true, true, true)
+  local c_u = vim.api.nvim_replace_termcodes('<C-u>', true, true, true)
+  if key == c_d or key == c_u then
+    vim.opt.scroll = 0
+  end
+end, nil)
 
 -- Auto mkdir
 vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
