@@ -386,6 +386,16 @@ return {
     cmd = { 'AiReview' },
     config = function()
       require('denops-lazy').load('ai-review.vim')
+
+      vim.api.nvim_create_autocmd({ 'BufEnter' }, {
+        pattern = { 'ai-review://*' },
+        callback = function(ctx)
+          local clients = vim.lsp.get_active_clients({ bufnr = ctx.buf })
+          for _, client in ipairs(clients) do
+            vim.lsp.buf_detach_client(ctx.buf, client.id)
+          end
+        end,
+      })
     end,
   },
   {

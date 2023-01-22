@@ -1,5 +1,5 @@
 -- Keymap
--- Leader is set before lazy
+-- Set Leader before loading plugin manager
 vim.g.mapleader = ' '
 vim.keymap.set({ 'n', 'x' }, '<Space>', '<Nop>')
 vim.keymap.set({ 'n' }, '<Plug>(tab)', '<Nop>')

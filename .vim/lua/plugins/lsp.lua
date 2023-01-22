@@ -9,9 +9,7 @@ local plugins = {
     ft = { 'typescript', 'typescriptreact' },
     dependencies = {
       { 'williamboman/mason.nvim' },
-      { 'williamboman/mason-lspconfig' },
       { 'jose-elias-alvarez/null-ls.nvim' },
-      { 'jayp0521/mason-null-ls.nvim' },
       { 'hrsh7th/cmp-nvim-lsp' },
       { 'b0o/SchemaStore.nvim' },
       { 'SmiteshP/nvim-navic' },
@@ -32,26 +30,10 @@ local plugins = {
         vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
       end
 
-      local mason = require('mason')
       local lspconfig = require('lspconfig')
       local mason_lspconfig = require('mason-lspconfig')
       local cmp_nvim_lsp = require('cmp_nvim_lsp')
       local null_ls = require('null-ls')
-      local mason_null_ls = require('mason-null-ls')
-
-      mason.setup()
-      mason_lspconfig.setup({
-        ensure_installed = {
-          'tsserver',
-          'eslint',
-          'denols',
-          'sumneko_lua',
-          'vimls',
-          'jsonls',
-          'yamlls',
-        },
-        automatic_installation = true,
-      })
 
       local opts = {
         capabilities = cmp_nvim_lsp.default_capabilities(),
@@ -159,14 +141,6 @@ local plugins = {
         end,
       })
 
-      mason_null_ls.setup({
-        ensure_installed = {
-          'prettierd',
-          'stylua',
-          'cspell',
-        },
-        automatic_installation = true,
-      })
       null_ls.setup({
         diagnostics_format = '#{m} (#{s}: #{c})',
         sources = {
@@ -217,21 +191,40 @@ local plugins = {
           end)
         end,
       })
-
-      vim.api.nvim_create_autocmd({ 'BufEnter' }, {
-        pattern = { 'ai-review://*' },
-        callback = function(ctx)
-          local clients = vim.lsp.get_active_clients({ bufnr = ctx.buf })
-          for _, client in ipairs(clients) do
-            vim.lsp.buf_detach_client(ctx.buf, client.id)
-          end
-        end,
-      })
     end,
   },
   {
     'williamboman/mason.nvim',
-    cmd = { 'Mason', 'MasonInstall' },
+    dependencies = {
+      { 'williamboman/mason-lspconfig' },
+      { 'jayp0521/mason-null-ls.nvim' },
+    },
+    cmd = { 'Mason', 'MasonInstall', 'MasonUninstall', 'MasonUninstallAll', 'MasonLog' },
+    config = function()
+      require('mason').setup()
+
+      require('mason-lspconfig').setup({
+        ensure_installed = {
+          'tsserver',
+          'eslint',
+          'denols',
+          'sumneko_lua',
+          'vimls',
+          'jsonls',
+          'yamlls',
+        },
+        automatic_installation = true,
+      })
+
+      require('mason-null-ls').setup({
+        ensure_installed = {
+          'prettierd',
+          'stylua',
+          'cspell',
+        },
+        automatic_installation = true,
+      })
+    end,
   },
   {
     'glepnir/lspsaga.nvim',

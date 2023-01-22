@@ -9,6 +9,7 @@ return {
       require('nvim-ts-autotag').setup({ enable_close = false })
     end,
   },
+  -- Too slow to build
   -- {
   --   'barrett-ruth/import-cost.nvim',
   --   build = 'sh install.sh yarn',
