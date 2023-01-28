@@ -129,7 +129,7 @@ vim.api.nvim_create_autocmd({ 'FileType' }, {
 })
 
 -- Cmdwin
-vim.api.nvim_create_autocmd({ 'CmdwinENter' }, {
+vim.api.nvim_create_autocmd({ 'CmdwinEnter' }, {
   pattern = '*',
   callback = function()
     vim.opt_local.number = true
