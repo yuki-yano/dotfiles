@@ -45,7 +45,7 @@ return {
           },
         },
       },
-      { 'kyazdani42/nvim-web-devicons' },
+      { 'nvim-tree/nvim-web-devicons' },
       { 'cohama/lexima.vim' }, -- NOTE: Load before cmp
     },
     init = function()
@@ -66,42 +66,42 @@ return {
       })
 
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
-        pattern = { 'gruvbox-material' },
+        pattern = { '*' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'CmpItemKindUnit', { fg = base_colors.yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindNumber', { fg = base_colors.magenta })
-          vim.api.nvim_set_hl(0, 'CmpItemKindFunction', { fg = base_colors.green })
-          vim.api.nvim_set_hl(0, 'CmpItemKindKey', { fg = base_colors.blue })
-          vim.api.nvim_set_hl(0, 'CmpItemKindKeyword', { fg = base_colors.red })
-          vim.api.nvim_set_hl(0, 'CmpItemKindReference', { fg = base_colors.cyan })
-          vim.api.nvim_set_hl(0, 'CmpItemKindFolder', { fg = base_colors.yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindVariable', { fg = base_colors.magenta })
-          vim.api.nvim_set_hl(0, 'CmpItemKindNull', { fg = base_colors.yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindValue', { fg = base_colors.yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindConstant', { fg = base_colors.white })
-          vim.api.nvim_set_hl(0, 'CmpItemKindText', { fg = base_colors.green })
-          vim.api.nvim_set_hl(0, 'CmpItemKindModule', { fg = base_colors.red })
-          vim.api.nvim_set_hl(0, 'CmpItemKindPackage', { fg = base_colors.red })
-          vim.api.nvim_set_hl(0, 'CmpItemKindClass', { fg = base_colors.green })
-          vim.api.nvim_set_hl(0, 'CmpItemKindOperator', { fg = base_colors.orange })
-          vim.api.nvim_set_hl(0, 'CmpItemKindStruct', { fg = base_colors.red })
-          vim.api.nvim_set_hl(0, 'CmpItemKindObject', { fg = base_colors.yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindMethod', { fg = base_colors.green })
-          vim.api.nvim_set_hl(0, 'CmpItemKindArray', { fg = base_colors.yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindEnum', { fg = base_colors.yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindField', { fg = base_colors.blue })
-          vim.api.nvim_set_hl(0, 'CmpItemKindInterface', { fg = base_colors.yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindProperty', { fg = base_colors.blue })
-          vim.api.nvim_set_hl(0, 'CmpItemKindColor', { fg = base_colors.magenta })
-          vim.api.nvim_set_hl(0, 'CmpItemKindFile', { fg = base_colors.red })
-          vim.api.nvim_set_hl(0, 'CmpItemKindEvent', { fg = base_colors.white })
-          vim.api.nvim_set_hl(0, 'CmpItemKindTypeParameter', { fg = base_colors.white })
-          vim.api.nvim_set_hl(0, 'CmpItemKindConstructor', { fg = base_colors.green })
-          vim.api.nvim_set_hl(0, 'CmpItemKindSnippet', { fg = base_colors.yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindBoolean', { fg = base_colors.magenta })
-          vim.api.nvim_set_hl(0, 'CmpItemKindNamespace', { fg = base_colors.yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindString', { fg = base_colors.cyan })
-          vim.api.nvim_set_hl(0, 'CmpItemKindEnumMember', { fg = base_colors.blue })
+          vim.api.nvim_set_hl(0, 'CmpItemKindUnit', { fg = base_colors().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindNumber', { fg = base_colors().magenta })
+          vim.api.nvim_set_hl(0, 'CmpItemKindFunction', { fg = base_colors().green })
+          vim.api.nvim_set_hl(0, 'CmpItemKindKey', { fg = base_colors().blue })
+          vim.api.nvim_set_hl(0, 'CmpItemKindKeyword', { fg = base_colors().red })
+          vim.api.nvim_set_hl(0, 'CmpItemKindReference', { fg = base_colors().cyan })
+          vim.api.nvim_set_hl(0, 'CmpItemKindFolder', { fg = base_colors().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindVariable', { fg = base_colors().magenta })
+          vim.api.nvim_set_hl(0, 'CmpItemKindNull', { fg = base_colors().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindValue', { fg = base_colors().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindConstant', { fg = base_colors().white })
+          vim.api.nvim_set_hl(0, 'CmpItemKindText', { fg = base_colors().green })
+          vim.api.nvim_set_hl(0, 'CmpItemKindModule', { fg = base_colors().red })
+          vim.api.nvim_set_hl(0, 'CmpItemKindPackage', { fg = base_colors().red })
+          vim.api.nvim_set_hl(0, 'CmpItemKindClass', { fg = base_colors().green })
+          vim.api.nvim_set_hl(0, 'CmpItemKindOperator', { fg = base_colors().orange })
+          vim.api.nvim_set_hl(0, 'CmpItemKindStruct', { fg = base_colors().red })
+          vim.api.nvim_set_hl(0, 'CmpItemKindObject', { fg = base_colors().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindMethod', { fg = base_colors().green })
+          vim.api.nvim_set_hl(0, 'CmpItemKindArray', { fg = base_colors().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindEnum', { fg = base_colors().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindField', { fg = base_colors().blue })
+          vim.api.nvim_set_hl(0, 'CmpItemKindInterface', { fg = base_colors().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindProperty', { fg = base_colors().blue })
+          vim.api.nvim_set_hl(0, 'CmpItemKindColor', { fg = base_colors().magenta })
+          vim.api.nvim_set_hl(0, 'CmpItemKindFile', { fg = base_colors().red })
+          vim.api.nvim_set_hl(0, 'CmpItemKindEvent', { fg = base_colors().white })
+          vim.api.nvim_set_hl(0, 'CmpItemKindTypeParameter', { fg = base_colors().white })
+          vim.api.nvim_set_hl(0, 'CmpItemKindConstructor', { fg = base_colors().green })
+          vim.api.nvim_set_hl(0, 'CmpItemKindSnippet', { fg = base_colors().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindBoolean', { fg = base_colors().magenta })
+          vim.api.nvim_set_hl(0, 'CmpItemKindNamespace', { fg = base_colors().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindString', { fg = base_colors().cyan })
+          vim.api.nvim_set_hl(0, 'CmpItemKindEnumMember', { fg = base_colors().blue })
         end,
       })
     end,
@@ -116,32 +116,34 @@ return {
         symbol_map = codicons,
       })
 
-      -- NOTE: After load lexima key mappings
-      require('copilot').setup({
-        suggestion = {
-          auto_trigger = true,
-          keymap = {
-            accept = '<Tab>',
-            -- <C-]> is used for insx
-            dismiss = false,
+      if vim.env.LSP == 'nvim' then
+        -- NOTE: After load lexima key mappings
+        require('copilot').setup({
+          suggestion = {
+            auto_trigger = true,
+            keymap = {
+              accept = '<Tab>',
+              -- <C-]> is used for insx
+              dismiss = false,
+            },
           },
-        },
-        filetypes = {
-          ['.'] = true,
-          -- typescript = true,
-          -- typescriptreact = true,
-          -- lua = true,
-          -- vim = true,
-        },
-      })
-      require('copilot_cmp').setup()
+          filetypes = {
+            ['.'] = true,
+            -- typescript = true,
+            -- typescriptreact = true,
+            -- lua = true,
+            -- vim = true,
+          },
+        })
+        require('copilot_cmp').setup()
+      end
 
       -- NOTE: force_keyword_length is used from manual complete
       local sources = {
         { name = 'luasnip', keyword_length = 2, force_keyword_length = true },
         { name = 'tsnip', keyword_length = 2, force_keyword_length = true },
         { name = 'copilot' },
-        { name = 'nvim_lsp', max_item_count = 30 },
+        { name = 'nvim_lsp' },
         { name = 'treesitter' },
         { name = 'nvim_lua', max_item_count = 20 },
         { name = 'cmp_tabnine' },
@@ -507,9 +509,6 @@ return {
   },
   {
     'cohama/lexima.vim',
-    dependencies = {
-      { 'windwp/nvim-ts-autotag' },
-    },
     event = { 'InsertEnter', 'CmdlineEnter' },
     init = function()
       vim.g.lexima_enable_space_rules = false
@@ -756,15 +755,17 @@ return {
         })
       end
 
-      -- TSX with nvim-ts-autotag
+      -- Close JSX tag
       rules = list_concat({
         rules,
         {
           {
-            filetype = { 'typescript', 'typescriptreact' },
+            filetype = { 'typescriptreact' },
             char = '>',
-            at = [[<[a-zA-Z.]\+\(\s\)\?.*\%#]],
-            input = [[><Esc>:lua require('nvim-ts-autotag.internal').close_tag()<CR>a]],
+            at = [[<\([a-zA-Z.]\+\)\(\s\)\?.*\%#]],
+            leave = '>',
+            input_after = [[</\1>]],
+            with_submatch = 1,
           },
         },
       })
@@ -1082,6 +1083,8 @@ return {
       local fast_wrap = require('insx.recipe.fast_wrap')
       local fast_break = require('insx.recipe.fast_break')
 
+      local vimx = require('artemis')
+
       -- Alias <C-h> to <BS>
       vim.keymap.set({ 'i', 'c' }, '<C-h>', '<BS>', { remap = true })
 
@@ -1140,12 +1143,21 @@ return {
         -- delete pair
         insx.add('<BS>', require('insx.recipe.delete_pair')({ open_pat = esc(open), close_pat = esc(close) }))
         -- fast wrap
-        insx.add('<C-]>', fast_wrap({ close = close }))
+        insx.add(
+          '<C-]>',
+          insx.with(fast_wrap({ close = close }), {
+            action = function(action, ctx)
+              -- NOTE: Add undo point
+              vim.o.undolevels = vim.o.undolevels
+              return action(ctx)
+            end,
+          })
+        )
         -- fast break
         insx.add('<CR>', fast_break({ open_pat = esc(open), close_pat = esc(close), split = true }))
       end
 
-      -- spacing `()` and `{}` (ignore `[]`)
+      -- spacing `()` and `{}` (exclude `[]`)
       for open, close in pairs({ ['('] = ')', ['{'] = '}' }) do
         insx.add(
           '<Space>',
@@ -1154,11 +1166,23 @@ return {
         insx.add('<BS>', require('insx.recipe.pair_spacing').decrease({ open_pat = esc(open), close_pat = esc(close) }))
       end
 
+      -- Fallback lexima
+      insx.add('<Space>', {
+        priority = -1,
+        action = function(ctx)
+          -- NOTE: lexima needs <SPACE> (not <Space>)
+          ctx.send(vim.fn.keytrans(vimx.fn.lexima.expand('<SPACE>', 'i')))
+        end,
+        enabled = function()
+          return true
+        end,
+      })
+
       -- Use lexima when markdown
       insx.add('<CR>', {
         priority = -1,
         action = function(ctx)
-          ctx.send(vim.fn.keytrans(vim.fn['lexima#expand']('<CR>', 'i')))
+          ctx.send(vim.fn.keytrans(vimx.fn.lexima.expand('<CR>', 'i')))
         end,
         enabled = function()
           return vim.o.filetype == 'markdown'
@@ -1434,9 +1458,9 @@ return {
       end, { expr = true })
 
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
-        pattern = { 'gruvbox-material' },
+        pattern = { '*' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'YankRoundRegion', { fg = base_colors.orange, bg = base_colors.black })
+          vim.api.nvim_set_hl(0, 'YankRoundRegion', { fg = base_colors().orange, bg = base_colors().black })
         end,
       })
     end,
@@ -1469,7 +1493,12 @@ return {
           }),
           augend.constant.new({
             elements = { 'log', 'warn', 'error', 'debug', 'info' },
-            word = false,
+            word = true,
+            cyclic = true,
+          }),
+          augend.constant.new({
+            elements = { 'on', 'off' },
+            word = true,
             cyclic = true,
           }),
           augend.semver.alias.semver,

@@ -14,7 +14,7 @@ return {
       vim.g.matchup_matchparen_offscreen = { method = 'popup' }
 
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
-        pattern = { 'gruvbox-material' },
+        pattern = { '*' },
         callback = function()
           vim.api.nvim_set_hl(0, 'MatchParen', { fg = 'NONE', bg = 'NONE', underline = true })
           vim.api.nvim_set_hl(0, 'MatchParenCur', { fg = 'NONE', bg = 'NONE', bold = true })
@@ -38,7 +38,6 @@ return {
     dependencies = {
       { 'lambdalisue/vim-quickrun-neovim-job' },
       { 'tyru/open-browser.vim' },
-      { 'rcarriga/nvim-notify' },
     },
     cmd = { 'QuickRun' },
     config = function()
@@ -61,7 +60,7 @@ return {
                   jobs[job_id] = { finish = false }
                 end
 
-                require('notify')('[QuickRun] Running ' .. session.config.command, 'warn', {
+                vim.notify('[QuickRun] Running ' .. session.config.command, 'warn', {
                   title = ' QuickRun',
                   -- keep = function()
                   --   if job_id then
@@ -73,10 +72,10 @@ return {
                 })
               end,
               on_success = function(session, _)
-                require('notify')('[QuickRun] Success ' .. session.config.command, 'info', { title = ' QuickRun' })
+                vim.notify('[QuickRun] Success ' .. session.config.command, 'info', { title = ' QuickRun' })
               end,
               on_failure = function(session, _)
-                require('notify')('[QuickRun] Error ' .. session.config.command, 'error', { title = ' QuickRun' })
+                vim.notify('[QuickRun] Error ' .. session.config.command, 'error', { title = ' QuickRun' })
               end,
               on_finish = function(session, _)
                 if session._temp_names then
@@ -149,6 +148,7 @@ return {
     config = function()
       local vimx = require('artemis')
 
+      -- FIX: Respond to cases where the project root and repository root do not match
       local function project_layout_file()
         return vim.fn.substitute(vim.fn.trim(vim.fn.system('git branch --show-current')), '/', '_', 'g')
           .. '_layout.json'
@@ -284,9 +284,6 @@ return {
   },
   {
     'tyru/capture.vim',
-    dependencies = {
-      { 'thinca/vim-prettyprint' },
-    },
     cmd = { 'Capture' },
     config = function()
       vim.api.nvim_create_autocmd({ 'FileType' }, {
@@ -366,7 +363,7 @@ return {
       vim.g.silicon = {
         font = 'UDEV Gothic 35NF',
         theme = 'OneHalfDark',
-        background = base_colors.black,
+        background = base_colors().black,
         output = '~/Downloads/silicon-{time:%Y-%m-%d-%H%M%S}.png',
       }
     end,
@@ -386,7 +383,7 @@ return {
       vim.g.silicon_options = {
         font = 'UDEV Gothic 35NF',
         theme = 'OneHalfDark',
-        background_color = base_colors.black,
+        background_color = base_colors().black,
       }
     end,
   },
@@ -394,7 +391,7 @@ return {
   {
     -- WIP
     'yuki-yano/ai-review.vim',
-    -- dir = '~/repos/github.com/yuki-yano/ai-review.vim',
+    dev = false,
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'yuki-yano/denops-lazy.nvim' },
@@ -418,10 +415,10 @@ return {
   },
   {
     'lambdalisue/guise.vim',
+    lazy = false,
     dependencies = {
       { 'vim-denops/denops.vim' },
     },
-    event = { 'User DenopsReady' },
   },
   {
     'yuki-yano/denops-open-http.vim',
@@ -429,6 +426,9 @@ return {
       { 'vim-denops/denops.vim' },
     },
     event = { 'CmdLineEnter' },
+    config = function()
+      require('denops-lazy').load('denops-open-http.vim', { wait_load = false })
+    end,
   },
   {
     'yuki-yano/denops-http-file-protocol.vim',
@@ -436,10 +436,13 @@ return {
       { 'vim-denops/denops.vim' },
       { 'lambdalisue/file-protocol.vim' },
     },
-    event = { 'User DenopsReady' },
+    cmd = { 'HttpFileProtocolServerStart' },
+    config = function()
+      require('denops-lazy').load('denops-http-file-protocol.vim')
+    end,
   },
-  -- TODO: try later
   {
+    -- TODO: try later
     'hachy/cmdpalette.nvim',
     enabled = false,
     cmd = { 'CmdPalette' },

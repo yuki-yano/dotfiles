@@ -28,17 +28,19 @@ return {
       vim.keymap.set({ 'n' }, '<Leader>e', '<Cmd>Fern . -drawer<CR><C-w>=')
       vim.keymap.set({ 'n' }, '<Leader>E', '<Cmd>Fern . -drawer -reveal=%<CR><C-w>=')
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
-        pattern = { 'gruvbox-material' },
+        pattern = { '*' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'FernGitStatusWorktree', { fg = base_colors.red, bg = 'NONE' })
-          vim.api.nvim_set_hl(0, 'FernGitStatusIndex', { fg = base_colors.green, bg = 'NONE' })
-          vim.api.nvim_set_hl(0, 'FernGitStatusUnmerged', { fg = base_colors.red, bg = 'NONE' })
-          vim.api.nvim_set_hl(0, 'FernGitStatusUntracked', { fg = base_colors.red, bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'FernGitStatusWorktree', { fg = base_colors().red, bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'FernGitStatusIndex', { fg = base_colors().green, bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'FernGitStatusUnmerged', { fg = base_colors().red, bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'FernGitStatusUntracked', { fg = base_colors().red, bg = 'NONE' })
           vim.api.nvim_set_hl(0, 'FernGitStatusIgnored', { link = 'Comment' })
         end,
       })
     end,
     config = function()
+      local vimx = require('artemis')
+
       vim.api.nvim_create_autocmd({ 'FileType' }, {
         pattern = { 'fern' },
         callback = function()
@@ -90,15 +92,10 @@ return {
 
           vim.opt_local.number = false
           vim.opt_local.relativenumber = false
+
+          vimx.fn.glyph_palette.apply()
         end,
       })
-    end,
-  },
-  {
-    'lambdalisue/glyph-palette.vim',
-    config = function()
-      local vimx = require('artemis')
-      vimx.fn.glyph_palette.apply()
     end,
   },
   {

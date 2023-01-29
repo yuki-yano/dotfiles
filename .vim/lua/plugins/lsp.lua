@@ -21,7 +21,18 @@ local plugins = {
       { 'SmiteshP/nvim-navic' },
       { 'jose-elias-alvarez/typescript.nvim' },
       { 'yioneko/nvim-vtsls' },
+      -- { 'kevinhwang91/nvim-ufo' }, -- NOTE: Explicitly adding to dependencies causes errors when loading
     },
+    init = function()
+      vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
+        pattern = { '*' },
+        callback = function()
+          vim.api.nvim_set_hl(0, 'LspReferenceWrite', { bold = true })
+          vim.api.nvim_set_hl(0, 'LspReferenceRead', { bold = true })
+          vim.api.nvim_set_hl(0, 'LspReferenceText', { bold = true })
+        end,
+      })
+    end,
     config = function()
       vim.diagnostic.config({
         virtual_text = false,
@@ -64,7 +75,9 @@ local plugins = {
             })
           end
 
-          client.server_capabilities.semanticTokensProvider = nil
+          if client.name ~= 'sumneko_lua' then
+            client.server_capabilities.semanticTokensProvider = nil
+          end
 
           if client.server_capabilities.documentSymbolProvider then
             require('nvim-navic').attach(client, bufnr)
@@ -250,65 +263,93 @@ local plugins = {
   {
     'glepnir/lspsaga.nvim',
     -- NOTE: Use versions earlier than 0.2.3
-    commit = 'b7b477',
-    -- dir = '~/repos/github.com/yuki-yano/lspsaga.nvim',
+    -- commit = 'b7b477',
+    -- dev = true,
     event = { 'LspAttach' },
     init = function()
       add_disable_cmp_filetypes({ 'sagarename' })
     end,
     config = function()
-      require('lspsaga').init_lsp_saga({
-        border_style = 'rounded',
-        -- saga_winblend = 10,
-        diagnostic_header = {
-          diagnostic_icons.error .. ' ',
-          diagnostic_icons.warn .. ' ',
-          diagnostic_icons.info .. ' ',
-          diagnostic_icons.hint .. ' ',
-        },
-        code_action_lightbulb = {
-          enable = false,
-        },
-      })
-
-      -- TODO: new version settings
-      -- require('lspsaga').setup({
-      --   ui = {
-      --     theme = 'round',
-      --     border = 'rounded',
-      --     title = true,
-      --     code_action = lsp_icons.code_action,
-      --     diagnostic = lsp_icons.diagnostics,
-      --     incoming = lsp_icons.incoming,
-      --     outgoing = lsp_icons.outgoing,
-      --     colors = {
-      --       normal_bg = base_colors.black,
-      --       title_bg = base_colors.green,
-      --       red = base_colors.red,
-      --       magenta = base_colors.magenta,
-      --       orange = base_colors.orange,
-      --       yellow = base_colors.yellow,
-      --       green = base_colors.green,
-      --       cyan = base_colors.cyan,
-      --       blue = base_colors.blue,
-      --       purple = base_colors.purple,
-      --       white = base_colors.white,
-      --       black = base_colors.black,
-      --     },
+      -- NOTE: old version settings
+      -- require('lspsaga').init_lsp_saga({
+      --   border_style = 'rounded',
+      --   -- saga_winblend = 10,
+      --   diagnostic_header = {
+      --     diagnostic_icons.error .. ' ',
+      --     diagnostic_icons.warn .. ' ',
+      --     diagnostic_icons.info .. ' ',
+      --     diagnostic_icons.hint .. ' ',
       --   },
-      --   diagnostic = {
-      --     show_code_action = false,
-      --   },
-      --   lightbulb = {
-      --     enable = false,
-      --   },
-      --   symbol_in_winbar = {
+      --   code_action_lightbulb = {
       --     enable = false,
       --   },
       -- })
 
-      -- TODO: Integrate with nvim-ufo
+      require('lspsaga').setup({
+        ui = {
+          theme = 'round',
+          border = 'rounded',
+          title = false,
+          winblend = 10,
+          expand = '>',
+          collapse = 'v',
+          preview = '< ',
+          hover = diagnostic_icons.hint,
+          code_action = lsp_icons.code_action,
+          diagnostic = lsp_icons.diagnostic,
+          incoming = lsp_icons.incoming,
+          outgoing = lsp_icons.outgoing,
+          -- NOTE: from: `require('catppuccin.groups.integrations.lsp_saga').custom_colors()`
+          colors = {
+            normal_bg = base_colors().black,
+            title_bg = base_colors().green,
+            black = base_colors().empty,
+            white = base_colors().white, -- TODO: change to text
+            red = base_colors().red,
+            blue = base_colors().blue,
+            green = base_colors().green,
+            yellow = base_colors().yellow,
+            cyan = base_colors().cyan, -- TODO: change to sky
+            magenta = base_colors().magenta, -- TODO: change to maroon
+            orange = base_colors().orange,
+            purple = base_colors().purple,
+          },
+        },
+        scroll_preview = {
+          scroll_down = '<C-d>',
+          scroll_up = '<C-u>',
+        },
+        definition = {
+          edit = '<CR>',
+          quit = 'q',
+          close = '<Esc>',
+        },
+        diagnostic = {
+          custom_msg = 'Message:',
+          custom_fix = 'Fix:',
+        },
+        rename = {
+          quit = 'q',
+          exec = '<CR>',
+          mark = '<Space>',
+          confirm = '<CR>',
+        },
+        lightbulb = {
+          enable = false,
+        },
+        beacon = {
+          enable = false,
+        },
+        symbol_in_winbar = {
+          enable = false,
+        },
+      })
+
       vim.keymap.set({ 'n' }, 'K', function()
+        if require('ufo').peekFoldedLinesUnderCursor() then
+          return
+        end
+
         local ft = vim.o.filetype
         if ft == 'vim' or ft == 'help' then
           vim.cmd([[execute 'h ' . expand('<cword>') ]])
@@ -322,6 +363,7 @@ local plugins = {
       -- Use actions-preview.nvim
       -- vim.keymap.set({ 'n', 'x' }, '<Plug>(lsp)a', '<Cmd>Lspsaga code_action<CR>')
       vim.keymap.set({ 'n' }, '<Plug>(lsp)rn', '<Cmd>Lspsaga rename<CR>')
+      vim.keymap.set({ 'n' }, '<Plug>(lsp)rN', '<Cmd>Lspsaga rename ++project<CR>')
       vim.keymap.set({ 'n' }, '<Plug>(lsp)n', '<Cmd>Lspsaga diagnostic_jump_next<CR>')
       vim.keymap.set({ 'n' }, '<Plug>(lsp)p', '<Cmd>Lspsaga diagnostic_jump_prev<CR>')
       vim.keymap.set({ 'n' }, '<Plug>(lsp)m', '<Cmd>Lspsaga show_cursor_diagnostics<CR>')
@@ -336,10 +378,15 @@ local plugins = {
     init = function()
       -- FIX: Workaround, highlighted group does not exist error
       --      TSPunctuation{Xxx} where it should be defined as TSPunct{Xxx}.
-      vim.api.nvim_set_hl(0, 'TSPunctuationBracket', { link = '@punctuation.bracket' })
-      vim.api.nvim_set_hl(0, 'TSPunctuationDelimiter', { link = '@punctuation.delimiter' })
-      vim.api.nvim_set_hl(0, 'TSPunctuationSpecial', { link = '@punctuation.special' })
-      vim.api.nvim_set_hl(0, 'TSSpell', { link = '@spell' })
+      vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
+        pattern = { '*' },
+        callback = function()
+          vim.api.nvim_set_hl(0, 'TSPunctuationBracket', { link = '@punctuation.bracket' })
+          vim.api.nvim_set_hl(0, 'TSPunctuationDelimiter', { link = '@punctuation.delimiter' })
+          vim.api.nvim_set_hl(0, 'TSPunctuationSpecial', { link = '@punctuation.special' })
+          vim.api.nvim_set_hl(0, 'TSSpell', { link = '@spell' })
+        end,
+      })
     end,
     config = function()
       require('neodim').setup({
@@ -427,7 +474,7 @@ local plugins = {
     event = { 'LspAttach' },
     init = function()
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
-        pattern = { 'gruvbox-material' },
+        pattern = { '*' },
 
         callback = function()
           vim.api.nvim_set_hl(0, 'DiagnosticVirtualTextError', { link = 'DiagnosticSignError' })
@@ -446,7 +493,9 @@ local plugins = {
 }
 
 for _, plugin in ipairs(plugins) do
-  plugin.enabled = vim.env.LSP == 'nvim'
+  if plugin.enabled == nil then
+    plugin.enabled = vim.env.LSP == 'nvim'
+  end
 end
 
 return plugins

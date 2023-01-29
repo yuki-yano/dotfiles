@@ -18,7 +18,7 @@ vim.keymap.set({ 'n' }, 'A', [[len(getline('.')) ? 'A' : '"_cc']], { expr = true
 vim.keymap.set({ 'n' }, 'gi', 'i')
 
 -- Split undo history when <CR>
-vim.keymap.set("i", "<CR>", "<C-g>u<CR>", { silent = true })
+vim.keymap.set('i', '<CR>', '<C-g>u<CR>', { silent = true })
 
 -- Ignore register
 vim.keymap.set({ 'n' }, 'x', '"_x')

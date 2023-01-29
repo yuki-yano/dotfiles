@@ -25,7 +25,7 @@ return {
     event = { 'BufRead' },
     init = function()
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
-        pattern = { 'gruvbox-material' },
+        pattern = { '*' },
         callback = function()
           vim.api.nvim_set_hl(0, 'GitSignsAddNr', { link = 'DiffAdd' })
           vim.api.nvim_set_hl(0, 'GitSignsChangeNr', { link = 'DiffChange' })

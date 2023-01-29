@@ -44,7 +44,7 @@ return {
       vim.g.fzf_preview_default_fzf_options = {
         ['--reverse'] = true,
         ['--preview-window'] = 'wrap',
-        ['--bind'] = 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,?:toggle-preview,ctrl-n:down,ctrl-p:up,ctrl-j:next-history,ctrl-k:previous-history',
+        ['--bind'] = 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,?:toggle-preview,ctrl-n:down,ctrl-p:up,ctrl-j:next-history,ctrl-k:previous-history,ctrl-a:toggle-all',
       }
       vim.g.fzf_preview_history_dir = '~/.fzf'
       vim.g.fzf_preview_update_statusline = false
@@ -53,9 +53,14 @@ return {
 
       if vim.env.NVIM_COLORSCHEME == 'gruvbox-material' then
         vim.env.BAT_THEME = 'gruvbox-dark'
-        vim.env.FZF_PREVIEW_PREVIEW_BAT_THEME = 'gruvbox-dark'
+        vim.env.FZF_PREVIEW_PREVIEW_BAT_THEME = 'Catppuccin-mocha'
         vim.env.FZF_DEFAULT_OPTS =
-          '--reverse --no-separator --color=bg+:#1D2021,bg:#1d2021,spinner:#D8A657,hl:#a9b665,fg:#d4be98,header:#928374,info:#89b482,pointer:#7daea3,marker:#d8a657,fg+:#d4be98,prompt:#e78a4e,hl+:#89b482'
+          '--reverse --no-separator --color=bg+:#1D2021,bg:#1d2021,spinner:#D8A657,hl:#A9B665,fg:#D4BE98,header:#928374,info:#89B482,pointer:#7DAEA3,marker:#D8A657,fg+:#D4BE98,prompt:#E78A4E,hl+:#89B482'
+      elseif vim.env.NVIM_COLORSCHEME == 'catppuccin' then
+        vim.env.BAT_THEME = 'gruvbox-dark'
+        vim.env.FZF_PREVIEW_PREVIEW_BAT_THEME = 'Catppuccin-mocha'
+        vim.env.FZF_DEFAULT_OPTS =
+          '--reverse --no-separator --color=bg+:#1E1E2E,bg:#1E1E2E,spinner:#F5E0DC,hl:#89B4FA,fg:#CDD6F4,header:#A6ADC8,info:#CBA6F7,pointer:#F5E0DC,marker:#F5E0DC,fg+:#CDD6F4,prompt:#A6E3A1,hl+:#89B4FA'
       end
 
       vim.keymap.set({ 'n' }, '<Plug>(ff)r', '<Cmd>FzfPreviewProjectMruFilesRpc --experimental-fast<CR>')
@@ -91,10 +96,7 @@ return {
     end,
     config = function()
       local vimx = require('artemis')
-
-      if vim.env.LSP == 'nvim' then
-        vimx.fn.fzf_preview.rpc.initialize()
-      end
+      vimx.fn.fzf_preview.rpc.initialize()
 
       vim.api.nvim_create_autocmd({ 'User' }, {
         pattern = { 'fzf_preview#rpc#initialized' },
@@ -137,7 +139,7 @@ return {
     'nvim-telescope/telescope.nvim',
     dependencies = {
       { 'nvim-lua/plenary.nvim' },
-      { 'kyazdani42/nvim-web-devicons' },
+      { 'nvim-tree/nvim-web-devicons' },
       { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
     },
     cmd = { 'Telescope' },
@@ -174,6 +176,34 @@ return {
       })
 
       telescope.load_extension('fzf')
+      telescope.load_extension('notify')
+    end,
+  },
+  {
+    'ibhagwan/fzf-lua',
+    dependencies = {
+      { 'nvim-tree/nvim-web-devicons' },
+    },
+    cmd = { 'FzfLua' },
+    init = function()
+      vim.keymap.set({ 'n' }, '<Plug>(ff)h', '<Cmd>FzfLua help_tags<CR>')
+    end,
+    config = function()
+      require('fzf-lua').setup({
+        winopts = {
+          win_height = 0.9,
+          win_width = 0.9,
+        },
+        keymap = {
+          builtin = {
+            ['<C-d>'] = 'preview-page-down',
+            ['<C-u>'] = 'preview-page-up',
+          },
+        },
+        fzf_opts = {
+          ['--info'] = 'default',
+        },
+      })
     end,
   },
 }

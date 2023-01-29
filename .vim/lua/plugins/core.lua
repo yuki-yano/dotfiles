@@ -19,10 +19,26 @@ return {
     'rcarriga/nvim-notify',
     event = { 'VeryLazy' },
     config = function()
-      require('notify').setup({ background_colour = base_colors.empty, stages = 'static' })
+      require('notify').setup({ background_colour = base_colors().empty, stages = 'static' })
+
+      -- NOTE: override vim.notify
+      vim.notify = function(...)
+        vim.notify = require('notify')
+        vim.notify(...)
+      end
+
+      vim.api.nvim_create_autocmd({ 'FileType' }, {
+        pattern = { 'notify' },
+        callback = function()
+          vim.keymap.set({ 'n' }, 'q', '<Cmd>quit<CR>', { buffer = true })
+        end,
+      })
     end,
   },
-  { 'vim-denops/denops.vim', event = { 'VeryLazy' } },
+  {
+    'vim-denops/denops.vim',
+    lazy = false,
+  },
   { 'yuki-yano/denops-lazy.nvim' },
   {
     'vigoux/notifier.nvim',

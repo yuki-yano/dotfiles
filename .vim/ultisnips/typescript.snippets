@@ -46,8 +46,8 @@ snippet range "range"
 [...Array(${1:n})].map((_, i) => i)
 endsnippet
 
-snippet range "range"
-[...Array(${1:n})].map((_, i + ${2:start}) => i)
+snippet range_with_start "range"
+[...Array(${1:n})].map((_, i) => i + ${2:start})
 endsnippet
 
 snippet log "console.log"

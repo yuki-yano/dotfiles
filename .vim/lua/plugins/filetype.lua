@@ -4,7 +4,7 @@ return {
     dependencies = {
       { 'nvim-treesitter/nvim-treesitter' },
     },
-    ft = { 'typescript', 'typescriptreact' },
+    ft = { 'typescriptreact' },
     config = function()
       require('nvim-ts-autotag').setup({ enable_close = false })
     end,

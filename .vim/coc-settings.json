@@ -1,53 +1,60 @@
 {
+  "suggest.autoTrigger": "always",
+  "suggest.asciiCharactersOnly": true,
+  "suggest.snippetIndicator": "~",
+  "suggest.languageSourcePriority": 200,
+  "suggest.noselect": true,
+  "suggest.enablePreselect": false,
+  "suggest.completionItemKindLabels": {
+    "text": "󾪓 ",
+    "method": "󾪌 ",
+    "function": "󾪌 ",
+    "constructor": "󾪌 ",
+    "field": "󾭟 ",
+    "variable": "󾪈 ",
+    "class": "󾭛 ",
+    "interface": "󾭡 ",
+    "module": "󾪋 ",
+    "property": "󾭥 ",
+    "unit": "󾪖 ",
+    "value": "󾪕 ",
+    "enum": "󾪕 ",
+    "keyword": "󾭢 ",
+    "snippet": "󾩻 ",
+    "color": "󾭜 ",
+    "file": "󾩻 ",
+    "reference": "󾪔 ",
+    "folder": "󾪃 ",
+    "enumMember": "󾪕 ",
+    "constant": "󾭝 ",
+    "struct": "󾪑 ",
+    "event": "󾪆 ",
+    "operator": "󾭤 ",
+    "typeParameter": "󾪒 ",
+    "default": "  "
+  },
   "hover.floatConfig": {
     "border": true,
     "highlight": "CocHoverFloating",
     "winblend": 10
   },
-  "suggest.autoTrigger": "always",
-  "suggest.asciiCharactersOnly": true,
-  "suggest.snippetIndicator": " >>",
-  "suggest.languageSourcePriority": 200,
   "suggest.floatConfig": {
     "border": true,
     "highlight": "CocSuggestFloating",
     "winblend": 10
   },
-  "suggest.noselect": true,
-  "suggest.enablePreselect": false,
-  "suggest.completionItemKindLabels": {
-    "keyword": " ",
-    "variable": " ",
-    "value": " ",
-    "operator": " ",
-    "constructor": " ",
-    "function": " ",
-    "reference": " ",
-    "constant": " ",
-    "method": " ",
-    "struct": " ",
-    "class": " ",
-    "interface": " ",
-    "text": " ",
-    "enum": " ",
-    "enumMember": " ",
-    "module": " ",
-    "color": " ",
-    "property": " ",
-    "field": " ",
-    "unit": " ",
-    "event": " ",
-    "file": " ",
-    "folder": " ",
-    "snippet": "",
-    "typeParameter": " ",
-    "default": "  "
+  "diagnostic.floatConfig": {
+    "border": true,
+    "highlight": "CocDiagnosticFloating",
+    "winblend": 10
   },
   "signature.floatConfig": {
     "border": true,
     "highlight": "CocSignatureFloating",
     "winblend": 10
   },
+  "dialog.floatHighlight": "CocFloating",
+  "dialog.floatBorderHighlight": "CocFloating",
   "coc.source.around.shortcut": "around",
   "coc.source.buffer.shortcut": "buffer",
   "coc.source.word.shortcut": "word",
@@ -56,39 +63,19 @@
   "coc.source.ultisnips-select.priority": 500,
   "tabnine.shortcut": "tabnine",
   "tabnine.priority": 100,
-  "dialog.floatHighlight": "CocFloating",
-  "dialog.floatBorderHighlight": "CocFloating",
   "diagnostic.messageTarget": "float",
   "diagnostic.checkCurrentLine": false,
   "diagnostic.messageDelay": 0,
-  "diagnostic.errorSign": "",
-  "diagnostic.warningSign": "",
-  "diagnostic.infoSign": "",
-  "diagnostic.hintSign": "",
-  "diagnostic.floatConfig": {
-    "border": true,
-    "highlight": "CocDiagnosticFloating",
-    "winblend": 10
-  },
+  "diagnostic.errorSign": "󾪇",
+  "diagnostic.warningSign": "󾩬",
+  "diagnostic.infoSign": "󾩴",
+  "diagnostic.hintSign": "󾩳",
   "coc.preferences.useQuickfixForLocations": false,
   "coc.preferences.currentFunctionSymbolAutoUpdate": true,
   "diagnostic.locationlistUpdate": false,
   "prettier.disableLanguages": [
     "markdown"
   ],
-  "languageserver": {
-    "efm": {
-      "command": "efm-langserver",
-      "filetypes": [
-        "go",
-        "ruby",
-        "vim",
-        "sh",
-        "zsh",
-        "markdown"
-      ]
-    }
-  },
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
   "deno.unstable": true,
@@ -103,9 +90,12 @@
   ],
   "prettier.onlyUseLocalVersion": true,
   "prettier.statusItemText": "",
+  "Lua.diagnostics.globals": [
+    "vim"
+  ],
+  "sumneko-lua.enableNvimLuaDev": true,
+  "Lua.telemetry.enable": true,
   "rust-analyzer.procMacro.enable": true,
-  "python.linting.flake8Enabled": true,
-  "solargraph.diagnostics": true,
   "json.schemas": [
     {
       "url": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/api/json/catalog.json",
@@ -140,9 +130,5 @@
     "typescript.tsx",
     "typescriptreact",
     "yaml"
-  ],
-  "tsserver.enable": false,
-  "deno.enable": false,
-  "deno.lint": true,
-  "prettier.enable": false
+  ]
 }

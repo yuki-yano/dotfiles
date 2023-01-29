@@ -12,8 +12,33 @@ return {
     end,
   },
   {
-    'folke/tokyonight.nvim',
-    priority = vim.env.NVIM_COLORSCHEME == 'tokyonight' and 1000 or 50,
-    lazy = vim.env.NVIM_COLORSCHEME ~= 'tokyonight',
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    priority = vim.env.NVIM_COLORSCHEME == 'catppuccin' and 1000 or 50,
+    lazy = vim.env.NVIM_COLORSCHEME ~= 'catppuccin',
+    config = function()
+      require('catppuccin').setup({
+        term_colors = true,
+        integrations = {
+          aerial = true,
+          coc_nvim = true,
+          cmp = true,
+          fern = true,
+          fidget = true,
+          gitsigns = true,
+          lsp_saga = true,
+          lsp_trouble = true,
+          mason = true,
+          notify = true,
+          telescope = true,
+          treesitter = true,
+          treesitter_context = true,
+          ts_rainbow = true,
+          indent_blankline = {
+            enabled = true,
+          },
+        },
+      })
+    end,
   },
 }

@@ -4,8 +4,8 @@ if vim.env.LSP == nil then
 end
 
 if vim.env.NVIM_COLORSCHEME == nil then
-  vim.env.NVIM_COLORSCHEME = 'gruvbox-material'
-  -- vim.env.NVIM_COLORSCHEME = 'tokyonight'
+  -- vim.env.NVIM_COLORSCHEME = 'gruvbox-material'
+  vim.env.NVIM_COLORSCHEME = 'catppuccin'
 end
 
 require('plugin_manager').lazy_init()

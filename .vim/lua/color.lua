@@ -1,61 +1,153 @@
 local M = {}
+local palette = {}
 
--- TODO: Split and define fg and bg, Only fg now
-M.base_colors = {
-  black = '#32302F',
-  red = '#EA6962',
-  green = '#A9B665',
-  yellow = '#D8A657',
-  blue = '#7DAEA3',
-  magenta = '#D3869B',
-  cyan = '#89B482',
-  white = '#D4BE98',
-  grey = '#807569',
-  orange = '#E78A4E',
-  purple = '#CBA6F7', -- TODO: Temporary settings
-  background = '#1D2021',
-  empty = '#1C1C1C',
-  incsearch = '#175655',
-  search = '#213F72',
-  visual = '#1D4647',
-  info = '#FFFFAF',
-}
-
-M.misc_colors = {
-  pointer = {
-    red = '#E27878',
-    blue = '#5F87D7',
+-- global settings
+local incsearch = '#175655'
+local search = '#213F72'
+local visual = '#1D4647'
+local diff = {
+  add = {
+    bg = '#1A3627',
   },
-  diff = {
-    add = {
-      bg = '#1A3627',
-    },
-    change = {
-      bg = '#36341a',
-    },
-    text = {
-      bg = '#716522',
-    },
+  change = {
+    bg = '#36341a',
   },
-  vert_split = '#504945',
-  scrollbar = {
-    bar = '#3A3A3A',
-    search = '#00AFAF',
-  },
-  hlslens = {
-    lens = {
-      fg = '#889EB5',
-      bg = '#283642',
-    },
-    near = {
-      fg = 'NONE',
-      bg = '#213F72',
-    },
-    float = {
-      fg = 'NONE',
-      bg = '#213F72',
-    },
+  text = {
+    bg = '#716522',
   },
 }
+local pointer = {
+  red = '#E27878',
+  blue = '#5F87D7',
+}
+
+palette['gruvbox-material'] = function()
+  return {
+    base = {
+      black = '#32302F',
+      red = '#EA6962',
+      green = '#A9B665',
+      yellow = '#D8A657',
+      blue = '#7DAEA3',
+      magenta = '#D3869B',
+      cyan = '#89B482',
+      white = '#D4BE98',
+      grey = '#807569',
+      orange = '#E78A4E',
+      purple = '#CBA6F7', -- TODO: Temporary settings
+      background = '#1D2021',
+      empty = '#1C1C1C',
+      info = '#FFFFAF',
+      incsearch = incsearch,
+      search = search,
+      visual = visual,
+    },
+    misc = {
+      pointer = pointer,
+      diff = diff,
+      vert_split = '#504945',
+      scrollbar = {
+        bar = '#3A3A3A',
+        search = '#00AFAF',
+      },
+      hlslens = {
+        lens = {
+          fg = '#889EB5',
+          bg = '#283642',
+        },
+        near = {
+          fg = 'NONE',
+          bg = search,
+        },
+        float = {
+          fg = 'NONE',
+          bg = search,
+        },
+      },
+    },
+  }
+end
+
+-- base = "#1E1E2E",
+-- blue = "#89B4FA",
+-- crust = "#11111B",
+-- flamingo = "#F2CDCD",
+-- green = "#A6E3A1",
+-- lavender = "#B4BEFE",
+-- mantle = "#181825",
+-- maroon = "#EBA0AC",
+-- mauve = "#CBA6F7",
+-- overlay0 = "#6C7086",
+-- overlay1 = "#7F849C",
+-- overlay2 = "#9399B2",
+-- peach = "#FAB387",
+-- pink = "#F5C2E7",
+-- red = "#F38BA8",
+-- rosewater = "#F5E0DC",
+-- sapphire = "#74C7EC",
+-- sky = "#89DCEB",
+-- subtext0 = "#A6ADC8",
+-- subtext1 = "#BAC2DE",
+-- surface0 = "#313244",
+-- surface1 = "#45475A",
+-- surface2 = "#585B70",
+-- teal = "#94E2D5",
+-- text = "#CDD6F4",
+-- yellow = "#F9E2AF"
+palette['catppuccin'] = function()
+  local catppuccin_palette = require('catppuccin.palettes').get_palette('mocha')
+
+  return {
+    base = {
+      black = catppuccin_palette.base, -- #1E1E2E
+      red = catppuccin_palette.red, -- #F38BA8
+      green = catppuccin_palette.green, -- #A6E3A1
+      yellow = catppuccin_palette.yellow, -- #F9E2AF
+      blue = catppuccin_palette.blue, -- #89B4FA
+      magenta = catppuccin_palette.pink, -- #F5C2E7
+      cyan = catppuccin_palette.lavender, -- #B4BEFE
+      white = catppuccin_palette.rosewater, -- #F5E0DC
+      grey = catppuccin_palette.overlay0, -- #6C7086
+      orange = catppuccin_palette.peach, -- #FAB387
+      purple = catppuccin_palette.mauve, -- #CBA6F7
+      background = catppuccin_palette.mantle, -- #181825
+      empty = catppuccin_palette.crust, -- #11111B
+      info = catppuccin_palette.yellow, -- #F9E2AF
+      incsearch = incsearch,
+      search = search,
+      visual = visual,
+      vert_split = catppuccin_palette.surface0, -- #313244
+    },
+    misc = {
+      pointer = pointer,
+      diff = diff,
+      scrollbar = {
+        bar = catppuccin_palette.surface0, -- #313244
+        search = catppuccin_palette.sky, -- #89DCEB
+      },
+      hlslens = {
+        lens = {
+          fg = catppuccin_palette.overlay2, -- #9399B2
+          bg = catppuccin_palette.surface0, -- #313244
+        },
+        near = {
+          fg = 'NONE',
+          bg = search,
+        },
+        float = {
+          fg = 'NONE',
+          bg = search,
+        },
+      },
+    },
+  }
+end
+
+M.base_colors = function()
+  return palette[vim.env.NVIM_COLORSCHEME]().base
+end
+M.misc_colors = function()
+  return palette[vim.env.NVIM_COLORSCHEME]().misc
+end
 
 return M

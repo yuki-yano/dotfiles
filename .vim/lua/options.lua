@@ -36,6 +36,7 @@ vim.opt.number = true
 vim.opt.pumheight = 40
 vim.opt.relativenumber = true
 vim.opt.scrolloff = 5
+vim.opt.shortmess:append('I')
 vim.opt.showmode = false
 vim.opt.showtabline = 0
 vim.opt.spellcapcheck = ''
@@ -149,7 +150,7 @@ vim.api.nvim_create_autocmd({ 'FileType' }, {
 
 -- Fold
 vim.api.nvim_create_autocmd({ 'FileType' }, {
-  pattern = { 'typescript', 'typescriptreact', 'vim', 'markdown' },
+  pattern = { 'typescript', 'typescriptreact', 'lua', 'vim', 'markdown' },
   callback = function()
     vim.opt_local.foldlevel = 100
   end,

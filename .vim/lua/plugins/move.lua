@@ -1,3 +1,4 @@
+local base_colors = require('color').base_colors
 local misc_colors = require('color').misc_colors
 
 return {
@@ -61,10 +62,10 @@ return {
       vim.keymap.set({ 'n' }, '<Leader>f', eft_toggle)
 
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
-        pattern = { 'gruvbox-material' },
+        pattern = { '*' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'EftChar', { fg = misc_colors.pointer.red })
-          vim.api.nvim_set_hl(0, 'EftSubChar', { fg = misc_colors.pointer.blue })
+          vim.api.nvim_set_hl(0, 'EftChar', { fg = misc_colors().pointer.red })
+          vim.api.nvim_set_hl(0, 'EftSubChar', { fg = misc_colors().pointer.blue })
         end,
       })
     end,
@@ -110,19 +111,23 @@ return {
       )
 
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
-        pattern = { 'gruvbox-material' },
+        pattern = { '*' },
         callback = function()
           vim.api.nvim_set_hl(0, 'HlSearchLensNear', { link = 'IncSearch' })
-          vim.api.nvim_set_hl(0, 'HlSearchLens', { fg = misc_colors.hlslens.lens.fg, bg = misc_colors.hlslens.lens.bg })
+          vim.api.nvim_set_hl(
+            0,
+            'HlSearchLens',
+            { fg = misc_colors().hlslens.lens.fg, bg = misc_colors().hlslens.lens.bg }
+          )
           vim.api.nvim_set_hl(
             0,
             'HlSearchLensNear',
-            { fg = misc_colors.hlslens.near.fg, bg = misc_colors.hlslens.near.bg }
+            { fg = misc_colors().hlslens.near.fg, bg = misc_colors().hlslens.near.bg }
           )
           vim.api.nvim_set_hl(
             0,
             'HlSearchFloat',
-            { fg = misc_colors.hlslens.float.fg, bg = misc_colors.hlslens.float.bg }
+            { fg = misc_colors().hlslens.float.fg, bg = misc_colors().hlslens.float.bg }
           )
         end,
       })
@@ -154,6 +159,16 @@ return {
     init = function()
       vim.g.fuzzy_motion_matchers = { 'fzf', 'kensaku' }
       vim.keymap.set({ 'n', 'x' }, 'ss', '<Cmd>FuzzyMotion<CR>')
+
+      vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
+        pattern = { '*' },
+        callback = function()
+          vim.api.nvim_set_hl(0, 'FuzzyMotionShade', { fg = base_colors().grey })
+          vim.api.nvim_set_hl(0, 'FuzzyMotionChar', { fg = base_colors().red })
+          vim.api.nvim_set_hl(0, 'FuzzyMotionSubChar', { fg = base_colors().yellow })
+          vim.api.nvim_set_hl(0, 'FuzzyMotionMatch', { fg = base_colors().blue })
+        end,
+      })
     end,
     config = function()
       require('denops-lazy').load('fuzzy-motion.vim', { wait_load = false })

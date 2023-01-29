@@ -7,6 +7,7 @@ M.diagnostic_icons = {
   warn = '󾩬',
   info = '󾩴',
   hint = '󾩳',
+  success = '󾪲',
 }
 
 M.lsp_icons = {
@@ -67,7 +68,7 @@ M.misc_icons = {
   folder = '󾪃',
   cmd = '󾪌',
   vim = '',
-  lazy = ''
+  lazy = '',
 }
 
 return M
