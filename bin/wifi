@@ -62,4 +62,4 @@ if [ "$rate" = 0 ]; then
     exit 1
 fi
 
-echo -e "#[fg=white]${ssid} #[fg=colour108]${rate}Mbps ${signal}"
+echo -e "#[fg=white]${ssid} #[fg=green]${rate}Mbps ${signal}"
