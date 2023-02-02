@@ -19,6 +19,11 @@ return {
     config = function()
       require('catppuccin').setup({
         term_colors = true,
+        custom_highlights = function(colors)
+          return {
+            ['@keyword.export'] = { fg = colors.sapphire, style = {} },
+          }
+        end,
         integrations = {
           aerial = true,
           coc_nvim = true,

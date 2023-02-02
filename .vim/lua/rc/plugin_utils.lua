@@ -1,9 +1,9 @@
-local list_concat = require('utils').list_concat
+local list_concat = require('rc.utils').list_concat
 
 local M = {}
 
 M.enable_noice = false
-M.enable_lsp_lines = true
+M.enable_lsp_lines = vim.env.LSP == 'nvim'
 
 local disable_cmp_filetypes = {}
 M.get_disable_cmp_filetypes = function()

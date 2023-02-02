@@ -1,13 +1,14 @@
-local get_disable_cmp_filetypes = require('plugin_utils').get_disable_cmp_filetypes
-local base_colors = require('color').base_colors
-local codicons = require('font').codicons
-local misc_icons = require('font').misc_icons
-local list_concat = require('utils').list_concat
+local get_disable_cmp_filetypes = require('rc.plugin_utils').get_disable_cmp_filetypes
+local color = require('rc.color')
+local codicons = require('rc.font').codicons
+local misc_icons = require('rc.font').misc_icons
+local todo_icons = require('rc.font').todo_icons
+local list_concat = require('rc.utils').list_concat
 
 return {
   {
     'hrsh7th/nvim-cmp',
-    event = { 'InsertEnter', 'CmdlineEnter' },
+    event = vim.env.LSP == 'nvim' and { 'InsertEnter', 'CmdlineEnter' } or { 'VeryLazy' },
     dependencies = {
       { 'hrsh7th/cmp-nvim-lsp' },
       { 'hrsh7th/cmp-nvim-lua' },
@@ -68,40 +69,43 @@ return {
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { '*' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'CmpItemKindUnit', { fg = base_colors().yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindNumber', { fg = base_colors().magenta })
-          vim.api.nvim_set_hl(0, 'CmpItemKindFunction', { fg = base_colors().green })
-          vim.api.nvim_set_hl(0, 'CmpItemKindKey', { fg = base_colors().blue })
-          vim.api.nvim_set_hl(0, 'CmpItemKindKeyword', { fg = base_colors().red })
-          vim.api.nvim_set_hl(0, 'CmpItemKindReference', { fg = base_colors().cyan })
-          vim.api.nvim_set_hl(0, 'CmpItemKindFolder', { fg = base_colors().yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindVariable', { fg = base_colors().magenta })
-          vim.api.nvim_set_hl(0, 'CmpItemKindNull', { fg = base_colors().yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindValue', { fg = base_colors().yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindConstant', { fg = base_colors().white })
-          vim.api.nvim_set_hl(0, 'CmpItemKindText', { fg = base_colors().green })
-          vim.api.nvim_set_hl(0, 'CmpItemKindModule', { fg = base_colors().red })
-          vim.api.nvim_set_hl(0, 'CmpItemKindPackage', { fg = base_colors().red })
-          vim.api.nvim_set_hl(0, 'CmpItemKindClass', { fg = base_colors().green })
-          vim.api.nvim_set_hl(0, 'CmpItemKindOperator', { fg = base_colors().orange })
-          vim.api.nvim_set_hl(0, 'CmpItemKindStruct', { fg = base_colors().red })
-          vim.api.nvim_set_hl(0, 'CmpItemKindObject', { fg = base_colors().yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindMethod', { fg = base_colors().green })
-          vim.api.nvim_set_hl(0, 'CmpItemKindArray', { fg = base_colors().yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindEnum', { fg = base_colors().yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindField', { fg = base_colors().blue })
-          vim.api.nvim_set_hl(0, 'CmpItemKindInterface', { fg = base_colors().yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindProperty', { fg = base_colors().blue })
-          vim.api.nvim_set_hl(0, 'CmpItemKindColor', { fg = base_colors().magenta })
-          vim.api.nvim_set_hl(0, 'CmpItemKindFile', { fg = base_colors().red })
-          vim.api.nvim_set_hl(0, 'CmpItemKindEvent', { fg = base_colors().white })
-          vim.api.nvim_set_hl(0, 'CmpItemKindTypeParameter', { fg = base_colors().white })
-          vim.api.nvim_set_hl(0, 'CmpItemKindConstructor', { fg = base_colors().green })
-          vim.api.nvim_set_hl(0, 'CmpItemKindSnippet', { fg = base_colors().yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindBoolean', { fg = base_colors().magenta })
-          vim.api.nvim_set_hl(0, 'CmpItemKindNamespace', { fg = base_colors().yellow })
-          vim.api.nvim_set_hl(0, 'CmpItemKindString', { fg = base_colors().cyan })
-          vim.api.nvim_set_hl(0, 'CmpItemKindEnumMember', { fg = base_colors().blue })
+          vim.api.nvim_set_hl(0, 'CmpItemAbbrMatchFuzzy', { fg = color.misc().completion.match })
+          vim.api.nvim_set_hl(0, 'CmpItemAbbrMatch', { fg = color.misc().completion.match })
+
+          vim.api.nvim_set_hl(0, 'CmpItemKindUnit', { fg = color.base().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindNumber', { fg = color.base().magenta })
+          vim.api.nvim_set_hl(0, 'CmpItemKindFunction', { fg = color.base().green })
+          vim.api.nvim_set_hl(0, 'CmpItemKindKey', { fg = color.base().blue })
+          vim.api.nvim_set_hl(0, 'CmpItemKindKeyword', { fg = color.base().red })
+          vim.api.nvim_set_hl(0, 'CmpItemKindReference', { fg = color.base().cyan })
+          vim.api.nvim_set_hl(0, 'CmpItemKindFolder', { fg = color.base().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindVariable', { fg = color.base().magenta })
+          vim.api.nvim_set_hl(0, 'CmpItemKindNull', { fg = color.base().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindValue', { fg = color.base().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindConstant', { fg = color.base().white })
+          vim.api.nvim_set_hl(0, 'CmpItemKindText', { fg = color.base().green })
+          vim.api.nvim_set_hl(0, 'CmpItemKindModule', { fg = color.base().red })
+          vim.api.nvim_set_hl(0, 'CmpItemKindPackage', { fg = color.base().red })
+          vim.api.nvim_set_hl(0, 'CmpItemKindClass', { fg = color.base().green })
+          vim.api.nvim_set_hl(0, 'CmpItemKindOperator', { fg = color.base().orange })
+          vim.api.nvim_set_hl(0, 'CmpItemKindStruct', { fg = color.base().red })
+          vim.api.nvim_set_hl(0, 'CmpItemKindObject', { fg = color.base().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindMethod', { fg = color.base().green })
+          vim.api.nvim_set_hl(0, 'CmpItemKindArray', { fg = color.base().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindEnum', { fg = color.base().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindField', { fg = color.base().blue })
+          vim.api.nvim_set_hl(0, 'CmpItemKindInterface', { fg = color.base().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindProperty', { fg = color.base().blue })
+          vim.api.nvim_set_hl(0, 'CmpItemKindColor', { fg = color.base().magenta })
+          vim.api.nvim_set_hl(0, 'CmpItemKindFile', { fg = color.base().red })
+          vim.api.nvim_set_hl(0, 'CmpItemKindEvent', { fg = color.base().white })
+          vim.api.nvim_set_hl(0, 'CmpItemKindTypeParameter', { fg = color.base().white })
+          vim.api.nvim_set_hl(0, 'CmpItemKindConstructor', { fg = color.base().green })
+          vim.api.nvim_set_hl(0, 'CmpItemKindSnippet', { fg = color.base().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindBoolean', { fg = color.base().magenta })
+          vim.api.nvim_set_hl(0, 'CmpItemKindNamespace', { fg = color.base().yellow })
+          vim.api.nvim_set_hl(0, 'CmpItemKindString', { fg = color.base().cyan })
+          vim.api.nvim_set_hl(0, 'CmpItemKindEnumMember', { fg = color.base().blue })
         end,
       })
     end,
@@ -239,12 +243,14 @@ return {
         },
       })
 
+      local cmdline_mappings = cmp.mapping.preset.cmdline({
+        ['<C-n>'] = vim.NIL,
+        ['<C-p>'] = vim.NIL,
+        ['<C-e>'] = vim.NIL,
+      })
+
       local incsearch_settings = {
-        mapping = cmp.mapping.preset.cmdline({
-          ['<C-n>'] = vim.NIL,
-          ['<C-p>'] = vim.NIL,
-          ['<C-e>'] = vim.NIL,
-        }),
+        mapping = cmdline_mappings,
         sources = cmp.config.sources({
           { name = 'buffer' },
         }),
@@ -257,11 +263,7 @@ return {
       cmp.setup.cmdline('/', incsearch_settings)
       cmp.setup.cmdline('?', incsearch_settings)
       cmp.setup.cmdline(':', {
-        mapping = cmp.mapping.preset.cmdline({
-          ['<C-n>'] = vim.NIL,
-          ['<C-p>'] = vim.NIL,
-          ['<C-e>'] = vim.NIL,
-        }),
+        mapping = cmdline_mappings,
         sources = cmp.config.sources({
           { name = 'cmdline' },
           { name = 'path' },
@@ -344,7 +346,8 @@ return {
         pattern = get_disable_cmp_filetypes(),
         callback = function()
           cmp.setup.buffer({
-            completion = { autocomplete = false },
+            enabled = false,
+            -- completion = { autocomplete = false },
           })
         end,
       })
@@ -358,6 +361,7 @@ return {
   },
   {
     'yuki-yano/tsnip.nvim',
+    -- dev = true,
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'yuki-yano/denops-lazy.nvim' },
@@ -529,57 +533,65 @@ return {
       -- Parenthesis
       rules = list_concat({
         rules,
+        -- {
+        --   { char = '<C-h>', at = [[(\%#)]], input = '<BS><Del>' },
+        --   { char = '<BS>', at = [[(\%#)]], input = '<BS><Del>' },
+        -- },
         {
-          { char = '<C-h>', at = [[(\%#)]], input = '<BS><Del>' },
-          { char = '<BS>', at = [[(\%#)]], input = '<BS><Del>' },
+          { char = '<Space>', at = [[(\%#)]], input_after = '<Space>' },
+          { char = '<C-h>', at = [[( \%# )]], delete = 1 },
+          { char = '<BS>', at = [[( \%# )]], delete = 1 },
         },
       })
 
       -- Brace
       rules = list_concat({
         rules,
+        -- {
+        --   { char = '<C-h>', at = [[{\%#}]], input = '<BS><Del>' },
+        --   { char = '<BS>', at = [[{\%#}]], input = '<BS><Del>' },
+        -- },
         {
-          { char = '<C-h>', at = [[{\%#}]], input = '<BS><Del>' },
-          { char = '<BS>', at = [[{\%#}]], input = '<BS><Del>' },
           { char = '<Space>', at = [[{\%#}]], input_after = '<Space>' },
-          { char = '<BS>', at = [[{\ \%# }]], delete = 1 },
+          { char = '<C-h>', at = [[{ \%# }]], delete = 1 },
+          { char = '<BS>', at = [[{ \%# }]], delete = 1 },
         },
       })
 
       -- Bracket
       rules = list_concat({
         rules,
-        {
-          { char = '<C-h>', at = [=[\[\%#\]]=], input = '<BS><Del>' },
-          { char = '<BS>', at = [=[\[\%#\]]=], input = '<BS><Del>' },
-        },
+        -- {
+        --   { char = '<C-h>', at = [=[\[\%#\]]=], input = '<BS><Del>' },
+        --   { char = '<BS>', at = [=[\[\%#\]]=], input = '<BS><Del>' },
+        -- },
       })
 
       -- Single quote
       rules = list_concat({
         rules,
-        {
-          { char = '<C-h>', at = [['\%#']], input = '<BS><Del>' },
-          { char = '<BS>', at = [['\%#']], input = '<BS><Del>' },
-        },
+        -- {
+        --   { char = '<C-h>', at = [['\%#']], input = '<BS><Del>' },
+        --   { char = '<BS>', at = [['\%#']], input = '<BS><Del>' },
+        -- },
       })
 
       -- Double quote
       rules = list_concat({
         rules,
-        {
-          { char = '<C-h>', at = [["\%#"]], input = '<BS><Del>' },
-          { char = '<BS>', at = [["\%#"]], input = '<BS><Del>' },
-        },
+        -- {
+        --   { char = '<C-h>', at = [["\%#"]], input = '<BS><Del>' },
+        --   { char = '<BS>', at = [["\%#"]], input = '<BS><Del>' },
+        -- },
       })
 
       -- Back quote
       rules = list_concat({
         rules,
-        {
-          { char = '<C-h>', at = [[`\%#`]], input = '<BS><Del>' },
-          { char = '<BS>', at = [[`\%#`]], input = '<BS><Del>' },
-        },
+        -- {
+        --   { char = '<C-h>', at = [[`\%#`]], input = '<BS><Del>' },
+        --   { char = '<BS>', at = [[`\%#`]], input = '<BS><Del>' },
+        -- },
       })
 
       -- Surround function
@@ -705,8 +717,15 @@ return {
         {
           {
             filetype = { 'typescript', 'typescriptreact' },
-            char = 'p',
-            at = [[^\s*p\%#$]],
+            char = '<Space>',
+            at = [[^pp\%#]],
+            input = '<C-w>console.log(',
+            input_after = ')',
+          },
+          {
+            filetype = { 'typescript', 'typescriptreact' },
+            char = '<Space>',
+            at = [[\s\+pp\%#]],
             input = '<C-w>console.log(',
             input_after = ')',
           },
@@ -776,8 +795,15 @@ return {
         {
           {
             filetype = { 'lua' },
-            char = 'p',
-            at = [[^\s*p\%#]],
+            char = '<Space>',
+            at = [[^pp\%#]],
+            input = '<C-w>vim.pretty_print(',
+            input_after = ')',
+          },
+          {
+            filetype = { 'lua' },
+            char = '<Space>',
+            at = [[\s\+pp\%#]],
             input = '<C-w>vim.pretty_print(',
             input_after = ')',
           },
@@ -1051,6 +1077,8 @@ return {
     config = function()
       vim.cmd([[
         LeximaAlterCommand ee                 e!
+        LeximaAlterCommand cn                 cnewer
+        LeximaAlterCommand cp                 colder
         LeximaAlterCommand dp                 diffput
         LeximaAlterCommand la\%[zy]           Lazy
         LeximaAlterCommand rg                 Rg
@@ -1157,21 +1185,21 @@ return {
         insx.add('<CR>', fast_break({ open_pat = esc(open), close_pat = esc(close), split = true }))
       end
 
+      -- Use lexima
       -- spacing `()` and `{}` (exclude `[]`)
-      for open, close in pairs({ ['('] = ')', ['{'] = '}' }) do
-        insx.add(
-          '<Space>',
-          require('insx.recipe.pair_spacing').increase({ open_pat = esc(open), close_pat = esc(close) })
-        )
-        insx.add('<BS>', require('insx.recipe.pair_spacing').decrease({ open_pat = esc(open), close_pat = esc(close) }))
-      end
+      -- for open, close in pairs({ ['('] = ')', ['{'] = '}' }) do
+      --   insx.add(
+      --     '<Space>',
+      --     require('insx.recipe.pair_spacing').increase({ open_pat = esc(open), close_pat = esc(close) })
+      --   )
+      --   insx.add('<BS>', require('insx.recipe.pair_spacing').decrease({ open_pat = esc(open), close_pat = esc(close) }))
+      -- end
 
-      -- Fallback lexima
-      insx.add('<Space>', {
+      -- Fallback <BS> to lexima
+      insx.add('<BS>', {
         priority = -1,
         action = function(ctx)
-          -- NOTE: lexima needs <SPACE> (not <Space>)
-          ctx.send(vim.fn.keytrans(vimx.fn.lexima.expand('<SPACE>', 'i')))
+          ctx.send(vim.fn.keytrans(vimx.fn.lexima.expand('<BS>', 'i')))
         end,
         enabled = function()
           return true
@@ -1445,7 +1473,7 @@ return {
     init = function()
       vim.g.yankround_max_history = 1000
       vim.g.yankround_use_region_hl = true
-      vim.g.yankround_dir = vim.fn.expand('~/.cache/vim/yankround')
+      vim.g.yankround_dir = vim.fn.stdpath('cache') .. '/yankround'
 
       vim.keymap.set({ 'n', 'x' }, 'p', '<Plug>(yankround-p)')
       vim.keymap.set({ 'n', 'x' }, 'P', '<Plug>(yankround-P)')
@@ -1460,7 +1488,7 @@ return {
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { '*' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'YankRoundRegion', { fg = base_colors().orange, bg = base_colors().black })
+          vim.api.nvim_set_hl(0, 'YankRoundRegion', { fg = color.base().orange, bg = color.base().black })
         end,
       })
     end,
@@ -1564,6 +1592,22 @@ return {
     cmd = { 'Neogen' },
     config = function()
       require('neogen').setup()
+    end,
+  },
+  {
+    'yuki-yano/delete-mark.nvim',
+    -- dev = true,
+    keys = {
+      { '<C-e>', mode = { 'n', 'x', 'i' } },
+    },
+    config = function()
+      require('delete-mark').setup({
+        highlight = {
+          mark = { fg = color.base().black, bg = color.base().red, bold = true },
+          sign = { fg = color.base().red },
+        },
+        sign = todo_icons.delete,
+      })
     end,
   },
 }

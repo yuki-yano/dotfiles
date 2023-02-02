@@ -122,6 +122,15 @@ vim.api.nvim_create_autocmd({ 'InsertLeave' }, {
   end,
 })
 
+-- Add qf to current line
+vim.api.nvim_create_user_command('AddQf', function(opts)
+  local filename = vim.fn.expand('%:p')
+  for i = opts.line1, opts.line2 do
+    vim.fn.setqflist({ { filename = filename, lnum = i, text = vim.fn.getline(i) } }, 'a')
+  end
+  vim.cmd([[copen]])
+end, { range = true })
+
 -- My Normal
 vim.api.nvim_create_user_command('Normal', function(opts)
   local code = vim.api.nvim_replace_termcodes(opts.args, true, true, true)
@@ -194,9 +203,33 @@ vim.api.nvim_create_user_command('ToggleLocationList', function()
 end, {})
 vim.keymap.set({ 'n' }, '<leader>l', '<Cmd>ToggleLocationList<CR>')
 
+-- Deno fmt
+vim.api.nvim_create_user_command('DenoFmt', function(opts)
+  local ft_map = {
+    typescript = 'ts',
+    typescriptreact = 'tsx',
+    javascript = 'js',
+    javascriptreact = 'jsx',
+    markdown = 'md',
+    json = 'json',
+    jsonc = 'jsonc',
+  }
+  local ft = ft_map[vim.o.filetype]
+  if ft == nil then
+    vim.notify('Not support filetype "' .. vim.o.filetype .. '"', vim.log.levels.ERROR, { title = 'DenoFmt' })
+    return
+  end
+
+  vim.cmd(opts.line1 .. ',' .. opts.line2 .. '!deno fmt --ext=' .. ft .. ' -')
+end, { range = '%' })
+
 -- VSCode
 vim.api.nvim_create_user_command('VSCode', function()
-  vim.cmd([[execute printf('!code -r "%s"', expand('%'))]])
+  local full_path = vim.fn.expand('%:p')
+  vim.notify('Open ' .. full_path .. ' in VSCode', vim.log.levels.INFO, { title = 'Open VSCode' })
+
+  -- for Mac
+  vim.cmd('!open vscode://file/' .. full_path .. ':' .. vim.fn.line('.') .. ':' .. vim.fn.col('.'))
 end, {})
 
 -- Interrupt large js file

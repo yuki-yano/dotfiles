@@ -1,4 +1,4 @@
-local base_colors = require('color').base_colors
+local color = require('rc.color')
 
 return {
   { 'farmergreg/vim-lastplace', event = { 'BufReadPre' } },
@@ -230,6 +230,8 @@ return {
   },
   {
     'wesQ3/vim-windowswap',
+    -- NOTE: Use chowcho.nvim
+    enable = false,
     keys = {
       -- Load from keys because `on_func` does not support
       { '<Leader><C-w>', mode = { 'n' } },
@@ -239,6 +241,56 @@ return {
     end,
     config = function()
       vim.keymap.set({ 'n' }, '<Leader><C-w>', '<Cmd>call WindowSwap#EasyWindowSwap()<CR>')
+    end,
+  },
+  {
+    'tkmpypy/chowcho.nvim',
+    keys = {
+      { '<C-w>e', mode = { 'n' } },
+      { '<C-w>x', mode = { 'n' } },
+    },
+    config = function()
+      require('chowcho').setup({
+        border_style = 'rounded',
+        active_border_color = color.base().blue,
+      })
+
+      vim.keymap.set({ 'n' }, '<C-w>e', function()
+        if vim.fn.winnr('$') <= 1 then
+          return
+        end
+        require('chowcho').run(function(n)
+          vim.cmd('buffer ' .. vim.api.nvim_win_call(n, function()
+            return vim.fn.bufnr('%')
+          end))
+        end)
+      end)
+
+      local chowcho_run = require('chowcho').run
+      local chowcho_bufnr = function(winid)
+        return vim.api.nvim_win_call(winid, function()
+          return vim.fn.bufnr('%'), vim.opt_local
+        end)
+      end
+      local chowcho_buffer = function(winid, bufnr)
+        return vim.api.nvim_win_call(winid, function()
+          local old = chowcho_bufnr(0)
+          vim.cmd('buffer ' .. bufnr)
+          return old
+        end)
+      end
+
+      vim.keymap.set({ 'n' }, '<C-w>x', function()
+        chowcho_run(function(n)
+          if vim.fn.winnr('$') <= 2 then
+            vim.cmd([[wincmd x]])
+            return
+          end
+          local bufnr0 = chowcho_bufnr(0)
+          local bufnrn = chowcho_buffer(n, bufnr0)
+          chowcho_buffer(0, bufnrn)
+        end)
+      end)
     end,
   },
   { 'AndrewRadev/linediff.vim', cmd = { 'Linediff' } },
@@ -299,7 +351,7 @@ return {
     event = { 'BufWritePre', 'FileWritePre' },
     config = function()
       vim.g.bakaup_auto_backup = true
-      vim.g.bakaup_backup_dir = vim.fn.expand('~/.cache/vim/backup')
+      vim.g.bakaup_backup_dir = vim.fn.stdpath('cache') .. '/backup'
     end,
   },
   {
@@ -363,7 +415,7 @@ return {
       vim.g.silicon = {
         font = 'UDEV Gothic 35NF',
         theme = 'OneHalfDark',
-        background = base_colors().black,
+        background = color.base().black,
         output = '~/Downloads/silicon-{time:%Y-%m-%d-%H%M%S}.png',
       }
     end,
@@ -383,22 +435,25 @@ return {
       vim.g.silicon_options = {
         font = 'UDEV Gothic 35NF',
         theme = 'OneHalfDark',
-        background_color = base_colors().black,
+        background_color = color.base().black,
       }
     end,
   },
   { 'powerman/vim-plugin-AnsiEsc', cmd = { 'AnsiEsc' } },
   {
-    -- WIP
-    'yuki-yano/ai-review.vim',
-    dev = false,
+    'yuki-yano/ai-review.nvim',
+    dev = true,
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'yuki-yano/denops-lazy.nvim' },
     },
-    cmd = { 'AiReview', 'AiPrompt' },
+    cmd = { 'AiReview' },
+    init = function()
+      vim.keymap.set({ 'n', 'x' }, '<Leader><CR>', ':AiReview<CR>', { silent = true })
+    end,
     config = function()
-      require('denops-lazy').load('ai-review.vim')
+      require('ai-review').setup()
+      require('denops-lazy').load('ai-review.nvim')
 
       vim.api.nvim_create_autocmd({ 'BufEnter' }, {
         pattern = { 'ai-review://*' },

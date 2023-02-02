@@ -1,4 +1,4 @@
-local escesc = require('func').escesc
+local escesc = require('rc.func').escesc
 
 local plugins = {
   {
@@ -13,15 +13,15 @@ local plugins = {
       { 'yuki-yano/tsnip.nvim' },
       -- NOTE: Vim plugin is not loaded if coc-fzf-preview is loaded first
       { 'yuki-yano/fzf-preview.vim' },
-      -- NOTE: Dependencies insx and lexima mappings
+      -- NOTE: Dependencies insx mappings
       { 'hrsh7th/nvim-insx' },
-      { 'cohama/lexima.vim' },
     },
     init = function()
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { '*' },
         callback = function()
           vim.api.nvim_set_hl(0, 'CocMenuSel', { link = 'Visual' })
+          vim.api.nvim_set_hl(0, 'CocInlayHint', { link = 'Comment' })
         end,
       })
     end,
@@ -67,7 +67,7 @@ local plugins = {
           return
         end
 
-        if vim.tbl_contains({ 'vim', 'help' }, vim.bo.filetype) then
+        if vim.tbl_contains({ 'vim', 'help' }, vim.o.filetype) then
           vim.cmd('h ' .. vim.fn.expand('<cword>'))
         elseif vim.fn['coc#rpc#ready']() then
           vimx.fn.CocActionAsync('doHover')
@@ -205,7 +205,12 @@ local plugins = {
       vim.api.nvim_create_autocmd({ 'InsertEnter' }, {
         pattern = '*',
         callback = function()
-          vim.keymap.set({ 'i' }, '<Tab>', [[copilot#Accept()]], { expr = true, silent = true, replace_keycodes = false })
+          vim.keymap.set(
+            { 'i' },
+            '<Tab>',
+            [[copilot#Accept()]],
+            { expr = true, silent = true, replace_keycodes = false }
+          )
 
           -- Debug
           -- vim.keymap.set({ 'i' }, '<C-g>', [[<Cmd>PP b:_copilot<CR>]])

@@ -1,11 +1,11 @@
-local add_disable_cmp_filetypes = require('plugin_utils').add_disable_cmp_filetypes
-local base_colors = require('color').base_colors
-local lsp_icons = require('font').lsp_icons
-local codicons = require('font').codicons
-local diagnostic_icons = require('font').diagnostic_icons
-local enable_lsp_lines = require('plugin_utils').enable_lsp_lines
-local get_lsp_lines_status = require('plugin_utils').get_lsp_lines_status
-local cycle_lsp_lines = require('plugin_utils').cycle_lsp_lines
+local add_disable_cmp_filetypes = require('rc.plugin_utils').add_disable_cmp_filetypes
+local color = require('rc.color')
+local lsp_icons = require('rc.font').lsp_icons
+local codicons = require('rc.font').codicons
+local diagnostic_icons = require('rc.font').diagnostic_icons
+local enable_lsp_lines = require('rc.plugin_utils').enable_lsp_lines
+local get_lsp_lines_status = require('rc.plugin_utils').get_lsp_lines_status
+local cycle_lsp_lines = require('rc.plugin_utils').cycle_lsp_lines
 
 local plugins = {
   {
@@ -75,7 +75,7 @@ local plugins = {
             })
           end
 
-          if client.name ~= 'sumneko_lua' then
+          if client.name ~= 'lua_ls' then
             client.server_capabilities.semanticTokensProvider = nil
           end
 
@@ -134,7 +134,7 @@ local plugins = {
             }
           end
 
-          if server_name == 'sumneko_lua' then
+          if server_name == 'lua_ls' then
             opts.settings = {
               Lua = {
                 diagnostics = { globals = { 'vim' } },
@@ -203,7 +203,11 @@ local plugins = {
       vim.api.nvim_create_autocmd({ 'FileType' }, {
         pattern = { 'typescript', 'typescriptreact' },
         callback = function()
-          if is_node_repo then
+          if vim.o.filetype == 'astro' then
+            vim.keymap.set({ 'n' }, '<Plug>(lsp)f', function()
+              vim.lsp.buf.format({ name = 'astro' })
+            end)
+          elseif is_node_repo then
             vim.keymap.set({ 'n' }, '<Plug>(lsp)f', function()
               vim.cmd([[EslintFixAll]])
               vim.lsp.buf.format({ name = 'null-ls' })
@@ -213,6 +217,13 @@ local plugins = {
               vim.lsp.buf.format({ name = 'denols' })
             end)
           end
+        end,
+      })
+
+      vim.api.nvim_create_autocmd({ 'FileType' }, {
+        pattern = { 'json' },
+        callback = function()
+          vim.lsp.buf.format({ name = 'null-ls' })
         end,
       })
 
@@ -241,8 +252,9 @@ local plugins = {
           -- 'tsserver',
           'vtsls',
           'eslint',
+          'astro',
           'denols',
-          'sumneko_lua',
+          'lua_ls',
           'vimls',
           'jsonls',
           'yamlls',
@@ -262,29 +274,11 @@ local plugins = {
   },
   {
     'glepnir/lspsaga.nvim',
-    -- NOTE: Use versions earlier than 0.2.3
-    -- commit = 'b7b477',
-    -- dev = true,
     event = { 'LspAttach' },
     init = function()
       add_disable_cmp_filetypes({ 'sagarename' })
     end,
     config = function()
-      -- NOTE: old version settings
-      -- require('lspsaga').init_lsp_saga({
-      --   border_style = 'rounded',
-      --   -- saga_winblend = 10,
-      --   diagnostic_header = {
-      --     diagnostic_icons.error .. ' ',
-      --     diagnostic_icons.warn .. ' ',
-      --     diagnostic_icons.info .. ' ',
-      --     diagnostic_icons.hint .. ' ',
-      --   },
-      --   code_action_lightbulb = {
-      --     enable = false,
-      --   },
-      -- })
-
       require('lspsaga').setup({
         ui = {
           theme = 'round',
@@ -301,24 +295,24 @@ local plugins = {
           outgoing = lsp_icons.outgoing,
           -- NOTE: from: `require('catppuccin.groups.integrations.lsp_saga').custom_colors()`
           colors = {
-            normal_bg = base_colors().black,
-            title_bg = base_colors().green,
-            black = base_colors().empty,
-            white = base_colors().white, -- TODO: change to text
-            red = base_colors().red,
-            blue = base_colors().blue,
-            green = base_colors().green,
-            yellow = base_colors().yellow,
-            cyan = base_colors().cyan, -- TODO: change to sky
-            magenta = base_colors().magenta, -- TODO: change to maroon
-            orange = base_colors().orange,
-            purple = base_colors().purple,
+            normal_bg = color.base().black,
+            title_bg = color.base().green,
+            black = color.base().empty,
+            white = color.base().white, -- TODO: change to text
+            red = color.base().red,
+            blue = color.base().blue,
+            green = color.base().green,
+            yellow = color.base().yellow,
+            cyan = color.base().cyan, -- TODO: change to sky
+            magenta = color.base().magenta, -- TODO: change to maroon
+            orange = color.base().orange,
+            purple = color.base().purple,
           },
         },
-        scroll_preview = {
-          scroll_down = '<C-d>',
-          scroll_up = '<C-u>',
-        },
+        -- scroll_preview = {
+        --   scroll_down = '<C-d>',
+        --   scroll_up = '<C-u>',
+        -- },
         definition = {
           edit = '<CR>',
           quit = 'q',
@@ -329,7 +323,7 @@ local plugins = {
           custom_fix = 'Fix:',
         },
         rename = {
-          quit = 'q',
+          quit = '<C-c>',
           exec = '<CR>',
           mark = '<Space>',
           confirm = '<CR>',
@@ -425,6 +419,7 @@ local plugins = {
     config = function()
       require('lsp_signature').setup({
         hint_enable = false,
+        transparency = 10,
       })
     end,
   },

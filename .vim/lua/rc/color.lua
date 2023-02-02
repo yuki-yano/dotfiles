@@ -4,21 +4,19 @@ local palette = {}
 -- global settings
 local incsearch = '#175655'
 local search = '#213F72'
-local visual = '#1D4647'
 local diff = {
   add = {
-    bg = '#1A3627',
+    bg = '#002800',
+  },
+  delete = {
+    bg = '#350001',
   },
   change = {
-    bg = '#36341a',
+    bg = '#2b2a00',
   },
   text = {
-    bg = '#716522',
+    bg = '#485400',
   },
-}
-local pointer = {
-  red = '#E27878',
-  blue = '#5F87D7',
 }
 
 palette['gruvbox-material'] = function()
@@ -40,10 +38,16 @@ palette['gruvbox-material'] = function()
       info = '#FFFFAF',
       incsearch = incsearch,
       search = search,
-      visual = visual,
+      visual = '#1D4647',
     },
     misc = {
-      pointer = pointer,
+      completion = {
+        match = '#7DAEA3',
+      },
+      pointer = {
+        red = '#E27878',
+        blue = '#5F87D7',
+      },
       diff = diff,
       vert_split = '#504945',
       scrollbar = {
@@ -115,11 +119,17 @@ palette['catppuccin'] = function()
       info = catppuccin_palette.yellow, -- #F9E2AF
       incsearch = incsearch,
       search = search,
-      visual = visual,
+      visual = catppuccin_palette.surface0, -- #313244
       vert_split = catppuccin_palette.surface0, -- #313244
     },
     misc = {
-      pointer = pointer,
+      completion = {
+        match = catppuccin_palette.sky, -- #89DCEB
+      },
+      pointer = {
+        red = '#f17497',
+        blue = '#71a4f9',
+      },
       diff = diff,
       scrollbar = {
         bar = catppuccin_palette.surface0, -- #313244
@@ -143,10 +153,10 @@ palette['catppuccin'] = function()
   }
 end
 
-M.base_colors = function()
+M.base = function()
   return palette[vim.env.NVIM_COLORSCHEME]().base
 end
-M.misc_colors = function()
+M.misc = function()
   return palette[vim.env.NVIM_COLORSCHEME]().misc
 end
 

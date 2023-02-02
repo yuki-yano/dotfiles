@@ -1,9 +1,9 @@
-local base_colors = require('color').base_colors
+local color = require('rc.color')
 
 return {
   {
     'nvim-treesitter/nvim-treesitter',
-    build = ':TSUpdate',
+    -- build = ':TSUpdate',
     dependencies = {
       { 'nvim-treesitter/playground' },
       { 'JoosepAlviste/nvim-ts-context-commentstring' },
@@ -129,7 +129,7 @@ return {
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { '*' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'TSNodeKey', { fg = base_colors().blue })
+          vim.api.nvim_set_hl(0, 'TSNodeKey', { fg = color.base().blue })
         end,
       })
     end,

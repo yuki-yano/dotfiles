@@ -99,18 +99,17 @@ vim.api.nvim_create_autocmd({ 'InsertLeave' }, {
 
 -- Undo
 vim.opt.undofile = true
-vim.opt.undodir = vim.fn.expand('~/.cache/nvim/undo/')
+vim.opt.undodir = vim.fn.stdpath('cache') .. '/undo'
 
 -- Swap
 vim.opt.swapfile = true
-vim.opt.directory = vim.fn.expand('~/.cache/vim/swap/')
+vim.opt.directory = vim.fn.stdpath('cache') .. '/swap'
 vim.opt.updatetime = 500
 
 -- Term
 vim.opt.shell = 'zsh'
 vim.opt.ttyfast = true
 vim.opt.ttimeout = true
-vim.opt.timeoutlen = 750
 vim.opt.ttimeoutlen = 10
 vim.opt.lazyredraw = true
 

@@ -1,5 +1,5 @@
-import { Snippet } from "https://deno.land/x/tsnip_vim@v0.4/mod.ts";
-import { pascalCase } from "https://deno.land/x/case@v2.1.0/mod.ts";
+import type { Snippet } from "./deps.ts";
+import { pascalCase } from "./deps.ts";
 
 const state: Snippet = {
   name: "useState",

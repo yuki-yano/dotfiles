@@ -1,4 +1,4 @@
-local misc_icons = require('font').misc_icons
+local misc_icons = require('rc.font').misc_icons
 
 local M = {}
 

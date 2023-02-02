@@ -61,6 +61,9 @@ M.todo_icons = {
   warn = '󾩬',
   test = '󾮨',
   note = '󾩻',
+  pref = '󾪆',
+  hack = '',
+  delete = '󾪁',
 }
 
 M.misc_icons = {

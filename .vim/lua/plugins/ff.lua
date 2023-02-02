@@ -1,4 +1,4 @@
-local add_disable_cmp_filetypes = require('plugin_utils').add_disable_cmp_filetypes
+local add_disable_cmp_filetypes = require('rc.plugin_utils').add_disable_cmp_filetypes
 
 return {
   {
@@ -24,6 +24,7 @@ return {
       'FzfPreviewFromResourcesRpc',
       'FzfPreviewGitActionsRpc',
       'FzfPreviewGitStatusRpc',
+      'FzfPreviewCommandPaletteRpc',
       'FzfPreviewNvimLspReferencesRpc',
       'FzfPreviewNvimLspDiagnosticsRpc',
       'FzfPreviewNvimLspCurrentDiagnosticsRpc',
@@ -60,7 +61,7 @@ return {
         vim.env.BAT_THEME = 'gruvbox-dark'
         vim.env.FZF_PREVIEW_PREVIEW_BAT_THEME = 'Catppuccin-mocha'
         vim.env.FZF_DEFAULT_OPTS =
-          '--reverse --no-separator --color=bg+:#1E1E2E,bg:#1E1E2E,spinner:#F5E0DC,hl:#89B4FA,fg:#CDD6F4,header:#A6ADC8,info:#CBA6F7,pointer:#F5E0DC,marker:#F5E0DC,fg+:#CDD6F4,prompt:#A6E3A1,hl+:#89B4FA'
+          '--reverse --no-separator --color=bg+:#1E1E2E,bg:#1E1E2E,spinner:#F5E0DC,hl:#89B4FA,fg:#CDD6F4,header:#A6ADC8,info:#CBA6F7,pointer:#F5E0DC,marker:#F5E0DC,fg+:#CDD6F4,prompt:#89B4FA,hl+:#89B4FA'
       end
 
       vim.keymap.set({ 'n' }, '<Plug>(ff)r', '<Cmd>FzfPreviewProjectMruFilesRpc --experimental-fast<CR>')
@@ -77,7 +78,7 @@ return {
         [[:<C-u>FzfPreviewProjectGrepRpc --experimental-fast --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort . <C-r>=expand('%')<CR><CR>]]
       )
       vim.keymap.set({ 'n' }, '<Plug>(ff)q', '<Cmd>FzfPreviewQuickFixRpc<CR>')
-      vim.keymap.set({ 'n' }, '<Plug>(ff)l', '<Cmd>FzfPreviewLocationListRpc<CR>')
+      -- vim.keymap.set({ 'n' }, '<Plug>(ff)l', '<Cmd>FzfPreviewLocationListRpc<CR>')
       vim.keymap.set(
         { 'n' },
         '<Plug>(ff)f',
@@ -88,6 +89,7 @@ return {
         '<Plug>(ff)f',
         [["sy:FzfPreviewProjectGrepRpc --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"]]
       )
+      vim.keymap.set({ 'n' }, '<Plug>(ff):', '<Cmd>FzfPreviewCommandPaletteRpc<CR>')
       vim.keymap.set(
         { 'n' },
         '<Plug>(ff)p',

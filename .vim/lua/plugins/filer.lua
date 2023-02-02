@@ -1,4 +1,4 @@
-local base_colors = require('color').base_colors
+local color = require('rc.color')
 
 return {
   {
@@ -30,10 +30,10 @@ return {
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { '*' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'FernGitStatusWorktree', { fg = base_colors().red, bg = 'NONE' })
-          vim.api.nvim_set_hl(0, 'FernGitStatusIndex', { fg = base_colors().green, bg = 'NONE' })
-          vim.api.nvim_set_hl(0, 'FernGitStatusUnmerged', { fg = base_colors().red, bg = 'NONE' })
-          vim.api.nvim_set_hl(0, 'FernGitStatusUntracked', { fg = base_colors().red, bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'FernGitStatusWorktree', { fg = color.base().red, bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'FernGitStatusIndex', { fg = color.base().green, bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'FernGitStatusUnmerged', { fg = color.base().red, bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'FernGitStatusUntracked', { fg = color.base().red, bg = 'NONE' })
           vim.api.nvim_set_hl(0, 'FernGitStatusIgnored', { link = 'Comment' })
         end,
       })

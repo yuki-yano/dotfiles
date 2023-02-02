@@ -1,5 +1,4 @@
-local base_colors = require('color').base_colors
-local misc_colors = require('color').misc_colors
+local color = require('rc.color')
 
 return {
   {
@@ -64,8 +63,8 @@ return {
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { '*' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'EftChar', { fg = misc_colors().pointer.red })
-          vim.api.nvim_set_hl(0, 'EftSubChar', { fg = misc_colors().pointer.blue })
+          vim.api.nvim_set_hl(0, 'EftChar', { fg = color.misc().pointer.red, bold = true })
+          vim.api.nvim_set_hl(0, 'EftSubChar', { fg = color.misc().pointer.blue, bold = true })
         end,
       })
     end,
@@ -117,17 +116,17 @@ return {
           vim.api.nvim_set_hl(
             0,
             'HlSearchLens',
-            { fg = misc_colors().hlslens.lens.fg, bg = misc_colors().hlslens.lens.bg }
+            { fg = color.misc().hlslens.lens.fg, bg = color.misc().hlslens.lens.bg }
           )
           vim.api.nvim_set_hl(
             0,
             'HlSearchLensNear',
-            { fg = misc_colors().hlslens.near.fg, bg = misc_colors().hlslens.near.bg }
+            { fg = color.misc().hlslens.near.fg, bg = color.misc().hlslens.near.bg }
           )
           vim.api.nvim_set_hl(
             0,
             'HlSearchFloat',
-            { fg = misc_colors().hlslens.float.fg, bg = misc_colors().hlslens.float.bg }
+            { fg = color.misc().hlslens.float.fg, bg = color.misc().hlslens.float.bg }
           )
         end,
       })
@@ -144,6 +143,9 @@ return {
       { '<Plug>(backandforward-forward)', mode = { 'n' } },
     },
     init = function()
+      vim.g.backandforward_config = {
+        define_commands = false,
+      }
       vim.keymap.set({ 'n' }, '<C-b>', '<Plug>(backandforward-back)')
       vim.keymap.set({ 'n' }, '<C-f>', '<Plug>(backandforward-forward)')
     end,
@@ -163,10 +165,10 @@ return {
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { '*' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'FuzzyMotionShade', { fg = base_colors().grey })
-          vim.api.nvim_set_hl(0, 'FuzzyMotionChar', { fg = base_colors().red })
-          vim.api.nvim_set_hl(0, 'FuzzyMotionSubChar', { fg = base_colors().yellow })
-          vim.api.nvim_set_hl(0, 'FuzzyMotionMatch', { fg = base_colors().blue })
+          vim.api.nvim_set_hl(0, 'FuzzyMotionShade', { fg = color.base().grey })
+          vim.api.nvim_set_hl(0, 'FuzzyMotionChar', { fg = color.base().red })
+          vim.api.nvim_set_hl(0, 'FuzzyMotionSubChar', { fg = color.base().yellow })
+          vim.api.nvim_set_hl(0, 'FuzzyMotionMatch', { fg = color.base().blue })
         end,
       })
     end,

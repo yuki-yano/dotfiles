@@ -58,7 +58,8 @@ vim.keymap.set({ 'n' }, '>', '>>')
 vim.keymap.set({ 'x' }, '<', '<gv')
 vim.keymap.set({ 'x' }, '>', '>gv')
 
-local function focus_floating()
+-- Focus floating
+vim.keymap.set({ 'n' }, '<C-w><C-w>', function()
   if vim.fn.empty(vim.api.nvim_win_get_config(vim.fn.win_getid()).relative) == 0 then
     vim.cmd([[wincmd p]])
     return
@@ -73,8 +74,7 @@ local function focus_floating()
     end
   end
   vim.cmd([[normal! <C-w><C-w>]])
-end
-vim.keymap.set({ 'n' }, '<C-w><C-w>', focus_floating)
+end)
 
 -- Tab
 vim.keymap.set({ 'n' }, '<Plug>(tab)t', '<Cmd>tablast <Bar> tabedit<CR>')

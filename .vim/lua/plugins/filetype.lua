@@ -31,4 +31,8 @@ return {
       vim.g.mkdp_open_to_the_world = true
     end,
   },
+  {
+    'kchmck/vim-coffee-script',
+    ft = { 'coffee' },
+  },
 }

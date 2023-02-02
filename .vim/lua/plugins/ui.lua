@@ -1,10 +1,9 @@
-local base_colors = require('color').base_colors
-local misc_colors = require('color').misc_colors
-local diagnostic_icons = require('font').diagnostic_icons
-local todo_icons = require('font').todo_icons
-local enable_noice = require('plugin_utils').enable_noice
-local enable_lsp_lines = require('plugin_utils').enable_lsp_lines
-local get_lsp_lines_status = require('plugin_utils').get_lsp_lines_status
+local color = require('rc.color')
+local diagnostic_icons = require('rc.font').diagnostic_icons
+local todo_icons = require('rc.font').todo_icons
+local enable_noice = require('rc.plugin_utils').enable_noice
+local enable_lsp_lines = require('rc.plugin_utils').enable_lsp_lines
+local get_lsp_lines_status = require('rc.plugin_utils').get_lsp_lines_status
 
 return {
   {
@@ -20,14 +19,14 @@ return {
         local table = {
           ['gruvbox-material'] = function()
             local custom_gruvbox = require('lualine.themes.gruvbox-material')
-            custom_gruvbox.normal.a.fg = base_colors().black
-            custom_gruvbox.normal.a.bg = base_colors().blue
-            custom_gruvbox.insert.a.fg = base_colors().black
-            custom_gruvbox.insert.a.bg = base_colors().yellow
-            custom_gruvbox.visual.a.fg = base_colors().black
-            custom_gruvbox.visual.a.bg = base_colors().magenta
-            custom_gruvbox.replace.a.fg = base_colors().black
-            custom_gruvbox.replace.a.bg = base_colors().red
+            custom_gruvbox.normal.a.fg = color.base().black
+            custom_gruvbox.normal.a.bg = color.base().blue
+            custom_gruvbox.insert.a.fg = color.base().black
+            custom_gruvbox.insert.a.bg = color.base().yellow
+            custom_gruvbox.visual.a.fg = color.base().black
+            custom_gruvbox.visual.a.bg = color.base().magenta
+            custom_gruvbox.replace.a.fg = color.base().black
+            custom_gruvbox.replace.a.bg = color.base().red
             return custom_gruvbox
           end,
           ['catppuccin'] = function()
@@ -68,7 +67,7 @@ return {
             end
           end
         end,
-        color = { fg = base_colors().green },
+        color = { fg = color.base().green },
       }
 
       -- Displays the number of unsaved files other than the current buffer
@@ -155,17 +154,17 @@ return {
       vim.keymap.set({ 'n' }, '<Plug>(ctrl-p)', '<Cmd>BufferLineCyclePrev<CR>')
     end,
     config = function()
-      local black = base_colors().black
-      local red = base_colors().red
-      local green = base_colors().green
-      local yellow = base_colors().yellow
-      local blue = base_colors().blue
-      local white = base_colors().white
-      local grey = base_colors().grey
-      local background = base_colors().background
-      local empty = base_colors().empty
-      local info = base_colors().yellow
-      local vert_split = base_colors().vert_split
+      local black = color.base().black
+      local red = color.base().red
+      local green = color.base().green
+      local yellow = color.base().yellow
+      local blue = color.base().blue
+      local white = color.base().white
+      local grey = color.base().grey
+      local background = color.base().background
+      local empty = color.base().empty
+      local info = color.base().yellow
+      local vert_split = color.base().vert_split
 
       require('scope').setup()
 
@@ -604,6 +603,8 @@ return {
     config = function()
       require('tint').setup({
         highlight_ignore_patterns = {
+          '@comment',
+          'Comment',
           'WinSeparator',
           'VertSplit',
           'Status.*',
@@ -628,7 +629,7 @@ return {
     config = function()
       require('scrollbar').setup({
         handle = {
-          color = misc_colors().scrollbar.bar,
+          color = color.misc().scrollbar.bar,
         },
         handlers = {
           search = true,
@@ -639,7 +640,7 @@ return {
           Search = {
             text = { '-', '=' },
             priority = 5,
-            color = misc_colors().scrollbar.search,
+            color = color.misc().scrollbar.search,
           },
           Error = {
             priority = 1,
@@ -671,12 +672,12 @@ return {
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { '*' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'SmoothCursor', { fg = base_colors().blue, bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'SmoothCursor', { fg = color.base().blue, bg = 'NONE' })
         end,
       })
     end,
     config = function()
-      require('SmoothCursor').setup({
+      require('smoothcursor').setup({
         cursor = '>',
         priority = 10,
         disabled_filetypes = {
@@ -711,13 +712,22 @@ return {
     config = function()
       require('todo-comments').setup({
         keywords = {
-          TODO = { icon = todo_icons.todo, color = base_colors().green },
-          FIX = { icon = todo_icons.fix, color = base_colors().magenta, alt = { 'FIXME', 'BUG', 'ISSUE' } },
-          WARN = { icon = todo_icons.warn, color = base_colors().orange, alt = { 'WARNING' } },
-          TEST = { icon = todo_icons.test, color = base_colors().yellow, alt = { 'TESTING', 'PASSED', 'FAILED' } },
-          NOTE = { icon = todo_icons.note, color = base_colors().blue, alt = { 'INFO', 'See' } },
+          TODO = { icon = todo_icons.todo, color = color.base().green },
+          FIX = { icon = todo_icons.fix, color = color.base().magenta, alt = { 'FIXME', 'BUG', 'ISSUE' } },
+          WARN = { icon = todo_icons.warn, color = color.base().orange, alt = { 'WARNING' } },
+          HACK = { icon = todo_icons.hack, color = color.base().orange },
+          TEST = { icon = todo_icons.test, color = color.base().yellow, alt = { 'TESTING', 'PASSED', 'FAILED' } },
+          NOTE = { icon = todo_icons.note, color = color.base().blue, alt = { 'Note', 'INFO', 'SEE', 'See', 'see' } },
+          PREF = { icon = todo_icons.pref, color = color.base().cyan, alt = { 'PERFORMANCE', 'OPTIMIZE' } },
         },
       })
+
+      vim.keymap.set({ 'n' }, 'tn', function()
+        require('todo-comments').jump_next()
+      end)
+      vim.keymap.set({ 'n' }, 'tp', function()
+        require('todo-comments').jump_prev()
+      end)
     end,
   },
   {
@@ -729,7 +739,7 @@ return {
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { '*' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'UfoFoldVirtText', { fg = base_colors().blue })
+          vim.api.nvim_set_hl(0, 'UfoFoldVirtText', { fg = color.base().blue })
         end,
       })
     end,
@@ -1013,7 +1023,7 @@ return {
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { '*' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'HighlightedyankRegion', { fg = base_colors().red, bg = base_colors().black })
+          vim.api.nvim_set_hl(0, 'HighlightedyankRegion', { fg = color.base().red, bg = color.base().black })
         end,
       })
     end,
@@ -1238,13 +1248,13 @@ _x_: reload
   {
     'nvim-tree/nvim-web-devicons',
     config = function()
-      local red = base_colors().red
-      local green = base_colors().green
-      local yellow = base_colors().yellow
-      local blue = base_colors().blue
-      local magenta = base_colors().magenta
-      local cyan = base_colors().cyan
-      local white = base_colors().white
+      local red = color.base().red
+      local green = color.base().green
+      local yellow = color.base().yellow
+      local blue = color.base().blue
+      local magenta = color.base().magenta
+      local cyan = color.base().cyan
+      local white = color.base().white
 
       require('nvim-web-devicons').set_default_icon('󾩻 ', white)
       require('nvim-web-devicons').setup({
@@ -1307,7 +1317,7 @@ _x_: reload
             icon = ' ',
             color = white,
             cterm_color = '179',
-            name = 'LICENSE',
+            name = 'License',
           },
           ['ai'] = {
             icon = ' ',

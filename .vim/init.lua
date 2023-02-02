@@ -8,13 +8,13 @@ if vim.env.NVIM_COLORSCHEME == nil then
   vim.env.NVIM_COLORSCHEME = 'catppuccin'
 end
 
-require('plugin_manager').lazy_init()
-require('preload')
+require('rc.plugin_manager').lazy_init()
+require('rc.preload')
 -- NOTE: lazy.nvim auto load lua/plugins/config.lua
 --       unnecessary `require('plugins/config')`
 --       config.lua load base settings with cache. (from lazy.nvim)
 --         - lua/options.lua
 --         - lua/func.lua
 --         - lua/highlight.lua
-require('plugin_manager').lazy_setup()
-require('postload')
+require('rc.plugin_manager').lazy_setup()
+require('rc.postload')
