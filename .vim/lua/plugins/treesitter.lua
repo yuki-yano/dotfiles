@@ -41,25 +41,10 @@ return {
         },
         highlight = {
           enable = true,
-          disable = function(lang, bufnr)
-            local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(bufnr))
-            if ok and stats and stats.size > 1024 * 1024 then
-              vim.notify('File too large: tree-sitter disabled.', vim.log.levels.WARN)
-              return true
-            end
-            local ok = true
-            ok = pcall(function()
-              vim.treesitter.get_parser(bufnr, lang):parse()
-            end) and ok
-            ok = pcall(function()
-              vim.treesitter.get_query(lang, 'highlights')
-            end) and ok
-            if not ok then
-              return true
-            end
-            return false
-          end,
           additional_vim_regex_highlighting = false,
+        },
+        indent = {
+          enable = false,
         },
         playground = {
           enable = true,
@@ -83,6 +68,7 @@ return {
         },
         yati = {
           enable = true,
+          default_lazy = true,
         },
         matchup = {
           enable = true,

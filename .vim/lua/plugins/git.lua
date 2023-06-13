@@ -17,7 +17,7 @@ return {
     'lambdalisue/gina.vim',
     cmd = { 'Gina' },
     init = function()
-      vim.g['gina#command#blame#use_default_mappings'] = false
+      vim.g['gina#command#blame#use_default_mappings'] = true
     end,
   },
   {

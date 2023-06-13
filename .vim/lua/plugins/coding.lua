@@ -797,14 +797,14 @@ return {
             filetype = { 'lua' },
             char = '<Space>',
             at = [[^pp\%#]],
-            input = '<C-w>vim.pretty_print(',
+            input = '<C-w>vim.print(',
             input_after = ')',
           },
           {
             filetype = { 'lua' },
             char = '<Space>',
             at = [[\s\+pp\%#]],
-            input = '<C-w>vim.pretty_print(',
+            input = '<C-w>vim.print(',
             input_after = ')',
           },
         },
@@ -1137,18 +1137,11 @@ return {
         -- auto pair
         insx.add(
           quote,
-          insx.with(
-            require('insx.recipe.auto_pair')({
-              open = quote,
-              close = quote,
-              ignore_pat = [[\\\%#]],
-            }),
-            {
-              enabled = function(enabled, ctx)
-                return enabled(ctx) and not insx.helper.syntax.in_string_or_comment()
-              end,
-            }
-          )
+          require('insx.recipe.auto_pair')({
+            open = quote,
+            close = quote,
+            ignore_pat = [[\\\%#]],
+          })
         )
 
         -- delete pair
@@ -1171,18 +1164,12 @@ return {
         -- delete pair
         insx.add('<BS>', require('insx.recipe.delete_pair')({ open_pat = esc(open), close_pat = esc(close) }))
         -- fast wrap
-        insx.add(
-          '<C-]>',
-          insx.with(fast_wrap({ close = close }), {
-            action = function(action, ctx)
-              -- NOTE: Add undo point
-              vim.o.undolevels = vim.o.undolevels
-              return action(ctx)
-            end,
-          })
-        )
+        insx.add('<C-]>', insx.with(fast_wrap({ close = close }), { insx.with.undopoint() }))
         -- fast break
-        insx.add('<CR>', fast_break({ open_pat = esc(open), close_pat = esc(close), split = true }))
+        insx.add(
+          '<CR>',
+          fast_break({ open_pat = esc(open), close_pat = esc(close), arguments = true, html_attrs = true })
+        )
       end
 
       -- Use lexima

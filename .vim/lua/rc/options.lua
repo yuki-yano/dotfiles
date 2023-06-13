@@ -117,7 +117,7 @@ vim.opt.lazyredraw = true
 vim.opt.mouse = 'a'
 -- Should it be run? Change &mousemodel 'popup_setpos' to 'extend'.
 -- Need to use statuscolumn
-vim.cmd([[behave xterm]])
+-- vim.cmd([[behave xterm]])
 
 -- Autoread
 vim.opt.autoread = true

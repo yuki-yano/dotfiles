@@ -56,6 +56,8 @@ local plugins = {
 
       vim.keymap.set({ 'i' }, '<C-Space>', function()
         vimx.fn.copilot.Suggest()
+        vimx.fn.copilot.Next()
+        vimx.fn.copilot.Previous()
 
         return vim.fn['coc#refresh']()
       end, { expr = true, silent = true })

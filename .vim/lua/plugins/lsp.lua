@@ -76,7 +76,7 @@ local plugins = {
           end
 
           if client.name ~= 'lua_ls' then
-            client.server_capabilities.semanticTokensProvider = nil
+            -- client.server_capabilities.semanticTokensProvider = nil
           end
 
           if client.server_capabilities.documentSymbolProvider then

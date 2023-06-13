@@ -70,6 +70,21 @@ return {
         color = { fg = color.base().green },
       }
 
+      local lsp_names = {
+        function()
+          local servers = vim
+            .iter(vim.lsp.get_active_clients({ bufnr = 0 }))
+            :map(function(server)
+              if server.name ~= 'null-ls' then
+                return server.name
+              end
+            end)
+            :totable()
+
+          return table.concat(servers, ', ')
+        end,
+      }
+
       -- Displays the number of unsaved files other than the current buffer
       local function modified_buffers()
         local modified_background_buffers = vim.tbl_filter(function(bufnr)
@@ -127,6 +142,7 @@ return {
               },
             },
             { lsp_lines_mode },
+            -- lsp_names,
             { 'filetype', colored = true, icon_only = false },
           },
           lualine_y = { 'progress' },
@@ -176,7 +192,7 @@ return {
           buffer_close_icon = '×',
           show_close_icon = false,
           diagnostics = vim.env.LSP == 'nvim' and 'nvim_lsp' or 'coc',
-          show_buffer_default_icon = false,
+          -- show_buffer_default_icon = false,
           separator_style = { '|', ' ' },
           modified_icon = '[+]',
           diagnostics_indicator = function(_, _, diagnostics_dict, context)
@@ -961,6 +977,7 @@ return {
   },
   {
     'yuki-yano/highlight-undo.nvim',
+    lazy = false,
     -- dev = true,
     dependencies = {
       { 'vim-denops/denops.vim' },
@@ -971,7 +988,7 @@ return {
       { '<C-r>', mode = { 'n' } },
     },
     config = function()
-      require('denops-lazy').load('highlight-undo.nvim')
+      -- require('denops-lazy').load('highlight-undo.nvim')
       require('highlight-undo').setup()
     end,
   },

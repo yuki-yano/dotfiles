@@ -443,18 +443,20 @@ return {
   {
     'yuki-yano/ai-review.nvim',
     dev = true,
+    lazy = false,
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'yuki-yano/denops-lazy.nvim' },
     },
-    cmd = { 'AiReview' },
     init = function()
       vim.keymap.set({ 'n', 'x' }, '<Leader><CR>', ':AiReview<CR>', { silent = true })
+      require('ai-review').setup({
+        chat_gpt = {
+          model = 'gpt-4',
+        },
+      })
     end,
     config = function()
-      require('ai-review').setup()
-      require('denops-lazy').load('ai-review.nvim')
-
       vim.api.nvim_create_autocmd({ 'BufEnter' }, {
         pattern = { 'ai-review://*' },
         callback = function(ctx)

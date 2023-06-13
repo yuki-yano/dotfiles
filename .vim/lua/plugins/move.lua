@@ -177,6 +177,36 @@ return {
     end,
   },
   {
+    'lambdalisue/kensaku-search.vim',
+    enabled = false,
+    dependencies = {
+      { 'lambdalisue/kensaku.vim' },
+    },
+    event = { 'CmdlineEnter' },
+    init = function()
+      local prev_maparg = nil
+      vim.api.nvim_create_autocmd({ 'CmdlineEnter' }, {
+        pattern = { '*' },
+        callback = function()
+          if prev_maparg == nil and vim.fn.getcmdtype() == '/' then
+            ---@diagnostic disable-next-line: missing-parameter
+            prev_maparg = vim.fn.maparg('<CR>', 'c')
+            vim.keymap.set({ 'c' }, '<CR>', '<Plug>(kensaku-search-replace)<CR>')
+          end
+        end,
+      })
+      vim.api.nvim_create_autocmd({ 'CmdlineLeave' }, {
+        pattern = { '*' },
+        callback = function()
+          if prev_maparg ~= nil then
+            vim.keymap.set({ 'c' }, '<CR>', prev_maparg)
+            prev_maparg = nil
+          end
+        end,
+      })
+    end,
+  },
+  {
     'lambdalisue/kensaku.vim',
     dependencies = {
       { 'vim-denops/denops.vim' },
