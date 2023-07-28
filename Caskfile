@@ -6,6 +6,7 @@ upgrade
 
 ## Casks
 # install --cask bettertouchtool
+# install --cask biscuit
 # install --cask dash
 # install --cask dropbox
 # install --cask duet
@@ -24,11 +25,11 @@ upgrade
 # install --cask vivaldi
 # install --cask xquartz
 install --cask 1password
+install --cask 1password/tap/1password-cli
 install --cask alfred
 install --cask alt-tab
 install --cask appcleaner
 install --cask bartender
-install --cask biscuit
 install --cask charles
 install --cask cleanshot
 install --cask default-folder-x

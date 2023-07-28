@@ -21,6 +21,9 @@ install readline
 install vim
 install neovim --HEAD
 
+## Container
+install orbstack
+
 ## Languages
 install boost
 install deno
@@ -28,7 +31,7 @@ install gcc
 install go
 install java
 install lua
-install node yarn nodenv
+install node yarn pnpm nodenv
 install openssl
 install perl
 install python pyenv
@@ -36,16 +39,18 @@ install ruby rbenv
 
 ## Service
 # install asciinema
+# install heroku/brew/heroku
 # install packer
 # install terraform
 install awscli
-install heroku/brew/heroku
+install planetscale/tap/pscale
 
 ## Database
-install mysql postgresql redis sqlite
+install sqlite
+install mysql-client
 
 ## Modern CLI
-install bat ctop direnv dust exa fd glow ripgrep procs
+install bat ctop direnv dust exa fd glow ripgrep procs vivid
 
 ## GNU Core Utilities
 install autoconf automake cmake gawk gnu-sed gnu-time gpatch gpg2 wget
@@ -58,9 +63,11 @@ install delphinus/sfmono-square/sfmono-square
 install curl
 install efm-langserver
 install global
+install gojq
 install graphviz
 install itchyny/tap/mmv
 install jq
+install neofetch
 install parallel
 install rsync
 install silicon
@@ -74,6 +81,10 @@ install yq
 
 ## VCS
 install git tig gh ghq gobo git-delta git-filter-repo
+
+## Window Manager
+install koekeishiya/formulae/yabai
+install koekeishiya/formulae/skhd
 
 ## Media
 install ffmpeg
