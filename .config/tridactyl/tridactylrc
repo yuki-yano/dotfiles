@@ -1,4 +1,4 @@
-colorscheme gruvbox-dark-hard
+colorscheme catppuccin
 
 setnull searchurls.github
 setnull searchurls.amazon
@@ -29,7 +29,10 @@ bind --mode=normal U fillcmdline undo
 unbind --mode=ex <C-f>
 unbind --mode=ex <Space>
 bind   --mode=ex <C-w>     text.backward_kill_word
-bind   --mode=ex <C-p>     ex.prev_completion
+
+" Since C-p is reserved and doesn't work in Firefox, we use Karabiner to convert C-p to C-k.
+" bind   --mode=ex <C-p>     ex.prev_completion
+bind   --mode=ex <C-k>     ex.prev_completion
 bind   --mode=ex <C-n>     ex.next_completion
 bind   --mode=ex <C-Space> ex.insert_space_or_completion
 
@@ -40,3 +43,9 @@ keymap P <Nop>
 
 unbindurl google\.com/search --mode=normal j
 unbindurl google\.com/search --mode=normal k
+unbindurl google\.com/search --mode=normal i
+unbindurl google\.com/search --mode=normal /
+unbindurl www.google\.com/search --mode=normal j
+unbindurl www.google\.com/search --mode=normal k
+unbindurl www.google\.com/search --mode=normal i
+unbindurl www.google\.com/search --mode=normal /
