@@ -37,6 +37,10 @@ zinit ice lucid as"program"
 zinit snippet 'https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux'
 
 zinit light yukiycino-dotfiles/zsh-show-buffer-stack
+
+zinit ice lucid
+zinit snippet ~/.config/tabtab/zsh/__tabtab.zsh
+
 # }}}
 
 # async loading {{{
@@ -147,6 +151,12 @@ if whence dust > /dev/null; then
 fi
 # }}}
 
+# yq {{{
+if whence gojq > /dev/null; then
+  alias yq='gojq --yaml-input --yaml-output'
+fi
+# }}}
+
 # }}}
 
 # }}}
@@ -216,9 +226,8 @@ setopt pushd_ignore_dups
 setopt share_history
 setopt transient_rprompt
 
-## dircolors
-if [[ -f ~/.dir_colors ]] && whence gdircolors > /dev/null; then
-  eval "$(gdircolors ~/.dir_colors)"
+if whence vivid > /dev/null; then
+  export LS_COLORS="$(vivid generate ~/.config/vivid/themes/catppuccin.yml)"
 fi
 
 # history
@@ -282,7 +291,7 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 # Project
 function f() {
   local project dir repository session current_session
-  dir=$(ghq list -p | sed -e "s|${HOME}|~|" | fzf-tmux -p 70%,70% --prompt='Project> ' --preview "bat \$(eval echo {})/README.md" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up)
+  dir=$(ghq list -p | sed -e "s|${HOME}|~|" | fzf-tmux -p 70%,70% --prompt='Project> ' --preview "bat \$(eval echo {})/README.md" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up --no-separator)
 
   if [[ $dir == "" ]]; then
     return 1
@@ -549,7 +558,7 @@ function git_auto_save() {
 # fzf {{{
 
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
-export FZF_DEFAULT_OPTS='--reverse --color=hl:#81A1C1,hl+:#81A1C1,info:#EACB8A,prompt:#81A1C1,pointer:#B48DAC,marker:#A3BE8B,spinner:#B48DAC,header:#A3BE8B'
+export FZF_DEFAULT_OPTS='--reverse --no-separator'
 export FZF_COMPLETION_TRIGGER=';'
 
 # }}}

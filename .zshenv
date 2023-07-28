@@ -23,10 +23,11 @@ setopt no_global_rcs
 typeset -U path fpath
 
 # default path
-path=(~/.config/yarn/global/node_modules/.bin(N-/) /usr/local/bin(N-/) /usr/bin(N-/) /bin(N-/) /sbin(N-/) /usr/sbin(N-/) /usr/local/sbin(N-/) /usr/X11/bin(N-/))
+path=(~/.config/yarn/global/node_modules/.bin(N-/) /usr/local/bin(N-/) /usr/bin(N-/) /bin(N-/) /sbin(N-/) /usr/sbin(N-/) /usr/local/sbin(N-/) /usr/X11/bin(N-/) ~/.bin(N-/))
 fpath=(~/.zsh/completions(N-/) $fpath)
 
-# library path
+# OpenSSL
+path=(/usr/local/opt/openssl/bin(N-/) $path)
 export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/
 
 # homebrew
@@ -130,14 +131,6 @@ export JAVA_HOME=$(/usr/libexec/java_home -v "14")
 
 # llvm
 path=(/usr/local/opt/llvm/bin(N-/) $path)
-
-# heroku
-## Update completions
-## $ heroku autocomplete --refresh-cache
-path=(/usr/local/heroku/bin(N-/) $path)
-export HEROKU_AC_ANALYTICS_DIR=~/Library/Caches/heroku/autocomplete/completion_analytics
-export HEROKU_AC_COMMANDS_PATH=~/Library/Caches/heroku/autocomplete/commands
-export HEROKU_AC_ZSH_SETTERS_PATH=${HEROKU_AC_COMMANDS_PATH}_setters && test -f $HEROKU_AC_ZSH_SETTERS_PATH && source $HEROKU_AC_ZSH_SETTERS_PATH
 
 # direnv
 if whence direnv > /dev/null; then

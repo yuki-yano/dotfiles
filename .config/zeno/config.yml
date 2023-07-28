@@ -38,6 +38,12 @@ snippets:
   - name: git diff cached file
     keyword: gdc
     snippet: git diff --cached -- {{file}}
+  - name: git diff pipe nvim
+    keyword: gdv
+    snippet: git diff | vi
+  - name: git diff cached pipe nvim
+    keyword: gdcv
+    snippet: git diff --cached | vi
   - name: git checkout
     keyword: gco
     snippet: git checkout {{branch}}
@@ -89,6 +95,10 @@ snippets:
   - name: git rebase conflict resolution
     snippet: git range-diff @{u} @{1} @
 
+  - name: auto commit message
+    keyword: ac
+    snippet: npx aicommits
+
   - name: tms
     keyword: t
     snippet: tms
@@ -134,6 +144,10 @@ snippets:
     context:
       lbuffer: '^git\s+'
     evaluate: true
+
+  - name: deno udd
+    keyword: udd
+    snippet: deno run --allow-all https://deno.land/x/udd/main.ts
 
   - name: disable desktop
     keyword: disable_desktop
