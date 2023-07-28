@@ -1,26 +1,33 @@
 {
-  "title": "VSCode Keybind",
+  "title": "Firefox Keybind",
   "rules": [
     {
-      "description": "Ctrl-m to Enter for VSCode",
+      "description": "Change Ctrl+p to Ctrl+k in Firefox",
       "manipulators": [
         {
           "type": "basic",
           "from": {
-            "key_code": "m",
+            "key_code": "p",
             "modifiers": {
-              "mandatory": ["control"]
+              "mandatory": [
+                "control"
+              ]
             }
           },
           "to": [
             {
-              "key_code": "return_or_enter"
+              "key_code": "k",
+              "modifiers": [
+                "control"
+              ]
             }
           ],
           "conditions": [
             {
               "type": "frontmost_application_if",
-              "bundle_identifiers": ["^com\\.microsoft\\.VSCode$"]
+              "bundle_identifiers": [
+                "^org\\.mozilla\\.firefox$"
+              ]
             }
           ]
         }
