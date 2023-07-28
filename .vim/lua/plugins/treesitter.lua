@@ -10,7 +10,7 @@ return {
       { 'm-demare/hlargs.nvim' },
       { 'nvim-treesitter/nvim-treesitter-context' },
       { 'nvim-treesitter/nvim-treesitter-textobjects' },
-      { 'mrjones2014/nvim-ts-rainbow' },
+      { 'hiphish/rainbow-delimiters.nvim' },
       { 'yioneko/nvim-yati' },
     },
     event = { 'BufRead', 'BufNewFile', 'InsertEnter' },
@@ -52,11 +52,13 @@ return {
         textobjects = {
           select = {
             enable = true,
-            -- NOTE: Not yet supported for jsx attributes
-            -- keymaps = {
-            --   ['ax'] = '@tag.attribute',
-            --   ['ix'] = '@tag.attribute',
-            -- },
+            keymaps = {
+              ['ib'] = '@block.inner',
+              ['ab'] = '@block.outer',
+              -- NOTE: Not yet supported for jsx attributes
+              -- ['ax'] = '@tag.attribute',
+              -- ['ix'] = '@tag.attribute',
+            },
           },
         },
         context_commentstring = {
@@ -76,6 +78,7 @@ return {
         },
       })
 
+      require('rainbow-delimiters.setup')()
       require('treesitter-context').setup()
     end,
   },

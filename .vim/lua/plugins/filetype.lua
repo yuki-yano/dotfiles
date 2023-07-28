@@ -33,6 +33,7 @@ return {
   },
   {
     'kchmck/vim-coffee-script',
+    enabled = false,
     ft = { 'coffee' },
   },
 }

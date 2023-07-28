@@ -28,6 +28,9 @@ return {
           aerial = true,
           coc_nvim = true,
           cmp = true,
+          dropbar = {
+            enabled = true,
+          },
           fern = true,
           fidget = true,
           gitsigns = true,
@@ -38,10 +41,11 @@ return {
           telescope = true,
           treesitter = true,
           treesitter_context = true,
-          ts_rainbow = true,
+          rainbow_delimiters = true,
           indent_blankline = {
             enabled = true,
           },
+          sandwich = true,
         },
       })
     end,

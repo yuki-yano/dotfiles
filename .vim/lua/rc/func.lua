@@ -250,4 +250,31 @@ vim.api.nvim_create_user_command('HelpView', function()
   vim.cmd([[setlocal conceallevel=2]])
 end, {})
 
+vim.api.nvim_create_user_command('CodeToChar', function(opts)
+  if opts.range ~= 2 then
+    vim.print('Not select code')
+    return
+  end
+
+  local code = vim.fn.getline('.'):sub(vim.fn.col("'<"), vim.fn.col("'>"))
+  vim.print(vim.fn.nr2char(vim.fn.str2nr(code, 16)))
+end, { range = true })
+
+vim.api.nvim_create_user_command('CharToCode', function(opts)
+  if opts.range ~= 2 then
+    vim.print('Not select char')
+    return
+  end
+
+  local char = vim.fn.getline('.'):sub(vim.fn.col("'<"), vim.fn.col("'>"))
+  vim.print(vim.fn.printf('0x%X', vim.fn.char2nr(char)))
+end, { range = true })
+
+vim.api.nvim_create_user_command('PluginList', function()
+  local plugins = require('lazy').plugins()
+  for _, plugin in ipairs(plugins) do
+    vim.print(plugin[1])
+  end
+end, {})
+
 return M

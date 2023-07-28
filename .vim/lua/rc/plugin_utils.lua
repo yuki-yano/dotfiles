@@ -2,10 +2,12 @@ local list_concat = require('rc.utils').list_concat
 
 local M = {}
 
+M.enabled_inlay_hint = {}
+M.enabled_inlay_hint_default_value = false
 M.enable_noice = false
 M.enable_lsp_lines = vim.env.LSP == 'nvim'
 
-local disable_cmp_filetypes = {}
+local disable_cmp_filetypes = { 'sagarename', 'ddu-ff', 'ddu-ff-filter' }
 M.get_disable_cmp_filetypes = function()
   return disable_cmp_filetypes
 end

@@ -173,11 +173,42 @@ return {
   },
   { 'itchyny/vim-qfedit', ft = { 'qf' } },
   {
-    'famiu/bufdelete.nvim',
-    cmd = { 'Bdelete' },
+    'ojroques/nvim-bufdel',
+    enabled = false,
+    cmd = { 'BufDel' },
     init = function()
-      vim.keymap.set({ 'n' }, '<Leader>d', '<Cmd>Bdelete<CR>')
-      vim.keymap.set({ 'n' }, '<Leader>D', '<Cmd>Bdelete!<CR>')
+      require('bufdel').setup({
+        quit = false,
+      })
+      vim.keymap.set({ 'n' }, '<Leader>d', '<Cmd>BufDel<CR>')
+      vim.keymap.set({ 'n' }, '<Leader>D', '<Cmd>BufDel!<CR>')
+    end,
+  },
+  {
+    'echasnovski/mini.bufremove',
+    keys = {
+      { '<Leader>d', mode = { 'n' } },
+      { '<Leader>D', mode = { 'n' } },
+    },
+    config = function()
+      local bufremove = require('mini.bufremove')
+      bufremove.setup()
+
+      vim.keymap.set({ 'n' }, '<Leader>d', function()
+        bufremove.delete()
+      end)
+      vim.keymap.set({ 'n' }, '<Leader>D', function()
+        bufremove.delete(0, true)
+      end)
+    end,
+  },
+  {
+    'kyoh86/wipeout-buffers.nvim',
+    cmd = { 'Wipeout' },
+    config = function()
+      vim.api.nvim_create_user_command('Wipeout', function(opts)
+        require('wipeout').menu({ force = opts.bang, keep_layout = true })
+      end, { bang = true })
     end,
   },
   {
@@ -441,31 +472,115 @@ return {
   },
   { 'powerman/vim-plugin-AnsiEsc', cmd = { 'AnsiEsc' } },
   {
-    'yuki-yano/ai-review.nvim',
-    dev = true,
+    'yuki-yano/ai-review.vim',
     lazy = false,
+    dev = true,
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'yuki-yano/denops-lazy.nvim' },
+      { 'Shougo/ddu.vim' },
     },
+    cmd = { 'AiReview', 'AiReviewLog' },
     init = function()
       vim.keymap.set({ 'n', 'x' }, '<Leader><CR>', ':AiReview<CR>', { silent = true })
-      require('ai-review').setup({
-        chat_gpt = {
-          model = 'gpt-4',
-        },
-      })
     end,
     config = function()
+      require('denops-lazy').load('ai-review.vim', { wait_load = false })
+
+      local vimx = require('artemis')
+      local request = require('plugins.config.ai-review')
+
+      vimx.fn.ai_review.config({
+        log_dir = vim.fn.expand('~/dotfiles/data/ai-review'),
+        chat_gpt = {
+          model = 'gpt-4',
+          requests = {
+            {
+              title = 'Customize request',
+              request = request.customize_request,
+              preview = function(opts)
+                return request.customize_request(opts).text
+              end,
+            },
+            {
+              title = 'Find bugs',
+              request = request.find_bugs,
+              preview = function(opts)
+                return request.find_bugs(opts).text
+              end,
+            },
+            {
+              title = 'Fix syntax error',
+              request = request.fix_syntax_error,
+              preview = function(opts)
+                return request.fix_syntax_error(opts).text
+              end,
+            },
+            {
+              title = 'Split function',
+              request = request.split_function,
+              preview = function(opts)
+                return request.split_function(opts).text
+              end,
+            },
+            {
+              title = 'Fix diagnostics',
+              request = request.fix_diagnostics,
+              preview = function(opts)
+                return request.fix_diagnostics(opts).text
+              end,
+            },
+            {
+              title = 'Optimize',
+              request = request.optimize,
+              preview = function(opts)
+                return request.optimize(opts).text
+              end,
+            },
+            {
+              title = 'Add comments',
+              request = request.add_comments,
+              preview = function(opts)
+                return request.add_comments(opts).text
+              end,
+            },
+            {
+              title = 'Add tests',
+              request = request.add_tests,
+              preview = function(opts)
+                return request.add_tests(opts).text
+              end,
+            },
+            {
+              title = 'Explain',
+              request = request.explain,
+              preview = function(opts)
+                return request.explain(opts).text
+              end,
+            },
+            {
+              title = 'Commit Message',
+              request = request.commit_message,
+              preview = function(opts)
+                return request.commit_message(opts).text
+              end,
+            },
+          },
+        },
+      })
+
       vim.api.nvim_create_autocmd({ 'BufEnter' }, {
         pattern = { 'ai-review://*' },
         callback = function(ctx)
-          local clients = vim.lsp.get_active_clients({ bufnr = ctx.buf })
+          local clients = vim.lsp.get_clients({ bufnr = ctx.buf })
+          local notify = vim.notify
+          -- NOTE: Disable detach notify
+          ---@diagnostic disable-next-line: duplicate-set-field
+          vim.notify = function(...) end
           for _, client in ipairs(clients) do
-            -- FIX: Using vim.lsp.buf_detach_client in lua, the message is output, use silent in vim.cmd to suppress
-            --      Fix not use vim.cmd
-            vim.cmd('silent lua vim.lsp.buf_detach_client(' .. ctx.buf .. ', ' .. client.id .. ')')
+            vim.lsp.buf_detach_client(ctx.buf, client.id)
           end
+          vim.notify = notify
         end,
       })
     end,
@@ -499,6 +614,17 @@ return {
     end,
   },
   {
+    'haya14busa/vim-metarepeat',
+    keys = {
+      { '<Plug>(metarepeat)', mode = { 'n', 'x' } },
+      { '<Plug>(metarepeat-preset-occurence)', mode = { 'n' } },
+    },
+    init = function()
+      vim.keymap.set({ 'n', 'x' }, 'g.', '<Plug>(metarepeat)')
+      vim.keymap.set({ 'n' }, 'go', '<Plug>(metarepeat-preset-occurence)')
+    end,
+  },
+  {
     -- TODO: try later
     'hachy/cmdpalette.nvim',
     enabled = false,
@@ -506,5 +632,10 @@ return {
     config = function()
       require('cmdpalette').setup({})
     end,
+  },
+  {
+    'wakatime/vim-wakatime',
+    enabled = false,
+    event = { 'BufRead', 'BufNewFile' },
   },
 }

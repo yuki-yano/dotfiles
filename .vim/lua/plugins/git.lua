@@ -2,7 +2,7 @@ return {
   -- TODO: migrate from gina
   {
     'lambdalisue/gin.vim',
-    enabled = true,
+    enabled = false,
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'yuki-yano/denops-lazy.nvim' },
@@ -57,10 +57,10 @@ return {
       vim.keymap.set({ 'n' }, 'gq', require('gitsigns').setqflist)
       vim.keymap.set({ 'n' }, 'gl', require('gitsigns').setloclist)
       vim.keymap.set({ 'n' }, 'gP', require('gitsigns').preview_hunk)
-      vim.keymap.set({ 'n', 'x' }, 'ga', ':Gitsigns stage_hunk<CR>', { silent = true })
-      vim.keymap.set({ 'n', 'x' }, 'gr', ':Gitsigns reset_hunk<CR>', { silent = true })
-      vim.keymap.set({ 'n', 'x' }, 'gu', require('gitsigns').undo_stage_hunk)
-      vim.keymap.set({ 'n', 'x' }, 'gR', require('gitsigns').reset_buffer)
+      -- vim.keymap.set({ 'n', 'x' }, 'ga', ':Gitsigns stage_hunk<CR>', { silent = true })
+      -- vim.keymap.set({ 'n', 'x' }, 'gr', ':Gitsigns reset_hunk<CR>', { silent = true })
+      -- vim.keymap.set({ 'n', 'x' }, 'gu', require('gitsigns').undo_stage_hunk)
+      -- vim.keymap.set({ 'n', 'x' }, 'gR', require('gitsigns').reset_buffer)
     end,
   },
   {

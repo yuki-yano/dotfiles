@@ -81,12 +81,12 @@ return {
       vim.keymap.set(
         { 'n' },
         'n',
-        '<Cmd>lua require("hlslens").enable()<CR><Cmd>execute("normal! " . v:count1 . "n")<CR><Cmd>lua require("hlslens").start()<CR>zzzv'
+        '<Cmd>execute("normal! " . v:count1 . "n")<CR><Cmd>lua require("hlslens").enable()<CR><Cmd>lua require("hlslens").start()<CR>zzzv'
       )
       vim.keymap.set(
         { 'n' },
         'N',
-        '<Cmd>lua require("hlslens").enable()<CR><Cmd>execute("normal! " . v:count1 . "N")<CR><Cmd>lua require("hlslens").start()<CR>zzzv'
+        '<Cmd>execute("normal! " . v:count1 . "N")<CR><Cmd>lua require("hlslens").enable()<CR><Cmd>lua require("hlslens").start()<CR>zzzv'
       )
       vim.keymap.set(
         { 'n', 'x' },
@@ -152,6 +152,7 @@ return {
   },
   {
     'yuki-yano/fuzzy-motion.vim',
+    dev = false,
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'yuki-yano/denops-lazy.nvim' },
@@ -237,6 +238,33 @@ return {
           -- { name = 'walk' },
         },
       })
+    end,
+  },
+  {
+    -- NOTE: Try lazy_on_func.nvim
+    'hrsh7th/vim-searchx',
+    enabled = true,
+    lazy = true,
+    init = function()
+      local on_func = require('lazy_on_func').on_func
+      local searchx = on_func('vim-searchx', 'searchx')
+
+      vim.keymap.set({ 'n', 'x' }, '/', function()
+        searchx('start')({ dir = 1 })
+      end)
+      vim.keymap.set({ 'n', 'x' }, '?', function()
+        searchx('start')({ dir = 0 })
+      end)
+      vim.keymap.set({ 'c' }, ';', function()
+        searchx('select')()
+      end)
+
+      vim.keymap.set({ 'n', 'x' }, 'n', function()
+        searchx('next_dir')()
+      end)
+      vim.keymap.set({ 'n', 'x' }, 'N', function()
+        searchx('prev_dir')()
+      end)
     end,
   },
 }

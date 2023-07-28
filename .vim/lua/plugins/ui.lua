@@ -41,7 +41,7 @@ return {
         function()
           if vim.env.LSP == 'nvim' then
             local diagnostics = vim.diagnostic.get(0)
-            local clients = vim.lsp.get_active_clients({ bufnr = 0 })
+            local clients = vim.lsp.get_clients({ bufnr = 0 })
 
             if #diagnostics == 0 and #clients ~= 0 then
               return diagnostic_icons.success .. ' '
@@ -73,7 +73,7 @@ return {
       local lsp_names = {
         function()
           local servers = vim
-            .iter(vim.lsp.get_active_clients({ bufnr = 0 }))
+            .iter(vim.lsp.get_clients({ bufnr = 0 }))
             :map(function(server)
               if server.name ~= 'null-ls' then
                 return server.name
@@ -535,6 +535,7 @@ return {
   },
   {
     'b0o/incline.nvim',
+    enabled = true,
     dependencies = {
       { 'nvim-tree/nvim-web-devicons' },
       { 'SmiteshP/nvim-navic' },
@@ -604,6 +605,84 @@ return {
     end,
   },
   {
+    'Bekaboo/dropbar.nvim',
+    enabled = false,
+    event = { 'LspAttach' },
+    config = function()
+      require('dropbar').setup({
+        icons = {
+          kinds = {
+            symbols = {
+              Array = ' ',
+              Boolean = ' ',
+              BreakStatement = ' ',
+              Call = ' ',
+              CaseStatement = '󱃙 ',
+              Class = ' ',
+              Color = ' ',
+              Constant = ' ',
+              Constructor = ' ',
+              ContinueStatement = ' ',
+              Copilot = ' ',
+              Declaration = ' ',
+              Delete = ' ',
+              DoStatement = ' ',
+              Enum = ' ',
+              EnumMember = ' ',
+              Event = ' ',
+              Field = ' ',
+              File = ' ',
+              Folder = ' ',
+              ForStatement = ' ',
+              Function = ' ',
+              Identifier = '󰀫 ',
+              IfStatement = '󰇉 ',
+              Interface = ' ',
+              Keyword = ' ',
+              List = ' ',
+              Log = '󰦪 ',
+              Lsp = ' ',
+              Macro = '󰁌 ',
+              MarkdownH1 = '󰉫 ',
+              MarkdownH2 = '󰉬 ',
+              MarkdownH3 = '󰉭 ',
+              MarkdownH4 = '󰉮 ',
+              MarkdownH5 = '󰉯 ',
+              MarkdownH6 = '󰉰 ',
+              Method = ' ',
+              Module = ' ',
+              Namespace = ' ',
+              Null = '󰢤 ',
+              Number = '󰎠 ',
+              Object = ' ',
+              Operator = ' ',
+              Package = ' ',
+              Property = ' ',
+              Reference = ' ',
+              Regex = ' ',
+              Repeat = ' ',
+              Scope = ' ',
+              Snippet = ' ',
+              Specifier = '󰦪 ',
+              Statement = ' ',
+              String = ' ',
+              Struct = ' ',
+              SwitchStatement = '󰺟 ',
+              Terminal = ' ',
+              Text = ' ',
+              Type = ' ',
+              TypeParameter = ' ',
+              Unit = ' ',
+              Value = ' ',
+              Variable = ' ',
+              WhileStatement = ' ',
+            },
+          },
+        },
+      })
+    end,
+  },
+  {
     'luukvbaal/statuscol.nvim',
     enabled = false,
     event = { 'BufRead' },
@@ -613,32 +692,43 @@ return {
       })
     end,
   },
-  {
-    'levouh/tint.nvim',
-    event = { 'BufRead' },
-    config = function()
-      require('tint').setup({
-        highlight_ignore_patterns = {
-          '@comment',
-          'Comment',
-          'WinSeparator',
-          'VertSplit',
-          'Status.*',
-        },
-        window_ignore_function = function(winid)
-          local bufid = vim.api.nvim_win_get_buf(winid)
-          local buftype = vim.api.nvim_buf_get_option(bufid, 'buftype')
-          local floating = vim.api.nvim_win_get_config(winid).relative ~= ''
-
-          return buftype == 'terminal' or floating
-        end,
-      })
-    end,
-  },
+  -- {
+  --   'levouh/tint.nvim',
+  --   event = { 'BufRead' },
+  --   config = function()
+  --     require('tint').setup({
+  --       highlight_ignore_patterns = {
+  --         '@comment',
+  --         'Comment',
+  --         'WinSeparator',
+  --         'VertSplit',
+  --         'Status.*',
+  --       },
+  --       window_ignore_function = function(winid)
+  --         local bufid = vim.api.nvim_win_get_buf(winid)
+  --         local buftype = vim.api.nvim_buf_get_option(bufid, 'buftype')
+  --         local floating = vim.api.nvim_win_get_config(winid).relative ~= ''
+  --
+  --         return buftype == 'terminal' or floating
+  --       end,
+  --     })
+  --   end,
+  -- },
+  -- {
+  --   'lewis6991/satellite.nvim',
+  --   event = { 'BufRead' },
+  --   config = function()
+  --     require('satellite').setup({
+  --       marks = {
+  --         enable = false,
+  --       },
+  --     })
+  --   end,
+  -- },
   {
     'petertriho/nvim-scrollbar',
+    enabled = true,
     dependencies = {
-      { 'petertriho/nvim-scrollbar' },
       { 'lewis6991/gitsigns.nvim' },
     },
     event = { 'BufRead' },
@@ -679,6 +769,14 @@ return {
 
       require('scrollbar.handlers.search').setup()
       require('scrollbar.handlers.gitsigns').setup()
+    end,
+  },
+  {
+    'lewis6991/satellite.nvim',
+    enabled = false,
+    event = { 'BufRead' },
+    config = function()
+      require('satellite').setup()
     end,
   },
   {
@@ -977,8 +1075,8 @@ return {
   },
   {
     'yuki-yano/highlight-undo.nvim',
-    lazy = false,
-    -- dev = true,
+    lazy = true,
+    dev = false,
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'yuki-yano/denops-lazy.nvim' },
@@ -988,7 +1086,7 @@ return {
       { '<C-r>', mode = { 'n' } },
     },
     config = function()
-      -- require('denops-lazy').load('highlight-undo.nvim')
+      require('denops-lazy').load('highlight-undo.nvim')
       require('highlight-undo').setup()
     end,
   },
@@ -1635,7 +1733,7 @@ _x_: reload
             name = 'Sql',
           },
           ['svg'] = {
-            icon = 'ﰟ ',
+            icon = ' ',
             color = yellow,
             cterm_color = '215',
             name = 'Svg',

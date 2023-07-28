@@ -3,6 +3,8 @@ local color = require('rc.color')
 local lsp_icons = require('rc.font').lsp_icons
 local codicons = require('rc.font').codicons
 local diagnostic_icons = require('rc.font').diagnostic_icons
+local enabled_inlay_hint = require('rc.plugin_utils').enabled_inlay_hint
+local enabled_inlay_hint_default_value = require('rc.plugin_utils').enabled_inlay_hint_default_value
 local enable_lsp_lines = require('rc.plugin_utils').enable_lsp_lines
 local get_lsp_lines_status = require('rc.plugin_utils').get_lsp_lines_status
 local cycle_lsp_lines = require('rc.plugin_utils').cycle_lsp_lines
@@ -11,7 +13,7 @@ local plugins = {
   {
     'neovim/nvim-lspconfig',
     event = { 'BufReadPre', 'BufWrite' },
-    -- Use onetime deno file
+    -- NOTE: Use onetime deno file
     ft = { 'typescript', 'typescriptreact' },
     dependencies = {
       { 'williamboman/mason.nvim' },
@@ -82,6 +84,38 @@ local plugins = {
           if client.server_capabilities.documentSymbolProvider then
             require('nvim-navic').attach(client, bufnr)
           end
+
+          if client.server_capabilities.inlayHintProvider then
+            -- NOTE: This is a workaround for current inlay hints state
+            enabled_inlay_hint[bufnr] = enabled_inlay_hint_default_value
+            vim.lsp.inlay_hint(bufnr, enabled_inlay_hint_default_value)
+
+            vim.keymap.set({ 'n' }, '<Plug>(lsp)h', function()
+              local buf = vim.api.nvim_get_current_buf()
+              local enabled = not enabled_inlay_hint[buf]
+              vim.lsp.inlay_hint(buf, enabled)
+              enabled_inlay_hint[buf] = enabled
+            end)
+
+            vim.keymap.set({ 'n' }, '<Plug>(lsp)H', function()
+              enabled_inlay_hint_default_value = not enabled_inlay_hint_default_value
+              for i, _ in pairs(enabled_inlay_hint) do
+                enabled_inlay_hint[i] = enabled_inlay_hint_default_value
+                vim.lsp.inlay_hint(i, enabled_inlay_hint_default_value)
+              end
+            end)
+
+            vim.api.nvim_create_autocmd({ 'ModeChanged' }, {
+              buffer = bufnr,
+              callback = function()
+                if vim.v.event.new_mode == 'i' or vim.v.event.new_mode == 'v' or vim.v.event.new_mode == 'V' then
+                  vim.lsp.inlay_hint(bufnr, false)
+                else
+                  vim.lsp.inlay_hint(bufnr, enabled_inlay_hint[vim.api.nvim_get_current_buf()])
+                end
+              end,
+            })
+          end
         end,
       }
 
@@ -90,6 +124,18 @@ local plugins = {
 
       mason_lspconfig.setup_handlers({
         function(server_name)
+          local typescriptInlayHints = {
+            parameterNames = {
+              enabled = 'literals',
+              suppressWhenArgumentMatchesName = true,
+            },
+            parameterTypes = { enabled = true },
+            variableTypes = { enabled = false },
+            propertyDeclarationTypes = { enabled = true },
+            functionLikeReturnTypes = { enabled = true },
+            enumMemberValues = { enabled = true },
+          }
+
           -- NOTE: vtsls added to mason and lspconfig
           --       Try to always enable vtsls
           if server_name == 'vtsls' then
@@ -105,6 +151,7 @@ local plugins = {
                 suggest = {
                   completeFunctionCalls = true,
                 },
+                inlayHints = typescriptInlayHints,
               },
             }
           end
@@ -113,6 +160,24 @@ local plugins = {
             if not is_node_repo then
               return
             end
+          end
+
+          if server_name == 'tailwindcss' then
+            opts.settings = {
+              tailwindCSS = {
+                classAttributes = { 'class', 'className', 'class:list', 'classList', '.*Class', '.*ClassName' },
+                lint = {
+                  cssConflict = 'warning',
+                  invalidApply = 'error',
+                  invalidConfigPath = 'error',
+                  invalidScreen = 'error',
+                  invalidTailwindDirective = 'error',
+                  invalidVariant = 'error',
+                  recommendedVariantOrder = 'warning',
+                },
+                validate = true,
+              },
+            }
           end
 
           if server_name == 'denols' then
@@ -124,6 +189,7 @@ local plugins = {
             opts.init_options = {
               lint = true,
               unstable = true,
+              documentPreloadLimit = 0,
               suggest = {
                 imports = {
                   hosts = {
@@ -131,6 +197,8 @@ local plugins = {
                   },
                 },
               },
+              inlayHints = typescriptInlayHints,
+              single_file_support = true,
             }
           end
 
@@ -179,6 +247,7 @@ local plugins = {
           }),
           null_ls.builtins.formatting.stylua,
           null_ls.builtins.diagnostics.cspell.with({
+            method = null_ls.methods.DIAGNOSTICS_ON_SAVE,
             diagnostics_postprocess = function(diagnostic)
               diagnostic.severity = vim.diagnostic.severity['HINT']
             end,
@@ -209,7 +278,9 @@ local plugins = {
             end)
           elseif is_node_repo then
             vim.keymap.set({ 'n' }, '<Plug>(lsp)f', function()
-              vim.cmd([[EslintFixAll]])
+              if vim.fn.exists(':EslintFixAll') == 2 then
+                vim.cmd([[EslintFixAll]])
+              end
               vim.lsp.buf.format({ name = 'null-ls' })
             end)
           else
@@ -252,6 +323,7 @@ local plugins = {
           -- 'tsserver',
           'vtsls',
           'eslint',
+          'tailwindcss',
           'astro',
           'denols',
           'lua_ls',
@@ -408,6 +480,7 @@ local plugins = {
   },
   {
     'j-hui/fidget.nvim',
+    tag = 'legacy',
     event = { 'LspAttach' },
     config = function()
       require('fidget').setup()

@@ -70,6 +70,10 @@ return {
   },
   { 'yuki-yano/denops-lazy.nvim' },
   {
+    'yuki-yano/lazy_on_func.nvim',
+    dev = true,
+  },
+  {
     'vigoux/notifier.nvim',
     -- NOTE: Use fidget
     enabled = false,

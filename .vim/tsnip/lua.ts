@@ -1,5 +1,12 @@
 import { Snippet } from "./deps.ts";
 
+const functionName = (name: string | undefined) => {
+  if (name?.endsWith(",")) {
+    return name.slice(0, -1);
+  }
+  return name ?? "";
+};
+
 const func: Snippet = {
   name: "func",
   text: "function ${1:name}(${2:args})\n\t$0\nend",
@@ -15,9 +22,9 @@ const func: Snippet = {
   ],
   render: ({ name, args }, ctx) => {
     return [
-      `function${name?.text ? ` ${name.text}` : ""}(${args?.text ?? ""})`,
+      `function ${functionName(name?.text)}(${args?.text ?? ""})`,
       `\t${ctx.postCursor}`,
-      `end`,
+      `end${name?.text?.endsWith(",") ? "," : ""}`,
     ].join("\n");
   },
 };
@@ -37,9 +44,7 @@ const command: Snippet = {
   ],
   render: ({ command }, ctx) => {
     return [
-      `vim.api.nvim_create_user_command('${
-        command?.text ? command.text : ""
-      }', function(opts)`,
+      `vim.api.nvim_create_user_command('${command?.text ? command.text : ""}', function(opts)`,
       `\t${ctx.postCursor}`,
       `end, {})`,
     ].join("\n");

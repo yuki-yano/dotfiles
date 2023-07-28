@@ -4,6 +4,7 @@ local codicons = require('rc.font').codicons
 local misc_icons = require('rc.font').misc_icons
 local todo_icons = require('rc.font').todo_icons
 local list_concat = require('rc.utils').list_concat
+-- local enable_noice = require('rc.plugin_utils').enable_noice
 
 return {
   {
@@ -35,6 +36,7 @@ return {
         },
       },
       { 'hrsh7th/cmp-cmdline' },
+      { 'uga-rosa/cmp-skkeleton' },
       {
         'tzachar/cmp-fuzzy-path',
         dependencies = {
@@ -111,6 +113,7 @@ return {
     end,
     config = function()
       local cmp = require('cmp')
+      local types = require('cmp.types')
       local luasnip = require('luasnip')
       local lspkind = require('lspkind')
 
@@ -148,7 +151,7 @@ return {
         { name = 'tsnip', keyword_length = 2, force_keyword_length = true },
         { name = 'copilot' },
         { name = 'nvim_lsp' },
-        { name = 'treesitter' },
+        -- { name = 'treesitter' },
         { name = 'nvim_lua', max_item_count = 20 },
         { name = 'cmp_tabnine' },
         { name = 'buffer' },
@@ -156,6 +159,7 @@ return {
         { name = 'rg', keyword_length = 4, max_item_count = 10 },
         { name = 'look', keyword_length = 4, max_item_count = 10, option = { convert_case = true, loud = true } },
         { name = 'path' },
+        -- { name = 'skkeleton' },
       }
 
       cmp.setup({
@@ -191,6 +195,20 @@ return {
               ['<CR>'] = cmp.mapping(function(fallback)
                 if cmp.visible() and cmp.get_selected_entry() then
                   cmp.confirm({ select = true })
+                else
+                  fallback()
+                end
+              end),
+              ['<C-n>'] = cmp.mapping(function(fallback)
+                if cmp.visible() then
+                  cmp.select_next_item({ behavior = types.cmp.SelectBehavior.Insert })
+                else
+                  fallback()
+                end
+              end),
+              ['<C-p>'] = cmp.mapping(function(fallback)
+                if cmp.visible() then
+                  cmp.select_prev_item({ behavior = types.cmp.SelectBehavior.Insert })
                 else
                   fallback()
                 end
@@ -342,14 +360,8 @@ return {
         end
       end)
 
-      vim.api.nvim_create_autocmd({ 'FileType' }, {
-        pattern = get_disable_cmp_filetypes(),
-        callback = function()
-          cmp.setup.buffer({
-            enabled = false,
-            -- completion = { autocomplete = false },
-          })
-        end,
+      cmp.setup.filetype(get_disable_cmp_filetypes(), {
+        sources = {},
       })
     end,
   },
@@ -491,6 +503,29 @@ return {
       vimx.fn.operator.sandwich.set('add', 'char', 'skip_space', 1)
       vim.cmd([[autocmd ModeChanged [vV\x16]*:* call operator#sandwich#set('add', 'char', 'skip_space', 1)]])
       vim.cmd([[autocmd ModeChanged *:[vV\x16]* call operator#sandwich#set('add', 'char', 'skip_space', 0)]])
+
+      -- NOTE: integrate with noice
+      --       The rendering breaks when toggled
+      -- vim.api.nvim_create_autocmd({ 'User' }, {
+      --   pattern = { 'OperatorSandwichAddPre', 'OperatorSandwichDeletePre', 'OperatorSandwichDeletePre' },
+      --   callback = function()
+      --     if enable_noice then
+      --       require('noice').setup({
+      --         cmdline = { enabled = false },
+      --       })
+      --     end
+      --   end,
+      -- })
+      -- vim.api.nvim_create_autocmd({ 'User' }, {
+      --   pattern = { 'OperatorSandwichAddPost', 'OperatorSandwichDeletePost', 'OperatorSandwichDeletePost' },
+      --   callback = function()
+      --     if enable_noice then
+      --       require('noice').setup({
+      --         cmdline = { enabled = true },
+      --       })
+      --     end
+      --   end,
+      -- })
     end,
   },
   {
@@ -630,8 +665,7 @@ return {
             filetype = { 'typescript', 'typescriptreact' },
             char = '<Space>',
             at = [[^\s*cf\%#$]],
-            input = '<C-w>const ',
-            input_after = ' = () => {<CR>}',
+            input = '<C-w>const <C-o>:normal! m`<CR>i = () => {<CR>}<C-o>``a',
           },
           {
             filetype = { 'typescript', 'typescriptreact' },
@@ -652,8 +686,7 @@ return {
             filetype = { 'typescript', 'typescriptreact' },
             char = '<Space>',
             at = [[^\s*f\%#$]],
-            input = '<C-w>function ',
-            input_after = '() {<CR>}',
+            input = '<C-w>function <C-o>:normal! m`<CR>i() {<CR>}<C-o>``a',
           },
           {
             filetype = { 'typescript', 'typescriptreact' },
@@ -668,8 +701,7 @@ return {
             filetype = { 'typescript', 'typescriptreact' },
             char = '<Space>',
             at = [[^\s*if\%#$]],
-            input = '<C-w>if (',
-            input_after = ') {<CR>}',
+            input = '<C-w>if (<C-o>:normal! m`<CR>i) {<CR>}<C-o>``a',
           },
           {
             filetype = { 'typescript', 'typescriptreact' },
@@ -1092,15 +1124,16 @@ return {
         LeximaAlterCommand tr\%[ouble]        TroubleToggle
         LeximaAlterCommand ss                 SaveProjectLayout
         LeximaAlterCommand sl                 LoadProjectLayout
-        LeximaAlterCommand re\%[view]         AiReview
-        LeximaAlterCommand pr\%[ompt]         AiPrompt
+        LeximaAlterCommand ai                 AiReview
         LeximaAlterCommand yr                 YR
         LeximaAlterCommand te\%[lescope]      Telescope
+        LeximaAlterCommand wipe\%[out]        Wipeout!
       ]])
     end,
   },
   {
     'hrsh7th/nvim-insx',
+    enabled = true,
     dependencies = {
       { 'cohama/lexima.vim' }, -- NOTE: Load before insx
     },
@@ -1125,7 +1158,7 @@ return {
 
       -- NOTE: Preset maps to `<` and `>`, so set the mappings manually
       -- quote
-      for _, quote in ipairs({ '"', "'", '`' }) do
+      for _, quote in ipairs({ '"', "'" }) do
         -- jump next
         insx.add(
           quote,
@@ -1455,7 +1488,69 @@ return {
     end,
   },
   {
+    'hrsh7th/nvim-pasta',
+    enabled = false,
+    event = { 'VeryLazy' },
+    init = function()
+      vim.keymap.set({ 'n', 'x' }, 'p', require('pasta.mappings').p)
+      vim.keymap.set({ 'n', 'x' }, 'P', require('pasta.mappings').P)
+
+      require('pasta').setup({
+        paste_mode = true,
+        prevent_diagnostics = false,
+        next_key = vim.api.nvim_replace_termcodes('<C-p>', true, true, true),
+        prev_key = vim.api.nvim_replace_termcodes('<C-n>', true, true, true),
+      })
+
+      vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
+        pattern = { '*' },
+        callback = function()
+          vim.api.nvim_set_hl(0, 'PastaEntry', { fg = color.base().orange, bg = color.base().black })
+        end,
+      })
+    end,
+  },
+  {
+    'gbprod/yanky.nvim',
+    enabled = false,
+    event = { 'VeryLazy' },
+    dependencies = {
+      { 'kkharji/sqlite.lua' },
+    },
+    init = function()
+      vim.keymap.set({ 'n' }, 'p', '<Plug>(YankyPutAfter)')
+      vim.keymap.set({ 'n' }, 'P', '<Plug>(YankyPutBefore)')
+      vim.keymap.set({ 'n' }, '<C-p>', function()
+        return require('yanky').can_cycle() and '<Plug>(YankyCycleForward)' or '<Plug>(ctrl-p)'
+      end, { expr = true })
+      vim.keymap.set({ 'n' }, '<C-n>', function()
+        return require('yanky').can_cycle() and '<Plug>(YankyCycleBackward)' or '<Plug>(ctrl-n)'
+      end, { expr = true })
+
+      require('yanky').setup({
+        ring = {
+          storage = 'sqlite',
+          history_length = 1000,
+        },
+        system_clipboard = {
+          sync_with_ring = false,
+        },
+        highlight = {
+          on_put = true,
+        },
+      })
+
+      vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
+        pattern = { '*' },
+        callback = function()
+          vim.api.nvim_set_hl(0, 'YankyPut', { fg = color.base().orange, bg = color.base().black })
+        end,
+      })
+    end,
+  },
+  {
     'LeafCage/yankround.vim',
+    enabled = true,
     event = { 'VeryLazy' },
     init = function()
       vim.g.yankround_max_history = 1000

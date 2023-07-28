@@ -93,7 +93,9 @@ vim.opt.signcolumn = 'yes'
 vim.api.nvim_create_autocmd({ 'InsertLeave' }, {
   pattern = '*',
   callback = function()
-    vim.cmd([[if &l:diff | diffupdate | endif]])
+    if vim.wo.diff then
+      vim.cmd([[diffupdate]])
+    end
   end,
 })
 

@@ -24,10 +24,10 @@ vim.keymap.set('i', '<CR>', '<C-g>u<CR>', { silent = true })
 vim.keymap.set({ 'n' }, 'x', '"_x')
 
 -- tagjump
-vim.keymap.set({ 'n' }, 's<C-]>', '<Cmd>wincmd ]<CR>')
-vim.keymap.set({ 'n' }, 'v<C-]>', '<Cmd>vertical wincmd ]<CR>')
-vim.keymap.set({ 'n' }, 't<C-]>', '<Cmd>tab wincmd ]<CR>')
-vim.keymap.set({ 'n' }, 'r<C-]>', '<C-w>}')
+-- vim.keymap.set({ 'n' }, 's<C-]>', '<Cmd>wincmd ]<CR>')
+-- vim.keymap.set({ 'n' }, 'v<C-]>', '<Cmd>vertical wincmd ]<CR>')
+-- vim.keymap.set({ 'n' }, 't<C-]>', '<Cmd>tab wincmd ]<CR>')
+-- vim.keymap.set({ 'n' }, 'r<C-]>', '<C-w>}')
 
 -- Quickfix
 vim.keymap.set({ 'n' }, '[c', '<Cmd>cprevious<CR>')

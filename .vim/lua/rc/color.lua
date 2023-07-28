@@ -121,6 +121,7 @@ palette['catppuccin'] = function()
       search = search,
       visual = catppuccin_palette.surface0, -- #313244
       vert_split = catppuccin_palette.surface0, -- #313244
+      inlay_hint = catppuccin_palette.surface2, -- #585B70
     },
     misc = {
       completion = {
