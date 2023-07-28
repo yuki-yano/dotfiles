@@ -12,12 +12,19 @@
 !/.config/alacritty/
 !/.config/bat/
 !/.config/efm-langserver
-!/.config/zeno
 !/.config/karabiner
-/.config/karabiner/automatic_backups
 !/.config/nvim
 !/.config/previm
 !/.config/ripgrep
+!/.config/skhd
 !/.config/snippets
+!/.config/tabtab
 !/.config/tridactyl
+!/.config/vivid
 !/.config/vscode
+!/.config/yabai
+!/.config/zeno
+/.config/karabiner/automatic_backups
+
+# data
+/data
