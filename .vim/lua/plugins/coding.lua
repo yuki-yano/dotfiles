@@ -1,3 +1,5 @@
+---@diagnostic disable: missing-fields
+
 local get_disable_cmp_filetypes = require('rc.plugin_utils').get_disable_cmp_filetypes
 local color = require('rc.color')
 local codicons = require('rc.font').codicons
@@ -13,6 +15,7 @@ return {
     dependencies = {
       { 'hrsh7th/cmp-nvim-lsp' },
       { 'hrsh7th/cmp-nvim-lua' },
+      { 'hrsh7th/cmp-nvim-lsp-signature-help' },
       { 'ray-x/cmp-treesitter' },
       { 'hrsh7th/cmp-buffer' },
       { 'andersevenrud/cmp-tmux' },
@@ -20,8 +23,12 @@ return {
       { 'octaltree/cmp-look' },
       { 'hrsh7th/cmp-path' },
       { 'onsails/lspkind-nvim' },
-      { 'L3MON4D3/LuaSnip' },
-      { 'saadparwaiz1/cmp_luasnip' },
+      {
+        'saadparwaiz1/cmp_luasnip',
+        dependencies = {
+          { 'L3MON4D3/LuaSnip' },
+        },
+      },
       {
         'kento-ogata/cmp-tsnip',
         dependencies = {
@@ -49,6 +56,7 @@ return {
         },
       },
       { 'nvim-tree/nvim-web-devicons' },
+      { 'roobert/tailwindcss-colorizer-cmp.nvim' },
       { 'cohama/lexima.vim' }, -- NOTE: Load before cmp
     },
     init = function()
@@ -153,6 +161,7 @@ return {
         { name = 'nvim_lsp' },
         -- { name = 'treesitter' },
         { name = 'nvim_lua', max_item_count = 20 },
+        { name = 'nvim_lsp_signature_help' },
         { name = 'cmp_tabnine' },
         { name = 'buffer' },
         { name = 'tmux', keyword_length = 4, max_item_count = 10, option = { all_panes = true } },
@@ -238,20 +247,32 @@ return {
           fields = { 'kind', 'abbr', 'menu' },
           format = lspkind.cmp_format({
             mode = 'symbol',
-            menu = {
-              luasnip = '[Snippet]',
-              tsnip = '[TSnip]',
-              copilot = '[Copilot]',
-              nvim_lsp = '[LSP]',
-              treesitter = '[Tree]',
-              nvim_lua = '[Lua]',
-              cmp_tabnine = '[Tabnine]',
-              buffer = '[Buffer]',
-              tmux = '[Tmux]',
-              rg = '[Rg]',
-              look = '[Look]',
-              path = '[Path]',
-            },
+            before = function(entry, vim_item)
+              local menu = {
+                luasnip = '[Snippet]',
+                tsnip = '[TSnip]',
+                copilot = '[Copilot]',
+                nvim_lsp = '[LSP]',
+                treesitter = '[Tree]',
+                nvim_lua = '[Lua]',
+                nvim_lsp_signature_help = '[Signature]',
+                cmp_tabnine = '[Tabnine]',
+                buffer = '[Buffer]',
+                tmux = '[Tmux]',
+                rg = '[Rg]',
+                look = '[Look]',
+                path = '[Path]',
+              }
+
+              vim_item = require('tailwindcss-colorizer-cmp').formatter(entry, vim_item)
+              if entry.source.name == 'nvim_lsp' then
+                vim_item.menu = '[' .. entry.source.source.client.name .. ']'
+              else
+                vim_item.menu = menu[entry.source.name] or entry.source.name
+              end
+
+              return vim_item
+            end,
           }),
         },
         snippet = {
@@ -373,7 +394,7 @@ return {
   },
   {
     'yuki-yano/tsnip.nvim',
-    -- dev = true,
+    dev = false,
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'yuki-yano/denops-lazy.nvim' },
@@ -383,6 +404,12 @@ return {
     cmd = { 'TSnip' },
     config = function()
       require('denops-lazy').load('tsnip.nvim', { wait_load = false })
+    end,
+  },
+  {
+    'roobert/tailwindcss-colorizer-cmp.nvim',
+    config = function()
+      require('tailwindcss-colorizer-cmp').setup({ color_square_width = 2 })
     end,
   },
   {
@@ -414,6 +441,15 @@ return {
       vim.keymap.set({ 'n', 'x' }, 'srb', '<Plug>(sandwich-replace-auto)')
       vim.keymap.set({ 'o', 'x' }, 'ib', '<Plug>(textobj-sandwich-auto-i)')
       vim.keymap.set({ 'o', 'x' }, 'ab', '<Plug>(textobj-sandwich-auto-a)')
+
+      vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
+        pattern = { '*' },
+        callback = function()
+          vim.api.nvim_set_hl(0, 'OperatorSandwichAdd', { bg = color.misc().sandwich.add })
+          vim.api.nvim_set_hl(0, 'OperatorSandwichDelete', { bg = color.misc().sandwich.delete })
+          vim.api.nvim_set_hl(0, 'OperatorSandwichChange', { bg = color.misc().sandwich.change })
+        end,
+      })
     end,
     config = function()
       local vimx = require('artemis')
@@ -1113,6 +1149,7 @@ return {
         LeximaAlterCommand cp                 colder
         LeximaAlterCommand dp                 diffput
         LeximaAlterCommand la\%[zy]           Lazy
+        LeximaAlterCommand d\%[du]            Ddu
         LeximaAlterCommand rg                 Rg
         LeximaAlterCommand or\%[ganizeimport] OrganizeImport
         LeximaAlterCommand gina               Gina
@@ -1618,14 +1655,16 @@ return {
   },
   { 'thinca/vim-qfreplace', cmd = { 'Qfreplace' } },
   {
-    'yuki-yano/deindent-yank.vim',
+    'yuki-yano/dedent-yank.vim',
+    dev = true,
     keys = {
-      { '<Plug>(deindent-yank-normal)', mode = { 'n' } },
-      { '<Plug>(deindent-yank-visual)', mode = { 'x' } },
+      { '<Plug>(dedent-yank-normal)', mode = { 'n' } },
+      { '<Plug>(dedent-yank-visual)', mode = { 'x' } },
     },
     init = function()
-      vim.keymap.set({ 'n' }, 'gy', '<Plug>(deindent-yank-normal)')
-      vim.keymap.set({ 'x' }, 'gy', '<Plug>(deindent-yank-visual)')
+      vim.g.dedent_yank_disable_default_mappings = true
+      vim.keymap.set({ 'n' }, 'gy', '<Plug>(dedent-yank-normal)')
+      vim.keymap.set({ 'x' }, 'gy', '<Plug>(dedent-yank-visual)')
     end,
   },
   {
@@ -1678,7 +1717,7 @@ return {
   },
   {
     'yuki-yano/delete-mark.nvim',
-    -- dev = true,
+    dev = false,
     keys = {
       { '<C-e>', mode = { 'n', 'x', 'i' } },
     },
