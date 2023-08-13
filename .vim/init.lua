@@ -1,11 +1,8 @@
+vim.loader.enable()
+
 if vim.env.LSP == nil then
   vim.env.LSP = 'nvim'
   -- vim.env.LSP = 'coc'
-  -- if os.date('*t').day % 2 == 0 then
-  --   vim.env.LSP = 'nvim'
-  -- else
-  --   vim.env.LSP = 'coc'
-  -- end
 end
 
 if vim.env.NVIM_COLORSCHEME == nil then
