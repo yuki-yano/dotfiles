@@ -843,19 +843,19 @@ return {
       end
 
       -- Close JSX tag
-      rules = list_concat({
-        rules,
-        {
-          {
-            filetype = { 'typescriptreact' },
-            char = '>',
-            at = [[<\([a-zA-Z.]\+\)\(\s\)\?.*\%#]],
-            leave = '>',
-            input_after = [[</\1>]],
-            with_submatch = 1,
-          },
-        },
-      })
+      -- rules = list_concat({
+      --   rules,
+      --   {
+      --     {
+      --       filetype = { 'typescriptreact' },
+      --       char = '>',
+      --       at = [[<\([a-zA-Z.]\+\)\(\s\)\?.*\%#]],
+      --       leave = '>',
+      --       input_after = [[</\1>]],
+      --       with_submatch = 1,
+      --     },
+      --   },
+      -- })
 
       -- Lua
       rules = list_concat({
@@ -1273,6 +1273,13 @@ return {
           return vim.o.filetype == 'markdown'
         end,
       })
+    end,
+  },
+  {
+    'hrsh7th/nvim-linkedit',
+    event = { 'ModeChanged' },
+    config = function()
+      require('linkedit').setup()
     end,
   },
   {

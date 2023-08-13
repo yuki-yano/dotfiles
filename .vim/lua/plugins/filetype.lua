@@ -1,6 +1,7 @@
 return {
   {
     'windwp/nvim-ts-autotag',
+    enabled = false,
     dependencies = {
       { 'nvim-treesitter/nvim-treesitter' },
     },
@@ -18,7 +19,12 @@ return {
   --     require('import-cost').setup()
   --   end,
   -- },
-  { 'folke/neodev.nvim', ft = { 'lua' } },
+  {
+    'folke/neodev.nvim',
+    config = function()
+      require('neodev').setup()
+    end,
+  },
   { 'pantharshit00/vim-prisma', ft = { 'prisma' } },
   {
     'iamcco/markdown-preview.nvim',
