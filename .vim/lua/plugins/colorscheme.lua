@@ -45,7 +45,7 @@ return {
           indent_blankline = {
             enabled = true,
           },
-          sandwich = true,
+          sandwich = false,
         },
       })
     end,
