@@ -124,5 +124,6 @@
     "typescript.tsx",
     "typescriptreact",
     "yaml"
-  ]
+  ],
+  "session.saveOnVimLeave": false
 }
