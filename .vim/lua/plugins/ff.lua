@@ -144,6 +144,7 @@ return {
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'yuki-yano/denops-lazy.nvim' },
+      { 'Shougo/ddu-commands.vim' },
       { 'Shougo/ddu-ui-ff' },
       { 'Shougo/ddu-kind-file' },
       { 'yuki-yano/ddu-filter-fzf' },
@@ -151,40 +152,12 @@ return {
       { 'kuuote/ddu-source-mr' },
       { 'matsui54/ddu-source-help' },
       { 'Shougo/ddu-source-action' },
+      { 'yuki-yano/ddu-source-nvim-notify', dev = true },
     },
+    cmd = { 'Ddu' },
+    event = { 'CmdlineEnter' },
     init = function()
-      local on_func = require('lazy_on_func').on_func
-      local ddu = on_func('ddu.vim', 'ddu')
-
-      vim.api.nvim_create_user_command('DduFile', function()
-        ddu('start')({
-          sources = {
-            {
-              name = 'mr',
-              params = {
-                current = true,
-              },
-            },
-          },
-        })
-      end, {})
-
-      vim.api.nvim_create_user_command('DduHelp', function()
-        ddu('start')({
-          sources = {
-            {
-              name = 'help',
-            },
-          },
-          kindParams = {
-            help = {
-              histadd = true,
-            },
-          },
-        })
-      end, {})
-
-      vim.keymap.set({ 'n' }, '<Plug>(ff)h', '<Cmd>DduHelp<CR>')
+      vim.keymap.set({ 'n' }, '<Plug>(ff)h', '<Cmd>Ddu help<CR>')
     end,
     config = function()
       require('denops-lazy').load('ddu.vim', { wait_load = false })
@@ -390,6 +363,9 @@ return {
           ['ai-review-log'] = {
             defaultAction = 'resume',
           },
+          ['nvim-notify'] = {
+            defaultAction = 'open',
+          },
         },
       })
       vimx.fn.ddu.custom.patch_global({
@@ -404,6 +380,13 @@ return {
         filterParams = {
           matcher_fzf = {
             highlightMatched = 'Search',
+          },
+        },
+      })
+      vimx.fn.ddu.custom.patch_global({
+        kindParams = {
+          help = {
+            histadd = true,
           },
         },
       })
@@ -450,7 +433,6 @@ return {
       })
 
       telescope.load_extension('fzf')
-      telescope.load_extension('notify')
     end,
   },
   {
