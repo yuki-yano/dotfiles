@@ -64,16 +64,17 @@ local lazy_setup_default_opts = {
   performance = {
     rtp = {
       disabled_plugins = {
+        'editorconfig',
         'gzip',
         'matchit',
         'matchparen',
         'netrwPlugin',
+        'rplugin',
+        'spellfile',
         'tarPlugin',
         'tohtml',
         'tutor',
         'zipPlugin',
-        'spellfile',
-        'rplugin',
       },
     },
   },
