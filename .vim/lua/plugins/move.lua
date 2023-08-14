@@ -49,7 +49,7 @@ return {
 
       enable_eft()
 
-      local function eft_toggle()
+      local function toggle_eft()
         if vim.g.eft_enable then
           disable_eft()
         else
@@ -57,8 +57,8 @@ return {
         end
       end
 
-      vim.api.nvim_create_user_command('ToggleEft', eft_toggle, {})
-      vim.keymap.set({ 'n' }, '<Leader>f', eft_toggle)
+      vim.api.nvim_create_user_command('ToggleEft', toggle_eft, {})
+      vim.keymap.set({ 'n' }, '<Leader>f', toggle_eft)
 
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { '*' },
@@ -243,8 +243,7 @@ return {
   {
     -- NOTE: Try lazy_on_func.nvim
     'hrsh7th/vim-searchx',
-    enabled = true,
-    lazy = true,
+    enabled = false,
     init = function()
       local on_func = require('lazy_on_func').on_func
       local searchx = on_func('vim-searchx', 'searchx')

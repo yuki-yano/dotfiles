@@ -49,6 +49,12 @@ palette['gruvbox-material'] = function()
         blue = '#5F87D7',
       },
       diff = diff,
+      -- NOTE: Copy from catppuccino
+      sandwich = {
+        add = '#0E4A1D',
+        delete = '#541010',
+        change = '#544E10',
+      },
       vert_split = '#504945',
       scrollbar = {
         bar = '#3A3A3A',
@@ -132,6 +138,11 @@ palette['catppuccin'] = function()
         blue = '#71a4f9',
       },
       diff = diff,
+      sandwich = {
+        add = '#0E4A1D',
+        delete = '#541010',
+        change = '#544E10',
+      },
       scrollbar = {
         bar = catppuccin_palette.surface0, -- #313244
         search = catppuccin_palette.sky, -- #89DCEB

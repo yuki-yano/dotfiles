@@ -10,12 +10,13 @@ return {
       { 'm-demare/hlargs.nvim' },
       { 'nvim-treesitter/nvim-treesitter-context' },
       { 'nvim-treesitter/nvim-treesitter-textobjects' },
-      { 'hiphish/rainbow-delimiters.nvim' },
+      -- { 'hiphish/rainbow-delimiters.nvim' },
       { 'yioneko/nvim-yati' },
     },
     event = { 'BufRead', 'BufNewFile', 'InsertEnter' },
     cmd = { 'TSHighlightCapturesUnderCursor' },
     config = function()
+      ---@diagnostic disable-next-line: missing-fields
       require('nvim-treesitter.configs').setup({
         ensure_installed = {
           'typescript',
@@ -29,6 +30,8 @@ return {
           'lua',
           'vim',
           'json',
+          'jsonc',
+          'json5',
           'yaml',
           'toml',
           'markdown',
@@ -53,8 +56,8 @@ return {
           select = {
             enable = true,
             keymaps = {
-              ['ib'] = '@block.inner',
-              ['ab'] = '@block.outer',
+              ['i`'] = '@block.inner',
+              ['a`'] = '@block.outer',
               -- NOTE: Not yet supported for jsx attributes
               -- ['ax'] = '@tag.attribute',
               -- ['ix'] = '@tag.attribute',
@@ -78,7 +81,7 @@ return {
         },
       })
 
-      require('rainbow-delimiters.setup')()
+      -- require('rainbow-delimiters')
       require('treesitter-context').setup()
     end,
   },

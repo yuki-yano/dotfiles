@@ -441,6 +441,7 @@ return {
   { 'dstein64/vim-startuptime', cmd = { 'StartupTime' } },
   {
     'segeljakt/vim-silicon',
+    enabled = false,
     cmd = { 'Silicon' },
     init = function()
       vim.g.silicon = {
@@ -473,7 +474,7 @@ return {
   { 'powerman/vim-plugin-AnsiEsc', cmd = { 'AnsiEsc' } },
   {
     'yuki-yano/ai-review.vim',
-    lazy = false,
+    lazy = true,
     dev = true,
     dependencies = {
       { 'vim-denops/denops.vim' },

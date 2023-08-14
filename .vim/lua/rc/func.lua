@@ -183,7 +183,7 @@ vim.api.nvim_create_user_command('ToggleQuickFix', function()
     vim.cmd([[botright copen]])
   end
 end, {})
-vim.keymap.set({ 'n' }, '<leader>q', '<Cmd>ToggleQuickFix<CR>')
+vim.keymap.set({ 'n' }, '<Leader>q', '<Cmd>ToggleQuickFix<CR>')
 
 -- Toggle LocationList
 vim.api.nvim_create_user_command('ToggleLocationList', function()
@@ -201,7 +201,7 @@ vim.api.nvim_create_user_command('ToggleLocationList', function()
     end
   end
 end, {})
-vim.keymap.set({ 'n' }, '<leader>l', '<Cmd>ToggleLocationList<CR>')
+vim.keymap.set({ 'n' }, '<Leader>l', '<Cmd>ToggleLocationList<CR>')
 
 -- Deno fmt
 vim.api.nvim_create_user_command('DenoFmt', function(opts)

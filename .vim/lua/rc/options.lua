@@ -65,7 +65,7 @@ end
 vim.api.nvim_create_autocmd({ 'FileType', 'BufReadPost', 'WinEnter' }, { pattern = '*', callback = set_format_options })
 
 -- viminfo
-vim.opt.viminfo = [['1000,:1000]]
+vim.opt.viminfo = [['100,:100]]
 
 -- Search
 vim.opt.ignorecase = true
@@ -143,7 +143,7 @@ end
 -- Conceal
 -- TODO: move ftplugin
 vim.api.nvim_create_autocmd({ 'FileType' }, {
-  pattern = { 'json', 'markdown' },
+  pattern = { 'json', 'jsonc', 'markdown' },
   callback = function()
     vim.opt_local.conceallevel = 0
   end,

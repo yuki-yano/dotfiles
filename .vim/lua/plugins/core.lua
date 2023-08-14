@@ -5,7 +5,7 @@ return {
     'folke/lazy.nvim',
     cmd = { 'Lazy', 'LazyAll' },
     init = function()
-      vim.keymap.set({ 'n' }, '<leader>L', '<Cmd>Lazy<CR>')
+      vim.keymap.set({ 'n' }, '<Leader>L', '<Cmd>Lazy<CR>')
 
       -- Load all plugins
       local did_load_all = false
@@ -48,7 +48,10 @@ return {
     'rcarriga/nvim-notify',
     event = { 'VeryLazy' },
     config = function()
-      require('notify').setup({ background_colour = color.base().empty, stages = 'static' })
+      require('notify').setup({
+        background_colour = color.base().empty,
+        stages = 'static',
+      })
 
       -- NOTE: override vim.notify
       vim.notify = function(...)
@@ -69,10 +72,7 @@ return {
     lazy = false,
   },
   { 'yuki-yano/denops-lazy.nvim' },
-  {
-    'yuki-yano/lazy_on_func.nvim',
-    dev = true,
-  },
+  { 'yuki-yano/lazy_on_func.nvim' },
   {
     'vigoux/notifier.nvim',
     -- NOTE: Use fidget

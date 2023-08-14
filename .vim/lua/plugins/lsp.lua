@@ -9,6 +9,10 @@ local enable_lsp_lines = require('rc.plugin_utils').enable_lsp_lines
 local get_lsp_lines_status = require('rc.plugin_utils').get_lsp_lines_status
 local cycle_lsp_lines = require('rc.plugin_utils').cycle_lsp_lines
 
+local enable_vtsls = true
+local enable_tsserver = not enable_vtsls
+local tsserver_name = enable_tsserver and 'tsserver' or 'vtsls'
+
 local plugins = {
   {
     'neovim/nvim-lspconfig',
@@ -23,7 +27,9 @@ local plugins = {
       { 'SmiteshP/nvim-navic' },
       { 'jose-elias-alvarez/typescript.nvim' },
       { 'yioneko/nvim-vtsls' },
-      -- { 'kevinhwang91/nvim-ufo' }, -- NOTE: Explicitly adding to dependencies causes errors when loading
+      { 'folke/neodev.nvim' },
+      { 'lewis6991/hover.nvim' },
+      -- { 'davidosomething/format-ts-errors.nvim' },
     },
     init = function()
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
@@ -82,7 +88,9 @@ local plugins = {
           end
 
           if client.server_capabilities.documentSymbolProvider then
-            require('nvim-navic').attach(client, bufnr)
+            if client.name ~= 'graphql' then
+              require('nvim-navic').attach(client, bufnr)
+            end
           end
 
           if client.server_capabilities.inlayHintProvider then
@@ -124,6 +132,12 @@ local plugins = {
 
       mason_lspconfig.setup_handlers({
         function(server_name)
+          if server_name == 'tsserver' and not enable_tsserver then
+            return
+          elseif server_name == 'vtsls' and not enable_vtsls then
+            return
+          end
+
           local typescriptInlayHints = {
             parameterNames = {
               enabled = 'literals',
@@ -138,13 +152,10 @@ local plugins = {
 
           -- NOTE: vtsls added to mason and lspconfig
           --       Try to always enable vtsls
-          if server_name == 'vtsls' then
+          if server_name == tsserver_name then
             if not is_node_repo then
               return
             end
-
-            -- Load nvim-vtsls
-            require('vtsls')
 
             opts.settings = {
               typescript = {
@@ -154,6 +165,10 @@ local plugins = {
                 inlayHints = typescriptInlayHints,
               },
             }
+
+            if tsserver_name == 'vtsls' then
+              require('lspconfig.configs').vtsls = require('vtsls').lspconfig
+            end
           end
 
           if server_name == 'eslint' then
@@ -189,8 +204,10 @@ local plugins = {
             opts.init_options = {
               lint = true,
               unstable = true,
+              -- NOTE: DenoKV type inference does not work well unless it is 0
               documentPreloadLimit = 0,
               suggest = {
+                autoImports = true,
                 imports = {
                   hosts = {
                     ['https://deno.land'] = true,
@@ -265,6 +282,7 @@ local plugins = {
       vim.keymap.set({ 'n' }, '<Plug>(lsp)t', '<Cmd>FzfPreviewNvimLspTypeDefinitionRpc<CR>')
       vim.keymap.set({ 'n' }, '<Plug>(lsp)T', vim.lsp.buf.type_definition)
       vim.keymap.set({ 'n' }, '<Plug>(lsp)rf', '<Cmd>FzfPreviewNvimLspReferencesRpc<CR>')
+      vim.keymap.set({ 'n' }, '<Plug>(lsp)rn', vim.lsp.buf.rename)
 
       -- tagjump does not work with Deno
       vim.keymap.set({ 'n' }, '<C-]>', vim.lsp.buf.definition)
@@ -318,16 +336,17 @@ local plugins = {
     config = function()
       require('mason').setup()
 
+      local ts_lsp = enable_tsserver and 'tsserver' or 'vtsls'
       require('mason-lspconfig').setup({
         ensure_installed = {
-          -- 'tsserver',
-          'vtsls',
+          ts_lsp,
           'eslint',
           'tailwindcss',
-          'astro',
           'denols',
+          'astro',
           'lua_ls',
           'vimls',
+          'graphql',
           'jsonls',
           'yamlls',
         },
@@ -345,7 +364,7 @@ local plugins = {
     end,
   },
   {
-    'glepnir/lspsaga.nvim',
+    'nvimdev/lspsaga.nvim',
     event = { 'LspAttach' },
     init = function()
       add_disable_cmp_filetypes({ 'sagarename' })
@@ -411,57 +430,59 @@ local plugins = {
         },
       })
 
-      vim.keymap.set({ 'n' }, 'K', function()
-        if require('ufo').peekFoldedLinesUnderCursor() then
-          return
-        end
+      -- NOTE: use hover.nvim
+      -- vim.keymap.set({ 'n' }, 'K', function()
+      --   local ft = vim.o.filetype
+      --   if ft == 'vim' or ft == 'help' then
+      --     vim.cmd([[execute 'h ' . expand('<cword>') ]])
+      --   else
+      --     vim.cmd([[Lspsaga hover_doc]])
+      --   end
+      -- end)
 
-        local ft = vim.o.filetype
-        if ft == 'vim' or ft == 'help' then
-          vim.cmd([[execute 'h ' . expand('<cword>') ]])
-        else
-          vim.cmd([[Lspsaga hover_doc]])
-        end
-      end)
-
-      vim.keymap.set({ 'n' }, '<Plug>(lsp)h', '<Cmd>Lspsaga lsp_finder<CR>')
       vim.keymap.set({ 'n' }, '<Plug>(lsp)D', '<Cmd>Lspsaga peek_definition<CR>')
       -- Use actions-preview.nvim
       -- vim.keymap.set({ 'n', 'x' }, '<Plug>(lsp)a', '<Cmd>Lspsaga code_action<CR>')
-      vim.keymap.set({ 'n' }, '<Plug>(lsp)rn', '<Cmd>Lspsaga rename<CR>')
-      vim.keymap.set({ 'n' }, '<Plug>(lsp)rN', '<Cmd>Lspsaga rename ++project<CR>')
       vim.keymap.set({ 'n' }, '<Plug>(lsp)n', '<Cmd>Lspsaga diagnostic_jump_next<CR>')
       vim.keymap.set({ 'n' }, '<Plug>(lsp)p', '<Cmd>Lspsaga diagnostic_jump_prev<CR>')
       vim.keymap.set({ 'n' }, '<Plug>(lsp)m', '<Cmd>Lspsaga show_cursor_diagnostics<CR>')
     end,
   },
   {
-    'zbirenbaum/neodim',
+    'lewis6991/hover.nvim',
+    config = function()
+      local hover = require('hover')
+      hover.setup({
+        init = function()
+          require('hover.providers.lsp')
+        end,
+        title = false,
+      })
+
+      vim.keymap.set({ 'n' }, 'K', function()
+        local ft = vim.o.filetype
+        if ft == 'vim' or ft == 'help' then
+          vim.cmd([[execute 'h ' . expand('<cword>') ]])
+        else
+          hover.hover()
+        end
+      end)
+      vim.keymap.set({ 'n' }, 'gK', require('hover').hover_select)
+    end,
+  },
+  {
+    'futsuuu/neodim',
     dependencies = {
       { 'nvim-treesitter/nvim-treesitter' },
     },
     event = { 'LspAttach' },
-    init = function()
-      -- FIX: Workaround, highlighted group does not exist error
-      --      TSPunctuation{Xxx} where it should be defined as TSPunct{Xxx}.
-      vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
-        pattern = { '*' },
-        callback = function()
-          vim.api.nvim_set_hl(0, 'TSPunctuationBracket', { link = '@punctuation.bracket' })
-          vim.api.nvim_set_hl(0, 'TSPunctuationDelimiter', { link = '@punctuation.delimiter' })
-          vim.api.nvim_set_hl(0, 'TSPunctuationSpecial', { link = '@punctuation.special' })
-          vim.api.nvim_set_hl(0, 'TSSpell', { link = '@spell' })
-        end,
-      })
-    end,
     config = function()
       require('neodim').setup({
-        update_in_insert = {
-          enable = false,
-        },
+        alpha = 0.6,
         hide = {
+          underline = false,
+          virtual_text = false,
           signs = false,
-          underline = true,
         },
       })
     end,
@@ -522,7 +543,19 @@ local plugins = {
     end,
   },
   {
+    'pmizio/typescript-tools.nvim',
+    enabled = enable_tsserver,
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'neovim/nvim-lspconfig',
+    },
+    config = function()
+      require('typescript-tools').setup()
+    end,
+  },
+  {
     'yioneko/nvim-vtsls',
+    enabled = enable_vtsls,
     config = function()
       vim.api.nvim_create_autocmd({ 'FileType' }, {
         pattern = { 'typescript', 'typescriptreact' },

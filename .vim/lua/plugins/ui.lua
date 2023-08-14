@@ -1,3 +1,4 @@
+local is_loaded_plugin = require('rc.plugin_utils').is_loaded_plugin
 local color = require('rc.color')
 local diagnostic_icons = require('rc.font').diagnostic_icons
 local todo_icons = require('rc.font').todo_icons
@@ -692,39 +693,29 @@ return {
       })
     end,
   },
-  -- {
-  --   'levouh/tint.nvim',
-  --   event = { 'BufRead' },
-  --   config = function()
-  --     require('tint').setup({
-  --       highlight_ignore_patterns = {
-  --         '@comment',
-  --         'Comment',
-  --         'WinSeparator',
-  --         'VertSplit',
-  --         'Status.*',
-  --       },
-  --       window_ignore_function = function(winid)
-  --         local bufid = vim.api.nvim_win_get_buf(winid)
-  --         local buftype = vim.api.nvim_buf_get_option(bufid, 'buftype')
-  --         local floating = vim.api.nvim_win_get_config(winid).relative ~= ''
-  --
-  --         return buftype == 'terminal' or floating
-  --       end,
-  --     })
-  --   end,
-  -- },
-  -- {
-  --   'lewis6991/satellite.nvim',
-  --   event = { 'BufRead' },
-  --   config = function()
-  --     require('satellite').setup({
-  --       marks = {
-  --         enable = false,
-  --       },
-  --     })
-  --   end,
-  -- },
+  {
+    'levouh/tint.nvim',
+    enabled = false,
+    event = { 'BufRead' },
+    config = function()
+      require('tint').setup({
+        highlight_ignore_patterns = {
+          '@comment',
+          'Comment',
+          'WinSeparator',
+          'VertSplit',
+          'Status.*',
+        },
+        window_ignore_function = function(winid)
+          local bufid = vim.api.nvim_win_get_buf(winid)
+          local buftype = vim.api.nvim_buf_get_option(bufid, 'buftype')
+          local floating = vim.api.nvim_win_get_config(winid).relative ~= ''
+
+          return buftype == 'terminal' or floating
+        end,
+      })
+    end,
+  },
   {
     'petertriho/nvim-scrollbar',
     enabled = true,
@@ -776,7 +767,11 @@ return {
     enabled = false,
     event = { 'BufRead' },
     config = function()
-      require('satellite').setup()
+      require('satellite').setup({
+        marks = {
+          enable = false,
+        },
+      })
     end,
   },
   {
@@ -1076,7 +1071,7 @@ return {
   {
     'yuki-yano/highlight-undo.nvim',
     lazy = true,
-    dev = false,
+    dev = true,
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'yuki-yano/denops-lazy.nvim' },
@@ -1085,6 +1080,11 @@ return {
       { 'u', mode = { 'n' } },
       { '<C-r>', mode = { 'n' } },
     },
+    init = function()
+      vim.api.nvim_create_user_command('ToggleHighlightUndo', function()
+        require('highlight-undo').toggle()
+      end, {})
+    end,
     config = function()
       require('denops-lazy').load('highlight-undo.nvim')
       require('highlight-undo').setup()
@@ -1198,7 +1198,7 @@ return {
  _q_: %{quickfix} QuickFix
  _l_: %{location_list} LocationList
  _f_: %{eft} Eft
- _u_: %{highlighted_undo} HighlightedUndo
+ _u_: %{highlight_undo} HighlightUndo
                          _<Esc>_
 ]]
 
@@ -1254,8 +1254,10 @@ return {
                   return '[ ]'
                 end
               end,
-              highlighted_undo = function()
-                if vim.g.highlightedundo_enable then
+              highlight_undo = function()
+                if not is_loaded_plugin('highlight-undo.nvim') then
+                  return '[?]'
+                elseif require('highlight-undo').enabled then
                   return '[x]'
                 else
                   return '[ ]'
@@ -1303,7 +1305,7 @@ return {
           {
             'u',
             function()
-              vim.cmd([[ToggleHighlightedundo]])
+              vim.cmd([[ToggleHighlightUndo]])
             end,
             { silent = true },
           },

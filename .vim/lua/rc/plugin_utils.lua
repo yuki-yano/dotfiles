@@ -2,6 +2,16 @@ local list_concat = require('rc.utils').list_concat
 
 local M = {}
 
+function M.is_loaded_plugin(name)
+  local specs = require('lazy').plugins()
+  for _, spec in ipairs(specs) do
+    if spec.name == name and spec._.loaded then
+      return true
+    end
+  end
+  return false
+end
+
 M.enabled_inlay_hint = {}
 M.enabled_inlay_hint_default_value = false
 M.enable_noice = false
