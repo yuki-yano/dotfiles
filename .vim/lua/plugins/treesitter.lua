@@ -83,6 +83,9 @@ return {
 
       -- require('rainbow-delimiters')
       require('treesitter-context').setup()
+
+      -- NOTE: Workaround for tsx not working with markdown_inline
+      vim.treesitter.query.add_directive('directivename', function() end, true)
     end,
   },
   {
