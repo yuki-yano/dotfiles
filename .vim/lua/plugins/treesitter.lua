@@ -68,9 +68,6 @@ return {
           enable = true,
           enable_autocmd = false,
         },
-        rainbow = {
-          enable = true,
-        },
         yati = {
           enable = true,
           default_lazy = true,
