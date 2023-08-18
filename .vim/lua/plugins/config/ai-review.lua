@@ -14,6 +14,16 @@ But write the language for the codeblock of TypeScript code including jsx as 'ty
 Please answer in Japanese.
 ]]
 
+local function convert_file_type(file_type)
+  if file_type == 'typescriptreact' then
+    return 'tsx'
+  elseif file_type == 'javascript' then
+    return 'typescript'
+  end
+
+  return file_type
+end
+
 local function count_indent(line)
   local i = 0
   while string.sub(line, i + 1, i + 1):match('%s') do
@@ -75,8 +85,8 @@ M.find_bugs = function(opts)
 ```%s
 %s
 ```]],
-    opts.file_type,
-    opts.file_type,
+    convert_file_type(opts.file_type),
+    convert_file_type(opts.file_type),
     code
   )
 
@@ -84,7 +94,7 @@ M.find_bugs = function(opts)
     context = code_context,
     text = text,
     code = code,
-    file_type = opts.file_type,
+    file_type = convert_file_type(opts.file_type),
   }
 end
 
@@ -100,8 +110,8 @@ M.fix_syntax_error = function(opts)
 ```%s
 %s
 ```]],
-    opts.file_type,
-    opts.file_type,
+    convert_file_type(opts.file_type),
+    convert_file_type(opts.file_type),
     code
   )
 
@@ -109,7 +119,7 @@ M.fix_syntax_error = function(opts)
     context = code_context,
     text = text,
     code = code,
-    file_type = opts.file_type,
+    file_type = convert_file_type(opts.file_type),
   }
 end
 
@@ -125,8 +135,8 @@ M.optimize = function(opts)
 ```%s
 %s
 ```]],
-    opts.file_type,
-    opts.file_type,
+    convert_file_type(opts.file_type),
+    convert_file_type(opts.file_type),
     code
   )
 
@@ -134,7 +144,7 @@ M.optimize = function(opts)
     context = code_context,
     text = text,
     code = code,
-    file_type = opts.file_type,
+    file_type = convert_file_type(opts.file_type),
   }
 end
 
@@ -150,8 +160,8 @@ M.add_comments = function(opts)
 ```%s
 %s
 ```]],
-    opts.file_type,
-    opts.file_type,
+    convert_file_type(opts.file_type),
+    convert_file_type(opts.file_type),
     code
   )
 
@@ -159,7 +169,7 @@ M.add_comments = function(opts)
     context = code_context,
     text = text,
     code = code,
-    file_type = opts.file_type,
+    file_type = convert_file_type(opts.file_type),
   }
 end
 
@@ -175,8 +185,8 @@ M.add_tests = function(opts)
 ```%s
 %s
 ```]],
-    opts.file_type,
-    opts.file_type,
+    convert_file_type(opts.file_type),
+    convert_file_type(opts.file_type),
     code
   )
 
@@ -184,7 +194,7 @@ M.add_tests = function(opts)
     context = code_context,
     text = text,
     code = code,
-    file_type = opts.file_type,
+    file_type = convert_file_type(opts.file_type),
   }
 end
 
@@ -200,8 +210,8 @@ M.explain = function(opts)
 ```%s
 %s
 ```]],
-    opts.file_type,
-    opts.file_type,
+    convert_file_type(opts.file_type),
+    convert_file_type(opts.file_type),
     code
   )
 
@@ -209,7 +219,7 @@ M.explain = function(opts)
     context = code_context,
     text = text,
     code = code,
-    file_type = opts.file_type,
+    file_type = convert_file_type(opts.file_type),
   }
 end
 
@@ -225,8 +235,8 @@ M.split_function = function(opts)
 ```%s
 %s
 ```]],
-    opts.file_type,
-    opts.file_type,
+    convert_file_type(opts.file_type),
+    convert_file_type(opts.file_type),
     code
   )
 
@@ -234,7 +244,7 @@ M.split_function = function(opts)
     context = code_context,
     text = text,
     code = code,
-    file_type = opts.file_type,
+    file_type = convert_file_type(opts.file_type),
   }
 end
 
@@ -262,9 +272,9 @@ M.fix_diagnostics = function(opts)
 ```%s
 %s
 ```]],
-    opts.file_type,
+    convert_file_type(opts.file_type),
     diagnostics_str,
-    opts.file_type,
+    convert_file_type(opts.file_type),
     code
   )
 
@@ -272,7 +282,7 @@ M.fix_diagnostics = function(opts)
     context = code_context,
     text = text,
     code = code,
-    file_type = opts.file_type,
+    file_type = convert_file_type(opts.file_type),
   }
 end
 
@@ -288,7 +298,7 @@ M.commit_message = function(opts)
 ```%s
 %s
 ```]],
-    opts.file_type,
+    convert_file_type(opts.file_type),
     code
   )
 
@@ -296,7 +306,7 @@ M.commit_message = function(opts)
     context = code_context,
     text = text,
     code = code,
-    file_type = opts.file_type,
+    file_type = convert_file_type(opts.file_type),
   }
 end
 
@@ -315,7 +325,7 @@ M.customize_request = function(opts)
 %s
 ```]],
     cursor_position_marker,
-    opts.file_type,
+    convert_file_type(opts.file_type),
     code
   )
 
@@ -323,7 +333,7 @@ M.customize_request = function(opts)
     context = code_context,
     text = text,
     code = code,
-    file_type = opts.file_type,
+    file_type = convert_file_type(opts.file_type),
   }
 end
 
