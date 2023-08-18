@@ -2,6 +2,11 @@ local list_concat = require('rc.utils').list_concat
 
 local M = {}
 
+M.enabled_inlay_hint = {}
+M.enabled_inlay_hint_default_value = false
+M.enable_noice = false
+M.enable_lsp_lines = vim.env.LSP == 'nvim'
+
 function M.is_loaded_plugin(name)
   local specs = require('lazy').plugins()
   for _, spec in ipairs(specs) do
@@ -12,12 +17,18 @@ function M.is_loaded_plugin(name)
   return false
 end
 
-M.enabled_inlay_hint = {}
-M.enabled_inlay_hint_default_value = false
-M.enable_noice = false
-M.enable_lsp_lines = vim.env.LSP == 'nvim'
+function M.is_node_repo()
+  if vim.env.TS_RUNTIME == 'deno' then
+    return false
+  elseif vim.env.TS_RUNTIME == 'node' then
+    return true
+  end
 
-local disable_cmp_filetypes = { 'sagarename', 'ddu-ff', 'ddu-ff-filter' }
+  local node_root_dir = require('lspconfig').util.root_pattern('package.json')
+  return node_root_dir(vim.api.nvim_buf_get_name(0)) ~= nil
+end
+
+local disable_cmp_filetypes = {}
 M.get_disable_cmp_filetypes = function()
   return disable_cmp_filetypes
 end

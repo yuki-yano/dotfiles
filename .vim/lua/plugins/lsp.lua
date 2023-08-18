@@ -1,4 +1,5 @@
 local add_disable_cmp_filetypes = require('rc.plugin_utils').add_disable_cmp_filetypes
+local is_node_repo = require('rc.plugin_utils').is_node_repo
 local color = require('rc.color')
 local lsp_icons = require('rc.font').lsp_icons
 local codicons = require('rc.font').codicons
@@ -128,7 +129,6 @@ local plugins = {
       }
 
       local node_root_dir = lspconfig.util.root_pattern('package.json')
-      local is_node_repo = node_root_dir(vim.api.nvim_buf_get_name(0)) ~= nil
 
       mason_lspconfig.setup_handlers({
         function(server_name)
@@ -153,7 +153,7 @@ local plugins = {
           -- NOTE: vtsls added to mason and lspconfig
           --       Try to always enable vtsls
           if server_name == tsserver_name then
-            if not is_node_repo then
+            if not is_node_repo() then
               return
             end
 
@@ -161,6 +161,9 @@ local plugins = {
               typescript = {
                 suggest = {
                   completeFunctionCalls = true,
+                },
+                preferences = {
+                  importModuleSpecifier = 'non-relative',
                 },
                 inlayHints = typescriptInlayHints,
               },
@@ -172,7 +175,7 @@ local plugins = {
           end
 
           if server_name == 'eslint' then
-            if not is_node_repo then
+            if not is_node_repo() then
               return
             end
           end
@@ -196,7 +199,7 @@ local plugins = {
           end
 
           if server_name == 'denols' then
-            if is_node_repo then
+            if is_node_repo() then
               return
             end
 
@@ -294,7 +297,7 @@ local plugins = {
             vim.keymap.set({ 'n' }, '<Plug>(lsp)f', function()
               vim.lsp.buf.format({ name = 'astro' })
             end)
-          elseif is_node_repo then
+          elseif is_node_repo() then
             vim.keymap.set({ 'n' }, '<Plug>(lsp)f', function()
               if vim.fn.exists(':EslintFixAll') == 2 then
                 vim.cmd([[EslintFixAll]])

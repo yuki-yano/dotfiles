@@ -158,6 +158,8 @@ return {
     event = { 'CmdlineEnter' },
     init = function()
       vim.keymap.set({ 'n' }, '<Plug>(ff)h', '<Cmd>Ddu help<CR>')
+
+      add_disable_cmp_filetypes({ 'ddu-ff', 'ddu-ff-filter' })
     end,
     config = function()
       require('denops-lazy').load('ddu.vim', { wait_load = false })
@@ -168,7 +170,7 @@ return {
         ui = 'ff',
         uiParams = {
           ff = {
-            -- startFilter = true,
+            startFilter = false,
             split = 'floating',
             prompt = '> ',
             floatingBorder = 'rounded',
@@ -254,7 +256,6 @@ return {
             vimx.fn.ddu.ui.ff.do_action('quit')
           end, { buffer = true })
           vim.keymap.set({ 'n' }, '<Esc><Esc>', function()
-            vim.cmd([[stopinsert]])
             vimx.fn.ddu.ui.ff.do_action('quit')
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<C-g>', function()
