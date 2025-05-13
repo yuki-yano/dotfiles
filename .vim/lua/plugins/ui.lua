@@ -87,8 +87,8 @@ return {
       }
 
       -- Displays the number of unsaved files other than the current buffer
-      local function modified_buffers()
-        local modified_background_buffers = vim.tbl_filter(function(bufnr)
+      local function modified_background_buffers()
+        local _modified_background_buffers = vim.tbl_filter(function(bufnr)
           return vim.api.nvim_buf_is_valid(bufnr)
             and vim.api.nvim_buf_is_loaded(bufnr)
             and vim.api.nvim_buf_get_option(bufnr, 'buftype') == ''
@@ -98,8 +98,8 @@ return {
             and vim.api.nvim_buf_get_option(bufnr, 'modified')
         end, vim.api.nvim_list_bufs())
 
-        if #modified_background_buffers > 0 then
-          return '!' .. #modified_background_buffers
+        if #_modified_background_buffers > 0 then
+          return '!' .. #_modified_background_buffers
         else
           return ''
         end
@@ -130,7 +130,7 @@ return {
         sections = {
           lualine_a = { 'mode' },
           lualine_b = { 'branch', 'diff' },
-          lualine_c = { { 'filename', path = 1 }, modified_buffers },
+          lualine_c = { { 'filename', path = 1 }, modified_background_buffers },
           lualine_x = {
             no_error,
             {
@@ -572,15 +572,19 @@ return {
           local nav = {}
 
           if vim.env.LSP == 'nvim' then
-            local data = require('nvim-navic').get_data(props.buf)
+            local ok, data = pcall(function()
+              return require('nvim-navic').get_data(props.buf)
+            end)
 
-            for _, v in ipairs(data) do
-              table.insert(nav, { '  ' })
-              table.insert(nav, {
-                v.icon,
-                group = 'CmpItemKind' .. v.type,
-              })
-              table.insert(nav, { v.name })
+            if ok and data ~= nil then
+              for _, v in ipairs(data) do
+                table.insert(nav, { '  ' })
+                table.insert(nav, {
+                  v.icon,
+                  group = 'CmpItemKind' .. v.type,
+                })
+                table.insert(nav, { v.name })
+              end
             end
           else
             local ok, nav_var = pcall(function()
@@ -800,18 +804,17 @@ return {
   },
   {
     'lukas-reineke/indent-blankline.nvim',
+    enabled = false,
     dependencies = {
       { 'nvim-treesitter/nvim-treesitter' },
     },
-    cmd = { 'IndentBlanklineToggle' },
+    cmd = { 'IBLToggle' },
     init = function()
-      vim.g.indent_blankline_enabled = false
-      vim.keymap.set({ 'n' }, '<Leader>i', '<Cmd>IndentBlanklineToggle!<CR>')
+      vim.keymap.set({ 'n' }, '<Leader>i', '<Cmd>IBLToggle<CR>')
     end,
     config = function()
-      require('indent_blankline').setup({
-        show_current_context = true,
-        show_current_context_start = true,
+      require('ibl').setup({
+        enabled = false,
       })
     end,
   },
@@ -841,7 +844,7 @@ return {
   },
   {
     'kevinhwang91/nvim-ufo',
-    enabled = false,
+    enabled = true,
     dependencies = {
       { 'kevinhwang91/promise-async' },
     },
@@ -1171,6 +1174,13 @@ return {
     end,
   },
   {
+    'nvzone/showkeys',
+    cmd = { 'ShowkeysToggle' },
+    config = function()
+      require('showkeys').setup()
+    end,
+  },
+  {
     'anuvyklack/hydra.nvim',
     keys = {
       { 'g;', mode = { 'n' } },
@@ -1200,7 +1210,7 @@ return {
  _l_: %{location_list} LocationList
  _f_: %{eft} Eft
  _u_: %{highlight_undo} HighlightUndo
-                         _<Esc>_
+                        _<Esc>_
 ]]
 
       hydra({
@@ -1224,7 +1234,7 @@ return {
                 end
               end,
               indent = function()
-                if vim.g.indent_blankline_enabled then
+                if require('snacks').indent.enabled then
                   return '[x]'
                 else
                   return '[ ]'
@@ -1278,7 +1288,12 @@ return {
           {
             'i',
             function()
-              vim.cmd([[IndentBlanklineToggle!]])
+              local snacks = require('snacks')
+              if snacks.indent.enabled then
+                snacks.indent.disable()
+              else
+                snacks.indent.enable()
+              end
             end,
             { silent = true },
           },
@@ -1504,7 +1519,7 @@ _x_: reload
             name = 'Dockerfile',
           },
           ['ejs'] = {
-            icon = '�� ',
+            icon = ' ',
             color = yellow,
             cterm_color = '185',
             name = 'Ejs',
@@ -1520,6 +1535,12 @@ _x_: reload
             color = yellow,
             cterm_color = '185',
             name = 'Favicon',
+          },
+          ['gemfile'] = {
+            icon = ' ',
+            color = red,
+            cterm_color = '52',
+            name = 'Gemfile',
           },
           ['gemspec'] = {
             icon = ' ',

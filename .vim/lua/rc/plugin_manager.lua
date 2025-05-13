@@ -42,7 +42,7 @@ local lazy_setup_default_opts = {
   defaults = {
     lazy = true,
   },
-  concurrency = 100,
+  concurrency = 10,
   install = {
     colorscheme = { vim.env.NVIM_COLORSCHEME },
   },
@@ -66,9 +66,11 @@ local lazy_setup_default_opts = {
       disabled_plugins = {
         'editorconfig',
         'gzip',
+        'man',
         'matchit',
         'matchparen',
         'netrwPlugin',
+        'osc52',
         'rplugin',
         'spellfile',
         'tarPlugin',

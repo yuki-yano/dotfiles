@@ -116,6 +116,7 @@ palette['catppuccin'] = function()
       blue = catppuccin_palette.blue, -- #89B4FA
       magenta = catppuccin_palette.pink, -- #F5C2E7
       cyan = catppuccin_palette.lavender, -- #B4BEFE
+      sky = catppuccin_palette.sky, -- #89DCEB
       white = catppuccin_palette.rosewater, -- #F5E0DC
       grey = catppuccin_palette.overlay0, -- #6C7086
       orange = catppuccin_palette.peach, -- #FAB387
@@ -144,7 +145,7 @@ palette['catppuccin'] = function()
         change = '#544E10',
       },
       scrollbar = {
-        bar = catppuccin_palette.surface0, -- #313244
+        bar = catppuccin_palette.surface1, -- #45475A
         search = catppuccin_palette.sky, -- #89DCEB
       },
       hlslens = {

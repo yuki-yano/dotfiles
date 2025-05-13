@@ -1,5 +1,3 @@
----@diagnostic disable: missing-fields
-
 local get_disable_cmp_filetypes = require('rc.plugin_utils').get_disable_cmp_filetypes
 local color = require('rc.color')
 local codicons = require('rc.font').codicons
@@ -157,11 +155,11 @@ return {
       local sources = {
         { name = 'luasnip', keyword_length = 2, force_keyword_length = true },
         { name = 'tsnip', keyword_length = 2, force_keyword_length = true },
-        { name = 'copilot' },
+        -- { name = 'copilot' },
         { name = 'nvim_lsp' },
         -- { name = 'treesitter' },
         { name = 'nvim_lua', max_item_count = 20 },
-        { name = 'nvim_lsp_signature_help' },
+        -- { name = 'nvim_lsp_signature_help' },
         { name = 'cmp_tabnine' },
         { name = 'buffer' },
         { name = 'tmux', keyword_length = 4, max_item_count = 10, option = { all_panes = true } },
@@ -225,6 +223,8 @@ return {
               ['<C-f>'] = cmp.mapping(function(fallback)
                 if luasnip.jumpable(1) then
                   luasnip.jump(1)
+                elseif vim.snippet.active({ direction = 1 }) then
+                  vim.snippet.jump(1)
                 else
                   fallback()
                 end
@@ -232,6 +232,8 @@ return {
               ['<C-b>'] = cmp.mapping(function(fallback)
                 if luasnip.jumpable(-1) then
                   luasnip.jump(-1)
+                elseif vim.snippet.active({ direction = -1 }) then
+                  vim.snippet.jump(-1)
                 else
                   fallback()
                 end
@@ -245,13 +247,14 @@ return {
         sources = cmp.config.sources(sources),
         formatting = {
           fields = { 'kind', 'abbr', 'menu' },
+          expandable_indicator = true,
           format = lspkind.cmp_format({
             mode = 'symbol',
             before = function(entry, vim_item)
               local menu = {
                 luasnip = '[Snippet]',
                 tsnip = '[TSnip]',
-                copilot = '[Copilot]',
+                -- copilot = '[Copilot]',
                 nvim_lsp = '[LSP]',
                 treesitter = '[Tree]',
                 nvim_lua = '[Lua]',
@@ -327,9 +330,10 @@ return {
         }),
         formatting = {
           fields = { 'kind', 'abbr', 'menu' },
+          expandable_indicator = true,
           format = function(entry, vim_item)
             if vim.tbl_contains({ 'path', 'fuzzy_path' }, entry.source.name) then
-              local icon, hl_group = require('nvim-web-devicons').get_icon(entry:get_completion_item().label)
+              local icon, hl_group = require('nvim-web-devicons').get_icon(entry.completion_item.label)
               if icon then
                 vim_item.kind = icon
                 vim_item.kind_hl_group = hl_group
@@ -338,7 +342,7 @@ return {
               end
             elseif 'cmdline' == entry.source.name then
               vim_item.kind = misc_icons.cmd
-              vim_item.dup = true
+              vim_item.dup = 1
             end
 
             return lspkind.cmp_format()(entry, vim_item)
@@ -382,7 +386,7 @@ return {
       end)
 
       cmp.setup.filetype(get_disable_cmp_filetypes(), {
-        sources = {},
+        enabled = false,
       })
     end,
   },
@@ -586,550 +590,270 @@ return {
     'cohama/lexima.vim',
     event = { 'InsertEnter', 'CmdlineEnter' },
     init = function()
+      vim.g.lexima_no_default_rules = true
+      vim.g.lexima_enable_basic_rules = false
+      vim.g.lexima_enable_newline_rules = false
       vim.g.lexima_enable_space_rules = false
+      vim.g.lexima_enable_endwise_rules = false
     end,
     config = function()
       local vimx = require('artemis')
 
       local rules = {}
 
-      -- Base rule
-      rules = list_concat({
-        rules,
-        {
-          { char = '<C-f>', input = '<C-g>U<Right>', priority = 10 },
-        },
-      })
-
-      -- Parenthesis
-      rules = list_concat({
-        rules,
-        -- {
-        --   { char = '<C-h>', at = [[(\%#)]], input = '<BS><Del>' },
-        --   { char = '<BS>', at = [[(\%#)]], input = '<BS><Del>' },
-        -- },
-        {
-          { char = '<Space>', at = [[(\%#)]], input_after = '<Space>' },
-          { char = '<C-h>', at = [[( \%# )]], delete = 1 },
-          { char = '<BS>', at = [[( \%# )]], delete = 1 },
-        },
-      })
-
-      -- Brace
-      rules = list_concat({
-        rules,
-        -- {
-        --   { char = '<C-h>', at = [[{\%#}]], input = '<BS><Del>' },
-        --   { char = '<BS>', at = [[{\%#}]], input = '<BS><Del>' },
-        -- },
-        {
-          { char = '<Space>', at = [[{\%#}]], input_after = '<Space>' },
-          { char = '<C-h>', at = [[{ \%# }]], delete = 1 },
-          { char = '<BS>', at = [[{ \%# }]], delete = 1 },
-        },
-      })
-
-      -- Bracket
-      rules = list_concat({
-        rules,
-        -- {
-        --   { char = '<C-h>', at = [=[\[\%#\]]=], input = '<BS><Del>' },
-        --   { char = '<BS>', at = [=[\[\%#\]]=], input = '<BS><Del>' },
-        -- },
-      })
-
-      -- Single quote
-      rules = list_concat({
-        rules,
-        -- {
-        --   { char = '<C-h>', at = [['\%#']], input = '<BS><Del>' },
-        --   { char = '<BS>', at = [['\%#']], input = '<BS><Del>' },
-        -- },
-      })
-
-      -- Double quote
-      rules = list_concat({
-        rules,
-        -- {
-        --   { char = '<C-h>', at = [["\%#"]], input = '<BS><Del>' },
-        --   { char = '<BS>', at = [["\%#"]], input = '<BS><Del>' },
-        -- },
-      })
-
-      -- Back quote
-      rules = list_concat({
-        rules,
-        -- {
-        --   { char = '<C-h>', at = [[`\%#`]], input = '<BS><Del>' },
-        --   { char = '<BS>', at = [[`\%#`]], input = '<BS><Del>' },
-        -- },
-      })
-
-      -- Surround function
-      -- NOTE: Use nvim-insx fast_wrap
-      -- rules = list_concat({
-      --   rules,
-      --   {
-      --     { char = ';', at = [[);\%#]], input = '<BS><BS><C-o>:normal! $<CR>a)<Esc>' },
-      --     { char = ';', at = [[);\%#.*(.*]], input = '<BS><BS><C-o>:normal! f(<CR>:normal %<CR>a)<Esc>' },
-      --   },
-      -- })
-
-      -- TypeScript
-      -- NOTE: `<Esc>a` is a workaround to disable copilot
-      rules = list_concat({
-        rules,
-        -- const
-        {
-          {
-            filetype = { 'typescript', 'typescriptreact' },
-            char = '<Space>',
-            at = [[^\s*c\%#$]],
-            input = '<C-w>const ',
-            input_after = ' = ',
-          },
-          {
-            filetype = { 'typescript', 'typescriptreact' },
-            char = '<C-f>',
-            at = [[^\s*const \S\+\%# = $]],
-            input = '<Esc>a<End>',
-          },
-        },
-        -- const arrow function
-        {
-          {
-            filetype = { 'typescript', 'typescriptreact' },
-            char = '<Space>',
-            at = [[^\s*cf\%#$]],
-            input = '<C-w>const <C-o>:normal! m`<CR>i = () => {<CR>}<C-o>``a',
-          },
-          {
-            filetype = { 'typescript', 'typescriptreact' },
-            char = '<C-f>',
-            at = [[^\s*const \S\+\%# = () => {$]],
-            input = '<Esc>a<C-o>:normal! f)a<Esc>',
-          },
-          {
-            filetype = { 'typescript', 'typescriptreact' },
-            char = '<C-f>',
-            at = [[^\s*const \S\+ = (.*\%#) => {$]],
-            input = '<Esc>a<End><CR>',
-          },
-        },
-        -- function
-        {
-          {
-            filetype = { 'typescript', 'typescriptreact' },
-            char = '<Space>',
-            at = [[^\s*f\%#$]],
-            input = '<C-w>function <C-o>:normal! m`<CR>i() {<CR>}<C-o>``a',
-          },
-          {
-            filetype = { 'typescript', 'typescriptreact' },
-            char = '<C-f>',
-            at = [[^\s*function \S\+(.*\%#) {$]],
-            input = '<Esc>a<End><CR>',
-          },
-        },
-        -- if
-        {
-          {
-            filetype = { 'typescript', 'typescriptreact' },
-            char = '<Space>',
-            at = [[^\s*if\%#$]],
-            input = '<C-w>if (<C-o>:normal! m`<CR>i) {<CR>}<C-o>``a',
-          },
-          {
-            filetype = { 'typescript', 'typescriptreact' },
-            char = '<C-f>',
-            at = [[^\s*if (.*\%#) {$]],
-            input = '<Esc>a<End><CR>',
-          },
-        },
-        -- expand arrow function
-        -- NOTE: Try `cf` shorthand
-        -- {
-        --   {
-        --     filetype = { 'typescript', 'typescriptreact' },
-        --     char = ';',
-        --     at = [[\.[a-zA-Z]\+([a-zA-Z,]*;\%#)]],
-        --     input = '<BS> => {',
-        --     input_after = '}',
-        --   },
-        --   {
-        --     filetype = { 'typescript', 'typescriptreact' },
-        --     char = ';',
-        --     at = [[\.[a-zA-Z]\+(([a-zA-Z, :<>]*;\%#))]],
-        --     input = '<BS><C-g>U<Right> => {',
-        --     input_after = '}',
-        --   },
-        --   {
-        --     filetype = { 'typescript', 'typescriptreact' },
-        --     char = ';',
-        --     at = [[([a-zA-Z, :<>]*;\%#)]],
-        --     input = '<BS><C-g>U<Right> => {',
-        --     input_after = '}',
-        --   },
-        --   {
-        --     filetype = { 'typescript', 'typescriptreact' },
-        --     char = ';',
-        --     at = [[({[a-zA-Z, :<>]\+;\%#\s\?})]],
-        --     input = '<BS><C-o>:normal! f)<CR>a<C-g>U<Right> => {}<Esc>',
-        --   },
-        -- },
-      })
-
-      -- pp
-      rules = list_concat({
-        rules,
-        {
-          {
-            filetype = { 'typescript', 'typescriptreact' },
-            char = '<Space>',
-            at = [[^pp\%#]],
-            input = '<C-w>console.log(',
-            input_after = ')',
-          },
-          {
-            filetype = { 'typescript', 'typescriptreact' },
-            char = '<Space>',
-            at = [[\s\+pp\%#]],
-            input = '<C-w>console.log(',
-            input_after = ')',
-          },
-        },
-      })
-
-      -- log level rotate
-      for level, next_level in pairs({
-        log = {
-          next = 'warn',
-          prev = 'info',
-        },
-        warn = {
-          next = 'error',
-          prev = 'log',
-        },
-        error = {
-          next = 'debug',
-          prev = 'warn',
-        },
-        debug = {
-          next = 'info',
-          prev = 'error',
-        },
-        info = {
-          next = 'log',
-          prev = 'debug',
-        },
-      }) do
-        rules = list_concat({
-          rules,
-          {
-            {
-              filetype = { 'typescript', 'typescriptreact' },
-              at = [[console\.]] .. level .. [[(\%#]],
-              char = '<C-a>',
-              input = '<C-w><C-w>' .. next_level.next .. '(',
-            },
-            {
-              filetype = { 'typescript', 'typescriptreact' },
-              at = [[console\.]] .. level .. [[(\%#]],
-              char = '<C-x>',
-              input = '<C-w><C-w>' .. next_level.prev .. '(',
-            },
-          },
-        })
-      end
-
-      -- Close JSX tag
+      -- Markdown
+      -- TODO: Use insx
       -- rules = list_concat({
       --   rules,
       --   {
       --     {
-      --       filetype = { 'typescriptreact' },
-      --       char = '>',
-      --       at = [[<\([a-zA-Z.]\+\)\(\s\)\?.*\%#]],
-      --       leave = '>',
-      --       input_after = [[</\1>]],
-      --       with_submatch = 1,
+      --       filetype = 'markdown',
+      --       char = '#',
+      --       at = [=[^\%#\%(#\)\@!]=],
+      --       input = '#<Space>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '#',
+      --       at = [=[#\s\%#]=],
+      --       input = '<BS>#<Space>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<C-h>',
+      --       at = [=[^#\s\%#]=],
+      --       input = '<BS><BS>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<C-h>',
+      --       at = [=[##\s\%#]=],
+      --       input = '<BS><BS><Space>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<BS>',
+      --       at = [=[^#\s\%#]=],
+      --       input = '<BS><BS>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<BS>',
+      --       at = [=[##\s\%#]=],
+      --       input = '<BS><BS><Space>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '-',
+      --       at = [=[^\s*\%#]=],
+      --       input = '-<Space>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<Tab>',
+      --       at = [=[^\s*-\s\%#]=],
+      --       input = '<Home><Tab><End>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<Tab>',
+      --       at = [=[^\s*-\s\w.*\%#]=],
+      --       input = '<Home><Tab><End>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<S-Tab>',
+      --       at = [=[^\s\+-\s\%#]=],
+      --       input = '<Home><Del><Del><End>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<S-Tab>',
+      --       at = [=[^\s\+-\s\w.*\%#]=],
+      --       input = '<Home><Del><Del><End>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<S-Tab>',
+      --       at = [=[^-\s\w.*\%#]=],
+      --       input = '',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<C-h>',
+      --       at = [=[^-\s\%#]=],
+      --       input = '<C-w><BS>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<C-h>',
+      --       at = [=[^\s\+-\s\%#]=],
+      --       input = '<C-w><C-w><BS>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<BS>',
+      --       at = [=[^-\s\%#]=],
+      --       input = '<C-w><BS>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<BS>',
+      --       at = [=[^\s\+-\s\%#]=],
+      --       input = '<C-w><C-w><BS>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<CR>',
+      --       at = [=[^-\s\%#]=],
+      --       input = '<C-w><CR>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<CR>',
+      --       at = [=[^\s\+-\s\%#]=],
+      --       input = '<C-w><C-w><CR>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<CR>',
+      --       at = [=[^\s*-\s\w.*\%#]=],
+      --       input = '<CR>-<Space>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '[',
+      --       at = [=[^\s*-\s\%#]=],
+      --       input = '<Left><Space>[]<Left>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<Tab>',
+      --       at = [=[^\s*-\s\[\%#\]\s]=],
+      --       input = '<Home><Tab><End><Left><Left>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<S-Tab>',
+      --       at = [=[^-\s\[\%#\]\s]=],
+      --       input = '',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<S-Tab>',
+      --       at = [=[^\s\+-\s\[\%#\]\s]=],
+      --       input = '<Home><Del><Del><End><Left><Left>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<C-h>',
+      --       at = [=[^\s*-\s\[\%#\]]=],
+      --       input = '<BS><Del><Del>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<BS>',
+      --       at = [=[^\s*-\s\[\%#\]]=],
+      --       input = '<BS><Del><Del>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<Space>',
+      --       at = [=[^\s*-\s\[\%#\]]=],
+      --       input = '<Space><End>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = 'x',
+      --       at = [=[^\s*-\s\[\%#\]]=],
+      --       input = 'x<End>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<CR>',
+      --       at = [=[^-\s\[\%#\]]=],
+      --       input = '<End><C-w><C-w><C-w><CR>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<CR>',
+      --       at = [=[^\s\+-\s\[\%#\]]=],
+      --       input = '<End><C-w><C-w><C-w><C-w><CR>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<Tab>',
+      --       at = [=[^\s*-\s\[\(\s\|x\)\]\s\%#]=],
+      --       input = '<Home><Tab><End>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<Tab>',
+      --       at = [=[^\s*-\s\[\(\s\|x\)\]\s\w.*\%#]=],
+      --       input = '<Home><Tab><End>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<S-Tab>',
+      --       at = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=],
+      --       input = '<Home><Del><Del><End>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<S-Tab>',
+      --       at = [=[^\s\+-\s\[\(\s\|x\)\]\s\w.*\%#]=],
+      --       input = '<Home><Del><Del><End>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<S-Tab>',
+      --       at = [=[^-\s\[\(\s\|x\)\]\s\w.*\%#]=],
+      --       input = '',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<C-h>',
+      --       at = [=[^-\s\[\(\s\|x\)\]\s\%#]=],
+      --       input = '<C-w><C-w><C-w><BS>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<C-h>',
+      --       at = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=],
+      --       input = '<C-w><C-w><C-w><C-w><BS>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<BS>',
+      --       at = [=[^-\s\[\(\s\|x\)\]\s\%#]=],
+      --       input = '<C-w><C-w><C-w><BS>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<BS>',
+      --       at = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=],
+      --       input = '<C-w><C-w><C-w><C-w><BS>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<CR>',
+      --       at = [=[^-\s\[\(\s\|x\)\]\s\%#]=],
+      --       input = '<C-w><C-w><C-w><CR>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<CR>',
+      --       at = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=],
+      --       input = '<C-w><C-w><C-w><C-w><CR>',
+      --     },
+      --     {
+      --       filetype = 'markdown',
+      --       char = '<CR>',
+      --       at = [=[^\s*-\s\[\(\s\|x\)\]\s\w.*\%#]=],
+      --       input = '<CR>-<Space>[]<Space><Left><Left>',
       --     },
       --   },
       -- })
-
-      -- Lua
-      rules = list_concat({
-        rules,
-        {
-          {
-            filetype = { 'lua' },
-            char = '<Space>',
-            at = [[^pp\%#]],
-            input = '<C-w>vim.print(',
-            input_after = ')',
-          },
-          {
-            filetype = { 'lua' },
-            char = '<Space>',
-            at = [[\s\+pp\%#]],
-            input = '<C-w>vim.print(',
-            input_after = ')',
-          },
-        },
-      })
-
-      -- Markdown
-      rules = list_concat({
-        rules,
-        {
-          {
-            filetype = 'markdown',
-            char = '#',
-            at = [=[^\%#\%(#\)\@!]=],
-            input = '#<Space>',
-          },
-          {
-            filetype = 'markdown',
-            char = '#',
-            at = [=[#\s\%#]=],
-            input = '<BS>#<Space>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<C-h>',
-            at = [=[^#\s\%#]=],
-            input = '<BS><BS>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<C-h>',
-            at = [=[##\s\%#]=],
-            input = '<BS><BS><Space>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<BS>',
-            at = [=[^#\s\%#]=],
-            input = '<BS><BS>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<BS>',
-            at = [=[##\s\%#]=],
-            input = '<BS><BS><Space>',
-          },
-          {
-            filetype = 'markdown',
-            char = '-',
-            at = [=[^\s*\%#]=],
-            input = '-<Space>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<Tab>',
-            at = [=[^\s*-\s\%#]=],
-            input = '<Home><Tab><End>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<Tab>',
-            at = [=[^\s*-\s\w.*\%#]=],
-            input = '<Home><Tab><End>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<S-Tab>',
-            at = [=[^\s\+-\s\%#]=],
-            input = '<Home><Del><Del><End>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<S-Tab>',
-            at = [=[^\s\+-\s\w.*\%#]=],
-            input = '<Home><Del><Del><End>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<S-Tab>',
-            at = [=[^-\s\w.*\%#]=],
-            input = '',
-          },
-          {
-            filetype = 'markdown',
-            char = '<C-h>',
-            at = [=[^-\s\%#]=],
-            input = '<C-w><BS>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<C-h>',
-            at = [=[^\s\+-\s\%#]=],
-            input = '<C-w><C-w><BS>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<BS>',
-            at = [=[^-\s\%#]=],
-            input = '<C-w><BS>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<BS>',
-            at = [=[^\s\+-\s\%#]=],
-            input = '<C-w><C-w><BS>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<CR>',
-            at = [=[^-\s\%#]=],
-            input = '<C-w><CR>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<CR>',
-            at = [=[^\s\+-\s\%#]=],
-            input = '<C-w><C-w><CR>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<CR>',
-            at = [=[^\s*-\s\w.*\%#]=],
-            input = '<CR>-<Space>',
-          },
-          {
-            filetype = 'markdown',
-            char = '[',
-            at = [=[^\s*-\s\%#]=],
-            input = '<Left><Space>[]<Left>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<Tab>',
-            at = [=[^\s*-\s\[\%#\]\s]=],
-            input = '<Home><Tab><End><Left><Left>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<S-Tab>',
-            at = [=[^-\s\[\%#\]\s]=],
-            input = '',
-          },
-          {
-            filetype = 'markdown',
-            char = '<S-Tab>',
-            at = [=[^\s\+-\s\[\%#\]\s]=],
-            input = '<Home><Del><Del><End><Left><Left>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<C-h>',
-            at = [=[^\s*-\s\[\%#\]]=],
-            input = '<BS><Del><Del>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<BS>',
-            at = [=[^\s*-\s\[\%#\]]=],
-            input = '<BS><Del><Del>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<Space>',
-            at = [=[^\s*-\s\[\%#\]]=],
-            input = '<Space><End>',
-          },
-          {
-            filetype = 'markdown',
-            char = 'x',
-            at = [=[^\s*-\s\[\%#\]]=],
-            input = 'x<End>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<CR>',
-            at = [=[^-\s\[\%#\]]=],
-            input = '<End><C-w><C-w><C-w><CR>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<CR>',
-            at = [=[^\s\+-\s\[\%#\]]=],
-            input = '<End><C-w><C-w><C-w><C-w><CR>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<Tab>',
-            at = [=[^\s*-\s\[\(\s\|x\)\]\s\%#]=],
-            input = '<Home><Tab><End>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<Tab>',
-            at = [=[^\s*-\s\[\(\s\|x\)\]\s\w.*\%#]=],
-            input = '<Home><Tab><End>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<S-Tab>',
-            at = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=],
-            input = '<Home><Del><Del><End>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<S-Tab>',
-            at = [=[^\s\+-\s\[\(\s\|x\)\]\s\w.*\%#]=],
-            input = '<Home><Del><Del><End>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<S-Tab>',
-            at = [=[^-\s\[\(\s\|x\)\]\s\w.*\%#]=],
-            input = '',
-          },
-          {
-            filetype = 'markdown',
-            char = '<C-h>',
-            at = [=[^-\s\[\(\s\|x\)\]\s\%#]=],
-            input = '<C-w><C-w><C-w><BS>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<C-h>',
-            at = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=],
-            input = '<C-w><C-w><C-w><C-w><BS>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<BS>',
-            at = [=[^-\s\[\(\s\|x\)\]\s\%#]=],
-            input = '<C-w><C-w><C-w><BS>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<BS>',
-            at = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=],
-            input = '<C-w><C-w><C-w><C-w><BS>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<CR>',
-            at = [=[^-\s\[\(\s\|x\)\]\s\%#]=],
-            input = '<C-w><C-w><C-w><CR>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<CR>',
-            at = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=],
-            input = '<C-w><C-w><C-w><C-w><CR>',
-          },
-          {
-            filetype = 'markdown',
-            char = '<CR>',
-            at = [=[^\s*-\s\[\(\s\|x\)\]\s\w.*\%#]=],
-            input = '<CR>-<Space>[]<Space><Left><Left>',
-          },
-        },
-      })
 
       for _, rule in ipairs(rules) do
         vimx.fn.lexima.add_rule(rule)
@@ -1173,45 +897,37 @@ return {
     enabled = true,
     dependencies = {
       { 'cohama/lexima.vim' }, -- NOTE: Load before insx
+      { 'L3MON4D3/LuaSnip' },
     },
     event = { 'InsertEnter', 'CmdlineEnter' },
     config = function()
       local insx = require('insx')
-      local esc = require('insx.helper.regex').esc
+      local esc = insx.helper.regex.esc
       local fast_wrap = require('insx.recipe.fast_wrap')
       local fast_break = require('insx.recipe.fast_break')
-
-      local vimx = require('artemis')
 
       -- Alias <C-h> to <BS>
       vim.keymap.set({ 'i', 'c' }, '<C-h>', '<BS>', { remap = true })
 
       -- Not use insert mode preset
-      require('insx.preset.standard').setup_cmdline_mode({
-        cmdline = {
-          enabled = true,
-        },
-      })
+      require('insx.preset.standard').setup_cmdline_mode()
 
       -- NOTE: Preset maps to `<` and `>`, so set the mappings manually
       -- quote
-      for _, quote in ipairs({ '"', "'" }) do
-        -- jump next
-        insx.add(
-          quote,
-          require('insx.recipe.jump_next')({
-            jump_pat = { [[\\\@<!\%#]] .. esc(quote) .. [[\zs]] },
-          })
-        )
-
+      for _, quote in ipairs({ '"', "'", '`' }) do
         -- auto pair
         insx.add(
           quote,
-          require('insx.recipe.auto_pair')({
-            open = quote,
-            close = quote,
-            ignore_pat = [[\\\%#]],
-          })
+          insx.with(
+            require('insx.recipe.auto_pair')({
+              open = quote,
+              close = quote,
+              ignore_pat = [[\\\%#]],
+            }),
+            {
+              insx.with.in_string(false),
+            }
+          )
         )
 
         -- delete pair
@@ -1221,6 +937,14 @@ return {
             open_pat = esc(quote),
             close_pat = esc(quote),
             ignore_pat = ([[\\%s\%%#]]):format(esc(quote)),
+          })
+        )
+
+        -- jump next
+        insx.add(
+          quote,
+          require('insx.recipe.jump_next')({
+            jump_pat = { [[\\\@<!\%#]] .. esc(quote) .. [[\zs]] },
           })
         )
       end
@@ -1234,49 +958,227 @@ return {
         -- delete pair
         insx.add('<BS>', require('insx.recipe.delete_pair')({ open_pat = esc(open), close_pat = esc(close) }))
         -- fast wrap
-        insx.add('<C-]>', insx.with(fast_wrap({ close = close }), { insx.with.undopoint() }))
+        insx.add(
+          '<C-]>',
+          insx.with(
+            fast_wrap({
+              close = close,
+            }),
+            { insx.with.undopoint(false) }
+          )
+        )
         -- fast break
         insx.add(
           '<CR>',
-          fast_break({ open_pat = esc(open), close_pat = esc(close), arguments = true, html_attrs = true })
+          fast_break({
+            open_pat = esc(open),
+            close_pat = esc(close),
+            arguments = true,
+            html_attrs = true,
+            html_tags = true,
+          })
         )
       end
 
-      -- Use lexima
       -- spacing `()` and `{}` (exclude `[]`)
-      -- for open, close in pairs({ ['('] = ')', ['{'] = '}' }) do
-      --   insx.add(
-      --     '<Space>',
-      --     require('insx.recipe.pair_spacing').increase({ open_pat = esc(open), close_pat = esc(close) })
-      --   )
-      --   insx.add('<BS>', require('insx.recipe.pair_spacing').decrease({ open_pat = esc(open), close_pat = esc(close) }))
-      -- end
-
-      -- Fallback <BS> to lexima
-      insx.add('<BS>', {
-        priority = -1,
-        action = function(ctx)
-          ctx.send(vim.fn.keytrans(vimx.fn.lexima.expand('<BS>', 'i')))
-        end,
-        enabled = function()
-          return true
-        end,
-      })
+      for open, close in pairs({ ['('] = ')', ['{'] = '}' }) do
+        insx.add(
+          '<Space>',
+          require('insx.recipe.pair_spacing').increase({ open_pat = esc(open), close_pat = esc(close) })
+        )
+        insx.add('<BS>', require('insx.recipe.pair_spacing').decrease({ open_pat = esc(open), close_pat = esc(close) }))
+      end
 
       -- Use lexima when markdown
-      insx.add('<CR>', {
-        priority = -1,
-        action = function(ctx)
-          ctx.send(vim.fn.keytrans(vimx.fn.lexima.expand('<CR>', 'i')))
+      -- insx.add('<CR>', {
+      --   priority = -1,
+      --   action = function(ctx)
+      --     ctx.send(vim.fn.keytrans(vimx.fn.lexima.expand('<CR>', 'i')))
+      --   end,
+      --   enabled = function()
+      --     return vim.o.filetype == 'markdown'
+      --   end,
+      -- })
+
+      require('insx.recipe.snippet').expand = function(params)
+        require('luasnip').lsp_expand(params.content)
+      end
+
+      insx.add(
+        '<Space>',
+        insx.with(
+          require('insx.recipe.snippet')({
+            pattern = [[^\s*\zsc\%#$]],
+            content = insx.dedent([[
+              const ${1:v} = ${2:expr}
+          ]]),
+          }),
+          {
+            insx.with.filetype({ 'typescript', 'typescriptreact' }),
+          }
+        )
+      )
+
+      insx.add(
+        '<Space>',
+        insx.with(
+          require('insx.recipe.snippet')({
+            pattern = [[^\s*\zscf\%#$]],
+            content = insx.dedent([[
+            const ${1:fn} = (${2:args}) => {
+              ${3:body}
+            }
+          ]]),
+          }),
+          {
+            insx.with.filetype({ 'typescript', 'typescriptreact' }),
+          }
+        )
+      )
+
+      insx.add(
+        '<Space>',
+        insx.with(
+          require('insx.recipe.snippet')({
+            pattern = [[^\s*\zsf\%#$]],
+            content = insx.dedent([[
+            function ${1:fn}(${2:args}) {
+              ${3:body}
+            }
+          ]]),
+          }),
+          {
+            insx.with.filetype({ 'typescript', 'typescriptreact' }),
+          }
+        )
+      )
+
+      insx.add(
+        '<Space>',
+        insx.with(
+          require('insx.recipe.snippet')({
+            pattern = [[^\s*\zsif\%#$]],
+            content = insx.dedent([[
+            if (${1:cond}) {
+              ${2:body}
+            }
+          ]]),
+          }),
+          {
+            insx.with.filetype({ 'typescript', 'typescriptreact' }),
+          }
+        )
+      )
+
+      insx.add(
+        '<Space>',
+        insx.with(
+          require('insx.recipe.snippet')({
+            pattern = [[^\s*\zsforof\%#$]],
+            content = insx.dedent([[
+            for (const ${1:v} of ${2:list}) {
+              ${3:body}
+            }
+          ]]),
+          }),
+          {
+            insx.with.filetype({ 'typescript', 'typescriptreact' }),
+          }
+        )
+      )
+
+      insx.add(
+        '<Space>',
+        insx.with(
+          require('insx.recipe.snippet')({
+            pattern = [[^\s*\zspp\%#$]],
+            content = insx.dedent([[
+            console.log($1)
+          ]]),
+          }),
+          {
+            insx.with.filetype({ 'typescript', 'typescriptreact' }),
+          }
+        )
+      )
+
+      insx.add(
+        '<Space>',
+        insx.with(
+          require('insx.recipe.snippet')({
+            pattern = [[^\s*\zspp\%#$]],
+            content = insx.dedent([[
+            vim.print($1)
+          ]]),
+          }),
+          {
+            insx.with.filetype({ 'lua' }),
+          }
+        )
+      )
+
+      local substitute = require('insx.recipe.substitute')
+      for level, next_level in pairs({
+        log = {
+          next = 'warn',
+          prev = 'info',
+        },
+        warn = {
+          next = 'error',
+          prev = 'log',
+        },
+        error = {
+          next = 'debug',
+          prev = 'warn',
+        },
+        debug = {
+          next = 'info',
+          prev = 'error',
+        },
+        info = {
+          next = 'log',
+          prev = 'debug',
+        },
+      }) do
+        insx.add(
+          '<C-a>',
+          substitute({
+            pattern = [[console\.]] .. level .. [[(\%#]],
+            replace = [[console.]] .. next_level.next .. [[(\%#]],
+          })
+        )
+        insx.add(
+          '<C-x>',
+          substitute({
+            pattern = [[console\.]] .. level .. [[(\%#]],
+            replace = [[console.]] .. next_level.prev .. [[(\%#]],
+          })
+        )
+      end
+
+      -- markdown
+      insx.add('`', {
+        enabled = function(ctx)
+          return ctx.match([[`\%#`]]) and ctx.filetype == 'markdown'
         end,
-        enabled = function()
-          return vim.o.filetype == 'markdown'
+        action = function(ctx)
+          ctx.send('``<Left>')
+          ctx.send('``<Left>')
         end,
       })
+      insx.add(
+        '<CR>',
+        require('insx.recipe.fast_break')({
+          open_pat = [[```\w*]],
+          close_pat = '```',
+          indent = 0,
+        })
+      )
     end,
   },
   {
     'hrsh7th/nvim-linkedit',
+    enabled = true,
     event = { 'ModeChanged' },
     config = function()
       require('linkedit').setup()
@@ -1476,6 +1378,15 @@ return {
     end,
   },
   {
+    'JoosepAlviste/nvim-ts-context-commentstring',
+    config = function()
+      vim.g.skip_ts_context_commentstring_module = true
+      require('ts_context_commentstring').setup({
+        enable_autocmd = false,
+      })
+    end,
+  },
+  {
     -- NOTE: Use my fork
     'yuki-yano/caw.vim',
     dependencies = {
@@ -1485,6 +1396,7 @@ return {
     },
     keys = {
       { 'gc', mode = { 'n', 'x' } },
+      { 'gcc', mode = { 'n' } },
       { 'gw', mode = { 'n', 'x' } },
     },
     init = function()
@@ -1535,16 +1447,9 @@ return {
     'hrsh7th/nvim-pasta',
     enabled = false,
     event = { 'VeryLazy' },
-    init = function()
-      vim.keymap.set({ 'n', 'x' }, 'p', require('pasta.mappings').p)
-      vim.keymap.set({ 'n', 'x' }, 'P', require('pasta.mappings').P)
-
-      require('pasta').setup({
-        paste_mode = true,
-        prevent_diagnostics = false,
-        next_key = vim.api.nvim_replace_termcodes('<C-p>', true, true, true),
-        prev_key = vim.api.nvim_replace_termcodes('<C-n>', true, true, true),
-      })
+    config = function()
+      vim.keymap.set({ 'n', 'x' }, 'p', require('pasta.mapping').p)
+      vim.keymap.set({ 'n', 'x' }, 'P', require('pasta.mapping').P)
 
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { '*' },
@@ -1614,7 +1519,7 @@ return {
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { '*' },
         callback = function()
-          vim.api.nvim_set_hl(0, 'YankRoundRegion', { fg = color.base().orange, bg = color.base().black })
+          vim.api.nvim_set_hl(0, 'YankRoundRegion', { fg = color.base().orange, bg = 'NONE' })
         end,
       })
     end,
@@ -1660,6 +1565,19 @@ return {
       })
     end,
   },
+  {
+    'yuki-yano/smart-i.nvim',
+    keys = {
+      { 'i', mode = { 'n' } },
+      { 'I', mode = { 'n' } },
+      { 'a', mode = { 'n' } },
+      { 'A', mode = { 'n' } },
+    },
+    config = function()
+      require('smart-i').setup()
+    end,
+  },
+
   { 'thinca/vim-qfreplace', cmd = { 'Qfreplace' } },
   {
     'yuki-yano/dedent-yank.vim',
@@ -1736,6 +1654,21 @@ return {
         },
         sign = todo_icons.delete,
       })
+    end,
+  },
+  {
+    'Wansmer/treesj',
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    keys = {
+      { '<Leader>m', mode = { 'n' } },
+    },
+    config = function()
+      require('treesj').setup({
+        use_default_keymaps = false,
+      })
+      vim.keymap.set({ 'n' }, '<Leader>m', function()
+        return require('treesj').toggle()
+      end)
     end,
   },
 }

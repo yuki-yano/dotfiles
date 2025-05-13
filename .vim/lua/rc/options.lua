@@ -20,7 +20,6 @@ vim.opt.background = 'dark'
 vim.opt.belloff = 'all'
 vim.opt.cmdheight = 1
 vim.opt.concealcursor = 'nc'
-vim.opt.conceallevel = 2
 vim.opt.diffopt = { 'internal', 'filler', 'algorithm:histogram', 'indent-heuristic', 'vertical' }
 vim.opt.display = 'lastline'
 vim.opt.fillchars = { diff = '/', eob = ' ' }
@@ -44,6 +43,38 @@ vim.opt.spelllang = { 'en', 'cjk' }
 vim.opt.synmaxcol = 300
 vim.opt.termguicolors = true
 vim.opt.virtualedit = 'all'
+-- NOTE: This is a workaround for treesitter flashing
+-- vim.g._ts_force_sync_parsing = true
+vim.api.nvim_create_autocmd({ 'BufWinEnter', 'WinNew', 'WinClosed', 'TabEnter' }, {
+  group = vim.api.nvim_create_augroup('ts_toggle_sync_parsing', {}),
+  callback = function(ctx)
+    local function exec()
+      local wins = vim.api.nvim_tabpage_list_wins(vim.api.nvim_get_current_tabpage())
+      local bufs = {}
+      for _, win in ipairs(wins) do
+        local buf = vim.api.nvim_win_get_buf(win)
+        if bufs[buf] == true then
+          local parsable = pcall(vim.treesitter.get_parser, buf)
+          if parsable then
+            vim.g._ts_force_sync_parsing = true
+            return
+          end
+          -- set to false to avoid multiple tests on the availability of parser
+          bufs[buf] = false
+        end
+        if bufs[buf] == nil then
+          bufs[buf] = true
+        end
+      end
+      vim.g._ts_force_sync_parsing = false
+    end
+
+    if ctx.event == 'WinClosed' then
+      return vim.schedule(exec)
+    end
+    return exec()
+  end,
+})
 
 -- Indent
 vim.opt.autoindent = true
@@ -113,7 +144,7 @@ vim.opt.shell = 'zsh'
 vim.opt.ttyfast = true
 vim.opt.ttimeout = true
 vim.opt.ttimeoutlen = 10
-vim.opt.lazyredraw = true
+vim.opt.lazyredraw = false
 
 -- Mouse
 vim.opt.mouse = 'a'
@@ -143,7 +174,7 @@ end
 -- Conceal
 -- TODO: move ftplugin
 vim.api.nvim_create_autocmd({ 'FileType' }, {
-  pattern = { 'json', 'jsonc', 'markdown' },
+  pattern = { 'json', 'jsonc', 'markdown', 'dockerfile' },
   callback = function()
     vim.opt_local.conceallevel = 0
   end,

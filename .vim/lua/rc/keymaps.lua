@@ -13,9 +13,10 @@ vim.keymap.set({ 'n' }, '<Leader>w', '<Cmd>update<CR>')
 vim.keymap.set({ 'n' }, '<Leader>W', '<Cmd>update!<CR>')
 
 -- Automatically indent with i and A
-vim.keymap.set({ 'n' }, 'i', [[len(getline('.')) ? 'i' : '"_cc']], { expr = true })
-vim.keymap.set({ 'n' }, 'A', [[len(getline('.')) ? 'A' : '"_cc']], { expr = true })
-vim.keymap.set({ 'n' }, 'gi', 'i')
+-- NOTE: Use smart-i.nvim
+-- vim.keymap.set({ 'n' }, 'i', [[len(getline('.')) ? 'i' : '"_cc']], { expr = true })
+-- vim.keymap.set({ 'n' }, 'A', [[len(getline('.')) ? 'A' : '"_cc']], { expr = true })
+-- vim.keymap.set({ 'n' }, 'gi', 'i')
 
 -- Split undo history when <CR>
 vim.keymap.set('i', '<CR>', '<C-g>u<CR>', { silent = true })
@@ -140,3 +141,9 @@ vim.api.nvim_create_autocmd({ 'CmdwinEnter' }, {
     vim.keymap.set({ 'i' }, 'q', '<Esc>l<C-c>', { buffer = true })
   end,
 })
+
+-- zz
+vim.keymap.set('n', 'zz', 'zz<Plug>(z1)')
+vim.keymap.set('n', '<Plug>(z1)z', 'zt<Plug>(z2)')
+vim.keymap.set('n', '<Plug>(z2)z', 'zb<Plug>(z0)')
+vim.keymap.set('n', '<Plug>(z0)z', 'zz<Plug>(z1)')

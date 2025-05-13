@@ -5,7 +5,7 @@ vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
   callback = function()
     vim.api.nvim_set_hl(0, 'Normal', { fg = color.base().white, bg = color.base().background })
     vim.api.nvim_set_hl(0, 'NormalFloat', { fg = 'NONE', bg = color.base().background })
-    vim.api.nvim_set_hl(0, 'FloatBorder', { fg = 'NONE', bg = color.base().background })
+    -- vim.api.nvim_set_hl(0, 'FloatBorder', { fg = 'NONE', bg = color.base().background })
     vim.api.nvim_set_hl(0, 'DiffAdd', { fg = 'NONE', bg = color.misc().diff.add.bg })
     vim.api.nvim_set_hl(0, 'DiffDelete', { fg = 'NONE', bg = color.misc().diff.delete.bg })
     vim.api.nvim_set_hl(0, 'DiffChange', { fg = 'NONE', bg = color.misc().diff.change.bg })

@@ -10,15 +10,22 @@ return {
       require('nvim-ts-autotag').setup({ enable_close = false })
     end,
   },
-  -- Too slow to build
-  -- {
-  --   'barrett-ruth/import-cost.nvim',
-  --   build = 'sh install.sh yarn',
-  --   ft = { 'typescript', 'typescriptreact' },
-  --   config = function()
-  --     require('import-cost').setup()
-  --   end,
-  -- },
+  {
+    'lambdalisue/vim-deno-cache',
+    config = function()
+      require('denops-lazy').load('vim-deno-cache')
+    end,
+  },
+  -- NOTE: Too slow to build
+  {
+    'barrett-ruth/import-cost.nvim',
+    enabled = false,
+    build = 'sh install.sh yarn',
+    ft = { 'typescript', 'typescriptreact' },
+    config = function()
+      require('import-cost').setup()
+    end,
+  },
   {
     'folke/neodev.nvim',
     config = function()
@@ -26,17 +33,6 @@ return {
     end,
   },
   { 'pantharshit00/vim-prisma', ft = { 'prisma' } },
-  {
-    'iamcco/markdown-preview.nvim',
-    build = 'cd app && yarn',
-    cmd = { 'MarkdownPreview', 'MarkdownPreviewToggle', 'MarkdownPreviewStop' },
-    ft = { 'markdown' },
-    init = function()
-      vim.g.mkdp_auto_close = false
-      vim.g.mkdp_echo_preview_url = true
-      vim.g.mkdp_open_to_the_world = true
-    end,
-  },
   {
     'kchmck/vim-coffee-script',
     enabled = false,

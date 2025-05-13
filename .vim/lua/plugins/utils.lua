@@ -28,7 +28,27 @@ return {
     'hrsh7th/nvim-dansa',
     event = { 'BufRead' },
     config = function()
-      require('dansa').setup()
+      require('dansa').setup({
+        enabled = true,
+        scan_offset = 100,
+        cutoff_count = 5,
+        default = {
+          expandtab = true,
+          space = {
+            shiftwidth = 2,
+          },
+          tab = {
+            shiftwidth = 4,
+          },
+        },
+      })
+    end,
+  },
+  {
+    'tani/dmacro.nvim',
+    event = { 'VeryLazy' },
+    config = function()
+      vim.keymap.set({ 'i', 'n' }, '<M-r>', '<Plug>(dmacro-play-macro)')
     end,
   },
   { 'lambdalisue/suda.vim', cmd = { 'SudaRead', 'SudaWrite' } },
@@ -186,6 +206,7 @@ return {
   },
   {
     'echasnovski/mini.bufremove',
+    enabled = false,
     keys = {
       { '<Leader>d', mode = { 'n' } },
       { '<Leader>D', mode = { 'n' } },
@@ -282,20 +303,13 @@ return {
     },
     config = function()
       require('chowcho').setup({
-        border_style = 'rounded',
-        active_border_color = color.base().blue,
+        selector = {
+          float = {
+            border_style = 'rounded',
+            active_border_color = color.base().blue,
+          },
+        },
       })
-
-      vim.keymap.set({ 'n' }, '<C-w>e', function()
-        if vim.fn.winnr('$') <= 1 then
-          return
-        end
-        require('chowcho').run(function(n)
-          vim.cmd('buffer ' .. vim.api.nvim_win_call(n, function()
-            return vim.fn.bufnr('%')
-          end))
-        end)
-      end)
 
       local chowcho_run = require('chowcho').run
       local chowcho_bufnr = function(winid)
@@ -310,6 +324,17 @@ return {
           return old
         end)
       end
+
+      vim.keymap.set({ 'n' }, '<C-w>e', function()
+        if vim.fn.winnr('$') <= 1 then
+          return
+        end
+        chowcho_run(function(n)
+          vim.cmd('buffer ' .. vim.api.nvim_win_call(n, function()
+            return vim.fn.bufnr('%')
+          end))
+        end)
+      end)
 
       vim.keymap.set({ 'n' }, '<C-w>x', function()
         chowcho_run(function(n)
@@ -379,10 +404,15 @@ return {
   },
   {
     'aiya000/aho-bakaup.vim',
+    -- NOTE: Use auto-backup.vim
+    enabled = false,
     event = { 'BufWritePre', 'FileWritePre' },
     config = function()
       vim.g.bakaup_auto_backup = true
       vim.g.bakaup_backup_dir = vim.fn.stdpath('cache') .. '/backup'
+      if vim.fn.isdirectory(vim.g.bakaup_backup_dir) == 0 then
+        vim.fn.mkdir(vim.g.bakaup_backup_dir, 'p')
+      end
     end,
   },
   {
@@ -410,30 +440,15 @@ return {
             return vim.o.columns * 0.3
           end
         end,
+        float_opts = {
+          width = function()
+            return math.ceil(vim.o.columns * 0.7)
+          end,
+          height = function()
+            return math.ceil(vim.o.lines * 0.7)
+          end,
+        },
       })
-
-      -- yarn run command
-      local function package_json_scripts(_, _, _)
-        if vim.fn.filereadable('package.json') == 0 then
-          return
-        end
-        local ok, json = pcall(vim.json.decode, table.concat(vim.fn.readfile('package.json'), ' '))
-        if not ok then
-          return {}
-        end
-
-        local scripts = {}
-        for k, _ in pairs(json.scripts) do
-          table.insert(scripts, k)
-        end
-        return scripts
-      end
-
-      local i = 1
-      vim.api.nvim_create_user_command('YR', function(opts)
-        vim.cmd(i .. [[TermExec cmd='yarn run ]] .. opts.args .. [[']])
-        i = i + 1
-      end, { nargs = 1, complete = package_json_scripts })
     end,
   },
   { 'thinca/vim-prettyprint', cmd = { 'PP' } },
@@ -441,11 +456,11 @@ return {
   { 'dstein64/vim-startuptime', cmd = { 'StartupTime' } },
   {
     'segeljakt/vim-silicon',
-    enabled = false,
+    enabled = true,
     cmd = { 'Silicon' },
     init = function()
       vim.g.silicon = {
-        font = 'UDEV Gothic 35NF',
+        font = 'SF Mono Square',
         theme = 'OneHalfDark',
         background = color.base().black,
         output = '~/Downloads/silicon-{time:%Y-%m-%d-%H%M%S}.png',
@@ -454,7 +469,6 @@ return {
   },
   {
     'skanehira/denops-silicon.vim',
-    -- Use vim-silicon
     enabled = false,
     dependencies = {
       { 'vim-denops/denops.vim' },
@@ -465,15 +479,28 @@ return {
       require('denops-lazy').load('denops-silicon.vim')
 
       vim.g.silicon_options = {
-        font = 'UDEV Gothic 35NF',
+        font = 'SF Mono Square',
         theme = 'OneHalfDark',
         background_color = color.base().black,
       }
     end,
   },
+  {
+    'krivahtoo/silicon.nvim',
+    enabled = false,
+    build = './install.sh',
+    cmd = { 'Silicon' },
+    config = function()
+      require('silicon').setup({
+        font = 'SF Mono Square',
+        theme = 'OneHalfDark',
+      })
+    end,
+  },
   { 'powerman/vim-plugin-AnsiEsc', cmd = { 'AnsiEsc' } },
   {
     'yuki-yano/ai-review.vim',
+    enabled = false,
     lazy = true,
     dev = true,
     dependencies = {
@@ -494,7 +521,7 @@ return {
       vimx.fn.ai_review.config({
         log_dir = vim.fn.expand('~/dotfiles/data/ai-review'),
         chat_gpt = {
-          model = 'gpt-4',
+          model = 'gpt-4o',
           requests = {
             {
               title = 'Customize request',
@@ -638,5 +665,62 @@ return {
     'wakatime/vim-wakatime',
     enabled = false,
     event = { 'BufRead', 'BufNewFile' },
+  },
+  {
+    'olimorris/codecompanion.nvim',
+    enabled = false,
+    lazy = false,
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-treesitter/nvim-treesitter',
+    },
+    config = function()
+      require('codecompanion').setup()
+    end,
+  },
+  {
+    'yuki-yano/resonator.vim',
+    lazy = true,
+    dev = true,
+    event = { 'BufRead' },
+    cmd = { 'ResonatorServer' },
+    dependencies = {
+      { 'vim-denops/denops.vim' },
+      { 'yuki-yano/denops-lazy.nvim' },
+    },
+    config = function()
+      vim.api.nvim_create_autocmd({ 'User' }, {
+        pattern = { 'DenopsPluginPost:resonator' },
+        callback = function()
+          vim.cmd('ResonatorServer')
+          vim.keymap.set({ 'n' }, '<Leader>s', '<Cmd>ResonatorToggleSync<CR>')
+        end,
+      })
+      require('denops-lazy').load('resonator.vim')
+    end,
+  },
+  {
+    'yuki-yano/auto-backup.vim',
+    lazy = true,
+    dev = true,
+    event = { 'BufRead' },
+    dependencies = {
+      { 'vim-denops/denops.vim' },
+      { 'yuki-yano/denops-lazy.nvim' },
+      { 'lambdalisue/fern.vim' },
+    },
+    config = function()
+      require('denops-lazy').load('auto-backup.vim')
+      vim.api.nvim_create_user_command('AutoBackupFiles', function()
+        local vimx = require('artemis')
+        local path = vimx.fn.auto_backup.get_backup_dir()
+        vim.cmd('Fern ' .. path .. ' -drawer')
+        vim.cmd('wincmd =')
+      end, {})
+    end,
+  },
+  {
+    'dundalek/bloat.nvim',
+    cmd = 'Bloat',
   },
 }

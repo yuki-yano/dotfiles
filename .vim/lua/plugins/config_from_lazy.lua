@@ -2,6 +2,7 @@
 require('rc.options')
 require('rc.func')
 require('rc.highlight')
+require('rc.extui')
 
 vim.api.nvim_create_autocmd({ 'User' }, {
   pattern = { 'VeryLazy' },

@@ -32,6 +32,7 @@ return {
   { 'tpope/vim-repeat', event = { 'VeryLazy' } },
   {
     'stevearc/dressing.nvim',
+    enabled = false,
     event = { 'VeryLazy' },
     config = function()
       vim.api.nvim_create_autocmd({ 'FileType' }, {
@@ -46,6 +47,7 @@ return {
   { 'nvim-lua/plenary.nvim' },
   {
     'rcarriga/nvim-notify',
+    enabled = false,
     event = { 'VeryLazy' },
     config = function()
       require('notify').setup({

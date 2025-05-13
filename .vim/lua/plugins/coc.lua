@@ -3,7 +3,7 @@ local escesc = require('rc.func').escesc
 local plugins = {
   {
     'neoclide/coc.nvim',
-    build = 'yarn install --frozen-lockfile',
+    build = 'npm ci',
     event = { 'BufReadPre' },
     dependencies = {
       { 'junegunn/fzf' },
@@ -65,10 +65,6 @@ local plugins = {
       vim.keymap.set({ 'i' }, '<C-s>', [[<Cmd>call CocActionAsync('showSignatureHelp')<CR>]], { silent = true })
 
       vim.keymap.set({ 'n' }, 'K', function()
-        if require('ufo').peekFoldedLinesUnderCursor() then
-          return
-        end
-
         if vim.tbl_contains({ 'vim', 'help' }, vim.o.filetype) then
           vim.cmd('h ' .. vim.fn.expand('<cword>'))
         elseif vim.fn['coc#rpc#ready']() then

@@ -44,6 +44,7 @@ return {
       vim.g.fzf_preview_mru_limit = 5000
       vim.g.fzf_preview_use_dev_icons = true
       vim.g.fzf_preview_default_fzf_options = {
+        ['--scheme'] = 'history',
         ['--reverse'] = true,
         ['--preview-window'] = 'wrap',
         ['--bind'] = 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,?:toggle-preview,ctrl-n:down,ctrl-p:up,ctrl-j:next-history,ctrl-k:previous-history,ctrl-a:toggle-all',
@@ -57,45 +58,79 @@ return {
         vim.env.BAT_THEME = 'gruvbox-dark'
         vim.env.FZF_PREVIEW_PREVIEW_BAT_THEME = 'Catppuccin-mocha'
         vim.env.FZF_DEFAULT_OPTS =
-          '--reverse --no-separator --color=bg+:#1D2021,bg:#1d2021,spinner:#D8A657,hl:#A9B665,fg:#D4BE98,header:#928374,info:#89B482,pointer:#7DAEA3,marker:#D8A657,fg+:#D4BE98,prompt:#E78A4E,hl+:#89B482'
+          '--reverse --pointer=">" --marker=">" --no-separator --color=bg+:#1D2021,bg:#1d2021,spinner:#D8A657,hl:#A9B665,fg:#D4BE98,header:#928374,info:#89B482,pointer:#7DAEA3,marker:#D8A657,fg+:#D4BE98,prompt:#E78A4E,hl+:#89B482'
       elseif vim.env.NVIM_COLORSCHEME == 'catppuccin' then
         vim.env.BAT_THEME = 'gruvbox-dark'
         vim.env.FZF_PREVIEW_PREVIEW_BAT_THEME = 'Catppuccin-mocha'
         vim.env.FZF_DEFAULT_OPTS =
-          '--reverse --no-separator --color=bg+:#1E1E2E,bg:#1E1E2E,spinner:#F5E0DC,hl:#89B4FA,fg:#CDD6F4,header:#A6ADC8,info:#CBA6F7,pointer:#F5E0DC,marker:#F5E0DC,fg+:#CDD6F4,prompt:#89B4FA,hl+:#89B4FA'
+          '--reverse --pointer=">" --marker=">" --no-separator --color=bg+:#1E1E2E,bg:#1E1E2E,spinner:#F5E0DC,hl:#89B4FA,fg:#CDD6F4,header:#A6ADC8,info:#CBA6F7,pointer:#F5E0DC,marker:#F5E0DC,fg+:#CDD6F4,prompt:#89B4FA,hl+:#89B4FA'
       end
 
-      vim.keymap.set({ 'n' }, '<Plug>(ff)r', '<Cmd>FzfPreviewProjectMruFilesRpc --experimental-fast<CR>')
-      vim.keymap.set({ 'n' }, '<Plug>(ff)w', '<Cmd>FzfPreviewProjectMrwFilesRpc --experimental-fast<CR>')
-      vim.keymap.set({ 'n' }, '<Plug>(ff)a', '<Cmd>FzfPreviewFromResourcesRpc --experimental-fast project_mru git<CR>')
-      vim.keymap.set({ 'n' }, '<Plug>(ff)s', '<Cmd>FzfPreviewGitStatusRpc --experimental-fast<CR>')
-      vim.keymap.set({ 'n' }, '<Plug>(ff)gg', '<Cmd>FzfPreviewGitActionsRpc<CR>')
-      vim.keymap.set({ 'n' }, '<Plug>(ff)b', '<Cmd>FzfPreviewBuffersRpc<CR>')
-      vim.keymap.set({ 'n' }, '<Plug>(ff)<C-o>', '<Cmd>FzfPreviewJumpsRpc --experimental-fast<CR>')
-      vim.keymap.set({ 'n' }, '<Plug>(ff)g;', '<Cmd>FzfPreviewChangesRpc<CR>')
-      vim.keymap.set(
-        { 'n' },
-        '<Plug>(ff)/',
-        [[:<C-u>FzfPreviewProjectGrepRpc --experimental-fast --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort . <C-r>=expand('%')<CR><CR>]]
-      )
-      vim.keymap.set({ 'n' }, '<Plug>(ff)q', '<Cmd>FzfPreviewQuickFixRpc<CR>')
-      -- vim.keymap.set({ 'n' }, '<Plug>(ff)l', '<Cmd>FzfPreviewLocationListRpc<CR>')
-      vim.keymap.set(
-        { 'n' },
-        '<Plug>(ff)f',
-        ':<C-u>FzfPreviewProjectGrepRpc --experimental-fast --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort '
-      )
-      vim.keymap.set(
-        { 'x' },
-        '<Plug>(ff)f',
-        [["sy:FzfPreviewProjectGrepRpc --experimental-fast --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"]]
-      )
-      vim.keymap.set({ 'n' }, '<Plug>(ff):', '<Cmd>FzfPreviewCommandPaletteRpc<CR>')
-      vim.keymap.set(
-        { 'n' },
-        '<Plug>(ff)p',
-        '<Cmd>FzfPreviewYankroundRpc --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>'
-      )
+      local function create_fzf_preview_keymaps(mappings)
+        local initialized = false
+
+        local function initialize_all()
+          if initialized then
+            return
+          end
+          initialized = true
+
+          for _, m in ipairs(mappings) do
+            local key = m[1]
+            local cmd = m[2]
+            if #m > 2 then
+              cmd = cmd .. ' ' .. table.concat({ unpack(m, 3) }, ' ')
+            end
+            vim.keymap.set('n', '<Plug>(ff)' .. key, '<Cmd>' .. cmd .. '<CR>')
+          end
+        end
+
+        for _, m in ipairs(mappings) do
+          local key = m[1]
+          local cmd = m[2]
+          if #m > 2 then
+            cmd = cmd .. ' ' .. table.concat({ unpack(m, 3) }, ' ')
+          end
+
+          vim.keymap.set('n', '<Plug>(ff)' .. key, function()
+            initialize_all()
+            return ':<C-u>' .. cmd .. '<CR>'
+          end, { expr = true, silent = true })
+        end
+      end
+
+      local mappings = {
+        -- { 'r', 'FzfPreviewProjectMruFilesRpc' },
+        -- { 'w', 'FzfPreviewProjectMrwFilesRpc' },
+        -- { 'a', 'FzfPreviewFromResourcesRpc', 'project_mru', 'git' },
+        -- { 's', 'FzfPreviewGitStatusRpc' },
+        -- { 'gg', 'FzfPreviewGitActionsRpc' },
+        -- { 'b', 'FzfPreviewBuffersRpc' },
+        -- { '<C-o>', 'FzfPreviewJumpsRpc' },
+        -- { 'g;', 'FzfPreviewChangesRpc' },
+        -- { 'q', 'FzfPreviewQuickFixRpc' },
+        -- { 'l', 'FzfPreviewLocationListRpc' },
+        -- { ':', 'FzfPreviewCommandPaletteRpc' },
+        -- { 'p', 'FzfPreviewYankroundRpc --add-fzf-arg=--exact --add-fzf-arg=--no-sort' },
+      }
+
+      create_fzf_preview_keymaps(mappings)
+
+      -- vim.keymap.set(
+      --   { 'n' },
+      --   '<Plug>(ff)/',
+      --   [[:<C-u>FzfPreviewProjectGrepRpc --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort . <C-r>=expand('%')<CR><CR>]]
+      -- )
+      -- vim.keymap.set(
+      --   { 'n' },
+      --   '<Plug>(ff)f',
+      --   ':<C-u>FzfPreviewProjectGrepRpc --resume --add-fzf-arg=--exact --add-fzf-arg=--no-sort '
+      -- )
+      -- vim.keymap.set(
+      --   { 'x' },
+      --   '<Plug>(ff)f',
+      --   [["sy:FzfPreviewProjectGrepRpc --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"]]
+      -- )
     end,
     config = function()
       local vimx = require('artemis')
@@ -157,8 +192,7 @@ return {
     cmd = { 'Ddu' },
     event = { 'CmdlineEnter' },
     init = function()
-      vim.keymap.set({ 'n' }, '<Plug>(ff)h', '<Cmd>Ddu help<CR>')
-
+      -- vim.keymap.set({ 'n' }, '<Plug>(ff)h', '<Cmd>Ddu help<CR>')
       add_disable_cmp_filetypes({ 'ddu-ff', 'ddu-ff-filter' })
     end,
     config = function()
@@ -170,7 +204,6 @@ return {
         ui = 'ff',
         uiParams = {
           ff = {
-            startFilter = false,
             split = 'floating',
             prompt = '> ',
             floatingBorder = 'rounded',
@@ -239,57 +272,57 @@ return {
 
           vim.keymap.set({ 'n' }, '<CR>', function()
             vim.cmd([[stopinsert]])
-            vimx.fn.ddu.ui.ff.do_action('itemAction')
+            vimx.fn.ddu.ui.do_action('itemAction')
           end, { buffer = true })
           vim.keymap.set({ 'n' }, '<Space>', function()
-            vimx.fn.ddu.ui.ff.do_action('toggleSelectItem')
-            vimx.fn.ddu.ui.ff.do_action('cursorNext')
+            vimx.fn.ddu.ui.do_action('toggleSelectItem')
+            vimx.fn.ddu.ui.do_action('cursorNext')
           end, { buffer = true })
           vim.keymap.set({ 'n' }, 'i', function()
-            vimx.fn.ddu.ui.ff.do_action('openFilterWindow')
+            vimx.fn.ddu.ui.do_action('openFilterWindow')
           end, { buffer = true })
           vim.keymap.set({ 'n' }, '>', function()
-            vimx.fn.ddu.ui.ff.do_action('chooseAction')
+            vimx.fn.ddu.ui.do_action('chooseAction')
           end, { buffer = true })
 
           vim.keymap.set({ 'n' }, 'q', function()
-            vimx.fn.ddu.ui.ff.do_action('quit')
+            vimx.fn.ddu.ui.do_action('quit')
           end, { buffer = true })
           vim.keymap.set({ 'n' }, '<Esc><Esc>', function()
-            vimx.fn.ddu.ui.ff.do_action('quit')
+            vimx.fn.ddu.ui.do_action('quit')
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<C-g>', function()
             vim.cmd([[stopinsert]])
-            vimx.fn.ddu.ui.ff.do_action('quit')
+            vimx.fn.ddu.ui.do_action('quit')
           end, { buffer = true, nowait = true })
           vim.keymap.set({ 'n', 'i' }, '<C-c>', function()
             vim.cmd([[stopinsert]])
-            vimx.fn.ddu.ui.ff.do_action('quit')
+            vimx.fn.ddu.ui.do_action('quit')
           end, { buffer = true })
 
           vim.keymap.set({ 'n' }, 'j', function()
-            vimx.fn.ddu.ui.ff.do_action('cursorNext')
+            vimx.fn.ddu.ui.do_action('cursorNext')
           end, { buffer = true })
           vim.keymap.set({ 'n' }, 'k', function()
-            vimx.fn.ddu.ui.ff.do_action('cursorPrevious')
+            vimx.fn.ddu.ui.do_action('cursorPrevious')
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<C-n>', function()
-            vimx.fn.ddu.ui.ff.do_action('cursorNext')
+            vimx.fn.ddu.ui.do_action('cursorNext')
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<C-p>', function()
-            vimx.fn.ddu.ui.ff.do_action('cursorPrevious')
+            vimx.fn.ddu.ui.do_action('cursorPrevious')
           end, { buffer = true })
 
           vim.keymap.set({ 'n', 'i' }, '<C-d>', function()
             local ctrl_d = vim.api.nvim_replace_termcodes('<C-d>', true, true, true)
-            vimx.fn.ddu.ui.ff.do_action('previewExecute', { command = 'normal! ' .. ctrl_d })
+            vimx.fn.ddu.ui.do_action('previewExecute', { command = 'normal! ' .. ctrl_d })
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<C-u>', function()
             local ctrl_u = vim.api.nvim_replace_termcodes('<C-u>', true, true, true)
-            vimx.fn.ddu.ui.ff.do_action('previewExecute', { command = 'normal! ' .. ctrl_u })
+            vimx.fn.ddu.ui.do_action('previewExecute', { command = 'normal! ' .. ctrl_u })
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '?', function()
-            vimx.fn.ddu.ui.ff.do_action('toggleAutoAction')
+            vimx.fn.ddu.ui.do_action('toggleAutoAction')
           end, { buffer = true })
         end,
       })
@@ -298,49 +331,49 @@ return {
         callback = function()
           vim.keymap.set({ 'n', 'i' }, '<CR>', function()
             vim.cmd([[stopinsert]])
-            vimx.fn.ddu.ui.ff.do_action('itemAction')
+            vimx.fn.ddu.ui.do_action('itemAction')
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '>', function()
-            vimx.fn.ddu.ui.ff.do_action('chooseAction')
+            vimx.fn.ddu.ui.do_action('chooseAction')
           end, { buffer = true })
 
           vim.keymap.set({ 'n' }, 'q', function()
-            vimx.fn.ddu.ui.ff.do_action('quit')
+            vimx.fn.ddu.ui.do_action('quit')
           end, { buffer = true })
           vim.keymap.set({ 'n' }, '<Esc><Esc>', function()
             vim.cmd([[stopinsert]])
-            vimx.fn.ddu.ui.ff.do_action('quit')
+            vimx.fn.ddu.ui.do_action('quit')
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<C-g>', function()
             vim.cmd([[stopinsert]])
-            vimx.fn.ddu.ui.ff.do_action('quit')
+            vimx.fn.ddu.ui.do_action('quit')
           end, { buffer = true, nowait = true })
           vim.keymap.set({ 'n', 'i' }, '<C-c>', function()
             vim.cmd([[stopinsert]])
-            vimx.fn.ddu.ui.ff.do_action('quit')
+            vimx.fn.ddu.ui.do_action('quit')
           end, { buffer = true })
 
           vim.keymap.set({ 'n', 'i' }, '<C-n>', function()
-            vimx.fn.ddu.ui.ff.do_action('cursorNext')
+            vimx.fn.ddu.ui.do_action('cursorNext')
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<C-p>', function()
-            vimx.fn.ddu.ui.ff.do_action('cursorPrevious')
+            vimx.fn.ddu.ui.do_action('cursorPrevious')
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<Tab>', function()
-            vimx.fn.ddu.ui.ff.do_action('toggleSelectItem')
-            vimx.fn.ddu.ui.ff.do_action('cursorNext')
+            vimx.fn.ddu.ui.do_action('toggleSelectItem')
+            vimx.fn.ddu.ui.do_action('cursorNext')
           end, { buffer = true })
 
           vim.keymap.set({ 'n', 'i' }, '<C-d>', function()
             local ctrl_d = vim.api.nvim_replace_termcodes('<C-d>', true, true, true)
-            vimx.fn.ddu.ui.ff.do_action('previewExecute', { command = 'normal! ' .. ctrl_d })
+            vimx.fn.ddu.ui.do_action('previewExecute', { command = 'normal! ' .. ctrl_d })
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<C-u>', function()
             local ctrl_u = vim.api.nvim_replace_termcodes('<C-u>', true, true, true)
-            vimx.fn.ddu.ui.ff.do_action('previewExecute', { command = 'normal! ' .. ctrl_u })
+            vimx.fn.ddu.ui.do_action('previewExecute', { command = 'normal! ' .. ctrl_u })
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '?', function()
-            vimx.fn.ddu.ui.ff.do_action('toggleAutoAction')
+            vimx.fn.ddu.ui.do_action('toggleAutoAction')
           end, { buffer = true })
 
           vim.keymap.set({ 'i' }, "'", "'", { buffer = true })
@@ -418,7 +451,7 @@ return {
               ['q'] = actions.close,
             },
             i = {
-              ['<C-g>'] = actions.close,
+              ['<C-g>'] = { actions.close, type = 'action', opts = { nowait = true } },
               ['<C-c>'] = actions.close,
             },
           },

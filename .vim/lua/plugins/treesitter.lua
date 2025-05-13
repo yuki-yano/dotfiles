@@ -1,3 +1,4 @@
+local has = require('rc.plugin_utils').has_plugin
 local color = require('rc.color')
 
 return {
@@ -21,14 +22,14 @@ return {
         ensure_installed = {
           'typescript',
           'tsx',
-          -- NOTE: Minified JS files are too slow when opened, so they are not used
-          -- 'javascript',
+          'javascript',
           'graphql',
           'jsdoc',
           'ruby',
           'python',
           'lua',
           'vim',
+          'vimdoc',
           'json',
           'jsonc',
           'json5',
@@ -39,6 +40,7 @@ return {
           'bash',
           'html',
           'css',
+          'diff',
           'comment',
           'regex',
         },
@@ -64,10 +66,6 @@ return {
             },
           },
         },
-        context_commentstring = {
-          enable = true,
-          enable_autocmd = false,
-        },
         yati = {
           enable = true,
           default_lazy = true,
@@ -78,8 +76,10 @@ return {
         },
       })
 
-      -- require('rainbow-delimiters')
       require('treesitter-context').setup()
+      if has('rainbow-delimiters.nvim') then
+        require('rainbow-delimiters').setup()
+      end
 
       -- NOTE: Workaround for tsx not working with markdown_inline
       vim.treesitter.query.add_directive('directivename', function() end, true)

@@ -1,17 +1,12 @@
 local M = {}
 
 -- EscEsc
-M.escesc = {
-  function()
-    vim.cmd([[echo '']])
-  end,
-}
-vim.api.nvim_create_user_command('EscEsc', function()
-  for _, v in ipairs(M.escesc) do
-    v()
-  end
-end, {})
-vim.keymap.set({ 'n' }, '<Esc><Esc>', '<Cmd>nohlsearch<CR><Cmd>EscEsc<CR>')
+local esc_esc_width = 1
+vim.keymap.set({ 'n' }, '<Esc><Esc>', function()
+  vim.cmd([[nohlsearch]])
+  esc_esc_width = esc_esc_width == 1 and 2 or 1
+  vim.print(string.rep(' ', esc_esc_width))
+end)
 
 -- Reset scroll
 vim.on_key(function(key)
@@ -223,15 +218,6 @@ vim.api.nvim_create_user_command('DenoFmt', function(opts)
   vim.cmd(opts.line1 .. ',' .. opts.line2 .. '!deno fmt --ext=' .. ft .. ' -')
 end, { range = '%' })
 
--- VSCode
-vim.api.nvim_create_user_command('VSCode', function()
-  local full_path = vim.fn.expand('%:p')
-  vim.notify('Open ' .. full_path .. ' in VSCode', vim.log.levels.INFO, { title = 'Open VSCode' })
-
-  -- for Mac
-  vim.cmd('!open vscode://file/' .. full_path .. ':' .. vim.fn.line('.') .. ':' .. vim.fn.col('.'))
-end, {})
-
 -- Interrupt large js file
 vim.cmd([[autocmd BufEnter *.js if getfsize(@%) > 1024 * 1024 | set syntax=OFF | call interrupt() | endif]])
 
@@ -276,5 +262,29 @@ vim.api.nvim_create_user_command('PluginList', function()
     vim.print(plugin[1])
   end
 end, {})
+
+local open_vscode_based_editor = function(editor, args)
+  local path = vim.fn.expand('%:p')
+  local line = vim.fn.line('.')
+  local col = vim.fn.col('.')
+
+  vim.cmd('!' .. editor .. ' . ' .. args .. ' --goto ' .. path .. ':' .. line .. ':' .. col)
+  vim.notify('Open ' .. path .. ' in ' .. editor, vim.log.levels.INFO, { title = 'Open ' .. editor })
+end
+
+-- VSCode
+vim.api.nvim_create_user_command('VSCode', function(opts)
+  open_vscode_based_editor('code', opts.args)
+end, { nargs = '?' })
+
+-- Cursor
+vim.api.nvim_create_user_command('Cursor', function(opts)
+  open_vscode_based_editor('cursor', opts.args)
+end, { nargs = '?' })
+
+-- Windsurf
+vim.api.nvim_create_user_command('Windsurf', function(opts)
+  open_vscode_based_editor('windsurf', opts.args)
+end, { nargs = '?' })
 
 return M
