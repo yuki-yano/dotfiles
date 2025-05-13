@@ -1,65 +1,73 @@
-#!/bin/bash
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
-#
-# See: https://github.com/b4b4r07/dotfiles
-# Licensed under the MIT license.
-# Copyright (c) 2016 "BABAROT" b4b4r07
-#
-# Permission is hereby granted, free of charge, to any person obtaining
-# a copy of this software and associated documentation files (the
-# "Software"), to deal in the Software without restriction, including
-# without limitation the rights to use, copy, modify, merge, publish,
-# distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so, subject to
-# the following conditions:
-#
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-#
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
-airport_path="/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport"
+#!/usr/bin/env bash
 
-signals=( ▂▅▇)
-
-# Get the wifi information and then set it to an info array
-info=( $(eval "$airport_path" --getinfo | grep -E "^ *(agrCtlRSSI|state|lastTxRate|SSID):" | awk '{print $2}') )
-if [[ ${#info[@]} -eq 0 ]]; then
-    echo "#[fg=red]offline"
-    exit 1
+# Check dependencies
+if ! command -v system_profiler >/dev/null 2>&1; then
+  echo "#[fg=red]system_profiler not found" >&2
+  exit 1
 fi
 
-rssi="${info[0]}"
-rate="${info[2]}"
-ssid="${info[3]}"
+if ! command -v jq >/dev/null 2>&1; then
+  echo "#[fg=red]jq not found; brew install jq" >&2
+  exit 1
+fi
 
-# Determine the signal from rssi of wifi
+# Retrieve JSON data
+json=$(system_profiler -json SPAirPortDataType -detailLevel basic 2>/dev/null)
+if [[ -z "$json" ]]; then
+  echo "#[fg=red]offline"
+  exit 1
+fi
+
+# Detect active interface
+iface=$(jq -r '
+  .SPAirPortDataType[0]
+  .spairport_airport_interfaces[]
+  | select(.spairport_current_network_information._name != null)
+  | ._name
+' <<<"$json" | head -n1)
+
+if [[ -z "$iface" ]]; then
+  echo "#[fg=red]offline"
+  exit 1
+fi
+
+# Extract SSID, RSSI, and transmit rate
+ssid=$(jq -r --arg IF "$iface" '
+  .SPAirPortDataType[0]
+  .spairport_airport_interfaces[]
+  | select(._name == $IF)
+  | .spairport_current_network_information._name
+' <<<"$json")
+
+rssi=$(jq -r --arg IF "$iface" '
+  .SPAirPortDataType[0]
+  .spairport_airport_interfaces[]
+  | select(._name == $IF)
+  | .spairport_current_network_information.spairport_signal_noise
+' <<<"$json" | awk '{print $1}')
+
+rate=$(jq -r --arg IF "$iface" '
+  .SPAirPortDataType[0]
+  .spairport_airport_interfaces[]
+  | select(._name == $IF)
+  | .spairport_current_network_information.spairport_network_rate
+' <<<"$json")
+
+# Build signal strength blocks
+signals=(▂▅▇)
 signal=""
-for ((j = 0; j < "${#signals[@]}"; j++))
-do
-    if ((  $j == 0 && $rssi > -100 )) ||
-        (( $j == 1 && $rssi > -80  )) ||
-        (( $j == 2 && $rssi > -50  )); then
-        signal="${signal}${signals[$j]} "
-    else
-        signal="${signal}  "
-    fi
+for idx in "${!signals[@]}"; do
+  threshold=$(( idx==0 ? -100 : idx==1 ? -80 : -50 ))
+  if (( rssi > threshold )); then
+    signal+="${signals[idx]}"
+  fi
 done
 
-if [ "$rate" = 0 ]; then
-    echo "#[ft=red]no_wifi"
-    exit 1
+# Handle no connection
+if (( rate == 0 )); then
+  echo "#[fg=red]no_wifi"
+  exit 1
 fi
 
-echo -e "#[fg=white]${ssid} #[fg=green]${rate}Mbps ${signal}"
+# Output formatted for tmux status-right
+echo "#[fg=white]${ssid} #[fg=green]${rate}Mbps ${signal}"
