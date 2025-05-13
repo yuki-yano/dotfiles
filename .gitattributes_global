@@ -1,2 +1,4 @@
-*.py diff=python
-*.rb diff=ruby
+package-lock.json binary
+yarn.lock binary
+pnpm-lock.yaml binary
+deno.lock binary

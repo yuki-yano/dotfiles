@@ -10,6 +10,7 @@
 # Config
 /.config/*
 !/.config/alacritty/
+!/.config/atuin
 !/.config/bat/
 !/.config/efm-langserver
 !/.config/karabiner
@@ -28,3 +29,6 @@
 
 # data
 /data
+
+# aider
+.aider*

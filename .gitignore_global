@@ -51,6 +51,10 @@ cSpell.json
 
 # VSCode
 .vscode
+.history
 
 # IntelliJ
 .idea
+
+# repomix
+repomix-output.txt
