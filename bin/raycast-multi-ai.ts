@@ -19,7 +19,8 @@ type Prefix = typeof defaultPrefixes[number];
 
 const defaultPrefixes = ["g", "f", "p", "c"] as const;
 const query = encodeURIComponent(Deno.args[0]);
-const prefixes = (Deno.args[1]?.split("") ?? defaultPrefixes) as Array<Prefix>;
+const arg1 = Deno.args[1];
+const prefixes = arg1 ? arg1.split("") as Array<Prefix> : defaultPrefixes;
 
 const services = {
   g: "https://chatgpt.com/?query=",
