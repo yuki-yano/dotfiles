@@ -1,9 +1,9 @@
-#!/usr/bin/env -S deno run --unstable -A
+#!/usr/bin/env -S deno run -A
 
 // Required parameters:
 // @raycast.schemaVersion 1
-// @raycast.title yabai
-// @raycast.packageName yabai package
+// @raycast.title yabai-resize
+// @raycast.packageName yabai window resize package
 // @raycast.mode compact
 
 // Optional parameters:
@@ -16,7 +16,9 @@
 // @raycast.author Yuki Yano
 // @raycast.authorURL https://github.com/yuki-yano
 
-import $ from "https://deno.land/x/dax@0.33.0/mod.ts";
+import $ from "jsr:@david/dax@0.42.0";
+
+Deno.env.set("PATH", `${Deno.env.get("PATH")}:${Deno.env.get("HOME")}/.local/bin`);
 
 const [_width, _height] = Deno.args as [string, string];
 

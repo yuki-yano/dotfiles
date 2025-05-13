@@ -29,19 +29,7 @@ yabai -m config left_padding                 12
 yabai -m config right_padding                12
 yabai -m config window_gap                   24
 
-yabai -m rule --add app="^Finder$" manage=off
-yabai -m rule --add app="^システム環境設定$" manage=off
-yabai -m rule --add app="^アクティビティモニタ$" manage=off
-yabai -m rule --add app="^ミュージック$" manage=off
-yabai -m rule --add app="^Spark$" manage=off
-yabai -m rule --add app="^zoom.us$" manage=off
-yabai -m rule --add app="^1Password.*$" manage=off
-yabai -m rule --add app="^CleanShot X$" manage=off
-yabai -m rule --add app="^Alfred Preferences$" manage=off
-yabai -m rule --add app="^Raycast$" manage=off
-yabai -m rule --add app="^Font Book$" manage=off
-yabai -m rule --add app="^Karabiner-Elements$" manage=off
-yabai -m rule --add app="^Karabiner-EventViewer$" manage=off
-yabai -m rule --add app="^Spotify$" manage=off
+yabai -m rule --add app=".*" manage=off
+yabai -m rule --apply
 
 echo "yabai configuration loaded.."

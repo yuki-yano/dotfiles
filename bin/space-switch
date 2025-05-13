@@ -1,0 +1,20 @@
+#!/usr/bin/env osascript
+
+on run argv
+    if (count of argv) < 1 then
+        error "No argument provided. Please provide a space number."
+    end if
+
+    set spaceNumber to item 1 of argv as number
+    if spaceNumber is greater than 10 or spaceNumber is less than 1 then
+        error "Invalid space number. Please provide a number between 1 and 10."
+    end if
+
+    -- Calculate the appropriate key code
+    set keyCodes to {18, 19, 20, 21, 23, 22, 26, 28, 25, 29} -- Key codes for numbers 0-9
+    set keyCode to item (spaceNumber) of keyCodes
+
+    tell application "System Events"
+        key code keyCode using control down
+    end tell
+end run
