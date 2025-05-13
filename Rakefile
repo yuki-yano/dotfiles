@@ -2,10 +2,10 @@ SRC_DIR       = File.dirname(File.expand_path(__FILE__))
 ZINIT_DIR     = File.join(ENV['HOME'], '.zinit')
 ZGEN_DIR      = File.join(ENV['HOME'], '.zsh/zgen')
 DOTFILES_SRCS = %w[
+  .aider.conf.yml
   .bashrc
   .config
   .ctags.d
-  .dir_colors
   .finicky.js
   .gitattributes_global
   .gitconfig

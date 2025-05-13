@@ -11,7 +11,6 @@ install mas
 
 ## Shell
 install bash binutils coreutils findutils bash-completion
-install shellcheck # Haskell
 install tmux reattach-to-user-namespace
 install zsh
 
@@ -19,6 +18,8 @@ install zsh
 # install railwaycat/emacsmacport/emacs-mac
 install readline
 install vim
+install utf8proc --HEAD
+install tree-sitter --HEAD
 install neovim --HEAD
 
 ## Container
@@ -31,18 +32,18 @@ install gcc
 install go
 install java
 install lua
-install node yarn pnpm nodenv
+install node yarn pnpm
 install openssl
 install perl
-install python pyenv
-install ruby rbenv
+install python
+install ruby
+install mise
 
 ## Service
 # install asciinema
-# install heroku/brew/heroku
-# install packer
 # install terraform
 install awscli
+install session-manager-plugin
 install planetscale/tap/pscale
 
 ## Database
@@ -50,7 +51,7 @@ install sqlite
 install mysql-client
 
 ## Modern CLI
-install bat ctop direnv dust exa fd glow ripgrep procs vivid
+install bat ctop direnv dust eza fd glow ripgrep procs vivid atuin
 
 ## GNU Core Utilities
 install autoconf automake cmake gawk gnu-sed gnu-time gpatch gpg2 wget
@@ -67,7 +68,7 @@ install gojq
 install graphviz
 install itchyny/tap/mmv
 install jq
-install neofetch
+install fastfetch
 install parallel
 install rsync
 install silicon
