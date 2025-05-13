@@ -16,7 +16,7 @@ snippets:
     snippet: git commit -m '{{commit_message}}'
   - name: git commit fixup
     keyword: gcif
-    snippet: git commit --fixup {{commit_id}}
+    snippet: git fixup {{commit_id}}
   - name: git diff
     keyword: gd
     snippet: git diff {{branch}}
@@ -95,10 +95,6 @@ snippets:
   - name: git rebase conflict resolution
     snippet: git range-diff @{u} @{1} @
 
-  - name: auto commit message
-    keyword: ac
-    snippet: npx aicommits
-
   - name: tms
     keyword: t
     snippet: tms
@@ -158,10 +154,20 @@ snippets:
 
 completions:
   - name: kill
-    patterns: 
+    patterns:
       - "^kill( -9)? $"
     sourceCommand: "procs --color=always"
     options:
       --multi: true
       --prompt: "'Kill Process> '"
     callback: "awk '{print $1}'"
+  - name: git fixup script
+    patterns:
+      - "^git fixup $"
+    sourceCommand: "git log --decorate --color=always --format='%C(green)[commit] %C(magenta)%h%x09%C(yellow)%cr%x09%C(blue)[%an]%x09%C(auto)%s%d' | column -t -s $'\\t'"
+    options:
+      --prompt: "'Git fixup> '"
+      --exact: true
+      --no-sort: true
+      --preview: "git show --color=always {2}"
+    callback: "awk '{print $2}'"

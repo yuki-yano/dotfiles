@@ -23,7 +23,7 @@ setopt no_global_rcs
 typeset -U path fpath
 
 # default path
-path=(~/.config/yarn/global/node_modules/.bin(N-/) /usr/local/bin(N-/) /usr/bin(N-/) /bin(N-/) /sbin(N-/) /usr/sbin(N-/) /usr/local/sbin(N-/) /usr/X11/bin(N-/) ~/.bin(N-/))
+path=(~/.config/yarn/global/node_modules/.bin(N-/) /opt/homebrew/bin(N-/) /usr/local/bin(N-/) /usr/bin(N-/) /bin(N-/) /sbin(N-/) /usr/sbin(N-/) /usr/local/sbin(N-/) /usr/X11/bin(N-/) ~/.bin(N-/))
 fpath=(~/.zsh/completions(N-/) $fpath)
 
 # OpenSSL
@@ -31,7 +31,7 @@ path=(/usr/local/opt/openssl/bin(N-/) $path)
 export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/
 
 # homebrew
-alias brew="PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin brew"
+alias brew="PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin brew"
 
 # zinit
 ZPLG_HOME=$HOME/.zinit
@@ -40,9 +40,6 @@ path=($ZPFX/bin(N-/) $path)
 
 # popd
 alias p=popd
-
-# curl
-path=(/usr/local/opt/curl/bin(N-/) $path)
 
 # ripgrep
 export RIPGREP_CONFIG_PATH=$HOME/.config/ripgrep/rc
@@ -53,68 +50,16 @@ export XDG_CONFIG_HOME=$HOME/.config
 # gtags
 export GTAGSLABEL=pygments
 
-# rbenv
-path=(~/.rbenv/shims(N-/) $path)
-export RBENV_SHELL=zsh
-function rbenv() {
-  local command
-  command="$1"
-  if [[ "$#" -gt 0 ]]; then
-    shift
-  fi
+# mise
+eval "$(/opt/homebrew/bin/mise activate zsh)"
 
-  case "$command" in
-    rehash|shell)
-      eval "$(rbenv "sh-$command" "$@")";;
-    *)
-      command rbenv "$command" "$@";;
-  esac
-}
-
-# python2
-path=(/usr/local/opt/python@2/bin(N-/) $path)
-
-# pyenv
-path=(~/.pyenv/shims(N-/) $path)
-export PYENV_ROOT=~/.pyenv
-export PYENV_SHELL=zsh
-export PYTHON_CONFIGURE_OPTS='--enable-framework'
-pyenv() {
-  local command
-  command="$1"
-  if [[ "$#" -gt 0 ]]; then
-    shift
-  fi
-
-  case "$command" in
-    rehash|shell)
-      eval "$(pyenv "sh-$command" "$@")";;
-    *)
-      command pyenv "$command" "$@";;
-  esac
-}
-
-# nodenv
-path=(~/.nodenv/shims(N-/) $path)
-export NODENV_SHELL=zsh
-nodenv() {
-  local command
-  command="$1"
-  if [[ "$#" -gt 0 ]]; then
-    shift
-  fi
-
-  case "$command" in
-    rehash|shell)
-      eval "$(nodenv "sh-$command" "$@")";;
-    *)
-      command nodenv "$command" "$@";;
-  esac
-}
+# pnpm
+# export PNPM_HOME="/Users/yuki-yano/Library/pnpm"
+export PNPM_HOME=$HOME/Library/pnpm
+path=($PNPM_HOME(N-/) $path)
 
 # deno
 path=(~/.deno/bin(N-/) $path)
-
 
 # Rust
 if [[ -d "$HOME/.cargo" ]]; then
@@ -146,5 +91,12 @@ fi
 #  Finally add the path of ~/bin and ~/dotfiles/bin to the beginning
 path=(~/bin(N-/) $path)
 path=(~/dotfiles/bin(N-/) $path)
+path=(~/.local/bin(N-/) $path)
+
+# Added by Windsurf
+path=(~/.codeium/windsurf/bin(N-/) $path)
+
+# Added by LM Studio CLI (lms)
+path=(~/.lmstudio/bin(N-/) $path)
 
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:

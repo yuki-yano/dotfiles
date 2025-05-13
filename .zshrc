@@ -38,8 +38,8 @@ zinit snippet 'https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux'
 
 zinit light yukiycino-dotfiles/zsh-show-buffer-stack
 
-zinit ice lucid
-zinit snippet ~/.config/tabtab/zsh/__tabtab.zsh
+# zinit ice lucid
+# zinit snippet ~/.config/tabtab/zsh/__tabtab.zsh
 
 # }}}
 
@@ -56,11 +56,11 @@ zinit light zsh-users/zsh-completions
 zinit ice lucid wait"0" depth"1" blockf
 zinit light yuki-yano/zsh-completions-anyenv
 
-zinit ice lucid wait"0" as"completion"
-zinit snippet OMZ::plugins/docker/_docker
+# zinit ice lucid wait"0" as"completion"
+# zinit snippet OMZ::plugins/docker/_docker
 
-zinit ice lucid wait"0" as"completion"
-zinit snippet OMZ::plugins/docker-compose/_docker-compose
+# zinit ice lucid wait"0" as"completion"
+# zinit snippet OMZ::plugins/docker-compose/_docker-compose
 
 # git
 # zinit ice lucid wait"0" as"program" pick"$ZPFX/bin/git-*" src"etc/git-extras-completion.zsh" make"PREFIX=$ZPFX"
@@ -77,6 +77,17 @@ zinit light yuki-yano/tmk
 # man
 zinit ice lucid wait"0" as"program" mv"fzf* -> ${ZPFX}/man/man1"
 zinit snippet 'https://github.com/junegunn/fzf/blob/master/man/man1/fzf.1'
+
+# Node
+zinit ice lucid wait"0" as"null" src"ni.zsh" atload"compdef _ni ni"
+zinit light azu/ni.zsh
+# zinit ice wait"!0" \
+#   silent \
+#   atload'compdef _ni ni' \
+#   id-as"local/ni" \
+#   link"local" \
+#   src"${HOME}/repos/github.com/yuki-yano/ni.zsh/ni.zsh"
+# zinit light _local/ni
 
 # util
 zinit ice lucid wait"0" depth"1"
@@ -110,11 +121,11 @@ add-zsh-hook precmd check-buffer-stack
 
 # alias {{{
 
-# exa {{{
-if whence exa > /dev/null; then
-  alias ls="exa"
-  alias ll="exa -lh  --git --time-style long-iso"
-  alias la="exa -alh --git --time-style long-iso"
+# eza {{{
+if whence eza > /dev/null; then
+  alias ls="eza"
+  alias ll="eza -lh  --git --time-style long-iso"
+  alias la="eza -alh --git --time-style long-iso"
 elif whence gls > /dev/null; then
   alias ls='gls --color=auto'
   alias ll='ls -lh'
@@ -128,8 +139,7 @@ fi
 # bat {{{
 if whence bat > /dev/null; then
   export BAT_THEME='gruvbox-dark'
-  alias bat='bat'
-  alias c='bat --color=always --style=plain'
+  alias bat='bat --color=always --style=plain'
 fi
 # }}}
 
@@ -288,6 +298,10 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 
 # fzf {{{
 
+export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
+export FZF_DEFAULT_OPTS='--reverse --no-separator --pointer=">" --marker=">"'
+export FZF_COMPLETION_TRIGGER=';'
+
 # Project
 function f() {
   local project dir repository session current_session
@@ -317,6 +331,10 @@ function f() {
   fi
 }
 
+# }}}
+
+# atuin {{{
+eval "$(atuin init zsh)"
 # }}}
 
 # Prompt {{{
@@ -529,15 +547,40 @@ bindkey '^x^e' edit-command-line
 # Misc {{{
 
 # Auto execute rehash when executing anyenv command
-add-zsh-hook preexec env_rehash
+# add-zsh-hook preexec env_rehash
+#
+# function env_rehash() {
+#   if   echo "$1" | grep rbenv  > /dev/null ; then
+#     rbenv rehash
+#   elif echo "$1" | grep pyenv  > /dev/null ; then
+#     pyenv rehash
+#   elif echo "$1" | grep nodenv > /dev/null ; then
+#     nodenv rehash
+#   fi
+# }
 
-function env_rehash() {
-  if   echo "$1" | grep rbenv  > /dev/null ; then
-    rbenv rehash
-  elif echo "$1" | grep pyenv  > /dev/null ; then
-    pyenv rehash
-  elif echo "$1" | grep nodenv > /dev/null ; then
-    nodenv rehash
+# Git quick save
+function c() {
+  local msg=""
+  if [ $# -gt 0 ]; then
+    msg=" - $*"
+  fi
+
+  if [[ -d .git ]]; then
+    if [[ ! -f ".git/MERGE_HEAD" ]] \
+      && [[ $(git --no-pager diff --cached | wc -l) -eq 0 ]] \
+      && [[ ! -f .git/index.lock ]] \
+      && [[ ! -d .git/rebase-merge ]] \
+      && [[ ! -d .git/rebase-apply ]]; then
+
+      git add --all \
+        && git commit --no-verify --message "Git save: $(date -R)$msg" >/dev/null \
+        && git reset HEAD^ >/dev/null
+
+      echo "Git quick save!$msg"
+    fi
+  else
+    echo "Not a Git repository."
   fi
 }
 
@@ -547,19 +590,11 @@ add-zsh-hook preexec git_auto_save
 function git_auto_save() {
   if [[ -d .git ]] && [[ -f .git/auto-save ]] && [[ $(find .git/auto-save -mmin -$((60)) | wc -l) -eq 0 ]]; then
     if [[ ! -f ".git/MERGE_HEAD" ]] && [[ $(git --no-pager diff --cached | wc -l) -eq 0 ]] && [[ ! -f .git/index.lock ]] && [[ ! -d .git/rebase-merge ]] && [[ ! -d .git/rebase-apply ]]; then
-      touch .git/auto-save && git add --all && git commit --no-verify --message "Auto save: $(date -R)" >/dev/null && git reset HEAD^ >/dev/null
+      touch .git/auto-save && git add --all && git commit --no-verify --message "Git auto save: $(date -R)" >/dev/null && git reset HEAD^ >/dev/null
       echo "Git auto save!"
     fi
   fi
 }
-
-# }}}
-
-# fzf {{{
-
-export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
-export FZF_DEFAULT_OPTS='--reverse --no-separator'
-export FZF_COMPLETION_TRIGGER=';'
 
 # }}}
 

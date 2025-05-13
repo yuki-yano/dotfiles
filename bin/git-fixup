@@ -1,0 +1,88 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# Enable debug mode if GIT_FIXUP_DEBUG is set
+[ "${GIT_FIXUP_DEBUG:-}" ] && set -x
+
+VERSION="1.0.0"
+
+# Error handling
+trap 'echo "Error: Script failed on line $LINENO" >&2' ERR
+
+usage() {
+    cat << EOF
+usage: git fixup <commit> [base-commit]
+
+    Automatically create a fixup commit and apply it using interactive rebase
+
+    Arguments:
+        <commit>      The commit to fix up
+        [base-commit] Optional base commit for rebase (defaults to <commit>^)
+
+    Options:
+        -h, --help    Show this help message
+        --version     Show version information
+EOF
+}
+
+# Parse options
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --help|-h)
+            usage
+            exit 0
+            ;;
+        --version)
+            echo "git-fixup version $VERSION"
+            exit 0
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+# Validate arguments
+if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+    usage
+    exit 1
+fi
+
+# Check if we're in a git repository
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "error: not a git repository" >&2
+    exit 1
+fi
+
+# Validate target commit
+target_commit=$1
+if ! git rev-parse --verify "$target_commit" >/dev/null 2>&1; then
+    echo "error: invalid commit: $target_commit" >&2
+    exit 1
+fi
+
+# Set base commit
+base_commit=${2:-$target_commit^}
+if ! git rev-parse --verify "$base_commit" >/dev/null 2>&1; then
+    echo "error: invalid base commit: $base_commit" >&2
+    exit 1
+fi
+
+# Check for staged changes
+if ! git diff --cached --quiet; then
+    # Create fixup commit
+    if ! git commit --fixup="$target_commit"; then
+        echo "error: failed to create fixup commit" >&2
+        exit 1
+    fi
+else
+    echo "error: no changes staged for commit" >&2
+    exit 1
+fi
+
+# Perform rebase
+if ! git -c sequence.editor=true rebase -i --autosquash "$base_commit"; then
+    echo "error: rebase failed" >&2
+    exit 1
+fi
