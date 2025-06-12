@@ -1,0 +1,31 @@
+{
+  "title": "Alacritty tmux key bindings",
+  "rules": [
+    {
+      "description": "Command+H to Command+Shift+H in Alacritty for tmux",
+      "manipulators": [
+        {
+          "conditions": [
+            {
+              "bundle_identifiers": [
+                "^org\\.alacritty$"
+              ],
+              "type": "frontmost_application_if"
+            }
+          ],
+          "from": {
+            "key_code": "h",
+            "modifiers": { "mandatory": ["command"] }
+          },
+          "to": [
+            {
+              "key_code": "h",
+              "modifiers": ["command", "shift"]
+            }
+          ],
+          "type": "basic"
+        }
+      ]
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 {
-  "title": "Terminal keybind",
+  "title": "Terminal",
   "rules": [
     {
-      "description": "Switch Option to Meta in Terminal",
+      "description": "Right Command to Option in Terminal",
       "manipulators": [
         {
           "type": "basic",

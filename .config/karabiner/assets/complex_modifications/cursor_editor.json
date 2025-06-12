@@ -1,5 +1,5 @@
 {
-  "title": "Ctrl + f/b/n/p to Arrow in Cursor Editor",
+  "title": "Cursor Editor",
   "rules": [
     {
       "description": "Emacs-style Cursor Movement in Cursor Editor",
