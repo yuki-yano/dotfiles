@@ -4,6 +4,93 @@
             "complex_modifications": {
                 "rules": [
                     {
+                        "description": "Command+Return to backslash+Enter in Alacritty for Claude Code",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^org\\.alacritty$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    },
+                                    {
+                                        "input_sources": [{ "language": "en" }],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "return_or_enter",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "parameters": { "basic.to_delayed_action_delay_milliseconds": 20 },
+                                "to": [{ "key_code": "backslash" }],
+                                "to_delayed_action": {
+                                    "to_if_canceled": [],
+                                    "to_if_invoked": [{ "key_code": "return_or_enter" }]
+                                },
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^org\\.alacritty$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    },
+                                    {
+                                        "input_sources": [{ "language": "en" }],
+                                        "type": "input_source_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "return_or_enter",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "parameters": { "basic.to_delayed_action_delay_milliseconds": 80 },
+                                "to": [
+                                    { "key_code": "japanese_eisuu" },
+                                    { "key_code": "backslash" }
+                                ],
+                                "to_delayed_action": {
+                                    "to_if_canceled": [],
+                                    "to_if_invoked": [
+                                        { "key_code": "return_or_enter" },
+                                        { "key_code": "japanese_kana" }
+                                    ]
+                                },
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Command+H to Command+Shift+H in Alacritty for tmux",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^org\\.alacritty$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "h",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "h",
+                                        "modifiers": ["command", "shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
                         "description": "Emacs-style Cursor Movement in Cursor Editor",
                         "manipulators": [
                             {
@@ -99,32 +186,6 @@
                                     }
                                 },
                                 "to": [{ "key_code": "home" }],
-                                "type": "basic"
-                            }
-                        ]
-                    },
-                    {
-                        "description": "Command+H to Command+Shift+H in Alacritty for tmux",
-                        "manipulators": [
-                            {
-                                "conditions": [
-                                    {
-                                        "bundle_identifiers": [
-                                            "^org\\.alacritty$"
-                                        ],
-                                        "type": "frontmost_application_if"
-                                    }
-                                ],
-                                "from": {
-                                    "key_code": "h",
-                                    "modifiers": { "mandatory": ["command"] }
-                                },
-                                "to": [
-                                    {
-                                        "key_code": "h",
-                                        "modifiers": ["command", "shift"]
-                                    }
-                                ],
                                 "type": "basic"
                             }
                         ]
