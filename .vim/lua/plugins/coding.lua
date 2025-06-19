@@ -33,7 +33,7 @@ return {
           { 'yuki-yano/tsnip.nvim' },
         },
       },
-      { 'tzachar/cmp-tabnine', build = './install.sh' },
+      -- { 'tzachar/cmp-tabnine', build = './install.sh' },
       {
         'zbirenbaum/copilot-cmp',
         dependencies = {
@@ -159,8 +159,9 @@ return {
         { name = 'nvim_lsp' },
         -- { name = 'treesitter' },
         { name = 'nvim_lua', max_item_count = 20 },
+        { name = 'lazydev', group_index = 0 },
         -- { name = 'nvim_lsp_signature_help' },
-        { name = 'cmp_tabnine' },
+        -- { name = 'cmp_tabnine', keyword_length = 2 },
         { name = 'buffer' },
         { name = 'tmux', keyword_length = 4, max_item_count = 10, option = { all_panes = true } },
         { name = 'rg', keyword_length = 4, max_item_count = 10 },
@@ -259,7 +260,7 @@ return {
                 treesitter = '[Tree]',
                 nvim_lua = '[Lua]',
                 nvim_lsp_signature_help = '[Signature]',
-                cmp_tabnine = '[Tabnine]',
+                -- cmp_tabnine = '[Tabnine]',
                 buffer = '[Buffer]',
                 tmux = '[Tmux]',
                 rg = '[Rg]',

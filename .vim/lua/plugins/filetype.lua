@@ -27,9 +27,23 @@ return {
     end,
   },
   {
-    'folke/neodev.nvim',
+    'folke/lazydev.nvim',
+    ft = 'lua',
+    opts = {
+      library = {
+        'lazy.nvim',
+        'plenary.nvim',
+      },
+    },
     config = function()
-      require('neodev').setup()
+      ---@diagnostic disable-next-line: missing-fields
+      require('lazydev').setup({
+        library = {
+          { path = 'luvit-meta/library', words = { 'vim%.uv' } },
+          'lazy.nvim',
+          'plenary.nvim',
+        },
+      })
     end,
   },
   { 'pantharshit00/vim-prisma', ft = { 'prisma' } },
