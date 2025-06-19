@@ -790,6 +790,7 @@ return {
       })
     end,
     config = function()
+      ---@diagnostic disable-next-line: missing-fields
       require('smoothcursor').setup({
         cursor = '>',
         priority = 10,
@@ -1091,6 +1092,7 @@ return {
     end,
     config = function()
       require('denops-lazy').load('highlight-undo.nvim')
+      ---@diagnostic disable-next-line: missing-parameter
       require('highlight-undo').setup()
     end,
   },
@@ -1725,6 +1727,24 @@ _x_: reload
             color = red,
             cterm_color = '52',
             name = 'Rb',
+          },
+          ['README.md'] = {
+            icon = ' ',
+            color = yellow,
+            cterm_color = '67',
+            name = 'Readme',
+          },
+          ['rs'] = {
+            icon = ' ',
+            color = white,
+            cterm_color = '180',
+            name = 'Rs',
+          },
+          ['rss'] = {
+            icon = ' ',
+            color = white,
+            cterm_color = '180',
+            name = 'Rss',
           },
           ['rs'] = {
             icon = ' ',

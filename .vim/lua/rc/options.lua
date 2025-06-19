@@ -44,37 +44,7 @@ vim.opt.synmaxcol = 300
 vim.opt.termguicolors = true
 vim.opt.virtualedit = 'all'
 -- NOTE: This is a workaround for treesitter flashing
--- vim.g._ts_force_sync_parsing = true
-vim.api.nvim_create_autocmd({ 'BufWinEnter', 'WinNew', 'WinClosed', 'TabEnter' }, {
-  group = vim.api.nvim_create_augroup('ts_toggle_sync_parsing', {}),
-  callback = function(ctx)
-    local function exec()
-      local wins = vim.api.nvim_tabpage_list_wins(vim.api.nvim_get_current_tabpage())
-      local bufs = {}
-      for _, win in ipairs(wins) do
-        local buf = vim.api.nvim_win_get_buf(win)
-        if bufs[buf] == true then
-          local parsable = pcall(vim.treesitter.get_parser, buf)
-          if parsable then
-            vim.g._ts_force_sync_parsing = true
-            return
-          end
-          -- set to false to avoid multiple tests on the availability of parser
-          bufs[buf] = false
-        end
-        if bufs[buf] == nil then
-          bufs[buf] = true
-        end
-      end
-      vim.g._ts_force_sync_parsing = false
-    end
-
-    if ctx.event == 'WinClosed' then
-      return vim.schedule(exec)
-    end
-    return exec()
-  end,
-})
+vim.g._ts_force_sync_parsing = true
 
 -- Indent
 vim.opt.autoindent = true
