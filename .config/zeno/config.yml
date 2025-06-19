@@ -145,6 +145,10 @@ snippets:
     keyword: udd
     snippet: deno run --allow-all https://deno.land/x/udd/main.ts
 
+  - name: claude yolo
+    keyword: yolo
+    snippet: claude --dangerously-skip-permissions
+
   - name: disable desktop
     keyword: disable_desktop
     snippet: defaults write com.apple.finder CreateDesktop -boolean false; killall Finder
