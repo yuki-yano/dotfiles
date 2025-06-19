@@ -60,19 +60,6 @@ local plugins = {
       local cmp_nvim_lsp = require('cmp_nvim_lsp')
       local null_ls = require('null-ls')
 
-      local base_opts = {
-        capabilities = cmp_nvim_lsp.default_capabilities(),
-        on_attach = function(client, bufnr)
-          if client.name == 'jsonls' then
-            client.server_capabilities.documentFormattingProvider = false
-            client.server_capabilities.documentRangeFormattingProvider = false
-          end
-          if client.server_capabilities.documentSymbolProvider then
-            require('nvim-navic').attach(client, bufnr)
-          end
-        end,
-      }
-
       vim.lsp.config('*', {
         capabilities = cmp_nvim_lsp.default_capabilities(),
       })
@@ -193,7 +180,7 @@ local plugins = {
       })
 
       vim.api.nvim_create_user_command('OrganizeImport', function()
-        local clients = vim.lsp.get_active_clients({ bufnr = 0, name = 'vtsls' })
+        local clients = vim.lsp.vim.lsp.get_clients({ bufnr = 0, name = 'vtsls' })
         if #clients > 0 then
           vim.lsp.buf.execute_command({
             command = '_typescript.organizeImports',
@@ -237,7 +224,7 @@ local plugins = {
           'jsonls',
           'yamlls',
         },
-        automatic_installation = true,
+        automatic_enable = true,
       })
 
       require('mason-null-ls').setup({
@@ -386,6 +373,7 @@ local plugins = {
     'folke/trouble.nvim',
     cmd = { 'Trouble', 'TroubleToggle' },
     config = function()
+      ---@diagnostic disable-next-line: missing-fields
       require('trouble').setup({
         use_diagnostic_signs = true,
         fold_open = 'v',
@@ -396,10 +384,9 @@ local plugins = {
   },
   {
     'j-hui/fidget.nvim',
-    tag = 'legacy',
     event = { 'LspAttach' },
     config = function()
-      require('fidget').setup()
+      require('fidget').setup({})
     end,
   },
   {

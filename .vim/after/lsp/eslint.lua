@@ -18,12 +18,13 @@ return {
       '.eslintrc',
     }
 
-    local found_dirs = vim.fs.find(eslint_config_files, {
+    local found_configs = vim.fs.find(eslint_config_files, {
       upward = true,
       path = path,
     })
-    if #found_dirs > 0 then
-      return callback(found_dirs[1])
+    if #found_configs > 0 then
+      local found_dir = vim.fs.dirname(vim.fs.normalize(found_configs[1]))
+      return callback(found_dir)
     end
   end,
 }
