@@ -1,0 +1,15 @@
+#!/bin/bash
+# Toggle mark/swap functionality for tmux panes
+
+# Get the number of marked panes
+marked_count=$(tmux list-panes -a -F '#{pane_marked}' | grep -c '^1$')
+
+if [ "$marked_count" -gt 0 ]; then
+    # Swap with marked pane and unmark
+    tmux swap-pane
+    tmux select-pane -M
+else
+    # Mark current pane
+    tmux select-pane -m
+    tmux display-message "Pane marked for swap - press prefix m again to swap"
+fi
