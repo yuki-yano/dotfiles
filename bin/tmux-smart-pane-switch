@@ -1,0 +1,227 @@
+#!/bin/bash
+#
+# Cursor-aware pane selection for tmux
+# This script selects a pane based on the cursor position when moving between panes
+#
+# Usage: tmux-smart-pane-switch <direction>
+# where <direction> is one of: left, right, up, down, L, R, U, D
+
+set -euo pipefail
+
+# Get direction from argument
+DIRECTION="${1:-}"
+if [ -z "$DIRECTION" ]; then
+    echo "Usage: $0 {left|right|up|down|L|R|U|D}"
+    exit 1
+fi
+
+# Normalize direction
+case "$DIRECTION" in
+    left|L) DIRECTION="L" ;;
+    right|R) DIRECTION="R" ;;
+    up|U) DIRECTION="U" ;;
+    down|D) DIRECTION="D" ;;
+    *)
+        echo "Invalid direction: $DIRECTION"
+        exit 1
+        ;;
+esac
+
+# Get current pane info
+CURRENT_PANE=$(tmux display-message -p '#{pane_id}')
+CURSOR_Y=$(tmux display-message -p '#{cursor_y}')
+PANE_TOP=$(tmux display-message -p '#{pane_top}')
+PANE_HEIGHT=$(tmux display-message -p '#{pane_height}')
+PANE_LEFT=$(tmux display-message -p '#{pane_left}')
+PANE_WIDTH=$(tmux display-message -p '#{pane_width}')
+
+# Calculate absolute cursor Y position in the window
+ABSOLUTE_CURSOR_Y=$((PANE_TOP + CURSOR_Y))
+
+# Get all panes info
+# Format: pane_id pane_left pane_top pane_width pane_height
+PANES_INFO=$(tmux list-panes -F "#{pane_id} #{pane_left} #{pane_top} #{pane_width} #{pane_height}")
+
+# Function to find the best pane based on cursor position
+find_best_pane() {
+    local direction="$1"
+    local best_pane=""
+    local best_distance=999999
+    
+    while IFS=' ' read -r pane_id pane_left pane_top pane_width pane_height; do
+        # Skip current pane
+        [ "$pane_id" = "$CURRENT_PANE" ] && continue
+        
+        case "$direction" in
+            L)
+                # Moving left: find panes to the left
+                if [ "$pane_left" -lt "$PANE_LEFT" ]; then
+                    # Check if cursor Y position falls within this pane's vertical range
+                    local pane_bottom=$((pane_top + pane_height))
+                    if [ "$ABSOLUTE_CURSOR_Y" -ge "$pane_top" ] && [ "$ABSOLUTE_CURSOR_Y" -lt "$pane_bottom" ]; then
+                        # This pane contains the cursor Y position
+                        # Calculate horizontal distance
+                        local distance=$((PANE_LEFT - (pane_left + pane_width)))
+                        if [ "$distance" -lt "$best_distance" ]; then
+                            best_distance="$distance"
+                            best_pane="$pane_id"
+                        fi
+                    fi
+                fi
+                ;;
+            R)
+                # Moving right: find panes to the right
+                if [ "$pane_left" -gt "$PANE_LEFT" ]; then
+                    # Check if cursor Y position falls within this pane's vertical range
+                    local pane_bottom=$((pane_top + pane_height))
+                    if [ "$ABSOLUTE_CURSOR_Y" -ge "$pane_top" ] && [ "$ABSOLUTE_CURSOR_Y" -lt "$pane_bottom" ]; then
+                        # This pane contains the cursor Y position
+                        # Calculate horizontal distance
+                        local distance=$((pane_left - (PANE_LEFT + PANE_WIDTH)))
+                        if [ "$distance" -lt "$best_distance" ]; then
+                            best_distance="$distance"
+                            best_pane="$pane_id"
+                        fi
+                    fi
+                fi
+                ;;
+            U)
+                # Moving up: find panes above
+                if [ "$pane_top" -lt "$PANE_TOP" ]; then
+                    # Check if cursor X position falls within this pane's horizontal range
+                    local cursor_x=$(tmux display-message -p '#{cursor_x}')
+                    local absolute_cursor_x=$((PANE_LEFT + cursor_x))
+                    local pane_right=$((pane_left + pane_width))
+                    if [ "$absolute_cursor_x" -ge "$pane_left" ] && [ "$absolute_cursor_x" -lt "$pane_right" ]; then
+                        # This pane contains the cursor X position
+                        # Calculate vertical distance
+                        local distance=$((PANE_TOP - (pane_top + pane_height)))
+                        if [ "$distance" -lt "$best_distance" ]; then
+                            best_distance="$distance"
+                            best_pane="$pane_id"
+                        fi
+                    fi
+                fi
+                ;;
+            D)
+                # Moving down: find panes below
+                if [ "$pane_top" -gt "$PANE_TOP" ]; then
+                    # Check if cursor X position falls within this pane's horizontal range
+                    local cursor_x=$(tmux display-message -p '#{cursor_x}')
+                    local absolute_cursor_x=$((PANE_LEFT + cursor_x))
+                    local pane_right=$((pane_left + pane_width))
+                    if [ "$absolute_cursor_x" -ge "$pane_left" ] && [ "$absolute_cursor_x" -lt "$pane_right" ]; then
+                        # This pane contains the cursor X position
+                        # Calculate vertical distance
+                        local distance=$((pane_top - (PANE_TOP + PANE_HEIGHT)))
+                        if [ "$distance" -lt "$best_distance" ]; then
+                            best_distance="$distance"
+                            best_pane="$pane_id"
+                        fi
+                    fi
+                fi
+                ;;
+        esac
+    done <<< "$PANES_INFO"
+    
+    echo "$best_pane"
+}
+
+# Find the best pane to switch to
+TARGET_PANE=$(find_best_pane "$DIRECTION")
+
+if [ -n "$TARGET_PANE" ]; then
+    # Switch to the target pane
+    tmux select-pane -t "$TARGET_PANE"
+else
+    # No suitable pane found in the direction, try to cycle to opposite edge
+    # This maintains cursor position awareness when cycling
+    case "$DIRECTION" in
+        L)
+            # Moving left but no panes to the left, find rightmost pane at cursor Y
+            RIGHTMOST_PANE=""
+            RIGHTMOST_X=-1
+            while IFS=' ' read -r pane_id pane_left pane_top pane_width pane_height; do
+                [ "$pane_id" = "$CURRENT_PANE" ] && continue
+                pane_bottom=$((pane_top + pane_height))
+                pane_right=$((pane_left + pane_width))
+                if [ "$ABSOLUTE_CURSOR_Y" -ge "$pane_top" ] && [ "$ABSOLUTE_CURSOR_Y" -lt "$pane_bottom" ]; then
+                    if [ "$pane_right" -gt "$RIGHTMOST_X" ]; then
+                        RIGHTMOST_X="$pane_right"
+                        RIGHTMOST_PANE="$pane_id"
+                    fi
+                fi
+            done <<< "$PANES_INFO"
+            if [ -n "$RIGHTMOST_PANE" ]; then
+                tmux select-pane -t "$RIGHTMOST_PANE"
+            else
+                tmux select-pane -"$DIRECTION"
+            fi
+            ;;
+        R)
+            # Moving right but no panes to the right, find leftmost pane at cursor Y
+            LEFTMOST_PANE=""
+            LEFTMOST_X=999999
+            while IFS=' ' read -r pane_id pane_left pane_top pane_width pane_height; do
+                [ "$pane_id" = "$CURRENT_PANE" ] && continue
+                pane_bottom=$((pane_top + pane_height))
+                if [ "$ABSOLUTE_CURSOR_Y" -ge "$pane_top" ] && [ "$ABSOLUTE_CURSOR_Y" -lt "$pane_bottom" ]; then
+                    if [ "$pane_left" -lt "$LEFTMOST_X" ]; then
+                        LEFTMOST_X="$pane_left"
+                        LEFTMOST_PANE="$pane_id"
+                    fi
+                fi
+            done <<< "$PANES_INFO"
+            if [ -n "$LEFTMOST_PANE" ]; then
+                tmux select-pane -t "$LEFTMOST_PANE"
+            else
+                tmux select-pane -"$DIRECTION"
+            fi
+            ;;
+        U)
+            # Moving up but no panes above, find bottommost pane at cursor X
+            BOTTOMMOST_PANE=""
+            BOTTOMMOST_Y=-1
+            cursor_x=$(tmux display-message -p '#{cursor_x}')
+            absolute_cursor_x=$((PANE_LEFT + cursor_x))
+            while IFS=' ' read -r pane_id pane_left pane_top pane_width pane_height; do
+                [ "$pane_id" = "$CURRENT_PANE" ] && continue
+                pane_right=$((pane_left + pane_width))
+                pane_bottom=$((pane_top + pane_height))
+                if [ "$absolute_cursor_x" -ge "$pane_left" ] && [ "$absolute_cursor_x" -lt "$pane_right" ]; then
+                    if [ "$pane_bottom" -gt "$BOTTOMMOST_Y" ]; then
+                        BOTTOMMOST_Y="$pane_bottom"
+                        BOTTOMMOST_PANE="$pane_id"
+                    fi
+                fi
+            done <<< "$PANES_INFO"
+            if [ -n "$BOTTOMMOST_PANE" ]; then
+                tmux select-pane -t "$BOTTOMMOST_PANE"
+            else
+                tmux select-pane -"$DIRECTION"
+            fi
+            ;;
+        D)
+            # Moving down but no panes below, find topmost pane at cursor X
+            TOPMOST_PANE=""
+            TOPMOST_Y=999999
+            cursor_x=$(tmux display-message -p '#{cursor_x}')
+            absolute_cursor_x=$((PANE_LEFT + cursor_x))
+            while IFS=' ' read -r pane_id pane_left pane_top pane_width pane_height; do
+                [ "$pane_id" = "$CURRENT_PANE" ] && continue
+                pane_right=$((pane_left + pane_width))
+                if [ "$absolute_cursor_x" -ge "$pane_left" ] && [ "$absolute_cursor_x" -lt "$pane_right" ]; then
+                    if [ "$pane_top" -lt "$TOPMOST_Y" ]; then
+                        TOPMOST_Y="$pane_top"
+                        TOPMOST_PANE="$pane_id"
+                    fi
+                fi
+            done <<< "$PANES_INFO"
+            if [ -n "$TOPMOST_PANE" ]; then
+                tmux select-pane -t "$TOPMOST_PANE"
+            else
+                tmux select-pane -"$DIRECTION"
+            fi
+            ;;
+    esac
+fi

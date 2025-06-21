@@ -369,12 +369,14 @@ return {
   },
   {
     'aserowy/tmux.nvim',
-    enabled = false,
+    enabled = true,
+    lazy = false,
+    priority = 100,
     keys = {
-      { '<C-j>', mode = { 'n' } },
-      { '<C-k>', mode = { 'n' } },
-      { '<C-h>', mode = { 'n' } },
-      { '<C-l>', mode = { 'n' } },
+      { '<C-j>', mode = { 'n', 'x', 'i', 't' } },
+      { '<C-k>', mode = { 'n', 'x', 'i', 't' } },
+      { '<C-h>', mode = { 'n', 'x', 'i', 't' } },
+      { '<C-l>', mode = { 'n', 'x', 'i', 't' } },
     },
     config = function()
       require('tmux').setup({
@@ -389,18 +391,31 @@ return {
           enable_default_keybindings = false,
         },
       })
+
+      local tmux_wrapper = require('tmux.wrapper.tmux')
+      local original_change_pane = tmux_wrapper.change_pane
+
+      tmux_wrapper.change_pane = function(direction)
+        local cmd_map = {
+          h = 'left',
+          j = 'down',
+          k = 'up',
+          l = 'right',
+        }
+        local cmd_direction = cmd_map[direction]
+
+        if cmd_direction then
+          tmux_wrapper.execute(string.format("run-shell 'tmux-smart-pane-switch %s'", cmd_direction))
+        else
+          original_change_pane(direction)
+        end
+      end
     end,
   },
   {
     'mrjones2014/smart-splits.nvim',
+    enabled = false,
     lazy = false,
-    priority = 100, -- 早期に読み込む
-    keys = {
-      { '<C-h>', mode = { 'n', 'x', 'i', 't' } },
-      { '<C-j>', mode = { 'n', 'x', 'i', 't' } },
-      { '<C-k>', mode = { 'n', 'x', 'i', 't' } },
-      { '<C-l>', mode = { 'n', 'x', 'i', 't' } },
-    },
     config = function()
       require('smart-splits').setup({
         multiplexer_integration = 'tmux',
