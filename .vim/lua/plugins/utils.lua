@@ -369,6 +369,7 @@ return {
   },
   {
     'aserowy/tmux.nvim',
+    enabled = false,
     keys = {
       { '<C-j>', mode = { 'n' } },
       { '<C-k>', mode = { 'n' } },
@@ -388,6 +389,39 @@ return {
           enable_default_keybindings = false,
         },
       })
+    end,
+  },
+  {
+    'mrjones2014/smart-splits.nvim',
+    lazy = false,
+    priority = 100, -- 早期に読み込む
+    keys = {
+      { '<C-h>', mode = { 'n', 'x', 'i', 't' } },
+      { '<C-j>', mode = { 'n', 'x', 'i', 't' } },
+      { '<C-k>', mode = { 'n', 'x', 'i', 't' } },
+      { '<C-l>', mode = { 'n', 'x', 'i', 't' } },
+    },
+    config = function()
+      require('smart-splits').setup({
+        multiplexer_integration = 'tmux',
+        disable_multiplexer_nav_when_zoomed = true,
+        default_amount = 3,
+        at_edge = 'wrap',
+        move_cursor_same_row = false,
+        cursor_follows_swapped_bufs = false,
+        resize_mode = {
+          quit_key = '<ESC>',
+          resize_keys = { 'h', 'j', 'k', 'l' },
+          silent = false,
+        },
+      })
+
+      local smart_splits = require('smart-splits')
+
+      vim.keymap.set({ 'n', 'x', 'i', 't' }, '<C-h>', smart_splits.move_cursor_left)
+      vim.keymap.set({ 'n', 'x', 'i', 't' }, '<C-j>', smart_splits.move_cursor_down)
+      vim.keymap.set({ 'n', 'x', 'i', 't' }, '<C-k>', smart_splits.move_cursor_up)
+      vim.keymap.set({ 'n', 'x', 'i', 't' }, '<C-l>', smart_splits.move_cursor_right)
     end,
   },
   {
