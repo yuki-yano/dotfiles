@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# 現在のペインのディレクトリを取得
+PANE_PATH="${1:-$PWD}"
+
+# ディレクトリに移動してGitブランチを取得
+cd "$PANE_PATH" 2>/dev/null || exit 0
+
+# Gitリポジトリかチェック
+if git rev-parse --git-dir >/dev/null 2>&1; then
+    # ブランチ名を取得
+    BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
+    
+    # ブランチ名が長すぎる場合は省略
+    if [ ${#BRANCH} -gt 20 ]; then
+        BRANCH="${BRANCH:0:17}..."
+    fi
+    
+    # アイコンとブランチ名を表示
+    echo " $BRANCH"
+else
+    # Gitリポジトリでない場合は何も表示しない
+    echo ""
+fi

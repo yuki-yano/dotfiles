@@ -1,0 +1,111 @@
+#!/usr/bin/env node
+
+const { execSync } = require("child_process");
+
+// Get ccusage output
+let jsonOutput;
+try {
+  jsonOutput = execSync("ccusage blocks --json --offline", {
+    encoding: "utf-8",
+  });
+} catch (error) {
+  process.exit(1);
+}
+
+// Parse JSON
+const data = JSON.parse(jsonOutput);
+let activeSession = null;
+
+// Find active session
+for (const block of data.blocks) {
+  if (block.isActive) {
+    activeSession = block;
+    break;
+  }
+}
+
+if (!activeSession) {
+  // Output with no background color override
+  process.stdout.write("#[fg=white]No active session");
+  process.exit(0);
+}
+
+// Extract values
+const remainingMinutes = activeSession.projection?.remainingMinutes || 0;
+const currentCost = activeSession.costUSD || 0;
+
+// Calculate average cost per hour based on session elapsed time
+const totalMinutes = 300; // 5 hour session
+const elapsedMinutes = totalMinutes - remainingMinutes;
+const elapsedHours = elapsedMinutes / 60;
+const costPerHour = elapsedHours > 0 ? currentCost / elapsedHours : 0;
+
+// Calculate remaining percentage (for the bar)
+const remainingPercent = Math.floor((remainingMinutes * 100) / totalMinutes);
+
+// Format remaining time
+const hours = Math.floor(remainingMinutes / 60);
+const minutes = remainingMinutes % 60;
+const timeStr = hours > 0 ? `${hours}h${minutes.toString().padStart(2, "0")}m` : `${minutes}m`;
+
+// Create remaining time bar (10 characters)
+// Fill from right to left to show remaining time
+const filled = Math.floor(remainingPercent / 10);
+const empty = 10 - filled;
+const progressBar = "[" + "█".repeat(filled) + "░".repeat(empty) + "]";
+
+// Determine colors for each section
+let progressColor, timeColor, costColor;
+
+// Progress bar color based on remaining time (same as time_color logic)
+if (remainingMinutes <= 60) {
+  // Red - 1 hour or less
+  progressColor = "#[fg=red,bold]";
+} else if (remainingMinutes <= 120) {
+  // Yellow - 1-2 hours
+  progressColor = "#[fg=yellow,bold]";
+} else if (remainingMinutes <= 180) {
+  // Cyan - 2-3 hours
+  progressColor = "#[fg=cyan]";
+} else {
+  // Green - more than 3 hours
+  progressColor = "#[fg=green]";
+}
+
+// Time color based on remaining time
+if (remainingMinutes <= 60) {
+  // Red - 1 hour or less
+  timeColor = "#[fg=red,bold]";
+} else if (remainingMinutes <= 120) {
+  // Yellow - 1-2 hours
+  timeColor = "#[fg=yellow,bold]";
+} else if (remainingMinutes <= 180) {
+  // Cyan - 2-3 hours
+  timeColor = "#[fg=cyan]";
+} else {
+  // Green - more than 3 hours
+  timeColor = "#[fg=green]";
+}
+
+// Cost rate color based on hourly rate (statistical thresholds)
+if (costPerHour >= 21) {
+  // Red - top 10% (very high usage)
+  costColor = "#[fg=red,bold]";
+} else if (costPerHour >= 14) {
+  // Yellow - 75-90 percentile (high usage)
+  costColor = "#[fg=yellow]";
+} else if (costPerHour >= 6) {
+  // Cyan - 50-75 percentile (normal usage)
+  costColor = "#[fg=cyan]";
+} else {
+  // Green - below median (low usage)
+  costColor = "#[fg=green]";
+}
+
+// Format output with tmux color codes
+// Show remaining time percentage instead of elapsed percentage
+process.stdout.write(
+  `${progressColor}${progressBar} ${remainingPercent}%#[fg=white] | ` +
+    `${timeColor}⏱ ${timeStr}#[fg=white] | ` +
+    `${costColor}$${currentCost.toFixed(2)} ($${costPerHour.toFixed(2)}/h)#[fg=white]`,
+);
