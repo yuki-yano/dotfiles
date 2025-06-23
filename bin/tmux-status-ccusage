@@ -26,7 +26,7 @@ for (const block of data.blocks) {
 
 if (!activeSession) {
   // Output with no background color override
-  process.stdout.write("#[fg=white]No active session");
+  process.stdout.write("#[fg=white]No active CC session");
   process.exit(0);
 }
 
@@ -50,7 +50,8 @@ const timeStr = hours > 0 ? `${hours}h${minutes.toString().padStart(2, "0")}m` :
 
 // Create remaining time bar (10 characters)
 // Fill from right to left to show remaining time
-const filled = Math.floor(remainingPercent / 10);
+// Round to nearest 10% instead of floor for better visual representation
+const filled = Math.round(remainingPercent / 10);
 const empty = 10 - filled;
 const progressBar = "[" + "█".repeat(filled) + "░".repeat(empty) + "]";
 
