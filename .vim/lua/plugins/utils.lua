@@ -368,49 +368,16 @@ return {
     end,
   },
   {
-    'aserowy/tmux.nvim',
-    enabled = true,
+    'yuki-yano/smart-tmux-nav.nvim',
+    dev = true,
     lazy = false,
-    priority = 100,
-    keys = {
-      { '<C-j>', mode = { 'n', 'x', 'i', 't' } },
-      { '<C-k>', mode = { 'n', 'x', 'i', 't' } },
-      { '<C-h>', mode = { 'n', 'x', 'i', 't' } },
-      { '<C-l>', mode = { 'n', 'x', 'i', 't' } },
-    },
     config = function()
-      require('tmux').setup({
-        copy_sync = {
-          enable = false,
-        },
-        navigation = {
-          enable_default_keybindings = true,
-          cycle_navigation = true,
-        },
-        resize = {
-          enable_default_keybindings = false,
-        },
-      })
-
-      local tmux_wrapper = require('tmux.wrapper.tmux')
-      local original_change_pane = tmux_wrapper.change_pane
-
-      tmux_wrapper.change_pane = function(direction)
-        local cmd_map = {
-          h = 'left',
-          j = 'down',
-          k = 'up',
-          l = 'right',
-        }
-        local cmd_direction = cmd_map[direction]
-
-        if cmd_direction then
-          tmux_wrapper.execute(string.format("run-shell 'tmux-smart-pane-switch %s'", cmd_direction))
-        else
-          original_change_pane(direction)
-        end
-      end
+      require('smart-tmux-nav').setup()
     end,
+  },
+  {
+    'aserowy/tmux.nvim',
+    enabled = false,
   },
   {
     'mrjones2014/smart-splits.nvim',

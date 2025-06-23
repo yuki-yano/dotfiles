@@ -446,22 +446,22 @@ ZSH_GIT_PROMPT_FORCE_BLANK=1
 # tmux {{{
 
 function _left-pane() {
-  tmux run-shell 'tmux-smart-pane-switch left'
+  tmux run-shell 'tmux-smart-switch-pane left'
 }
 zle -N left-pane _left-pane
 
 function _down-pane() {
-  tmux run-shell 'tmux-smart-pane-switch down'
+  tmux run-shell 'tmux-smart-switch-pane down'
 }
 zle -N down-pane _down-pane
 
 function _up-pane() {
-  tmux run-shell 'tmux-smart-pane-switch up'
+  tmux run-shell 'tmux-smart-switch-pane up'
 }
 zle -N up-pane _up-pane
 
 function _right-pane() {
-  tmux run-shell 'tmux-smart-pane-switch right'
+  tmux run-shell 'tmux-smart-switch-pane right'
 }
 zle -N right-pane _right-pane
 

@@ -1,0 +1,302 @@
+#!/bin/bash
+#
+# Cursor-aware pane selection for tmux (Refactored version)
+# This script selects a pane based on the cursor position when moving between panes
+#
+# Usage: tmux-smart-switch-pane <direction>
+# where <direction> is one of: left, right, up, down, L, R, U, D
+#
+set -euo pipefail
+
+# Constants
+readonly SCRIPT_NAME=$(basename "$0")
+readonly INFINITE_DISTANCE=999999
+
+# Global variables for current pane state
+DIRECTION=""
+CURRENT_PANE=""
+CURSOR_X=""
+CURSOR_Y=""
+PANE_TOP=""
+PANE_HEIGHT=""
+PANE_LEFT=""
+PANE_WIDTH=""
+ABSOLUTE_CURSOR_X=""
+ABSOLUTE_CURSOR_Y=""
+PANES_INFO=""
+
+# Display usage information
+usage() {
+    cat >&2 <<EOF
+Usage: $SCRIPT_NAME <direction>
+  where <direction> is one of: left, right, up, down, L, R, U, D
+
+This script performs cursor-aware pane selection in tmux.
+When moving between panes, it selects the pane that best aligns
+with the current cursor position.
+EOF
+    exit 1
+}
+
+# Normalize direction input to single letter
+normalize_direction() {
+    local input="${1:-}"
+    [ -z "$input" ] && usage
+    
+    case "$input" in
+        left|Left|LEFT|l|L)  echo "L" ;;
+        right|Right|RIGHT|r|R) echo "R" ;;
+        up|Up|UP|u|U)    echo "U" ;;
+        down|Down|DOWN|d|D)  echo "D" ;;
+        *)
+            echo "Error: Invalid direction: $input" >&2
+            usage
+            ;;
+    esac
+}
+
+# Initialize pane information
+init_pane_info() {
+    # Get current pane state
+    CURRENT_PANE=$(tmux display-message -p '#{pane_id}')
+    CURSOR_X=$(tmux display-message -p '#{cursor_x}')
+    CURSOR_Y=$(tmux display-message -p '#{cursor_y}')
+    PANE_TOP=$(tmux display-message -p '#{pane_top}')
+    PANE_HEIGHT=$(tmux display-message -p '#{pane_height}')
+    PANE_LEFT=$(tmux display-message -p '#{pane_left}')
+    PANE_WIDTH=$(tmux display-message -p '#{pane_width}')
+    
+    # Calculate absolute cursor positions in window coordinates
+    ABSOLUTE_CURSOR_X=$((PANE_LEFT + CURSOR_X))
+    ABSOLUTE_CURSOR_Y=$((PANE_TOP + CURSOR_Y))
+    
+    # Get all panes information
+    PANES_INFO=$(tmux list-panes -F "#{pane_id} #{pane_left} #{pane_top} #{pane_width} #{pane_height}")
+}
+
+# Check if value is within range [start, start+length)
+in_range() {
+    local value=$1
+    local start=$2
+    local length=$3
+    local end=$((start + length))
+    
+    [ "$value" -ge "$start" ] && [ "$value" -lt "$end" ]
+}
+
+# Check if pane is in the specified direction from current pane
+is_pane_in_direction() {
+    local direction=$1
+    local pane_left=$2
+    local pane_top=$3
+    local pane_width=$4
+    local pane_height=$5
+    
+    case "$direction" in
+        L) [ "$pane_left" -lt "$PANE_LEFT" ] ;;
+        R) [ "$pane_left" -gt "$PANE_LEFT" ] ;;
+        U) [ "$pane_top" -lt "$PANE_TOP" ] ;;
+        D) [ "$pane_top" -gt "$PANE_TOP" ] ;;
+    esac
+}
+
+# Check if cursor position aligns with target pane
+cursor_aligns_with_pane() {
+    local direction=$1
+    local pane_left=$2
+    local pane_top=$3
+    local pane_width=$4
+    local pane_height=$5
+    
+    case "$direction" in
+        L|R) # Horizontal movement: check vertical alignment
+            in_range "$ABSOLUTE_CURSOR_Y" "$pane_top" "$pane_height"
+            ;;
+        U|D) # Vertical movement: check horizontal alignment
+            in_range "$ABSOLUTE_CURSOR_X" "$pane_left" "$pane_width"
+            ;;
+    esac
+}
+
+# Calculate distance to pane based on direction
+calculate_distance() {
+    local direction=$1
+    local pane_left=$2
+    local pane_top=$3
+    local pane_width=$4
+    local pane_height=$5
+    
+    case "$direction" in
+        L) echo $((PANE_LEFT - (pane_left + pane_width))) ;;
+        R) echo $((pane_left - (PANE_LEFT + PANE_WIDTH))) ;;
+        U) echo $((PANE_TOP - (pane_top + pane_height))) ;;
+        D) echo $((pane_top - (PANE_TOP + PANE_HEIGHT))) ;;
+    esac
+}
+
+# Find best pane in specified direction
+find_best_pane() {
+    local direction=$1
+    local best_pane=""
+    local best_distance=$INFINITE_DISTANCE
+    
+    while IFS=' ' read -r pane_id pane_left pane_top pane_width pane_height; do
+        # Skip current pane
+        [ "$pane_id" = "$CURRENT_PANE" ] && continue
+        
+        # Check if pane is in the correct direction
+        if is_pane_in_direction "$direction" "$pane_left" "$pane_top" "$pane_width" "$pane_height"; then
+            # Check if cursor aligns with this pane
+            if cursor_aligns_with_pane "$direction" "$pane_left" "$pane_top" "$pane_width" "$pane_height"; then
+                local distance=$(calculate_distance "$direction" "$pane_left" "$pane_top" "$pane_width" "$pane_height")
+                
+                # Only consider non-negative distances closer than current best
+                if [ "$distance" -ge 0 ] && [ "$distance" -lt "$best_distance" ]; then
+                    best_distance=$distance
+                    best_pane=$pane_id
+                fi
+            fi
+        fi
+    done <<< "$PANES_INFO"
+    
+    echo "$best_pane"
+}
+
+# Find edge pane for cycling (when no pane found in direction)
+find_edge_pane_for_cycling() {
+    local direction=$1
+    local best_pane=""
+    local best_position
+    
+    # Initialize based on direction (opposite edge)
+    case "$direction" in
+        L) best_position=-1 ;;           # Find rightmost
+        R) best_position=$INFINITE_DISTANCE ;;  # Find leftmost
+        U) best_position=-1 ;;           # Find bottommost
+        D) best_position=$INFINITE_DISTANCE ;;  # Find topmost
+    esac
+    
+    while IFS=' ' read -r pane_id pane_left pane_top pane_width pane_height; do
+        # Skip current pane
+        [ "$pane_id" = "$CURRENT_PANE" ] && continue
+        
+        # Check if cursor aligns with this pane
+        if cursor_aligns_with_pane "$direction" "$pane_left" "$pane_top" "$pane_width" "$pane_height"; then
+            local position
+            
+            # Get position based on direction
+            case "$direction" in
+                L) position=$((pane_left + pane_width)) ;;  # Right edge
+                R) position=$pane_left ;;                     # Left edge
+                U) position=$((pane_top + pane_height)) ;;   # Bottom edge
+                D) position=$pane_top ;;                      # Top edge
+            esac
+            
+            # Update best pane based on direction
+            case "$direction" in
+                L|U) # Looking for maximum position
+                    if [ "$position" -gt "$best_position" ]; then
+                        best_position=$position
+                        best_pane=$pane_id
+                    fi
+                    ;;
+                R|D) # Looking for minimum position
+                    if [ "$position" -lt "$best_position" ]; then
+                        best_position=$position
+                        best_pane=$pane_id
+                    fi
+                    ;;
+            esac
+        fi
+    done <<< "$PANES_INFO"
+    
+    echo "$best_pane"
+}
+
+# Check if pane is running Neovim
+is_neovim_pane() {
+    local pane_id=$1
+    local pane_cmd=$(tmux display-message -t "$pane_id" -p '#{pane_current_command}')
+    [[ "$pane_cmd" =~ ^n?vim?$ ]]
+}
+
+# Setup Neovim integration for window selection
+setup_neovim_integration() {
+    local target_pane=$1
+    local is_cycle=$2
+    
+    if is_neovim_pane "$target_pane"; then
+        # Get target pane dimensions
+        local dest_pane_top=$(tmux display-message -t "$target_pane" -p '#{pane_top}')
+        local dest_pane_height=$(tmux display-message -t "$target_pane" -p '#{pane_height}')
+        local dest_pane_left=$(tmux display-message -t "$target_pane" -p '#{pane_left}')
+        local dest_pane_width=$(tmux display-message -t "$target_pane" -p '#{pane_width}')
+        
+        # Calculate cursor position as percentage within target pane
+        # Need to adjust for target pane's position
+        local relative_cursor_y=$((ABSOLUTE_CURSOR_Y - dest_pane_top))
+        local relative_cursor_x=$((ABSOLUTE_CURSOR_X - dest_pane_left))
+        
+        # Ensure cursor Y is within bounds
+        if [ "$relative_cursor_y" -lt 0 ]; then
+            relative_cursor_y=0
+        elif [ "$relative_cursor_y" -ge "$dest_pane_height" ]; then
+            relative_cursor_y=$((dest_pane_height - 1))
+        fi
+        
+        # Ensure cursor X is within bounds
+        if [ "$relative_cursor_x" -lt 0 ]; then
+            relative_cursor_x=0
+        elif [ "$relative_cursor_x" -ge "$dest_pane_width" ]; then
+            relative_cursor_x=$((dest_pane_width - 1))
+        fi
+        
+        # Calculate percentages
+        local cursor_percent_y=$((relative_cursor_y * 100 / dest_pane_height))
+        local cursor_percent_x=$((relative_cursor_x * 100 / dest_pane_width))
+        
+        # Set environment variables for Neovim
+        tmux set-environment NVIM_CURSOR_Y "$cursor_percent_y"
+        tmux set-environment NVIM_CURSOR_X "$cursor_percent_x"
+        tmux set-environment NVIM_SELECT_DIRECTION "$DIRECTION"
+        tmux set-environment NVIM_IS_CYCLE "$is_cycle"
+    fi
+}
+
+# Switch to specified pane with optional Neovim integration
+switch_to_pane() {
+    local target_pane=$1
+    local is_cycle=$2
+    
+    if [ -n "$target_pane" ]; then
+        tmux select-pane -t "$target_pane"
+        setup_neovim_integration "$target_pane" "$is_cycle"
+    else
+        # Fallback to standard tmux navigation
+        tmux select-pane -"$DIRECTION"
+    fi
+}
+
+# Main execution
+main() {
+    # Validate and normalize direction
+    DIRECTION=$(normalize_direction "${1:-}")
+    
+    # Initialize pane information
+    init_pane_info
+    
+    # Find best pane in specified direction
+    local target_pane=$(find_best_pane "$DIRECTION")
+    
+    if [ -n "$target_pane" ]; then
+        # Found a suitable pane in the direction
+        switch_to_pane "$target_pane" "false"
+    else
+        # No pane found in direction, try cycling to opposite edge
+        local edge_pane=$(find_edge_pane_for_cycling "$DIRECTION")
+        switch_to_pane "$edge_pane" "true"
+    fi
+}
+
+# Execute main function with all arguments
+main "$@"
