@@ -115,6 +115,35 @@
           "type": "basic"
         }
       ]
+    },
+    {
+      "description": "Command+[ to disable IME in Alacritty",
+      "manipulators": [
+        {
+          "conditions": [
+            {
+              "bundle_identifiers": [
+                "^org\\.alacritty$"
+              ],
+              "type": "frontmost_application_if"
+            }
+          ],
+          "from": {
+            "key_code": "open_bracket",
+            "modifiers": { "mandatory": ["command"] }
+          },
+          "to": [
+            {
+              "key_code": "japanese_eisuu"
+            },
+            {
+              "key_code": "open_bracket",
+              "modifiers": ["command"]
+            }
+          ],
+          "type": "basic"
+        }
+      ]
     }
   ]
 }
