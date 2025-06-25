@@ -1,8 +1,6 @@
 SRC_DIR       = File.dirname(File.expand_path(__FILE__))
 ZINIT_DIR     = File.join(ENV['HOME'], '.zinit')
-ZGEN_DIR      = File.join(ENV['HOME'], '.zsh/zgen')
 DOTFILES_SRCS = %w[
-  .aider.conf.yml
   .bashrc
   .config
   .ctags.d
@@ -10,7 +8,6 @@ DOTFILES_SRCS = %w[
   .gitattributes_global
   .gitconfig
   .gitignore_global
-  .globalrc
   .hammerspoon
   .tigrc
   .tmux.conf
@@ -66,38 +63,6 @@ namespace :tmux do
   desc 'Enable italic'
   task install: '.tmux/tmux-256color.terminfo' do |t|
     sh 'tic -x .tmux/tmux-256color.terminfo'
-  end
-end
-
-namespace :gem do
-  desc 'Install gem'
-  task install: 'GemGlobal' do
-    packages = File.readlines('GemGlobal').map(&:chomp).join(' ')
-    sh "gem install #{packages}"
-  end
-
-  desc 'Uninstall gem'
-  task :uninstall do
-    sh 'gem uninstall --all --ignore-dependencies --executables $(gem list | grep -v "default" | awk "{print $1}")'
-    sh 'gem install rake bundler'
-  end
-end
-
-namespace :pip do
-  desc 'Install pip'
-  task install: 'PipGlobal' do
-    sh 'pip  install setuptools'
-    sh 'pip  install pip --upgrade'
-    sh 'pip  list --outdated --format=legacy | cut -d" " -f1 | xargs pip install --upgrade'
-    File.readlines('PipGlobal').map(&:chomp).each do |package|
-      system "pip install #{package} --upgrade"
-    end
-  end
-
-  desc 'Uninstall pip'
-  task :uninstall do
-    pip3file = '/tmp/piplist3.txt'
-    system "pip3 freeze > #{pip3file} && test -f #{pip3file} && yes | pip3 uninstall -r #{pip3file} && rm #{pip3file}"
   end
 end
 
@@ -164,28 +129,6 @@ namespace :mas do
   end
 end
 
-# namespace :vscode do
-#   desc 'Override vscode settings file'
-#   task settings: ['.config/vscode/settings.json', '.config/vscode/keybindings.json', '.config/vscode/locale.json'] do
-#     config_root = '~/Library/Application\ Support/Code/User'
-#     sh "ln -sfn ~/.config/vscode/settings.json #{config_root}/settings.json"
-#     sh "ln -sfn ~/.config/vscode/keybindings.json #{config_root}/keybindings.json"
-#     sh "ln -sfn ~/.config/vscode/locale.json #{config_root}/locale.json"
-#   end
-# 
-#   desc 'Install extensions'
-#   task extension: 'Codefile' do
-#     File.readlines('Codefile').map(&:chomp).each do |extension|
-#       sh "code --install-extension #{extension}"
-#     end
-#   end
-# 
-#   desc 'Export extensions'
-#   task :export_extension do
-#     File.write('Codefile', `code --list-extensions`)
-#   end
-# end
-
 namespace :coteditor do
   desc 'Integrate command line with citeditor'
   task :install do
@@ -195,15 +138,5 @@ namespace :coteditor do
   desc 'Delete cot command'
   task :uninstall do
     sh 'rm /usr/local/bin/cot'
-  end
-end
-
-namespace :vagrant do
-  desc 'Install vagrant plugins'
-  task plugins: 'VagrantPlugins' do
-    sh 'vagrant plugin update'
-    File.readlines('VagrantPlugins').map(&:chomp).each do |plugin|
-      sh "vagrant plugin install #{plugin}"
-    end
   end
 end
