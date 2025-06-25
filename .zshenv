@@ -88,6 +88,8 @@ if whence direnv > /dev/null; then
   fi
 fi
 
+path=(~/.bun/bin(N-/) $path)
+
 #  Finally add the path of ~/bin and ~/dotfiles/bin to the beginning
 path=(~/bin(N-/) $path)
 path=(~/dotfiles/bin(N-/) $path)

@@ -1,3 +1,5 @@
+tmp/
+
 # zsh
 /.zsh/cache/
 *.zwc
@@ -32,3 +34,5 @@
 
 # aider
 .aider*
+
+
