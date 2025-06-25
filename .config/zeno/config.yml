@@ -147,7 +147,7 @@ snippets:
 
   - name: claude yolo
     keyword: yolo
-    snippet: claude --dangerously-skip-permissions
+    snippet: ENABLE_BACKGROUND_TASKS=1 claude --dangerously-skip-permissions
 
   - name: disable desktop
     keyword: disable_desktop
