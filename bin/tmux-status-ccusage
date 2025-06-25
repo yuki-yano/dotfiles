@@ -33,12 +33,18 @@ if (!activeSession) {
 // Extract values
 const remainingMinutes = activeSession.projection?.remainingMinutes || 0;
 const currentCost = activeSession.costUSD || 0;
+const requestCount = activeSession.entries || 0;
+
+// Use burnRate for recent usage speed
+const burnRate = activeSession.burnRate || {};
+const recentCostPerHour = burnRate.costPerHour || 0;
+const tokensPerMinute = burnRate.tokensPerMinute || 0;
 
 // Calculate average cost per hour based on session elapsed time
 const totalMinutes = 300; // 5 hour session
 const elapsedMinutes = totalMinutes - remainingMinutes;
 const elapsedHours = elapsedMinutes / 60;
-const costPerHour = elapsedHours > 0 ? currentCost / elapsedHours : 0;
+const avgCostPerHour = elapsedHours > 0 ? currentCost / elapsedHours : 0;
 
 // Calculate remaining percentage (for the bar)
 const remainingPercent = Math.floor((remainingMinutes * 100) / totalMinutes);
@@ -56,7 +62,7 @@ const empty = 10 - filled;
 const progressBar = "[" + "█".repeat(filled) + "░".repeat(empty) + "]";
 
 // Determine colors for each section
-let progressColor, timeColor, costColor;
+let progressColor, timeColor, totalCostColor, avgCostColor, recentCostColor, requestColor;
 
 // Progress bar color based on remaining time (same as time_color logic)
 if (remainingMinutes <= 60) {
@@ -88,25 +94,71 @@ if (remainingMinutes <= 60) {
   timeColor = "#[fg=green]";
 }
 
-// Cost rate color based on hourly rate (statistical thresholds)
-if (costPerHour >= 21) {
+// Total cost color based on percentage of $100 limit
+const costPercent = (currentCost / 100) * 100;
+if (costPercent >= 80) {
+  // Red - 80% or more of limit
+  totalCostColor = "#[fg=red,bold]";
+} else if (costPercent >= 60) {
+  // Yellow - 60-80% of limit
+  totalCostColor = "#[fg=yellow,bold]";
+} else if (costPercent >= 40) {
+  // Cyan - 40-60% of limit
+  totalCostColor = "#[fg=cyan]";
+} else {
+  // Green - under 40% of limit
+  totalCostColor = "#[fg=green]";
+}
+
+// Average cost rate color (statistical thresholds)
+if (avgCostPerHour >= 21) {
   // Red - top 10% (very high usage)
-  costColor = "#[fg=red,bold]";
-} else if (costPerHour >= 14) {
+  avgCostColor = "#[fg=red,bold]";
+} else if (avgCostPerHour >= 14) {
   // Yellow - 75-90 percentile (high usage)
-  costColor = "#[fg=yellow]";
-} else if (costPerHour >= 6) {
+  avgCostColor = "#[fg=yellow]";
+} else if (avgCostPerHour >= 6) {
   // Cyan - 50-75 percentile (normal usage)
-  costColor = "#[fg=cyan]";
+  avgCostColor = "#[fg=cyan]";
 } else {
   // Green - below median (low usage)
-  costColor = "#[fg=green]";
+  avgCostColor = "#[fg=green]";
+}
+
+// Recent cost rate color (statistical thresholds)
+if (recentCostPerHour >= 21) {
+  // Red - top 10% (very high usage)
+  recentCostColor = "#[fg=red,bold]";
+} else if (recentCostPerHour >= 14) {
+  // Yellow - 75-90 percentile (high usage)
+  recentCostColor = "#[fg=yellow]";
+} else if (recentCostPerHour >= 6) {
+  // Cyan - 50-75 percentile (normal usage)
+  recentCostColor = "#[fg=cyan]";
+} else {
+  // Green - below median (low usage)
+  recentCostColor = "#[fg=green]";
+}
+
+// Request count color based on distribution analysis
+if (requestCount >= 700) {
+  // Red - top 5% (very active)
+  requestColor = "#[fg=red,bold]";
+} else if (requestCount >= 400) {
+  // Yellow - 75-90 percentile (active usage)
+  requestColor = "#[fg=yellow,bold]";
+} else if (requestCount >= 150) {
+  // Cyan - 40-75 percentile (normal usage)
+  requestColor = "#[fg=cyan]";
+} else {
+  // Green - bottom 40% (light usage)
+  requestColor = "#[fg=green]";
 }
 
 // Format output with tmux color codes
 // Show remaining time percentage instead of elapsed percentage
 process.stdout.write(
-  `${progressColor}${progressBar} ${remainingPercent}%#[fg=white] | ` +
-    `${timeColor}⏱ ${timeStr}#[fg=white] | ` +
-    `${costColor}$${currentCost.toFixed(2)} ($${costPerHour.toFixed(2)}/h)#[fg=white]`,
+  `${progressColor}${progressBar}#[fg=white] ${timeColor}${timeStr}#[fg=white] | ` +
+    `${totalCostColor}$${currentCost.toFixed(2)}#[fg=white] ${recentCostColor}⚡${recentCostPerHour.toFixed(1)}/h#[fg=white] ${avgCostColor}⌀ ${avgCostPerHour.toFixed(1)}/h#[fg=white] | ` +
+    `${requestColor}${requestCount} req#[fg=white]`,
 );
