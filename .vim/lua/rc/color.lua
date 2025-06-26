@@ -162,6 +162,12 @@ palette['catppuccin'] = function()
           bg = search,
         },
       },
+      -- lualine inactive colors
+      lualine_inactive = {
+        fg = catppuccin_palette.overlay0, -- #6C7086
+        bg = catppuccin_palette.surface0, -- #313244
+        bg_alt = catppuccin_palette.base, -- #1E1E2E
+      },
     },
   }
 end

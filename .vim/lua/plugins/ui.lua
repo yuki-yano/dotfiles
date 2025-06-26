@@ -16,7 +16,10 @@ return {
       end, {})
     end,
     config = function()
-      local theme_table = function(theme)
+      local lualine = require('lualine')
+      local current_theme = nil
+
+      local theme_table = function(theme, is_inactive)
         local table = {
           ['gruvbox-material'] = function()
             local custom_gruvbox = require('lualine.themes.gruvbox-material')
@@ -31,12 +34,38 @@ return {
             return custom_gruvbox
           end,
           ['catppuccin'] = function()
-            return 'catppuccin'
+            if is_inactive then
+              -- 非アクティブ時は地味な色に変更
+              local custom_catppuccin = require('lualine.themes.catppuccin')
+              local inactive_colors = color.misc().lualine_inactive
+              -- 全モードで地味な色に統一
+              for _, mode in ipairs({'normal', 'insert', 'visual', 'replace', 'command', 'inactive'}) do
+                if custom_catppuccin[mode] then
+                  if custom_catppuccin[mode].a then
+                    custom_catppuccin[mode].a.fg = inactive_colors.fg
+                    custom_catppuccin[mode].a.bg = inactive_colors.bg
+                  end
+                  if custom_catppuccin[mode].b then
+                    custom_catppuccin[mode].b.fg = inactive_colors.fg
+                    custom_catppuccin[mode].b.bg = inactive_colors.bg_alt
+                  end
+                  if custom_catppuccin[mode].c then
+                    custom_catppuccin[mode].c.fg = inactive_colors.fg
+                  end
+                end
+              end
+              return custom_catppuccin
+            else
+              return 'catppuccin'
+            end
           end,
         }
 
         return table[theme] and table[theme]() or 'auto'
       end
+
+      -- 初期テーマを保存
+      current_theme = vim.env.NVIM_COLORSCHEME
 
       local no_error = {
         function()
@@ -122,9 +151,10 @@ return {
         return 'LspLines: [' .. mode .. ']'
       end
 
-      require('lualine').setup({
+      -- lualineの初期設定
+      lualine.setup({
         options = {
-          theme = theme_table(vim.env.NVIM_COLORSCHEME),
+          theme = theme_table(current_theme, false),
           globalstatus = true,
         },
         sections = {
@@ -157,6 +187,28 @@ return {
           'quickfix',
           'toggleterm',
         },
+      })
+
+      vim.api.nvim_create_autocmd({'FocusLost'}, {
+        callback = function()
+          lualine.setup({
+            options = {
+              theme = theme_table(current_theme, true),
+              globalstatus = true,
+            },
+          })
+        end,
+      })
+
+      vim.api.nvim_create_autocmd({'FocusGained'}, {
+        callback = function()
+          lualine.setup({
+            options = {
+              theme = theme_table(current_theme, false),
+              globalstatus = true,
+            },
+          })
+        end,
       })
     end,
   },
