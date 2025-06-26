@@ -159,6 +159,6 @@ if (requestCount >= 700) {
 // Show remaining time percentage instead of elapsed percentage
 process.stdout.write(
   `${progressColor}${progressBar}#[fg=white] ${timeColor}${timeStr}#[fg=white] | ` +
-    `${totalCostColor}$${currentCost.toFixed(2)}#[fg=white] ${recentCostColor}⚡${recentCostPerHour.toFixed(1)}/h#[fg=white] ${avgCostColor}⌀ ${avgCostPerHour.toFixed(1)}/h#[fg=white] | ` +
+    `${totalCostColor}$${currentCost.toFixed(2)}#[fg=white] ${recentCostColor}⚡$${recentCostPerHour.toFixed(1)}/h#[fg=white] ${avgCostColor}⌀ $${avgCostPerHour.toFixed(1)}/h#[fg=white] | ` +
     `${requestColor}${requestCount} req#[fg=white]`,
 );
