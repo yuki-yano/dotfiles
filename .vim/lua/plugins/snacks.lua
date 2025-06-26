@@ -260,6 +260,22 @@ return {
       vim.keymap.set({ 'n' }, '<Plug>(lsp)rf', function()
         snacks.picker.lsp_references({ auto_confirm = false })
       end)
+
+      -- AI directory picker
+      vim.keymap.set({ 'n' }, '<Plug>(ff)i', function()
+        local ai_dir = vim.fn.getcwd() .. '/ai'
+        if vim.fn.isdirectory(ai_dir) == 1 then
+          snacks.picker.files({
+            cwd = ai_dir,
+            hidden = true,
+            filter = {
+              cwd = false,
+            },
+          })
+        else
+          vim.notify('AI directory not found in current directory', vim.log.levels.WARN)
+        end
+      end)
     end,
   },
 }
