@@ -1,6 +1,27 @@
 {
   "lock": false,
   "fmt": {
-    "lineWidth": 120
+    "lineWidth": 120,
+    "indentWidth": 2,
+    "singleQuote": false,
+    "semiColons": true
+  },
+  "tasks": {
+    "dotfiles:install": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts dotfiles:install",
+    "zsh:zinit:install": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts zsh:zinit:install",
+    "zsh:zinit:uninstall": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts zsh:zinit:uninstall",
+    "tmux:install": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts tmux:install",
+    "npm:install": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts npm:install",
+    "npm:uninstall": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts npm:uninstall",
+    "npm:upgrade": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts npm:upgrade",
+    "brew:bundle": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts brew:bundle",
+    "brew:cask": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts brew:cask",
+    "mas:install": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts mas:install",
+    "coteditor:install": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts coteditor:install",
+    "coteditor:uninstall": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts coteditor:uninstall",
+    "help": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts help"
+  },
+  "imports": {
+    "@david/dax": "jsr:@david/dax@^0.42.0"
   }
 }
