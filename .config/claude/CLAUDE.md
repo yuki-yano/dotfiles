@@ -20,29 +20,29 @@
 1. **`ai/tmp/`** - 一時的な作業ファイル
    - デバッグ、実験、検証用
    - セッション終了時に削除可能
-   
+
 2. **`ai/log/`** - 時系列の作業記録
    - `features/` - 実装した機能
    - `fixes/` - バグ修正
    - `tests/` - テスト実行結果
    - `sessions/` - セッション引き継ぎ
    - ファイル名: `YYYY-MM-DD-説明.md`
-   
+
 3. **`ai/knowledge/`** - 恒久的な知識ベース
    - `learnings/` - 技術的な学習事項
    - `decisions/` - アーキテクチャ決定
    - `patterns/` - ベストプラクティス
    - `context/` - プロジェクトコンテキスト
-   
+
 4. **`ai/issues/`** - 問題管理
    - `active/` - 対応中の問題
    - `resolved/` - 解決済み
    - `blocked/` - ブロック中
-   
+
 5. **`ai/plans/`** - 計画とチェックリスト
    - `active/` - 実行中の計画
    - `completed/` - 完了した計画
-   
+
 ### ファイル命名規則
 - 日付を含む場合: `YYYY-MM-DD-簡潔な説明.md`
 - 説明は15文字以内を推奨
@@ -90,6 +90,7 @@
 
 ```bash
 # Bash ツールを使用して macos-notify-cli コマンドを実行
+# 注意: メッセージ内のシェル特殊文字は適切にエスケープすること
 macos-notify-cli -m "実行した内容の簡潔な説明" --current-tmux
 ```
 

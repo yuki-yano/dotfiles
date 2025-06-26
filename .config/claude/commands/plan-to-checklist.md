@@ -24,6 +24,7 @@ description: Convert created plan to Markdown checklist and save to ai/plans/act
 - ディレクトリ: `ai/plans/active/`
 - ファイル名: `$ARGUMENTS.md`（提供されている場合）
 - ファイル名が未指定の場合は内容から15文字以内の適切な名前を生成
+- 同名ファイルが存在する場合は `-1`、`-2` などの接尾辞を追加して衝突を回避
 
 ステップ 4. **チェックリストの構造**
 ```markdown

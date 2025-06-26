@@ -19,7 +19,7 @@ description: Create Markdown log for features implemented in current HEAD commit
 ステップ 4. フォルダ `ai/log/features/` が存在することを確認（存在しない場合は作成）。
 ステップ 5. ログファイル `ai/log/features/<date>-<feature>.md` を作成（例: `2025-06-18-create-button.md`）。
 同名のファイルが既に存在する場合は、上書きを避けるために `-1`、`-2`、… を追加。`<feature>` は 20 文字未満にする。
-6. 以下の Markdown コンテンツを書き込む:
+ステップ 6. 以下の Markdown コンテンツを書き込む:
 
    ```markdown
    # <件名または $ARGUMENTS>
@@ -37,4 +37,4 @@ description: Create Markdown log for features implemented in current HEAD commit
    ...
    ```
 
-7. 書き込み後、ユーザーが確認できるように作成したファイルへの相対パスを出力。
+ステップ 7. 書き込み後、ユーザーが確認できるように作成したファイルへの相対パスを出力。

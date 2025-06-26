@@ -17,7 +17,7 @@ description: Reproduce, investigate, and fix bugs based on provided bug reports,
 
 ステップ 2. **調査と分析**
 - エラーログやスタックトレースを確認
-- `context7` MCPツールでライブラリのドキュメントを参照
+- `context7` MCPツールでライブラリのドキュメントを参照（利用可能な場合）
 - `/gemini-search` コマンドで類似の問題や解決策を検索
 - 複数のサブエージェントを使用して並列調査
 

@@ -44,3 +44,4 @@ description: Review specified GitHub issue, create branch, implement fix, and cr
 ステップ 6. **修正記録の作成**
 - `ai/log/fixes/YYYY-MM-DD-issue-$ARGUMENTS.md` に修正内容を記録
 - 根本原因と解決方法を文書化
+
