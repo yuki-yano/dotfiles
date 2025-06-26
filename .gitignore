@@ -41,3 +41,4 @@ tmp/
 !/.config/claude/commands/
 !/.config/claude/commands/**
 !/.config/claude/settings.json
+.claude/settings.local.json

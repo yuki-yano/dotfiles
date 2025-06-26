@@ -1,0 +1,73 @@
+#compdef ccusage
+
+# ccusage zsh completion
+
+_ccusage() {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  _arguments -C \
+    '1: :->cmds' \
+    '*:: :->args' && return 0
+
+  case $state in
+    cmds)
+      _values 'ccusage commands' \
+        'daily[Show usage report grouped by date]' \
+        'monthly[Show usage report grouped by month]' \
+        'session[Show usage report grouped by conversation session]' \
+        'blocks[Show usage report grouped by session billing blocks]' \
+        'mcp[Start MCP server with usage reporting tools]'
+      ;;
+    args)
+      case $line[1] in
+        daily|monthly|session)
+          _arguments \
+            {-s,--since}'[Filter from date (YYYYMMDD format)]:date:' \
+            {-u,--until}'[Filter until date (YYYYMMDD format)]:date:' \
+            {-j,--json}'[Output in JSON format]' \
+            {-m,--mode}'[Cost calculation mode]:mode:(auto calculate display)' \
+            {-d,--debug}'[Show pricing mismatch information for debugging]' \
+            '--debug-samples[Number of sample discrepancies to show in debug output]:number:' \
+            {-o,--order}'[Sort order]:order:(desc asc)' \
+            {-b,--breakdown}'[Show per-model cost breakdown]' \
+            {-O,--offline}'[Use cached pricing data for Claude models instead of fetching from API]' \
+            '--no-offline[Negatable of -O, --offline]' \
+            {-h,--help}'[Display help message]' \
+            {-v,--version}'[Display version]'
+          ;;
+        blocks)
+          _arguments \
+            {-s,--since}'[Filter from date (YYYYMMDD format)]:date:' \
+            {-u,--until}'[Filter until date (YYYYMMDD format)]:date:' \
+            {-j,--json}'[Output in JSON format]' \
+            {-m,--mode}'[Cost calculation mode]:mode:(auto calculate display)' \
+            {-d,--debug}'[Show pricing mismatch information for debugging]' \
+            '--debug-samples[Number of sample discrepancies to show in debug output]:number:' \
+            {-o,--order}'[Sort order]:order:(desc asc)' \
+            {-b,--breakdown}'[Show per-model cost breakdown]' \
+            {-O,--offline}'[Use cached pricing data for Claude models instead of fetching from API]' \
+            '--no-offline[Negatable of -O, --offline]' \
+            {-a,--active}'[Show only active block with projections]' \
+            {-r,--recent}'[Show blocks from last 3 days (including active)]' \
+            {-t,--token-limit}'[Token limit for quota warnings (e.g., 500000 or "max")]:token limit:' \
+            {-l,--session-length}'[Session block duration in hours]:hours:' \
+            '--live[Live monitoring mode with real-time updates]' \
+            '--refresh-interval[Refresh interval in seconds for live mode]:seconds:' \
+            {-h,--help}'[Display help message]' \
+            {-v,--version}'[Display version]'
+          ;;
+        mcp)
+          _arguments \
+            {-m,--mode}'[Cost calculation mode]:mode:(auto calculate display)' \
+            {-t,--type}'[Transport type for MCP server]:type:(stdio http)' \
+            '--port[Port for HTTP transport]:port:' \
+            {-h,--help}'[Display help message]' \
+            {-v,--version}'[Display version]'
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_ccusage "$@"
