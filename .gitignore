@@ -35,4 +35,9 @@ tmp/
 # aider
 .aider*
 
-
+# Claude
+/.config/claude/*
+!/.config/claude/CLAUDE.md
+!/.config/claude/commands/
+!/.config/claude/commands/**
+!/.config/claude/settings.json
