@@ -1,14 +1,14 @@
 ---
-description: Fetch and analyze PR review comments to identify patterns and prepare responses
+description: Check PR review comments and create action plan for addressing feedback
 ---
 
-# PRレビュー分析
+# PRレビューの確認と対応計画: $ARGUMENTS
 
 ## 目標
 
 プルリクエストのレビューコメントを取得し、指摘事項を分析して対応策を検討する
 
-## 手順（厳密に従うこと）
+## 手順（順番に実行）
 
 ステップ 1. **PR番号の特定**
 - 引数が指定された場合: `$ARGUMENTS` を使用
