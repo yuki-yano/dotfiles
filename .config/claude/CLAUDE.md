@@ -59,7 +59,21 @@
 
 ## Web検索のルール
 
-- Web検索を実行する場合には `/gemini-search` を使用してください
+**重要**: Web検索が必要な場合は、組み込みの `Web_Search` ツールを使用せず、必ず以下の方法を使用してください：
+
+### 実行方法
+```bash
+gemini -p "WebSearch: <検索クエリ>"
+```
+
+### 使用例
+- エラー検索: `gemini -p "WebSearch: TypeError Cannot read property of undefined"`
+- 技術調査: `gemini -p "WebSearch: React hooks best practices 2025"`
+
+### 注意事項
+- **必須**: Bash ツールを使用して `gemini -p` コマンドを実行
+- **必須**: "WebSearch: " プレフィックスを付ける
+- **禁止**: 組み込みの Web_Search ツールは使用しない
 
 ## Git commitのルール
 
