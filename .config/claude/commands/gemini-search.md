@@ -32,33 +32,6 @@ gemini --prompt "WebSearch: <検索クエリ>"
    - 情報の新しさを確認（特に技術仕様は変更が多い）
    - 重要な発見は `ai/knowledge/learnings/` に記録
 
-## 使用例
-
-### エラー解決
-```bash
-gemini --prompt "WebSearch: TypeError: Cannot read property 'map' of undefined React"
-```
-
-### ライブラリの使用方法
-```bash
-gemini --prompt "WebSearch: Next.js 14 App Router middleware 使い方"
-```
-
-### ベストプラクティス調査
-```bash
-gemini --prompt "WebSearch: TypeScript monorepo 構成 2025 ベストプラクティス"
-```
-
-### 最新技術動向
-```bash
-gemini --prompt "WebSearch: Deno 2.0 新機能 マイグレーションガイド"
-```
-
-### トラブルシューティング
-```bash
-gemini --prompt "WebSearch: npm ERR! ERESOLVE unable to resolve dependency tree"
-```
-
 ## 重要な注意事項
 
 - **必須**: Task Toolを使用してgeminiコマンドを実行する
@@ -66,10 +39,3 @@ gemini --prompt "WebSearch: npm ERR! ERESOLVE unable to resolve dependency tree"
 - **推奨**: 検索クエリには具体的なエラーメッセージやバージョン情報を含める
 - **推奨**: 技術的な検索では英語のキーワードも併用する
 - **記録**: 有用な情報は適切なAI作業ディレクトリに保存する
-
-## 活用のコツ
-
-- エラーメッセージは可能な限り完全な形で検索
-- ライブラリ名とバージョンを明記すると精度が向上
-- 複数の検索を組み合わせて情報を検証
-- 公式ドキュメントへのリンクは特に重要
