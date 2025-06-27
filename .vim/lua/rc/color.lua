@@ -74,6 +74,7 @@ palette['gruvbox-material'] = function()
           bg = search,
         },
       },
+      focus_inactive = '#2A2827', -- Slightly lighter than gruvbox background
     },
   }
 end
@@ -168,6 +169,7 @@ palette['catppuccin'] = function()
         bg = catppuccin_palette.surface0, -- #313244
         bg_alt = catppuccin_palette.base, -- #1E1E2E
       },
+      focus_inactive = catppuccin_palette.base, -- #1E1E2E
     },
   }
 end

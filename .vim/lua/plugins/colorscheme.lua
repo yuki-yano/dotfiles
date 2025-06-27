@@ -19,6 +19,9 @@ return {
     config = function()
       require('catppuccin').setup({
         term_colors = true,
+        dim_inactive = {
+          enabled = false,
+        },
         custom_highlights = function(colors)
           return {
             ['@keyword.export'] = { fg = colors.sapphire, style = {} },

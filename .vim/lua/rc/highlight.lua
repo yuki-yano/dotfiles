@@ -18,5 +18,9 @@ vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
     vim.api.nvim_set_hl(0, 'Visual', { fg = 'NONE', bg = color.base().visual, bold = true })
     vim.api.nvim_set_hl(0, 'VertSplit', { fg = color.base().vert_split, bg = 'NONE' })
     vim.api.nvim_set_hl(0, 'LspInlayHint', { fg = color.base().inlay_hint, bg = 'NONE' })
+    
+    -- Custom highlight groups for focus states
+    vim.api.nvim_set_hl(0, 'NormalInactive', { bg = color.misc().focus_inactive })
+    vim.api.nvim_set_hl(0, 'NormalActive', { bg = color.base().background })
   end,
 })
