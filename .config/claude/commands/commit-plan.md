@@ -50,10 +50,18 @@ git diff --cached --stat
 git diff --stat
 git log --oneline -20  # 過去のコミットメッセージフォーマットを参考にする
 
-# ARGUMENTSに基づいてフィルタリング
+# ARGUMENTSに基づいた処理
 if [ -n "$ARGUMENTS" ]; then
-    # パスパターンが指定されている場合は該当ファイルのみを対象にする
-    # 例: "src/" や "*.ts" が指定された場合
+    # パスパターンの場合: 指定されたパスのファイルのみを対象
+    # 例: "src/" → src/配下の変更のみ
+    # 例: "*.ts" → TypeScriptファイルのみ
+
+    # 戦略指定の場合: コミット分割の方針を決定
+    # 例: "細かく分割" → より小さな単位でコミット
+    # 例: "ファイルタイプ別" → 拡張子ごとにグループ化
+
+    # モード指定の場合: デフォルトの実行モードを設定
+    # 例: "--auto" → 選択プロンプトをスキップ
 fi
 ```
 
@@ -92,68 +100,34 @@ fi
 
 **注意**: コミットメッセージは過去のログから抽出したパターンに従って作成する
 
-#### 出力フォーマット例
+以下の形式で番号付きのコミット計画を出力する：
+
 ```markdown
 ## 📋 コミット計画
 
-### コミット 1: feat: 新機能の追加
-**タイプ**: feat
-**影響範囲**: 機能追加
-**ファイル**:
-- `path/to/new-feature.ts` (新規)
-- `path/to/new-feature.test.ts` (新規)
-- `path/to/index.ts` (修正: import追加)
+### [1] feat: 新機能の追加
+**ファイル**: 
+- `path/to/feature.ts` (新規)
+- `path/to/feature.test.ts` (新規)
 
-**コミットメッセージ案**:
+**メッセージ案**:
 ```
 feat: Add new feature for handling user preferences
 
-- Implement preference storage module
-- Add unit tests for preference handling
-- Export new module from index
+- Implement preference storage module  
+- Add unit tests
 ```
 
-### コミット 2: fix: エラー処理の修正
-**タイプ**: fix
-**影響範囲**: バグ修正
+### [2] fix: バグ修正
 **ファイル**:
-- `path/to/error-handler.ts` (修正)
-- `path/to/error-handler.test.ts` (修正)
+- `path/to/bugfix.ts` (修正)
 
-**コミットメッセージ案**:
-```
-fix: Correct error handling in async operations
-
-- Fix uncaught promise rejection
-- Add proper error logging
-- Update tests for error cases
-```
-
-### コミット 3: docs: READMEの更新
-**タイプ**: docs
-**影響範囲**: ドキュメント
-**ファイル**:
-- `README.md` (修正)
-- `docs/api.md` (修正)
-
-**コミットメッセージ案**:
-```
-docs: Update README with new feature documentation
-
-- Add usage examples for new feature
-- Update API documentation
-- Fix outdated information
-```
+（以下、必要なコミット数だけ続く）
 
 ## 📊 サマリー
-- 総変更ファイル数: X
-- 推奨コミット数: Y
-- 依存関係: コミット1を先に実行（他が依存）
-
-## 💡 推奨事項
-- 大きな変更は更に分割を検討
-- テストは対応する機能と同じコミットに含める
-- Breaking changesがある場合は明記
+- 総変更ファイル数: X個
+- 推奨コミット数: Y個
+- 依存関係: [1]を先に実行
 ```
 
 ### ステップ 5: 実行方法の選択提示
@@ -178,17 +152,43 @@ docs: Update README with new feature documentation
 #### [a] 自動実行の場合
 - すべてのコミットを順番に実行
 - 各コミット後にgit statusで確認
-- エラーがあれば停止
+- エラー発生時:
+  - 実行を停止
+  - エラー内容を表示
+  - 既に実行済みのコミットをリスト表示
+  - リカバリー方法を提案
 
 #### [i] インタラクティブの場合
-- 各コミット前に変更内容を表示
-- ユーザーの確認を待つ
-- スキップやメッセージ編集も可能
+- 各コミット前に変更内容を表示（git diff）
+- 選択肢を提示:
+  - [y] 実行
+  - [n] スキップ
+  - [e] メッセージ編集
+  - [q] 中断
+- エラー時は自動的に停止し、状況を報告
 
 #### [e] 計画編集の場合
-- テキストエディタで計画を開く
-- ファイルの移動、コミットの分割・統合が可能
-- 編集後、再度実行方法を選択
+**実装方法**：
+1. 現在の計画を番号付きリストで表示
+2. 以下の編集コマンドを対話的に受け付ける：
+
+**編集コマンド例**：
+```
+統合: "1,2を統合" または "merge 1 2"
+分割: "3を分割" または "split 3"
+順序変更: "1と3を入れ替え" または "swap 1 3"
+メッセージ変更: "2のメッセージ: 新しいメッセージ内容"
+ファイル移動: "file.txtを2から3へ" または "move file.txt from 2 to 3"
+削除: "4を削除" または "delete 4"
+完了: "完了" または "done"
+```
+
+**編集フロー**：
+1. 計画を表示
+2. 編集コマンドを入力
+3. 変更後の計画を再表示
+4. 追加の編集または完了を選択
+5. 完了後、実行方法の選択画面に戻る
 
 #### [d] ドライランの場合
 - 実行予定のコマンドを表示のみ
@@ -210,12 +210,23 @@ git add path/to/other/files...
 git commit -m "fix: ..."
 ```
 - 実行可能なシェルスクリプトとして保存
+- 保存先: カレントディレクトリ
 - ファイル名: `commit-plan-YYYY-MM-DD-HHmmss.sh`
+- 実行権限を自動付与: `chmod +x`
 
-### ステップ 7: 計画の保存（オプション）
+### ステップ 7: 実行結果の報告
 
+選択された実行方法に応じて結果を報告：
+- 自動実行/インタラクティブ: 成功したコミット数とハッシュ
+- ドライラン: 実行予定だったコマンドの確認
+- スクリプト保存: 保存先パスと実行方法
+- エラー発生時: 具体的なエラー内容と対処法
+
+### ステップ 8: 計画の保存（オプション）
+
+実行完了後、必要に応じて計画と結果を保存：
 ```bash
-# 計画を ai/plans/active/ に保存
+# ai/plans/active/ に計画を保存
 echo "$COMMIT_PLAN" > "ai/plans/active/$(date +%Y-%m-%d)-commit-plan.md"
 ```
 
@@ -226,18 +237,6 @@ echo "$COMMIT_PLAN" > "ai/plans/active/$(date +%Y-%m-%d)-commit-plan.md"
 - **メッセージ規約**: プロジェクトの過去のコミットパターンを優先し、Conventional Commitsを補助的に使用
 - **一貫性の維持**: 過去のコミットメッセージのスタイルと整合性を保つ
 - **レビューの容易さ**: レビュアーが理解しやすい単位で分割
-
-## 実装のポイント
-
-### 対話的な選択の実装
-- 選択肢の入力を待つ際は、明確なプロンプトを表示
-- 無効な入力の場合は再度選択を促す
-- 各オプションの動作を事前に説明
-
-### エラーハンドリング
-- gitコマンドの実行エラーをキャッチ
-- コンフリクトや未ステージの変更を検出
-- エラー時は適切なリカバリー方法を提案
 
 ## 高度なオプション
 
