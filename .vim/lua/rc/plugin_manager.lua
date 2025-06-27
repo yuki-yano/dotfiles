@@ -61,6 +61,9 @@ local lazy_setup_default_opts = {
       ft = misc_icons.folder,
     },
   },
+  rocks = {
+    enabled = false,
+  },
   performance = {
     rtp = {
       disabled_plugins = {
