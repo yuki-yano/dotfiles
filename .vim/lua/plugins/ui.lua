@@ -39,7 +39,7 @@ return {
               local custom_catppuccin = require('lualine.themes.catppuccin')
               local inactive_colors = color.misc().lualine_inactive
               -- 全モードで地味な色に統一
-              for _, mode in ipairs({'normal', 'insert', 'visual', 'replace', 'command', 'inactive'}) do
+              for _, mode in ipairs({ 'normal', 'insert', 'visual', 'replace', 'command', 'inactive' }) do
                 if custom_catppuccin[mode] then
                   if custom_catppuccin[mode].a then
                     custom_catppuccin[mode].a.fg = inactive_colors.fg
@@ -100,20 +100,20 @@ return {
         color = { fg = color.base().green },
       }
 
-      local lsp_names = {
-        function()
-          local servers = vim
-            .iter(vim.lsp.get_clients({ bufnr = 0 }))
-            :map(function(server)
-              if server.name ~= 'null-ls' then
-                return server.name
-              end
-            end)
-            :totable()
-
-          return table.concat(servers, ', ')
-        end,
-      }
+      -- local lsp_names = {
+      --   function()
+      --     local servers = vim
+      --       .iter(vim.lsp.get_clients({ bufnr = 0 }))
+      --       :map(function(server)
+      --         if server.name ~= 'null-ls' then
+      --           return server.name
+      --         end
+      --       end)
+      --       :totable()
+      -- 
+      --     return table.concat(servers, ', ')
+      --   end,
+      -- }
 
       -- Displays the number of unsaved files other than the current buffer
       local function modified_background_buffers()
@@ -189,25 +189,42 @@ return {
         },
       })
 
-      vim.api.nvim_create_autocmd({'FocusLost'}, {
+      vim.api.nvim_create_autocmd({ 'FocusLost' }, {
         callback = function()
+          -- Update lualine theme
           lualine.setup({
             options = {
               theme = theme_table(current_theme, true),
               globalstatus = true,
             },
           })
+
+          -- Set all windows to inactive background color
+          for _, win in ipairs(vim.api.nvim_list_wins()) do
+            vim.api.nvim_win_set_option(win, 'winhighlight', 'Normal:NormalInactive,NormalNC:NormalInactive')
+          end
         end,
       })
 
-      vim.api.nvim_create_autocmd({'FocusGained'}, {
+      vim.api.nvim_create_autocmd({ 'FocusGained' }, {
         callback = function()
+          -- Update lualine theme
           lualine.setup({
             options = {
               theme = theme_table(current_theme, false),
               globalstatus = true,
             },
           })
+
+          -- Reset active window background color
+          vim.api.nvim_win_set_option(0, 'winhighlight', '')
+
+          -- Reset other windows to default NormalNC behavior
+          for _, win in ipairs(vim.api.nvim_list_wins()) do
+            if win ~= vim.api.nvim_get_current_win() then
+              vim.api.nvim_win_set_option(win, 'winhighlight', '')
+            end
+          end
         end,
       })
     end,
@@ -1785,12 +1802,6 @@ _x_: reload
             color = yellow,
             cterm_color = '67',
             name = 'Readme',
-          },
-          ['rs'] = {
-            icon = ' ',
-            color = white,
-            cterm_color = '180',
-            name = 'Rs',
           },
           ['rss'] = {
             icon = ' ',
