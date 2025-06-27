@@ -7,10 +7,11 @@ setnull searchurls.youtube
 
 " workaround
 " https://github.com/tridactyl/tridactyl/issues/4944 
-set searchurls.google https://www.google.co.jp/search?q=
-set searchurls.kagi https://kagi.com/search?q=
+set searchurls.google https://www.google.com/search?q=
+" set searchurls.kagi https://kagi.com/search?q=
 
-set searchengine kagi
+" set searchengine kagi
+set searchengine google
 set tabopenpos last
 set smoothscroll false
 set scrollduration 100
@@ -46,14 +47,14 @@ keymap A <Nop>
 keymap p <Nop>
 keymap P <Nop>
 
-unbindurl google\.co\.jp/search --mode=normal j
-unbindurl google\.co\.jp/search --mode=normal k
-unbindurl google\.co\.jp/search --mode=normal i
-unbindurl google\.co\.jp/search --mode=normal /
-unbindurl www\.google\.co\.jp/search --mode=normal j
-unbindurl www\.google\.co\.jp/search --mode=normal k
-unbindurl www\.google\.co\.jp/search --mode=normal i
-unbindurl www\.google\.co\.jp/search --mode=normal /
+unbindurl google\.com/search --mode=normal j
+unbindurl google\.com/search --mode=normal k
+unbindurl google\.com/search --mode=normal i
+unbindurl google\.com/search --mode=normal /
+unbindurl www\.google\.com/search --mode=normal j
+unbindurl www\.google\.com/search --mode=normal k
+unbindurl www\.google\.com/search --mode=normal i
+unbindurl www\.google\.com/search --mode=normal /
 
 unbindurl kagi\.com/search --mode=normal j
 unbindurl kagi\.com/search --mode=normal k
