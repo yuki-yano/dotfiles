@@ -2,7 +2,7 @@
 description: Analyze git changes and create an organized commit plan with logical grouping
 ---
 
-# コミット計画作成: $ARGUMENTS
+# コミット計画作成
 
 ## 目標
 
@@ -29,7 +29,7 @@ git diff  # 全体の変更を確認
 
 ### 3. 意図別コミット計画
 
-以下の形式で出力:
+以下の形式で出力（コミットメッセージは作業内容を詳細に記述）:
 
 **コミット計画**
 
@@ -43,18 +43,61 @@ git diff  # 全体の変更を確認
 git add src/auth.ts
 git add -p src/api.ts    # L45-L89を選択
 git add -p src/types.ts   # L12-L25を選択
-git commit -m "feat: Add user authentication"
+git commit
+```
+
+コミットメッセージ:
+```
+feat: Add user authentication
+
+- Implement JWT-based authentication system
+- Add login/logout API endpoints
+- Define authentication types and interfaces
+- Handle token validation and refresh
+```
+
+**複雑な部分的ステージングが必要な場合**:
+```bash
+# バックアップを作成
+cp src/api.ts src/api.ts.backup
+
+# 該当行以外を一時的に元に戻す
+# (エディタで L45-L89 以外を手動で revert するか、
+#  パッチを適用して必要な部分のみ残す)
+git add src/api.ts
+git commit  # エディタでメッセージを記述
+
+# 元のファイルを復元
+mv src/api.ts.backup src/api.ts
 ```
 
 **[2] fix: バリデーション修正**
 - `src/utils.ts` [部分] L102-L115
 - `src/api.ts` [部分] L15-L18
 
+実行コマンド:
+```bash
+git add -p src/utils.ts   # L102-L115を選択
+git add -p src/api.ts     # L15-L18を選択
+git commit
+```
+
+コミットメッセージ:
+```
+fix: Fix validation errors in form submission
+
+- Add proper email format validation
+- Handle empty field cases correctly
+- Fix error message display logic
+- Prevent duplicate submissions
+```
+
 （各コミットごとに同様の形式で続く）
 
 ### 4. 実行モード選択
 
 - **[a] 自動実行**: 順次実行（部分的変更では`git add -p`起動）
+  - add -pでエラーが発生した場合は停止し、手動での対処を促す
 - **[i] インタラクティブ**: 各コミット前に確認
 - **[e] 計画を編集**: コミットの統合・分割・順序変更
   - `1,2を統合` / `3を分割` / `1と3を入れ替え` / `2のメッセージ: 新内容`
@@ -63,8 +106,77 @@ git commit -m "feat: Add user authentication"
 ## git add -p 操作
 
 - `y` - ステージング / `n` - スキップ
-- `s` - 分割 / `e` - 編集
+- `s` - 分割（可能な場合）
+- `e` - 編集モード（行単位での選択が可能）
 - `?` - ヘルプ / `q` - 終了
+
+### コミットメッセージの作成
+
+`git commit` 実行時のメッセージ作成ガイドライン:
+
+- **形式**: Conventional Commits形式を使用
+- **1行目**: `型: 簡潔な要約` (50文字以内推奨)
+- **本文**: 空行を挟んで、変更内容を箇条書きで詳細に記述
+- **Why**: 変更の理由や背景を含める
+- **影響**: 影響範囲や注意点があれば記載
+
+### 自動的な行単位ステージング
+
+ハンクに複数の意図が混在する場合の対処:
+
+**方法1: git add --patch の代替手段**
+```bash
+# 一時的にインデックスに追加してから部分的に削除
+git add <file>
+git reset -p <file>  # 不要な部分を選択的にアンステージ
+```
+
+**方法2: 一時ファイルを使った精密な制御**
+```bash
+# 現在の状態を保存
+cp <file> <file>.backup
+
+# 意図1の変更のみを含むファイルを作成
+# （該当行以外を元に戻す）
+git checkout -p HEAD -- <file>  # 不要な変更を対話的に破棄
+git add <file>
+git commit -m "意図1"
+
+# 残りの変更を復元
+mv <file>.backup <file>
+```
+
+**推奨**: 複雑な場合は一時的にファイルを分割してコミット後に統合
+
+## 重要な注意事項
+
+### add -p での段階的コミット
+
+- **警告**: 後のコミットでは、前のコミットで選択した部分が既にコミット済みのため、表示されるハンクが変わります
+- **対策**: 各コミットで必要な行番号範囲を明確に記録し、ハンクの内容を確認してから選択
+- **例**: 
+  - 1回目: L1-100のうちL45-89を選択 → 2つのハンクに分かれる可能性
+  - 2回目: 残りのL1-44とL90-100が新しいハンクとして表示される
+- **ハンク分割できない場合**: `s`が効かない大きなハンクは`e`で編集
+
+### エラー時の対処
+
+```bash
+# add -p でミスした場合
+git reset HEAD <file>  # ステージングを取り消し
+
+# ファイルが壊れた場合
+git checkout HEAD -- <file>  # 最後のコミットの状態に戻す
+
+# 完全にやり直したい場合
+git reset --hard $BACKUP_BRANCH
+```
+
+### 実行時の原則
+
+- **自動修正の禁止**: add -pで失敗しても、ファイルを変更して解決しようとしない
+- **確認優先**: 不安な場合は`git diff --cached`でステージング内容を確認
+- **段階的実行**: 各コミット後に`git log -1 --stat`で結果を確認
 
 ## ベストプラクティス
 
@@ -72,3 +184,81 @@ git commit -m "feat: Add user authentication"
 2. 1コミット = 1つの意図
 3. 同一ファイルでも意図別に`git add -p`で分割
 4. ビルドが壊れない順序で実行
+5. コミットメッセージは以下の形式で詳細に記述：
+   - 1行目: 簡潔な要約（型: 内容）
+   - 空行
+   - 具体的な変更内容を箇条書きで列挙
+   - 変更の理由や背景（必要に応じて）
+
+## 完了後のクリーンアップ
+
+```bash
+# すべてのコミットが成功した場合
+git branch -d $BACKUP_BRANCH
+echo "バックアップブランチを削除しました: $BACKUP_BRANCH"
+
+# stash参照ファイルも削除
+rm -f .git/commit-plan-stash-ref
+```
+
+## 計画完了の報告
+
+コミット計画作成完了時に、以下の情報を簡潔に日本語で報告する：
+
+1. **計画した総コミット数**
+2. **各コミットの内容**（番号順に簡潔に列挙）
+3. **意図別の内訳**（例：feat: 2件、fix: 1件、refactor: 1件）
+4. **特に注意が必要な点**（例：部分的ステージングが必要なファイル数）
+
+例：
+```
+5つのコミットに分割する計画を作成しました。
+
+【コミット内容】
+1. feat: ユーザー認証機能の追加
+2. feat: APIエンドポイントの実装
+3. fix: バリデーションエラーの修正
+4. refactor: 共通処理の抽出
+5. docs: API仕様書の更新
+
+【内訳】
+- 新機能追加(feat): 2件
+- バグ修正(fix): 1件
+- リファクタリング(refactor): 1件
+- ドキュメント(docs): 1件
+
+【注意点】
+3つのファイルで部分的なステージング（git add -p）が必要です。
+```
+
+## 実行モード選択（必須）
+
+計画完了の報告後、必ず以下の実行モードの選択肢を表示する：
+
+```
+【実行モードを選択してください】
+- [a] 自動実行: 順次実行（部分的変更では git add -p 起動）
+- [i] インタラクティブ: 各コミット前に確認
+- [e] 計画を編集: コミットの統合・分割・順序変更
+- [d] ドライラン: コマンド確認のみ
+- [q] 終了: 計画を保存して終了
+
+選択: 
+```
+
+## 実行前の安全対策
+
+実行モードが選択され、実際にコミット作業を開始する直前に以下を実行：
+
+```bash
+# バックアップブランチを作成
+BACKUP_BRANCH="backup/commit-plan-$(date +%Y%m%d-%H%M%S)"
+git branch $BACKUP_BRANCH
+echo "バックアップブランチを作成しました: $BACKUP_BRANCH"
+
+# 現在のステージング状態を保存
+git stash create > .git/commit-plan-stash-ref
+
+# 実行前の最終状態確認
+git status
+```
