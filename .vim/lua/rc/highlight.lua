@@ -16,9 +16,10 @@ vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
     vim.api.nvim_set_hl(0, 'CurSearch', { fg = 'NONE', bg = color.base().search })
     vim.api.nvim_set_hl(0, 'SignColumn', { fg = color.base().black, bg = 'NONE' })
     vim.api.nvim_set_hl(0, 'Visual', { fg = 'NONE', bg = color.base().visual, bold = true })
-    vim.api.nvim_set_hl(0, 'VertSplit', { fg = color.base().vert_split, bg = 'NONE' })
+    vim.api.nvim_set_hl(0, 'WinSeparator', color.misc().split.win_separator)
+    vim.api.nvim_set_hl(0, 'VertSplit', color.misc().split.vert_split)
     vim.api.nvim_set_hl(0, 'LspInlayHint', { fg = color.base().inlay_hint, bg = 'NONE' })
-    
+
     -- Custom highlight groups for focus states
     vim.api.nvim_set_hl(0, 'NormalInactive', { bg = color.misc().focus_inactive })
     vim.api.nvim_set_hl(0, 'NormalActive', { bg = color.base().background })

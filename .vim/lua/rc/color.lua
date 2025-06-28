@@ -48,6 +48,10 @@ palette['gruvbox-material'] = function()
         red = '#E27878',
         blue = '#5F87D7',
       },
+      split = {
+        win_separator = '#3C3836',
+        vert_split = '#3C3836',
+      },
       diff = diff,
       -- NOTE: Copy from catppuccino
       sandwich = {
@@ -55,7 +59,6 @@ palette['gruvbox-material'] = function()
         delete = '#541010',
         change = '#544E10',
       },
-      vert_split = '#504945',
       scrollbar = {
         bar = '#3A3A3A',
         search = '#00AFAF',
@@ -74,7 +77,7 @@ palette['gruvbox-material'] = function()
           bg = search,
         },
       },
-      focus_inactive = '#2A2827', -- Slightly lighter than gruvbox background
+      focus_inactive = '#222423', -- Slightly darker, between background (#1D2021) and black (#32302F)
     },
   }
 end
@@ -128,7 +131,6 @@ palette['catppuccin'] = function()
       incsearch = incsearch,
       search = search,
       visual = catppuccin_palette.surface0, -- #313244
-      vert_split = catppuccin_palette.surface0, -- #313244
       inlay_hint = catppuccin_palette.surface2, -- #585B70
     },
     misc = {
@@ -138,6 +140,18 @@ palette['catppuccin'] = function()
       pointer = {
         red = '#f17497',
         blue = '#71a4f9',
+      },
+      split = {
+        win_separator = {
+          fg = catppuccin_palette.surface2, -- #585B70
+          bg = 'NONE', -- No background for win_separator
+          bold = true,
+        },
+        vert_split = {
+          fg = catppuccin_palette.surface2, -- #585B70
+          bg = 'NONE', -- No background for vert_split
+          bold = true,
+        },
       },
       diff = diff,
       sandwich = {
@@ -167,9 +181,9 @@ palette['catppuccin'] = function()
       lualine_inactive = {
         fg = catppuccin_palette.overlay0, -- #6C7086
         bg = catppuccin_palette.surface0, -- #313244
-        bg_alt = catppuccin_palette.base, -- #1E1E2E
+        bg_alt = '#232333', -- Slightly darker, between base (#1E1E2E) and surface0 (#313244)
       },
-      focus_inactive = catppuccin_palette.base, -- #1E1E2E
+      focus_inactive = '#232333', -- Slightly darker, between base (#1E1E2E) and surface0 (#313244)
     },
   }
 end
