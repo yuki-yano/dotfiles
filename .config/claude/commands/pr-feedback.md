@@ -1,8 +1,8 @@
 ---
-description: Check PR review comments and create action plan for addressing feedback
+description: Analyze PR feedback and create action plan for addressing review comments
 ---
 
-# PRレビューの確認と対応計画: $ARGUMENTS
+# PRフィードバックの分析と対応計画: $ARGUMENTS
 
 ## 目標
 
@@ -43,9 +43,9 @@ description: Check PR review comments and create action plan for addressing feed
 - **ドキュメント**: コメント、READMEの改善
 
 ステップ 6. **分析レポートの作成**
-`ai/log/analysis/YYYY-MM-DD-pr-review-[PR番号].md` に以下を記録:
+`ai/log/analysis/YYYY-MM-DD-pr-feedback-[PR番号].md` に以下を記録:
 ```markdown
-# PR #[PR番号] レビュー分析
+# PR #[PR番号] フィードバック分析
 
 ## PR概要
 - タイトル: [PRタイトル]
