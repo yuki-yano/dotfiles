@@ -59,21 +59,21 @@
 
 ## Web検索のルール
 
-**重要**: Web検索が必要な場合は、組み込みの `Web_Search` ツールを使用せず、必ず以下の方法を使用してください：
+**最重要**: Web検索が必要な場合は、以下の優先順位で実行してください：
 
-### 実行方法
-```bash
-gemini -p "WebSearch: <検索クエリ>"
-```
+1. **最優先: MCP google_search** (必ず最初に試す)
+ - `mcp__gemini-grounding__google_search` を使用
+ - AI生成の要約付き検索結果を提供
 
-### 使用例
-- エラー検索: `gemini -p "WebSearch: TypeError Cannot read property of undefined"`
-- 技術調査: `gemini -p "WebSearch: React hooks best practices 2025"`
+2. **代替手段: gemini コマンド** (MCPが利用不可の場合のみ)
+ ```bash
+ gemini -p "WebSearch: <検索クエリ>"
+ ```
 
-### 注意事項
-- **必須**: Bash ツールを使用して `gemini -p` コマンドを実行
-- **必須**: "WebSearch: " プレフィックスを付ける
-- **禁止**: 組み込みの Web_Search ツールは使用しない
+禁止事項
+
+- 組み込みの WebSearch ツールは絶対に使用しない
+- 必ず上記の優先順位を守る
 
 ## Git commitのルール
 
@@ -109,7 +109,7 @@ macos-notify-cli -m "実行した内容の簡潔な説明" --current-tmux
 ```
 
 パラメータ:
-- `-m`: 実行した内容の簡潔な説明（必須）
+- `--message`: 実行した内容の簡潔な説明（必須）
 - `--current-tmux`: 現在のtmuxセッションを使用
 
 4. **通知の目的**
