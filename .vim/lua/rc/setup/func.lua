@@ -284,3 +284,83 @@ end, { nargs = '?' })
 vim.api.nvim_create_user_command('Windsurf', function(opts)
   open_vscode_based_editor('windsurf', opts.args)
 end, { nargs = '?' })
+
+-- Claude Code yank commands
+local function get_relative_filepath()
+  local filepath = vim.fn.expand('%:.')
+  if filepath == '' then
+    filepath = vim.fn.expand('%:p')
+  end
+  return filepath
+end
+
+local function format_diagnostics(diagnostics)
+  local lines = {}
+  for _, diag in ipairs(diagnostics) do
+    -- Only include ERROR and WARN
+    if diag.severity == vim.diagnostic.severity.ERROR or diag.severity == vim.diagnostic.severity.WARN then
+      local severity = ({ 'ERROR', 'WARN' })[diag.severity]
+      local line = diag.lnum + 1 -- Convert back to 1-indexed
+      local msg = string.format('[%s] Line %d: %s', severity, line, diag.message)
+      if diag.source then
+        msg = msg .. string.format(' (%s)', diag.source)
+      end
+      table.insert(lines, msg)
+    end
+  end
+  return lines
+end
+
+local function yank_content(content, has_diagnostics)
+  vim.fn.setreg('"', content)
+  local lines = vim.split(content, '\n')
+  local notification = 'Yanked: ' .. lines[1]
+  if has_diagnostics then
+    notification = notification .. ' (with ' .. (#lines - 2) .. ' diagnostics)'
+  end
+  vim.notify(notification, vim.log.levels.INFO, { title = 'Claude Code Yank' })
+end
+
+-- Normal mode: yank file path as @path/to/file
+vim.keymap.set('n', 'yc', function()
+  local content = '@' .. get_relative_filepath()
+  yank_content(content, false)
+end, { desc = 'Yank file path for Claude Code' })
+
+-- Visual mode: yank with line range as @path/to/file#Lxx-yy
+vim.keymap.set('x', 'yc', function()
+  local filepath = get_relative_filepath()
+
+  -- Get current visual selection range
+  -- Use vim.fn.getpos() to get the current visual selection
+  local vstart = vim.fn.getpos('v')
+  local vend = vim.fn.getpos('.')
+
+  local start_line = math.min(vstart[2], vend[2])
+  local end_line = math.max(vstart[2], vend[2])
+
+  -- Build the base content
+  local content = '@' .. filepath .. '#L' .. start_line
+  if start_line ~= end_line then
+    content = content .. '-' .. end_line
+  end
+
+  -- Check for diagnostics in the selected range
+  local diagnostics = vim.diagnostic.get(0, {
+    lnum_start = start_line - 1, -- 0-indexed
+    lnum_end = end_line - 1, -- 0-indexed
+  })
+
+  -- Add diagnostics info if present (only ERROR and WARN)
+  local diag_lines = format_diagnostics(diagnostics)
+  local has_diagnostics = #diag_lines > 0
+  if has_diagnostics then
+    content = content .. '\n' .. table.concat(diag_lines, '\n')
+  end
+
+  yank_content(content, has_diagnostics)
+
+  -- Exit visual mode safely
+  local esc = vim.api.nvim_replace_termcodes('<Esc>', true, false, true)
+  vim.api.nvim_feedkeys(esc, 'n', false)
+end, { desc = 'Yank file path with line range for Claude Code' })
