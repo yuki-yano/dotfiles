@@ -53,4 +53,38 @@ M.add_disable_cmp_filetypes = function(filetypes)
   disable_cmp_filetypes = list_concat({ disable_cmp_filetypes, filetypes })
 end
 
+-- Global FocusGain/FocusLost handlers
+local focus_gain_handlers = {}
+local focus_lost_handlers = {}
+
+M.add_focus_gain = function(handler)
+  table.insert(focus_gain_handlers, handler)
+end
+
+M.add_focus_lost = function(handler)
+  table.insert(focus_lost_handlers, handler)
+end
+
+-- Setup autocmds for FocusGain/FocusLost
+local function setup_focus_autocmds()
+  vim.api.nvim_create_autocmd({ 'FocusLost' }, {
+    callback = function()
+      for _, handler in ipairs(focus_lost_handlers) do
+        handler()
+      end
+    end,
+  })
+
+  vim.api.nvim_create_autocmd({ 'FocusGained' }, {
+    callback = function()
+      for _, handler in ipairs(focus_gain_handlers) do
+        handler()
+      end
+    end,
+  })
+end
+
+-- Call setup when this module is loaded
+setup_focus_autocmds()
+
 return M
