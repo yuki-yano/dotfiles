@@ -1,10 +1,10 @@
-local get_disable_cmp_filetypes = require('rc.plugin_utils').get_disable_cmp_filetypes
-local color = require('rc.color')
-local codicons = require('rc.font').codicons
-local misc_icons = require('rc.font').misc_icons
-local todo_icons = require('rc.font').todo_icons
-local list_concat = require('rc.utils').list_concat
--- local enable_noice = require('rc.plugin_utils').enable_noice
+local get_disable_cmp_filetypes = require('rc.modules.plugin_utils').get_disable_cmp_filetypes
+local color = require('rc.modules.color')
+local codicons = require('rc.modules.font').codicons
+local misc_icons = require('rc.modules.font').misc_icons
+local todo_icons = require('rc.modules.font').todo_icons
+local list_concat = require('rc.modules.utils').list_concat
+-- local enable_noice = require('rc.modules.plugin_utils').enable_noice
 
 return {
   {

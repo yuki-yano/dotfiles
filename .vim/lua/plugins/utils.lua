@@ -1,4 +1,4 @@
-local color = require('rc.color')
+local color = require('rc.modules.color')
 
 return {
   { 'farmergreg/vim-lastplace', event = { 'BufReadPre' } },

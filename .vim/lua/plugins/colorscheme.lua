@@ -25,7 +25,7 @@ return {
         custom_highlights = function(colors)
           return {
             ['@keyword.export'] = { fg = colors.sapphire, style = {} },
-            NormalNC = { bg = require('rc.color').misc().focus_inactive },
+            NormalNC = { bg = require('rc.modules.color').misc().focus_inactive },
           }
         end,
         integrations = {

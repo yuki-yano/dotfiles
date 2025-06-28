@@ -1,5 +1,5 @@
-local has = require('rc.plugin_utils').has_plugin
-local color = require('rc.color')
+local has = require('rc.modules.plugin_utils').has_plugin
+local color = require('rc.modules.color')
 
 return {
   {

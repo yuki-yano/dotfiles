@@ -1,4 +1,4 @@
-local escesc = require('rc.func').escesc
+-- local escesc = require('rc.setup.func').escesc
 
 local plugins = {
   {
@@ -190,11 +190,11 @@ local plugins = {
         end,
       })
 
-      vim.list_extend(escesc, {
-        function()
-          vimx.fn.coc.float.close_all()
-        end,
-      })
+      -- vim.list_extend(escesc, {
+      --   function()
+      --     vimx.fn.coc.float.close_all()
+      --   end,
+      -- })
     end,
   },
   {

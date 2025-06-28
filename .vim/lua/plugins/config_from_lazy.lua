@@ -1,13 +1,14 @@
 -- Cache base settings by using lazy.nvim plugin loading
-require('rc.options')
-require('rc.func')
-require('rc.highlight')
-require('rc.extui')
+require('rc.setup.options')
+require('rc.setup.func')
+require('rc.setup.highlight')
+require('rc.setup.extui')
 
 vim.api.nvim_create_autocmd({ 'User' }, {
   pattern = { 'VeryLazy' },
   callback = function()
-    require('rc.keymaps')
+    require('rc.setup.keymaps')
+    require('rc.setup.ui')
   end,
 })
 

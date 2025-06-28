@@ -1,4 +1,4 @@
-local is_node_repo = require('rc.plugin_utils').is_node_repo
+local is_node_repo = require('rc.modules.plugin_utils').is_node_repo
 
 return {
   root_dir = function(bufnr, callback)

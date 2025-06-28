@@ -1,7 +1,7 @@
-local color = require('rc.color')
-local merge = require('rc.utils').merge
-local dedent = require('rc.utils').dedent
-local add_disable_cmp_filetypes = require('rc.plugin_utils').add_disable_cmp_filetypes
+local color = require('rc.modules.color')
+local merge = require('rc.modules.utils').merge
+local dedent = require('rc.modules.utils').dedent
+local add_disable_cmp_filetypes = require('rc.modules.plugin_utils').add_disable_cmp_filetypes
 
 return {
   {

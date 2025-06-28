@@ -1,4 +1,4 @@
-local add_disable_cmp_filetypes = require('rc.plugin_utils').add_disable_cmp_filetypes
+local add_disable_cmp_filetypes = require('rc.modules.plugin_utils').add_disable_cmp_filetypes
 
 return {
   {

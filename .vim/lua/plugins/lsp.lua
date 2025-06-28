@@ -1,11 +1,11 @@
-local add_disable_cmp_filetypes = require('rc.plugin_utils').add_disable_cmp_filetypes
-local is_node_repo = require('rc.plugin_utils').is_node_repo
-local color = require('rc.color')
-local lsp_icons = require('rc.font').lsp_icons
-local codicons = require('rc.font').codicons
-local diagnostic_icons = require('rc.font').diagnostic_icons
-local enabled_inlay_hint = require('rc.plugin_utils').enabled_inlay_hint
-local enabled_inlay_hint_default_value = require('rc.plugin_utils').enabled_inlay_hint_default_value
+local add_disable_cmp_filetypes = require('rc.modules.plugin_utils').add_disable_cmp_filetypes
+local is_node_repo = require('rc.modules.plugin_utils').is_node_repo
+local color = require('rc.modules.color')
+local lsp_icons = require('rc.modules.font').lsp_icons
+local codicons = require('rc.modules.font').codicons
+local diagnostic_icons = require('rc.modules.font').diagnostic_icons
+local enabled_inlay_hint = require('rc.modules.plugin_utils').enabled_inlay_hint
+local enabled_inlay_hint_default_value = require('rc.modules.plugin_utils').enabled_inlay_hint_default_value
 
 local enable_vtsls = true
 local enable_tsserver = not enable_vtsls
