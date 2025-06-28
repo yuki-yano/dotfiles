@@ -1,4 +1,4 @@
-local list_concat = require('rc.utils').list_concat
+local list_concat = require('rc.modules.utils').list_concat
 
 local M = {}
 

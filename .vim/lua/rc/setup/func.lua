@@ -1,5 +1,3 @@
-local M = {}
-
 -- EscEsc
 local esc_esc_width = 1
 vim.keymap.set({ 'n' }, '<Esc><Esc>', function()
@@ -286,5 +284,3 @@ end, { nargs = '?' })
 vim.api.nvim_create_user_command('Windsurf', function(opts)
   open_vscode_based_editor('windsurf', opts.args)
 end, { nargs = '?' })
-
-return M
