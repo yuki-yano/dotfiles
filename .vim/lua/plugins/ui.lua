@@ -113,7 +113,7 @@ return {
       --         end
       --       end)
       --       :totable()
-      -- 
+      --
       --     return table.concat(servers, ', ')
       --   end,
       -- }
@@ -123,11 +123,11 @@ return {
         local _modified_background_buffers = vim.tbl_filter(function(bufnr)
           return vim.api.nvim_buf_is_valid(bufnr)
             and vim.api.nvim_buf_is_loaded(bufnr)
-            and vim.api.nvim_buf_get_option(bufnr, 'buftype') == ''
-            and vim.api.nvim_buf_get_option(bufnr, 'modifiable')
+            and vim.bo[bufnr].buftype == ''
+            and vim.bo[bufnr].modifiable
             and vim.api.nvim_buf_get_name(bufnr) ~= ''
-            and vim.api.nvim_buf_get_number(bufnr) ~= vim.api.nvim_get_current_buf()
-            and vim.api.nvim_buf_get_option(bufnr, 'modified')
+            and bufnr ~= vim.api.nvim_get_current_buf()
+            and vim.bo[bufnr].modified
         end, vim.api.nvim_list_bufs())
 
         if #_modified_background_buffers > 0 then
@@ -767,7 +767,7 @@ return {
         },
         window_ignore_function = function(winid)
           local bufid = vim.api.nvim_win_get_buf(winid)
-          local buftype = vim.api.nvim_buf_get_option(bufid, 'buftype')
+          local buftype = vim.bo[bufid].buftype
           local floating = vim.api.nvim_win_get_config(winid).relative ~= ''
 
           return buftype == 'terminal' or floating
