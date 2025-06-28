@@ -1,10 +1,13 @@
-local is_loaded_plugin = require('rc.plugin_utils').is_loaded_plugin
+local plugin_utils = require('rc.plugin_utils')
+local is_loaded_plugin = plugin_utils.is_loaded_plugin
 local color = require('rc.color')
 local diagnostic_icons = require('rc.font').diagnostic_icons
 local todo_icons = require('rc.font').todo_icons
-local enable_noice = require('rc.plugin_utils').enable_noice
-local enable_lsp_lines = require('rc.plugin_utils').enable_lsp_lines
-local get_lsp_lines_status = require('rc.plugin_utils').get_lsp_lines_status
+local enable_noice = plugin_utils.enable_noice
+local enable_lsp_lines = plugin_utils.enable_lsp_lines
+local get_lsp_lines_status = plugin_utils.get_lsp_lines_status
+local add_focus_gain = plugin_utils.add_focus_gain
+local add_focus_lost = plugin_utils.add_focus_lost
 
 return {
   {
@@ -189,44 +192,27 @@ return {
         },
       })
 
-      vim.api.nvim_create_autocmd({ 'FocusLost' }, {
-        callback = function()
-          -- Update lualine theme
-          lualine.setup({
-            options = {
-              theme = theme_table(current_theme, true),
-              globalstatus = true,
-            },
-          })
+      -- Register FocusLost handler for lualine
+      add_focus_lost(function()
+        -- Update lualine theme
+        lualine.setup({
+          options = {
+            theme = theme_table(current_theme, true),
+            globalstatus = true,
+          },
+        })
+      end)
 
-          -- Set all windows to inactive background color
-          for _, win in ipairs(vim.api.nvim_list_wins()) do
-            vim.api.nvim_win_set_option(win, 'winhighlight', 'Normal:NormalInactive,NormalNC:NormalInactive')
-          end
-        end,
-      })
-
-      vim.api.nvim_create_autocmd({ 'FocusGained' }, {
-        callback = function()
-          -- Update lualine theme
-          lualine.setup({
-            options = {
-              theme = theme_table(current_theme, false),
-              globalstatus = true,
-            },
-          })
-
-          -- Reset active window background color
-          vim.api.nvim_win_set_option(0, 'winhighlight', '')
-
-          -- Reset other windows to default NormalNC behavior
-          for _, win in ipairs(vim.api.nvim_list_wins()) do
-            if win ~= vim.api.nvim_get_current_win() then
-              vim.api.nvim_win_set_option(win, 'winhighlight', '')
-            end
-          end
-        end,
-      })
+      -- Register FocusGained handler for lualine
+      add_focus_gain(function()
+        -- Update lualine theme
+        lualine.setup({
+          options = {
+            theme = theme_table(current_theme, false),
+            globalstatus = true,
+          },
+        })
+      end)
     end,
   },
   {
