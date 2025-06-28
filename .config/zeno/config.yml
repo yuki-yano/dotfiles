@@ -95,6 +95,12 @@ snippets:
   - name: git rebase conflict resolution
     snippet: git range-diff @{u} @{1} @
 
+  - name: git push safe force
+    keyword: -f
+    snippet: --force-with-lease
+    context:
+      lbuffer: '^git push(\s+\S+)*\s+'
+
   - name: tms
     keyword: t
     snippet: tms
@@ -141,10 +147,6 @@ snippets:
       lbuffer: '^git\s+'
     evaluate: true
 
-  - name: deno udd
-    keyword: udd
-    snippet: deno run --allow-all https://deno.land/x/udd/main.ts
-
   - name: claude yolo
     keyword: yolo
     snippet: ENABLE_BACKGROUND_TASKS=1 claude --dangerously-skip-permissions
@@ -164,7 +166,8 @@ completions:
     options:
       --multi: true
       --prompt: "'Kill Process> '"
-    callback: "awk '{print $1}'"
+      --header-lines: 2
+    callback: "perl -ane 'print $F[0]'"
   - name: git fixup script
     patterns:
       - "^git fixup $"
