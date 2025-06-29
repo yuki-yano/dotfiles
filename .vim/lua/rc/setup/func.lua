@@ -322,13 +322,13 @@ local function yank_content(content, has_diagnostics)
 end
 
 -- Normal mode: yank file path as @path/to/file
-vim.keymap.set('n', 'yc', function()
+vim.keymap.set('n', 'ga', function()
   local content = '@' .. get_relative_filepath()
   yank_content(content, false)
 end, { desc = 'Yank file path for Claude Code' })
 
 -- Visual mode: yank with line range as @path/to/file#Lxx-yy
-vim.keymap.set('x', 'yc', function()
+vim.keymap.set('x', 'ga', function()
   local filepath = get_relative_filepath()
 
   -- Get current visual selection range

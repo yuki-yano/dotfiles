@@ -80,12 +80,6 @@ local plugins = {
           if client.server_capabilities.documentSymbolProvider then
             require('nvim-navic').attach(client, ev.buf)
           end
-
-          if client.supports_method('textDocument/formatting') then
-            vim.keymap.set('n', '<Plug>(lsp)f', function()
-              vim.lsp.buf.format({ bufnr = ev.buf })
-            end, { buffer = ev.buf, desc = 'Format with LSP' })
-          end
         end,
       })
 
@@ -140,12 +134,18 @@ local plugins = {
             end, { buffer = ev.buf, desc = 'Format with Eslint & null-ls' })
           else
             vim.keymap.set('n', '<Plug>(lsp)f', function()
-              vim.lsp.buf.format({
-                bufnr = ev.buf,
-                filter = function(c)
-                  return c.name == 'denols'
-                end,
-              })
+              -- Execute :DenoFmt if available
+              if vim.fn.exists(':DenoFmt') == 2 then
+                vim.cmd('DenoFmt')
+              else
+                -- fallback to LSP formatting
+                vim.lsp.buf.format({
+                  bufnr = ev.buf,
+                  filter = function(c)
+                    return c.name == 'denols'
+                  end,
+                })
+              end
             end, { buffer = ev.buf, desc = 'Format with denols' })
           end
         end,
