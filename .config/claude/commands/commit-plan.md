@@ -4,18 +4,58 @@ description: Analyze git changes and create an organized commit plan with logica
 
 # コミット計画作成
 
+## 引数（ARGUMENTS）
+
+自然言語で指示を与えることができます：
+
+```bash
+# 例
+"機能追加だけまとめて"
+"テストとコードを分けて"
+"自動で実行"
+```
+
+**キーワード**：
+- タイプ指定: "機能追加"(feat)、"修正"(fix)、"リファクタリング"(refactor)、"ドキュメント"(docs)、"テスト"(test)、"設定"(chore)
+- グルーピング: "まとめて"（統合）、"分けて"（分割）
+- 実行: "自動で"（自動実行モード）
+
+**フラグ**: `--file <path>`、`--type <type>`、`--auto`
+
 ## 目標
 
 Git変更を分析し、意図別に論理的なコミット計画を作成する。同一ファイルに複数の意図がある場合は`git add -p`で分割。
 
 ## 実行手順
 
+### 0. 引数の解析
+
+自然言語とフラグオプションを解析：
+
+**自然言語からの意図抽出**：
+- "機能追加" / "新機能" → COMMIT_TYPE="feat"
+- "バグ修正" / "修正" → COMMIT_TYPE="fix"
+- "リファクタリング" / "整理" → COMMIT_TYPE="refactor"
+- "ドキュメント" → COMMIT_TYPE="docs"
+- "テスト" → COMMIT_TYPE="test"
+- "設定" / "依存関係" → COMMIT_TYPE="chore"
+- "自動で" / "自動実行" → AUTO_EXECUTE=true
+- "まとめて" → GROUPING="merge"
+- "分けて" / "ファイルごと" → GROUPING="split"
+
 ### 1. 変更内容の分析
 
+引数に応じて分析対象を変更：
+
 ```bash
+# デフォルト（引数なし）
 git status --porcelain
 git diff --stat
 git diff  # 全体の変更を確認
+
+# --file <path> が指定された場合
+git diff --stat -- <path>
+git diff -- <path>
 ```
 
 ### 2. 意図の識別と分類
@@ -27,9 +67,16 @@ git diff  # 全体の変更を確認
 - **test**: テストの追加・修正
 - **chore**: 設定、依存関係
 
+`--type` 引数が指定された場合は、そのタイプの変更のみを抽出して計画を作成。
+
 ### 3. 意図別コミット計画
 
 以下の形式で出力（コミットメッセージは作業内容を詳細に記述）:
+
+自然言語指示による調整：
+- GROUPING="merge" の場合：同じタイプの変更をできるだけまとめる
+- GROUPING="split" の場合：ファイル単位で細かく分割
+- COMMIT_TYPE が指定された場合：そのタイプの変更のみを計画に含める
 
 **コミット計画**
 
@@ -69,27 +116,6 @@ git commit  # エディタでメッセージを記述
 
 # 元のファイルを復元
 mv src/api.ts.backup src/api.ts
-```
-
-**[2] fix: バリデーション修正**
-- `src/utils.ts` [部分] L102-L115
-- `src/api.ts` [部分] L15-L18
-
-実行コマンド:
-```bash
-git add -p src/utils.ts   # L102-L115を選択
-git add -p src/api.ts     # L15-L18を選択
-git commit
-```
-
-コミットメッセージ:
-```
-fix: Fix validation errors in form submission
-
-- Add proper email format validation
-- Handle empty field cases correctly
-- Fix error message display logic
-- Prevent duplicate submissions
 ```
 
 （各コミットごとに同様の形式で続く）
@@ -162,14 +188,9 @@ mv <file>.backup <file>
 ### エラー時の対処
 
 ```bash
-# add -p でミスした場合
 git reset HEAD <file>  # ステージングを取り消し
-
-# ファイルが壊れた場合
 git checkout HEAD -- <file>  # 最後のコミットの状態に戻す
-
-# 完全にやり直したい場合
-git reset --hard $BACKUP_BRANCH
+git reset --hard $BACKUP_BRANCH  # 完全にやり直し
 ```
 
 ### 実行時の原則
@@ -195,23 +216,24 @@ git reset --hard $BACKUP_BRANCH
 ```bash
 # すべてのコミットが成功した場合
 git branch -d $BACKUP_BRANCH
-echo "バックアップブランチを削除しました: $BACKUP_BRANCH"
-
-# stash参照ファイルも削除
 rm -f .git/commit-plan-stash-ref
 ```
 
-## 計画完了の報告
+## 計画完了の報告（必須）
 
 コミット計画作成完了時に、以下の情報を簡潔に日本語で報告する：
 
-1. **計画した総コミット数**
-2. **各コミットの内容**（番号順に簡潔に列挙）
-3. **意図別の内訳**（例：feat: 2件、fix: 1件、refactor: 1件）
-4. **特に注意が必要な点**（例：部分的ステージングが必要なファイル数）
+1. **自然言語指示の解釈**（指示があった場合）
+2. **計画した総コミット数**
+3. **各コミットの内容**（番号順に簡潔に列挙）
+4. **意図別の内訳**（例：feat: 2件、fix: 1件、refactor: 1件）
+5. **特に注意が必要な点**（例：部分的ステージングが必要なファイル数）
 
 例：
 ```
+【指示の解釈】
+"機能追加の変更だけをまとめて自動実行" → feat タイプのみ抽出、まとめてコミット、自動実行モード
+
 5つのコミットに分割する計画を作成しました。
 
 【コミット内容】
@@ -245,6 +267,8 @@ rm -f .git/commit-plan-stash-ref
 
 選択: 
 ```
+
+**注意**: `--auto` 引数が指定された場合は、この選択画面をスキップして自動的に [a] モードで実行を開始する。
 
 ## 実行前の安全対策
 
