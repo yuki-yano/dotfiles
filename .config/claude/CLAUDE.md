@@ -57,23 +57,37 @@
 
 - URLが提供された場合は、`read_url_content_as_markdown` を使用してコンテンツを読み込み、内容を要約する
 
+
 ## Web検索のルール
 
 **最重要**: Web検索が必要な場合は、以下の優先順位で実行してください：
 
 1. **最優先: MCP google_search** (必ず最初に試す)
- - `mcp__gemini-grounding__google_search` を使用
+ - 単一検索: `mcp__gemini-grounding__google_search` を使用
  - AI生成の要約付き検索結果を提供
+ - 引用付きの包括的な回答を生成
 
-2. **代替手段: gemini コマンド** (MCPが利用不可の場合のみ)
+2. **バッチ検索: MCP google_search_batch** (複数の検索が必要な場合)
+ - `mcp__gemini-grounding__google_search_batch` を使用
+ - 最大10個のクエリを並列実行
+ - 検索結果からWebページをスクレイピング可能
+ - 以下の場合に使用:
+   - 複数の観点から調査が必要な場合
+   - 比較検討が必要な場合
+   - 深い調査が必要な場合
+
+3. **代替手段: gemini コマンド** (MCPが利用不可の場合のみ)
  ```bash
- gemini -p "WebSearch: <検索クエリ>"
+ gemini --prompt "WebSearch: <検索クエリ>"
  ```
 
 禁止事項
-
 - 組み込みの WebSearch ツールは絶対に使用しない
 - 必ず上記の優先順位を守る
+
+使用例
+- 単一検索: 「TypeScriptの最新バージョンは？」
+- バッチ検索: 「React、Vue、Angularの比較」（3つの検索を並列実行）
 
 ## Git commitのルール
 
