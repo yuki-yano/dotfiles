@@ -890,6 +890,7 @@ return {
         LeximaAlterCommand yr                 YR
         LeximaAlterCommand te\%[lescope]      Telescope
         LeximaAlterCommand wipe\%[out]        Wipeout!
+        LeximaAlterCommand f                  GhqProject
       ]])
     end,
   },

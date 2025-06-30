@@ -254,6 +254,29 @@ vim.api.nvim_create_user_command('CharToCode', function(opts)
   vim.print(vim.fn.printf('0x%X', vim.fn.char2nr(char)))
 end, { range = true })
 
+-- ghq project selector with tmux integration
+vim.api.nvim_create_user_command('GhqProject', function()
+  -- Save current state
+  local current_file = vim.fn.expand('%:p')
+
+  -- Run the selector
+  vim.cmd('silent !ghq-project-selector')
+
+  -- If we switched tmux sessions, the command effect is already applied
+  -- If not in tmux or stayed in same session, we need to handle cd
+  if vim.v.shell_error == 0 and vim.env.TMUX == nil then
+    -- Not in tmux, the script only output the directory
+    local result = vim.fn.system('ghq-project-selector')
+    if result ~= '' then
+      local dir = result:gsub('\n$', ''):gsub('^~', vim.env.HOME)
+      vim.cmd('cd ' .. vim.fn.fnameescape(dir))
+    end
+  end
+
+  -- Refresh the screen
+  vim.cmd('redraw!')
+end, {})
+
 vim.api.nvim_create_user_command('PluginList', function()
   local plugins = require('lazy').plugins()
   for _, plugin in ipairs(plugins) do

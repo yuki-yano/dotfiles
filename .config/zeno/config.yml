@@ -101,6 +101,10 @@ snippets:
     context:
       lbuffer: '^git push(\s+\S+)*\s+'
 
+  - name: ghq-project-selector
+    keyword: f
+    snippet: ghq-project-selector
+
   - name: tms
     keyword: t
     snippet: tms
