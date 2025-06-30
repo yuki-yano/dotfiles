@@ -13,12 +13,12 @@ description: Create Markdown log for features implemented in current HEAD commit
 ## 動作仕様（順番に従う）
 
 ステップ 1. `$ARGUMENTS` を解析: 存在する場合は明示的な機能説明の上書きとして扱う。そうでない場合は HEAD コミットメッセージから説明を導出する。
-ステップ 2. `git log -1 --pretty=format:"%h|%an|%ad|%s" --date=short` でコミットメタデータを収集して以下を取得:
-   * 短縮ハッシュ *作成者* *日付* *件名*
+ステップ 2. `git log -1 --pretty=format:"%h|%an|%ad|%s" --date=format:%Y-%m-%d` でコミットメタデータを収集して以下を取得:
+   * 短縮ハッシュ *作成者* *日付(YYYY-MM-DD形式)* *件名*
 ステップ 3. `git diff-tree --no-commit-id --name-only -r HEAD` で変更されたファイルを特定。
 ステップ 4. フォルダ `ai/log/features/` が存在することを確認（存在しない場合は作成）。
-ステップ 5. ログファイル `ai/log/features/<date>-<feature>.md` を作成（例: `2025-06-18-create-button.md`）。
-同名のファイルが既に存在する場合は、上書きを避けるために `-1`、`-2`、… を追加。`<feature>` は 20 文字未満にする。
+ステップ 5. ログファイル `ai/log/features/<date>-<feature>.md` を作成（例: `2024-12-29-create-button.md`）。
+日付はステップ2で取得したYYYY-MM-DD形式の日付を使用。同名のファイルが既に存在する場合は、上書きを避けるために `-1`、`-2`、… を追加。`<feature>` は 20 文字未満にする。
 ステップ 6. 以下の Markdown コンテンツを書き込む:
 
    ```markdown
