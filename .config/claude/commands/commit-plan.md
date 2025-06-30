@@ -157,20 +157,54 @@ git add <file>
 git reset -p <file>  # 不要な部分を選択的にアンステージ
 ```
 
-**方法2: 一時ファイルを使った精密な制御**
+**方法2: パッチファイルを使った精密な分割**
+
+`git add -p` で分割できない大きなハンクがあり、意図別に正確に分けたい場合に有効です。
+
 ```bash
-# 現在の状態を保存
-cp <file> <file>.backup
+# 1. 現在のファイルをバックアップ
+cp package.json package.json.backup
 
-# 意図1の変更のみを含むファイルを作成
-# （該当行以外を元に戻す）
-git checkout -p HEAD -- <file>  # 不要な変更を対話的に破棄
-git add <file>
-git commit -m "意図1"
+# 2. HEADの状態を取得（オリジナル）
+git show HEAD:package.json > package.json.original
 
-# 残りの変更を復元
-mv <file>.backup <file>
+# 3. 意図別のファイルを作成
+cp package.json.original package.json.npm-only
+
+# 4. package.json.npm-only を編集して、特定の意図の変更のみを含む状態にする
+# （例：npm公開設定のみを適用し、ビルド設定の変更は除外）
+
+# 5. 一時的にファイルを置き換えてステージング
+cp package.json.npm-only package.json
+git add package.json
+
+# 6. コミット
+git commit -m "feat: Add npm package publishing configuration"
+
+# 7. 元のファイルを復元（残りの変更を含む状態に戻す）
+cp package.json.backup package.json
+
+# 8. クリーンアップ
+rm -f package.json.backup package.json.original package.json.npm-only
 ```
+
+**利点**:
+- git add -p で分割できない複雑な変更を意図別に正確に分離できる
+- 各コミットに含める内容を完全にコントロール可能
+- 大きなファイルの多数の変更を論理的に整理できる
+
+**注意点**:
+- 必ずバックアップを取ってから実行する
+- ファイルの一時的な変更が発生するため、慎重に作業する
+- 作業後は必ず元のファイルを復元する
+
+**実際の使用例**:
+package.json に以下の変更が混在している場合：
+- npm公開設定（main, exports, bin, files）
+- ビルド設定（build script, tsdown追加）
+- メタ情報（author, repository）
+
+これらを3つの異なるコミットに分けたいが、git add -p では1つのハンクになってしまう場合に、この方法で各変更を個別にステージング・コミットできます。
 
 **推奨**: 複雑な場合は一時的にファイルを分割してコミット後に統合
 
