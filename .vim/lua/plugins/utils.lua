@@ -234,11 +234,12 @@ return {
   },
   {
     'junegunn/vim-easy-align',
+    enable = false,
     keys = {
       { '<Plug>(EasyAlign)', mode = { 'x' } },
     },
     init = function()
-      vim.keymap.set({ 'x' }, 'ga', '<Plug>(EasyAlign)')
+      -- vim.keymap.set({ 'x' }, 'ga', '<Plug>(EasyAlign)')
 
       vim.g.easy_align_delimiters = {
         ['>'] = { pattern = [[>>\|=>\|>]] },

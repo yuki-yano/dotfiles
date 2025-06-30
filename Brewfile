@@ -32,12 +32,14 @@ install gcc
 install go
 install java
 install lua
+install luarocks busted
+install mise
 install node yarn pnpm
 install openssl
+install oven-sh/bun/bun
 install perl
 install python
 install ruby
-install mise
 
 ## Service
 # install asciinema

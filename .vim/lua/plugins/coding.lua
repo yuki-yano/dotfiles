@@ -1501,7 +1501,7 @@ return {
   },
   {
     'LeafCage/yankround.vim',
-    enabled = true,
+    enabled = false,
     event = { 'VeryLazy' },
     init = function()
       vim.g.yankround_max_history = 1000
@@ -1524,6 +1524,20 @@ return {
           vim.api.nvim_set_hl(0, 'YankRoundRegion', { fg = color.base().orange, bg = 'NONE' })
         end,
       })
+    end,
+  },
+  {
+    'yuki-yano/haritsuke.nvim',
+    dev = true,
+    lazy = false,
+    dependencies = {
+      'vim-denops/denops.vim',
+    },
+    config = function()
+      vim.g.haritsuke_config = {
+        maxHistory = 10000,
+        persistencePath = nil,
+      }
     end,
   },
   {
