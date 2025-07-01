@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { execSync } = require("child_process");
+const { execSync, exec } = require("child_process");
 
 // Get ccusage output
 let jsonOutput;
@@ -25,13 +25,18 @@ for (const block of data.blocks) {
 }
 
 if (!activeSession) {
+  // Execute claude --print "hello" asynchronously and exit
+  exec('claude --print "hello"', (error, stdout, stderr) => {
+    // Ignore any errors from claude command
+  });
   // Output with no background color override
   process.stdout.write("#[fg=white]No active CC session");
   process.exit(0);
 }
 
 // Extract values
-const remainingMinutes = activeSession.projection?.remainingMinutes || 0;
+const totalMinutes = 300; // 5 hour session
+const remainingMinutes = activeSession.projection?.remainingMinutes ?? totalMinutes;
 const currentCost = activeSession.costUSD || 0;
 const requestCount = activeSession.entries || 0;
 
@@ -41,7 +46,6 @@ const recentCostPerHour = burnRate.costPerHour || 0;
 const tokensPerMinute = burnRate.tokensPerMinute || 0;
 
 // Calculate average cost per hour based on session elapsed time
-const totalMinutes = 300; // 5 hour session
 const elapsedMinutes = totalMinutes - remainingMinutes;
 const elapsedHours = elapsedMinutes / 60;
 const avgCostPerHour = elapsedHours > 0 ? currentCost / elapsedHours : 0;
@@ -53,6 +57,15 @@ const remainingPercent = Math.floor((remainingMinutes * 100) / totalMinutes);
 const hours = Math.floor(remainingMinutes / 60);
 const minutes = remainingMinutes % 60;
 const timeStr = hours > 0 ? `${hours}h${minutes.toString().padStart(2, "0")}m` : `${minutes}m`;
+
+// Calculate end time
+const now = new Date();
+const endTime = new Date(now.getTime() + remainingMinutes * 60 * 1000);
+const endTimeStr = endTime.toLocaleTimeString('ja-JP', { 
+  hour: '2-digit', 
+  minute: '2-digit',
+  hour12: false 
+});
 
 // Create remaining time bar (10 characters)
 // Fill from right to left to show remaining time
@@ -158,7 +171,7 @@ if (requestCount >= 700) {
 // Format output with tmux color codes
 // Show remaining time percentage instead of elapsed percentage
 process.stdout.write(
-  `${progressColor}${progressBar}#[fg=white] ${timeColor}${timeStr}#[fg=white] | ` +
+  `${progressColor}${progressBar}#[fg=white] ${timeColor}${timeStr} (~${endTimeStr})#[fg=white] | ` +
     `${totalCostColor}$${currentCost.toFixed(2)}#[fg=white] ${recentCostColor}⚡$${recentCostPerHour.toFixed(1)}/h#[fg=white] ${avgCostColor}⌀ $${avgCostPerHour.toFixed(1)}/h#[fg=white] | ` +
     `${requestColor}${requestCount} req#[fg=white]`,
 );
