@@ -4,7 +4,7 @@
             "complex_modifications": {
                 "rules": [
                     {
-                        "description": "Command+Shift+] to Option+Shift+] in Alacritty for tmux paste",
+                        "description": "Command+Shift+] to disable IME and Option+Shift+] in Alacritty for tmux paste",
                         "manipulators": [
                             {
                                 "conditions": [
@@ -20,9 +20,37 @@
                                     "modifiers": { "mandatory": ["command", "shift"] }
                                 },
                                 "to": [
+                                    { "key_code": "japanese_eisuu" },
                                     {
                                         "key_code": "close_bracket",
                                         "modifiers": ["option", "shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Command+] to disable IME in Alacritty",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^org\\.alacritty$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "close_bracket",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "to": [
+                                    { "key_code": "japanese_eisuu" },
+                                    {
+                                        "key_code": "close_bracket",
+                                        "modifiers": ["command"]
                                     }
                                 ],
                                 "type": "basic"
