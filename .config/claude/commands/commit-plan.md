@@ -157,35 +157,84 @@ git add <file>
 git reset -p <file>  # 不要な部分を選択的にアンステージ
 ```
 
-**方法2: パッチファイルを使った精密な分割**
+**方法2: diffパッチファイルを使った精密な分割**
 
 `git add -p` で分割できない大きなハンクがあり、意図別に正確に分けたい場合に有効です。
 
 ```bash
-# 1. 現在のファイルをバックアップ
-cp package.json package.json.backup
+# 1. 対象ファイルの現在の変更をパッチファイルとして保存
+git diff package.json > package.json.full.patch
 
-# 2. HEADの状態を取得（オリジナル）
-git show HEAD:package.json > package.json.original
+# 2. 現在のファイルをバックアップ（安全のため）
+cp package.json package.json.working
 
-# 3. 意図別のファイルを作成
-cp package.json.original package.json.npm-only
+# 3. 対象ファイルの変更を一時的にリセット（他のファイルには影響しない）
+git checkout HEAD -- package.json
 
-# 4. package.json.npm-only を編集して、特定の意図の変更のみを含む状態にする
-# （例：npm公開設定のみを適用し、ビルド設定の変更は除外）
+# 4. 意図別のパッチファイルを作成
+cp package.json.full.patch package.json.npm-only.patch
 
-# 5. 一時的にファイルを置き換えてステージング
-cp package.json.npm-only package.json
+# 5. package.json.npm-only.patch を編集して、特定の意図の変更のみを残す
+# （例：npm公開設定の変更行のみ残し、ビルド設定の変更行は削除）
+# パッチファイルの編集時の注意:
+# - @@で始まるハンクヘッダーの行数情報を修正
+# - +で始まる追加行、-で始まる削除行を適切に調整
+# - コンテキスト行（スペースで始まる行）は維持
+
+# 6. 編集したパッチを適用（--check で事前確認）
+git apply --check package.json.npm-only.patch
+if [ $? -eq 0 ]; then
+    git apply package.json.npm-only.patch
+else
+    echo "パッチの適用に失敗しました。パッチファイルを確認してください。"
+    # エラー時は元のファイルを復元して終了
+    cp package.json.working package.json
+    rm -f package.json.working package.json.full.patch package.json.npm-only.patch
+    exit 1
+fi
+
+# 7. ステージングしてコミット
 git add package.json
+git commit -m "feat: Add npm package publishing configuration"
+
+# 8. フルパッチを再適用して元の状態に戻す
+git apply package.json.full.patch
+
+# 9. 適用済みの変更との差分を確認
+diff package.json package.json.working
+if [ $? -ne 0 ]; then
+    echo "警告: ファイルの内容に差異があります。手動で確認してください。"
+    # 必要に応じて: cp package.json.working package.json
+fi
+
+# 10. クリーンアップ
+rm -f package.json.working package.json.full.patch package.json.npm-only.patch
+```
+
+**より簡単な代替方法: 逆パッチアプローチ**
+
+```bash
+# 1. ファイル全体をステージング
+git add package.json
+
+# 2. ステージングされた内容から不要な部分だけを含む逆パッチを作成
+# （git diff --cached で現在のステージング内容を確認しながら）
+git diff --cached package.json > staged.patch
+
+# 3. staged.patch を編集して、除外したい変更（ビルド設定など）のみを残す
+# 注意: この時、残したい変更（npm設定）の行は削除する
+
+# 4. 逆パッチを適用して不要な部分をアンステージ
+git apply -R --cached staged.patch
+
+# 5. 結果を確認
+git diff --cached package.json  # ステージングされた内容を確認
 
 # 6. コミット
 git commit -m "feat: Add npm package publishing configuration"
 
-# 7. 元のファイルを復元（残りの変更を含む状態に戻す）
-cp package.json.backup package.json
-
-# 8. クリーンアップ
-rm -f package.json.backup package.json.original package.json.npm-only
+# 7. クリーンアップ
+rm -f staged.patch
 ```
 
 **利点**:
@@ -206,7 +255,7 @@ package.json に以下の変更が混在している場合：
 
 これらを3つの異なるコミットに分けたいが、git add -p では1つのハンクになってしまう場合に、この方法で各変更を個別にステージング・コミットできます。
 
-**推奨**: 複雑な場合は一時的にファイルを分割してコミット後に統合
+**推奨**: 複雑な場合はdiffパッチを使用して意図別に正確に分割
 
 ## 重要な注意事項
 
@@ -219,12 +268,14 @@ package.json に以下の変更が混在している場合：
   - 2回目: 残りのL1-44とL90-100が新しいハンクとして表示される
 - **ハンク分割できない場合**: `s`が効かない大きなハンクは`e`で編集
 
-### パッチファイルアプローチ使用時の注意
+### diffパッチアプローチ使用時の注意
 
-- **ファイルの整合性**: 一時的にファイルを変更するため、作業中に他のコマンドを実行しない
-- **バックアップ必須**: 必ず `.backup` ファイルを作成してから作業を開始
-- **即座に復元**: コミット後は速やかに元のファイルを復元
-- **git diff で確認**: ステージング前に `git diff` で意図した変更のみが含まれているか確認
+- **ファイル単位での操作**: `git checkout HEAD -- <file>` で特定ファイルのみリセット（他のファイルに影響なし）
+- **バックアップの作成**: 作業前に必ず `.working` ファイルとしてバックアップ
+- **パッチファイルの編集**: ハンクヘッダーの行数情報（`@@ -行,数 +行,数 @@`）を正確に修正
+- **事前検証**: `git apply --check` でパッチが正しく適用できるか確認
+- **エラー時の復旧**: エラーが発生した場合は即座にバックアップから復元
+- **逆パッチアプローチ**: より簡単で安全な代替方法として推奨
 
 ### エラー時の対処
 
