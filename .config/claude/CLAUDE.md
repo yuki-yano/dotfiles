@@ -26,7 +26,8 @@
    - `fixes/` - バグ修正
    - `tests/` - テスト実行結果
    - `sessions/` - セッション引き継ぎ
-   - ファイル名: `YYYY-MM-DD-説明.md`
+   - `nippo/` - 日次作業記録（日報）
+   - ファイル名: `YYYY-MM-DD-説明.md`（nippoは`YYYY-MM-DD.md`）
 
 3. **`ai/knowledge/`** - 恒久的な知識ベース
    - `learnings/` - 技術的な学習事項
