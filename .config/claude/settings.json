@@ -1,5 +1,4 @@
 {
-  "model": "opus",
-  "includeCoAuthoredBy": false
+  "includeCoAuthoredBy": false,
+  "model": "opus"
 }
-
