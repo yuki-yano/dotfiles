@@ -293,9 +293,19 @@ key = "LBracket"
 mods = "Command"
 
 [[keyboard.bindings]]
+chars = "\u001B{"
+key = "LBracket"
+mods = "Alt|Shift"
+
+[[keyboard.bindings]]
 chars = "\u001B]"
 key = "RBracket"
 mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u001B}"
+key = "RBracket"
+mods = "Alt|Shift"
 
 [[keyboard.bindings]]
 chars = "\u001BA"
