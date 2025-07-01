@@ -134,18 +134,13 @@ local plugins = {
             end, { buffer = ev.buf, desc = 'Format with Eslint & null-ls' })
           else
             vim.keymap.set('n', '<Plug>(lsp)f', function()
-              -- Execute :DenoFmt if available
-              if vim.fn.exists(':DenoFmt') == 2 then
-                vim.cmd('DenoFmt')
-              else
-                -- fallback to LSP formatting
-                vim.lsp.buf.format({
-                  bufnr = ev.buf,
-                  filter = function(c)
-                    return c.name == 'denols'
-                  end,
-                })
-              end
+              -- fallback to LSP formatting
+              vim.lsp.buf.format({
+                bufnr = ev.buf,
+                filter = function(c)
+                  return c.name == 'denols'
+                end,
+              })
             end, { buffer = ev.buf, desc = 'Format with denols' })
           end
         end,
