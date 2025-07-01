@@ -2,7 +2,7 @@
 description: Analyze git changes and create an organized commit plan with logical grouping
 ---
 
-# コミット計画作成
+# コミット計画作成: $ARGUMENTS
 
 ## 引数（ARGUMENTS）
 
@@ -88,8 +88,8 @@ git diff -- <path>
 実行コマンド:
 ```bash
 git add src/auth.ts
-git add -p src/api.ts    # L45-L89を選択
-git add -p src/types.ts   # L12-L25を選択
+git add --patch src/api.ts    # L45-L89を選択
+git add --patch src/types.ts   # L12-L25を選択
 git commit
 ```
 
@@ -129,7 +129,7 @@ mv src/api.ts.backup src/api.ts
   - `1,2を統合` / `3を分割` / `1と3を入れ替え` / `2のメッセージ: 新内容`
 - **[d] ドライラン**: コマンド確認のみ
 
-## git add -p 操作
+## git add --patch 操作
 
 - `y` - ステージング / `n` - スキップ
 - `s` - 分割（可能な場合）
@@ -154,7 +154,7 @@ mv src/api.ts.backup src/api.ts
 ```bash
 # 一時的にインデックスに追加してから部分的に削除
 git add <file>
-git reset -p <file>  # 不要な部分を選択的にアンステージ
+git reset --patch <file>  # 不要な部分を選択的にアンステージ
 ```
 
 **方法2: diffパッチファイルを使った精密な分割**
@@ -238,7 +238,7 @@ rm -f staged.patch
 ```
 
 **利点**:
-- git add -p で分割できない複雑な変更を意図別に正確に分離できる
+- git add --patch で分割できない複雑な変更を意図別に正確に分離できる
 - 各コミットに含める内容を完全にコントロール可能
 - 大きなファイルの多数の変更を論理的に整理できる
 
@@ -253,13 +253,13 @@ package.json に以下の変更が混在している場合：
 - ビルド設定（build script, tsdown追加）
 - メタ情報（author, repository）
 
-これらを3つの異なるコミットに分けたいが、git add -p では1つのハンクになってしまう場合に、この方法で各変更を個別にステージング・コミットできます。
+これらを3つの異なるコミットに分けたいが、git add --patch では1つのハンクになってしまう場合に、この方法で各変更を個別にステージング・コミットできます。
 
 **推奨**: 複雑な場合はdiffパッチを使用して意図別に正確に分割
 
 ## 重要な注意事項
 
-### add -p での段階的コミット
+### add --patch での段階的コミット
 
 - **警告**: 後のコミットでは、前のコミットで選択した部分が既にコミット済みのため、表示されるハンクが変わります
 - **対策**: 各コミットで必要な行番号範囲を明確に記録し、ハンクの内容を確認してから選択
@@ -368,7 +368,7 @@ rm -f .git/commit-plan-stash-ref
 
 ```bash
 # バックアップブランチを作成
-BACKUP_BRANCH="backup/commit-plan-$(date +%Y%m%d-%H%M%S)"
+BACKUP_BRANCH="backup/commit-plan-$(perl -MPOSIX -le 'print strftime("%Y%m%d-%H%M%S", localtime)')"
 git branch $BACKUP_BRANCH
 echo "バックアップブランチを作成しました: $BACKUP_BRANCH"
 
