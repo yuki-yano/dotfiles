@@ -350,20 +350,20 @@ local plugins = {
       })
 
       vim.api.nvim_create_user_command('OrganizeImport', function()
-        local clients = vim.lsp.vim.lsp.get_clients({ bufnr = 0, name = 'vtsls' })
+        local clients = vim.lsp.get_clients({ bufnr = 0, name = 'vtsls' })
         if #clients > 0 then
-          vim.lsp.buf.execute_command({
+          clients[1]:exec_cmd({
+            title = 'Organize Imports',
             command = '_typescript.organizeImports',
             arguments = { vim.api.nvim_buf_get_name(0) },
-            title = 'Organize Imports',
           })
         else
-          clients = vim.lsp.get_active_clients({ bufnr = 0, name = 'tsserver' })
+          clients = vim.lsp.get_clients({ bufnr = 0, name = 'tsserver' })
           if #clients > 0 then
-            vim.lsp.buf.execute_command({
+            clients[1]:exec_cmd({
+              title = 'Organize Imports',
               command = '_typescript.organizeImports',
               arguments = { vim.api.nvim_buf_get_name(0) },
-              title = 'Organize Imports',
             })
           end
         end

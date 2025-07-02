@@ -1534,10 +1534,9 @@ return {
       'vim-denops/denops.vim',
     },
     config = function()
-      vim.g.haritsuke_config = {
-        maxHistory = 10000,
-        persistencePath = nil,
-      }
+      require('haritsuke').setup({
+        max_history = 10000,
+      })
     end,
   },
   {
