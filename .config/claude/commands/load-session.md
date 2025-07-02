@@ -12,14 +12,26 @@ description: Load a session handoff document to understand previous work context
 # 引数なし - 直近のセッションを読み込む
 load-session
 
-# 日付指定
+# 日付指定（その日のhandoffファイルを読み込む）
 load-session 2025-01-01
 load-session "2025-01-01"
 
+# 特定のサフィックスを指定
+load-session 2025-01-01-morning     # 特定のセッションファイル
+load-session morning                # 今日のmorningセッション
+
 # 相対指定
-load-session latest    # 最新のセッション
-load-session yesterday # 昨日のセッション
-load-session 2         # 2番目に新しいセッション
+load-session latest    # 最新のセッション（全ファイル対象）
+load-session yesterday # 昨日のセッション（handoffのみ）
+load-session 2         # 2番目に新しいセッション（全ファイル対象）
+
+# 複数セッション指定
+load-session "2025-01-01 2025-01-02"           # 複数の日付
+load-session "morning afternoon"                # 今日の複数セッション
+load-session "2025-01-01-morning yesterday"    # 混在も可能
+
+# リスト表示
+load-session list      # 利用可能なセッション一覧
 ```
 
 ## 目標
@@ -31,24 +43,94 @@ load-session 2         # 2番目に新しいセッション
 ### 1. セッションファイルの特定
 
 ```bash
-# 引数の解析
-if [ -z "$ARGUMENTS" ] || [ "$ARGUMENTS" = "latest" ]; then
-    # 最新のセッションファイルを検索
-    ls -t ai/log/sessions/*-handoff.md 2>/dev/null | head -1
-elif [ "$ARGUMENTS" = "yesterday" ]; then
-    # 昨日の日付を取得
-    YESTERDAY=$(perl -MPOSIX -le 'print strftime("%Y-%m-%d", localtime(time - 86400))')
-    echo "ai/log/sessions/${YESTERDAY}-handoff.md"
-elif [[ "$ARGUMENTS" =~ ^[0-9]+$ ]]; then
-    # N番目に新しいファイルを取得
-    ls -t ai/log/sessions/*-handoff.md 2>/dev/null | sed -n "${ARGUMENTS}p"
-else
-    # 日付として解釈（YYYY-MM-DD形式に正規化）
-    if [[ "$ARGUMENTS" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
-        echo "ai/log/sessions/${ARGUMENTS}-handoff.md"
+# セッションファイル解決用の関数
+resolve_session_file() {
+    local ARG="$1"
+    local FILE=""
+    
+    if [ "$ARG" = "yesterday" ]; then
+        YESTERDAY=$(perl -MPOSIX -le 'print strftime("%Y-%m-%d", localtime(time - 86400))')
+        FILE="ai/log/sessions/${YESTERDAY}-handoff.md"
+    elif [[ "$ARG" =~ ^[0-9]+$ ]]; then
+        FILE=$(ls -t ai/log/sessions/*.md 2>/dev/null | sed -n "${ARG}p")
+    elif [[ "$ARG" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}-(.+)$ ]]; then
+        FILE="ai/log/sessions/${ARG}.md"
+    elif [[ "$ARG" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+        DATE="$ARG"
+        if [ -f "ai/log/sessions/${DATE}-handoff.md" ]; then
+            FILE="ai/log/sessions/${DATE}-handoff.md"
+        else
+            FILE=$(ls -t ai/log/sessions/${DATE}-*.md 2>/dev/null | head -1)
+        fi
     else
-        # 日付のフォーマット変換を試みる
-        date -j -f "%Y%m%d" "$ARGUMENTS" "+ai/log/sessions/%Y-%m-%d-handoff.md" 2>/dev/null
+        TODAY=$(perl -MPOSIX -le 'print strftime("%Y-%m-%d", localtime)')
+        FILE="ai/log/sessions/${TODAY}-${ARG}.md"
+    fi
+    
+    echo "$FILE"
+}
+
+# 引数の解析
+if [ "$ARGUMENTS" = "list" ]; then
+    # 利用可能なセッション一覧を表示
+    echo "利用可能なセッション:"
+    echo "===================="
+    ls -t ai/log/sessions/*.md 2>/dev/null | head -20 | while read file; do
+        BASENAME=$(basename "$file" .md)
+        # ファイルの最初の見出しを取得
+        TITLE=$(grep -m1 "^# " "$file" 2>/dev/null | sed 's/^# //')
+        echo "$BASENAME - $TITLE"
+    done
+    exit 0
+fi
+
+# 複数セッションの処理をサポート
+SESSION_FILES=()
+
+# 引数がスペースを含む場合は複数指定として処理
+if [[ "$ARGUMENTS" =~ " " ]]; then
+    # スペースで分割して各要素を処理
+    IFS=' ' read -ra ARGS <<< "$ARGUMENTS"
+    for ARG in "${ARGS[@]}"; do
+        FILE=$(resolve_session_file "$ARG")
+        if [ -n "$FILE" ] && [ -f "$FILE" ]; then
+            SESSION_FILES+=("$FILE")
+        fi
+    done
+else
+    # 単一セッションの処理
+    ARG="$ARGUMENTS"
+    
+    if [ -z "$ARG" ] || [ "$ARG" = "latest" ]; then
+        # 最新のセッションファイルを検索（すべての.mdファイル）
+        SESSION_FILE=$(ls -t ai/log/sessions/*.md 2>/dev/null | head -1)
+    elif [ "$ARG" = "yesterday" ]; then
+        # 昨日の日付を取得（handoffファイルのみ）
+        YESTERDAY=$(perl -MPOSIX -le 'print strftime("%Y-%m-%d", localtime(time - 86400))')
+        SESSION_FILE="ai/log/sessions/${YESTERDAY}-handoff.md"
+    elif [[ "$ARG" =~ ^[0-9]+$ ]]; then
+        # N番目に新しいファイルを取得（すべての.mdファイル）
+        SESSION_FILE=$(ls -t ai/log/sessions/*.md 2>/dev/null | sed -n "${ARG}p")
+    elif [[ "$ARG" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}-(.+)$ ]]; then
+        # 完全なファイル名（日付+サフィックス）が指定された場合
+        SESSION_FILE="ai/log/sessions/${ARG}.md"
+    elif [[ "$ARG" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+        # 日付のみ指定された場合（その日のhandoffファイルを優先）
+        DATE="$ARG"
+        if [ -f "ai/log/sessions/${DATE}-handoff.md" ]; then
+            SESSION_FILE="ai/log/sessions/${DATE}-handoff.md"
+        else
+            # handoffがない場合は、その日の最初のファイルを選択
+            SESSION_FILE=$(ls -t ai/log/sessions/${DATE}-*.md 2>/dev/null | head -1)
+        fi
+    else
+        # サフィックスのみ指定された場合（今日の該当ファイル）
+        TODAY=$(perl -MPOSIX -le 'print strftime("%Y-%m-%d", localtime)')
+        SESSION_FILE="ai/log/sessions/${TODAY}-${ARG}.md"
+    fi
+    
+    if [ -n "$SESSION_FILE" ]; then
+        SESSION_FILES=("$SESSION_FILE")
     fi
 fi
 ```
@@ -56,20 +138,82 @@ fi
 ### 2. ファイルの存在確認と読み込み
 
 ```bash
-# セッションファイルが存在するか確認
-if [ ! -f "$SESSION_FILE" ]; then
-    echo "セッションファイルが見つかりません: $SESSION_FILE"
+# 複数セッションモードの場合
+if [ ${#SESSION_FILES[@]} -gt 1 ]; then
+    echo "================================================================================
+複数セッションを読み込みます: ${#SESSION_FILES[@]}件
+================================================================================"
     
-    # 利用可能なセッションをリスト表示
-    echo -e "\n利用可能なセッション:"
-    ls -t ai/log/sessions/*-handoff.md 2>/dev/null | head -10 | while read file; do
-        basename "$file" .md
+    MISSING_FILES=()
+    for FILE in "${SESSION_FILES[@]}"; do
+        if [ ! -f "$FILE" ]; then
+            MISSING_FILES+=("$FILE")
+        fi
     done
-    exit 1
+    
+    if [ ${#MISSING_FILES[@]} -gt 0 ]; then
+        echo "警告: 以下のファイルが見つかりません:"
+        for FILE in "${MISSING_FILES[@]}"; do
+            echo "- $(basename "$FILE")"
+        done
+        echo ""
+    fi
+    
+    # 各セッションを順番に表示
+    for i in "${!SESSION_FILES[@]}"; do
+        FILE="${SESSION_FILES[$i]}"
+        if [ -f "$FILE" ]; then
+            echo ""
+            echo "================================================================================
+セッション $((i+1))/${#SESSION_FILES[@]}: $(basename "$FILE" .md)
+================================================================================
+"
+            cat "$FILE"
+            
+            # 最後のファイルでなければ区切り線を追加
+            if [ $i -lt $((${#SESSION_FILES[@]} - 1)) ]; then
+                echo -e "\n\n"
+            fi
+        fi
+    done
+    
+# 単一セッションモードの場合
+else
+    SESSION_FILE="${SESSION_FILES[0]:-}"
+    
+    # セッションファイルが存在するか確認
+    if [ -z "$SESSION_FILE" ] || [ ! -f "$SESSION_FILE" ]; then
+        echo "セッションファイルが見つかりません: ${SESSION_FILE:-指定されたファイル}"
+        
+        # 利用可能なセッションをリスト表示
+        echo -e "\n利用可能なセッション（最新10件）:"
+        echo "=================================="
+        ls -t ai/log/sessions/*.md 2>/dev/null | head -10 | while read file; do
+            BASENAME=$(basename "$file" .md)
+            # ファイルの最初の見出しを取得
+            TITLE=$(grep -m1 "^# " "$file" 2>/dev/null | sed 's/^# //')
+            echo "$BASENAME"
+            [ -n "$TITLE" ] && echo "  └─ $TITLE"
+        done
+        
+        echo -e "\n使用方法のヒント:"
+        echo "- 最新のセッション: load-session"
+        echo "- 日付指定: load-session 2025-01-01"
+        echo "- 特定のセッション: load-session 2025-01-01-morning"
+        echo "- 複数指定: load-session \"morning afternoon\""
+        echo "- 一覧表示: load-session list"
+        exit 1
+    fi
+    
+    # ファイル情報を表示
+    echo "================================================================================
+セッションファイル: $(basename "$SESSION_FILE" .md)
+================================================================================
+"
+    
+    # ファイルを読み込んで表示
+    cat "$SESSION_FILE"
 fi
-
-# ファイルを読み込んで表示
-cat "$SESSION_FILE"
 ```
 
 ### 3. セッション情報の解析と表示
@@ -187,7 +331,7 @@ TodoListへの未完了タスクの追加を推奨します。
 
 2. **セッションディレクトリが存在しない場合**
    - ディレクトリの作成を提案
-   - session-handoffコマンドの使用を促す
+   - save-sessionコマンドの使用を促す
 
 3. **読み込みエラー**
    - ファイルの権限を確認
@@ -196,21 +340,39 @@ TodoListへの未完了タスクの追加を推奨します。
 ## 使用例
 
 ```bash
-# 最新のセッションを読み込む
+# 最新のセッションを読み込む（すべてのファイル対象）
 load-session
 
-# 特定の日付のセッションを読み込む
+# 特定の日付のセッションを読み込む（handoff優先）
 load-session 2025-01-01
+
+# 特定のセッションファイルを読み込む
+load-session 2025-01-01-morning
+load-session 2025-01-01-feature-implementation
+
+# 今日の特定セッションを読み込む
+load-session morning
+load-session refactoring
+
+# 複数のセッションを一度に読み込む
+load-session "2025-01-01 2025-01-02"              # 2日分の日報
+load-session "morning afternoon"                   # 今日の朝と午後のセッション
+load-session "2025-01-01-morning 2025-01-01-afternoon"  # 特定日の複数セッション
+load-session "yesterday 2"                         # 昨日と2番目に新しいセッション
 
 # 2番目に新しいセッションを読み込む
 load-session 2
 
 # 昨日のセッションを読み込む
 load-session yesterday
+
+# 利用可能なセッション一覧を表示
+load-session list
 ```
 
 ## 関連コマンド
 
-- `session-handoff`: セッション引き継ぎ情報を作成
+- `save-session`: セッション引き継ぎ情報を保存
 - `todo`: TodoListの管理
 - `git log`: コミット履歴の確認
+- `nippo-show`: 日報を表示
