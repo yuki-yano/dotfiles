@@ -27,20 +27,38 @@ save-session "morning"                  # → YYYY-MM-DD-morning.md
 ### 1. ファイル名の決定
 
 ```bash
-# 基本の日付を取得
+# 基本の日付と時刻を取得
 DATE=$(perl -MPOSIX -le 'print strftime("%Y-%m-%d", localtime)')
+HOUR=$(perl -MPOSIX -le 'print strftime("%H", localtime)')
 
-# ファイル名の生成
+# ファイル名の生成と重複チェック
 if [ -z "$ARGUMENTS" ]; then
-    FILENAME="ai/log/sessions/${DATE}-handoff.md"
+    BASE_NAME="${DATE}-${HOUR}-handoff"
 else
     # 引数からサフィックスを生成（スペースをハイフンに変換）
     SUFFIX=$(echo "$ARGUMENTS" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
-    FILENAME="ai/log/sessions/${DATE}-${SUFFIX}.md"
+    BASE_NAME="${DATE}-${HOUR}-${SUFFIX}"
 fi
 
 # ディレクトリの確認と作成
 mkdir -p ai/log/sessions
+
+# 重複チェックと番号付け
+FILENAME="ai/log/sessions/${BASE_NAME}.md"
+COUNTER=2
+
+while [ -f "$FILENAME" ]; do
+    FILENAME="ai/log/sessions/${BASE_NAME}-${COUNTER}.md"
+    ((COUNTER++))
+done
+
+# 既存ファイルの確認
+EXISTING_FILES=$(ls -1 ai/log/sessions/${DATE}-*.md 2>/dev/null | wc -l)
+if [ $EXISTING_FILES -gt 0 ]; then
+    echo "既存のセッションファイル:"
+    ls -1t ai/log/sessions/${DATE}-*.md | head -5 | sed 's|ai/log/sessions/||'
+    echo ""
+fi
 ```
 
 ### 2. 現在のセッション情報を収集
@@ -182,13 +200,16 @@ fi
 ## 使用例
 
 ```bash
-# デフォルトのファイル名で保存
-save-session
+# デフォルトのファイル名で保存（14時の場合）
+save-session                        # → 2025-01-01-14-handoff.md
+save-session                        # → 2025-01-01-14-handoff-2.md （既存の場合）
+save-session                        # → 2025-01-01-14-handoff-3.md （既存の場合）
 
-# 作業内容を示すサフィックス付きで保存
-save-session "refactoring"         # → 2025-01-01-refactoring.md
-save-session "bug fix login"       # → 2025-01-01-bug-fix-login.md
-save-session "morning session"     # → 2025-01-01-morning-session.md
+# 作業内容を示すサフィックス付きで保存（10時の場合）
+save-session "refactoring"         # → 2025-01-01-10-refactoring.md
+save-session "refactoring"         # → 2025-01-01-10-refactoring-2.md （既存の場合）
+save-session "bug fix login"       # → 2025-01-01-10-bug-fix-login.md
+save-session "morning session"     # → 2025-01-01-10-morning-session.md
 ```
 
 ## 関連コマンド
