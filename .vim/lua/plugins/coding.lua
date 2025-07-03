@@ -1528,15 +1528,26 @@ return {
   },
   {
     'yuki-yano/haritsuke.nvim',
+    enabled = true,
     dev = true,
     lazy = false,
     dependencies = {
       'vim-denops/denops.vim',
     },
     config = function()
-      require('haritsuke').setup({
-        max_history = 10000,
-      })
+      -- require('denops-lazy').load('haritsuke.nvim')
+
+      vim.g.haritsuke_config = {
+        debug = true,
+        use_region_hl = true,
+      }
+
+      vim.keymap.set({ 'n', 'x' }, 'p', '<Plug>(haritsuke-p)')
+      vim.keymap.set({ 'n', 'x' }, 'P', '<Plug>(haritsuke-P)')
+      vim.keymap.set({ 'n' }, 'gp', '<Plug>(haritsuke-gp)')
+      vim.keymap.set({ 'n' }, 'gP', '<Plug>(haritsuke-gP)')
+      vim.keymap.set({ 'n' }, '<C-p>', '<Plug>(haritsuke-prev)')
+      vim.keymap.set({ 'n' }, '<C-n>', '<Plug>(haritsuke-next)')
     end,
   },
   {
