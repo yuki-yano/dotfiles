@@ -61,6 +61,21 @@ const timeStr = hours > 0 ? `${hours}h${minutes.toString().padStart(2, "0")}m` :
 // Calculate end time
 const now = new Date();
 const endTime = new Date(now.getTime() + remainingMinutes * 60 * 1000);
+
+// Round to the nearest hour boundary to avoid oscillation
+const endMinutes = endTime.getMinutes();
+if (endMinutes === 59) {
+  // If we're at :59, round up to the next hour
+  endTime.setMinutes(0);
+  endTime.setHours(endTime.getHours() + 1);
+} else if (endMinutes === 0) {
+  // Keep :00 as is
+} else if (endMinutes >= 58) {
+  // If we're close to the hour boundary, round to :00
+  endTime.setMinutes(0);
+  endTime.setHours(endTime.getHours() + 1);
+}
+
 const endTimeStr = endTime.toLocaleTimeString('ja-JP', { 
   hour: '2-digit', 
   minute: '2-digit',
