@@ -54,7 +54,7 @@ AIディレクトリ構造を整理し、古いファイルのクリーンアッ
 ...
 
 ### アーカイブ対象
-- ai/log/sessions/2024-01-01-handoff.md (30日前)
+- ai/log/sessions/2024-12-01-14-handoff.md (30日前)
 ...
 
 ## 整理実行コマンド例
@@ -64,7 +64,7 @@ rm ai/tmp/old-file1.txt ai/tmp/old-file2.txt
 
 # アーカイブ対象の移動
 mkdir -p ai/archive/2025-06
-mv ai/log/sessions/2024-01-01-handoff.md ai/archive/2025-06/
+mv ai/log/sessions/2024-12-01-14-handoff.md ai/archive/2025-06/
 ```
 
 ## 推奨事項
