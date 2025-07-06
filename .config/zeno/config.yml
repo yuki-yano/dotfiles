@@ -153,7 +153,8 @@ snippets:
 
   - name: claude yolo
     keyword: yolo
-    snippet: claude --dangerously-skip-permissions
+    # snippet: claude --dangerously-skip-permissions
+    snippet: cage --allow . --allow /private/tmp --allow "$CLAUDE_CONFIG_DIR" --allow "$HOME/.claude.json" --allow "$HOME/.npm" --allow-keychain -- claude --dangerously-skip-permissions
 
   - name: disable desktop
     keyword: disable_desktop

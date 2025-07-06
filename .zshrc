@@ -138,7 +138,7 @@ fi
 
 # bat {{{
 if whence bat > /dev/null; then
-  export BAT_THEME='gruvbox-dark'
+  export BAT_THEME='Catppuccin-mocha'
   alias bat='bat --color=always --style=plain'
 fi
 # }}}
