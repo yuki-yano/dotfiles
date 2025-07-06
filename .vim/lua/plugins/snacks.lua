@@ -200,25 +200,17 @@ return {
       vim.keymap.set({ 'n' }, '<Plug>(ff)p', function()
         snacks.picker({
           finder = function()
-            local function parse_yank_line(line)
-              local type, raw_text = line:match('^(.-)\t(.*)$')
-              local text = dedent(raw_text)
-              if type and type:match('\22') then
-                type = 'b'
-              end
-              return {
-                type = type,
-                text = type .. '  ' .. text,
-                yank = raw_text,
-                preview = { text = raw_text },
-              }
-            end
-
-            local yankround_histories = vim.g._yankround_cache or {}
+            local haritsuke_list = vim.fn['haritsuke#list']()
             local items = {}
 
-            for i, line in ipairs(yankround_histories) do
-              items[i] = parse_yank_line(line)
+            for i, entry in ipairs(haritsuke_list) do
+              local text = entry.type .. '  ' .. dedent(entry.content)
+              items[i] = {
+                type = entry.type,
+                text = text,
+                yank = entry.content,
+                preview = { text = entry.content },
+              }
             end
 
             return items

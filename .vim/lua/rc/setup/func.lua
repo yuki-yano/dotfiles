@@ -348,6 +348,7 @@ end
 vim.keymap.set('n', 'ga', function()
   local content = '@' .. get_relative_filepath()
   yank_content(content, false)
+  vim.fn.setreg('+', vim.fn.getreg('"'))
 end, { desc = 'Yank file path for Claude Code' })
 
 -- Visual mode: yank with line range as @path/to/file#Lxx-yy
@@ -382,6 +383,7 @@ vim.keymap.set('x', 'ga', function()
   end
 
   yank_content(content, has_diagnostics)
+  vim.fn.setreg('+', vim.fn.getreg('"'))
 
   -- Exit visual mode safely
   local esc = vim.api.nvim_replace_termcodes('<Esc>', true, false, true)

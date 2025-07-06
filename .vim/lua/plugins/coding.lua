@@ -1281,6 +1281,19 @@ return {
     end,
   },
   {
+    'kana/vim-textobj-indent',
+    dependencies = {
+      { 'kana/vim-textobj-user' },
+    },
+    event = { 'ModeChanged' },
+    init = function()
+      vim.g.textobj_indent_no_default_key_mappings = true
+
+      vim.keymap.set({ 'o', 'x' }, 'ii', '<Plug>(textobj-indent-i)')
+      vim.keymap.set({ 'o', 'x' }, 'ai', '<Plug>(textobj-indent-a)')
+    end,
+  },
+  {
     'thinca/vim-textobj-between',
     dependencies = {
       { 'kana/vim-textobj-user' },
@@ -1356,6 +1369,7 @@ return {
   {
     -- NOTE: Use my fork
     'yuki-yano/vim-operator-replace',
+    enabled = false,
     dependencies = {
       { 'kana/vim-operator-user' },
     },
@@ -1527,27 +1541,35 @@ return {
     end,
   },
   {
-    'yuki-yano/haritsuke.nvim',
+    'yuki-yano/haritsuke.vim',
     enabled = true,
     dev = true,
     lazy = false,
     dependencies = {
       'vim-denops/denops.vim',
     },
-    config = function()
-      -- require('denops-lazy').load('haritsuke.nvim')
-
+    init = function()
       vim.g.haritsuke_config = {
-        debug = true,
-        use_region_hl = true,
+        persist_path = vim.fn.stdpath('cache') .. '/haritsuke',
+        max_entries = 10000,
+        debug = false,
       }
 
       vim.keymap.set({ 'n', 'x' }, 'p', '<Plug>(haritsuke-p)')
       vim.keymap.set({ 'n', 'x' }, 'P', '<Plug>(haritsuke-P)')
-      vim.keymap.set({ 'n' }, 'gp', '<Plug>(haritsuke-gp)')
-      vim.keymap.set({ 'n' }, 'gP', '<Plug>(haritsuke-gP)')
-      vim.keymap.set({ 'n' }, '<C-p>', '<Plug>(haritsuke-prev)')
-      vim.keymap.set({ 'n' }, '<C-n>', '<Plug>(haritsuke-next)')
+      -- vim.keymap.set({ 'n' }, 'gp', '<Plug>(haritsuke-gp)')
+      -- vim.keymap.set({ 'n' }, 'gP', '<Plug>(haritsuke-gP)')
+      vim.keymap.set({ 'n' }, '<C-p>', function()
+        return vim.fn['haritsuke#is_active']() and '<Plug>(haritsuke-prev)' or '<Plug>(ctrl-p)'
+      end, { expr = true })
+      vim.keymap.set({ 'n' }, '<C-n>', function()
+        return vim.fn['haritsuke#is_active']() and '<Plug>(haritsuke-next)' or '<Plug>(ctrl-n)'
+      end, { expr = true })
+
+      vim.keymap.set({ 'n', 'x' }, 'R', '<Plug>(haritsuke-replace)')
+    end,
+    config = function()
+      require('denops-lazy').load('haritsuke.vim')
     end,
   },
   {
