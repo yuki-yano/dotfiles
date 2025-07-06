@@ -1,4 +1,7 @@
 {
+  "permissions": {
+    "defaultMode": "acceptEdits"
+  },
   "includeCoAuthoredBy": false,
   "model": "opus"
 }
