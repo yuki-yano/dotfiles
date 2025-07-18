@@ -3,6 +3,7 @@ require('rc.setup.options')
 require('rc.setup.func')
 require('rc.setup.highlight')
 require('rc.setup.extui')
+require('rc.setup.quick_ime')
 
 vim.api.nvim_create_autocmd({ 'User' }, {
   pattern = { 'VeryLazy' },

@@ -8,10 +8,12 @@ local enable_lsp_lines = plugin_utils.enable_lsp_lines
 local get_lsp_lines_status = plugin_utils.get_lsp_lines_status
 local add_focus_gain = plugin_utils.add_focus_gain
 local add_focus_lost = plugin_utils.add_focus_lost
+local is_quick_ime = require('rc.setup.quick_ime').is_quick_ime
 
 return {
   {
     'nvim-lualine/lualine.nvim',
+    enabled = not is_quick_ime(),
     event = { 'FocusLost', 'BufRead', 'BufNewFile' },
     init = function()
       vim.api.nvim_create_user_command('LL', function()

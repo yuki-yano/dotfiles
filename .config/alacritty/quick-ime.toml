@@ -1,0 +1,15 @@
+[general]
+import = ["~/.config/alacritty/alacritty.toml"]
+
+[window]
+decorations = "None"
+opacity = 0.8
+dynamic_title = false
+title = "Quick IME"
+padding = { x = 4, y = 2 }
+# initial size is approximate; Hammerspoon will resize to 1280x800
+dimensions = { columns = 120, lines = 30 }
+
+[font]
+normal = { family = "SF Mono Square" }
+size = 16.0
