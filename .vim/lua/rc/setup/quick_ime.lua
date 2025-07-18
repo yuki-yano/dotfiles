@@ -14,6 +14,8 @@ local function apply_mode_opts()
   end
   vim.g.quick_ime_opts_applied = 1
 
+  vim.g.enable_number = false
+  vim.g.enable_relative_number = false
   vim.opt.number = false
   vim.opt.relativenumber = false
   vim.opt.wrap = true
@@ -21,6 +23,7 @@ local function apply_mode_opts()
   vim.opt.showmode = true
   vim.opt.laststatus = 0
   vim.opt.cmdheight = 0
+  vim.opt.signcolumn = 'no'
 
   vim.cmd([[
     highlight Normal guibg=NONE ctermbg=NONE
@@ -45,7 +48,7 @@ local function create_scratch()
   vim.bo[bufnr].swapfile = false
   vim.bo[bufnr].modifiable = true
   vim.bo[bufnr].readonly = false
-  vim.bo[bufnr].filetype = 'text'
+  vim.bo[bufnr].filetype = 'markdown'
   vim.bo[bufnr].fileformat = 'unix'
 end
 
@@ -81,14 +84,18 @@ local function send()
   reset()
 end
 
-
 if vim.env.QUICK_IME == '1' then
   vim.g.quick_ime = 1
   vim.api.nvim_create_user_command('QuickIMESend', send, {})
-  vim.keymap.set('n', '<Esc><Esc>', '<Cmd>QuickIMESend<CR>', { silent = true })
-  vim.keymap.set('n', '<C-c>', '<Cmd>QuickIMESend<CR>', { silent = true })
 
-  vim.schedule(reset)
+  vim.api.nvim_create_autocmd({ 'FileType' }, {
+    pattern = 'markdown',
+    callback = function()
+      vim.keymap.set({ 'n', 'i' }, '<C-g>', '<Cmd>q!<CR>', { silent = true, nowait = true })
+      vim.keymap.set({ 'n', 'i' }, '<C-c>', '<Cmd>QuickIMESend<CR>', { silent = true, nowait = true })
+    end,
+  })
+  reset()
 end
 
 return M

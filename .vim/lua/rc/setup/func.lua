@@ -99,7 +99,7 @@ vim.api.nvim_create_autocmd({ 'InsertEnter' }, {
       return
     end
 
-    if vim.fn.filereadable(vim.fn.expand('#' .. vim.fn.bufnr('') .. ':p')) then
+    if vim.fn.filereadable(vim.fn.expand('#' .. vim.fn.bufnr('') .. ':p')) and vim.g.enable_number then
       vim.opt_local.number = true
       vim.opt_local.relativenumber = false
     end

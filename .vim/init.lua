@@ -15,11 +15,11 @@ require('rc.init.preload')
 -- NOTE: lazy.nvim auto load lua/plugins/config_from_lazy.lua
 --       config_from_lazy.lua loads base settings:
 --         - rc/setup/options.lua
+--         - rc/setup/keymaps.lua
 --         - rc/setup/func.lua
 --         - rc/setup/highlight.lua
 --         - rc/setup/extui.lua
 --       And VeryLazy event loads:
---         - rc/setup/keymaps.lua
 --         - rc/setup/ui.lua
 require('rc.modules.plugin_manager').lazy_setup()
 require('rc.init.postload')
