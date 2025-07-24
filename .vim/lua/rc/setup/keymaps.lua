@@ -103,11 +103,38 @@ vim.keymap.set({ 'n' }, '<C-g>', '2<C-g>')
 -- Clipboard
 vim.keymap.set({ 'n' }, 'sc', function()
   vim.fn.setreg('+', vim.fn.getreg('"'))
-  vim.cmd([[echo 'Copied " register to OS clipboard']])
+  vim.notify('Copied to OS clipboard.', vim.log.levels.INFO)
 end)
+
+vim.keymap.set({ 'n' }, 'sC', function()
+  local md = vim.fn.getreg('"')
+
+  if vim.fn.executable('pandoc') == 0 then
+    vim.fn.system({ 'pbcopy' }, md)
+    return
+  end
+
+  local html = vim.fn.system({ 'pandoc', '-f', 'markdown', '-t', 'html', '--wrap=none' }, md)
+  html = html:gsub('"', '\\"'):gsub('\n', '')
+
+  local hex = vim.fn.system(string.format([[printf '%%s' "%s" | hexdump -ve '1/1 "%%02x"']], html)):gsub('%s+$', '')
+
+  local plain = vim.fn.system({ 'pandoc', '-f', 'markdown', '-t', 'plain' }, md)
+  plain = plain:gsub('"', '\\"'):gsub('\n', '\\n')
+
+  local script = table.concat({
+    'set the clipboard to {',
+    '«class HTML»:«data HTML' .. hex .. '», ',
+    'string:"' .. plain .. '"}',
+  }, '')
+  vim.fn.system({ 'osascript', '-e', script })
+
+  vim.notify('Both HTML and plain text have been set to the clipboard.', vim.log.levels.INFO)
+end)
+
 vim.keymap.set({ 'n', 'x' }, 'sp', function()
   vim.fn.setreg('"', vim.fn.getreg('+'))
-  vim.cmd([[echo 'Copied from OS clipboard to " register']])
+  vim.notify('Copied from OS clipboard to " register', vim.log.levels.INFO)
 end)
 
 -- Terminal

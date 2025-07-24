@@ -5,10 +5,11 @@ function M.is_quick_ime()
   return vim.env.QUICK_IME == '1' or vim.g.quick_ime == 1
 end
 
+function M.is_editprompt()
+  return vim.env.EDITPROMPT == '1' or vim.g.editprompt == 1
+end
+
 local function apply_mode_opts()
-  if not M.is_quick_ime() then
-    return
-  end
   if vim.g.quick_ime_opts_applied == 1 then
     return
   end
@@ -53,9 +54,9 @@ local function create_scratch()
 end
 
 local function reset()
-  create_scratch()
-  apply_mode_opts()
-  vim.cmd('startinsert')
+  if M.is_quick_ime() then
+    create_scratch()
+  end
 end
 
 local function get_buffer_text(bufnr)
@@ -71,7 +72,7 @@ local function get_buffer_text(bufnr)
   return table.concat(lines, '\n')
 end
 
-local function send()
+local function send_hammerspoon()
   local text = get_buffer_text(M.bufnr)
   vim.fn.system('pbcopy', text)
 
@@ -84,18 +85,38 @@ local function send()
   reset()
 end
 
-if vim.env.QUICK_IME == '1' then
-  vim.g.quick_ime = 1
-  vim.api.nvim_create_user_command('QuickIMESend', send, {})
+local function send_editprompt()
+  vim.cmd('wq!')
+end
 
-  vim.api.nvim_create_autocmd({ 'FileType' }, {
-    pattern = 'markdown',
-    callback = function()
-      vim.keymap.set({ 'n', 'i' }, '<C-g>', '<Cmd>q!<CR>', { silent = true, nowait = true })
-      vim.keymap.set({ 'n', 'i' }, '<C-c>', '<Cmd>QuickIMESend<CR>', { silent = true, nowait = true })
-    end,
-  })
-  reset()
+local function send_quick_ime()
+  send_hammerspoon()
+end
+
+if vim.env.QUICK_IME == '1' or vim.env.EDITPROMPT == '1' then
+  if M.is_quick_ime() then
+    vim.g.quick_ime = 1
+    vim.api.nvim_create_user_command('SendQuickIme', send_quick_ime, {})
+    reset()
+    apply_mode_opts()
+    vim.cmd('startinsert')
+  elseif M.is_editprompt() then
+    vim.g.editprompt = 1
+    vim.api.nvim_create_user_command('SendQuickIme', send_editprompt, {})
+    vim.api.nvim_create_autocmd({ 'FileType' }, {
+      pattern = { 'markdown' },
+      callback = function()
+        apply_mode_opts()
+        vim.cmd('startinsert')
+      end,
+    })
+  else
+    vim.g.quick_ime = 0
+    vim.g.editprompt = 0
+  end
+
+  vim.keymap.set({ 'n', 'i' }, '<C-g>', '<Cmd>quit!<CR>', { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'n', 'i' }, '<C-c>', '<Cmd>SendQuickIme<CR>', { silent = true, buffer = true, nowait = true })
 end
 
 return M

@@ -12,32 +12,37 @@ _G.quick_ime_front_app = nil
 _G.quick_ime_front_bundle = nil
 _G.quick_ime_win = nil
 _G.quick_ime_pid = nil
-_G.quick_ime_watcher = nil
 
 -- Logging
 local function log(fmt, ...)
   hs.printf('[QuickIME] ' .. fmt, ...)
 end
 
+-- Paste configuration per app
 local APP_PASTE_CONFIG = {
   ['Alacritty'] = 'keystrokes',
 }
 local DEFAULT_PASTE_METHOD = 'clipboard'
 
+-- Send text line by line using keystrokes
 local function pasteToCurrentAppLineByLine(text)
+  -- Remove trailing newlines
   text = text:gsub('[\r\n]+$', '')
 
+  -- Split into lines
   local lines = {}
   for line in text:gmatch('([^\n]*)\n?') do
-    if line ~= '' or #lines > 0 then -- 空行も保持
+    if line ~= '' or #lines > 0 then -- Keep empty lines
       table.insert(lines, line)
     end
   end
 
+  -- Remove last empty element
   if #lines > 0 and lines[#lines] == '' then
     table.remove(lines)
   end
 
+  -- Type each line
   for i, line in ipairs(lines) do
     hs.eventtap.keyStrokes(line)
     if i < #lines then
@@ -46,7 +51,7 @@ local function pasteToCurrentAppLineByLine(text)
   end
 end
 
--- Find window
+-- Find Quick IME window
 local function find_win()
   if _G.quick_ime_win then
     local success, result = pcall(function()
@@ -86,7 +91,6 @@ local function show_win()
     log('Show: Quick IME window not found.')
     return
   end
-
   w:raise()
   w:focus()
 end
@@ -140,31 +144,6 @@ local function restore_front_window()
   return false
 end
 
--- Setup focus watcher
-local function setup_focus_watcher()
-  if _G.quick_ime_watcher then
-    _G.quick_ime_watcher:stop()
-    _G.quick_ime_watcher = nil
-  end
-
-  _G.quick_ime_watcher = hs.application.watcher.new(function(appName, eventType, appObject)
-    if eventType == hs.application.watcher.activated then
-      local quickWin = find_win()
-      if quickWin and appName ~= 'Alacritty' then
-        log('Another app activated: %s, closing Quick IME', appName)
-        hide_win()
-        if _G.quick_ime_watcher then
-          _G.quick_ime_watcher:stop()
-          _G.quick_ime_watcher = nil
-        end
-      end
-    end
-  end)
-
-  _G.quick_ime_watcher:start()
-  log('Focus watcher started (using application watcher)')
-end
-
 -- Spawn process
 local function spawn_proc()
   log('Launching Quick IME Alacritty...')
@@ -173,7 +152,6 @@ local function spawn_proc()
   if existing_win then
     log('Found existing Quick IME window, showing it')
     show_win()
-    setup_focus_watcher()
     return
   end
 
@@ -199,7 +177,6 @@ local function spawn_proc()
 
   -- Wait for window
   local tries = 0
-
   local function waitForWindow()
     tries = tries + 1
     local alacritty_apps = hs.application.applicationsForBundleID('org.alacritty') or {}
@@ -212,7 +189,6 @@ local function spawn_proc()
           _G.quick_ime_pid = app:pid()
           log('Found Quick IME window pid=%s', _G.quick_ime_pid)
           show_win()
-          setup_focus_watcher()
           return
         end
       end
@@ -243,6 +219,7 @@ function _G.quick_ime_done()
 
   restore_front_window()
 
+  -- Determine paste method based on current app
   local frontApp = hs.application.frontmostApplication()
   local appName = frontApp and frontApp:name() or nil
   local pasteMethod = DEFAULT_PASTE_METHOD
@@ -254,6 +231,7 @@ function _G.quick_ime_done()
     log('Using default paste method "%s" for app: %s', pasteMethod, appName or 'unknown')
   end
 
+  -- Paste text
   if pasteMethod == 'keystrokes' then
     pasteToCurrentAppLineByLine(text)
   else -- "clipboard"
@@ -262,39 +240,49 @@ function _G.quick_ime_done()
   end
 
   hide_win()
-  if _G.quick_ime_watcher then
-    _G.quick_ime_watcher:stop()
-    _G.quick_ime_watcher = nil
-  end
 end
 
--- Hotkey handler
-function QuickIMEAlacrittyToggle()
-  log('Hotkey pressed.')
+-- Register hotkey with eventtap to control event consumption
+local cmdIEventTap = hs.eventtap.new({ hs.eventtap.event.types.keyDown }, function(event)
+  local flags = event:getFlags()
+  local keyCode = event:getKeyCode()
 
-  local front_app = hs.application.frontmostApplication()
-  local front_win = hs.window.frontmostWindow()
-  local quick_win = find_win()
-  if quick_win and front_win and front_win:id() == quick_win:id() then
-    log('Quick IME is active, closing it')
-    restore_front_window()
-    hide_win()
-    if _G.quick_ime_watcher then
-      _G.quick_ime_watcher:stop()
-      _G.quick_ime_watcher = nil
+  -- Check if Cmd+I is pressed (i key code is 34)
+  if keyCode == 34 and flags.cmd and not flags.alt and not flags.shift and not flags.ctrl then
+    local front_app = hs.application.frontmostApplication()
+    local front_win = hs.window.frontmostWindow()
+
+    -- Close Quick IME window if active
+    local quick_win = find_win()
+    if quick_win and front_win and front_win:id() == quick_win:id() then
+      log('Quick IME is active, closing it')
+      restore_front_window()
+      hide_win()
+      return true -- Consume event
     end
-    return
+
+    -- Pass through to normal Alacritty
+    if front_app and front_app:name() == 'Alacritty' then
+      local title = front_win and front_win:title() or ''
+      if not title:find('Quick IME') then
+        log('In normal Alacritty, passing through Cmd+I')
+        return false -- Pass through event
+      end
+    end
+
+    -- Launch Quick IME for other apps
+    log('Launching Quick IME')
+    _G.quick_ime_front_app = front_app
+    _G.quick_ime_front_bundle = front_app and front_app:bundleID() or nil
+    log('Captured front app: bundle=%s', _G.quick_ime_front_bundle or 'nil')
+    spawn_proc()
+    return true -- Consume event
   end
 
-  _G.quick_ime_front_app = front_app
-  _G.quick_ime_front_bundle = front_app and front_app:bundleID() or nil
+  return false -- Pass through other events
+end)
 
-  log('Captured front app: bundle=%s', _G.quick_ime_front_bundle or 'nil')
-
-  spawn_proc()
-end
-
--- Register hotkey
-hs.hotkey.bind({ 'cmd' }, 'i', QuickIMEAlacrittyToggle)
+cmdIEventTap:start()
+log('Quick IME eventtap registered (Cmd+I)')
 
 log('Quick IME Alacritty init loaded.')
