@@ -1,0 +1,13 @@
+presets:
+  claude-code:
+    allow:
+      - "."
+      - path: "/tmp"
+        eval-symlinks: true
+      # - path: "$CLAUDE_CONFIG_DIR"
+      #   eval-symlinks: true
+      - "$HOME/dotfiles/.config/claude"
+      - "/dev/tty"
+      - "$HOME/.npm"
+    allow-keychain: true
+    allow-git: true
