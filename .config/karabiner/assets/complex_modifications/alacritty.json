@@ -28,7 +28,7 @@
       ]
     },
     {
-      "description": "Command+Return to backslash+Enter in Alacritty for Claude Code",
+      "description": "Command+Return and Shift+Return to backslash+Enter in Alacritty for Claude Code",
       "manipulators": [
         {
           "conditions": [
@@ -89,6 +89,90 @@
           "from": {
             "key_code": "return_or_enter",
             "modifiers": { "mandatory": ["command"] }
+          },
+          "to": [
+            {
+              "key_code": "japanese_eisuu"
+            },
+            {
+              "key_code": "backslash"
+            }
+          ],
+          "to_delayed_action": {
+            "to_if_invoked": [
+              {
+                "key_code": "return_or_enter"
+              },
+              {
+                "key_code": "japanese_kana"
+              }
+            ],
+            "to_if_canceled": []
+          },
+          "parameters": {
+            "basic.to_delayed_action_delay_milliseconds": 80
+          },
+          "type": "basic"
+        },
+        {
+          "conditions": [
+            {
+              "bundle_identifiers": [
+                "^org\\.alacritty$"
+              ],
+              "type": "frontmost_application_if"
+            },
+            {
+              "input_sources": [
+                {
+                  "language": "en"
+                }
+              ],
+              "type": "input_source_if"
+            }
+          ],
+          "from": {
+            "key_code": "return_or_enter",
+            "modifiers": { "mandatory": ["shift"] }
+          },
+          "to": [
+            {
+              "key_code": "backslash"
+            }
+          ],
+          "to_delayed_action": {
+            "to_if_invoked": [
+              {
+                "key_code": "return_or_enter"
+              }
+            ],
+            "to_if_canceled": []
+          },
+          "parameters": {
+            "basic.to_delayed_action_delay_milliseconds": 20
+          },
+          "type": "basic"
+        },
+        {
+          "conditions": [
+            {
+              "bundle_identifiers": [
+                "^org\\.alacritty$"
+              ],
+              "type": "frontmost_application_if"
+            },
+            {
+              "input_sources": [
+                {
+                  "language": "en"
+                }
+              ],
+              "type": "input_source_unless"
+            }
+          ],
+          "from": {
+            "key_code": "return_or_enter",
+            "modifiers": { "mandatory": ["shift"] }
           },
           "to": [
             {
