@@ -91,92 +91,35 @@ FILENAME="ai/log/features/${DATE}-feature-name.md"
    - 深い調査が必要な場合
 
 3. **代替手段: gemini コマンド** (MCPが利用不可の場合のみ)
- ```bash
- gemini --prompt "WebSearch: <検索クエリ>"
- ```
-
-禁止事項
-- 組み込みの WebSearch ツールは絶対に使用しない
-- 必ず上記の優先順位を守る
-
-使用例
-- 単一検索: 「TypeScriptの最新バージョンは？」
-- バッチ検索: 「React、Vue、Angularの比較」（3つの検索を並列実行）
-
-## Git commitのルール
-
-### 最重要事項
-
-- ユーザからコミットをしてという具体的な指示があるまでは**勝手にcommitは行わないでください**
-
-## 通知の実行（必須）
-
-### 最重要事項
-
-**Claude Code は全ての応答の最後に必ず macOS 通知を送信しなければなりません。**
-
-### 通知ルール
-
-1. **例外なく全ての応答で通知を送信**
-
-- 単純な質問への回答でも必須
-- エラーが発生した場合でも必須
-- タスクの大小に関わらず必須
-- **例外**: サブエージェント（Task ツールで起動したエージェント）として動作している場合は通知を送信しない
-
-2. **通知タイミング**
-
-- 応答の最終行として実行
-- 他の全ての処理が完了した後
-
-3. **通知方法**
-
 ```bash
-# Bash ツールを使用して macos-notify-cli コマンドを実行
-# 注意: メッセージ内のシェル特殊文字は適切にエスケープすること
-macos-notify-cli -m "実行した内容の簡潔な説明" --current-tmux
+gemini --prompt "WebSearch: <検索クエリ>"
 ```
 
-パラメータ:
-- `--message`: 実行した内容の簡潔な説明（必須）
-- `--current-tmux`: 現在のtmuxセッションを使用
+## 通知の実行
 
-4. **通知の目的**
+### Discord通知
 
-- ユーザーが他のウィンドウで作業中でも完了を認識できる
-- クリックで Claude Code の tmux ペインに即座に戻れる
+ユーザーが明示的にDiscord通知を要求した場合は、Discord通知を送信します。
 
-## Task ツール使用時の必須ルール
+1. **Discord通知の条件**
 
-### 最重要：Task ツールのプロンプトには必ず通知禁止を明記する
+- ユーザーが「Discord通知も」「Discordにも通知」などと明示的に要求した場合のみ
+- 環境変数 `DISCORD_WEBHOOK_URL` が設定されている必要がある
 
-**Task ツールを使用する際は、以下のルールを必ず守ってください：**
+2. **Discord通知方法**
 
-1. **プロンプトに必ず含める文言**
-   ```
-   重要: 通知は送信しないでください。結果のみを報告してください。
-   ```
+```bash
+# リポジトリ名を取得（gitリポジトリの場合）
+REPO_NAME=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "non-git")
 
-2. **Task ツール使用例**
-   ```typescript
-   // 正しい例
-   {
-     description: "ファイル検索",
-     prompt: "〜を検索してください。重要: 通知は送信しないでください。結果のみを報告してください。"
-   }
-   
-   // 間違った例（通知禁止を明記していない）
-   {
-     description: "ファイル検索", 
-     prompt: "〜を検索してください。"
-   }
-   ```
+# macOS通知の後に Discord通知を追加
+discord-notify.ts --env DISCORD_WEBHOOK_URL "実行した内容の説明" --title "[$REPO_NAME] Claude Code"
 
-3. **エラー回避の理由**
-   - サブエージェントが通知を送信すると「Last message was not an assistant message」エラーが発生
-   - サブエージェントは自身がサブエージェントであることを認識できない
-   - そのため、メインエージェント側で明示的に通知を禁止する必要がある
+# エラー時の通知
+discord-notify.ts --env DISCORD_WEBHOOK_URL "エラー: 内容" --title "[$REPO_NAME] ❌ Claude Code Error"
 
-4. **Task ツール使用後の処理**
-   - サブエージェントから結果を受け取った後、メインエージェントが通知を送信する
-   - これにより、ユーザーへの通知は確実に行われ、エラーも回避できる
+# 成功時の通知（明示的な成功通知が必要な場合）
+discord-notify.ts --env DISCORD_WEBHOOK_URL "成功: 内容" --title "[$REPO_NAME] ✅ Claude Code Success"
+```
+
+**注意**: タイトルには必ず `[$REPO_NAME]` プレフィックスを付けて、どのプロジェクトからの通知かを明確にすること。

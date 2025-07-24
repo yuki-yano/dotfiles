@@ -3,5 +3,18 @@
     "defaultMode": "acceptEdits"
   },
   "includeCoAuthoredBy": false,
-  "model": "opus"
+  "model": "opus",
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/dotfiles/bin/stop-send-notification.ts"
+          }
+        ]
+      }
+    ]
+  }
 }
