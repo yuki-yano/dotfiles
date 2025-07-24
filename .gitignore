@@ -14,6 +14,7 @@ tmp/
 !/.config/alacritty/
 !/.config/atuin
 !/.config/bat/
+!/.config/cage
 !/.config/claude/
 !/.config/efm-langserver
 !/.config/karabiner

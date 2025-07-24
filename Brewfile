@@ -35,7 +35,7 @@ install lua
 install luarocks busted
 install mise
 install node yarn pnpm
-install openssl
+install openssl pkg-config
 install oven-sh/bun/bun
 install perl
 install python
@@ -57,6 +57,12 @@ install bat ctop direnv dust eza fd glow ripgrep procs vivid atuin
 
 ## GNU Core Utilities
 install autoconf automake cmake gawk gnu-sed gnu-time gpatch gpg2 wget
+
+## Clipboard util
+install pandoc
+
+## AI
+install claude-code ccusage
 
 ## Font
 install delphinus/sfmono-square/sfmono-square
@@ -88,6 +94,9 @@ install git tig gh ghq gobo git-delta git-filter-repo
 ## Window Manager
 install koekeishiya/formulae/yabai
 install koekeishiya/formulae/skhd
+
+## AI Agent Support
+install --cask Warashi/tap/cage --no-quarantine
 
 ## Media
 install ffmpeg

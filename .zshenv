@@ -61,6 +61,12 @@ path=($PNPM_HOME(N-/) $path)
 # deno
 path=(~/.deno/bin(N-/) $path)
 
+# bun
+path=(~/.bun/bin(N-/) $path)
+
+# Ruby
+path=(/opt/homebrew/opt/ruby/bin(N-/) $path)
+
 # Rust
 if [[ -d "$HOME/.cargo" ]]; then
   path=(~/.cargo/bin(N-/) $path)

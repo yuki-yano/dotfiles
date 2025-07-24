@@ -25,10 +25,6 @@ for (const block of data.blocks) {
 }
 
 if (!activeSession) {
-  // Execute claude --print "hello" asynchronously and exit
-  exec('claude --print "hello"', (error, stdout, stderr) => {
-    // Ignore any errors from claude command
-  });
   // Output with no background color override
   process.stdout.write("#[fg=white]No active CC session");
   process.exit(0);

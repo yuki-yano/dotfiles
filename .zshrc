@@ -472,6 +472,8 @@ bindkey -e
 zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end  history-search-end
 
+zstyle :zle:edit-command-line editor nvim --cmd 'let g:is_edit_command_line = v:true' -c 'startinsert'
+
 # My ZLE bind
 bindkey '^]'   insert-last-word
 bindkey "^[u"  redo
