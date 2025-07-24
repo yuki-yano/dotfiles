@@ -4,6 +4,7 @@ local codicons = require('rc.modules.font').codicons
 local misc_icons = require('rc.modules.font').misc_icons
 local todo_icons = require('rc.modules.font').todo_icons
 local list_concat = require('rc.modules.utils').list_concat
+local is_editprompt = require('rc.setup.quick_ime').is_editprompt
 -- local enable_noice = require('rc.modules.plugin_utils').enable_noice
 
 return {
@@ -55,7 +56,11 @@ return {
       },
       { 'nvim-tree/nvim-web-devicons' },
       { 'roobert/tailwindcss-colorizer-cmp.nvim' },
-      { 'cohama/lexima.vim' }, -- NOTE: Load before cmp
+      {
+        'biosugar0/cmp-claudecode',
+        dependencies = { 'nvim-lua/plenary.nvim' },
+      },
+      -- { 'cohama/lexima.vim' }, -- NOTE: Load before cmp
     },
     init = function()
       vim.api.nvim_create_autocmd({ 'CmdlineEnter' }, {
@@ -170,6 +175,18 @@ return {
         -- { name = 'skkeleton' },
       }
 
+      if is_editprompt() then
+        require('cmp_claudecode').setup()
+        table.insert(sources, 1, {
+          name = 'claude_at',
+          priority = 900,
+        })
+        table.insert(sources, 1, {
+          name = 'claude_slash',
+          priority = 900,
+        })
+      end
+
       cmp.setup({
         enabled = vim.env.LSP == 'nvim',
         mapping = vim.env.LSP == 'nvim'
@@ -266,6 +283,8 @@ return {
                 rg = '[Rg]',
                 look = '[Look]',
                 path = '[Path]',
+                claude_at = '[Claude @]',
+                claude_slash = '[Claude /]',
               }
 
               vim_item = require('tailwindcss-colorizer-cmp').formatter(entry, vim_item)
@@ -1552,11 +1571,13 @@ return {
       vim.g.haritsuke_config = {
         persist_path = vim.fn.stdpath('cache') .. '/haritsuke',
         max_entries = 10000,
+        operator_replace_single_undo = true,
         debug = false,
       }
 
       vim.keymap.set({ 'n', 'x' }, 'p', '<Plug>(haritsuke-p)')
       vim.keymap.set({ 'n', 'x' }, 'P', '<Plug>(haritsuke-P)')
+      vim.keymap.set({ 'n' }, '<Tab>', '<Plug>(haritsuke-toggle-smart-indent)')
       -- vim.keymap.set({ 'n' }, 'gp', '<Plug>(haritsuke-gp)')
       -- vim.keymap.set({ 'n' }, 'gP', '<Plug>(haritsuke-gP)')
       vim.keymap.set({ 'n' }, '<C-p>', function()

@@ -9,11 +9,12 @@ local get_lsp_lines_status = plugin_utils.get_lsp_lines_status
 local add_focus_gain = plugin_utils.add_focus_gain
 local add_focus_lost = plugin_utils.add_focus_lost
 local is_quick_ime = require('rc.setup.quick_ime').is_quick_ime
+local is_editprompt = require('rc.setup.quick_ime').is_editprompt
 
 return {
   {
     'nvim-lualine/lualine.nvim',
-    enabled = not is_quick_ime(),
+    enabled = not is_quick_ime() and not is_editprompt() and not vim.g.is_edit_command_line,
     event = { 'FocusLost', 'BufRead', 'BufNewFile' },
     init = function()
       vim.api.nvim_create_user_command('LL', function()
@@ -40,10 +41,8 @@ return {
           end,
           ['catppuccin'] = function()
             if is_inactive then
-              -- 非アクティブ時は地味な色に変更
               local custom_catppuccin = require('lualine.themes.catppuccin')
               local inactive_colors = color.misc().lualine_inactive
-              -- 全モードで地味な色に統一
               for _, mode in ipairs({ 'normal', 'insert', 'visual', 'replace', 'command', 'inactive' }) do
                 if custom_catppuccin[mode] then
                   if custom_catppuccin[mode].a then
@@ -219,6 +218,7 @@ return {
   },
   {
     'akinsho/bufferline.nvim',
+    enabled = not is_quick_ime() and not is_editprompt(),
     dependencies = {
       { 'tiagovla/scope.nvim' },
     },
@@ -593,7 +593,7 @@ return {
   },
   {
     'b0o/incline.nvim',
-    enabled = true,
+    enabled = not is_quick_ime() and not is_editprompt() and not vim.g.is_edit_command_line,
     dependencies = {
       { 'nvim-tree/nvim-web-devicons' },
       { 'SmiteshP/nvim-navic' },
@@ -1147,11 +1147,18 @@ return {
       vim.api.nvim_create_user_command('ToggleHighlightUndo', function()
         require('highlight-undo').toggle()
       end, {})
+      vim.api.nvim_set_hl(0, 'HighlightUndoAdd', { fg = 'NONE', bg = color.misc().highlight_undo.add })
+      vim.api.nvim_set_hl(0, 'HighlightUndoRemoved', { fg = 'NONE', bg = color.misc().highlight_undo.delete })
     end,
     config = function()
       require('denops-lazy').load('highlight-undo.nvim')
       ---@diagnostic disable-next-line: missing-parameter
-      require('highlight-undo').setup()
+      require('highlight-undo').setup({
+        highlight = {
+          added = 'HighlightUndoAdd',
+          removed = 'HighlightUndoRemoved',
+        },
+      })
     end,
   },
   {

@@ -159,6 +159,10 @@ palette['catppuccin'] = function()
         delete = '#541010',
         change = '#544E10',
       },
+      highlight_undo = {
+        add = '#215C2B',
+        delete = '#7A2936',
+      },
       scrollbar = {
         bar = catppuccin_palette.surface1, -- #45475A
         search = catppuccin_palette.sky, -- #89DCEB

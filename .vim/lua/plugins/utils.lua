@@ -1,4 +1,6 @@
 local color = require('rc.modules.color')
+local is_quick_ime = require('rc.setup.quick_ime').is_quick_ime
+local is_editprompt = require('rc.setup.quick_ime').is_editprompt
 
 return {
   { 'farmergreg/vim-lastplace', event = { 'BufReadPre' } },
@@ -697,6 +699,7 @@ return {
   },
   {
     'yuki-yano/resonator.vim',
+    enabled = not is_quick_ime() and not is_editprompt() and not vim.g.is_edit_command_line,
     lazy = true,
     dev = true,
     event = { 'BufRead' },
