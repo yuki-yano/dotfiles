@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Auto rename tmux session based on git repository name when session name is numeric
+# This script is called by tmux's chdir-after-pane hook
+
+# Get current session name
+session_name=$(tmux display-message -p '#S')
+
+# Check if session name is numeric
+if [[ $session_name =~ ^[0-9]+$ ]]; then
+  # Check if we're in a git repository
+  if git_root=$(git rev-parse --show-toplevel 2>/dev/null); then
+    # Extract repository name from path
+    repository=$(basename "$git_root")
+    
+    # Convert dots to hyphens (same as ghq-project-selector)
+    new_session_name=${repository//./-}
+    
+    # Rename the session
+    tmux rename-session "$new_session_name" 2>/dev/null || true
+  fi
+fi

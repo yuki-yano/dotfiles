@@ -569,6 +569,30 @@ function git_auto_save() {
   fi
 }
 
+# Auto rename tmux session when entering git repository
+function tmux_auto_rename_hook() {
+  if [[ -n "$TMUX" ]]; then
+    # Get current session name
+    local session_name=$(tmux display-message -p '#S')
+
+    # Check if session name is numeric
+    if [[ $session_name =~ ^[0-9]+$ ]]; then
+      # Check if we're in a git repository
+      if git_root=$(git rev-parse --show-toplevel 2>/dev/null); then
+        # Extract repository name from path
+        local repository=$(basename "$git_root")
+
+        # Convert dots to hyphens
+        local new_session_name=${repository//./-}
+
+        # Rename the session
+        tmux rename-session "$new_session_name" 2>/dev/null || true
+      fi
+    fi
+  fi
+}
+add-zsh-hook chpwd tmux_auto_rename_hook
+
 # }}}
 
 # Profile {{{
