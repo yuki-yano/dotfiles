@@ -23,7 +23,7 @@ setopt no_global_rcs
 typeset -U path fpath
 
 # default path
-path=(~/.config/yarn/global/node_modules/.bin(N-/) /opt/homebrew/bin(N-/) /usr/local/bin(N-/) /usr/bin(N-/) /bin(N-/) /sbin(N-/) /usr/sbin(N-/) /usr/local/sbin(N-/) /usr/X11/bin(N-/) ~/.bin(N-/))
+path=(/opt/homebrew/bin(N-/) /usr/local/bin(N-/) /usr/bin(N-/) /bin(N-/) /sbin(N-/) /usr/sbin(N-/) /usr/local/sbin(N-/) ~/dotfiles/bin(N-/) ~/.bin(N-/))
 fpath=(~/.zsh/completions(N-/) $fpath)
 
 # OpenSSL
@@ -108,8 +108,6 @@ fi
 # - This allows brew to work without modifying Homebrew's source code
 #
 # Reference: Library/Homebrew/cmd/shellenv.sh:9-11
-export HOMEBREW_PREFIX="/opt/homebrew"
-export HOMEBREW_PATH="/opt/homebrew/bin:/opt/homebrew/sbin"
 
 #  Finally add the path of ~/bin and ~/dotfiles/bin to the beginning
 path=(~/bin(N-/) $path)

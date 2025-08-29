@@ -19,6 +19,7 @@ const DOTFILES_SRCS = [
   ".zsh",
   ".zshenv",
   ".zshrc",
+  ".zprofile",
 ];
 
 const SRC_DIR = Deno.cwd();

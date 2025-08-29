@@ -1,0 +1,20 @@
+[settings]
+experimental = true
+disable_backends = ["asdf", "vfox"]
+idiomatic_version_file_enable_tools = ["node"]
+
+[settings.pipx]
+uvx = true
+
+[tools]
+bun = "latest"
+"cargo:similarity-ts" = "latest"
+node = "latest"
+"npm:@anthropic-ai/claude-code" = "latest"
+"npm:@google/gemini-cli" = "latest"
+"npm:ccundo" = "latest"
+"npm:editprompt" = "latest"
+"npm:pnpm" = "latest"
+"npm:vde-layout" = "latest"
+"npm:yarn" = "latest"
+uv = "latest"

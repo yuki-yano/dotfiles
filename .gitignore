@@ -18,6 +18,7 @@ tmp/
 !/.config/claude/
 !/.config/efm-langserver
 !/.config/karabiner
+!/.config/mise
 !/.config/nvim
 !/.config/previm
 !/.config/ripgrep
