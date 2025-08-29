@@ -108,9 +108,6 @@ snippets:
   - name: tms
     keyword: t
     snippet: tms
-  - name: tmux swap pane
-    keyword: ts
-    snippet: tmux swap-pane -t
 
   - name: "null"
     keyword: "null"
@@ -133,16 +130,6 @@ snippets:
     snippet: "| vi"
     context:
       lbuffer: '.+\s'
-  - name: pipe xargs
-    keyword: X
-    snippet: "| xargs -I{} {{command}} {}"
-    context:
-      lbuffer: '.+\s'
-  - name: pipe awk
-    keyword: pipe_awk
-    snippet: "| awk '{ print ${{column}} }'"
-    context:
-      lbuffer: '.+\s'
 
   - name: default branch
     keyword: B
@@ -153,8 +140,7 @@ snippets:
 
   - name: claude yolo
     keyword: yolo
-    # snippet: claude --dangerously-skip-permissions
-    snippet: cage --preset claude-code -- claude --dangerously-skip-permissions
+    snippet: cage -- claude --dangerously-skip-permissions
 
   - name: disable desktop
     keyword: disable_desktop
@@ -171,6 +157,7 @@ completions:
     options:
       --multi: true
       --prompt: "'Kill Process> '"
+      --exact: true
       --header-lines: 2
     callback: "perl -ane 'print $F[0]'"
   - name: git fixup script

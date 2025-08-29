@@ -34,7 +34,7 @@ install java
 install lua
 install luarocks busted
 install mise
-install node yarn pnpm
+install node
 install openssl pkg-config
 install oven-sh/bun/bun
 install perl
