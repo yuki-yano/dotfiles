@@ -174,3 +174,6 @@ vim.keymap.set('n', 'zz', 'zz<Plug>(z1)')
 vim.keymap.set('n', '<Plug>(z1)z', 'zt<Plug>(z2)')
 vim.keymap.set('n', '<Plug>(z2)z', 'zb<Plug>(z0)')
 vim.keymap.set('n', '<Plug>(z0)z', 'zz<Plug>(z1)')
+
+-- _ to -
+vim.keymap.set({'n', 'x'}, '-', '_')

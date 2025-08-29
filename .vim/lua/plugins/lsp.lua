@@ -493,6 +493,7 @@ local plugins = {
 
       vim.keymap.set({ 'n' }, '<C-]>', '<Cmd>Lspsaga peek_definition<CR>')
       vim.keymap.set({ 'n' }, '<Plug>(lsp)t', '<Cmd>Lspsaga peek_type_definition<CR>')
+      vim.keymap.set({ 'n' }, '<Plug>(lsp)rn', '<Cmd>Lspsaga rename<CR>')
       vim.keymap.set({ 'n' }, '<Plug>(lsp)R', '<Cmd>Lspsaga finder<CR>')
       vim.keymap.set({ 'n' }, '<Plug>(lsp)n', '<Cmd>Lspsaga diagnostic_jump_next<CR>')
       vim.keymap.set({ 'n' }, '<Plug>(lsp)p', '<Cmd>Lspsaga diagnostic_jump_prev<CR>')

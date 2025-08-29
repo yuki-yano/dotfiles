@@ -85,7 +85,15 @@ local function send_hammerspoon()
   reset()
 end
 
+local function set_clipboard(text)
+  vim.fn.system('pbcopy', text)
+end
+
 local function send_editprompt()
+  local text = get_buffer_text(M.bufnr)
+  if text ~= '' then
+    set_clipboard(text)
+  end
   vim.cmd('wq!')
 end
 

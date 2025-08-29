@@ -13,6 +13,7 @@ return {
     event = { 'BufRead' },
     -- TODO: Disable in cmdwin
     init = function()
+      vim.g.matchup_treesitter_disable_virtual_text = true
       vim.g.matchup_matchparen_offscreen = { method = 'popup' }
 
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
