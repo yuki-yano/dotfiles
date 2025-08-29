@@ -16,28 +16,6 @@
    - `fixes/` - バグ修正
    - `tests/` - テスト実行結果
    - `sessions/` - セッション引き継ぎ
-   - `nippo/` - 日次作業記録（日報）
-   - ファイル名: `YYYY-MM-DD-説明.md`（nippoは`YYYY-MM-DD.md`）
-
-3. **`ai/knowledge/`** - 恒久的な知識ベース
-   - `learnings/` - 技術的な学習事項
-   - `decisions/` - アーキテクチャ決定
-   - `patterns/` - ベストプラクティス
-   - `context/` - プロジェクトコンテキスト
-
-4. **`ai/issues/`** - 問題管理
-   - `active/` - 対応中の問題
-   - `resolved/` - 解決済み
-   - `blocked/` - ブロック中
-
-5. **`ai/plans/`** - 計画とチェックリスト
-   - `active/` - 実行中の計画
-   - `completed/` - 完了した計画
-
-6. **`ai/roadmap/`** - プロジェクトのロードマップ
-   - `current/` - 現在のロードマップ
-   - `archive/` - 過去のロードマップ
-   - `milestones/` - マイルストーン定義
 
 ### ファイル命名規則
 - 日付を含む場合: `YYYY-MM-DD-簡潔な説明.md`
@@ -58,8 +36,6 @@ FILENAME="ai/log/features/${DATE}-feature-name.md"
 
 **注意事項**:
 - 環境情報の「Today's date」に依存せず、必ず上記のコマンドで実際の日付を取得する
-- タイムスタンプが必要な場合は `perl -MPOSIX -le 'print strftime("%Y-%m-%d %H:%M:%S", localtime)'` を使用
-- 日本時間（JST）を明示する場合は `perl -MPOSIX -le 'print strftime("%Y-%m-%d %H:%M (JST)", localtime)'` を使用
 
 ### 重要な原則
 - **既存の情報を確認**: 新規作成前に関連ディレクトリを確認
@@ -70,7 +46,6 @@ FILENAME="ai/log/features/${DATE}-feature-name.md"
 ## URL処理のルール
 
 - URLが提供された場合は、`read_url_content_as_markdown` を使用してコンテンツを読み込み、内容を要約する
-
 
 ## Web検索のルール
 
