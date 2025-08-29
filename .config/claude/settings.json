@@ -1,9 +1,13 @@
 {
+  "includeCoAuthoredBy": false,
   "permissions": {
     "defaultMode": "acceptEdits"
   },
-  "includeCoAuthoredBy": false,
   "model": "opus",
+  "statusLine": {
+    "type": "command",
+    "command": "ccusage statusline"
+  },
   "hooks": {
     "Stop": [
       {
@@ -12,6 +16,26 @@
           {
             "type": "command",
             "command": "~/dotfiles/bin/stop-send-notification.ts"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/dotfiles/bin/claude-pre_tool_use-hook_bash.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/dotfiles/bin/claude-pre_tool_use-hook_grep.ts"
           }
         ]
       }
