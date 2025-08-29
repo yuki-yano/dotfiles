@@ -2,12 +2,43 @@ presets:
   claude-code:
     allow:
       - "."
-      - path: "/tmp"
+      - path: "$CLAUDE_CONFIG_DIR"
         eval-symlinks: true
-      # - path: "$CLAUDE_CONFIG_DIR"
-      #   eval-symlinks: true
-      - "$HOME/dotfiles/.config/claude"
-      - "/dev/tty"
-      - "$HOME/.npm"
+      - "$HOME/.claude"
+      - "$HOME/.claude.json"
+      - "$HOME/.claude.json.backup"
+      - "$HOME/.claude.json.lock"
+      - "$HOME/.claude.lock"
     allow-keychain: true
     allow-git: true
+  tmp:
+    allow:
+      - path: "/tmp"
+        eval-symlinks: true
+      - "/private/var/folders"
+      - "$HOME/.cache"
+      - "$HOME/Library/Caches"
+  device:
+    allow:
+      - "/dev/tty"
+      - "/dev/null"
+      - "/dev/stderr"
+      - "/dev/stdout"
+  node:
+    allow:
+      - "$HOME/.npm"
+      - "$HOME/.bun"
+      - "$HOME/.local/share/mise/shims"
+  serena:
+    allow:
+      - "$HOME/.serena"
+      - "$HOME/.local/share"
+
+auto-presets:
+  - command: claude
+    presets:
+      - claude-code
+      - tmp
+      - device
+      - node
+      - serena
