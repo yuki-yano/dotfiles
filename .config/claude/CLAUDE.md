@@ -14,7 +14,6 @@
 2. **`ai/log/`** - 時系列の作業記録
    - `features/` - 実装した機能
    - `fixes/` - バグ修正
-   - `tests/` - テスト実行結果
    - `sessions/` - セッション引き継ぎ
 
 ### ファイル命名規則
@@ -46,29 +45,6 @@ FILENAME="ai/log/features/${DATE}-feature-name.md"
 ## URL処理のルール
 
 - URLが提供された場合は、`read_url_content_as_markdown` を使用してコンテンツを読み込み、内容を要約する
-
-## Web検索のルール
-
-**最重要**: Web検索が必要な場合は、以下の優先順位で実行してください：
-
-1. **最優先: MCP google_search** (必ず最初に試す)
- - 単一検索: `mcp__gemini-grounding__google_search` を使用
- - AI生成の要約付き検索結果を提供
- - 引用付きの包括的な回答を生成
-
-2. **バッチ検索: MCP google_search_batch** (複数の検索が必要な場合)
- - `mcp__gemini-grounding__google_search_batch` を使用
- - 最大10個のクエリを並列実行
- - 検索結果からWebページをスクレイピング可能
- - 以下の場合に使用:
-   - 複数の観点から調査が必要な場合
-   - 比較検討が必要な場合
-   - 深い調査が必要な場合
-
-3. **代替手段: gemini コマンド** (MCPが利用不可の場合のみ)
-```bash
-gemini --prompt "WebSearch: <検索クエリ>"
-```
 
 ## 通知の実行
 
