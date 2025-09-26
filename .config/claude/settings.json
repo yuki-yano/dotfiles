@@ -1,13 +1,12 @@
 {
+  "env": {
+    "DISABLE_AUTOUPDATER": "1"
+  },
   "includeCoAuthoredBy": false,
   "permissions": {
     "defaultMode": "acceptEdits"
   },
   "model": "opus",
-  "statusLine": {
-    "type": "command",
-    "command": "ccusage statusline"
-  },
   "hooks": {
     "Stop": [
       {
@@ -39,6 +38,39 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/dotfiles/bin/claude-post_tool_use-hook_eol.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/dotfiles/bin/claude-post_tool_use-hook_eol.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/dotfiles/bin/claude-post_tool_use-hook_eol.ts"
+          }
+        ]
+      }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/dotfiles/bin/cc-statusline.ts"
   }
 }
