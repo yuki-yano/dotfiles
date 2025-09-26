@@ -167,6 +167,10 @@ if whence gojq > /dev/null; then
 fi
 # }}}
 
+# safe-chain {{{
+[[ -f ~/.safe-chain/scripts/init-posix.sh ]] && source ~/.safe-chain/scripts/init-posix.sh
+# }}}
+
 # }}}
 
 # }}}
@@ -475,10 +479,10 @@ zle -N history-beginning-search-forward-end  history-search-end
 zstyle :zle:edit-command-line editor nvim --cmd 'let g:is_edit_command_line = v:true' -c 'startinsert'
 
 # My ZLE bind
-bindkey '^]'   insert-last-word
-bindkey "^[u"  redo
-bindkey '^[f'  forward-word
-bindkey "^[b"  backward-word
+bindkey '^]'  insert-last-word
+bindkey "^[u" redo
+bindkey '^[f' forward-word
+bindkey "^[b" backward-word
 
 # Add tmux bind
 bindkey '^h' backspace-or-left-pane

@@ -142,6 +142,10 @@ snippets:
     keyword: yolo
     snippet: cage -- claude --dangerously-skip-permissions
 
+  - name: codex yolo
+    keyword: oyolo
+    snippet: cage -- codex --yolo
+
   - name: disable desktop
     keyword: disable_desktop
     snippet: defaults write com.apple.finder CreateDesktop -boolean false; killall Finder
@@ -159,7 +163,7 @@ completions:
       --prompt: "'Kill Process> '"
       --exact: true
       --header-lines: 2
-    callback: "perl -ane 'print $F[0]'"
+    callback: "perl -lane 'print $F[0]'"
   - name: git fixup script
     patterns:
       - "^git fixup $"
