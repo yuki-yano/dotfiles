@@ -255,17 +255,31 @@ return {
 
       -- AI directory picker
       vim.keymap.set({ 'n' }, '<Plug>(ff)i', function()
-        local ai_dir = vim.fn.getcwd() .. '/ai'
-        if vim.fn.isdirectory(ai_dir) == 1 then
+        local cwd = vim.fn.getcwd()
+        local ai_dir = cwd .. '/ai'
+        local docs_dir = cwd .. '/docs'
+        local has_ai = vim.fn.isdirectory(ai_dir) == 1
+        local has_docs = vim.fn.isdirectory(docs_dir) == 1
+        local dirs = {}
+
+        if has_ai then
+          table.insert(dirs, 'ai')
+        end
+        if has_docs then
+          table.insert(dirs, 'docs')
+        end
+
+        if #dirs > 0 then
           snacks.picker.files({
-            cwd = ai_dir,
+            cwd = cwd,
             hidden = true,
+            dirs = dirs,
             filter = {
               cwd = false,
             },
           })
         else
-          vim.notify('AI directory not found in current directory', vim.log.levels.WARN)
+          vim.notify('AI or docs directory not found in current directory', vim.log.levels.WARN)
         end
       end)
     end,
