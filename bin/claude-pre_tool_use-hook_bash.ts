@@ -45,11 +45,11 @@ const VALIDATION_RULES: ValidationRule[] = [
     message:
       "git ls-files を xargs へパイプして使うのではなく、git grep --show-function [-C|-A|-B] -- <path...> を使ってください。xargs は不要です",
   },
-  {
-    validate: (cmd: string) => /^cd/.test(cmd),
-    message:
-      "cd コマンドは使わないでください。例えば yarn の場合 --cwd フラグ、make の場合 -C フラグ、docker compose なら --project-directory フラグが利用できます",
-  },
+  // {
+  //   validate: (cmd: string) => /^cd/.test(cmd),
+  //   message:
+  //     "cd コマンドは使わないでください。例えば yarn の場合 --cwd フラグ、make の場合 -C フラグ、docker compose なら --project-directory フラグが利用できます",
+  // },
 ];
 
 function validateCommand(command: string): string[] {
