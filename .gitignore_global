@@ -48,6 +48,7 @@ git-worktrees/*
 
 # vim
 cSpell.json
+cspell.json
 
 # VSCode
 .vscode

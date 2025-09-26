@@ -103,3 +103,5 @@
   syntax-theme = Catppuccin-mocha
 
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:
+[coderabbit]
+	machineId = cli/49c9a1ddee924a63959acee4c203e338
