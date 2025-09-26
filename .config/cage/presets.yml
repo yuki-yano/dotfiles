@@ -11,6 +11,12 @@ presets:
       - "$HOME/.claude.lock"
     allow-keychain: true
     allow-git: true
+  codex:
+    allow:
+      - "."
+      - "$HOME/.codex/"
+    allow-keychain: true
+    allow-git: true
   tmp:
     allow:
       - path: "/tmp"
@@ -28,11 +34,11 @@ presets:
     allow:
       - "$HOME/.npm"
       - "$HOME/.bun"
+      - "$HOME/Library/pnpm/store/v10"
       - "$HOME/.local/share/mise/shims"
-  serena:
-    allow:
-      - "$HOME/.serena"
-      - "$HOME/.local/share"
+      - "$HOME/Library/pnpm/.tools"
+      - path: "$HOME/.config/.wrangler/logs"
+        eval-symlinks: true
 
 auto-presets:
   - command: claude
@@ -41,4 +47,10 @@ auto-presets:
       - tmp
       - device
       - node
-      - serena
+      - codex
+  - command: codex
+    presets:
+      - codex
+      - tmp
+      - device
+      - node
