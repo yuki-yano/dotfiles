@@ -144,9 +144,9 @@ fi
 # }}}
 
 # sed {{{
-if whence gsed > /dev/null; then
-  alias sed='gsed'
-fi
+# if whence gsed > /dev/null; then
+#   alias sed='gsed'
+# fi
 # }}}
 
 # find {{{
@@ -543,16 +543,20 @@ function c() {
     msg=" - $*"
   fi
 
-  if [[ -d .git ]]; then
-    if [[ ! -f ".git/MERGE_HEAD" ]] \
-      && [[ $(git --no-pager diff --cached | wc -l) -eq 0 ]] \
-      && [[ ! -f .git/index.lock ]] \
-      && [[ ! -d .git/rebase-merge ]] \
-      && [[ ! -d .git/rebase-apply ]]; then
+  # Get git root directory
+  local git_root
+  git_root=$(git rev-parse --show-toplevel 2>/dev/null)
 
-      git add --all \
-        && git commit --no-verify --message "Git save: $(date -R)$msg" >/dev/null \
-        && git reset HEAD^ >/dev/null
+  if [[ -n "$git_root" ]]; then
+    if [[ ! -f "$git_root/.git/MERGE_HEAD" ]] \
+      && [[ $(git --no-pager diff --cached | wc -l) -eq 0 ]] \
+      && [[ ! -f "$git_root/.git/index.lock" ]] \
+      && [[ ! -d "$git_root/.git/rebase-merge" ]] \
+      && [[ ! -d "$git_root/.git/rebase-apply" ]]; then
+
+      git add --all &&
+        git commit --no-verify --message "Git quick save: $(date -R)$msg" >/dev/null &&
+        git reset HEAD^ >/dev/null
 
       echo "Git quick save!$msg"
     fi
@@ -565,13 +569,58 @@ function c() {
 add-zsh-hook preexec git_auto_save
 
 function git_auto_save() {
-  if [[ -d .git ]] && [[ -f .git/auto-save ]] && [[ $(find .git/auto-save -mmin -$((60)) | wc -l) -eq 0 ]]; then
-    if [[ ! -f ".git/MERGE_HEAD" ]] && [[ $(git --no-pager diff --cached | wc -l) -eq 0 ]] && [[ ! -f .git/index.lock ]] && [[ ! -d .git/rebase-merge ]] && [[ ! -d .git/rebase-apply ]]; then
-      touch .git/auto-save && git add --all && git commit --no-verify --message "Git auto save: $(date -R)" >/dev/null && git reset HEAD^ >/dev/null
+  # Get git root directory
+  local git_root
+  git_root=$(git rev-parse --show-toplevel 2>/dev/null)
+
+  if [[ -n "$git_root" ]] \
+    && [[ -f "$git_root/.git/auto-save" ]] \
+    && [[ $(find "$git_root/.git/auto-save" -mmin -$((60)) | wc -l) -eq 0 ]]; then
+    if [[ ! -f "$git_root/.git/MERGE_HEAD" ]] \
+      && [[ $(git --no-pager diff --cached | wc -l) -eq 0 ]] \
+      && [[ ! -f "$git_root/.git/index.lock" ]] \
+      && [[ ! -d "$git_root/.git/rebase-merge" ]] \
+      && [[ ! -d "$git_root/.git/rebase-apply" ]]; then
+
+      touch "$git_root/.git/auto-save" &&
+        git add --all &&
+        git commit --no-verify --message "Git auto save: $(date -R)" >/dev/null &&
+        git reset HEAD^ >/dev/null
+
       echo "Git auto save!"
     fi
   fi
 }
+
+# Select from git reflog using fzf and insert at cursor
+function _fzf-git-reflog-widget() {
+  local git_root
+  git_root=$(git rev-parse --show-toplevel 2>/dev/null)
+
+  if [[ -z "$git_root" ]]; then
+    zle -M "Not a Git repository."
+    return
+  fi
+
+  local selected
+  selected=$(git reflog --pretty=format:'%h %gD: %gs' | \
+    grep -E '(Git quick save:|Git auto save:)' | \
+    fzf-tmux -p 70%,70% --reverse --ansi --exact --no-sort \
+        --preview 'echo {} | cut -d" " -f1 | xargs git show --color=always' \
+        --preview-window=right:70% \
+        --bind 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up')
+
+  if [[ -n "$selected" ]]; then
+    # Extract commit hash
+    local hash=$(echo "$selected" | awk '{print $1}')
+    LBUFFER+="$hash"
+  fi
+
+  zle reset-prompt
+}
+zle -N fzf-git-reflog-widget _fzf-git-reflog-widget
+bindkey '^gr' fzf-git-reflog-widget
+bindkey '^g^r' fzf-git-reflog-widget
 
 # Auto rename tmux session when entering git repository
 function tmux_auto_rename_hook() {
