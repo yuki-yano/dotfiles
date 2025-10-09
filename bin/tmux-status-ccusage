@@ -1,188 +1,378 @@
 #!/usr/bin/env node
 
-const { execSync, exec } = require("child_process");
+import { execSync } from "node:child_process";
 
-// Get ccusage output
-let jsonOutput;
-try {
-  jsonOutput = execSync("ccusage blocks --json --offline", {
-    encoding: "utf-8",
+const SESSION_DURATION_MINUTES = 5 * 60;
+const COST_LIMIT_USD = 100;
+const COST_RATE_THRESHOLDS = { critical: 21, warning: 14, elevated: 6 };
+const COST_HIGHLIGHT_THRESHOLD = 6;
+const COST_DELTA_THRESHOLD = 2;
+const DEFAULT_CLAUDE_COMMAND = "ccusage";
+const DEFAULT_CODEX_COMMAND = "@ccusage/codex";
+
+const argOverrides = parseCommandOverrides(process.argv.slice(2));
+const CLAUDE_COMMAND =
+  normalizeCommand(argOverrides.claude)
+  ?? normalizeCommand(process.env.CCUSAGE_CLAUDE_CMD)
+  ?? DEFAULT_CLAUDE_COMMAND;
+const CODEX_COMMAND =
+  normalizeCommand(argOverrides.codex)
+  ?? normalizeCommand(process.env.CCUSAGE_CODEX_CMD)
+  ?? DEFAULT_CODEX_COMMAND;
+
+main();
+
+function main() {
+  const codexLine = buildSessionSummary({
+    command: CODEX_COMMAND,
+    label: "Codex",
+    accentColor: "#[fg=magenta,bold]",
+    type: "codex",
+    fatalOnFailure: false,
   });
-} catch (error) {
-  process.exit(1);
+
+  const claudeLine = buildSessionSummary({
+    command: CLAUDE_COMMAND,
+    label: "Claude",
+    accentColor: "#[fg=cyan,bold]",
+    type: "claude",
+    fatalOnFailure: true,
+  });
+
+  const parts = [];
+  if (codexLine != null) {
+    parts.push(codexLine);
+  }
+  if (claudeLine != null) {
+    parts.push(claudeLine);
+  }
+
+  if (parts.length === 0) {
+    process.stdout.write("#[fg=white]No active sessions");
+    process.exit(0);
+  }
+
+  process.stdout.write(parts.join(" #[fg=white] "));
 }
 
-// Parse JSON
-const data = JSON.parse(jsonOutput);
-let activeSession = null;
+function buildSessionSummary(options) {
+  const { command, label, accentColor, type, fatalOnFailure } = options;
+  const result = loadSession(command);
 
-// Find active session
-for (const block of data.blocks) {
-  if (block.isActive) {
-    activeSession = block;
-    break;
+  if (result.status === "missing") {
+    if (fatalOnFailure) {
+      process.exit(1);
+    }
+    return `${accentColor}${label}#[fg=white] CLI not found`;
+  }
+
+  if (result.status === "error") {
+    if (fatalOnFailure) {
+      process.exit(1);
+    }
+    return `${accentColor}${label}#[fg=white] unavailable`;
+  }
+
+  if (result.status === "idle") {
+    return `${accentColor}${label}#[fg=white] No active session`;
+  }
+
+  if (result.status === "active") {
+    const summary = formatActiveBlock(result.block, type);
+    return `${accentColor}${label}#[fg=white] ${summary}`;
+  }
+
+  return null;
+}
+
+function loadSession(command) {
+  const response = runBlocksCommand(command);
+
+  if (response.type === "missing") {
+    return { status: "missing" };
+  }
+
+  if (response.type === "error") {
+    return { status: "error" };
+  }
+
+  const payload = response.data;
+  const blocks = Array.isArray(payload?.blocks) ? payload.blocks : [];
+  const activeBlock = blocks.find(block => block?.isActive === true && block?.isGap !== true);
+
+  if (activeBlock == null) {
+    return { status: "idle" };
+  }
+
+  return { status: "active", block: activeBlock };
+}
+
+function runBlocksCommand(command) {
+  const fullCommand = `${command} blocks --json --offline`;
+
+  try {
+    const stdout = execSync(fullCommand, { encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"] });
+    const payload = extractJson(stdout);
+    if (payload == null) {
+      return { type: "error" };
+    }
+    return { type: "ok", data: payload };
+  } catch (error) {
+    if (error?.code === "ENOENT" || error?.status === 127) {
+      return { type: "missing" };
+    }
+
+    const stderrText = bufferToString(error?.stderr) + bufferToString(error?.stdout);
+    if (/not found/i.test(stderrText) || /command not found/i.test(String(error?.message ?? ""))) {
+      return { type: "missing" };
+    }
+
+    return { type: "error" };
   }
 }
 
-if (!activeSession) {
-  // Output with no background color override
-  process.stdout.write("#[fg=white]No active CC session");
-  process.exit(0);
+function formatActiveBlock(block, type) {
+  const totalMinutes = computeTotalMinutes(block);
+  const remainingMinutes = computeRemainingMinutes(block, totalMinutes);
+  const elapsedMinutes = Math.max(0, totalMinutes - remainingMinutes);
+  const elapsedHours = elapsedMinutes / 60;
+
+  const currentCost = Number.isFinite(block?.costUSD) ? block.costUSD : 0;
+  const recentCostPerHour = Number.isFinite(block?.burnRate?.costPerHour) ? block.burnRate.costPerHour : 0;
+  const avgCostPerHour = elapsedHours > 0 ? currentCost / elapsedHours : 0;
+
+  const progressColor = chooseRemainingColor(remainingMinutes);
+  const progressBar = buildProgressBar(remainingMinutes, totalMinutes);
+  const timeColor = chooseRemainingColor(remainingMinutes);
+  const timeStr = formatRemainingTime(remainingMinutes);
+  const endTimeStr = formatProjectedEndTime(remainingMinutes);
+  const totalCostColor = chooseTotalCostColor(currentCost);
+
+  const segments = [
+    `${progressColor}${progressBar}#[fg=white]`,
+    `${timeColor}${timeStr} (~${endTimeStr})#[fg=white]`,
+    `${totalCostColor}$${currentCost.toFixed(2)}#[fg=white]${formatCostHighlights({ recentCostPerHour, avgCostPerHour })}`,
+  ];
+
+  return segments.join(" | ");
 }
 
-// Extract values
-const totalMinutes = 300; // 5 hour session
-const remainingMinutes = activeSession.projection?.remainingMinutes ?? totalMinutes;
-const currentCost = activeSession.costUSD || 0;
-const requestCount = activeSession.entries || 0;
-
-// Use burnRate for recent usage speed
-const burnRate = activeSession.burnRate || {};
-const recentCostPerHour = burnRate.costPerHour || 0;
-const tokensPerMinute = burnRate.tokensPerMinute || 0;
-
-// Calculate average cost per hour based on session elapsed time
-const elapsedMinutes = totalMinutes - remainingMinutes;
-const elapsedHours = elapsedMinutes / 60;
-const avgCostPerHour = elapsedHours > 0 ? currentCost / elapsedHours : 0;
-
-// Calculate remaining percentage (for the bar)
-const remainingPercent = Math.floor((remainingMinutes * 100) / totalMinutes);
-
-// Format remaining time
-const hours = Math.floor(remainingMinutes / 60);
-const minutes = remainingMinutes % 60;
-const timeStr = hours > 0 ? `${hours}h${minutes.toString().padStart(2, "0")}m` : `${minutes}m`;
-
-// Calculate end time
-const now = new Date();
-const endTime = new Date(now.getTime() + remainingMinutes * 60 * 1000);
-
-// Round to the nearest hour boundary to avoid oscillation
-const endMinutes = endTime.getMinutes();
-if (endMinutes === 59) {
-  // If we're at :59, round up to the next hour
-  endTime.setMinutes(0);
-  endTime.setHours(endTime.getHours() + 1);
-} else if (endMinutes === 0) {
-  // Keep :00 as is
-} else if (endMinutes >= 58) {
-  // If we're close to the hour boundary, round to :00
-  endTime.setMinutes(0);
-  endTime.setHours(endTime.getHours() + 1);
+function computeTotalMinutes(block) {
+  const start = parseIsoDate(block?.startTime);
+  const end = parseIsoDate(block?.endTime);
+  if (start != null && end != null) {
+    const diff = Math.round((end.getTime() - start.getTime()) / 60000);
+    if (Number.isFinite(diff) && diff > 0) {
+      return diff;
+    }
+  }
+  return SESSION_DURATION_MINUTES;
 }
 
-const endTimeStr = endTime.toLocaleTimeString('ja-JP', { 
-  hour: '2-digit', 
-  minute: '2-digit',
-  hour12: false 
-});
+function computeRemainingMinutes(block, totalMinutes) {
+  const projected = Number(block?.projection?.remainingMinutes);
+  if (Number.isFinite(projected)) {
+    return clamp(projected, 0, totalMinutes);
+  }
 
-// Create remaining time bar (10 characters)
-// Fill from right to left to show remaining time
-// Round to nearest 10% instead of floor for better visual representation
-const filled = Math.round(remainingPercent / 10);
-const empty = 10 - filled;
-const progressBar = "[" + "█".repeat(filled) + "░".repeat(empty) + "]";
+  const end = parseIsoDate(block?.endTime);
+  if (end != null) {
+    const diff = Math.round((end.getTime() - Date.now()) / 60000);
+    if (Number.isFinite(diff)) {
+      return clamp(diff, 0, totalMinutes);
+    }
+  }
 
-// Determine colors for each section
-let progressColor, timeColor, totalCostColor, avgCostColor, recentCostColor, requestColor;
-
-// Progress bar color based on remaining time (same as time_color logic)
-if (remainingMinutes <= 60) {
-  // Red - 1 hour or less
-  progressColor = "#[fg=red,bold]";
-} else if (remainingMinutes <= 120) {
-  // Yellow - 1-2 hours
-  progressColor = "#[fg=yellow,bold]";
-} else if (remainingMinutes <= 180) {
-  // Cyan - 2-3 hours
-  progressColor = "#[fg=cyan]";
-} else {
-  // Green - more than 3 hours
-  progressColor = "#[fg=green]";
+  return Math.max(0, Math.min(totalMinutes, SESSION_DURATION_MINUTES));
 }
 
-// Time color based on remaining time
-if (remainingMinutes <= 60) {
-  // Red - 1 hour or less
-  timeColor = "#[fg=red,bold]";
-} else if (remainingMinutes <= 120) {
-  // Yellow - 1-2 hours
-  timeColor = "#[fg=yellow,bold]";
-} else if (remainingMinutes <= 180) {
-  // Cyan - 2-3 hours
-  timeColor = "#[fg=cyan]";
-} else {
-  // Green - more than 3 hours
-  timeColor = "#[fg=green]";
+function buildProgressBar(remainingMinutes, totalMinutes) {
+  if (totalMinutes <= 0) {
+    return "[░░░░░░░░░░]";
+  }
+
+  const percent = clamp(Math.round((remainingMinutes * 100) / totalMinutes), 0, 100);
+  const filled = clamp(Math.round(percent / 10), 0, 10);
+  const empty = 10 - filled;
+  return `[${"█".repeat(filled)}${"░".repeat(empty)}]`;
 }
 
-// Total cost color based on percentage of $100 limit
-const costPercent = (currentCost / 100) * 100;
-if (costPercent >= 80) {
-  // Red - 80% or more of limit
-  totalCostColor = "#[fg=red,bold]";
-} else if (costPercent >= 60) {
-  // Yellow - 60-80% of limit
-  totalCostColor = "#[fg=yellow,bold]";
-} else if (costPercent >= 40) {
-  // Cyan - 40-60% of limit
-  totalCostColor = "#[fg=cyan]";
-} else {
-  // Green - under 40% of limit
-  totalCostColor = "#[fg=green]";
+function formatRemainingTime(remainingMinutes) {
+  const safe = Math.max(0, Math.round(remainingMinutes));
+  const hours = Math.floor(safe / 60);
+  const minutes = safe % 60;
+  if (hours > 0) {
+    return `${hours}h${minutes.toString().padStart(2, "0")}m`;
+  }
+  return `${minutes}m`;
 }
 
-// Average cost rate color (statistical thresholds)
-if (avgCostPerHour >= 21) {
-  // Red - top 10% (very high usage)
-  avgCostColor = "#[fg=red,bold]";
-} else if (avgCostPerHour >= 14) {
-  // Yellow - 75-90 percentile (high usage)
-  avgCostColor = "#[fg=yellow]";
-} else if (avgCostPerHour >= 6) {
-  // Cyan - 50-75 percentile (normal usage)
-  avgCostColor = "#[fg=cyan]";
-} else {
-  // Green - below median (low usage)
-  avgCostColor = "#[fg=green]";
+function formatProjectedEndTime(remainingMinutes) {
+  const now = new Date();
+  const endTime = new Date(now.getTime() + Math.max(0, remainingMinutes) * 60 * 1000);
+  const endMinutes = endTime.getMinutes();
+
+  if (endMinutes === 59 || endMinutes >= 58) {
+    endTime.setMinutes(0);
+    endTime.setHours(endTime.getHours() + 1);
+  } else if (endMinutes === 0) {
+    // keep as is
+  }
+
+  return endTime.toLocaleTimeString("ja-JP", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
 }
 
-// Recent cost rate color (statistical thresholds)
-if (recentCostPerHour >= 21) {
-  // Red - top 10% (very high usage)
-  recentCostColor = "#[fg=red,bold]";
-} else if (recentCostPerHour >= 14) {
-  // Yellow - 75-90 percentile (high usage)
-  recentCostColor = "#[fg=yellow]";
-} else if (recentCostPerHour >= 6) {
-  // Cyan - 50-75 percentile (normal usage)
-  recentCostColor = "#[fg=cyan]";
-} else {
-  // Green - below median (low usage)
-  recentCostColor = "#[fg=green]";
+function chooseRemainingColor(remainingMinutes) {
+  if (remainingMinutes <= 60) {
+    return "#[fg=red,bold]";
+  }
+  if (remainingMinutes <= 120) {
+    return "#[fg=yellow,bold]";
+  }
+  if (remainingMinutes <= 180) {
+    return "#[fg=cyan]";
+  }
+  return "#[fg=green]";
 }
 
-// Request count color based on distribution analysis
-if (requestCount >= 700) {
-  // Red - top 5% (very active)
-  requestColor = "#[fg=red,bold]";
-} else if (requestCount >= 400) {
-  // Yellow - 75-90 percentile (active usage)
-  requestColor = "#[fg=yellow,bold]";
-} else if (requestCount >= 150) {
-  // Cyan - 40-75 percentile (normal usage)
-  requestColor = "#[fg=cyan]";
-} else {
-  // Green - bottom 40% (light usage)
-  requestColor = "#[fg=green]";
+function chooseTotalCostColor(currentCost) {
+  const costPercent = (currentCost / COST_LIMIT_USD) * 100;
+  if (costPercent >= 80) {
+    return "#[fg=red,bold]";
+  }
+  if (costPercent >= 60) {
+    return "#[fg=yellow,bold]";
+  }
+  if (costPercent >= 40) {
+    return "#[fg=cyan]";
+  }
+  return "#[fg=green]";
 }
 
-// Format output with tmux color codes
-// Show remaining time percentage instead of elapsed percentage
-process.stdout.write(
-  `${progressColor}${progressBar}#[fg=white] ${timeColor}${timeStr} (~${endTimeStr})#[fg=white] | ` +
-    `${totalCostColor}$${currentCost.toFixed(2)}#[fg=white] ${recentCostColor}⚡$${recentCostPerHour.toFixed(1)}/h#[fg=white] ${avgCostColor}⌀ $${avgCostPerHour.toFixed(1)}/h#[fg=white] | ` +
-    `${requestColor}${requestCount} req#[fg=white]`,
-);
+function chooseRateColor(rate) {
+  if (rate >= COST_RATE_THRESHOLDS.critical) {
+    return "#[fg=red,bold]";
+  }
+  if (rate >= COST_RATE_THRESHOLDS.warning) {
+    return "#[fg=yellow]";
+  }
+  if (rate >= COST_RATE_THRESHOLDS.elevated) {
+    return "#[fg=cyan]";
+  }
+  return "#[fg=green]";
+}
+
+function formatCostHighlights(rates) {
+  const { recentCostPerHour, avgCostPerHour } = rates;
+  const parts = [];
+
+  if (recentCostPerHour >= COST_HIGHLIGHT_THRESHOLD) {
+    parts.push(`${chooseRateColor(recentCostPerHour)}⚡$${recentCostPerHour.toFixed(1)}/h`);
+  }
+
+  if (
+    avgCostPerHour >= COST_HIGHLIGHT_THRESHOLD &&
+    Math.abs(avgCostPerHour - recentCostPerHour) >= COST_DELTA_THRESHOLD
+  ) {
+    parts.push(`${chooseRateColor(avgCostPerHour)}⌀ $${avgCostPerHour.toFixed(1)}/h`);
+  }
+
+  if (parts.length === 0) {
+    return "";
+  }
+
+  return " " + parts.map(part => `${part}#[fg=white]`).join(" ");
+}
+
+function parseIsoDate(value) {
+  if (typeof value !== "string") {
+    return null;
+  }
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function bufferToString(buffer) {
+  if (buffer == null) {
+    return "";
+  }
+  if (Buffer.isBuffer(buffer)) {
+    return buffer.toString("utf-8");
+  }
+  if (typeof buffer === "string") {
+    return buffer;
+  }
+  return "";
+}
+
+function parseCommandOverrides(argv) {
+  const overrides = { codex: null, claude: null };
+  const positional = [];
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const token = argv[index];
+    if (token === "--codex" && argv[index + 1] != null) {
+      overrides.codex = argv[index + 1];
+      index += 1;
+      continue;
+    }
+    if (token?.startsWith("--codex=")) {
+      overrides.codex = token.slice("--codex=".length);
+      continue;
+    }
+    if (token === "--claude" && argv[index + 1] != null) {
+      overrides.claude = argv[index + 1];
+      index += 1;
+      continue;
+    }
+    if (token?.startsWith("--claude=")) {
+      overrides.claude = token.slice("--claude=".length);
+      continue;
+    }
+    positional.push(token);
+  }
+
+  if (overrides.codex == null && positional.length > 0) {
+    overrides.codex = positional.shift() ?? null;
+  }
+  if (overrides.claude == null && positional.length > 0) {
+    overrides.claude = positional.shift() ?? null;
+  }
+
+  return overrides;
+}
+
+function normalizeCommand(value) {
+  if (typeof value !== "string") {
+    return null;
+  }
+  const trimmed = value.trim();
+  return trimmed.length === 0 ? null : trimmed;
+}
+
+function extractJson(output) {
+  if (typeof output !== "string" || output.length === 0) {
+    return null;
+  }
+
+  const start = output.indexOf("{");
+  const end = output.lastIndexOf("}");
+  if (start === -1 || end === -1 || end < start) {
+    return null;
+  }
+
+  const candidate = output.slice(start, end + 1);
+  try {
+    return JSON.parse(candidate);
+  } catch {
+    return null;
+  }
+}
