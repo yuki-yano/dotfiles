@@ -1,4 +1,5 @@
 package-lock.json binary
 yarn.lock binary
 pnpm-lock.yaml binary
+bun.lock binary
 deno.lock binary
