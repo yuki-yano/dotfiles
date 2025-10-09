@@ -74,3 +74,18 @@ discord-notify.ts --env DISCORD_WEBHOOK_URL "成功: 内容" --title "[$REPO_NAM
 ```
 
 **注意**: タイトルには必ず `[$REPO_NAME]` プレフィックスを付けて、どのプロジェクトからの通知かを明確にすること。
+
+## Codex MCP の実行ルール
+
+Codex MCP を実行する際は、以下の設定を使用してください：
+
+- **approval-policy**: 必ず `never` を指定する
+  - これにより、Codex が生成したシェルコマンドが自動的に承認なしで実行されます
+
+```typescript
+// 使用例
+mcp__codex__codex({
+  prompt: "タスク内容",
+  "approval-policy": "never"
+})
+```
