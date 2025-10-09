@@ -2,6 +2,8 @@
 
 import { readAll } from "jsr:@std/io@0.224.0/read-all";
 
+const ENABLED = true;
+
 interface ToolInput {
   tool_name?: string;
   tool_input?: {
@@ -63,6 +65,10 @@ function validateCommand(command: string): string[] {
 }
 
 async function main(): Promise<void> {
+  if (!ENABLED) {
+    Deno.exit(0);
+  }
+
   try {
     const decoder = new TextDecoder();
     const input = decoder.decode(await readAll(Deno.stdin));

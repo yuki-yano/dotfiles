@@ -6,7 +6,6 @@
   "permissions": {
     "defaultMode": "acceptEdits"
   },
-  "model": "opus",
   "hooks": {
     "Stop": [
       {
@@ -14,7 +13,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/dotfiles/bin/stop-send-notification.ts"
+            "command": "~/dotfiles/bin/cc-stop-send-notification.ts"
           }
         ]
       }
@@ -72,5 +71,6 @@
   "statusLine": {
     "type": "command",
     "command": "~/dotfiles/bin/cc-statusline.ts"
-  }
+  },
+  "alwaysThinkingEnabled": true
 }

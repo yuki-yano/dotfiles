@@ -138,13 +138,13 @@ snippets:
       lbuffer: '^git\s+'
     evaluate: true
 
-  - name: claude yolo
-    keyword: yolo
-    snippet: cage -- claude --dangerously-skip-permissions
+  # - name: claude yolo
+  #   keyword: yolo
+  #   snippet: cage -- claude --dangerously-skip-permissions
 
   - name: codex yolo
-    keyword: oyolo
-    snippet: cage -- codex --yolo
+    keyword: yolo
+    snippet: codex --full-auto
 
   - name: disable desktop
     keyword: disable_desktop

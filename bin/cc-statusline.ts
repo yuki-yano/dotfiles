@@ -44,7 +44,7 @@ async function getGitBranch(): Promise<string> {
 
 function getTokenCount(transcriptPath: string | null): string {
   if (!transcriptPath) {
-    return "_ tkns. (%)";
+    return "_ tokens. (%)";
   }
 
   try {
