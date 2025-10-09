@@ -153,7 +153,7 @@ return {
             -- vim = true,
           },
         })
-        require('copilot_cmp').setup()
+        -- require('copilot_cmp').setup()
       end
 
       -- NOTE: force_keyword_length is used from manual complete
@@ -1577,7 +1577,7 @@ return {
 
       vim.keymap.set({ 'n', 'x' }, 'p', '<Plug>(haritsuke-p)')
       vim.keymap.set({ 'n', 'x' }, 'P', '<Plug>(haritsuke-P)')
-      vim.keymap.set({ 'n' }, '<Tab>', '<Plug>(haritsuke-toggle-smart-indent)')
+      -- vim.keymap.set({ 'n' }, '<Tab>', '<Plug>(haritsuke-toggle-smart-indent)')
       -- vim.keymap.set({ 'n' }, 'gp', '<Plug>(haritsuke-gp)')
       -- vim.keymap.set({ 'n' }, 'gP', '<Plug>(haritsuke-gP)')
       vim.keymap.set({ 'n' }, '<C-p>', function()
@@ -1739,5 +1739,41 @@ return {
         return require('treesj').toggle()
       end)
     end,
+  },
+  {
+    'folke/sidekick.nvim',
+    lazy = false,
+    enabled = false,
+    keys = {
+      {
+        '<tab>',
+        function()
+          -- if there is a next edit, jump to it, otherwise apply it if any
+          if require('sidekick').nes_jump_or_apply() then
+            return -- jumped or applied
+          end
+
+          -- if you are using Neovim's native inline completions
+          if vim.lsp.inline_completion.get() then
+            return
+          end
+
+          -- any other things (like snippets) you want to do on <tab> go here.
+
+          -- fall back to normal tab
+          return '<tab>'
+        end,
+        mode = { 'i', 'n' },
+        expr = true,
+        desc = 'Goto/Apply Next Edit Suggestion',
+      },
+      {
+        '<leader>ac',
+        function()
+          require('sidekick.cli').toggle({ name = 'claude', focus = true })
+        end,
+        mode = { 'n', 'v' },
+      },
+    },
   },
 }

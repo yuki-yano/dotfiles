@@ -258,8 +258,10 @@ return {
         local cwd = vim.fn.getcwd()
         local ai_dir = cwd .. '/ai'
         local docs_dir = cwd .. '/docs'
+        local kiro_dir = cwd .. '/.kiro'
         local has_ai = vim.fn.isdirectory(ai_dir) == 1
         local has_docs = vim.fn.isdirectory(docs_dir) == 1
+        local has_kiro = vim.fn.isdirectory(kiro_dir) == 1
         local dirs = {}
 
         if has_ai then
@@ -267,6 +269,9 @@ return {
         end
         if has_docs then
           table.insert(dirs, 'docs')
+        end
+        if has_kiro then
+          table.insert(dirs, '.kiro')
         end
 
         if #dirs > 0 then

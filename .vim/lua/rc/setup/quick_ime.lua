@@ -124,6 +124,7 @@ if vim.env.QUICK_IME == '1' or vim.env.EDITPROMPT == '1' then
   end
 
   vim.keymap.set({ 'n', 'i' }, '<C-g>', '<Cmd>quit!<CR>', { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'n' }, 'q', '<Cmd>quit!<CR>', { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n', 'i' }, '<C-c>', '<Cmd>SendQuickIme<CR>', { silent = true, buffer = true, nowait = true })
 end
 
