@@ -88,6 +88,11 @@ return {
             nnoremap <silent>        <buffer> <nowait> <C-d>   <Plug>(fern-action-page-down-or-scroll-down-preview)
             nnoremap <silent>        <buffer> <nowait> <C-u>   <Plug>(fern-action-page-down-or-scroll-up-preview)
             nnoremap <silent>        <buffer> <nowait> R       <Plug>(fern-action-reload:all)
+            nnoremap <silent>        <buffer> <nowait> <C-q>   <Nop>
+            nnoremap <silent>        <buffer> <nowait> <C-n>   <Nop>
+            nnoremap <silent>        <buffer> <nowait> <C-p>   <Nop>
+            nnoremap <silent>        <buffer> <nowait> <C-f>   <Nop>
+            nnoremap <silent>        <buffer> <nowait> <C-b>   <Nop>
           ]])
 
           vim.opt_local.number = false
