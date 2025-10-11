@@ -144,7 +144,14 @@ snippets:
 
   - name: codex yolo
     keyword: yolo
-    snippet: codex --full-auto
+    snippet: codex --yolo
+
+  - name: codex oneline
+    keyword: '?'
+    snippet: codex --config model_reasoning_effort="low" exec "{{prompt}}" 2>/dev/null; printf $'\e[<u'
+    context:
+      buffer: '^\?$'
+
 
   - name: disable desktop
     keyword: disable_desktop
