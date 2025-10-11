@@ -1,34 +1,32 @@
 local util = require('lspconfig.util')
+local config = require('vtsls.lspconfig')
 
 local filetypes = { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' }
 
 local function find_node_root(fname)
-  return util.root_pattern('package.json', 'pnpm-workspace.yaml', 'yarn.lock', 'lerna.json')(fname)
+  return util.root_pattern('package.json', 'pnpm-workspace.yaml')(fname)
 end
 
-local function find_deno_root(fname)
-  return util.root_pattern('deno.json', 'deno.jsonc')(fname)
-end
+config.default_config.filetypes = filetypes
+config.default_config.single_file_support = false
 
-return {
-  filetypes = filetypes,
-  root_dir = function(fname)
-    local node_root = find_node_root(fname)
-    if not node_root then
-      return nil
-    end
+local original_root_dir = config.default_config.root_dir
 
-    local deno_root = find_deno_root(fname)
-    if deno_root then
-      local normalized_deno_root = vim.fs.normalize(deno_root)
-      local normalized_file_dir = vim.fs.dirname(vim.fs.normalize(fname))
+config.default_config.root_dir = function(fname)
+  if vim.env.TS_RUNTIME == 'deno' then
+    return nil
+  end
 
-      if normalized_file_dir and vim.startswith(normalized_file_dir, normalized_deno_root) then
-        return nil
-      end
-    end
-
+  local node_root = find_node_root(fname)
+  if node_root then
     return node_root
-  end,
-  single_file_support = false,
-}
+  end
+
+  if original_root_dir then
+    return original_root_dir(fname)
+  end
+
+  return nil
+end
+
+return config

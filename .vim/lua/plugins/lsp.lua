@@ -15,7 +15,7 @@ local plugins = {
     'neovim/nvim-lspconfig',
     event = { 'BufReadPre', 'BufWrite' },
     -- NOTE: Use onetime deno file
-    ft = { 'typescript', 'typescriptreact' },
+    ft = { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
     dependencies = {
       { 'williamboman/mason.nvim' },
       { 'nvimtools/none-ls.nvim' },
