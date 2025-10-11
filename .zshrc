@@ -81,13 +81,6 @@ zinit snippet 'https://github.com/junegunn/fzf/blob/master/man/man1/fzf.1'
 # Node
 zinit ice lucid wait"0" as"null" src"ni.zsh" atload"compdef _ni ni"
 zinit light azu/ni.zsh
-# zinit ice wait"!0" \
-#   silent \
-#   atload'compdef _ni ni' \
-#   id-as"local/ni" \
-#   link"local" \
-#   src"${HOME}/repos/github.com/yuki-yano/ni.zsh/ni.zsh"
-# zinit light _local/ni
 
 # util
 zinit ice lucid wait"0" depth"1"
