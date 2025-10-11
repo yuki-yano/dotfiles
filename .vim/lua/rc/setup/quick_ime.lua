@@ -89,9 +89,26 @@ local function set_clipboard(text)
   vim.fn.system('pbcopy', text)
 end
 
+local function ensure_multibyte_alnum_spacing(text)
+  if text == '' then
+    return text
+  end
+  -- Insert spaces between multi-byte characters and single ASCII alphanumerics on either side.
+  local multibyte = '[\194-\244][\128-\191]*'
+  text = text:gsub('(' .. multibyte .. ')%f[%w]([%w])%f[^%w]', '%1 %2')
+  text = text:gsub('%f[%w]([%w])(' .. multibyte .. ')', '%1 %2')
+  return text
+end
+
 local function send_editprompt()
-  local text = get_buffer_text(M.bufnr)
+  local bufnr = (M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr)) and M.bufnr or vim.api.nvim_get_current_buf()
+  local text = get_buffer_text(bufnr)
   if text ~= '' then
+    local adjusted = ensure_multibyte_alnum_spacing(text)
+    if adjusted ~= text then
+      local lines = vim.split(adjusted, '\n', { plain = true })
+      vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
+    end
     set_clipboard(text)
   end
   vim.cmd('wq!')
@@ -124,8 +141,9 @@ if vim.env.QUICK_IME == '1' or vim.env.EDITPROMPT == '1' then
   end
 
   vim.keymap.set({ 'n', 'i' }, '<C-g>', '<Cmd>quit!<CR>', { silent = true, buffer = true, nowait = true })
-  vim.keymap.set({ 'n' }, 'q', '<Cmd>quit!<CR>', { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'n' }, 'q', '<Cmd>SendQuickIme<CR>', { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n', 'i' }, '<C-c>', '<Cmd>SendQuickIme<CR>', { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'n' }, 'ZZ', '<Cmd>SendQuickIme<CR>', { silent = true, buffer = true, nowait = true })
 end
 
 return M
