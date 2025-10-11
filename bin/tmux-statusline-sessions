@@ -1,14 +1,21 @@
 #!/usr/bin/env bash
 
-current_session=$(tmux list-sessions | grep 'attached' | cut -d":" -f1)
+current_session=$(tmux display-message -p '#S' 2>/dev/null)
 
-tmux list-sessions | while read -r line
-do
-  session=$(echo "$line" | cut -d":" -f1)
-  if [ "$current_session" = "$session" ];
-  then
-    echo -n "#[bold][$session]#[nobold] "
-  else
-    echo -n "$session "
+output="#[fg=#A5A1F2,bg=#352F63]"
+
+while IFS= read -r session; do
+  if [ -z "$session" ]; then
+    continue
   fi
-done | sed -e 's/ \+$//'
+
+  output+=" "
+
+  if [ "$session" = "$current_session" ]; then
+    output+="#[fg=#B4BEFE,bg=#352F63]#[fg=#1E1E2E,bg=#B4BEFE,bold] ${session} #[fg=#B4BEFE,bg=#352F63]#[fg=#A5A1F2,bg=#352F63]"
+  else
+    output+="#[fg=#C6D0F5,bg=#352F63] ${session} #[fg=#A5A1F2,bg=#352F63]"
+  fi
+done < <(tmux list-sessions -F '#{session_name}')
+
+printf '%s' "$output"
