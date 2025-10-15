@@ -13,7 +13,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/dotfiles/bin/cc-stop-send-notification.ts"
+            "command": "vde-notifier --claude"
           }
         ]
       }

@@ -30,6 +30,7 @@ tmp/
 !/.config/vscode
 !/.config/yabai
 !/.config/zeno
+!/.config/vde
 /.config/karabiner/automatic_backups
 
 # data

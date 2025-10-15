@@ -38,12 +38,6 @@ snippets:
   - name: git diff cached file
     keyword: gdc
     snippet: git diff --cached -- {{file}}
-  - name: git diff pipe nvim
-    keyword: gdv
-    snippet: git diff | vi
-  - name: git diff cached pipe nvim
-    keyword: gdcv
-    snippet: git diff --cached | vi
   - name: git checkout
     keyword: gco
     snippet: git checkout {{branch}}
@@ -152,6 +146,9 @@ snippets:
     context:
       buffer: '^\?$'
 
+  - name: vde-layout
+    keyword: vl
+    snippet: vde-layout
 
   - name: disable desktop
     keyword: disable_desktop

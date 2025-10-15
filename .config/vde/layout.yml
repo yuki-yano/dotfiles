@@ -1,0 +1,43 @@
+presets:
+  default:
+    name: "IDE like layout"
+    description: "Neovim main pane with three terminal splits below and an AI pane on the right"
+    layout:
+      type: horizontal
+      ratio: [70, 30]
+      panes:
+        - type: vertical
+          ratio: [70, 30]
+          panes:
+            - name: "neovim"
+              command: "nvim"
+              focus: true
+            - type: horizontal
+              ratio: [1, 1, 1]
+              panes:
+                - name: "term1"
+                - name: "term2"
+                - name: "term3"
+        - name: "codex"
+          command: "yolo"
+  ai-workbench:
+    name: "AI Assisted Workbench"
+    description: "Three columns across; left and center columns split into upper and lower panes, rightmost reserved for the AI client"
+    windowMode: current-window
+    layout:
+      type: horizontal
+      ratio: [2, 2, 3]
+      panes:
+        - type: vertical
+          ratio: [1, 1]
+          panes:
+            - name: "work-left-top"
+            - name: "work-left-bottom"
+        - type: vertical
+          ratio: [1, 1]
+          panes:
+            - name: "work-center-top"
+            - name: "work-center-bottom"
+        - name: "ai-terminal"
+          command: "yolo"
+          focus: true
