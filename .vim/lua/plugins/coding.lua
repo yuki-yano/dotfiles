@@ -1588,6 +1588,7 @@ return {
       end, { expr = true })
 
       vim.keymap.set({ 'n', 'x' }, 'R', '<Plug>(haritsuke-replace)')
+      vim.keymap.set({ 'n' }, 'RR', 'R')
     end,
     config = function()
       require('denops-lazy').load('haritsuke.vim')
