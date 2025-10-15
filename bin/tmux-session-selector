@@ -1,0 +1,70 @@
+#!/usr/bin/env zsh
+# tmux session selector with popup integration
+
+readonly GREEN=$'\033[32m'
+readonly CYAN=$'\033[36m'
+readonly BOLD=$'\033[1m'
+readonly RESET=$'\033[0m'
+readonly DELIM=$':::'
+
+if [[ "$1" != "--popup" && -n ${TMUX-} ]]; then
+  pane_dir=$(tmux display-message -p "#{pane_current_path}" 2>/dev/null)
+  tmux display-popup -E -w 70% -h 70% -d "${pane_dir:-$HOME}" "$0 --popup"
+  exit 0
+fi
+
+[[ "$1" == "--popup" ]] && shift
+
+function _tss_list_entries() {
+  local is_tmux="$1"
+  local session windows panes win_plural pane_plural detail action label
+  local -a panes_list
+  local -a sessions=("${(@f)$(tmux list-sessions -F '#{session_name}' 2>/dev/null || true)}")
+
+  for session in "${sessions[@]}"; do
+    [[ -z "$session" ]] && continue
+    windows=$(tmux display-message -p -F '#{session_windows}' -t "${session}:" 2>/dev/null)
+    panes_list=("${(@f)$(tmux list-panes -s -t "${session}:" -F '#{pane_id}' 2>/dev/null || true)}")
+    panes=${#panes_list}
+    [[ -z "$windows" ]] && windows=0
+    [[ -z "$panes" ]] && panes=0
+
+    win_plural="s"
+    [[ "$windows" == "1" ]] && win_plural=""
+    pane_plural="s"
+    [[ "$panes" == 1 ]] && pane_plural=""
+
+    detail="[ ${BOLD}${session}${RESET} | ${CYAN}${windows} window${win_plural}${RESET} / ${CYAN}${panes} pane${pane_plural}${RESET} ]"
+
+    if [[ -n "$is_tmux" ]]; then
+      action="select"
+      label="${GREEN}select${RESET}"
+    else
+      action="attach"
+      label="${GREEN}attach${RESET}"
+    fi
+
+    printf '%s\t%s\t%s ==> %s\n' "$action" "$session" "$label" "$detail"
+  done
+
+  if [[ -z "$is_tmux" ]]; then
+    printf 'create\t\t%s ==> [ %s ]\n' "${GREEN}create${RESET}" "${BOLD}new session${RESET} | ${CYAN}tmux new-session${RESET}"
+  fi
+}
+
+function _tss_choose() {
+  local selection action name
+  local is_tmux="$([[ -n ${TMUX-} ]] && echo 1)"
+
+  selection=$(_tss_list_entries "$is_tmux" | fzf --ansi --prompt='Session> ' --delimiter=$'\t' --with-nth=3 --cycle --reverse --height=100% --no-info) || return 1
+  [[ -z "$selection" ]] && return 1
+
+  IFS=$'\t' read -r action name _ <<< "$selection"
+  case "$action" in
+    select) [[ -n "$name" ]] && tmux switch-client -t "$name" ;;
+    attach) [[ -n "$name" ]] && tmux attach -t "$name" ;;
+    create) tmux new-session ;;
+  esac
+}
+
+_tss_choose || exit 0

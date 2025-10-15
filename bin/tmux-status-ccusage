@@ -8,7 +8,7 @@ const COST_RATE_THRESHOLDS = { critical: 21, warning: 14, elevated: 6 };
 const COST_HIGHLIGHT_THRESHOLD = 6;
 const COST_DELTA_THRESHOLD = 2;
 const DEFAULT_CLAUDE_COMMAND = "ccusage";
-const DEFAULT_CODEX_COMMAND = "@ccusage/codex";
+const DEFAULT_CODEX_COMMAND = "ccusage-codex";
 
 const argOverrides = parseCommandOverrides(process.argv.slice(2));
 const CLAUDE_COMMAND =

@@ -1,0 +1,64 @@
+#!/usr/bin/env zsh
+# tmux session killer with popup integration
+
+readonly RED=$'\033[31m'
+readonly CYAN=$'\033[36m'
+readonly BOLD=$'\033[1m'
+readonly RESET=$'\033[0m'
+readonly DELIM=$':::'
+
+if [[ "$1" != "--popup" && -n ${TMUX-} ]]; then
+  pane_dir=$(tmux display-message -p "#{pane_current_path}" 2>/dev/null)
+  tmux display-popup -E -w 70% -h 70% -d "${pane_dir:-$HOME}" "$0 --popup"
+  exit 0
+fi
+
+[[ "$1" == "--popup" ]] && shift
+
+function _tsk_list_entries() {
+  local session windows panes win_plural pane_plural detail
+  local count=0
+  local -a sessions=("${(@f)$(tmux list-sessions -F '#{session_name}' 2>/dev/null || true)}")
+  local -a panes_list
+
+  for session in "${sessions[@]}"; do
+    [[ -z "$session" ]] && continue
+    windows=$(tmux display-message -p -F '#{session_windows}' -t "${session}:" 2>/dev/null)
+    panes_list=("${(@f)$(tmux list-panes -s -t "${session}:" -F '#{pane_id}' 2>/dev/null || true)}")
+    panes=${#panes_list}
+    [[ -z "$windows" ]] && windows=0
+
+    win_plural="s"
+    [[ "$windows" == "1" ]] && win_plural=""
+    pane_plural="s"
+    [[ "$panes" == 1 ]] && pane_plural=""
+
+    detail="[ ${BOLD}${session}${RESET} | ${CYAN}${windows} window${win_plural}${RESET} / ${CYAN}${panes} pane${pane_plural}${RESET} ]"
+    printf 'session\t%s\t%s ==> %s\n' "$session" "${RED}kill${RESET}" "$detail"
+    ((count++))
+  done
+
+  if (( count > 1 )); then
+    printf 'server\t\t%s ==> [ %s ]\n' "${RED}kill${RESET}" "${BOLD}tmux server${RESET} | ${CYAN}tmux kill-server${RESET}"
+  fi
+}
+
+function _tsk_choose() {
+  local selection action name line
+  local -a selected_lines
+
+  selection=$(_tsk_list_entries | fzf --ansi --prompt='Kill> ' --delimiter=$'\t' --with-nth=3 --cycle --reverse --multi --bind=ctrl-a:select-all,ctrl-d:deselect-all --height=100% --no-info) || return 1
+  [[ -z "$selection" ]] && return 1
+
+  selected_lines=("${(@f)selection}")
+  for line in "${selected_lines[@]}"; do
+    [[ -z "$line" ]] && continue
+    IFS=$'\t' read -r action name _ <<< "$line"
+    case "$action" in
+      session) [[ -n "$name" ]] && tmux kill-session -t "$name" ;;
+      server) tmux kill-server ;;
+    esac
+  done
+}
+
+_tsk_choose || exit 0

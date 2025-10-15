@@ -17,14 +17,14 @@ fi
 # Determine which fzf to use
 if [[ -n "$TMUX" ]] && command -v fzf-tmux >/dev/null 2>&1; then
   # Use fzf-tmux if in tmux and available
-  dir=$(ghq list -p | sed -e "s|${HOME}|~|" | fzf-tmux -p 70%,70% --prompt='Project> ' --preview "bat \$(eval echo {})/README.md" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up --no-separator)
+  dir=$(ghq list -p | sed -e "s|${HOME}|~|" | fzf-tmux -p 70%,70% --prompt='Project> ' --preview "bat \$(eval echo {})/README.md" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up --no-separator) || exit 0
 else
   # Fallback to regular fzf
-  dir=$(ghq list -p | sed -e "s|${HOME}|~|" | fzf --prompt='Project> ' --preview "bat \$(eval echo {})/README.md" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up --no-separator)
+  dir=$(ghq list -p | sed -e "s|${HOME}|~|" | fzf --prompt='Project> ' --preview "bat \$(eval echo {})/README.md" --bind ctrl-d:preview-page-down,ctrl-u:preview-page-up --no-separator) || exit 0
 fi
 
 if [[ $dir == "" ]]; then
-  exit 1
+  exit 0
 fi
 
 # If in tmux, handle session switching
