@@ -7,6 +7,27 @@ local diagnostic_icons = require('rc.modules.font').diagnostic_icons
 local enabled_inlay_hint = require('rc.modules.plugin_utils').enabled_inlay_hint
 local enabled_inlay_hint_default_value = require('rc.modules.plugin_utils').enabled_inlay_hint_default_value
 
+local uv = vim.uv or vim.loop
+
+local function load_vtsls_override()
+  local paths = {
+    vim.fn.stdpath('config') .. '/after/lsp/vtsls.lua',
+    vim.fn.expand('~/.vim/after/lsp/vtsls.lua'),
+  }
+
+  for _, path in ipairs(paths) do
+    if path ~= '' then
+      local stat = uv.fs_stat(path)
+      if stat then
+        local ok, err = pcall(dofile, path)
+        if not ok then
+          vim.notify(string.format('vtsls override failed: %s', err), vim.log.levels.WARN)
+        end
+      end
+    end
+  end
+end
+
 local enable_vtsls = true
 local enable_tsserver = not enable_vtsls
 
@@ -380,8 +401,9 @@ local plugins = {
     config = function()
       require('mason').setup()
 
+      local mason_lspconfig = require('mason-lspconfig')
       local ts_lsp = enable_tsserver and 'tsserver' or 'vtsls'
-      require('mason-lspconfig').setup({
+      mason_lspconfig.setup({
         ensure_installed = {
           ts_lsp,
           'eslint',
@@ -394,7 +416,9 @@ local plugins = {
           'jsonls',
           'yamlls',
         },
-        automatic_enable = true,
+        automatic_enable = {
+          exclude = { 'vtsls' },
+        },
       })
 
       require('mason-null-ls').setup({
@@ -609,10 +633,34 @@ local plugins = {
     'yioneko/nvim-vtsls',
     enabled = enable_vtsls,
     config = function()
+      load_vtsls_override()
+
+      local vtsls_config = require('vtsls.lspconfig')
+      require('lspconfig').vtsls.setup({
+        autostart = false,
+        root_dir = vtsls_config.default_config.root_dir,
+        single_file_support = vtsls_config.default_config.single_file_support,
+        on_new_config = vtsls_config.default_config.on_new_config,
+      })
+
       vim.api.nvim_create_autocmd({ 'FileType' }, {
         pattern = { 'typescript', 'typescriptreact' },
         callback = function()
           vim.keymap.set({ 'n' }, '<Plug>(lsp)s', '<Cmd>VtsExec goto_source_definition<CR>')
+        end,
+      })
+
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
+        callback = function(ev)
+          if not is_node_repo(ev.buf) then
+            return
+          end
+
+          local manager = require('lspconfig').vtsls.manager
+          if manager then
+            manager:try_add(ev.buf)
+          end
         end,
       })
     end,
