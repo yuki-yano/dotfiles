@@ -60,5 +60,7 @@ install --cask visual-studio-code
 install --cask vlc
 install --cask zoom
 
+install --cask yuki-yano/swiftdialog/swift-dialog
+
 # Remove outdated versions
 cleanup
