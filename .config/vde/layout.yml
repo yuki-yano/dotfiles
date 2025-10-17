@@ -18,7 +18,7 @@ presets:
                 - name: "term1"
                 - name: "term2"
                 - name: "term3"
-        - name: "codex"
+        - name: "coding agent"
           command: "yolo"
   ai-workbench:
     name: "AI Assisted Workbench"
@@ -38,6 +38,30 @@ presets:
           panes:
             - name: "work-center-top"
             - name: "work-center-bottom"
-        - name: "ai-terminal"
+        - name: "coding agent"
           command: "yolo"
           focus: true
+  web-dev:
+    name: Web Development
+    description: Editor, server, and logs
+    layout:
+      type: horizontal
+      ratio: [3, 2]
+      panes:
+        - name: editor
+          command: nvim
+          focus: true
+        - type: vertical
+          ratio: [7, 3]
+          panes:
+            - name: server
+              command: npm run dev
+              env:
+                NODE_ENV: development
+            - name: logs
+              command: tail -f logs/app.log
+              title: Logs
+              delay: 500
+  monitor:
+    name: Monitor
+    command: htop
