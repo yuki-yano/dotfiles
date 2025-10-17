@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+current_mode=$(tmux show -gqv '@theme_mode')
+
+if [[ -z "$current_mode" || "$current_mode" == "transparent" ]]; then
+  next_mode="solid"
+else
+  next_mode="transparent"
+fi
+
+tmux set -g @theme_mode "$next_mode"
+if [[ "$next_mode" == "transparent" ]]; then
+  tmux set -g window-style 'bg=default'
+  tmux set -g window-active-style 'bg=default'
+else
+  tmux set -g window-style 'bg=#232333'
+  tmux set -g window-active-style 'bg=#181825'
+fi
+
+tmux display-message "tmux theme mode: ${next_mode}"

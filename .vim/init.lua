@@ -5,6 +5,20 @@ if vim.env.LSP == nil then
   -- vim.env.LSP = 'coc'
 end
 
+if vim.g.ui_transparency == nil then
+  local env_value = vim.env.NVIM_TRANSPARENCY
+  if env_value ~= nil and env_value ~= '' then
+    local normalized = string.lower(env_value)
+    if normalized == '0' or normalized == 'false' or normalized == 'off' then
+      vim.g.ui_transparency = false
+    else
+      vim.g.ui_transparency = true
+    end
+  else
+    vim.g.ui_transparency = true
+  end
+end
+
 if vim.env.NVIM_COLORSCHEME == nil then
   -- vim.env.NVIM_COLORSCHEME = 'gruvbox-material'
   vim.env.NVIM_COLORSCHEME = 'catppuccin'

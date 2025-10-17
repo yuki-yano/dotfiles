@@ -1,11 +1,22 @@
 local color = require('rc.modules.color')
 
+local function is_transparent()
+  return vim.g.ui_transparency ~= false
+end
+
+local function normal_background()
+  return is_transparent() and 'NONE' or color.base().background
+end
+
+local function inactive_background()
+  return is_transparent() and 'NONE' or color.misc().focus_inactive
+end
+
 vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
   pattern = { '*' },
   callback = function()
-    vim.api.nvim_set_hl(0, 'Normal', { fg = color.base().white, bg = color.base().background })
-    vim.api.nvim_set_hl(0, 'NormalFloat', { fg = 'NONE', bg = color.base().background })
-    -- vim.api.nvim_set_hl(0, 'FloatBorder', { fg = 'NONE', bg = color.base().background })
+    vim.api.nvim_set_hl(0, 'Normal', { fg = color.base().white, bg = normal_background() })
+    vim.api.nvim_set_hl(0, 'NormalFloat', { fg = 'NONE', bg = normal_background() })
     vim.api.nvim_set_hl(0, 'DiffAdd', { fg = 'NONE', bg = color.misc().diff.add.bg })
     vim.api.nvim_set_hl(0, 'DiffDelete', { fg = 'NONE', bg = color.misc().diff.delete.bg })
     vim.api.nvim_set_hl(0, 'DiffChange', { fg = 'NONE', bg = color.misc().diff.change.bg })
@@ -21,7 +32,7 @@ vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
     vim.api.nvim_set_hl(0, 'LspInlayHint', { fg = color.base().inlay_hint, bg = 'NONE' })
 
     -- Custom highlight groups for focus states
-    vim.api.nvim_set_hl(0, 'NormalInactive', { bg = color.misc().focus_inactive })
-    vim.api.nvim_set_hl(0, 'NormalActive', { bg = color.base().background })
+    vim.api.nvim_set_hl(0, 'NormalInactive', { bg = inactive_background() })
+    vim.api.nvim_set_hl(0, 'NormalActive', { bg = normal_background() })
   end,
 })

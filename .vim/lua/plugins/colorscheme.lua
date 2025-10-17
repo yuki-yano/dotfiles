@@ -17,41 +17,12 @@ return {
     priority = vim.env.NVIM_COLORSCHEME == 'catppuccin' and 1000 or 50,
     lazy = vim.env.NVIM_COLORSCHEME ~= 'catppuccin',
     config = function()
-      require('catppuccin').setup({
-        term_colors = true,
-        dim_inactive = {
-          enabled = false,
-        },
-        custom_highlights = function(colors)
-          return {
-            ['@keyword.export'] = { fg = colors.sapphire, style = {} },
-            NormalNC = { bg = require('rc.modules.color').misc().focus_inactive },
-          }
-        end,
-        integrations = {
-          aerial = true,
-          coc_nvim = true,
-          cmp = true,
-          dropbar = {
-            enabled = true,
-          },
-          fern = true,
-          fidget = true,
-          gitsigns = true,
-          lsp_saga = true,
-          lsp_trouble = true,
-          mason = true,
-          notify = true,
-          telescope = true,
-          treesitter = true,
-          treesitter_context = true,
-          rainbow_delimiters = true,
-          indent_blankline = {
-            enabled = true,
-          },
-          sandwich = false,
-        },
-      })
+      local transparency = require('rc.modules.transparency')
+      transparency.configure_catppuccin()
+
+      vim.api.nvim_create_user_command('ToggleTransparency', function()
+        transparency.toggle()
+      end, { desc = 'Toggle UI transparency mode' })
     end,
   },
 }

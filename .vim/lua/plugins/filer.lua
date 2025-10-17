@@ -97,6 +97,10 @@ return {
 
           vim.opt_local.number = false
           vim.opt_local.relativenumber = false
+          vim.api.nvim_set_hl(0, 'FernCursorLine', {
+            bg = '#45475A',
+            blend = 50,
+          })
 
           vimx.fn.glyph_palette.apply()
         end,
