@@ -39,7 +39,7 @@ similarity-tsを使用してTypeScriptコードベース内の重複コードを
 - 低優先度: 40-59%の類似性、または小規模な重複
 
 ステップ 6. **リファクタリング計画の作成**
-`ai/plans/active/refactor-duplications.md` に以下の形式で保存:
+`tmp/ai/plans/refactor-duplications.md` に以下の形式で保存:
 ```markdown
 # TypeScriptコード重複リファクタリング計画
 

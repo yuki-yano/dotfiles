@@ -102,3 +102,6 @@ install --cask Warashi/tap/cage --no-quarantine
 install ffmpeg
 install imagemagick
 install youtube-dl
+
+## Notification
+install ntfy

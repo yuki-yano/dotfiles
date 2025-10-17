@@ -132,6 +132,12 @@ snippets:
       lbuffer: '^git\s+'
     evaluate: true
 
+  - name: nr to ni run
+    keyword: nr
+    snippet: ni run
+    context:
+      buffer: "^nr$"
+
   # - name: claude yolo
   #   keyword: yolo
   #   snippet: cage -- claude --dangerously-skip-permissions
