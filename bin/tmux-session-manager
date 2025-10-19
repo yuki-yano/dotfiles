@@ -1,17 +1,40 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env sh
+
 # tmux session selector/killer manager
 
-set -euo pipefail
+set -eu
 
-readonly GREEN=$'\033[32m'
-readonly RED=$'\033[31m'
-readonly CYAN=$'\033[36m'
-readonly BOLD=$'\033[1m'
-readonly RESET=$'\033[0m'
-readonly SCRIPT_PATH="${(%):-%N}"
-readonly SCRIPT_ABS="${SCRIPT_PATH:A}"
+if ! command -v fzf >/dev/null 2>&1; then
+  printf '%s\n' "tmux-session-manager: fzf not found" >&2
+  exit 1
+fi
 
-function _tsm_usage() {
+if ! command -v tmux >/dev/null 2>&1; then
+  printf '%s\n' "tmux-session-manager: tmux not found" >&2
+  exit 1
+fi
+
+GREEN=$(printf '\033[32m')
+RED=$(printf '\033[31m')
+CYAN=$(printf '\033[36m')
+BOLD=$(printf '\033[1m')
+RESET=$(printf '\033[0m')
+
+SCRIPT_PATH=$0
+case $SCRIPT_PATH in
+  */*)
+    SCRIPT_ABS="$(cd "$(dirname "$SCRIPT_PATH")" 2>/dev/null && pwd)/$(basename "$SCRIPT_PATH")"
+    ;;
+  *)
+    if command -v "$SCRIPT_PATH" >/dev/null 2>&1; then
+      SCRIPT_ABS=$(command -v "$SCRIPT_PATH")
+    else
+      SCRIPT_ABS="$(pwd)/$SCRIPT_PATH"
+    fi
+    ;;
+esac
+
+tsm_usage() {
   cat <<'USAGE'
 Usage: tmux-session-manager [--kill] [--help]
 
@@ -20,46 +43,51 @@ Usage: tmux-session-manager [--kill] [--help]
 USAGE
 }
 
-function _tsm_open_popup_if_needed() {
-  local mode="$1"
-  if [[ -n ${TMUX-} && $2 -eq 0 ]]; then
-    local pane_dir
-    pane_dir=$(tmux display-message -p "#{pane_current_path}" 2>/dev/null)
-    if [[ "$mode" == "kill" ]]; then
-      tmux display-popup -E -w 70% -h 70% -d "${pane_dir:-$HOME}" "${SCRIPT_ABS} --kill --popup"
+tsm_open_popup_if_needed() {
+  mode=$1
+  popup_flag=$2
+  if [ -n "${TMUX-}" ] && [ "$popup_flag" -eq 0 ]; then
+    pane_dir=$(tmux display-message -p "#{pane_current_path}" 2>/dev/null || printf '')
+    if [ -z "$pane_dir" ]; then
+      pane_dir=$HOME
+    fi
+    if [ "$mode" = "kill" ]; then
+      tmux display-popup -E -w 70% -h 70% -d "$pane_dir" "$SCRIPT_ABS --kill --popup"
     else
-      tmux display-popup -E -w 70% -h 70% -d "${pane_dir:-$HOME}" "${SCRIPT_ABS} --popup"
+      tmux display-popup -E -w 70% -h 70% -d "$pane_dir" "$SCRIPT_ABS --popup"
     fi
     exit 0
   fi
 }
 
-function _tsm_list_sessions() {
-  tmux list-sessions -F '#{session_name}' 2>/dev/null || true
+tsm_list_sessions() {
+  tmux list-sessions -F '#{session_name}' 2>/dev/null || :
 }
 
-function _tsm_list_selection_entries() {
-  local is_tmux="$1"
-  local session windows panes win_plural pane_plural detail action label
-  local -a panes_list sessions
+tsm_list_selection_entries() {
+  is_tmux=$1
+  tsm_list_sessions | while IFS= read -r session; do
+    [ -z "$session" ] && continue
+    windows=$(tmux display-message -p -F '#{session_windows}' -t "${session}:" 2>/dev/null || printf '0')
+    panes=$(tmux list-panes -s -t "${session}:" -F '#{pane_id}' 2>/dev/null | wc -l | tr -d '[:space:]')
+    [ -z "$windows" ] && windows=0
+    [ -z "$panes" ] && panes=0
 
-  sessions=(${(@f)$(_tsm_list_sessions)})
-  for session in "${sessions[@]}"; do
-    [[ -z "$session" ]] && continue
-    windows=$(tmux display-message -p -F '#{session_windows}' -t "${session}:" 2>/dev/null)
-    panes_list=(${(@f)$(tmux list-panes -s -t "${session}:" -F '#{pane_id}' 2>/dev/null || true)})
-    panes=${#panes_list}
-    [[ -z "$windows" ]] && windows=0
-    [[ -z "$panes" ]] && panes=0
+    if [ "$windows" = "1" ]; then
+      win_plural=""
+    else
+      win_plural="s"
+    fi
 
-    win_plural="s"
-    [[ "$windows" == "1" ]] && win_plural=""
-    pane_plural="s"
-    [[ "$panes" == 1 ]] && pane_plural=""
+    if [ "$panes" = "1" ]; then
+      pane_plural=""
+    else
+      pane_plural="s"
+    fi
 
     detail="[ ${BOLD}${session}${RESET} | ${CYAN}${windows} window${win_plural}${RESET} / ${CYAN}${panes} pane${pane_plural}${RESET} ]"
 
-    if [[ -n "$is_tmux" ]]; then
+    if [ "$is_tmux" -eq 1 ]; then
       action="select"
       label="${GREEN}select${RESET}"
     else
@@ -70,104 +98,122 @@ function _tsm_list_selection_entries() {
     printf '%s\t%s\t%s ==> %s\n' "$action" "$session" "$label" "$detail"
   done
 
-  if [[ -z "$is_tmux" ]]; then
+  if [ "$is_tmux" -eq 0 ]; then
     printf 'create\t\t%s ==> [ %s ]\n' "${GREEN}create${RESET}" "${BOLD}new session${RESET} | ${CYAN}tmux new-session${RESET}"
   fi
 }
 
-function _tsm_choose_selection() {
-  local is_tmux="$([[ -n ${TMUX-} ]] && echo 1)"
-  local selection action name
+tsm_choose_selection() {
+  if [ -n "${TMUX-}" ]; then
+    is_tmux=1
+  else
+    is_tmux=0
+  fi
 
-  selection=$(_tsm_list_selection_entries "$is_tmux" | fzf --ansi --prompt='Session> ' --delimiter=$'\t' --with-nth=3 --cycle --reverse --height=100% --no-info) || return 1
-  [[ -z "$selection" ]] && return 1
+  if [ "$is_tmux" -eq 1 ] && command -v fzf-tmux >/dev/null 2>&1; then
+    selection=$(tsm_list_selection_entries "$is_tmux" | fzf-tmux -p 70%,70% --ansi --prompt='Session> ' --delimiter="$(printf '\t')" --with-nth=3 --cycle --reverse --height=100% --no-info) || return 1
+  else
+    selection=$(tsm_list_selection_entries "$is_tmux" | fzf --ansi --prompt='Session> ' --delimiter="$(printf '\t')" --with-nth=3 --cycle --reverse --height=100% --no-info) || return 1
+  fi
 
-  IFS=$'\t' read -r action name _ <<< "$selection"
-  case "$action" in
-    select) [[ -n "$name" ]] && tmux switch-client -t "$name" ;;
-    attach) [[ -n "$name" ]] && tmux attach -t "$name" ;;
-    create) tmux new-session ;;
+  [ -z "$selection" ] && return 1
+
+  IFS="$(printf '\t')" read -r action name _ <<EOF || return 1
+$selection
+EOF
+
+  case $action in
+    select)
+      [ -n "$name" ] && tmux switch-client -t "$name"
+      ;;
+    attach)
+      [ -n "$name" ] && tmux attach -t "$name"
+      ;;
+    create)
+      tmux new-session
+      ;;
   esac
 }
 
-function _tsm_list_kill_entries() {
-  local session windows panes win_plural pane_plural detail
-  local count=0
-  local -a sessions panes_list
+tsm_list_kill_entries() {
+  tsm_list_sessions | while IFS= read -r session; do
+    [ -z "$session" ] && continue
+    windows=$(tmux display-message -p -F '#{session_windows}' -t "${session}:" 2>/dev/null || printf '0')
+    panes=$(tmux list-panes -s -t "${session}:" -F '#{pane_id}' 2>/dev/null | wc -l | tr -d '[:space:]')
+    [ -z "$windows" ] && windows=0
+    [ -z "$panes" ] && panes=0
 
-  sessions=(${(@f)$(_tsm_list_sessions)})
-  for session in "${sessions[@]}"; do
-    [[ -z "$session" ]] && continue
-    windows=$(tmux display-message -p -F '#{session_windows}' -t "${session}:" 2>/dev/null)
-    panes_list=(${(@f)$(tmux list-panes -s -t "${session}:" -F '#{pane_id}' 2>/dev/null || true)})
-    panes=${#panes_list}
-    [[ -z "$windows" ]] && windows=0
+    if [ "$windows" = "1" ]; then
+      win_plural=""
+    else
+      win_plural="s"
+    fi
 
-    win_plural="s"
-    [[ "$windows" == "1" ]] && win_plural=""
-    pane_plural="s"
-    [[ "$panes" == 1 ]] && pane_plural=""
+    if [ "$panes" = "1" ]; then
+      pane_plural=""
+    else
+      pane_plural="s"
+    fi
 
     detail="[ ${BOLD}${session}${RESET} | ${CYAN}${windows} window${win_plural}${RESET} / ${CYAN}${panes} pane${pane_plural}${RESET} ]"
     printf 'session\t%s\t%s ==> %s\n' "$session" "${RED}kill${RESET}" "$detail"
-    ((count++))
   done
 
-  if (( count > 1 )); then
+  session_count=$(tsm_list_sessions | wc -l | tr -d '[:space:]')
+  if [ "$session_count" -gt 1 ]; then
     printf 'server\t\t%s ==> [ %s ]\n' "${RED}kill${RESET}" "${BOLD}tmux server${RESET} | ${CYAN}tmux kill-server${RESET}"
   fi
 }
 
-function _tsm_choose_kill() {
-  local selection action name line
-  local -a selected_lines
+tsm_choose_kill() {
+  selection=$(tsm_list_kill_entries | fzf --ansi --prompt='Kill> ' --delimiter="$(printf '\t')" --with-nth=3 --cycle --reverse --multi --bind=ctrl-a:select-all,ctrl-d:deselect-all --height=100% --no-info) || return 1
+  [ -z "$selection" ] && return 1
 
-  selection=$(_tsm_list_kill_entries | fzf --ansi --prompt='Kill> ' --delimiter=$'\t' --with-nth=3 --cycle --reverse --multi --bind=ctrl-a:select-all,ctrl-d:deselect-all --height=100% --no-info) || return 1
-  [[ -z "$selection" ]] && return 1
-
-  selected_lines=(${(@f)selection})
-  for line in "${selected_lines[@]}"; do
-    [[ -z "$line" ]] && continue
-    IFS=$'\t' read -r action name _ <<< "$line"
-    case "$action" in
-      session) [[ -n "$name" ]] && tmux kill-session -t "$name" ;;
-      server) tmux kill-server ;;
+  printf '%s\n' "$selection" | while IFS="$(printf '\t')" read -r action name _; do
+    [ -z "$action" ] && continue
+    case $action in
+      session)
+        [ -n "$name" ] && tmux kill-session -t "$name"
+        ;;
+      server)
+        tmux kill-server
+        ;;
     esac
   done
 }
 
-function _tsm_main() {
-  local mode="select"
-  local popup=0
+tsm_main() {
+  mode=select
+  popup=0
 
-  while (( $# > 0 )); do
-    case "$1" in
+  while [ "$#" -gt 0 ]; do
+    case $1 in
       --kill)
-        mode="kill"
+        mode=kill
         ;;
       --popup)
         popup=1
         ;;
       --help|-h)
-        _tsm_usage
+        tsm_usage
         exit 0
         ;;
       *)
         printf 'Unknown option: %s\n' "$1" >&2
-        _tsm_usage >&2
+        tsm_usage >&2
         exit 1
         ;;
     esac
     shift
   done
 
-  _tsm_open_popup_if_needed "$mode" "$popup"
+  tsm_open_popup_if_needed "$mode" "$popup"
 
-  if [[ "$mode" == "kill" ]]; then
-    _tsm_choose_kill || exit 0
+  if [ "$mode" = "kill" ]; then
+    tsm_choose_kill || exit 0
   else
-    _tsm_choose_selection || exit 0
+    tsm_choose_selection || exit 0
   fi
 }
 
-_tsm_main "$@"
+tsm_main "$@"
