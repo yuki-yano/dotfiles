@@ -250,7 +250,8 @@ return {
   },
   {
     'b0o/incline.nvim',
-    enabled = not is_quick_ime() and not is_editprompt() and not vim.g.is_edit_command_line,
+    -- enabled = not is_quick_ime() and not is_editprompt() and not vim.g.is_edit_command_line,
+    enabled = false,
     dependencies = {
       { 'nvim-tree/nvim-web-devicons' },
       { 'SmiteshP/nvim-navic' },
@@ -325,10 +326,12 @@ return {
   },
   {
     'Bekaboo/dropbar.nvim',
-    enabled = false,
+    enabled = not is_quick_ime() and not is_editprompt() and not vim.g.is_edit_command_line,
     event = { 'LspAttach' },
     config = function()
-      require('dropbar').setup({
+      local dropbar = require('dropbar')
+
+      dropbar.setup({
         icons = {
           kinds = {
             symbols = {
@@ -398,6 +401,33 @@ return {
             },
           },
         },
+      })
+
+      local bar_utils = require('dropbar.utils.bar')
+      local original_attach = bar_utils.attach
+
+      local function place_winbar_right(win)
+        if win and vim.api.nvim_win_is_valid(win) and vim.wo[win].winbar == '%{%v:lua.dropbar()%}' then
+          vim.wo[win].winbar = '%=%{%v:lua.dropbar()%}'
+        end
+      end
+
+      bar_utils.attach = function(buf, win, info)
+        original_attach(buf, win, info)
+        place_winbar_right(win or vim.api.nvim_get_current_win())
+      end
+
+      local function align_all_dropbars()
+        for _, win in ipairs(vim.api.nvim_list_wins()) do
+          place_winbar_right(win)
+        end
+      end
+
+      align_all_dropbars()
+
+      vim.api.nvim_create_autocmd({ 'BufWinEnter', 'WinNew' }, {
+        group = vim.api.nvim_create_augroup('DropbarAlignRight', { clear = true }),
+        callback = align_all_dropbars,
       })
     end,
   },
