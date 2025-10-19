@@ -48,7 +48,7 @@ export RIPGREP_CONFIG_PATH=$HOME/.config/ripgrep/rc
 export XDG_CONFIG_HOME=$HOME/.config
 
 # gtags
-export GTAGSLABEL=pygments
+# export GTAGSLABEL=pygments
 
 # mise
 eval "$(/opt/homebrew/bin/mise activate zsh)"
@@ -78,10 +78,10 @@ export GOPATH=$HOME/.go
 path=(~/.go/bin(N-/) ~/.ghg/bin(N-/) $path)
 
 # java
-export JAVA_HOME=$(/usr/libexec/java_home -v "14")
+# export JAVA_HOME=$(/usr/libexec/java_home -v "14")
 
 # llvm
-path=(/usr/local/opt/llvm/bin(N-/) $path)
+# path=(/usr/local/opt/llvm/bin(N-/) $path)
 
 # direnv
 if whence direnv > /dev/null; then

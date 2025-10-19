@@ -53,27 +53,6 @@ zinit light zdharma-continuum/fast-syntax-highlighting
 zinit ice lucid wait"0" depth"1" blockf
 zinit light zsh-users/zsh-completions
 
-zinit ice lucid wait"0" depth"1" blockf
-zinit light yuki-yano/zsh-completions-anyenv
-
-# zinit ice lucid wait"0" as"completion"
-# zinit snippet OMZ::plugins/docker/_docker
-
-# zinit ice lucid wait"0" as"completion"
-# zinit snippet OMZ::plugins/docker-compose/_docker-compose
-
-# git
-# zinit ice lucid wait"0" as"program" pick"$ZPFX/bin/git-*" src"etc/git-extras-completion.zsh" make"PREFIX=$ZPFX"
-# zinit light tj/git-extras
-zinit ice lucid wait"0" depth"1" as"program"
-zinit light yuki-yano/zsh-git-sync
-
-zinit ice lucid wait"0" depth"1" as"program" src"tms.plugin.zsh" pick"tms"
-zinit light yuki-yano/tms
-
-zinit ice lucid wait"0" depth"1" as"program" src"tmk.plugin.zsh" pick"tmk"
-zinit light yuki-yano/tmk
-
 # man
 zinit ice lucid wait"0" as"program" mv"fzf* -> ${ZPFX}/man/man1"
 zinit snippet 'https://github.com/junegunn/fzf/blob/master/man/man1/fzf.1'
@@ -83,8 +62,14 @@ zinit ice lucid wait"0" as"null" src"ni.zsh" atload"compdef _ni ni"
 zinit light azu/ni.zsh
 
 # util
-zinit ice lucid wait"0" depth"1"
-zinit light yukiycino-dotfiles/fancy-ctrl-z
+
+## fancy-ctrl-z
+zinit ice lucid wait"0"
+zinit snippet https://gist.githubusercontent.com/yuki-yano/f1f0d11db6d1d49180bca7e282599932/raw/394a57effdd6d033677a82437a20cd6d12d45a57/fancy-ctrl-z.zsh
+
+## show-buffer-stack
+zinit ice lucid wait"0"
+zinit snippet https://gist.githubusercontent.com/yuki-yano/dc4684c65cf2ba0c2f1612b70d120a34/raw/7652e88d7dbb43ed3f3208f7ca023d1757f2d056/show-buffer-stack.zsh
 
 # }}}
 
@@ -641,6 +626,41 @@ add-zsh-hook chpwd tmux_auto_rename_hook
 
 # }}}
 
+# zeno {{{
+if [[ -d ~/repos/github.com/yuki-yano/zeno.zsh ]]; then
+  zinit ice lucid wait"0" blockf atload"zeno_config"
+  zinit light ~/repos/github.com/yuki-yano/zeno.zsh
+else
+  zinit ice lucid wait"0" depth"1" blockf atload"zeno_config"
+  zinit light yuki-yano/zeno.zsh
+fi
+
+function zeno_config() {
+  export ZENO_GIT_CAT="bat --color=always --plain --number"
+  export ZENO_ENABLE_FZF_TMUX=1
+  export ZENO_FZF_TMUX_OPTIONS="-p 70%,70%"
+  export ZENO_DISABLE_EXECUTE_CACHE_COMMAND=1
+  export ZENO_ENABLE_SOCK=1
+
+  if [[ -n $ZENO_LOADED ]]; then
+    bindkey ' '    zeno-auto-snippet
+    bindkey '^m'   zeno-auto-snippet-and-accept-line
+    bindkey '^xs'  zeno-insert-snippet
+    bindkey '^x^s' zeno-insert-snippet
+    bindkey '^i'   zeno-completion
+    # Use atuin
+    # bindkey '^r'   zeno-history-selection
+
+    bindkey '^x '  zeno-insert-space
+    bindkey '^x^m' accept-line
+    bindkey '^x^z' zeno-toggle-auto-snippet
+
+    ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(zeno-auto-snippet-and-accept-line)
+  fi
+}
+
+# }}}
+
 # Profile {{{
 
 if whence zprof > /dev/null ;then
@@ -655,11 +675,6 @@ fi
 if [[ ! -f ~/.zshrc.zwc ]] || [[ "$(readlink ~/.zshrc)" -nt ~/.zshrc.zwc ]]; then
   zcompile ~/.zshrc
 fi
-
-# zinit
-# if [[ ! -f ~/.zinit/bin/zinit.zsh.zwc ]] || [[ ~/.zinit/bin/zinit.zsh -nt ~/.zinit/bin/zinit.zsh.zwc ]]; then
-#   zcompile ~/.zinit/bin/zinit.zsh
-# fi
 
 # }}}
 
