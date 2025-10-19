@@ -132,6 +132,7 @@ if vim.env.QUICK_IME == '1' or vim.env.EDITPROMPT == '1' then
       pattern = { 'markdown' },
       callback = function()
         apply_mode_opts()
+        vim.bo.filetype = 'markdown.editprompt'
         vim.cmd('startinsert')
       end,
     })

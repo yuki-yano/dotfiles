@@ -14,8 +14,11 @@ return {
       vim.keymap.set({ 'o', 'x' }, '<Leader>j', function()
         return vim.fn['edgemotion#move'](1)
       end, { silent = true, expr = true })
-      vim.keymap.set({ 'n', 'o', 'x' }, '<Leader>k', function()
-        return vim.fn['edgemotion#move'](0)
+      vim.keymap.set({ 'n' }, '<Leader>j', function()
+        return 'm`' .. vim.fn['edgemotion#move'](1)
+      end, { silent = true, expr = true })
+      vim.keymap.set({ 'o', 'x' }, '<Leader>j', function()
+        return vim.fn['edgemotion#move'](1)
       end, { silent = true, expr = true })
     end,
   },
