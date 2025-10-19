@@ -1,5 +1,5 @@
 local util = require('lspconfig.util')
-local config = require('vtsls.lspconfig')
+local config = require('vtsls').lspconfig
 local uv = vim.uv or vim.loop
 local path = util.path
 

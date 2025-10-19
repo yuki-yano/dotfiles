@@ -635,7 +635,10 @@ local plugins = {
     config = function()
       load_vtsls_override()
 
-      local vtsls_config = require('vtsls.lspconfig')
+      local configs = require('lspconfig.configs')
+      configs.vtsls = require('vtsls').lspconfig
+
+      local vtsls_config = configs.vtsls
       require('lspconfig').vtsls.setup({
         autostart = false,
         root_dir = vtsls_config.default_config.root_dir,
