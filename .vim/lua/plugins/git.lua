@@ -2,7 +2,8 @@ return {
   -- TODO: migrate from gina
   {
     'lambdalisue/gin.vim',
-    enabled = false,
+    enabled = true,
+    lazy = false,
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'yuki-yano/denops-lazy.nvim' },
@@ -15,6 +16,7 @@ return {
   },
   {
     'lambdalisue/gina.vim',
+    enabled = false,
     cmd = { 'Gina' },
     init = function()
       vim.g['gina#command#blame#use_default_mappings'] = true

@@ -19,7 +19,7 @@ presets:
                 - name: "term2"
                 - name: "term3"
         - name: "coding agent"
-          command: "yolo"
+          command: "codex --yolo"
   ai-workbench:
     name: "AI Assisted Workbench"
     description: "Three columns across; left and center columns split into upper and lower panes, rightmost reserved for the AI client"
@@ -39,7 +39,7 @@ presets:
             - name: "work-center-top"
             - name: "work-center-bottom"
         - name: "coding agent"
-          command: "yolo"
+          command: "codex --yolo"
           focus: true
   web-dev:
     name: Web Development
