@@ -513,9 +513,6 @@ return {
           'aerial',
           'toggleterm',
         },
-        enabled_filetypes = {
-          'fern',
-        },
         disable_float_win = true,
       })
     end,
