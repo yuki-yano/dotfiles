@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Git working tree quick save utility
+
+label=${GIT_QUICK_SAVE_LABEL:-"Git quick save"}
+
+msg=""
+if [ "$#" -gt 0 ]; then
+  msg=" - $*"
+fi
+
+git_root=$(git rev-parse --show-toplevel 2>/dev/null || printf '')
+
+if [ -n "$git_root" ]; then
+  if [ ! -f "$git_root/.git/MERGE_HEAD" ] &&
+     git --no-pager diff --cached --quiet &&
+     [ ! -f "$git_root/.git/index.lock" ] &&
+     [ ! -d "$git_root/.git/rebase-merge" ] &&
+     [ ! -d "$git_root/.git/rebase-apply" ]; then
+    if git add --all &&
+       git commit --no-verify --message "$label: $(date -R)$msg" >/dev/null &&
+       git reset HEAD^ >/dev/null; then
+      echo "$label!$msg"
+    fi
+  fi
+else
+  echo "Not a Git repository."
+fi

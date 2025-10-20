@@ -132,15 +132,17 @@ snippets:
       lbuffer: '^git\s+'
     evaluate: true
 
+  - name: git quick save
+    keyword: c
+    snippet: git-quick-save
+    context:
+      buffer: "^c$"
+
   - name: nr to ni run
     keyword: nr
     snippet: ni run
     context:
       buffer: "^nr$"
-
-  # - name: claude yolo
-  #   keyword: yolo
-  #   snippet: cage -- claude --dangerously-skip-permissions
 
   - name: codex yolo
     keyword: yolo

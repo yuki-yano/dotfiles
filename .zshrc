@@ -514,35 +514,6 @@ bindkey '^x^e' edit-command-line
 #   fi
 # }
 
-# Git quick save
-function c() {
-  local msg=""
-  if [ $# -gt 0 ]; then
-    msg=" - $*"
-  fi
-
-  # Get git root directory
-  local git_root
-  git_root=$(git rev-parse --show-toplevel 2>/dev/null)
-
-  if [[ -n "$git_root" ]]; then
-    if [[ ! -f "$git_root/.git/MERGE_HEAD" ]] \
-      && [[ $(git --no-pager diff --cached | wc -l) -eq 0 ]] \
-      && [[ ! -f "$git_root/.git/index.lock" ]] \
-      && [[ ! -d "$git_root/.git/rebase-merge" ]] \
-      && [[ ! -d "$git_root/.git/rebase-apply" ]]; then
-
-      git add --all &&
-        git commit --no-verify --message "Git quick save: $(date -R)$msg" >/dev/null &&
-        git reset HEAD^ >/dev/null
-
-      echo "Git quick save!$msg"
-    fi
-  else
-    echo "Not a Git repository."
-  fi
-}
-
 # Automatically save the current git state to reflog
 add-zsh-hook preexec git_auto_save
 
@@ -554,19 +525,8 @@ function git_auto_save() {
   if [[ -n "$git_root" ]] \
     && [[ -f "$git_root/.git/auto-save" ]] \
     && [[ $(find "$git_root/.git/auto-save" -mmin -$((60)) | wc -l) -eq 0 ]]; then
-    if [[ ! -f "$git_root/.git/MERGE_HEAD" ]] \
-      && [[ $(git --no-pager diff --cached | wc -l) -eq 0 ]] \
-      && [[ ! -f "$git_root/.git/index.lock" ]] \
-      && [[ ! -d "$git_root/.git/rebase-merge" ]] \
-      && [[ ! -d "$git_root/.git/rebase-apply" ]]; then
-
-      touch "$git_root/.git/auto-save" &&
-        git add --all &&
-        git commit --no-verify --message "Git auto save: $(date -R)" >/dev/null &&
-        git reset HEAD^ >/dev/null
-
-      echo "Git auto save!"
-    fi
+    touch "$git_root/.git/auto-save" &&
+      GIT_QUICK_SAVE_LABEL="Git auto save" git-quick-save
   fi
 }
 
