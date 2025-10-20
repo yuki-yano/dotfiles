@@ -11,6 +11,7 @@ return {
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'lambdalisue/gin.vim' },
+      { 'sindrets/diffview.nvim' },
     },
     init = function()
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
@@ -46,236 +47,7 @@ return {
         snacks.picker.format._git_status_staged_override = true
       end
 
-      local function sanitize_selection(selection)
-        local items = {}
-        for _, item in ipairs(selection or {}) do
-          if item.file then
-            items[#items + 1] = {
-              file = item.file,
-              cwd = item.cwd,
-              status = item.status,
-            }
-          end
-        end
-        return items
-      end
-
-      local function refresh_git_status_picker(picker)
-        if not picker or picker.closed or not picker.list then
-          return
-        end
-        picker.list:set_selected()
-        picker.list:set_target()
-        picker:find()
-      end
-
-      local function run_git_batch(picker, selection, builder)
-        local items = sanitize_selection(selection or picker:selected({ fallback = true }))
-        if vim.tbl_isempty(items) then
-          return
-        end
-        local groups = {}
-        local fallback_cwd = picker:cwd() or (vim.uv or vim.loop).cwd() or vim.fn.getcwd()
-        for _, item in ipairs(items) do
-          if item.file and item.file ~= '' then
-            local cwd = item.cwd or fallback_cwd
-            groups[cwd] = groups[cwd] or {}
-            table.insert(groups[cwd], item.file)
-          end
-        end
-        local total = 0
-        local completed = 0
-        for cwd, files in pairs(groups) do
-          if not vim.tbl_isempty(files) then
-            local cmd = builder(files)
-            if cmd then
-              total = total + 1
-              snacks.picker.util.cmd(cmd, function()
-                completed = completed + 1
-                if completed == total then
-                  refresh_git_status_picker(picker)
-                end
-              end, { cwd = cwd })
-            end
-          end
-        end
-        if total == 0 then
-          refresh_git_status_picker(picker)
-        end
-      end
-
-      local function stage_selection(picker, selection)
-        if picker.focus ~= 'list' then
-          picker:focus('list', { show = true })
-        end
-        run_git_batch(picker, selection, function(files)
-          local cmd = { 'git', 'add', '--' }
-          vim.list_extend(cmd, files)
-          return cmd
-        end)
-      end
-
-      local function reset_selection(picker, selection)
-        if picker.focus ~= 'list' then
-          picker:focus('list', { show = true })
-        end
-        run_git_batch(picker, selection, function(files)
-          local cmd = { 'git', 'restore', '--staged', '--' }
-          vim.list_extend(cmd, files)
-          return cmd
-        end)
-      end
-
-      local function commit_selection(picker, _)
-        if picker.focus ~= 'list' then
-          picker:focus('list', { show = true })
-        end
-        local cwd = picker:cwd() or (vim.uv or vim.loop).cwd() or vim.fn.getcwd()
-        picker:close()
-        vim.schedule(function()
-          local ok, result = pcall(function()
-            return vim.system({ 'git', 'diff', '--cached', '--name-only' }, { cwd = cwd, text = true }):wait()
-          end)
-          if not ok or not result or result.code ~= 0 then
-            return
-          end
-          if not result.stdout or result.stdout:match('%S') == nil then
-            return
-          end
-          vim.cmd({ cmd = 'Gin', args = { '-C', cwd, 'commit' } })
-        end)
-      end
-
-      local function open_tab_for_item(item)
-        vim.cmd('tabnew')
-        if item.cwd and item.cwd ~= '' then
-          vim.cmd(string.format('lcd %s', vim.fn.fnameescape(item.cwd)))
-        end
-        if item.file and item.file ~= '' then
-          local fullpath = item.file
-          if item.cwd and item.cwd ~= '' then
-            fullpath = table.concat({ item.cwd, item.file }, '/')
-          end
-          vim.cmd(string.format('edit %s', vim.fn.fnameescape(fullpath)))
-        end
-      end
-
-      local function patch_selection(picker, selection)
-        local items = sanitize_selection(selection or picker:selected({ fallback = true }))
-        if vim.tbl_isempty(items) then
-          return
-        end
-        picker:close()
-        vim.schedule(function()
-          for _, item in ipairs(items) do
-            open_tab_for_item(item)
-            if item.file and item.file ~= '' then
-              vim.cmd(string.format('GinPatch %s', vim.fn.fnameescape(item.file)))
-            else
-              vim.cmd('GinPatch')
-            end
-          end
-        end)
-      end
-
-      local function chaperon_selection(picker, selection)
-        local items = sanitize_selection(selection or picker:selected({ fallback = true }))
-        if vim.tbl_isempty(items) then
-          return
-        end
-        picker:close()
-        vim.schedule(function()
-          for _, item in ipairs(items) do
-            open_tab_for_item(item)
-            if item.file and item.file ~= '' then
-              vim.cmd(string.format('GinChaperon %s', vim.fn.fnameescape(item.file)))
-            else
-              vim.cmd('GinChaperon')
-            end
-          end
-        end)
-      end
-
-      local function open_actions_picker(picker)
-        local items = sanitize_selection(picker:selected({ fallback = true }))
-        if vim.tbl_isempty(items) then
-          return
-        end
-        local prev_auto_close = picker.opts.auto_close
-        picker.opts.auto_close = false
-
-        local summary = {}
-        for _, item in ipairs(items) do
-          summary[#summary + 1] = ('%s %s'):format(item.status or '  ', item.file or '')
-        end
-        local preview_text = table.concat(summary, '\n')
-        local target_ref = picker:ref()
-
-        local function with_target(fn)
-          local target = target_ref()
-          if target then
-            fn(target)
-          end
-        end
-
-        snacks.picker.pick({
-          source = 'git_status_actions',
-          title = 'Git Actions',
-          prompt = '> ',
-          layout = 'select',
-          format = 'text',
-          confirm = 'item_action',
-          on_close = function()
-            local target = target_ref()
-            if target then
-              target.opts.auto_close = prev_auto_close
-              if not target.closed then
-                target:focus('list', { show = true })
-              end
-            elseif picker then
-              picker.opts.auto_close = prev_auto_close
-            end
-          end,
-          items = {
-            {
-              text = 'Add (git add)',
-              action = function()
-                with_target(function(target)
-                  stage_selection(target, items)
-                end)
-              end,
-              preview = { text = preview_text },
-            },
-            {
-              text = 'Reset (git restore --staged)',
-              action = function()
-                with_target(function(target)
-                  reset_selection(target, items)
-                end)
-              end,
-              preview = { text = preview_text },
-            },
-            {
-              text = 'Patch (:Gin patch)',
-              action = function()
-                with_target(function(target)
-                  patch_selection(target, items)
-                end)
-              end,
-              preview = { text = preview_text },
-            },
-            {
-              text = 'Chaperon (:Gin chaperon)',
-              action = function()
-                with_target(function(target)
-                  chaperon_selection(target, items)
-                end)
-              end,
-              preview = { text = preview_text },
-            },
-          },
-        })
-      end
+      local git_config = require('plugins.config.snacks.git').setup(snacks)
 
       ---@type snacks.picker.Config
       local picker_opts = {
@@ -330,53 +102,11 @@ return {
             },
           },
         },
-        actions = {
-          git_stage_selected = function(picker, _, action)
-            stage_selection(picker, action and action.selection)
-          end,
-          git_reset_selected = function(picker, _, action)
-            reset_selection(picker, action and action.selection)
-          end,
-          git_commit_selected = function(picker, _, action)
-            commit_selection(picker, action and action.selection)
-          end,
-          git_patch_selected = function(picker, _, action)
-            patch_selection(picker, action and action.selection)
-          end,
-          git_chaperon_selected = function(picker, _, action)
-            chaperon_selection(picker, action and action.selection)
-          end,
-          git_status_actions = function(picker)
-            open_actions_picker(picker)
-          end,
-        },
-        sources = {
-          git_status = {
-            win = {
-              input = {
-                keys = {
-                  ['<Tab>'] = { 'select_and_next', mode = { 'n', 'i' } },
-                  ['<S-Tab>'] = { 'select_and_prev', mode = { 'n', 'i' } },
-                  ['>'] = { 'git_status_actions', mode = { 'n', 'i' }, nowait = true },
-                  ['<C-a>'] = { 'git_stage_selected', mode = { 'n', 'i' }, nowait = true },
-                  ['<C-r>'] = { 'git_reset_selected', mode = { 'n', 'i' }, nowait = true },
-                  ['<C-c>'] = { 'git_commit_selected', mode = { 'n', 'i' }, nowait = true },
-                },
-              },
-              list = {
-                keys = {
-                  ['<Tab>'] = { 'select_and_next', mode = { 'n', 'x' } },
-                  ['<S-Tab>'] = { 'select_and_prev', mode = { 'n', 'x' } },
-                  ['>'] = { 'git_status_actions', mode = { 'n' }, nowait = true },
-                  ['<C-a>'] = { 'git_stage_selected', mode = { 'n' }, nowait = true },
-                  ['<C-r>'] = { 'git_reset_selected', mode = { 'n' }, nowait = true },
-                  ['<C-c>'] = { 'git_commit_selected', mode = { 'n' }, nowait = true },
-                },
-              },
-            },
-          },
-        },
       }
+
+      if git_config and git_config.picker then
+        picker_opts = merge(picker_opts, git_config.picker)
+      end
 
       ---@type snacks.Config
       local opts = {
@@ -426,6 +156,7 @@ return {
         snacks.words.jump(-vim.v.count1, true)
       end)
 
+      -- NOTE: Use smart_open_files picker
       -- picker
       -- vim.keymap.set({ 'n' }, '<Plug>(ff)r', function()
       --   snacks.picker.smart({
@@ -435,6 +166,7 @@ return {
       --   })
       -- end)
 
+      -- picker keymaps (global visibility)
       vim.keymap.set({ 'n' }, '<Plug>(ff)a', function()
         snacks.picker.files({
           filter = {
@@ -446,6 +178,13 @@ return {
 
       vim.keymap.set({ 'n' }, '<Plug>(ff)s', function()
         snacks.picker.git_status()
+      end)
+
+      vim.keymap.set({ 'n' }, '<Plug>(ff)R', function()
+        snacks.picker.git_reflog({
+          include_subject = { 'Git quick save:' },
+          title = 'Git Reflog (Quick Save)',
+        })
       end)
 
       vim.keymap.set({ 'n' }, '<Plug>(ff)c', function()
@@ -595,6 +334,7 @@ return {
         apply_to = { 'smart', 'smart_open_files' },
       })
       vim.keymap.set({ 'n' }, '<Plug>(ff)r', function()
+        ---@diagnostic disable-next-line: undefined-field
         snacks.picker.smart_open_files({
           filter = {
             cwd = true,
