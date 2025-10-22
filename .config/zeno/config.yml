@@ -88,6 +88,12 @@ snippets:
     snippet: GIT_EDITOR=cat git rebase --interactive --autosquash {{branch}}
   - name: git rebase conflict resolution
     snippet: git range-diff @{u} @{1} @
+  - name: git push
+    keyword: gp
+    snippet: git push
+  - name: git push force-with-lease
+    keyword: gpf
+    snippet: git push --force-with-lease
 
   - name: git push safe force
     keyword: -f
@@ -99,9 +105,14 @@ snippets:
     keyword: f
     snippet: ghq-project-selector
 
-  - name: tms
+  - name: tmux session selector
     keyword: t
-    snippet: tms
+    snippet: tmux-session-manager
+
+  - name: tmux session killer
+    keyword: tk
+    snippet: tmux-session-manager --kill
+
 
   - name: "null"
     keyword: "null"
@@ -157,6 +168,10 @@ snippets:
   - name: vde-layout
     keyword: vl
     snippet: vde-layout
+
+  - name: difit
+    keyword: difit
+    snippet: bun x difit@latest .
 
   - name: disable desktop
     keyword: disable_desktop
