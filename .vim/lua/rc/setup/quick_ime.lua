@@ -7,75 +7,6 @@ function M.is_editprompt()
   return vim.env.EDITPROMPT == '1' or vim.g.editprompt == 1
 end
 
-local uv = vim.loop
-
-local function clipboard_dir()
-  if M._clipboard_dir ~= nil then
-    return M._clipboard_dir
-  end
-  local dir = vim.fs.normalize(vim.fn.stdpath('cache') .. '/codex-clipboard')
-  vim.fn.mkdir(dir, 'p')
-  M._clipboard_dir = dir
-  return dir
-end
-
-local function unique_image_path()
-  local dir = clipboard_dir()
-  local stamp = os.date('%Y%m%d%H%M%S')
-  local suffix
-  if uv and uv.hrtime then
-    suffix = tostring(uv.hrtime()):sub(-9)
-  else
-    suffix = tostring(math.random(0, 1000000000))
-  end
-  return string.format('%s/codex-clipboard-%s-%s.png', dir, stamp, suffix)
-end
-
-local function capture_clipboard_image(dest)
-  if vim.fn.executable('pngpaste') ~= 1 then
-    return nil, 'pngpaste is required to capture clipboard images (try `brew install pngpaste`).'
-  end
-
-  local result = vim.system({ 'pngpaste', dest }, { text = true }):wait()
-  if result.code ~= 0 then
-    local reason = result.stderr
-    if reason and reason ~= '' then
-      reason = vim.trim(reason)
-    else
-      reason = string.format('pngpaste exited with code %d', result.code)
-    end
-    return nil, reason
-  end
-
-  if uv and uv.fs_stat then
-    local stat = uv.fs_stat(dest)
-    if not stat or (stat.size or 0) == 0 then
-      return nil, 'Generated image file is empty.'
-    end
-  end
-
-  return dest
-end
-
-local function insert_text_at_cursor(text)
-  local win = vim.api.nvim_get_current_win()
-  local bufnr = vim.api.nvim_get_current_buf()
-  local row, col = unpack(vim.api.nvim_win_get_cursor(win))
-  vim.api.nvim_buf_set_text(bufnr, row - 1, col, row - 1, col, { text })
-  vim.api.nvim_win_set_cursor(win, { row, col + #text })
-end
-
-function M.paste_clipboard_image()
-  local dest = unique_image_path()
-  local path, err = capture_clipboard_image(dest)
-  if not path then
-    return false, err
-  end
-  local real = (uv and uv.fs_realpath and uv.fs_realpath(path)) or vim.fs.normalize(path)
-  insert_text_at_cursor(real .. ' ')
-  return true
-end
-
 local function apply_mode_opts()
   if vim.g.editprompt_opts_applied == 1 then
     return
@@ -189,15 +120,6 @@ if M.is_editprompt() then
   vim.keymap.set({ 'n' }, 'q', '<Cmd>SendEditPrompt<CR>', { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n', 'i' }, '<C-c>', '<Cmd>SendEditPrompt<CR>', { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n' }, 'ZZ', '<Cmd>SendEditPrompt<CR>', { silent = true, buffer = true, nowait = true })
-  vim.keymap.set('i', '<C-v>', function()
-    local ok, err = M.paste_clipboard_image()
-    if ok then
-      return
-    end
-    if err and err ~= '' then
-      vim.notify(err, vim.log.levels.WARN)
-    end
-  end, { silent = true, buffer = true })
 else
   vim.g.editprompt = 0
 end
