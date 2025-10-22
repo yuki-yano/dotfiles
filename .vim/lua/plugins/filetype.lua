@@ -29,12 +29,6 @@ return {
   {
     'folke/lazydev.nvim',
     ft = 'lua',
-    opts = {
-      library = {
-        'lazy.nvim',
-        'plenary.nvim',
-      },
-    },
     config = function()
       ---@diagnostic disable-next-line: missing-fields
       require('lazydev').setup({
@@ -45,6 +39,12 @@ return {
         },
       })
     end,
+  },
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    ft = { 'markdown' },
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    opts = {},
   },
   { 'pantharshit00/vim-prisma', ft = { 'prisma' } },
   {
