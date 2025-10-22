@@ -175,7 +175,7 @@ return {
   },
   {
     'Shougo/ddu.vim',
-    lazy = true,
+    enable = false,
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'yuki-yano/denops-lazy.nvim' },
@@ -390,12 +390,6 @@ return {
           },
           help = {
             defaultAction = 'open',
-          },
-          ['ai-review-request'] = {
-            defaultAction = 'open',
-          },
-          ['ai-review-log'] = {
-            defaultAction = 'resume',
           },
           ['nvim-notify'] = {
             defaultAction = 'open',
