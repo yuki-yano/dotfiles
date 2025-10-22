@@ -1,219 +1,412 @@
-#!/usr/bin/env sh
+#!/usr/bin/env -S deno run --allow-run --allow-env --allow-read
 
-# tmux session selector/killer manager
+import { Command } from "jsr:@cliffy/command@1.0.0-rc.7";
+import { colors } from "https://deno.land/x/cliffy@v1.0.0-rc.4/ansi/colors.ts";
+import { fromFileUrl } from "https://deno.land/std@0.224.0/path/mod.ts";
 
-set -eu
+const decoder = new TextDecoder();
+const encoder = new TextEncoder();
 
-if ! command -v fzf >/dev/null 2>&1; then
-  printf '%s\n' "tmux-session-manager: fzf not found" >&2
-  exit 1
-fi
+type Mode = "select" | "kill";
+type Action = "session" | "window" | "create" | "server";
 
-if ! command -v tmux >/dev/null 2>&1; then
-  printf '%s\n' "tmux-session-manager: tmux not found" >&2
-  exit 1
-fi
-
-GREEN=$(printf '\033[32m')
-RED=$(printf '\033[31m')
-CYAN=$(printf '\033[36m')
-BOLD=$(printf '\033[1m')
-RESET=$(printf '\033[0m')
-
-SCRIPT_PATH=$0
-case $SCRIPT_PATH in
-  */*)
-    SCRIPT_ABS="$(cd "$(dirname "$SCRIPT_PATH")" 2>/dev/null && pwd)/$(basename "$SCRIPT_PATH")"
-    ;;
-  *)
-    if command -v "$SCRIPT_PATH" >/dev/null 2>&1; then
-      SCRIPT_ABS=$(command -v "$SCRIPT_PATH")
-    else
-      SCRIPT_ABS="$(pwd)/$SCRIPT_PATH"
-    fi
-    ;;
-esac
-
-tsm_usage() {
-  cat <<'USAGE'
-Usage: tmux-session-manager [--kill] [--help]
-
-  --kill   Kill session(s) instead of selecting/attaching
-  --help   Show this help
-USAGE
+interface WindowInfo {
+  index: string;
+  name: string;
+  panes: number;
+  active: boolean;
+  command: string;
 }
 
-tsm_open_popup_if_needed() {
-  mode=$1
-  popup_flag=$2
-  if [ -n "${TMUX-}" ] && [ "$popup_flag" -eq 0 ]; then
-    pane_dir=$(tmux display-message -p "#{pane_current_path}" 2>/dev/null || printf '')
-    if [ -z "$pane_dir" ]; then
-      pane_dir=$HOME
-    fi
-    if [ "$mode" = "kill" ]; then
-      tmux display-popup -E -w 70% -h 70% -d "$pane_dir" "$SCRIPT_ABS --kill --popup"
-    else
-      tmux display-popup -E -w 70% -h 70% -d "$pane_dir" "$SCRIPT_ABS --popup"
-    fi
-    exit 0
-  fi
+interface SessionInfo {
+  name: string;
+  windows: WindowInfo[];
+  totalWindows: number;
+  totalPanes: number;
+  isCurrent: boolean;
 }
 
-tsm_list_sessions() {
-  tmux list-sessions -F '#{session_name}' 2>/dev/null || :
+interface Entry {
+  action: Action;
+  name: string;
+  display: string;
 }
 
-tsm_list_selection_entries() {
-  is_tmux=$1
-  tsm_list_sessions | while IFS= read -r session; do
-    [ -z "$session" ] && continue
-    windows=$(tmux display-message -p -F '#{session_windows}' -t "${session}:" 2>/dev/null || printf '0')
-    panes=$(tmux list-panes -s -t "${session}:" -F '#{pane_id}' 2>/dev/null | wc -l | tr -d '[:space:]')
-    [ -z "$windows" ] && windows=0
-    [ -z "$panes" ] && panes=0
+async function runCommand(
+  cmd: string,
+  args: string[],
+  { allowFail = false }: { allowFail?: boolean } = {},
+): Promise<string> {
+  const command = new Deno.Command(cmd, {
+    args,
+    stdout: "piped",
+    stderr: "piped",
+  });
 
-    if [ "$windows" = "1" ]; then
-      win_plural=""
-    else
-      win_plural="s"
-    fi
-
-    if [ "$panes" = "1" ]; then
-      pane_plural=""
-    else
-      pane_plural="s"
-    fi
-
-    detail="[ ${BOLD}${session}${RESET} | ${CYAN}${windows} window${win_plural}${RESET} / ${CYAN}${panes} pane${pane_plural}${RESET} ]"
-
-    if [ "$is_tmux" -eq 1 ]; then
-      action="select"
-      label="${GREEN}select${RESET}"
-    else
-      action="attach"
-      label="${GREEN}attach${RESET}"
-    fi
-
-    printf '%s\t%s\t%s ==> %s\n' "$action" "$session" "$label" "$detail"
-  done
-
-  if [ "$is_tmux" -eq 0 ]; then
-    printf 'create\t\t%s ==> [ %s ]\n' "${GREEN}create${RESET}" "${BOLD}new session${RESET} | ${CYAN}tmux new-session${RESET}"
-  fi
+  try {
+    const { code, stdout, stderr } = await command.output();
+    if (code !== 0) {
+      if (allowFail) {
+        return "";
+      }
+      const errorText = decoder.decode(stderr).trim();
+      throw new Error(
+        `${cmd} ${args.join(" ")} exited with ${code}${errorText ? `: ${errorText}` : ""}`,
+      );
+    }
+    return decoder.decode(stdout);
+  } catch (error) {
+    if (error instanceof Deno.errors.NotFound) {
+      throw new Error(`${cmd} not found in PATH`);
+    }
+    if (allowFail) {
+      return "";
+    }
+    throw error;
+  }
 }
 
-tsm_choose_selection() {
-  if [ -n "${TMUX-}" ]; then
-    is_tmux=1
-  else
-    is_tmux=0
-  fi
-
-  if [ "$is_tmux" -eq 1 ] && command -v fzf-tmux >/dev/null 2>&1; then
-    selection=$(tsm_list_selection_entries "$is_tmux" | fzf-tmux -p 70%,70% --ansi --prompt='Session> ' --delimiter="$(printf '\t')" --with-nth=3 --cycle --reverse --height=100% --no-info) || return 1
-  else
-    selection=$(tsm_list_selection_entries "$is_tmux" | fzf --ansi --prompt='Session> ' --delimiter="$(printf '\t')" --with-nth=3 --cycle --reverse --height=100% --no-info) || return 1
-  fi
-
-  [ -z "$selection" ] && return 1
-
-  IFS="$(printf '\t')" read -r action name _ <<EOF || return 1
-$selection
-EOF
-
-  case $action in
-    select)
-      [ -n "$name" ] && tmux switch-client -t "$name"
-      ;;
-    attach)
-      [ -n "$name" ] && tmux attach -t "$name"
-      ;;
-    create)
-      tmux new-session
-      ;;
-  esac
+async function commandExists(cmd: string): Promise<boolean> {
+  try {
+    const command = new Deno.Command(cmd, {
+      args: ["--version"],
+      stdout: "null",
+      stderr: "null",
+    });
+    await command.output();
+    return true;
+  } catch (error) {
+    if (error instanceof Deno.errors.NotFound) {
+      return false;
+    }
+    return true;
+  }
 }
 
-tsm_list_kill_entries() {
-  tsm_list_sessions | while IFS= read -r session; do
-    [ -z "$session" ] && continue
-    windows=$(tmux display-message -p -F '#{session_windows}' -t "${session}:" 2>/dev/null || printf '0')
-    panes=$(tmux list-panes -s -t "${session}:" -F '#{pane_id}' 2>/dev/null | wc -l | tr -d '[:space:]')
-    [ -z "$windows" ] && windows=0
-    [ -z "$panes" ] && panes=0
+async function collectSessions(): Promise<SessionInfo[]> {
+  const inTmux = Boolean(Deno.env.get("TMUX"));
+  const currentSession = inTmux
+    ? (await runCommand("tmux", [
+      "display-message",
+      "-p",
+      "#{session_name}",
+    ], { allowFail: true })).trim()
+    : "";
 
-    if [ "$windows" = "1" ]; then
-      win_plural=""
-    else
-      win_plural="s"
-    fi
+  const sessionsRaw = await runCommand("tmux", [
+    "list-sessions",
+    "-F",
+    "#{session_name}",
+  ], { allowFail: true });
 
-    if [ "$panes" = "1" ]; then
-      pane_plural=""
-    else
-      pane_plural="s"
-    fi
+  const sessionNames = sessionsRaw
+    .split(/\r?\n/)
+    .map((name) => name.trim())
+    .filter((name) => name.length > 0);
 
-    detail="[ ${BOLD}${session}${RESET} | ${CYAN}${windows} window${win_plural}${RESET} / ${CYAN}${panes} pane${pane_plural}${RESET} ]"
-    printf 'session\t%s\t%s ==> %s\n' "$session" "${RED}kill${RESET}" "$detail"
-  done
+  const sessions: SessionInfo[] = [];
 
-  session_count=$(tsm_list_sessions | wc -l | tr -d '[:space:]')
-  if [ "$session_count" -gt 1 ]; then
-    printf 'server\t\t%s ==> [ %s ]\n' "${RED}kill${RESET}" "${BOLD}tmux server${RESET} | ${CYAN}tmux kill-server${RESET}"
-  fi
+  for (const name of sessionNames) {
+    const windowOutput = await runCommand("tmux", [
+      "list-windows",
+      "-t",
+      `${name}:`,
+      "-F",
+      "#{window_index}\t#{window_panes}\t#{window_active}\t#{window_name}\t#{pane_current_command}",
+    ], { allowFail: true });
+
+    const windows: WindowInfo[] = [];
+    let paneTotal = 0;
+
+    const lines = windowOutput
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+
+    for (const line of lines) {
+      const [
+        index,
+        panesStr,
+        activeStr,
+        b64Name,
+        b64Command,
+      ] = line.split("\t");
+      if (!index) continue;
+      const panes = Number.parseInt(panesStr ?? "0", 10) || 0;
+      paneTotal += panes;
+      const nameDecoded = b64Name ?? "";
+      const commandDecoded = b64Command ?? "";
+      windows.push({
+        index,
+        name: nameDecoded.length > 0 ? decodeTmuxString(nameDecoded) : "(unnamed)",
+        panes,
+        active: activeStr === "1",
+        command: decodeTmuxString(commandDecoded).trim(),
+      });
+    }
+
+    sessions.push({
+      name,
+      windows,
+      totalWindows: windows.length,
+      totalPanes: paneTotal,
+      isCurrent: inTmux && name === currentSession,
+    });
+  }
+
+  return sessions;
 }
 
-tsm_choose_kill() {
-  selection=$(tsm_list_kill_entries | fzf --ansi --prompt='Kill> ' --delimiter="$(printf '\t')" --with-nth=3 --cycle --reverse --multi --bind=ctrl-a:select-all,ctrl-d:deselect-all --height=100% --no-info) || return 1
-  [ -z "$selection" ] && return 1
-
-  printf '%s\n' "$selection" | while IFS="$(printf '\t')" read -r action name _; do
-    [ -z "$action" ] && continue
-    case $action in
-      session)
-        [ -n "$name" ] && tmux kill-session -t "$name"
-        ;;
-      server)
-        tmux kill-server
-        ;;
-    esac
-  done
+function decodeTmuxString(value: string): string {
+  // tmux can encode special characters, decode common sequences.
+  if (!value) return "";
+  return value
+    .replace(/\\x([0-9a-fA-F]{2})/g, (_, hex) =>
+      String.fromCharCode(Number.parseInt(hex, 16))
+    )
+    .replace(/\\([0-7]{1,3})/g, (_, oct) =>
+      String.fromCharCode(Number.parseInt(oct, 8))
+    )
+    .replace(/\\\\/g, "\\");
 }
 
-tsm_main() {
-  mode=select
-  popup=0
-
-  while [ "$#" -gt 0 ]; do
-    case $1 in
-      --kill)
-        mode=kill
-        ;;
-      --popup)
-        popup=1
-        ;;
-      --help|-h)
-        tsm_usage
-        exit 0
-        ;;
-      *)
-        printf 'Unknown option: %s\n' "$1" >&2
-        tsm_usage >&2
-        exit 1
-        ;;
-    esac
-    shift
-  done
-
-  tsm_open_popup_if_needed "$mode" "$popup"
-
-  if [ "$mode" = "kill" ]; then
-    tsm_choose_kill || exit 0
-  else
-    tsm_choose_selection || exit 0
-  fi
+function formatSessionDisplay(session: SessionInfo, mode: Mode): string {
+  const starColor = mode === "kill" ? colors.red : colors.green;
+  const marker = session.isCurrent ? starColor("*") : " ";
+  const windowLabel = session.totalWindows === 1 ? "window" : "windows";
+  const paneLabel = session.totalPanes === 1 ? "pane" : "panes";
+  return `${marker} ${colors.bold(session.name)}  ${colors.dim("|")} ${colors.dim("windows")} ${colors.cyan(String(session.totalWindows))}  ${colors.dim("|")} ${colors.dim("panes")} ${colors.cyan(String(session.totalPanes))}`;
 }
 
-tsm_main "$@"
+function formatWindowDisplay(
+  session: SessionInfo,
+  window: WindowInfo,
+  isLast: boolean,
+  mode: Mode,
+): string {
+  const branch = isLast ? "  └─" : "  ├─";
+  const starColor = mode === "kill" ? colors.red : colors.green;
+  const marker = window.active ? starColor("*") : " ";
+  const paneLabel = window.panes === 1 ? "pane" : "panes";
+  const commandLabel = window.command ? `  ${colors.dim("|")} ${colors.dim("cmd")} ${colors.magenta(window.command)}` : "";
+  return `${branch} ${marker} ${colors.bold(session.name)}:${colors.cyan(window.index)} ${window.name}  ${colors.dim("|")} ${colors.dim("panes")} ${colors.cyan(String(window.panes))}${commandLabel}`;
+}
+
+function buildEntries(sessions: SessionInfo[], mode: Mode): Entry[] {
+  const entries: Entry[] = [];
+
+  for (const session of sessions) {
+    entries.push({
+      action: "session",
+      name: session.name,
+      display: formatSessionDisplay(session, mode),
+    });
+
+    session.windows.forEach((window, index) => {
+      entries.push({
+        action: "window",
+        name: `${session.name}:${window.index}`,
+        display: formatWindowDisplay(session, window, index === session.windows.length - 1, mode),
+      });
+    });
+  }
+
+  if (mode === "select" && !Deno.env.get("TMUX")) {
+    entries.push({
+      action: "create",
+      name: "",
+      display: `${colors.green("create")} [ ${colors.bold("new session") } | ${colors.cyan("tmux new-session")} ]`,
+    });
+  }
+
+  if (mode === "kill") {
+    const sessionCount = sessions.length;
+    if (sessionCount > 1) {
+      entries.push({
+        action: "server",
+        name: "",
+        display: `  ${colors.red("✖")} ${colors.bold("tmux server")}  ${colors.dim("|")} ${colors.cyan("tmux kill-server")}`,
+      });
+    }
+  }
+
+  return entries;
+}
+
+interface RunFzfOptions {
+  forcePlain?: boolean;
+}
+
+async function runFzf(
+  entries: Entry[],
+  mode: Mode,
+  options: RunFzfOptions = {},
+): Promise<string[]> {
+  if (entries.length === 0) {
+    return [];
+  }
+
+  const inTmux = Boolean(Deno.env.get("TMUX"));
+  const useFzfTmux = !options.forcePlain && inTmux && await commandExists("fzf-tmux");
+  const baseCmd = useFzfTmux ? "fzf-tmux" : "fzf";
+
+  const commonArgs = [
+    "--ansi",
+    `--prompt=${mode === "kill" ? "Kill" : "Session"}> `,
+    `--delimiter=${"\t"}`,
+    "--with-nth=3",
+    "--cycle",
+    "--reverse",
+    "--height=100%",
+    "--no-info",
+    "--no-sort",
+    "--exact",
+  ];
+
+  if (mode === "kill") {
+    commonArgs.push("--multi", "--bind=ctrl-a:select-all,ctrl-d:deselect-all");
+  }
+
+  const args = useFzfTmux
+    ? ["-p", "50%,50%", ...commonArgs]
+    : commonArgs;
+
+  const command = new Deno.Command(baseCmd, {
+    args,
+    stdin: "piped",
+    stdout: "piped",
+    stderr: "piped",
+  });
+
+  const child = command.spawn();
+  const writer = child.stdin.getWriter();
+  const payload = entries.map((entry) => `${entry.action}\t${entry.name}\t${entry.display}`).join("\n");
+  await writer.write(encoder.encode(payload));
+  await writer.write(encoder.encode("\n"));
+  await writer.close();
+
+  const { code, stdout } = await child.output();
+  if (code !== 0) {
+    return [];
+  }
+
+  const text = decoder.decode(stdout).trim();
+  if (!text) {
+    return [];
+  }
+  return text.split(/\r?\n/);
+}
+
+async function handleSelection(lines: string[], mode: Mode): Promise<void> {
+  if (lines.length === 0) {
+    return;
+  }
+
+  if (mode === "kill") {
+    for (const line of lines) {
+      const [action, name] = line.split("\t");
+      if (!action) continue;
+      if (action === "session" && name) {
+        await runCommand("tmux", ["kill-session", "-t", name], { allowFail: true });
+      } else if (action === "window" && name) {
+        await runCommand("tmux", ["kill-window", "-t", name], { allowFail: true });
+      } else if (action === "server") {
+        await runCommand("tmux", ["kill-server"], { allowFail: true });
+      }
+    }
+    return;
+  }
+
+  const [line] = lines;
+  const [action, name] = line.split("\t");
+  if (!action) {
+    return;
+  }
+
+  if (action === "session" && name) {
+    if (Deno.env.get("TMUX")) {
+      await runCommand("tmux", ["switch-client", "-t", name], { allowFail: true });
+    } else {
+      await runCommand("tmux", ["attach", "-t", name], { allowFail: true });
+    }
+  } else if (action === "window" && name) {
+    const sessionName = name.split(":")[0] ?? name;
+    if (Deno.env.get("TMUX")) {
+      await runCommand("tmux", ["switch-client", "-t", sessionName], { allowFail: true });
+      await runCommand("tmux", ["select-window", "-t", name], { allowFail: true });
+    } else {
+      await runCommand("tmux", ["select-window", "-t", name], { allowFail: true });
+      await runCommand("tmux", ["attach", "-t", sessionName], { allowFail: true });
+    }
+  } else if (action === "create") {
+    await runCommand("tmux", ["new-session"], { allowFail: true });
+  }
+}
+
+async function openPopupIfNeeded(mode: Mode, popup: boolean): Promise<void> {
+  if (!Deno.env.get("TMUX") || popup) {
+    return;
+  }
+
+  const paneDir = (await runCommand("tmux", [
+    "display-message",
+    "-p",
+    "#{pane_current_path}",
+  ], { allowFail: true })).trim() || Deno.env.get("HOME") || Deno.cwd();
+
+  const scriptPath = fromFileUrl(import.meta.url);
+  const args = mode === "kill" ? ["--kill", "--popup"] : ["--popup"];
+
+  try {
+    const popupCmd = new Deno.Command("tmux", {
+      args: [
+        "display-popup",
+        "-E",
+        "-w",
+        "50%",
+        "-h",
+        "50%",
+        "-d",
+        paneDir,
+        scriptPath,
+        ...args,
+      ],
+      stdout: "null",
+      stderr: "piped",
+    });
+    const { code, stderr } = await popupCmd.output();
+    if (code === 0) {
+      Deno.exit(0);
+    } else {
+      const warning = decoder.decode(stderr).trim();
+      if (warning.length > 0) {
+        console.error(`tmux display-popup failed (${code}): ${warning}`);
+      }
+    }
+  } catch (error) {
+    console.error(`tmux display-popup not available: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+async function main(): Promise<void> {
+  const cli = new Command()
+    .name("tmux-session-manager")
+    .description("tmux session selector/killer manager")
+    .option("--kill", "Kill session(s) instead of selecting/attaching", { default: false })
+    .option("--popup", "Internal flag to skip popup", { default: false })
+    .action(async ({ kill, popup }: { kill: boolean; popup: boolean }) => {
+      const mode: Mode = kill ? "kill" : "select";
+      await openPopupIfNeeded(mode, popup);
+
+      const sessions = await collectSessions();
+      const entries = buildEntries(sessions, mode);
+      const lines = await runFzf(entries, mode, { forcePlain: popup });
+      await handleSelection(lines, mode);
+    });
+
+  await cli.parse(Deno.args);
+}
+
+if (import.meta.main) {
+  await main();
+}
