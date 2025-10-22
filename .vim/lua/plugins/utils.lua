@@ -1,5 +1,4 @@
 local color = require('rc.modules.color')
-local is_quick_ime = require('rc.setup.quick_ime').is_quick_ime
 local is_editprompt = require('rc.setup.quick_ime').is_editprompt
 
 return {
@@ -700,7 +699,7 @@ return {
   },
   {
     'yuki-yano/resonator.vim',
-    enabled = not is_quick_ime() and not is_editprompt() and not vim.g.is_edit_command_line,
+    enabled = not is_editprompt() and not vim.g.is_edit_command_line,
     lazy = true,
     dev = true,
     event = { 'BufRead' },
@@ -741,7 +740,20 @@ return {
     end,
   },
   {
-    'dundalek/bloat.nvim',
-    cmd = 'Bloat',
+    'yuki-yano/clipboard-image-to-agent.nvim',
+    dev = true,
+    enabled = is_editprompt(),
+    lazy = false,
+    config = function()
+      local clip = require('clipboard_image_to_agent')
+      clip.setup()
+
+      vim.keymap.set({ 'i' }, '<C-v>', function()
+        local ok, err = clip.paste()
+        if not ok and err then
+          vim.notify(err, vim.log.levels.WARN, { title = 'clipboard-image-to-agent.nvim' })
+        end
+      end)
+    end,
   },
 }

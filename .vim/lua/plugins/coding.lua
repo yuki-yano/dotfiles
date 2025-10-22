@@ -60,6 +60,10 @@ return {
         'biosugar0/cmp-claudecode',
         dependencies = { 'nvim-lua/plenary.nvim' },
       },
+      {
+        'yuki-yano/cmp-prompt-abbr',
+        dev = true,
+      },
       -- { 'cohama/lexima.vim' }, -- NOTE: Load before cmp
     },
     init = function()
@@ -177,6 +181,59 @@ return {
 
       if is_editprompt() then
         require('cmp_claudecode').setup()
+        require('cmp_prompt_abbr').setup({
+          keyword_length = 1,
+          mappings = {
+            { source = ';jp', target = '日本語で説明して', label = ';jp →日本語で説明して' },
+            { source = ';co', target = 'commitをして', label = ';co →commitをして' },
+            { source = ';noe', target = '編集はしないで', label = ';noe →編集はしないで' },
+            {
+              source = ';nd',
+              target = '完了したらDiscordに通知して',
+              label = ';nd →完了したらDiscordに通知して',
+            },
+            {
+              source = ';ns',
+              target = '完了したらスマホに通知して',
+              label = ';ns →完了したらスマホに通知して',
+            },
+            {
+              source = ';na',
+              target = '完了したらDiscordとスマホに通知して',
+              label = ';na →完了したらDiscordとスマホに通知して',
+            },
+            {
+              source = ';sir',
+              target = 'sddでinitとrequirementsを実行して',
+              label = ';sir → sddでinitとrequirementsを実行して',
+            },
+            {
+              source = ';sd',
+              target = '承認するからsddでdesignを実行して',
+              label = ';sd →承認するからsddでdesignを実行して',
+            },
+            {
+              source = ';st',
+              target = '承認するからsddでtasksを実行して',
+              label = ';st →承認するからsddでtasksを実行して',
+            },
+            {
+              source = ';si',
+              target = '承認するからsddでimplを実行して',
+              label = ';si →承認するからsddでimplを実行して',
+            },
+            {
+              source = ';prr',
+              target = 'PRに付いているレビューやコメントを確認して\nそれぞれの内容が妥当かどうか検討して教えて',
+              label = ';prr → PRに付いているレビューやコメントを確認してそれぞれの内容が妥当かどうか検討して教えて',
+            },
+          },
+        })
+        table.insert(sources, 1, {
+          name = 'prompt_abbr',
+          keyword_length = 1,
+          keyword_pattern = [[;[A-Za-z0-9_-]*]],
+        })
         table.insert(sources, 1, {
           name = 'claude_at',
           priority = 900,
@@ -285,6 +342,7 @@ return {
                 path = '[Path]',
                 claude_at = '[Claude @]',
                 claude_slash = '[Claude /]',
+                prompt_abbr = '[Prompt Abbr]',
               }
 
               vim_item = require('tailwindcss-colorizer-cmp').formatter(entry, vim_item)

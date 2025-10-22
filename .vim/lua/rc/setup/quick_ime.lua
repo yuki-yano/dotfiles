@@ -110,7 +110,7 @@ if M.is_editprompt() then
           local mode = vim.api.nvim_get_mode().mode
           if mode ~= 'i' and mode ~= 'R' and mode ~= 'Rv' and mode ~= 'c' then
             -- vim.cmd('startinsert') -- Ensure returning focus re-enters insert mode
-            vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('a', true, false, true), 'n', false)
+            -- vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('a', true, false, true), 'n', false)
           end
         end)
       end

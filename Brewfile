@@ -71,13 +71,14 @@ install delphinus/sfmono-square/sfmono-square
 # install universal-ctags --HEAD
 install curl
 install efm-langserver
+install fastfetch
 install global
 install gojq
 install graphviz
 install itchyny/tap/mmv
 install jq
-install fastfetch
 install parallel
+install pngpaste
 install rsync
 install silicon
 install tokei
