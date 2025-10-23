@@ -186,7 +186,11 @@ return {
           mappings = {
             { source = ';jp', target = '日本語で説明して', label = ';jp →日本語で説明して' },
             { source = ';co', target = 'commitをして', label = ';co →commitをして' },
-            { source = ';noe', target = '編集はしないで', label = ';noe →編集はしないで' },
+            {
+              source = ';noe',
+              target = 'まだ実際の編集はしないで',
+              label = ';noe →まだ実際の編集はしないで',
+            },
             {
               source = ';nd',
               target = '完了したらDiscordに通知して',
@@ -679,260 +683,6 @@ return {
 
       local rules = {}
 
-      -- Markdown
-      -- TODO: Use insx
-      -- rules = list_concat({
-      --   rules,
-      --   {
-      --     {
-      --       filetype = 'markdown',
-      --       char = '#',
-      --       at = [=[^\%#\%(#\)\@!]=],
-      --       input = '#<Space>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '#',
-      --       at = [=[#\s\%#]=],
-      --       input = '<BS>#<Space>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<C-h>',
-      --       at = [=[^#\s\%#]=],
-      --       input = '<BS><BS>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<C-h>',
-      --       at = [=[##\s\%#]=],
-      --       input = '<BS><BS><Space>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<BS>',
-      --       at = [=[^#\s\%#]=],
-      --       input = '<BS><BS>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<BS>',
-      --       at = [=[##\s\%#]=],
-      --       input = '<BS><BS><Space>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '-',
-      --       at = [=[^\s*\%#]=],
-      --       input = '-<Space>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<Tab>',
-      --       at = [=[^\s*-\s\%#]=],
-      --       input = '<Home><Tab><End>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<Tab>',
-      --       at = [=[^\s*-\s\w.*\%#]=],
-      --       input = '<Home><Tab><End>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<S-Tab>',
-      --       at = [=[^\s\+-\s\%#]=],
-      --       input = '<Home><Del><Del><End>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<S-Tab>',
-      --       at = [=[^\s\+-\s\w.*\%#]=],
-      --       input = '<Home><Del><Del><End>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<S-Tab>',
-      --       at = [=[^-\s\w.*\%#]=],
-      --       input = '',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<C-h>',
-      --       at = [=[^-\s\%#]=],
-      --       input = '<C-w><BS>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<C-h>',
-      --       at = [=[^\s\+-\s\%#]=],
-      --       input = '<C-w><C-w><BS>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<BS>',
-      --       at = [=[^-\s\%#]=],
-      --       input = '<C-w><BS>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<BS>',
-      --       at = [=[^\s\+-\s\%#]=],
-      --       input = '<C-w><C-w><BS>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<CR>',
-      --       at = [=[^-\s\%#]=],
-      --       input = '<C-w><CR>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<CR>',
-      --       at = [=[^\s\+-\s\%#]=],
-      --       input = '<C-w><C-w><CR>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<CR>',
-      --       at = [=[^\s*-\s\w.*\%#]=],
-      --       input = '<CR>-<Space>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '[',
-      --       at = [=[^\s*-\s\%#]=],
-      --       input = '<Left><Space>[]<Left>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<Tab>',
-      --       at = [=[^\s*-\s\[\%#\]\s]=],
-      --       input = '<Home><Tab><End><Left><Left>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<S-Tab>',
-      --       at = [=[^-\s\[\%#\]\s]=],
-      --       input = '',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<S-Tab>',
-      --       at = [=[^\s\+-\s\[\%#\]\s]=],
-      --       input = '<Home><Del><Del><End><Left><Left>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<C-h>',
-      --       at = [=[^\s*-\s\[\%#\]]=],
-      --       input = '<BS><Del><Del>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<BS>',
-      --       at = [=[^\s*-\s\[\%#\]]=],
-      --       input = '<BS><Del><Del>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<Space>',
-      --       at = [=[^\s*-\s\[\%#\]]=],
-      --       input = '<Space><End>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = 'x',
-      --       at = [=[^\s*-\s\[\%#\]]=],
-      --       input = 'x<End>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<CR>',
-      --       at = [=[^-\s\[\%#\]]=],
-      --       input = '<End><C-w><C-w><C-w><CR>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<CR>',
-      --       at = [=[^\s\+-\s\[\%#\]]=],
-      --       input = '<End><C-w><C-w><C-w><C-w><CR>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<Tab>',
-      --       at = [=[^\s*-\s\[\(\s\|x\)\]\s\%#]=],
-      --       input = '<Home><Tab><End>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<Tab>',
-      --       at = [=[^\s*-\s\[\(\s\|x\)\]\s\w.*\%#]=],
-      --       input = '<Home><Tab><End>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<S-Tab>',
-      --       at = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=],
-      --       input = '<Home><Del><Del><End>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<S-Tab>',
-      --       at = [=[^\s\+-\s\[\(\s\|x\)\]\s\w.*\%#]=],
-      --       input = '<Home><Del><Del><End>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<S-Tab>',
-      --       at = [=[^-\s\[\(\s\|x\)\]\s\w.*\%#]=],
-      --       input = '',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<C-h>',
-      --       at = [=[^-\s\[\(\s\|x\)\]\s\%#]=],
-      --       input = '<C-w><C-w><C-w><BS>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<C-h>',
-      --       at = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=],
-      --       input = '<C-w><C-w><C-w><C-w><BS>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<BS>',
-      --       at = [=[^-\s\[\(\s\|x\)\]\s\%#]=],
-      --       input = '<C-w><C-w><C-w><BS>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<BS>',
-      --       at = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=],
-      --       input = '<C-w><C-w><C-w><C-w><BS>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<CR>',
-      --       at = [=[^-\s\[\(\s\|x\)\]\s\%#]=],
-      --       input = '<C-w><C-w><C-w><CR>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<CR>',
-      --       at = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=],
-      --       input = '<C-w><C-w><C-w><C-w><CR>',
-      --     },
-      --     {
-      --       filetype = 'markdown',
-      --       char = '<CR>',
-      --       at = [=[^\s*-\s\[\(\s\|x\)\]\s\w.*\%#]=],
-      --       input = '<CR>-<Space>[]<Space><Left><Left>',
-      --     },
-      --   },
-      -- })
-
       for _, rule in ipairs(rules) do
         vimx.fn.lexima.add_rule(rule)
       end
@@ -1196,7 +946,66 @@ return {
         )
       )
 
-      local substitute = require('insx.recipe.substitute')
+      local function console_switch(from_level, to_level)
+        local target = 'console.' .. from_level .. '('
+        local target_len = #target
+        local adjust_offset = #'console.'
+        local diff = #to_level - #from_level
+
+        return {
+          enabled = function(ctx)
+            local text = ctx.text()
+            local cursor = ctx.col()
+            local start_col
+            local search_pos = 1
+
+            while true do
+              local s = text:find(target, search_pos, true)
+              if not s then
+                break
+              end
+              local col = s - 1
+              start_col = col
+              search_pos = s + 1
+              if col >= cursor then
+                break
+              end
+            end
+
+            if not start_col then
+              return false
+            end
+
+            ctx.data.console_switch = {
+              insert_col = start_col + target_len,
+              adjust_from = start_col + adjust_offset,
+              diff = diff,
+              original_col = cursor,
+            }
+
+            return true
+          end,
+          action = function(ctx)
+            local data = ctx.data.console_switch
+            if not data then
+              return
+            end
+
+            ctx.move(ctx.row(), data.insert_col)
+            ctx.remove([[console\.]] .. from_level .. [[(\%#]])
+            ctx.send('console.' .. to_level .. '(')
+
+            local new_col = data.original_col
+            if new_col >= data.adjust_from then
+              new_col = new_col + data.diff
+            end
+
+            ctx.move(ctx.row(), new_col)
+            ctx.data.console_switch = nil
+          end,
+        }
+      end
+
       for level, next_level in pairs({
         log = {
           next = 'warn',
@@ -1219,20 +1028,8 @@ return {
           prev = 'debug',
         },
       }) do
-        insx.add(
-          '<C-a>',
-          substitute({
-            pattern = [[console\.]] .. level .. [[(\%#]],
-            replace = [[console.]] .. next_level.next .. [[(\%#]],
-          })
-        )
-        insx.add(
-          '<C-x>',
-          substitute({
-            pattern = [[console\.]] .. level .. [[(\%#]],
-            replace = [[console.]] .. next_level.prev .. [[(\%#]],
-          })
-        )
+        insx.add('<C-a>', console_switch(level, next_level.next))
+        insx.add('<C-x>', console_switch(level, next_level.prev))
       end
 
       -- markdown
@@ -1253,6 +1050,71 @@ return {
           indent = 0,
         })
       )
+
+      -- markdown headings / list helpers (ported from former lexima rules)
+      local markdown_rules = {
+        -- headings '# '
+        { key = '#', pattern = [=[^\%#\%(#\)\@!]=], input = '#<Space>' },
+        { key = '#', pattern = [=[#\s\%#]=], input = '<BS>#<Space>' },
+        { key = '<C-h>', pattern = [=[^#\s\%#]=], input = '<BS><BS>' },
+        { key = '<C-h>', pattern = [=[##\s\%#]=], input = '<BS><BS><Space>' },
+        { key = '<BS>', pattern = [=[^#\s\%#]=], input = '<BS><BS>' },
+        { key = '<BS>', pattern = [=[##\s\%#]=], input = '<BS><BS><Space>' },
+        -- unordered list '- '
+        { key = '-', pattern = [=[^\s*\%#]=], input = '-<Space>' },
+        { key = '<Tab>', pattern = [=[^\s*-\s\%#]=], input = '<Home><Tab><End>' },
+        { key = '<Tab>', pattern = [=[^\s*-\s\w.*\%#]=], input = '<Home><Tab><End>' },
+        { key = '<S-Tab>', pattern = [=[^\s\+-\s\%#]=], input = '<Home><Del><Del><End>' },
+        { key = '<S-Tab>', pattern = [=[^\s\+-\s\w.*\%#]=], input = '<Home><Del><Del><End>' },
+        { key = '<S-Tab>', pattern = [=[^-\s\w.*\%#]=], input = '' },
+        { key = '<C-h>', pattern = [=[^-\s\%#]=], input = '<C-w><BS>' },
+        { key = '<C-h>', pattern = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><BS>' },
+        { key = '<BS>', pattern = [=[^-\s\%#]=], input = '<C-w><BS>' },
+        { key = '<BS>', pattern = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><BS>' },
+        { key = '<CR>', pattern = [=[^-\s\%#]=], input = '<C-w><CR>' },
+        { key = '<CR>', pattern = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><CR>' },
+        { key = '<CR>', pattern = [=[^\s*-\s\w.*\%#]=], input = '<CR>-<Space>' },
+        -- checkbox '- [ ]' basics
+        { key = '[', pattern = [=[^\s*-\s\%#]=], input = '<Left><Space>[]<Left>' },
+        { key = '<Tab>', pattern = [=[^\s*-\s\[\%#\]\s]=], input = '<Home><Tab><End><Left><Left>' },
+        { key = '<S-Tab>', pattern = [=[^-\s\[\%#\]\s]=], input = '' },
+        { key = '<S-Tab>', pattern = [=[^\s\+-\s\[\%#\]\s]=], input = '<Home><Del><Del><End><Left><Left>' },
+        { key = '<C-h>', pattern = [=[^\s*-\s\[\%#\]]=], input = '<BS><Del><Del>' },
+        { key = '<BS>', pattern = [=[^\s*-\s\[\%#\]]=], input = '<BS><Del><Del>' },
+        { key = '<Space>', pattern = [=[^\s*-\s\[\%#\]]=], input = '<Space><End>' },
+        { key = 'x', pattern = [=[^\s*-\s\[\%#\]]=], input = 'x<End>' },
+        { key = '<CR>', pattern = [=[^-\s\[\%#\]]=], input = '<End><C-w><C-w><C-w><CR>' },
+        { key = '<CR>', pattern = [=[^\s\+-\s\[\%#\]]=], input = '<End><C-w><C-w><C-w><C-w><CR>' },
+        -- checkbox indentation
+        { key = '<Tab>', pattern = [=[^\s*-\s\[\(\s\|x\)\]\s\%#]=], input = '<Home><Tab><End>' },
+        { key = '<Tab>', pattern = [=[^\s*-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '<Home><Tab><End>' },
+        { key = '<S-Tab>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<Home><Del><Del><End>' },
+        { key = '<S-Tab>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '<Home><Del><Del><End>' },
+        { key = '<S-Tab>', pattern = [=[^-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '' },
+        { key = '<C-h>', pattern = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><BS>' },
+        { key = '<C-h>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><C-w><BS>' },
+        { key = '<BS>', pattern = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><BS>' },
+        { key = '<BS>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><C-w><BS>' },
+        { key = '<CR>', pattern = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><CR>' },
+        { key = '<CR>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><C-w><CR>' },
+        { key = '<CR>', pattern = [=[^\s*-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '<CR>-<Space>[]<Space><Left><Left>' },
+      }
+
+      for _, rule in ipairs(markdown_rules) do
+        local key = rule.key
+        local pattern = rule.pattern
+        local input = rule.input
+
+        insx.add(key, {
+          priority = 100,
+          enabled = function(ctx)
+            return ctx.filetype == 'markdown' and ctx.match(pattern)
+          end,
+          action = function(ctx)
+            ctx.send(input)
+          end,
+        })
+      end
     end,
   },
   {
@@ -1770,6 +1632,7 @@ return {
   },
   {
     'yuki-yano/delete-mark.nvim',
+    enabled = false,
     dev = false,
     keys = {
       { '<C-e>', mode = { 'n', 'x', 'i' } },
