@@ -32,18 +32,41 @@ interface Entry {
   display: string;
 }
 
+interface RunCommandOptions {
+  allowFail?: boolean;
+  inheritStdio?: boolean;
+}
+
 async function runCommand(
   cmd: string,
   args: string[],
-  { allowFail = false }: { allowFail?: boolean } = {},
+  { allowFail = false, inheritStdio = false }: RunCommandOptions = {},
 ): Promise<string> {
-  const command = new Deno.Command(cmd, {
+  const commandOptions: Deno.CommandOptions = {
     args,
-    stdout: "piped",
-    stderr: "piped",
-  });
+    stdout: inheritStdio ? "inherit" : "piped",
+    stderr: inheritStdio ? "inherit" : "piped",
+  };
+
+  if (inheritStdio) {
+    commandOptions.stdin = "inherit";
+  }
+
+  const command = new Deno.Command(cmd, commandOptions);
 
   try {
+    if (inheritStdio) {
+      const child = command.spawn();
+      const { code } = await child.status;
+      if (code !== 0) {
+        if (allowFail) {
+          return "";
+        }
+        throw new Error(`${cmd} ${args.join(" ")} exited with ${code}`);
+      }
+      return "";
+    }
+
     const { code, stdout, stderr } = await command.output();
     if (code !== 0) {
       if (allowFail) {
@@ -327,7 +350,7 @@ async function handleSelection(lines: string[], mode: Mode): Promise<void> {
     if (Deno.env.get("TMUX")) {
       await runCommand("tmux", ["switch-client", "-t", name], { allowFail: true });
     } else {
-      await runCommand("tmux", ["attach", "-t", name], { allowFail: true });
+      await runCommand("tmux", ["attach", "-t", name], { allowFail: true, inheritStdio: true });
     }
   } else if (action === "window" && name) {
     const sessionName = name.split(":")[0] ?? name;
@@ -336,10 +359,10 @@ async function handleSelection(lines: string[], mode: Mode): Promise<void> {
       await runCommand("tmux", ["select-window", "-t", name], { allowFail: true });
     } else {
       await runCommand("tmux", ["select-window", "-t", name], { allowFail: true });
-      await runCommand("tmux", ["attach", "-t", sessionName], { allowFail: true });
+      await runCommand("tmux", ["attach", "-t", sessionName], { allowFail: true, inheritStdio: true });
     }
   } else if (action === "create") {
-    await runCommand("tmux", ["new-session"], { allowFail: true });
+    await runCommand("tmux", ["new-session"], { allowFail: true, inheritStdio: true });
   }
 }
 
