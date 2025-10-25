@@ -6,23 +6,95 @@ label=${GIT_QUICK_SAVE_LABEL:-"Git quick save"}
 
 msg=""
 if [ "$#" -gt 0 ]; then
-  msg=" - $*"
+  non_empty_args=""
+  for arg in "$@"; do
+    if [ -n "$arg" ]; then
+      if [ -z "$non_empty_args" ]; then
+        non_empty_args="$arg"
+      else
+        non_empty_args="$non_empty_args $arg"
+      fi
+    fi
+  done
+
+  if [ -n "$non_empty_args" ]; then
+    msg=" - $non_empty_args"
+  fi
 fi
 
 git_root=$(git rev-parse --show-toplevel 2>/dev/null || printf '')
 
-if [ -n "$git_root" ]; then
-  if [ ! -f "$git_root/.git/MERGE_HEAD" ] &&
-     git --no-pager diff --cached --quiet &&
-     [ ! -f "$git_root/.git/index.lock" ] &&
-     [ ! -d "$git_root/.git/rebase-merge" ] &&
-     [ ! -d "$git_root/.git/rebase-apply" ]; then
-    if git add --all &&
-       git commit --no-verify --message "$label: $(date -R)$msg" >/dev/null &&
-       git reset HEAD^ >/dev/null; then
-      echo "$label!$msg"
-    fi
+log() {
+  printf '%s: %s\n' "$label" "$1"
+}
+
+if [ -z "$git_root" ]; then
+  log "Not a Git repository."
+  exit 1
+fi
+
+if [ -f "$git_root/.git/MERGE_HEAD" ]; then
+  log "Skipped: merge in progress."
+  exit 0
+fi
+
+if ! git --no-pager diff --cached --quiet; then
+  log "Skipped: staged changes present."
+  exit 0
+fi
+
+if [ -f "$git_root/.git/index.lock" ]; then
+  log "Skipped: index is locked."
+  exit 0
+fi
+
+if [ -d "$git_root/.git/rebase-merge" ] || [ -d "$git_root/.git/rebase-apply" ]; then
+  log "Skipped: rebase in progress."
+  exit 0
+fi
+
+if ! git add --all; then
+  log "Failed: git add."
+  exit 1
+fi
+
+empty_snapshot=0
+if git diff --cached --quiet --; then
+  empty_snapshot=1
+  log "No working tree changes; creating empty snapshot."
+fi
+
+commit_message="$label: $(date -R)$msg"
+commit_output=$(git commit --no-verify --allow-empty --message "$commit_message" 2>&1)
+commit_status=$?
+
+if [ $commit_status -ne 0 ]; then
+  log "Commit failed."
+  printf '%s\n' "$commit_output" >&2
+  exit $commit_status
+fi
+
+commit_hash=$(git rev-parse --short HEAD 2>/dev/null)
+
+if [ -z "$commit_hash" ]; then
+  log "Commit succeeded but failed to read hash."
+fi
+
+if ! git reset HEAD^ >/dev/null 2>&1; then
+  log "Commit succeeded but git reset HEAD^ failed."
+  exit 1
+fi
+
+if [ -n "$commit_hash" ]; then
+  if [ "$empty_snapshot" -eq 1 ]; then
+    echo "$label!$msg (commit $commit_hash, empty snapshot)"
+  else
+    echo "$label!$msg (commit $commit_hash)"
   fi
 else
-  echo "Not a Git repository."
+  if [ "$empty_snapshot" -eq 1 ]; then
+    echo "$label!$msg (empty snapshot)"
+  else
+    echo "$label!$msg"
+  fi
 fi
