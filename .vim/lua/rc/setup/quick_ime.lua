@@ -120,6 +120,11 @@ if M.is_editprompt() then
   vim.keymap.set({ 'n' }, 'q', '<Cmd>SendEditPrompt<CR>', { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n', 'i' }, '<C-c>', '<Cmd>SendEditPrompt<CR>', { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n' }, 'ZZ', '<Cmd>SendEditPrompt<CR>', { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'i' }, '<C-k>', function()
+    pcall(function()
+      require('smart-tmux-nav').navigate('k')
+    end)
+  end, { silent = true, buffer = true, nowait = true })
 else
   vim.g.editprompt = 0
 end

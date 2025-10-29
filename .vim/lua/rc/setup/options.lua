@@ -57,6 +57,15 @@ vim.opt.smartindent = true
 vim.opt.softtabstop = 2
 vim.opt.tabstop = 2
 
+vim.api.nvim_create_autocmd({ 'FileType' }, {
+  pattern = { 'markdown' },
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.tabstop = 2
+  end,
+})
+
 local function set_format_options()
   vim.opt.formatoptions:remove('c')
   vim.opt.formatoptions:remove('r')

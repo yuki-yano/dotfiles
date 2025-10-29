@@ -303,10 +303,11 @@ vim.api.nvim_create_user_command('Cursor', function(opts)
   open_vscode_based_editor('cursor', opts.args)
 end, { nargs = '?' })
 
--- Windsurf
-vim.api.nvim_create_user_command('Windsurf', function(opts)
-  open_vscode_based_editor('windsurf', opts.args)
-end, { nargs = '?' })
+-- Arto
+vim.api.nvim_create_user_command('Arto', function()
+  local path = vim.fn.expand('%:p')
+  vim.cmd('!open -a /Applications/Arto.app ' .. path)
+end, {})
 
 -- Claude Code yank commands
 local function get_relative_filepath()
