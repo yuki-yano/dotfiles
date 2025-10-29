@@ -1,3 +1,0 @@
-#!/bin/bash
-
-echo "$*" | nkf -WwMQ | tr -d '\n' | tr = % | sed -e 's/%%/%/g'
