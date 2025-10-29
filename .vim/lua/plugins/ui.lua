@@ -612,6 +612,116 @@ return {
         return width
       end
 
+      local floatwin = require('ufo.preview.floatwin')
+
+      if not floatwin._adjust_width_to_fold then
+        floatwin._adjust_width_to_fold = true
+        local original_set_content = floatwin.setContent
+        local original_build = floatwin.build
+        local default_border = {
+          none = { '', '', '', '', '', '', '', '' },
+          single = { '┌', '─', '┐', '│', '┘', '─', '└', '│' },
+          double = { '╔', '═', '╗', '║', '╝', '═', '╚', '║' },
+          rounded = { '╭', '─', '╮', '│', '╯', '─', '╰', '│' },
+          solid = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+          shadow = {
+            '',
+            '',
+            { ' ', 'FloatShadowThrough' },
+            { ' ', 'FloatShadow' },
+            { ' ', 'FloatShadow' },
+            { ' ', 'FloatShadow' },
+            { ' ', 'FloatShadowThrough' },
+            '',
+          },
+        }
+
+        floatwin.setContent = function(self, text)
+          local max_text_width = 1
+          for _, line in ipairs(text) do
+            local line_width = vim.fn.strdisplaywidth(line)
+            if line_width > max_text_width then
+              max_text_width = line_width
+            end
+          end
+
+          original_set_content(self, text)
+
+          if not vim.api.nvim_win_is_valid(self.winid) then
+            return
+          end
+
+          self.showScrollBar = false
+
+          local available_width = self.width
+          local desired_width = math.min(available_width, max_text_width)
+          desired_width = math.max(desired_width, 1)
+
+          if desired_width ~= available_width then
+            local wopts = floatwin.getConfig()
+            wopts.width = desired_width
+            wopts.noautocmd = nil
+            vim.api.nvim_win_set_config(self.winid, wopts)
+            self.width = desired_width
+          end
+        end
+
+        floatwin.build = function(self, winid, height, border, is_above)
+          local wopts = original_build(self, winid, height, border, is_above)
+
+          local function resolve_border(value)
+            if type(value) == 'string' then
+              return default_border[value]
+            elseif type(value) == 'table' then
+              return value
+            end
+          end
+
+          local base_border = resolve_border(border) or default_border.rounded
+
+          local function restore_blank(target)
+            if type(target) ~= 'table' or type(base_border) ~= 'table' then
+              return
+            end
+            local function ensure(index)
+              local current = target[index]
+              local blank = false
+              if type(current) == 'string' then
+                blank = current == ''
+              elseif type(current) == 'table' then
+                blank = current[1] == ''
+              end
+              if blank then
+                local original = base_border[index]
+                if type(original) == 'table' then
+                  target[index] = vim.deepcopy(original)
+                else
+                  target[index] = original
+                end
+              end
+            end
+            ensure(1)
+            ensure(7)
+            ensure(8)
+          end
+
+          restore_blank(self.border)
+          restore_blank(wopts.border)
+
+          if type(wopts.col) == 'number' and wopts.col < 0 then
+            local shift = -wopts.col
+            wopts.col = 0
+            if type(wopts.width) == 'number' then
+              local new_width = math.max(wopts.width - shift, 1)
+              wopts.width = new_width
+              self.width = new_width
+            end
+          end
+
+          return wopts
+        end
+      end
+
       require('ufo').setup({
         open_fold_hl_timeout = 0,
         provider_selector = function(_, filetype, _)
