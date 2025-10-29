@@ -58,11 +58,12 @@ return {
           select = {
             enable = true,
             keymaps = {
-              ['i`'] = '@block.inner',
-              ['a`'] = '@block.outer',
-              -- NOTE: Not yet supported for jsx attributes
-              -- ['ax'] = '@tag.attribute',
-              -- ['ix'] = '@tag.attribute',
+              ['aF'] = '@function.outer',
+              ['iF'] = '@function.inner',
+              ['ib'] = '@block.inner',
+              ['ab'] = '@block.outer',
+              ['ix'] = '@attribute.inner',
+              ['ax'] = '@attribute.outer',
             },
           },
         },
@@ -92,10 +93,10 @@ return {
     },
     event = { 'ModeChanged' },
     config = function()
-      vim.keymap.set({ 'x' }, 'iu', [[:lua require('treesitter-unit').select()<CR>]])
-      vim.keymap.set({ 'x' }, 'au', [[:lua require('treesitter-unit').select(true)<CR>]])
-      vim.keymap.set({ 'o' }, 'iu', [[:<C-u>lua require('treesitter-unit').select()<CR>]])
-      vim.keymap.set({ 'o' }, 'au', [[:<C-u>lua require('treesitter-unit').select(true)<CR>]])
+      vim.keymap.set({ 'x' }, 'iu', [[:lua require('treesitter-unit').select()<CR>]], { silent = true })
+      vim.keymap.set({ 'x' }, 'au', [[:lua require('treesitter-unit').select(true)<CR>]], { silent = true })
+      vim.keymap.set({ 'o' }, 'iu', [[:<C-u>lua require('treesitter-unit').select()<CR>]], { silent = true })
+      vim.keymap.set({ 'o' }, 'au', [[:<C-u>lua require('treesitter-unit').select(true)<CR>]], { silent = true })
     end,
   },
   {

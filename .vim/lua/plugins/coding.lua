@@ -226,11 +226,6 @@ return {
               target = '承認するからsddでimplを実行して',
               label = ';si →承認するからsddでimplを実行して',
             },
-            {
-              source = ';prr',
-              target = 'PRに付いているレビューやコメントを確認して\nそれぞれの内容が妥当かどうか検討して教えて',
-              label = ';prr → PRに付いているレビューやコメントを確認してそれぞれの内容が妥当かどうか検討して教えて',
-            },
           },
         })
         table.insert(sources, 1, {
@@ -525,8 +520,8 @@ return {
       vim.keymap.set({ 'n', 'x' }, 'sdb', '<Plug>(sandwich-delete-auto)')
       vim.keymap.set({ 'n', 'x' }, 'sr', '<Plug>(sandwich-replace)')
       vim.keymap.set({ 'n', 'x' }, 'srb', '<Plug>(sandwich-replace-auto)')
-      vim.keymap.set({ 'o', 'x' }, 'ib', '<Plug>(textobj-sandwich-auto-i)')
-      vim.keymap.set({ 'o', 'x' }, 'ab', '<Plug>(textobj-sandwich-auto-a)')
+      -- vim.keymap.set({ 'o', 'x' }, 'ib', '<Plug>(textobj-sandwich-auto-i)')
+      -- vim.keymap.set({ 'o', 'x' }, 'ab', '<Plug>(textobj-sandwich-auto-a)')
 
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
         pattern = { '*' },
@@ -697,27 +692,13 @@ return {
     config = function()
       vim.cmd([[
         LeximaAlterCommand ee                 e!
-        LeximaAlterCommand cn                 cnewer
-        LeximaAlterCommand cp                 colder
-        LeximaAlterCommand dp                 diffput
-        LeximaAlterCommand la\%[zy]           Lazy
-        LeximaAlterCommand d\%[du]            Ddu
-        LeximaAlterCommand rg                 Rg
-        LeximaAlterCommand or\%[ganizeimport] OrganizeImport
-        LeximaAlterCommand gina               Gina
         LeximaAlterCommand gin                Gin
-        LeximaAlterCommand blame              Gina<Space>blame
-        LeximaAlterCommand bro\%[wse]         Gina<Space>browse<Space>--exact<Space>:
+        LeximaAlterCommand blame              GinBlame
+        LeximaAlterCommand bro\%[wse]         GinBrowse<Space>--permalink
         LeximaAlterCommand cap\%[ture]        Capture
         LeximaAlterCommand r\%[un]            QuickRun
-        LeximaAlterCommand tr\%[ouble]        TroubleToggle
         LeximaAlterCommand ss                 SaveProjectLayout
         LeximaAlterCommand sl                 LoadProjectLayout
-        LeximaAlterCommand ai                 AiReview
-        LeximaAlterCommand yr                 YR
-        LeximaAlterCommand te\%[lescope]      Telescope
-        LeximaAlterCommand wipe\%[out]        Wipeout!
-        LeximaAlterCommand f                  GhqProject
       ]])
     end,
   },
@@ -817,17 +798,6 @@ return {
         )
         insx.add('<BS>', require('insx.recipe.pair_spacing').decrease({ open_pat = esc(open), close_pat = esc(close) }))
       end
-
-      -- Use lexima when markdown
-      -- insx.add('<CR>', {
-      --   priority = -1,
-      --   action = function(ctx)
-      --     ctx.send(vim.fn.keytrans(vimx.fn.lexima.expand('<CR>', 'i')))
-      --   end,
-      --   enabled = function()
-      --     return vim.o.filetype == 'markdown'
-      --   end,
-      -- })
 
       require('insx.recipe.snippet').expand = function(params)
         require('luasnip').lsp_expand(params.content)
@@ -1157,25 +1127,25 @@ return {
       vim.keymap.set(
         { 'o' },
         '<Plug>(textobj-functioncall-ts-string-variable-i)',
-        ':<C-u>call textobj#functioncall#i("o", g:textobj_functioncall_ts_string_variable_patterns)<CR>',
+        ':<C-u>call textobj#functioncall#ip("o", g:textobj_functioncall_ts_string_variable_patterns)<CR>',
         { silent = true }
       )
       vim.keymap.set(
         { 'x' },
         '<Plug>(textobj-functioncall-ts-string-variable-i)',
-        ':<C-u>call textobj#functioncall#i("x", g:textobj_functioncall_ts_string_variable_patterns)<CR>',
+        ':<C-u>call textobj#functioncall#ip("x", g:textobj_functioncall_ts_string_variable_patterns)<CR>',
         { silent = true }
       )
       vim.keymap.set(
         { 'o' },
         '<Plug>(textobj-functioncall-ts-string-variable-a)',
-        ':<C-u>call textobj#functioncall#a("o", g:textobj_functioncall_ts_string_variable_patterns)<CR>',
+        ':<C-u>call textobj#functioncall#i("o", g:textobj_functioncall_ts_string_variable_patterns)<CR>',
         { silent = true }
       )
       vim.keymap.set(
         { 'x' },
         '<Plug>(textobj-functioncall-ts-string-variable-a)',
-        ':<C-u>call textobj#functioncall#a("x", g:textobj_functioncall_ts_string_variable_patterns)<CR>',
+        ':<C-u>call textobj#functioncall#i("x", g:textobj_functioncall_ts_string_variable_patterns)<CR>',
         { silent = true }
       )
     end,
@@ -1247,6 +1217,8 @@ return {
       vim.keymap.set({ 'o', 'x' }, 'a_', '<Plug>(textobj-between-a)_')
       vim.keymap.set({ 'o', 'x' }, 'i-', '<Plug>(textobj-between-i)-')
       vim.keymap.set({ 'o', 'x' }, 'a-', '<Plug>(textobj-between-a)-')
+      vim.keymap.set({ 'o', 'x' }, 'i`', '<Plug>(textobj-between-i)`')
+      vim.keymap.set({ 'o', 'x' }, 'a`', '<Plug>(textobj-between-a)`')
     end,
   },
   {
@@ -1274,6 +1246,7 @@ return {
 
       vim.g.expand_region_text_objects = {
         ['iw'] = 0,
+        ['iW'] = 0,
         ['i"'] = 1,
         ['a"'] = 1,
         ["i'"] = 1,
@@ -1297,10 +1270,10 @@ return {
         ['i<'] = 1,
         ['a<'] = 1,
         ['il'] = 0,
-        ['ii'] = 1,
-        ['ai'] = 1,
-        ['ic'] = 0,
-        ['ac'] = 0,
+        ['iF'] = 1,
+        ['aF'] = 1,
+        ['it'] = 1,
+        ['at'] = 1,
         ['ie'] = 0,
       }
     end,
