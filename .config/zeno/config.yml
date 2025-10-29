@@ -145,15 +145,19 @@ snippets:
 
   - name: git quick save
     keyword: c
-    snippet: git-quick-save
-    context:
-      buffer: "^c$"
+    snippet: git-quick-save "{{message}}"
 
   - name: nr to ni run
     keyword: nr
     snippet: ni run
-    context:
-      buffer: "^nr$"
+
+  - name: brew update
+    keyword: brup
+    snippet: brew update && brew outdated
+
+  - name: brew upgrade
+    keyword: brug
+    snippet: brew upgrade
 
   - name: codex yolo
     keyword: yolo
@@ -162,8 +166,6 @@ snippets:
   - name: codex oneline
     keyword: '?'
     snippet: codex --config model_reasoning_effort="low" exec "{{prompt}}" 2>/dev/null; printf $'\e[<u'
-    context:
-      buffer: '^\?$'
 
   - name: vde-layout
     keyword: vl
@@ -201,3 +203,17 @@ completions:
       --no-sort: true
       --preview: "git show --color=always {2}"
     callback: "awk '{print $2}'"
+
+history:
+  defaultScope: global
+  fzfCommand: fzf-tmux
+  fzfOptions:
+    - "-p 50%,50%"
+    - "--exact"
+    - "--no-sort"
+  redact:
+  keymap:
+    deleteSoft: ctrl-d
+    deleteHard: alt-d
+    toggleScope: ctrl-r
+    togglePreview: "?"
