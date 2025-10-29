@@ -287,7 +287,7 @@ export FZF_COMPLETION_TRIGGER=';'
 # }}}
 
 # atuin {{{
-eval "$(atuin init zsh)"
+# eval "$(atuin init zsh)"
 # }}}
 
 # Prompt {{{
@@ -588,36 +588,36 @@ add-zsh-hook chpwd tmux_auto_rename_hook
 
 # zeno {{{
 if [[ -d ~/repos/github.com/yuki-yano/zeno.zsh ]]; then
-  zinit ice lucid wait"0" blockf atload"zeno_config"
+  zinit ice lucid blockf
   zinit light ~/repos/github.com/yuki-yano/zeno.zsh
 else
-  zinit ice lucid wait"0" depth"1" blockf atload"zeno_config"
+  zinit ice lucid depth"1" blockf
   zinit light yuki-yano/zeno.zsh
 fi
 
-function zeno_config() {
-  export ZENO_GIT_CAT="bat --color=always --plain --number"
-  export ZENO_ENABLE_FZF_TMUX=1
-  export ZENO_FZF_TMUX_OPTIONS="-p 70%,70%"
-  export ZENO_DISABLE_EXECUTE_CACHE_COMMAND=1
-  export ZENO_ENABLE_SOCK=1
+export ZENO_GIT_CAT="bat --color=always --plain --number"
+export ZENO_ENABLE_FZF_TMUX=1
+export ZENO_FZF_TMUX_OPTIONS="-p 50%,50%"
+export ZENO_DISABLE_EXECUTE_CACHE_COMMAND=1
+# export ZENO_DISABLE_SOCK=1
 
-  if [[ -n $ZENO_LOADED ]]; then
-    bindkey ' '    zeno-auto-snippet
-    bindkey '^m'   zeno-auto-snippet-and-accept-line
-    bindkey '^xs'  zeno-insert-snippet
-    bindkey '^x^s' zeno-insert-snippet
-    bindkey '^i'   zeno-completion
-    # Use atuin
-    # bindkey '^r'   zeno-history-selection
+if [[ -n $ZENO_LOADED ]]; then
+  bindkey ' '    zeno-auto-snippet
+  bindkey '^m'   zeno-auto-snippet-and-accept-line
+  bindkey '^xs'  zeno-insert-snippet
+  bindkey '^x^s' zeno-insert-snippet
+  bindkey '^i'   zeno-completion
+  # Use atuin
+  # bindkey '^r'   zeno-history-selection
 
-    bindkey '^x '  zeno-insert-space
-    bindkey '^x^m' accept-line
-    bindkey '^x^z' zeno-toggle-auto-snippet
+  bindkey '^x '  zeno-insert-space
+  bindkey '^x^m' accept-line
+  bindkey '^x^z' zeno-toggle-auto-snippet
 
-    ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(zeno-auto-snippet-and-accept-line)
-  fi
-}
+  bindkey '^r' zeno-smart-history-selection
+
+  ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(zeno-auto-snippet-and-accept-line)
+fi
 
 # }}}
 
