@@ -20,7 +20,7 @@ if command -v bat >/dev/null 2>&1; then
 fi
 
 if [ -n "$TMUX" ] && [ "$tmux_available" -eq 1 ] && command -v fzf-tmux >/dev/null 2>&1; then
-  set -- fzf-tmux -p 70%,70%
+  set -- fzf-tmux -p 50%,50%
 else
   set -- fzf
 fi
