@@ -162,10 +162,19 @@ snippets:
   - name: codex yolo
     keyword: yolo
     snippet: codex --yolo
+  - name: codex
+    keyword: co
+    snippet: codex --yolo
+  - name: claude
+    keyword: cc
+    snippet: claude --dangerously-skip-permissions
 
   - name: codex oneline
     keyword: '?'
-    snippet: codex --config model_reasoning_effort="low" exec "{{prompt}}" 2>/dev/null; printf $'\e[<u'
+    snippet: codex --config model_reasoning_effort="low" exec "{{prompt}}" 2>/dev/null; printf $'\e[<u'; printf $'\e[?2004h'
+  - name: CC oneline
+    keyword: '??'
+    snippet: claude --print --model haiku "{{prompt}}"
 
   - name: vde-layout
     keyword: vl
