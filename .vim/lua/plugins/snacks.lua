@@ -35,16 +35,62 @@ return {
     end,
     config = function()
       local snacks = require('snacks')
-      if not snacks.picker.format._git_status_staged_override then
+      if not snacks.picker.format._git_status_dual_highlight_override then
         local original_git_status_format = snacks.picker.format.git_status
+        local stage_hls = {
+          A = 'SnacksPickerGitStatusAdded',
+          C = 'SnacksPickerGitStatusCopied',
+          D = 'SnacksPickerGitStatusDeleted',
+          M = 'SnacksPickerGitStatusStaged',
+          R = 'SnacksPickerGitStatusRenamed',
+          U = 'SnacksPickerGitStatusUnmerged',
+          ['?'] = 'SnacksPickerGitStatusUntracked',
+          ['!'] = 'SnacksPickerGitStatusIgnored',
+        }
+        local work_hls = {
+          A = 'SnacksPickerGitStatusAdded',
+          C = 'SnacksPickerGitStatusCopied',
+          D = 'SnacksPickerGitStatusDeleted',
+          M = 'SnacksPickerGitStatusModified',
+          R = 'SnacksPickerGitStatusRenamed',
+          U = 'SnacksPickerGitStatusUnmerged',
+          ['?'] = 'SnacksPickerGitStatusUntracked',
+          ['!'] = 'SnacksPickerGitStatusIgnored',
+        }
+        local function resolve_hl(char, map, fallback)
+          if not char or char == '' then
+            return fallback
+          end
+          if char:match('^%s$') then
+            return nil
+          end
+          return map[char] or fallback
+        end
         snacks.picker.format.git_status = function(item, picker)
           local ret = original_git_status_format(item, picker)
-          if item and item.status and item.status:sub(1, 1) == 'M' and type(ret[1]) == 'table' then
-            ret[1] = { ret[1][1], 'SnacksPickerGitStatusStaged' }
+          local first = ret[1]
+          if type(first) ~= 'table' or type(first[1]) ~= 'string' then
+            return ret
           end
+          local status_text = first[1]
+          if status_text == '' then
+            return ret
+          end
+          if #status_text < 2 then
+            status_text = status_text .. (' '):rep(2 - #status_text)
+          elseif #status_text > 2 then
+            status_text = status_text:sub(-2)
+          end
+          local stage_char = status_text:sub(1, 1)
+          local work_char = status_text:sub(2, 2)
+          local default_stage_hl = first[2] or 'SnacksPickerGitStatus'
+          first[1] = stage_char
+          first[2] = resolve_hl(stage_char, stage_hls, default_stage_hl)
+          local work_hl = resolve_hl(work_char, work_hls, 'SnacksPickerGitStatus')
+          table.insert(ret, 2, { work_char, work_hl })
           return ret
         end
-        snacks.picker.format._git_status_staged_override = true
+        snacks.picker.format._git_status_dual_highlight_override = true
       end
 
       local git_config = require('plugins.config.snacks.git').setup(snacks)
