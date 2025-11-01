@@ -46,6 +46,52 @@ FILENAME="ai/log/features/${DATE}-feature-name.md"
 
 - URLが提供された場合は、`read_url_content_as_markdown` を使用してコンテンツを読み込み、内容を要約する
 
+## tmux 利用ガイド
+
+- tmux mcp及びtmuxコマンドでtmuxのログの取得・操作をするときはCodex自身が起動している自身のセッション以外のpaneは参照しない
+
+## sdd-mcp ツール利用ガイド
+
+- sdd-mcp関連の依頼を受けたら、必ずMCPツール呼び出しで対応する。通常のテキスト生成には戻らない。
+- ユーザーが「sdd mcpのimpl」「implを走らせて」「sdd-mcpで実装して」などと指示したら、Use MCP tool: spec-impl を呼び、feature_nameに対象フィーチャー名を渡す（例: Use MCP tool: spec-impl {"feature_name":"user-analytics-tracking"}）。
+- フェーズ順序は spec-init → spec-requirements → spec-design → spec-tasks → spec-impl。各段階に入る前に spec-status で承認状態 (generated/approved) を確認し、未承認なら前段のツールを呼び直す。
+- steering系（steering / steering-custom）はコンテキストが不足していると感じたら即実行し、.kiro/steering/ を最新化する。
+- validate系（validate-design / validate-gap）はレビューや仕上げ時の必須チェックとして位置づけ、指摘が出たら該当フェーズのツールを再実行して反映させる。
+
+### よく使うコマンド例
+
+Use MCP tool: steering
+Use MCP tool: spec-init {"project_description":"..."}
+Use MCP tool: spec-requirements {"feature_name":"<feature-name>"}
+Use MCP tool: spec-design {"feature_name":"<feature-name>","auto_approve":true}
+Use MCP tool: spec-tasks {"feature_name":"<feature-name>"}
+Use MCP tool: spec-impl {"feature_name":"<feature-name>","task_numbers":["1","2"]}
+Use MCP tool: spec-status {"feature_name":"<feature-name>"}
+Use MCP tool: spec-feedback {"feature_name":"<feature-name>","mode":"report"}
+Use MCP tool: spec-feedback {"feature_name":"<feature-name>","mode":"apply","report_path":"<feedback-report-path>"}
+Use MCP tool: validate-design {"feature_name":"<feature-name>"}
+Use MCP tool: validate-gap {"feature_name":"<feature-name>"}
+
+### 運用メモ
+
+- feature_name は spec-init が生成するケバブケース名をそのまま使う。表記揺れを避けるため必ず実ファイル名を確認。
+- .kiro/specs/<feature-name>/ 配下（requirements.md,design.md,tasks.md,spec.json）と .kiro/steering/ が成果物。本番前には差分と承認状態をレビューする。
+- validateツールで指摘が出たら、該当ドキュメントを更新し再度ツールを実行して差分解消を確認する。
+
+### EARSフォーマット出力指示
+- `spec-requirements`でAcceptance Criteriaを出力する際は、各EARS文を句ごとに改行し、番号行の直後で2スペースのインデントを入れてください。
+- 基本形:
+  1. WHEN <event>
+     THEN <system/subject> SHALL <response>
+  2. IF <precondition>
+     THEN <system/subject> SHALL <response>
+  3. WHILE <ongoing condition>
+     THE <system/subject> SHALL <continuous behavior>
+  4. WHERE <context>
+     THE <system/subject> SHALL <contextual behavior>
+- 複合条件を扱う場合も同じルールで、`WHEN`や`AND`をそれぞれ独立行に配置してください。
+- この書式は人間のレビューと自動パース（正規表現や構文解析）双方を容易にするために必須です。
+
 ## 通知の実行
 
 ### Discord通知
