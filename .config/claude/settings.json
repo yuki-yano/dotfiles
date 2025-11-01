@@ -6,6 +6,7 @@
   "permissions": {
     "defaultMode": "acceptEdits"
   },
+  "model": "sonnet",
   "hooks": {
     "Stop": [
       {
