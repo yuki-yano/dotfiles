@@ -217,14 +217,14 @@ elseif M.is_quick_ime() then
     pattern = { 'markdown.quickime' },
     callback = function()
       apply_mode_opts()
-      -- vim.cmd('startinsert')
+      vim.cmd('startinsert')
     end,
   })
   vim.api.nvim_create_autocmd({ 'FocusGained' }, {
     group = quick_ime_group,
     callback = function()
       if vim.bo.filetype == 'markdown.quickime' then
-        -- vim.cmd('startinsert')
+        vim.cmd('startinsert')
       end
     end,
   })
