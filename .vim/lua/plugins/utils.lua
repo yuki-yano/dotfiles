@@ -1,5 +1,6 @@
 local color = require('rc.modules.color')
 local is_editprompt = require('rc.setup.quick_ime').is_editprompt
+local is_ime = require('rc.setup.quick_ime').is_ime
 
 return {
   { 'farmergreg/vim-lastplace', event = { 'BufReadPre' } },
@@ -584,7 +585,7 @@ return {
   },
   {
     'yuki-yano/resonator.vim',
-    enabled = not is_editprompt() and not vim.g.is_edit_command_line,
+    enabled = not is_ime() and not vim.g.is_edit_command_line,
     lazy = true,
     dev = true,
     event = { 'BufRead' },
@@ -627,7 +628,7 @@ return {
   {
     'yuki-yano/clipboard-image-to-agent.nvim',
     dev = true,
-    enabled = is_editprompt(),
+    enabled = is_ime(),
     lazy = false,
     config = function()
       local clip = require('clipboard_image_to_agent')

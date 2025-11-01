@@ -8,12 +8,12 @@ local enable_lsp_lines = plugin_utils.enable_lsp_lines
 local get_lsp_lines_status = plugin_utils.get_lsp_lines_status
 local add_focus_gain = plugin_utils.add_focus_gain
 local add_focus_lost = plugin_utils.add_focus_lost
-local is_editprompt = require('rc.setup.quick_ime').is_editprompt
+local is_ime = require('rc.setup.quick_ime').is_ime
 
 return {
   {
     'nvim-lualine/lualine.nvim',
-    enabled = not is_editprompt() and not vim.g.is_edit_command_line,
+    enabled = not is_ime() and not vim.g.is_edit_command_line,
     event = { 'FocusLost', 'BufRead', 'BufNewFile' },
     init = function()
       vim.api.nvim_create_user_command('LL', function()
@@ -217,7 +217,7 @@ return {
   },
   {
     'akinsho/bufferline.nvim',
-    enabled = not is_editprompt(),
+    enabled = not is_ime(),
     dependencies = {
       { 'tiagovla/scope.nvim' },
     },
@@ -249,7 +249,6 @@ return {
   },
   {
     'b0o/incline.nvim',
-    -- enabled = not is_editprompt() and not vim.g.is_edit_command_line,
     enabled = false,
     dependencies = {
       { 'nvim-tree/nvim-web-devicons' },
@@ -325,7 +324,7 @@ return {
   },
   {
     'Bekaboo/dropbar.nvim',
-    enabled = not is_editprompt() and not vim.g.is_edit_command_line,
+    enabled = not is_ime() and not vim.g.is_edit_command_line,
     event = { 'LspAttach' },
     config = function()
       local dropbar = require('dropbar')
