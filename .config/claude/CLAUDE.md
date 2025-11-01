@@ -92,46 +92,43 @@ Use MCP tool: validate-gap {"feature_name":"<feature-name>"}
 - 複合条件を扱う場合も同じルールで、`WHEN`や`AND`をそれぞれ独立行に配置してください。
 - この書式は人間のレビューと自動パース（正規表現や構文解析）双方を容易にするために必須です。
 
-## 通知の実行
-
 ### Discord通知
 
-ユーザーが明示的にDiscord通知を要求した場合は、Discord通知を送信します。
+ユーザーが明示的にDiscord通知を要求した場合は、Discord通知を送信する
 
 1. **Discord通知の条件**
 
 - ユーザーが「Discord通知も」「Discordにも通知」などと明示的に要求した場合のみ
-- 環境変数 `DISCORD_WEBHOOK_URL` が設定されている必要がある
-
-2. **Discord通知方法**
-
-```bash
-# リポジトリ名を取得（gitリポジトリの場合）
+- 通知は discord-notify mcp の notify ツールを使う
+- 通知内容はいい感じにサマリーは最低数百文字で適宜改行を入れて、できるだけ作業の詳細を送って
+- プロパティは主にtitleとbodyで、 titleはこれ `[$REPO_NAME] Claude Code ${実行した内容を簡潔に}`
+  - 以下のコマンドで `$REPO_NAME` は取得する
+```
 REPO_NAME=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "non-git")
-
-# macOS通知の後に Discord通知を追加
-discord-notify.ts --env DISCORD_WEBHOOK_URL "実行した内容の説明" --title "[$REPO_NAME] Claude Code"
-
-# エラー時の通知
-discord-notify.ts --env DISCORD_WEBHOOK_URL "エラー: 内容" --title "[$REPO_NAME] ❌ Claude Code Error"
-
-# 成功時の通知（明示的な成功通知が必要な場合）
-discord-notify.ts --env DISCORD_WEBHOOK_URL "成功: 内容" --title "[$REPO_NAME] ✅ Claude Code Success"
 ```
 
 **注意**: タイトルには必ず `[$REPO_NAME]` プレフィックスを付けて、どのプロジェクトからの通知かを明確にすること。
 
-## Codex MCP の実行ルール
+### スマホ通知
 
-Codex MCP を実行する際は、以下の設定を使用してください：
+ユーザーが明示的にスマホ通知を要求した場合は、スマホ通知を送信する
 
-- **approval-policy**: 必ず `never` を指定する
-  - これにより、Codex が生成したシェルコマンドが自動的に承認なしで実行されます
+1. **スマホ通知の条件**
 
-```typescript
-// 使用例
-mcp__codex__codex({
-  prompt: "タスク内容",
-  "approval-policy": "never"
-})
+- ユーザーが「スマホ通知も」「スマホにも通知」などと明示的に要求した場合のみ
+- 環境変数 `NTFY_TOPIC` が設定されているか確認
+- 通知は ntfy コマンドを使う
+  - 使い方は `ntfy publish -t "<title>" "$NTFY_TOPIC" "<message>"`
+- メッセージはいい感じにサマリーを100−200字程度で整理する
+- titleにはこのフォーマットを使用する `[$REPO_NAME] Codex ${実行した内容を簡潔に}`
+  - 以下のコマンドで `$REPO_NAME` は取得する
 ```
+REPO_NAME=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "non-git")
+```
+
+**注意**: タイトルには必ず `[$REPO_NAME]` プレフィックスを付けて、どのプロジェクトからの通知かを明確にすること。
+
+### スクリーンショット撮影
+
+- ユーザーが明示的にスクリーンショットの取得を要求した場合は、screenshot mcpのscreenshot_app_window toolを使ってスクリーンショットの取得を行う
+- toolの引数は `appName` or `bundleId`
