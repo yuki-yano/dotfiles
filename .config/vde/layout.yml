@@ -41,27 +41,3 @@ presets:
         - name: "coding agent"
           command: "codex --yolo"
           focus: true
-  web-dev:
-    name: Web Development
-    description: Editor, server, and logs
-    layout:
-      type: horizontal
-      ratio: [3, 2]
-      panes:
-        - name: editor
-          command: nvim
-          focus: true
-        - type: vertical
-          ratio: [7, 3]
-          panes:
-            - name: server
-              command: npm run dev
-              env:
-                NODE_ENV: development
-            - name: logs
-              command: tail -f logs/app.log
-              title: Logs
-              delay: 500
-  monitor:
-    name: Monitor
-    command: htop
