@@ -29,7 +29,7 @@ return {
         },
       },
       {
-        'kento-ogata/cmp-tsnip',
+        'ogaken-1/cmp-tsnip',
         dependencies = {
           { 'yuki-yano/tsnip.nvim' },
         },
@@ -163,7 +163,7 @@ return {
       -- NOTE: force_keyword_length is used from manual complete
       local sources = {
         { name = 'luasnip', keyword_length = 2, force_keyword_length = true },
-        { name = 'tsnip', keyword_length = 2, force_keyword_length = true },
+        { name = 'tsnip', keyword_length = is_editprompt() and 1 or 2, force_keyword_length = true },
         -- { name = 'copilot' },
         { name = 'nvim_lsp' },
         -- { name = 'treesitter' },
@@ -186,6 +186,11 @@ return {
           mappings = {
             { source = ';jp', target = '日本語で説明して', label = ';jp →日本語で説明して' },
             { source = ';co', target = 'commitをして', label = ';co →commitをして' },
+            {
+              source = ';gb',
+              target = '作業用のbranchを作成してから作業を始めて',
+              label = ';gb →作業用のbranchを作成してから作業を始めて',
+            },
             {
               source = ';noe',
               target = 'まだ実際の編集はしないで',
@@ -225,6 +230,11 @@ return {
               source = ';si',
               target = '承認するからsddでimplを実行して',
               label = ';si →承認するからsddでimplを実行して',
+            },
+            {
+              source = ';hitl',
+              target = '分からない事があったらhitl mcpで人に確認して',
+              label = ';hitl →分からない事があったらhitl mcpで人に確認して',
             },
           },
         })
