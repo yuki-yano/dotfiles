@@ -94,30 +94,12 @@ if whence direnv > /dev/null; then
   fi
 fi
 
-# NOTE: Workaround for Homebrew shellenv in sandbox-exec environments
-#
-# Issue:
-# - AI Agents like Claude Code run brew commands in sandbox-exec environments
-# - brew internally calls shellenv which tries to detect the shell name
-# - shellenv executes /bin/ps to detect the parent shell, but ps is restricted in sandbox
-# - This causes brew commands to fail with "Operation not permitted" errors
-#
-# Solution:
-# - When HOMEBREW_PATH is already set, shellenv skips the ps command execution
-# - By pre-setting this environment variable, we can avoid the sandbox restriction
-# - This allows brew to work without modifying Homebrew's source code
-#
-# Reference: Library/Homebrew/cmd/shellenv.sh:9-11
-
 #  Finally add the path of ~/bin and ~/dotfiles/bin to the beginning
 path=(~/bin(N-/) $path)
 path=(~/dotfiles/bin(N-/) $path)
 path=(~/.local/bin(N-/) $path)
 
-# Added by Windsurf
-path=(~/.codeium/windsurf/bin(N-/) $path)
-
-# Added by LM Studio CLI (lms)
-path=(~/.lmstudio/bin(N-/) $path)
+# Added by Alacritty
+path=(/Applications/Alacritty.app/Contents/MacOS/(N-/) $path)
 
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:

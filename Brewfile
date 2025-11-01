@@ -40,6 +40,7 @@ install oven-sh/bun/bun
 install perl
 install python
 install ruby
+install shellcheck
 
 ## Service
 # install asciinema
