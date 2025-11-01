@@ -37,6 +37,11 @@ interface RunCommandOptions {
   inheritStdio?: boolean;
 }
 
+interface PaneInfo {
+  id: string;
+  pid: string;
+}
+
 async function runCommand(
   cmd: string,
   args: string[],
@@ -105,6 +110,8 @@ async function commandExists(cmd: string): Promise<boolean> {
     return true;
   }
 }
+
+const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 async function collectSessions(): Promise<SessionInfo[]> {
   const inTmux = Boolean(Deno.env.get("TMUX"));
@@ -178,6 +185,131 @@ async function collectSessions(): Promise<SessionInfo[]> {
   }
 
   return sessions;
+}
+
+async function collectPaneInfo(target: string, recursive: boolean): Promise<PaneInfo[]> {
+  const args = ["list-panes"];
+  if (recursive) {
+    args.push("-s");
+  }
+  args.push("-t", target);
+  args.push("-F", "#{pane_id}\t#{pane_pid}");
+  const output = await runCommand("tmux", args, { allowFail: true });
+  if (!output) {
+    return [];
+  }
+
+  return output
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .map((line) => {
+      const [id, pid] = line.split("\t");
+      return {
+        id: (id ?? "").trim(),
+        pid: (pid ?? "").trim(),
+      };
+    })
+    .filter((pane) => pane.id.length > 0);
+}
+
+interface CleanKillOptions {
+  target: string;
+  recursive: boolean;
+  finalCommand: {
+    cmd: string;
+    args: string[];
+  };
+}
+
+async function cleanKillTarget(options: CleanKillOptions): Promise<void> {
+  const panes = await collectPaneInfo(options.target, options.recursive);
+  if (panes.length === 0) {
+    await runCommand(options.finalCommand.cmd, options.finalCommand.args, { allowFail: true });
+    return;
+  }
+
+  const currentPane = Deno.env.get("TMUX_PANE") ?? "";
+  const panesToSignal = panes.filter((pane) => pane.id !== currentPane);
+
+  for (const pane of panesToSignal) {
+    await runCommand("tmux", ["send-keys", "-t", pane.id, "C-c"], { allowFail: true });
+  }
+
+  if (panesToSignal.length > 0) {
+    await sleep(1000);
+  }
+
+  const pgids = new Set<string>();
+
+  for (const pane of panesToSignal) {
+    const pid = pane.pid;
+    if (!pid || !/^\d+$/.test(pid)) {
+      continue;
+    }
+    const pgidOutput = (await runCommand("ps", ["-o", "pgid=", "-p", pid], { allowFail: true })).trim();
+    if (!pgidOutput) {
+      continue;
+    }
+    const normalized = pgidOutput.split(/\s+/).find((part) => part.length > 0);
+    if (normalized) {
+      pgids.add(normalized);
+    }
+  }
+
+  for (const pgid of pgids) {
+    await runCommand("kill", ["-TERM", `-${pgid}`], { allowFail: true });
+  }
+
+  if (pgids.size > 0) {
+    await sleep(1000);
+  }
+
+  for (const pgid of pgids) {
+    const stillRunning = (await runCommand("ps", ["-o", "pid=", "-g", pgid], { allowFail: true })).trim();
+    if (stillRunning) {
+      await runCommand("kill", ["-KILL", `-${pgid}`], { allowFail: true });
+    }
+  }
+
+  await runCommand(options.finalCommand.cmd, options.finalCommand.args, { allowFail: true });
+}
+
+async function killSessionClean(name: string): Promise<void> {
+  await cleanKillTarget({
+    target: `${name}:`,
+    recursive: true,
+    finalCommand: {
+      cmd: "tmux",
+      args: ["kill-session", "-t", name],
+    },
+  });
+}
+
+async function killWindowClean(name: string): Promise<void> {
+  await cleanKillTarget({
+    target: name,
+    recursive: false,
+    finalCommand: {
+      cmd: "tmux",
+      args: ["kill-window", "-t", name],
+    },
+  });
+}
+
+async function killServerClean(): Promise<void> {
+  const sessions = await collectSessions();
+  const others = sessions.filter((session) => !session.isCurrent);
+  for (const session of others) {
+    await killSessionClean(session.name);
+  }
+
+  const current = sessions.find((session) => session.isCurrent);
+  if (current) {
+    await killSessionClean(current.name);
+  }
+
+  await runCommand("tmux", ["kill-server"], { allowFail: true });
 }
 
 function decodeTmuxString(value: string): string {
@@ -330,11 +462,11 @@ async function handleSelection(lines: string[], mode: Mode): Promise<void> {
       const [action, name] = line.split("\t");
       if (!action) continue;
       if (action === "session" && name) {
-        await runCommand("tmux", ["kill-session", "-t", name], { allowFail: true });
+        await killSessionClean(name);
       } else if (action === "window" && name) {
-        await runCommand("tmux", ["kill-window", "-t", name], { allowFail: true });
+        await killWindowClean(name);
       } else if (action === "server") {
-        await runCommand("tmux", ["kill-server"], { allowFail: true });
+        await killServerClean();
       }
     }
     return;
