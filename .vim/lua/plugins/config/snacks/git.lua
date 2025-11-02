@@ -520,6 +520,93 @@ function M.setup(snacks)
     },
   }
 
+  local delta_available = vim.fn.executable('delta') == 1
+  if delta_available then
+    local delta_theme
+    local theme_output = vim.fn.systemlist({ 'git', 'config', '--get', 'delta.syntax-theme' })
+    if vim.v.shell_error == 0 and theme_output and theme_output[1] and theme_output[1] ~= '' then
+      delta_theme = theme_output[1]
+    end
+
+    local delta_cmd = {
+      'delta',
+      '--paging=never',
+      '--no-gitconfig',
+      '--hunk-header-decoration-style=none',
+      '--hunk-header-style=raw',
+      '--file-style=omit',
+      '--line-numbers',
+      '--line-numbers-left-format={nm:>4} ',
+      '--line-numbers-right-format= {np:<4}',
+      '--keep-plus-minus-markers',
+    }
+    if delta_theme then
+      table.insert(delta_cmd, '--syntax-theme=' .. delta_theme)
+    end
+
+    picker_overrides.previewers = merge(picker_overrides.previewers or {}, {
+      diff = {
+        builtin = false,
+        cmd = delta_cmd,
+      },
+    })
+
+    local preview = require('snacks.picker.preview')
+    if not preview._git_diff_delta_override then
+      local original_git_diff = preview.git_diff
+      preview.git_diff = function(ctx)
+        local diff_opts = ctx.picker.opts.previewers and ctx.picker.opts.previewers.diff or nil
+        local diff_cmd = diff_opts and diff_opts.cmd or nil
+        local should_use_delta = diff_cmd and diff_cmd[1] == 'delta' and vim.fn.executable('delta') == 1
+        if not should_use_delta then
+          return original_git_diff(ctx)
+        end
+
+        local cwd = ctx.item.cwd or ctx.picker:cwd() or (vim.uv or vim.loop).cwd() or vim.fn.getcwd()
+        local git_cmd = { 'git', '-c', 'delta.' .. vim.o.background .. '=true', 'diff', 'HEAD' }
+        if ctx.item.file then
+          vim.list_extend(git_cmd, { '--', ctx.item.file })
+        end
+
+        local ok, result = pcall(function()
+          return vim.system(git_cmd, { cwd = cwd, text = true }):wait()
+        end)
+        if not ok or not result or result.code ~= 0 or not result.stdout or result.stdout == '' then
+          return original_git_diff(ctx)
+        end
+
+        local delta_cmd = vim.deepcopy(diff_cmd)
+        if delta_cmd[1] == 'delta' then
+          table.insert(delta_cmd, 2, '--' .. vim.o.background)
+        end
+
+        local delta_result = vim.system(delta_cmd, {
+          cwd = cwd,
+          text = true,
+          stdin = result.stdout,
+        }):wait()
+        if not delta_result or delta_result.code ~= 0 or not delta_result.stdout or delta_result.stdout == '' then
+          return original_git_diff(ctx)
+        end
+
+        local job = preview.cmd(delta_cmd, ctx, {
+          output = delta_result.stdout,
+        })
+        vim.defer_fn(function()
+          local preview_win = ctx.preview and ctx.preview.win
+          local win = preview_win and preview_win.win or nil
+          if win and vim.api.nvim_win_is_valid(win) then
+            vim.api.nvim_win_call(win, function()
+              vim.cmd('normal! ggzt')
+            end)
+          end
+        end, 10)
+        return job
+      end
+      preview._git_diff_delta_override = true
+    end
+  end
+
   return {
     picker = picker_overrides,
     apply_keymaps = apply_keymaps,
