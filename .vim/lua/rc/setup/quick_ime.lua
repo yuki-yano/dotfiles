@@ -72,6 +72,7 @@ local function send_editprompt()
     set_clipboard(text)
   end
 
+  vim.cmd('startinsert')
   vim.system({ 'editprompt', '--', content }, { text = true }, function(obj)
     vim.schedule(function()
       if obj.code == 0 then
@@ -103,7 +104,7 @@ local function get_env_from_tmux(var)
     return nil
   end
 
-  value = raw:sub(eq + 1)
+  local value = raw:sub(eq + 1)
   if not value or value == '' then
     return nil
   end
@@ -142,7 +143,10 @@ local function focus_previous_target()
   end
 
   local escaped = app:gsub('"', '\\"')
-  vim.fn.jobstart({ '/usr/bin/osascript', '-e', string.format('tell application "%s" to activate', escaped) }, { detach = true })
+  vim.fn.jobstart(
+    { '/usr/bin/osascript', '-e', string.format('tell application "%s" to activate', escaped) },
+    { detach = true }
+  )
 end
 
 local function quick_ime_detach()
@@ -176,7 +180,6 @@ end
 
 if M.is_editprompt() then
   vim.g.editprompt = 1
-  vim.api.nvim_create_user_command('SendEditPrompt', send_editprompt, {})
   vim.api.nvim_create_autocmd({ 'FileType' }, {
     group = editprompt_group,
     pattern = { 'markdown' },
@@ -186,29 +189,52 @@ if M.is_editprompt() then
       vim.cmd('startinsert')
     end,
   })
-  vim.api.nvim_create_autocmd({ 'FocusGained' }, {
-    group = editprompt_group,
-    callback = function()
-      if vim.bo.filetype == 'markdown.editprompt' then
-        vim.schedule(function()
-          local mode = vim.api.nvim_get_mode().mode
-          if mode ~= 'i' and mode ~= 'R' and mode ~= 'Rv' and mode ~= 'c' then
-            -- vim.cmd('startinsert') -- Ensure returning focus re-enters insert mode
-            -- vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('a', true, false, true), 'n', false)
-          end
+  vim.keymap.set({ 'n', 'i' }, '<C-g>', '<Cmd>quit!<CR>', { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'n' }, 'q', send_editprompt, { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'n', 'i' }, '<C-c>', send_editprompt, { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'n' }, 'ZZ', send_editprompt, { silent = true, buffer = true, nowait = true })
+
+  local function is_buffer_empty(bufnr)
+    return get_buffer_text(bufnr) == ''
+  end
+
+  local function map_tmux_normal_nav(lhs, dir)
+    vim.keymap.set('n', lhs, function()
+      vim.cmd('startinsert')
+      pcall(function()
+        require('smart-tmux-nav').navigate(dir)
+      end)
+    end, { silent = true, buffer = true, nowait = true })
+  end
+  for _, mapping in ipairs({
+    { '<C-h>', 'h' },
+    { '<C-j>', 'j' },
+    { '<C-k>', 'k' },
+    { '<C-l>', 'l' },
+  }) do
+    map_tmux_normal_nav(unpack(mapping))
+  end
+
+  local function map_tmux_insert_nav(lhs, fallback, dir)
+    vim.keymap.set('i', lhs, function()
+      if not is_buffer_empty() then
+        return fallback
+      else
+        pcall(function()
+          require('smart-tmux-nav').navigate(dir)
         end)
       end
-    end,
-  })
-  vim.keymap.set({ 'n', 'i' }, '<C-g>', '<Cmd>quit!<CR>', { silent = true, buffer = true, nowait = true })
-  vim.keymap.set({ 'n' }, 'q', '<Cmd>SendEditPrompt<CR>', { silent = true, buffer = true, nowait = true })
-  vim.keymap.set({ 'n', 'i' }, '<C-c>', '<Cmd>SendEditPrompt<CR>', { silent = true, buffer = true, nowait = true })
-  vim.keymap.set({ 'n' }, 'ZZ', '<Cmd>SendEditPrompt<CR>', { silent = true, buffer = true, nowait = true })
-  vim.keymap.set({ 'i' }, '<C-k>', function()
-    pcall(function()
-      require('smart-tmux-nav').navigate('k')
-    end)
-  end, { silent = true, buffer = true, nowait = true })
+    end, { silent = true, buffer = true, nowait = true, expr = true })
+  end
+
+  for _, mapping in ipairs({
+    { '<C-h>', '<BS>', 'h' },
+    { '<C-j>', '<C-j>', 'j' },
+    { '<C-k>', '<C-k>', 'k' },
+    { '<C-l>', '<C-l>', 'l' },
+  }) do
+    map_tmux_insert_nav(unpack(mapping))
+  end
 elseif M.is_quick_ime() then
   vim.g.quick_ime = 1
   vim.api.nvim_create_user_command('SendQuickIme', send_quick_ime, {})
