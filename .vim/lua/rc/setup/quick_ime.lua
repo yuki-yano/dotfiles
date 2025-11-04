@@ -72,6 +72,10 @@ local function send_editprompt()
     set_clipboard(text)
   end
 
+  pcall(function()
+    require('cmp').confirm({ select = true })
+  end)
+
   vim.cmd('startinsert')
   vim.system({ 'editprompt', '--', content }, { text = true }, function(obj)
     vim.schedule(function()
@@ -200,7 +204,9 @@ if M.is_editprompt() then
 
   local function map_tmux_normal_nav(lhs, dir)
     vim.keymap.set('n', lhs, function()
-      vim.cmd('startinsert')
+      if is_buffer_empty() then
+        vim.cmd('startinsert')
+      end
       pcall(function()
         require('smart-tmux-nav').navigate(dir)
       end)

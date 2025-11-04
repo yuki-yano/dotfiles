@@ -4,7 +4,7 @@
 # @raycast.title IME Neovim (WezTerm, isolated tmux server – robust)
 # @raycast.mode silent
 # Optional parameters:
-# @raycast.icon 🟩
+# @raycast.icon 🔤
 # @raycast.packageName Neovim
 # @raycast.needsConfirmation false
 # Documentation:
@@ -12,6 +12,7 @@
 
 set -euo pipefail
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$HOME/dotfiles/bin:$HOME/.local/bin:$PATH"
+source "${HOME}/.zshrc.local"
 
 # ===== Tunables ===============================================================
 TITLE="${WEZTERM_NVIM_TITLE:-IME NVIM}"
