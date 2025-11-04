@@ -4,9 +4,18 @@
 # zmodload zsh/zprof && zprof
 
 export XDG_CONFIG_DIR=$HOME/.config
+export XDG_CACHE_HOME=$HOME/.cache
 
 # language
 export LANG=ja_JP.UTF-8
+
+# cache profile
+export CACHE_PROFILE="${XDG_CACHE_HOME}/zsh/profile"
+mkdir -p ${CACHE_PROFILE}
+cache::clear() {
+  rm -rf ${CACHE_PROFILE}
+  mkdir -p ${CACHE_PROFILE}
+}
 
 # editor
 export EDITOR=nvim
@@ -51,10 +60,19 @@ export XDG_CONFIG_HOME=$HOME/.config
 # export GTAGSLABEL=pygments
 
 # mise
-eval "$(/opt/homebrew/bin/mise activate zsh)"
+# eval "$(/opt/homebrew/bin/mise activate zsh)"
+if type mise &>/dev/null; then
+  cache::mise() {
+    mise activate zsh > ${CACHE_PROFILE}/mise.zsh
+    zcompile ${CACHE_PROFILE}/mise.zsh
+  }
+  if [[ ! -f ${CACHE_PROFILE}/mise.zsh ]]; then
+    cache::mise
+  fi
+  source ${CACHE_PROFILE}/mise.zsh
+fi
 
 # pnpm
-# export PNPM_HOME="/Users/yuki-yano/Library/pnpm"
 export PNPM_HOME=$HOME/Library/pnpm
 path=($PNPM_HOME(N-/) $path)
 

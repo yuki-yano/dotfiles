@@ -19,38 +19,33 @@ MANPATH="${ZPFX}/man:${MANPATH}"
 # }}}
 
 # sync loading {{{
-zinit ice depth=1
+
+zinit ice depth=1 compile'(true)'
 zinit light romkatv/powerlevel10k
-zinit ice depth=1
+
+zinit ice depth=1 compile'(true)'
 zinit light zsh-users/zsh-autosuggestions
-zinit ice lucid
+
+zinit ice lucid depth"1" compile'(true)'
 zinit light woefe/git-prompt.zsh
-
-# zinit ice lucid
-# zinit light romkatv/zsh-prompt-benchmark
-
-# fuzzy finder
-zinit ice lucid from"gh-r" as"program" mv"fzf -> ${ZPFX}/bin/fzf"
-zinit light junegunn/fzf
-
-zinit ice lucid as"program"
-zinit snippet 'https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux'
-
-zinit light yukiycino-dotfiles/zsh-show-buffer-stack
-
-# zinit ice lucid
-# zinit snippet ~/.config/tabtab/zsh/__tabtab.zsh
 
 # }}}
 
 # async loading {{{
 
+# fuzzy finder
+zinit ice wait"0" lucid light-mode from"gh-r" as"program" mv"fzf -> ${ZPFX}/bin/fzf"
+zinit light junegunn/fzf
+
+zinit ice wait"0" lucid light-mode as"program"
+zinit snippet 'https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux'
+
 # PROMPT
-zinit ice lucid wait"!0" depth"1" atinit"zpcompinit; zpcdreplay" atload"set_fast_theme"
+zinit ice lucid wait"!0" depth"1" atinit"zpcompinit; zpcdreplay" atload"set_fast_theme" compile'(true)'
 zinit light zdharma-continuum/fast-syntax-highlighting
 
 # completion
-zinit ice lucid wait"0" depth"1" blockf
+zinit ice lucid wait"0" depth"1" blockf compile'(true)'
 zinit light zsh-users/zsh-completions
 
 # man
@@ -58,18 +53,22 @@ zinit ice lucid wait"0" as"program" mv"fzf* -> ${ZPFX}/man/man1"
 zinit snippet 'https://github.com/junegunn/fzf/blob/master/man/man1/fzf.1'
 
 # Node
-zinit ice lucid wait"0" as"null" src"ni.zsh" atload"compdef _ni ni"
+zinit ice lucid wait"0" as"null" src"ni.zsh" atload"compdef _ni ni" compile'(true)'
 zinit light azu/ni.zsh
 
 # util
 
 ## fancy-ctrl-z
-zinit ice lucid wait"0"
+zinit ice lucid wait"1" compile'(true)'
 zinit snippet https://gist.githubusercontent.com/yuki-yano/f1f0d11db6d1d49180bca7e282599932/raw/394a57effdd6d033677a82437a20cd6d12d45a57/fancy-ctrl-z.zsh
 
 ## show-buffer-stack
-zinit ice lucid wait"0"
+zinit ice lucid wait"1" compile'(true)' atload"autoload -Uz add-zsh-hook; add-zsh-hook precmd check-buffer-stack; bindkey '^q' show-buffer-stack"
 zinit snippet https://gist.githubusercontent.com/yuki-yano/dc4684c65cf2ba0c2f1612b70d120a34/raw/7652e88d7dbb43ed3f3208f7ca023d1757f2d056/show-buffer-stack.zsh
+
+## show-suspend-jobs
+zinit ice lucid wait"1" compile'(true)'
+zinit snippet https://gist.githubusercontent.com/yuki-yano/636184c3ca326e19cc76351e34ac3517/raw/c6e133d0ac20940c516e0c2e84690499ec49cf1f/show-suspended-jobs.zsh
 
 # }}}
 
@@ -91,10 +90,6 @@ function set_fast_theme() {
   FAST_HIGHLIGHT_STYLES[globbing]='fg=green,bold'
   FAST_HIGHLIGHT_STYLES[history-expansion]='fg=green,bold'
 }
-# }}}
-
-# show-buffer-stack {{{
-add-zsh-hook precmd check-buffer-stack
 # }}}
 
 # alias {{{
@@ -218,8 +213,14 @@ setopt pushd_ignore_dups
 setopt share_history
 setopt transient_rprompt
 
-if whence vivid > /dev/null; then
-  export LS_COLORS="$(vivid generate ~/.config/vivid/themes/catppuccin.yml)"
+if whence vivid >/dev/null; then
+  local theme=$HOME/.config/vivid/themes/catppuccin.yml
+  local cache=${XDG_CACHE_HOME:-$HOME/.cache}/vivid/catppuccin.ls_colors
+  if [[ ! -s $cache || $cache -ot $theme ]]; then
+    mkdir -p ${cache:h}
+    vivid generate "$theme" >"$cache"
+  fi
+  export LS_COLORS="$(<"$cache")"
 fi
 
 # history
@@ -339,10 +340,6 @@ function prompt_conflicting() {
   fi
 }
 
-function prompt_show_buffer_stack() {
-  p10k segment -f white -e -t '$COMMAND_BUFFER_STACK'
-}
-
 typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
   dir
   vcs
@@ -353,7 +350,15 @@ typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
   prompt_char
 )
 
+function prompt_show_buffer_stack() {
+  p10k segment -f white -e -t '$COMMAND_BUFFER_STACK'
+}
+function prompt_susp_jobs() {
+  p10k segment -f white -e -t '$SUSP_JOBS_RPROMPT'
+}
+
 typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
+  susp_jobs
   show_buffer_stack
 )
 
@@ -478,7 +483,6 @@ bindkey '^w' backward-kill-word
 bindkey '^p' history-beginning-search-backward
 bindkey '^n' history-beginning-search-forward
 bindkey '^y' yank
-bindkey '^q' show-buffer-stack
 
 bindkey "$terminfo[kcbt]" reverse-menu-complete
 
