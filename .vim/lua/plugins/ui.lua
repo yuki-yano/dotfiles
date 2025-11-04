@@ -14,6 +14,9 @@ return {
   {
     'nvim-lualine/lualine.nvim',
     enabled = not is_ime() and not vim.g.is_edit_command_line,
+    dependencies = {
+      { 'yuki-yano/vinsert.vim' },
+    },
     event = { 'FocusLost', 'BufRead', 'BufNewFile' },
     init = function()
       vim.api.nvim_create_user_command('LL', function()
