@@ -5,31 +5,39 @@ update
 upgrade
 
 ## Casks
+# install --cask 1password
+# install --cask alfred
 # install --cask bettertouchtool
 # install --cask biscuit
+# install --cask charles
 # install --cask dash
 # install --cask dropbox
 # install --cask duet
 # install --cask flux
+# install --cask homebrew/cask-versions/discord-canary
+# install --cask homebrew/cask-versions/discord-ptb
+# install --cask homebrew/cask-versions/google-chrome-canary
 # install --cask imagealpha
 # install --cask imageoptim
+# install --cask iterm2
 # install --cask java
 # install --cask kaleidoscope
 # install --cask kitematic
 # install --cask simplecap
 # install --cask skitch
 # install --cask sourcetree
+# install --cask sublime-text
+# install --cask tripmode
 # install --cask vimr
+# install --cask virtualbox
 # install --cask virtualbox
 # install --cask vivaldi
 # install --cask xquartz
-# install --cask 1password
 install --cask 1password/tap/1password-cli
-# install --cask alfred
 install --cask alt-tab
 install --cask appcleaner
 install --cask bartender
-# install --cask charles
+install --cask claude-code
 install --cask cleanshot
 install --cask default-folder-x
 install --cask discord
@@ -38,10 +46,6 @@ install --cask finicky
 install --cask firefox
 install --cask fork
 install --cask google-chrome
-# install --cask homebrew/cask-versions/discord-canary
-# install --cask homebrew/cask-versions/discord-ptb
-# install --cask homebrew/cask-versions/google-chrome-canary
-# install --cask iterm2
 install --cask jasper
 install --cask jetbrains-toolbox
 install --cask karabiner-elements
@@ -51,11 +55,8 @@ install --cask keycastr
 install --cask krisp
 install --cask mplayerx
 install --cask ngrok
-# install --cask sublime-text
 install --cask tableplus
-# install --cask tripmode
 install --cask vagrant
-# install --cask virtualbox
 install --cask visual-studio-code
 install --cask vlc
 install --cask zoom

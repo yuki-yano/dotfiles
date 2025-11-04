@@ -8,10 +8,10 @@ setnull searchurls.youtube
 " workaround
 " https://github.com/tridactyl/tridactyl/issues/4944 
 set searchurls.google https://www.google.com/search?q=
-" set searchurls.kagi https://kagi.com/search?q=
+set searchurls.kagi https://kagi.com/search?q=
 
-" set searchengine kagi
-set searchengine google
+" set searchengine google
+set searchengine kagi
 set tabopenpos last
 set smoothscroll false
 set scrollduration 100

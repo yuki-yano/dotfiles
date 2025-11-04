@@ -13,7 +13,7 @@
   unmerged  = magenta
 
 [core]
-  autocrlf       = input
+  autocrlf = input
   pager = "{                        \
     if [[ $COLUMNS -ge 160 ]]; then \
       delta --side-by-side;         \

@@ -88,7 +88,6 @@ install w3m
 install watch
 install watchman
 install wget
-install yq
 
 ## VCS
 install git tig gh ghq gobo git-delta git-filter-repo
