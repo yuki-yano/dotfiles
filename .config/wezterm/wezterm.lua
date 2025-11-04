@@ -124,4 +124,62 @@ config.set_environment_variables = {
   TERM = 'xterm-256color',
 }
 
+if wezterm.gui then
+  local function center_on_main_display(window, attempt)
+    attempt = attempt or 1
+    if attempt > 6 then
+      return
+    end
+
+    local screens = wezterm.gui.screens()
+    if not screens then
+      return
+    end
+
+    local main_screen = screens.main or screens.active
+    if not main_screen then
+      return
+    end
+
+    local dimensions = window:get_dimensions()
+    if not dimensions or dimensions.is_full_screen then
+      -- defer until we have valid dimensions / not fullscreen
+      wezterm.time.call_after(0.1 * attempt, function()
+        center_on_main_display(window, attempt + 1)
+      end)
+      return
+    end
+
+    if dimensions.pixel_width > 0 and dimensions.pixel_height > 0 then
+      local centered_x = main_screen.x + math.floor((main_screen.width - dimensions.pixel_width) / 2)
+      local centered_y = main_screen.y + math.floor((main_screen.height - dimensions.pixel_height) / 2)
+      wezterm.log_info(string.format('Center attempt %d -> %d,%d', attempt, centered_x, centered_y))
+      window:set_position(centered_x, centered_y)
+    end
+
+    if attempt < 6 then
+      wezterm.time.call_after(0.1 * attempt, function()
+        center_on_main_display(window, attempt + 1)
+      end)
+    end
+  end
+
+  wezterm.on('window-config-reloaded', function(window, _)
+    center_on_main_display(window)
+  end)
+
+  wezterm.on('window-created', function(window, _)
+    center_on_main_display(window)
+  end)
+
+  wezterm.on('window-resized', function(window, _)
+    center_on_main_display(window)
+  end)
+
+  wezterm.on('gui-startup', function(cmd)
+    local _, _, window = wezterm.mux.spawn_window(cmd or {})
+    center_on_main_display(window)
+  end)
+end
+
 return config
