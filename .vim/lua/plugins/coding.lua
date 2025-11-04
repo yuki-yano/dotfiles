@@ -6,6 +6,7 @@ local todo_icons = require('rc.modules.font').todo_icons
 local list_concat = require('rc.modules.utils').list_concat
 local is_editprompt = require('rc.setup.quick_ime').is_editprompt
 -- local enable_noice = require('rc.modules.plugin_utils').enable_noice
+local enable_copilot = false
 
 return {
   {
@@ -138,7 +139,7 @@ return {
         symbol_map = codicons,
       })
 
-      if vim.env.LSP == 'nvim' then
+      if vim.env.LSP == 'nvim' and enable_copilot then
         -- NOTE: After load lexima key mappings
         require('copilot').setup({
           suggestion = {
@@ -215,6 +216,11 @@ return {
               source = ';sir',
               target = 'sddでinitとrequirementsを実行して',
               label = ';sir → sddでinitとrequirementsを実行して',
+            },
+            {
+              source = ';sird',
+              target = 'sddでinitとrequirementsとdesignを実行して',
+              label = ';sird → sddでinitとrequirementsとdesignを実行して',
             },
             {
               source = ';sd',
@@ -701,14 +707,15 @@ return {
     event = { 'CmdlineEnter' },
     config = function()
       vim.cmd([[
-        LeximaAlterCommand ee                 e!
-        LeximaAlterCommand gin                Gin
-        LeximaAlterCommand blame              GinBlame
-        LeximaAlterCommand bro\%[wse]         GinBrowse<Space>--permalink
-        LeximaAlterCommand cap\%[ture]        Capture
-        LeximaAlterCommand r\%[un]            QuickRun
-        LeximaAlterCommand ss                 SaveProjectLayout
-        LeximaAlterCommand sl                 LoadProjectLayout
+        LeximaAlterCommand ee          e!
+        LeximaAlterCommand gin         Gin
+        LeximaAlterCommand blame       GinBlame
+        LeximaAlterCommand bro\%[wse]  GinBrowse<Space>--permalink
+        LeximaAlterCommand cap\%[ture] Capture
+        LeximaAlterCommand r\%[un]     QuickRun
+        LeximaAlterCommand ss          SaveProjectLayout
+        LeximaAlterCommand sl          LoadProjectLayout
+        LeximaAlterCommand ar\%[to]    Arto
       ]])
     end,
   },
