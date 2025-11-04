@@ -67,7 +67,6 @@ return {
         return table[theme] and table[theme]() or 'auto'
       end
 
-      -- 初期テーマを保存
       current_theme = vim.env.NVIM_COLORSCHEME
 
       local no_error = {
@@ -137,31 +136,50 @@ return {
         end
       end
 
-      local function lsp_lines_mode()
-        if vim.env.LSP ~= 'nvim' or not enable_lsp_lines then
+      local function vinsert_component()
+        local status = vim.fn['vinsert#status']()
+        if status.label == '' then
           return ''
         end
-
-        local mode = ''
-        if get_lsp_lines_status().mode == 'current' then
-          mode = 'C'
-        elseif get_lsp_lines_status().mode == 'all' then
-          mode = 'A'
-        elseif get_lsp_lines_status().mode == 'none' then
-          mode = 'N'
-        end
-
-        return 'LspLines: [' .. mode .. ']'
+        return status.label
       end
 
-      -- lualineの初期設定
+      local function vinsert_cond()
+        local status = vim.fn['vinsert#status']()
+        return status.active or status.error
+      end
+
+      local function vinsert_color()
+        local status = vim.fn['vinsert#status']()
+        local base = color.base()
+        local palette = {
+          idle = { fg = base.fg, bg = base.bg_dim },
+          rec = { fg = base.black, bg = base.red },
+          stt = { fg = base.black, bg = base.yellow },
+          gen = { fg = base.black, bg = base.blue },
+          error = { fg = base.white, bg = base.red_dark },
+        }
+        return palette[status.indicatorPhase] or palette.idle
+      end
+
       lualine.setup({
         options = {
           theme = theme_table(current_theme, false),
           globalstatus = true,
         },
         sections = {
-          lualine_a = { 'mode' },
+          lualine_a = {
+            {
+              'mode',
+              separator = { left = '', right = '' },
+            },
+            {
+              vinsert_component,
+              cond = vinsert_cond,
+              color = vinsert_color,
+              separator = { left = '', right = '' },
+            },
+          },
           lualine_b = { 'branch', 'diff' },
           lualine_c = { { 'filename', path = 1 }, modified_background_buffers },
           lualine_x = {
@@ -175,21 +193,12 @@ return {
                 hint = diagnostic_icons.hint .. ' ',
               },
             },
-            { lsp_lines_mode },
-            -- lsp_names,
             { 'filetype', colored = true, icon_only = false },
           },
           lualine_y = { 'progress' },
           lualine_z = { 'location' },
         },
-        extensions = {
-          'aerial',
-          'fern',
-          'fzf',
-          'man',
-          'quickfix',
-          'toggleterm',
-        },
+        extensions = { 'aerial', 'fern', 'fzf', 'man', 'quickfix', 'toggleterm' },
       })
 
       -- Register FocusLost handler for lualine

@@ -60,6 +60,7 @@ config.keys = {
   { key = 'H', mods = 'SUPER', action = act.HideApplication },
   { key = 'M', mods = 'SUPER', action = act.HideApplication },
   { key = 'Enter', mods = 'ALT', action = act.ToggleFullScreen },
+  { key = 'q', mods = 'CTRL', action = act.SendKey({ key = 'q', mods = 'CTRL' }) },
 }
 
 config.colors = {
