@@ -4,6 +4,32 @@ local M = {}
 
 ---@param snacks snacks
 function M.setup(snacks)
+  local diffview_loaded = false
+
+  local function ensure_diffview()
+    if diffview_loaded then
+      return true
+    end
+
+    if pcall(require, 'diffview') then
+      diffview_loaded = true
+      return true
+    end
+
+    local ok_lazy, lazy = pcall(require, 'lazy')
+    if not ok_lazy then
+      return false
+    end
+
+    local ok_load = pcall(lazy.load, { plugins = { 'diffview.nvim' } })
+    if not ok_load then
+      return false
+    end
+
+    diffview_loaded = pcall(require, 'diffview')
+    return diffview_loaded
+  end
+
   local function sanitize_selection(selection)
     local items = {}
     for _, item in ipairs(selection or {}) do
@@ -479,8 +505,8 @@ function M.setup(snacks)
           return
         end
         local sha = target.sha
-        if vim.fn.exists(':DiffviewOpen') == 0 then
-          vim.notify('DiffviewOpen command is not available', vim.log.levels.ERROR, { title = 'Snacks Reflog' })
+        if not ensure_diffview() then
+          vim.notify('Diffview could not be loaded', vim.log.levels.ERROR, { title = 'Snacks Reflog' })
           return
         end
         picker:close()

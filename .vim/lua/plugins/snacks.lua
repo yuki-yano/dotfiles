@@ -11,7 +11,6 @@ return {
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'lambdalisue/gin.vim' },
-      { 'sindrets/diffview.nvim' },
     },
     init = function()
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
@@ -378,14 +377,15 @@ return {
   {
     'yuki-yano/snacks-smart-open.nvim',
     dev = true,
-    lazy = false,
+    event = 'VeryLazy',
     dependencies = { 'folke/snacks.nvim' },
     config = function()
-      local snacks = require('snacks')
       require('snacks-smart-open').setup({
         apply_to = { 'smart', 'smart_open_files' },
       })
+
       vim.keymap.set({ 'n' }, '<Plug>(ff)r', function()
+        local snacks = require('snacks')
         ---@diagnostic disable-next-line: undefined-field
         snacks.picker.smart_open_files({
           filter = {
