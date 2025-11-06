@@ -6,7 +6,6 @@ local todo_icons = require('rc.modules.font').todo_icons
 local list_concat = require('rc.modules.utils').list_concat
 local is_editprompt = require('rc.setup.quick_ime').is_editprompt
 -- local enable_noice = require('rc.modules.plugin_utils').enable_noice
-local enable_copilot = false
 
 return {
   {
@@ -14,7 +13,7 @@ return {
     event = vim.env.LSP == 'nvim' and { 'InsertEnter', 'CmdlineEnter' } or { 'VeryLazy' },
     dependencies = {
       { 'hrsh7th/cmp-nvim-lsp' },
-      { 'hrsh7th/cmp-nvim-lua' },
+      -- { 'hrsh7th/cmp-nvim-lua' },
       { 'hrsh7th/cmp-nvim-lsp-signature-help' },
       { 'ray-x/cmp-treesitter' },
       { 'hrsh7th/cmp-buffer' },
@@ -36,12 +35,6 @@ return {
         },
       },
       -- { 'tzachar/cmp-tabnine', build = './install.sh' },
-      {
-        'zbirenbaum/copilot-cmp',
-        dependencies = {
-          { 'zbirenbaum/copilot.lua' },
-        },
-      },
       { 'hrsh7th/cmp-cmdline' },
       { 'uga-rosa/cmp-skkeleton' },
       {
@@ -65,7 +58,6 @@ return {
         'yuki-yano/cmp-prompt-abbr',
         dev = true,
       },
-      -- { 'cohama/lexima.vim' }, -- NOTE: Load before cmp
     },
     init = function()
       vim.api.nvim_create_autocmd({ 'CmdlineEnter' }, {
@@ -139,28 +131,6 @@ return {
         symbol_map = codicons,
       })
 
-      if vim.env.LSP == 'nvim' and enable_copilot then
-        -- NOTE: After load lexima key mappings
-        require('copilot').setup({
-          suggestion = {
-            auto_trigger = true,
-            keymap = {
-              accept = '<Tab>',
-              -- <C-]> is used for insx
-              dismiss = false,
-            },
-          },
-          filetypes = {
-            ['.'] = true,
-            -- typescript = true,
-            -- typescriptreact = true,
-            -- lua = true,
-            -- vim = true,
-          },
-        })
-        -- require('copilot_cmp').setup()
-      end
-
       -- NOTE: force_keyword_length is used from manual complete
       local sources = {
         { name = 'luasnip', keyword_length = 2, force_keyword_length = true },
@@ -168,7 +138,7 @@ return {
         -- { name = 'copilot' },
         { name = 'nvim_lsp' },
         -- { name = 'treesitter' },
-        { name = 'nvim_lua', max_item_count = 20 },
+        -- { name = 'nvim_lua', max_item_count = 20 },
         { name = 'lazydev', group_index = 0 },
         -- { name = 'nvim_lsp_signature_help' },
         -- { name = 'cmp_tabnine', keyword_length = 2 },
@@ -259,6 +229,10 @@ return {
         })
       end
 
+      -- local tabnine = require('cmp_tabnine.config')
+      -- tabnine:setup()
+      -- require('cmp_tabnine').setup()
+
       cmp.setup({
         enabled = vim.env.LSP == 'nvim',
         mapping = vim.env.LSP == 'nvim'
@@ -347,7 +321,7 @@ return {
                 -- copilot = '[Copilot]',
                 nvim_lsp = '[LSP]',
                 treesitter = '[Tree]',
-                nvim_lua = '[Lua]',
+                -- nvim_lua = '[Lua]',
                 nvim_lsp_signature_help = '[Signature]',
                 -- cmp_tabnine = '[Tabnine]',
                 buffer = '[Buffer]',
@@ -443,43 +417,29 @@ return {
         },
       })
 
-      -- Insert '(' after confirm function or method item
-      cmp.event:on('confirm_done', function(evt)
-        local Kind = cmp.lsp.CompletionItemKind
-
-        -- TypeScript imported functions are completed as variable with the format `(alias) function {func_name} ...`.
-        local ts_extra_matcher = function(item)
-          return item.kind == Kind.Variable and string.match(item.detail, '^%(alias%) function ') ~= nil
-        end
-        local rules = {
-          -- NOTE: Disabled because vtsls returns snippet
-          -- typescript = {
-          --   ['('] = {
-          --     kind = { Kind.Function, Kind.Method },
-          --     extra_matcher = ts_extra_matcher,
-          --   },
-          -- },
-          -- typescriptreact = {
-          --   ['('] = {
-          --     kind = { Kind.Function, Kind.Method },
-          --     extra_matcher = ts_extra_matcher,
-          --   },
-          -- },
-        }
-
-        local filetype = vim.o.filetype
-        local item = evt.entry:get_completion_item()
-        if rules[filetype] then
-          for key, rule in pairs(rules[filetype]) do
-            if vim.tbl_contains(rule.kind, item.kind) or rule.extra_matcher(item) then
-              vim.api.nvim_feedkeys(key, 'i', true)
-            end
-          end
-        end
-      end)
-
       cmp.setup.filetype(get_disable_cmp_filetypes(), {
         enabled = false,
+      })
+    end,
+  },
+  {
+    'zbirenbaum/copilot.lua',
+    dependencies = {
+      { 'copilotlsp-nvim/copilot-lsp' },
+    },
+    event = { 'InsertEnter' },
+    cmd = { 'Copilot' },
+    config = function()
+      require('copilot').setup({
+        suggestion = {
+          auto_trigger = true,
+          keymap = {
+            accept = '<Tab>',
+            next = '<M-n>',
+            prev = '<M-p>',
+            dismiss = false,
+          },
+        },
       })
     end,
   },
@@ -716,6 +676,7 @@ return {
         LeximaAlterCommand ss          SaveProjectLayout
         LeximaAlterCommand sl          LoadProjectLayout
         LeximaAlterCommand ar\%[to]    Arto
+        LeximaAlterCommand cur\%[sor]  Cursor
       ]])
     end,
   },
@@ -1040,51 +1001,51 @@ return {
 
       -- markdown headings / list helpers (ported from former lexima rules)
       local markdown_rules = {
-        -- headings '# '
-        { key = '#', pattern = [=[^\%#\%(#\)\@!]=], input = '#<Space>' },
-        { key = '#', pattern = [=[#\s\%#]=], input = '<BS>#<Space>' },
-        { key = '<C-h>', pattern = [=[^#\s\%#]=], input = '<BS><BS>' },
-        { key = '<C-h>', pattern = [=[##\s\%#]=], input = '<BS><BS><Space>' },
-        { key = '<BS>', pattern = [=[^#\s\%#]=], input = '<BS><BS>' },
-        { key = '<BS>', pattern = [=[##\s\%#]=], input = '<BS><BS><Space>' },
-        -- unordered list '- '
-        { key = '-', pattern = [=[^\s*\%#]=], input = '-<Space>' },
-        { key = '<Tab>', pattern = [=[^\s*-\s\%#]=], input = '<Home><Tab><End>' },
-        { key = '<Tab>', pattern = [=[^\s*-\s\w.*\%#]=], input = '<Home><Tab><End>' },
-        { key = '<S-Tab>', pattern = [=[^\s\+-\s\%#]=], input = '<Home><Del><Del><End>' },
-        { key = '<S-Tab>', pattern = [=[^\s\+-\s\w.*\%#]=], input = '<Home><Del><Del><End>' },
-        { key = '<S-Tab>', pattern = [=[^-\s\w.*\%#]=], input = '' },
-        { key = '<C-h>', pattern = [=[^-\s\%#]=], input = '<C-w><BS>' },
-        { key = '<C-h>', pattern = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><BS>' },
-        { key = '<BS>', pattern = [=[^-\s\%#]=], input = '<C-w><BS>' },
-        { key = '<BS>', pattern = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><BS>' },
-        { key = '<CR>', pattern = [=[^-\s\%#]=], input = '<C-w><CR>' },
-        { key = '<CR>', pattern = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><CR>' },
-        { key = '<CR>', pattern = [=[^\s*-\s\w.*\%#]=], input = '<CR>-<Space>' },
-        -- checkbox '- [ ]' basics
-        { key = '[', pattern = [=[^\s*-\s\%#]=], input = '<Left><Space>[]<Left>' },
-        { key = '<Tab>', pattern = [=[^\s*-\s\[\%#\]\s]=], input = '<Home><Tab><End><Left><Left>' },
-        { key = '<S-Tab>', pattern = [=[^-\s\[\%#\]\s]=], input = '' },
-        { key = '<S-Tab>', pattern = [=[^\s\+-\s\[\%#\]\s]=], input = '<Home><Del><Del><End><Left><Left>' },
-        { key = '<C-h>', pattern = [=[^\s*-\s\[\%#\]]=], input = '<BS><Del><Del>' },
-        { key = '<BS>', pattern = [=[^\s*-\s\[\%#\]]=], input = '<BS><Del><Del>' },
-        { key = '<Space>', pattern = [=[^\s*-\s\[\%#\]]=], input = '<Space><End>' },
-        { key = 'x', pattern = [=[^\s*-\s\[\%#\]]=], input = 'x<End>' },
-        { key = '<CR>', pattern = [=[^-\s\[\%#\]]=], input = '<End><C-w><C-w><C-w><CR>' },
-        { key = '<CR>', pattern = [=[^\s\+-\s\[\%#\]]=], input = '<End><C-w><C-w><C-w><C-w><CR>' },
-        -- checkbox indentation
-        { key = '<Tab>', pattern = [=[^\s*-\s\[\(\s\|x\)\]\s\%#]=], input = '<Home><Tab><End>' },
-        { key = '<Tab>', pattern = [=[^\s*-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '<Home><Tab><End>' },
-        { key = '<S-Tab>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<Home><Del><Del><End>' },
-        { key = '<S-Tab>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '<Home><Del><Del><End>' },
-        { key = '<S-Tab>', pattern = [=[^-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '' },
-        { key = '<C-h>', pattern = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><BS>' },
-        { key = '<C-h>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><C-w><BS>' },
-        { key = '<BS>', pattern = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><BS>' },
-        { key = '<BS>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><C-w><BS>' },
-        { key = '<CR>', pattern = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><CR>' },
-        { key = '<CR>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><C-w><CR>' },
-        { key = '<CR>', pattern = [=[^\s*-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '<CR>-<Space>[]<Space><Left><Left>' },
+        -- -- headings '# '
+        -- { key = '#', pattern = [=[^\%#\%(#\)\@!]=], input = '#<Space>' },
+        -- { key = '#', pattern = [=[#\s\%#]=], input = '<BS>#<Space>' },
+        -- { key = '<C-h>', pattern = [=[^#\s\%#]=], input = '<BS><BS>' },
+        -- { key = '<C-h>', pattern = [=[##\s\%#]=], input = '<BS><BS><Space>' },
+        -- { key = '<BS>', pattern = [=[^#\s\%#]=], input = '<BS><BS>' },
+        -- { key = '<BS>', pattern = [=[##\s\%#]=], input = '<BS><BS><Space>' },
+        -- -- unordered list '- '
+        -- { key = '-', pattern = [=[^\s*\%#]=], input = '-<Space>' },
+        -- { key = '<Tab>', pattern = [=[^\s*-\s\%#]=], input = '<Home><Tab><End>' },
+        -- { key = '<Tab>', pattern = [=[^\s*-\s\w.*\%#]=], input = '<Home><Tab><End>' },
+        -- { key = '<S-Tab>', pattern = [=[^\s\+-\s\%#]=], input = '<Home><Del><Del><End>' },
+        -- { key = '<S-Tab>', pattern = [=[^\s\+-\s\w.*\%#]=], input = '<Home><Del><Del><End>' },
+        -- { key = '<S-Tab>', pattern = [=[^-\s\w.*\%#]=], input = '' },
+        -- { key = '<C-h>', pattern = [=[^-\s\%#]=], input = '<C-w><BS>' },
+        -- { key = '<C-h>', pattern = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><BS>' },
+        -- { key = '<BS>', pattern = [=[^-\s\%#]=], input = '<C-w><BS>' },
+        -- { key = '<BS>', pattern = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><BS>' },
+        -- { key = '<CR>', pattern = [=[^-\s\%#]=], input = '<C-w><CR>' },
+        -- { key = '<CR>', pattern = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><CR>' },
+        -- { key = '<CR>', pattern = [=[^\s*-\s\w.*\%#]=], input = '<CR>-<Space>' },
+        -- -- checkbox '- [ ]' basics
+        -- { key = '[', pattern = [=[^\s*-\s\%#]=], input = '<Left><Space>[]<Left>' },
+        -- { key = '<Tab>', pattern = [=[^\s*-\s\[\%#\]\s]=], input = '<Home><Tab><End><Left><Left>' },
+        -- { key = '<S-Tab>', pattern = [=[^-\s\[\%#\]\s]=], input = '' },
+        -- { key = '<S-Tab>', pattern = [=[^\s\+-\s\[\%#\]\s]=], input = '<Home><Del><Del><End><Left><Left>' },
+        -- { key = '<C-h>', pattern = [=[^\s*-\s\[\%#\]]=], input = '<BS><Del><Del>' },
+        -- { key = '<BS>', pattern = [=[^\s*-\s\[\%#\]]=], input = '<BS><Del><Del>' },
+        -- { key = '<Space>', pattern = [=[^\s*-\s\[\%#\]]=], input = '<Space><End>' },
+        -- { key = 'x', pattern = [=[^\s*-\s\[\%#\]]=], input = 'x<End>' },
+        -- { key = '<CR>', pattern = [=[^-\s\[\%#\]]=], input = '<End><C-w><C-w><C-w><CR>' },
+        -- { key = '<CR>', pattern = [=[^\s\+-\s\[\%#\]]=], input = '<End><C-w><C-w><C-w><C-w><CR>' },
+        -- -- checkbox indentation
+        -- { key = '<Tab>', pattern = [=[^\s*-\s\[\(\s\|x\)\]\s\%#]=], input = '<Home><Tab><End>' },
+        -- { key = '<Tab>', pattern = [=[^\s*-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '<Home><Tab><End>' },
+        -- { key = '<S-Tab>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<Home><Del><Del><End>' },
+        -- { key = '<S-Tab>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '<Home><Del><Del><End>' },
+        -- { key = '<S-Tab>', pattern = [=[^-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '' },
+        -- { key = '<C-h>', pattern = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><BS>' },
+        -- { key = '<C-h>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><C-w><BS>' },
+        -- { key = '<BS>', pattern = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><BS>' },
+        -- { key = '<BS>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><C-w><BS>' },
+        -- { key = '<CR>', pattern = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><CR>' },
+        -- { key = '<CR>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><C-w><CR>' },
+        -- { key = '<CR>', pattern = [=[^\s*-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '<CR>-<Space>[]<Space><Left><Left>' },
       }
 
       for _, rule in ipairs(markdown_rules) do
@@ -1651,41 +1612,5 @@ return {
         return require('treesj').toggle()
       end)
     end,
-  },
-  {
-    'folke/sidekick.nvim',
-    lazy = false,
-    enabled = false,
-    keys = {
-      {
-        '<tab>',
-        function()
-          -- if there is a next edit, jump to it, otherwise apply it if any
-          if require('sidekick').nes_jump_or_apply() then
-            return -- jumped or applied
-          end
-
-          -- if you are using Neovim's native inline completions
-          if vim.lsp.inline_completion.get() then
-            return
-          end
-
-          -- any other things (like snippets) you want to do on <tab> go here.
-
-          -- fall back to normal tab
-          return '<tab>'
-        end,
-        mode = { 'i', 'n' },
-        expr = true,
-        desc = 'Goto/Apply Next Edit Suggestion',
-      },
-      {
-        '<leader>ac',
-        function()
-          require('sidekick.cli').toggle({ name = 'claude', focus = true })
-        end,
-        mode = { 'n', 'v' },
-      },
-    },
   },
 }
