@@ -12,7 +12,7 @@
 
 set -euo pipefail
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$HOME/dotfiles/bin:$HOME/.local/bin:$PATH"
-source "${HOME}/.zshrc.local"
+[ -f "${HOME}/.zshrc.local" ] && source "${HOME}/.zshrc.local"
 
 # ===== Tunables ===============================================================
 TITLE="${WEZTERM_NVIM_TITLE:-IME NVIM}"
@@ -22,28 +22,45 @@ ATTACH_FAIL_SLEEP="${ATTACH_FAIL_SLEEP:-2}"        # Seconds to keep window on a
 TMUX_CONF="${TMUX_CONF:-$HOME/.tmux.conf}"         # Optional custom tmux config
 WEZTERM_BIN="${WEZTERM_BIN:-wezterm}"
 YABAI_BIN="${YABAI_BIN:-yabai}"
+WEZTERM_APP_PATH="${WEZTERM_APP_PATH:-/Applications/WezTerm.app}"
+WEZTERM_HEADLESS_BOOT="${WEZTERM_HEADLESS_BOOT:-1}"
 # ==============================================================================
 
 _tmux() {
   env -u TMUX tmux -L "$TMUX_SERVER_NAME" -f "$TMUX_CONF" "$@"
 }
 
-_focus_wezterm_window() {
-  if /usr/bin/osascript -e 'tell application "WezTerm" to activate' >/dev/null 2>&1; then
-    return 0
-  fi
-
+_wezterm_gui_ready() {
+  for _ in {1..30}; do
+    if "$WEZTERM_BIN" cli list >/dev/null 2>&1; then return 0; fi
+    sleep 0.1
+  done
   return 1
 }
 
-for b in "$WEZTERM_BIN" tmux nvim; do
+_wezterm_boot_headless_if_needed() {
+  if "$WEZTERM_BIN" cli list >/dev/null 2>&1; then return 0; fi
+
+  open -gj "$WEZTERM_APP_PATH" >/dev/null 2>&1 || true
+  _wezterm_gui_ready || return 0
+
+  "$WEZTERM_BIN" cli list --format json \
+    | jq -r '.[].pane_id' \
+    | xargs -r -n1 "$WEZTERM_BIN" cli kill-pane --pane-id >/dev/null 2>&1 || true
+}
+
+_focus_wezterm_window() {
+  /usr/bin/osascript -e 'tell application "WezTerm" to activate' >/dev/null 2>&1 || return 1
+  return 0
+}
+
+for b in "$WEZTERM_BIN" tmux nvim jq; do
   command -v "$b" >/dev/null 2>&1 || { echo "$b not found" >&2; exit 1; }
 done
 
 PREV_APP=""
 PREV_WINDOW_ID=""
-
-if command -v "$YABAI_BIN" >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+if command -v "$YABAI_BIN" >/dev/null 2>&1; then
   if window_info=$("$YABAI_BIN" -m query --windows --window 2>/dev/null); then
     PREV_WINDOW_ID="$(printf '%s' "$window_info" | jq -r '.id // empty')"
     PREV_APP="$(printf '%s' "$window_info" | jq -r '.app // empty')"
@@ -58,10 +75,7 @@ export QUICK_IME_SESSION="$SESSION"
 export QUICK_IME_RETURN_APP="$PREV_APP"
 export QUICK_IME_RETURN_WINDOW_ID="$PREV_WINDOW_ID"
 
-# Drop any existing clients for this dedicated session
 _tmux detach-client -a -s "$SESSION" 2>/dev/null || true
-
-# Ensure persistent session on the secondary server
 _tmux start-server >/dev/null 2>&1 || true
 _tmux set-option -g exit-unattached off >/dev/null 2>&1 || true
 _tmux set-environment -g QUICK_IME 1 >/dev/null 2>&1 || true
@@ -76,7 +90,10 @@ if ! _tmux has-session -t "$SESSION" 2>/dev/null; then
   _tmux new-session -d -s "$SESSION" "/bin/sh -lc 'QUICK_IME=1 exec nvim'"
 fi
 
-# Spawn dedicated WezTerm window
+if [ "${WEZTERM_HEADLESS_BOOT}" = "1" ]; then
+  _wezterm_boot_headless_if_needed || true
+fi
+
 WEZTERM_COMMON_ARGS=()
 [[ -n "${WEZTERM_WORKSPACE:-}" ]] && WEZTERM_COMMON_ARGS+=(--workspace "$WEZTERM_WORKSPACE")
 [[ -n "${WEZTERM_CWD:-}" ]] && WEZTERM_COMMON_ARGS+=(--cwd "$WEZTERM_CWD")

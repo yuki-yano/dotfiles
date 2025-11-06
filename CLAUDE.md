@@ -60,7 +60,7 @@ deno task help             # 利用可能なタスクを表示
   - `deno.json` - Deno タスク定義
   - `tasks.ts` - TypeScript で実装されたタスクランナー
 - **Neovim プラグイン**: `.vim/lua/plugins/` - モジュール化されたプラグイン設定
-- **LSP 設定**: `.vim/after/lsp/` - 言語固有の LSP 設定
+- **LSP 設定**: `.vim/lua/plugins/lsp/servers/` - 言語固有の LSP 設定
 
 ### 開発フォーカスエリア
 

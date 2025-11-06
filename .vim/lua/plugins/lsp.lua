@@ -1,41 +1,51 @@
-local add_disable_cmp_filetypes = require('rc.modules.plugin_utils').add_disable_cmp_filetypes
-local is_node_repo = require('rc.modules.plugin_utils').is_node_repo
+local plugin_utils = require('rc.modules.plugin_utils')
+local add_disable_cmp_filetypes = plugin_utils.add_disable_cmp_filetypes
 local color = require('rc.modules.color')
 local lsp_icons = require('rc.modules.font').lsp_icons
 local codicons = require('rc.modules.font').codicons
 local diagnostic_icons = require('rc.modules.font').diagnostic_icons
-local enabled_inlay_hint = require('rc.modules.plugin_utils').enabled_inlay_hint
-local enabled_inlay_hint_default_value = require('rc.modules.plugin_utils').enabled_inlay_hint_default_value
 
-local uv = vim.uv or vim.loop
+local server_specs = {
+  { name = 'astro', module = 'plugins.lsp.servers.astro' },
+  { name = 'denols', module = 'plugins.lsp.servers.denols' },
+  { name = 'eslint', module = 'plugins.lsp.servers.eslint' },
+  { name = 'jsonls', module = 'plugins.lsp.servers.jsonls' },
+  { name = 'lua_ls', module = 'plugins.lsp.servers.lua_ls' },
+  { name = 'tailwindcss', module = 'plugins.lsp.servers.tailwindcss' },
+  { name = 'tsserver', module = 'plugins.lsp.servers.tsserver' },
+  { name = 'vtsls', module = 'plugins.lsp.servers.vtsls' },
+  { name = 'yamlls', module = 'plugins.lsp.servers.yamlls' },
+}
 
-local function load_vtsls_override()
-  local paths = {
-    vim.fn.stdpath('config') .. '/after/lsp/vtsls.lua',
-    vim.fn.expand('~/.vim/after/lsp/vtsls.lua'),
-  }
+local function setup_servers()
+  for _, spec in ipairs(server_specs) do
+    local ok, config_or_err = pcall(require, spec.module)
+    if not ok then
+      vim.notify(
+        string.format('Failed to load LSP config: %s (%s)', spec.name, config_or_err),
+        vim.log.levels.ERROR
+      )
+    else
+      local enable = true
+      if config_or_err.enable ~= nil then
+        enable = config_or_err.enable
+      end
 
-  for _, path in ipairs(paths) do
-    if path ~= '' then
-      local stat = uv.fs_stat(path)
-      if stat then
-        local ok, err = pcall(dofile, path)
-        if not ok then
-          vim.notify(string.format('vtsls override failed: %s', err), vim.log.levels.WARN)
-        end
+      local config = vim.deepcopy(config_or_err)
+      config.enable = nil
+
+      vim.lsp.config(spec.name, config)
+      if enable then
+        vim.lsp.enable(spec.name)
       end
     end
   end
 end
 
-local enable_vtsls = true
-local enable_tsserver = not enable_vtsls
-
 local plugins = {
   {
     'neovim/nvim-lspconfig',
     event = { 'BufReadPre', 'BufWrite' },
-    -- NOTE: Use onetime deno file
     ft = { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
     dependencies = {
       { 'williamboman/mason.nvim' },
@@ -51,7 +61,6 @@ local plugins = {
       { 'rachartier/tiny-inline-diagnostic.nvim' },
       { 'lambdalisue/vim-deno-cache' },
       { 'kyoh86/climbdir.nvim' },
-      -- { 'davidosomething/format-ts-errors.nvim' },
     },
     init = function()
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
@@ -63,8 +72,11 @@ local plugins = {
         end,
       })
     end,
-
     config = function()
+      local cmp_nvim_lsp = require('cmp_nvim_lsp')
+      local null_ls = require('null-ls')
+      local cspell_sources = require('plugins.lsp.cspell').setup(null_ls)
+
       vim.diagnostic.config({
         signs = {
           text = {
@@ -78,16 +90,13 @@ local plugins = {
         severity_sort = true,
       })
 
-      local cmp_nvim_lsp = require('cmp_nvim_lsp')
-      local null_ls = require('null-ls')
-      local cspell_sources = require('plugins.lsp.cspell').setup(null_ls)
-
       vim.lsp.config('*', {
         capabilities = cmp_nvim_lsp.default_capabilities(),
       })
 
+      local lsp_group = vim.api.nvim_create_augroup('UserLspConfig', { clear = true })
       vim.api.nvim_create_autocmd('LspAttach', {
-        group = vim.api.nvim_create_augroup('UserLspConfig', { clear = true }),
+        group = lsp_group,
         callback = function(ev)
           local client = vim.lsp.get_client_by_id(ev.data.client_id)
           if not client then
@@ -123,93 +132,9 @@ local plugins = {
 
       vim.keymap.set('n', '<Plug>(lsp)f', function()
         vim.lsp.buf.format()
-      end, { buffer = true, desc = 'Format current buffer' })
+      end, { desc = 'Format current buffer' })
 
-      vim.api.nvim_create_autocmd('FileType', {
-        pattern = { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
-        callback = function(ev)
-          if vim.bo[ev.buf].filetype == 'astro' then
-            vim.keymap.set('n', '<Plug>(lsp)f', function()
-              vim.lsp.buf.format({
-                bufnr = ev.buf,
-                filter = function(c)
-                  return c.name == 'null-ls' or c.name == 'astro'
-                end,
-              })
-            end, { buffer = ev.buf, desc = 'Format with null-ls/astro' })
-          elseif is_node_repo() then
-            vim.keymap.set('n', '<Plug>(lsp)f', function()
-              if vim.fn.exists(':EslintFixAll') == 2 then
-                vim.cmd('EslintFixAll')
-              end
-              vim.lsp.buf.format({
-                bufnr = ev.buf,
-                filter = function(c)
-                  return c.name == 'null-ls'
-                end,
-              })
-            end, { buffer = ev.buf, desc = 'Format with Eslint & null-ls' })
-          else
-            vim.keymap.set('n', '<Plug>(lsp)f', function()
-              -- fallback to LSP formatting
-              vim.lsp.buf.format({
-                bufnr = ev.buf,
-                filter = function(c)
-                  return c.name == 'denols'
-                end,
-              })
-            end, { buffer = ev.buf, desc = 'Format with denols' })
-          end
-        end,
-      })
-
-      vim.api.nvim_create_autocmd('FileType', {
-        pattern = 'json',
-        callback = function(ev)
-          vim.keymap.set('n', '<Plug>(lsp)f', function()
-            vim.lsp.buf.format({
-              bufnr = ev.buf,
-              filter = function(c)
-                return c.name == 'null-ls'
-              end,
-            })
-          end, { buffer = ev.buf, desc = 'Format JSON with null-ls' })
-        end,
-      })
-
-      vim.api.nvim_create_autocmd('FileType', {
-        pattern = 'lua',
-        callback = function(ev)
-          vim.keymap.set('n', '<Plug>(lsp)f', function()
-            vim.lsp.buf.format({
-              bufnr = ev.buf,
-              filter = function(c)
-                return c.name == 'null-ls'
-              end,
-            })
-          end, { buffer = ev.buf, desc = 'Format Lua with null-ls' })
-        end,
-      })
-
-      vim.api.nvim_create_user_command('OrganizeImport', function()
-        local clients = vim.lsp.get_clients({ bufnr = 0, name = 'vtsls' })
-        if #clients > 0 then
-          clients[1]:exec_cmd({
-            title = 'Organize Imports',
-            command = '_typescript.organizeImports',
-            arguments = { vim.api.nvim_buf_get_name(0) },
-          })
-        else
-          clients = vim.lsp.get_clients({ bufnr = 0, name = 'tsserver' })
-          if #clients > 0 then
-            clients[1]:exec_cmd({
-              title = 'Organize Imports',
-              command = '_typescript.organizeImports',
-              arguments = { vim.api.nvim_buf_get_name(0) },
-            })
-          end
-        end
-      end, {})
+      setup_servers()
     end,
   },
   {
@@ -222,24 +147,19 @@ local plugins = {
     config = function()
       require('mason').setup()
 
-      local mason_lspconfig = require('mason-lspconfig')
-      local ts_lsp = enable_tsserver and 'tsserver' or 'vtsls'
-      mason_lspconfig.setup({
+      require('mason-lspconfig').setup({
         ensure_installed = {
-          ts_lsp,
+          'vtsls',
           'eslint',
           'biome',
           'tailwindcss',
           'denols',
           'astro',
           'lua_ls',
-          'vimls',
           'jsonls',
           'yamlls',
         },
-        automatic_enable = {
-          exclude = { 'vtsls' },
-        },
+        automatic_enable = false,
       })
 
       require('mason-null-ls').setup({
@@ -441,7 +361,7 @@ local plugins = {
   },
   {
     'pmizio/typescript-tools.nvim',
-    enabled = enable_tsserver,
+    enabled = false,
     dependencies = {
       'nvim-lua/plenary.nvim',
       'neovim/nvim-lspconfig',
@@ -452,45 +372,22 @@ local plugins = {
   },
   {
     'yioneko/nvim-vtsls',
-    enabled = enable_vtsls,
     config = function()
-      load_vtsls_override()
+      local group = vim.api.nvim_create_augroup('UserVtslsExtras', { clear = true })
+      vim.api.nvim_create_autocmd('LspAttach', {
+        group = group,
+        callback = function(ev)
+          local client = vim.lsp.get_client_by_id(ev.data.client_id)
+          if not client or client.name ~= 'vtsls' then
+            return
+          end
 
-      local configs = require('lspconfig.configs')
-      local vtsls_config = require('vtsls').lspconfig
-      if not configs.vtsls then
-        configs.vtsls = vtsls_config
-      end
-      require('lspconfig').vtsls.setup({
-        autostart = false,
-        root_dir = vtsls_config.default_config.root_dir,
-        single_file_support = vtsls_config.default_config.single_file_support,
-        on_new_config = vtsls_config.default_config.on_new_config,
-      })
-
-      vim.api.nvim_create_autocmd({ 'FileType' }, {
-        pattern = { 'typescript', 'typescriptreact' },
-        callback = function()
           vim.keymap.set(
             { 'n' },
             '<Plug>(lsp)s',
             '<Cmd>VtsExec goto_source_definition<CR>',
-            { silent = true, buffer = true }
+            { silent = true, buffer = ev.buf }
           )
-        end,
-      })
-
-      vim.api.nvim_create_autocmd('FileType', {
-        pattern = { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
-        callback = function(ev)
-          if not is_node_repo(ev.buf) then
-            return
-          end
-
-          local manager = require('lspconfig').vtsls.manager
-          if manager then
-            manager:try_add(ev.buf)
-          end
         end,
       })
     end,

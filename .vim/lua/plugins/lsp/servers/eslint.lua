@@ -1,15 +1,17 @@
 return {
-  root_dir = function(bufnr, callback)
+  root_dir = function(bufnr, on_dir)
     local path = vim.fs.dirname(vim.fs.normalize(vim.api.nvim_buf_get_name(bufnr)))
+    if not path or path == '' then
+      return
+    end
+
     local eslint_config_files = {
-      -- Flat Config (ESLint v8+)
       'eslint.config.js',
       'eslint.config.cjs',
       'eslint.config.mjs',
       'eslint.config.ts',
       'eslint.config.mts',
       'eslint.config.cts',
-      -- Legacy .eslintrc.* formats
       '.eslintrc.js',
       '.eslintrc.cjs',
       '.eslintrc.yaml',
@@ -22,9 +24,9 @@ return {
       upward = true,
       path = path,
     })
+
     if #found_configs > 0 then
-      local found_dir = vim.fs.dirname(vim.fs.normalize(found_configs[1]))
-      return callback(found_dir)
+      on_dir(vim.fs.dirname(vim.fs.normalize(found_configs[1])))
     end
   end,
 }
