@@ -44,6 +44,7 @@ tmp/
 .aider*
 
 # Claude
+CLAUDE.md
 /.config/claude/*
 !/.config/claude/CLAUDE.md
 !/.config/claude/commands/
