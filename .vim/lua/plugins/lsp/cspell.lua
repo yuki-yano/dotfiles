@@ -56,6 +56,17 @@ local function add_words_with_cspell_helpers(words, cspell_helpers)
     cspell_config_path = cwd .. '/cspell.json'
   end
 
+  if cspell_helpers and cspell_helpers.create_default_cspell_json then
+    local stat = vim.loop.fs_stat(cspell_config_path)
+    if not stat then
+      local ok, err = pcall(cspell_helpers.create_default_cspell_json, params, cspell_config_path)
+      if not ok then
+        vim.notify('Failed to create cspell config: ' .. tostring(err), vim.log.levels.WARN)
+        return false
+      end
+    end
+  end
+
   local success, err = pcall(cspell_helpers.add_words_to_json, params, words, cspell_config_path)
   if success then
     vim.notify(string.format('Added %d words to dictionary', #words), vim.log.levels.INFO)
