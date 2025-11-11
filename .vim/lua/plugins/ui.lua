@@ -105,21 +105,6 @@ return {
         color = { fg = color.base().green },
       }
 
-      -- local lsp_names = {
-      --   function()
-      --     local servers = vim
-      --       .iter(vim.lsp.get_clients({ bufnr = 0 }))
-      --       :map(function(server)
-      --         if server.name ~= 'null-ls' then
-      --           return server.name
-      --         end
-      --       end)
-      --       :totable()
-      --
-      --     return table.concat(servers, ', ')
-      --   end,
-      -- }
-
       -- Displays the number of unsaved files other than the current buffer
       local function modified_background_buffers()
         local _modified_background_buffers = vim.tbl_filter(function(bufnr)

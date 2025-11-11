@@ -425,12 +425,17 @@ return {
   {
     'zbirenbaum/copilot.lua',
     dependencies = {
-      { 'copilotlsp-nvim/copilot-lsp' },
+      -- { 'copilotlsp-nvim/copilot-lsp' },
     },
     event = { 'InsertEnter' },
     cmd = { 'Copilot' },
     config = function()
       require('copilot').setup({
+        filetypes = {
+          markdown = true,
+          ['markdown.editprompt'] = true,
+          ['markdown.quickime'] = true,
+        },
         suggestion = {
           auto_trigger = true,
           keymap = {
@@ -675,7 +680,7 @@ return {
         LeximaAlterCommand r\%[un]     QuickRun
         LeximaAlterCommand ss          SaveProjectLayout
         LeximaAlterCommand sl          LoadProjectLayout
-        LeximaAlterCommand ar\%[to]    Arto
+        LeximaAlterCommand a\%[rto]    Arto
         LeximaAlterCommand cur\%[sor]  Cursor
       ]])
     end,
@@ -1483,7 +1488,9 @@ return {
 
       vim.keymap.set({ 'n', 'x' }, 'p', '<Plug>(haritsuke-p)')
       vim.keymap.set({ 'n', 'x' }, 'P', '<Plug>(haritsuke-P)')
-      -- vim.keymap.set({ 'n' }, '<Tab>', '<Plug>(haritsuke-toggle-smart-indent)')
+      vim.keymap.set({ 'n' }, '<Tab>', function()
+        return vim.fn['haritsuke#is_active']() and '<Plug>(haritsuke-toggle-smart-indent)' or '<Tab>'
+      end, { expr = true })
       -- vim.keymap.set({ 'n' }, 'gp', '<Plug>(haritsuke-gp)')
       -- vim.keymap.set({ 'n' }, 'gP', '<Plug>(haritsuke-gP)')
       vim.keymap.set({ 'n' }, '<C-p>', function()
@@ -1492,6 +1499,8 @@ return {
       vim.keymap.set({ 'n' }, '<C-n>', function()
         return vim.fn['haritsuke#is_active']() and '<Plug>(haritsuke-next)' or '<Plug>(ctrl-n)'
       end, { expr = true })
+      vim.keymap.set({ 'o', 'x' }, 'iP', '<Plug>(haritsuke-textobj-inner)')
+      vim.keymap.set({ 'o', 'x' }, 'aP', '<Plug>(haritsuke-textobj-outer)')
 
       vim.keymap.set({ 'n', 'x' }, 'R', '<Plug>(haritsuke-replace)')
       vim.keymap.set({ 'n' }, 'RR', 'R')
@@ -1516,6 +1525,27 @@ return {
       local config = require('dial.config')
       local augend = require('dial.augend')
 
+      local log_levels = augend.constant.new({
+        elements = { 'log', 'warn', 'error', 'debug', 'info' },
+        word = true,
+        cyclic = true,
+        match_before_cursor = true,
+      })
+      local markdown_checkboxes = {
+        augend.constant.new({
+          elements = { '[ ]', '[x]' },
+          word = false,
+          cyclic = true,
+          match_before_cursor = true,
+        }),
+        augend.constant.new({
+          elements = { '[ ]', '[X]' },
+          word = false,
+          cyclic = true,
+          match_before_cursor = true,
+        }),
+      }
+
       config.augends:register_group({
         default = {
           augend.integer.alias.decimal_int,
@@ -1527,17 +1557,24 @@ return {
             cyclic = true,
           }),
           augend.constant.new({
-            elements = { 'log', 'warn', 'error', 'debug', 'info' },
-            word = true,
-            cyclic = true,
-          }),
-          augend.constant.new({
             elements = { 'on', 'off' },
             word = true,
             cyclic = true,
           }),
           augend.semver.alias.semver,
         },
+      })
+
+      local function extend_default(extras)
+        return vim.list_extend(vim.deepcopy(config.augends:get('default')), extras)
+      end
+
+      config.augends:on_filetype({
+        markdown = extend_default(markdown_checkboxes),
+        javascript = extend_default({ log_levels }),
+        javascriptreact = extend_default({ log_levels }),
+        typescript = extend_default({ log_levels }),
+        typescriptreact = extend_default({ log_levels }),
       })
     end,
   },
@@ -1553,18 +1590,18 @@ return {
       require('smart-i').setup()
     end,
   },
-
   { 'thinca/vim-qfreplace', cmd = { 'Qfreplace' } },
   {
     'yuki-yano/dedent-yank.vim',
     dev = true,
     keys = {
-      { '<Plug>(dedent-yank-normal)', mode = { 'n' } },
+      { '<Plug>(dedent-yank-operator)', mode = { 'n' } },
       { '<Plug>(dedent-yank-visual)', mode = { 'x' } },
     },
     init = function()
       vim.g.dedent_yank_disable_default_mappings = true
-      vim.keymap.set({ 'n' }, 'gy', '<Plug>(dedent-yank-normal)')
+      vim.keymap.set({ 'n' }, 'gy', '<Plug>(dedent-yank-operator)')
+      vim.keymap.set({ 'n' }, 'gyy', '<Plug>(dedent-yank-line)')
       vim.keymap.set({ 'x' }, 'gy', '<Plug>(dedent-yank-visual)')
     end,
   },

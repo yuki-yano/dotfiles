@@ -154,6 +154,8 @@ local function focus_previous_target()
 end
 
 local function quick_ime_detach()
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
+
   local tty = vim.fn.systemlist({ 'tmux', 'display-message', '-p', '#{client_tty}' })[1]
   if tty and #tty > 0 then
     vim.fn.jobstart({ 'tmux', 'detach-client', '-t', tty }, { detach = true })
