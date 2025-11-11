@@ -232,12 +232,14 @@ async function cleanKillTarget(options: CleanKillOptions): Promise<void> {
   const currentPane = Deno.env.get("TMUX_PANE") ?? "";
   const panesToSignal = panes.filter((pane) => pane.id !== currentPane);
 
-  for (const pane of panesToSignal) {
-    await runCommand("tmux", ["send-keys", "-t", pane.id, "C-c"], { allowFail: true });
+  if (panesToSignal.length > 0) {
+    await Promise.all(panesToSignal.map((pane) =>
+      runCommand("tmux", ["send-keys", "-t", pane.id, "C-c"], { allowFail: true })
+    ));
   }
 
   if (panesToSignal.length > 0) {
-    await sleep(1000);
+    await sleep(300);
   }
 
   const pgids = new Set<string>();
@@ -257,25 +259,69 @@ async function cleanKillTarget(options: CleanKillOptions): Promise<void> {
     }
   }
 
-  for (const pgid of pgids) {
-    await runCommand("kill", ["-TERM", `-${pgid}`], { allowFail: true });
+  if (pgids.size > 0) {
+    await Promise.all(Array.from(pgids).map((pgid) =>
+      runCommand("kill", ["-TERM", `-${pgid}`], { allowFail: true })
+    ));
   }
 
   if (pgids.size > 0) {
-    await sleep(1000);
+    await sleep(300);
   }
 
-  for (const pgid of pgids) {
-    const stillRunning = (await runCommand("ps", ["-o", "pid=", "-g", pgid], { allowFail: true })).trim();
-    if (stillRunning) {
-      await runCommand("kill", ["-KILL", `-${pgid}`], { allowFail: true });
-    }
+  if (pgids.size > 0) {
+    await Promise.all(Array.from(pgids).map(async (pgid) => {
+      const stillRunning = (await runCommand("ps", ["-o", "pid=", "-g", pgid], { allowFail: true })).trim();
+      if (stillRunning) {
+        await runCommand("kill", ["-KILL", `-${pgid}`], { allowFail: true });
+      }
+    }));
   }
 
   await runCommand(options.finalCommand.cmd, options.finalCommand.args, { allowFail: true });
 }
 
+async function switchAwayFromSession(target: string): Promise<void> {
+  if (!Deno.env.get("TMUX")) {
+    return;
+  }
+
+  const currentSession = (await runCommand("tmux", [
+    "display-message",
+    "-p",
+    "#{session_name}",
+  ], { allowFail: true })).trim();
+  if (currentSession !== target) {
+    return;
+  }
+
+  const sessionsRaw = await runCommand("tmux", [
+    "list-sessions",
+    "-F",
+    "#{session_name}",
+  ], { allowFail: true });
+  const names = sessionsRaw
+    .split(/\r?\n/)
+    .map((name) => name.trim())
+    .filter((name) => name.length > 0);
+
+  if (names.length <= 1) {
+    return;
+  }
+
+  const currentIndex = names.findIndex((name) => name === target);
+  const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % names.length;
+  const nextSession = names[nextIndex];
+
+  if (!nextSession || nextSession === target) {
+    return;
+  }
+
+  await runCommand("tmux", ["switch-client", "-t", nextSession], { allowFail: true });
+}
+
 async function killSessionClean(name: string): Promise<void> {
+  await switchAwayFromSession(name);
   await cleanKillTarget({
     target: `${name}:`,
     recursive: true,
