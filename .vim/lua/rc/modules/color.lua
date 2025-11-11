@@ -163,6 +163,10 @@ palette['catppuccin'] = function()
         add = '#215C2B',
         delete = '#7A2936',
       },
+      cmt = {
+        commented = '#7A2936',
+        uncommented = '#215C2B',
+      },
       scrollbar = {
         bar = catppuccin_palette.surface1, -- #45475A
         search = catppuccin_palette.sky, -- #89DCEB

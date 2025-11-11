@@ -1293,8 +1293,43 @@ return {
     end,
   },
   {
+    'yuki-yano/cmt.nvim',
+    dev = true,
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+      'JoosepAlviste/nvim-ts-context-commentstring',
+    },
+    keys = {
+      { 'gc', '<Plug>(cmt:line:toggle)', mode = { 'n', 'x' } },
+      { 'gw', '<Plug>(cmt:block:toggle)', mode = { 'n', 'x' } },
+      { 'gC', '<Plug>(cmt:line:toggle:with-blank)', mode = { 'n', 'x' } },
+      { 'gW', '<Plug>(cmt:block:toggle:with-blank)', mode = { 'n', 'x' } },
+      { 'gcc', '<Plug>(cmt:line:toggle:current)', mode = 'n' },
+      { 'gCC', '<Plug>(cmt:line:toggle:with-blank:current)', mode = 'n' },
+      { 'gww', '<Plug>(cmt:block:toggle:current)', mode = 'n' },
+      { 'gWW', '<Plug>(cmt:block:toggle:with-blank:current)', mode = 'n' },
+      { 'gco', '<Plug>(cmt:open-below-comment)', mode = 'n' },
+      { 'gcO', '<Plug>(cmt:open-above-comment)', mode = 'n' },
+    },
+    init = function()
+      vim.g.cmt_mixed_mode_policy = {
+        default = 'first-line',
+      }
+      vim.api.nvim_set_hl(0, 'CmtToggleCommented', { fg = 'NONE', bg = color.misc().cmt.commented })
+      vim.api.nvim_set_hl(0, 'CmtToggleUncommented', { fg = 'NONE', bg = color.misc().cmt.uncommented })
+      vim.g.cmt_toggle_highlight = {
+        enabled = true,
+        groups = {
+          comment = 'IncSearch',
+          uncomment = 'DiffDelete',
+        },
+      }
+    end,
+  },
+  {
     -- NOTE: Use my fork
     'yuki-yano/caw.vim',
+    enabled = false,
     dependencies = {
       { 'kana/vim-operator-user' },
       { 'kana/vim-textobj-line' },
