@@ -125,9 +125,32 @@ config.set_environment_variables = {
 }
 
 if wezterm.gui then
+  local function normalize_window(window)
+    if not window then
+      return nil
+    end
+    if window.gui_window then
+      local ok, gui_window = pcall(function()
+        return window:gui_window()
+      end)
+      if ok and gui_window then
+        window = gui_window
+      end
+    end
+    if not window.get_dimensions then
+      return nil
+    end
+    return window
+  end
+
   local function center_on_main_display(window, attempt)
     attempt = attempt or 1
     if attempt > 6 then
+      return
+    end
+
+    window = normalize_window(window)
+    if not window then
       return
     end
 
