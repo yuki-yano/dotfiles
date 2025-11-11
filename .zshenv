@@ -95,6 +95,9 @@ fi
 export GOPATH=$HOME/.go
 path=(~/.go/bin(N-/) ~/.ghg/bin(N-/) $path)
 
+# luarocks
+path=(~/.luarocks/bin(N-/) $path)
+
 # java
 # export JAVA_HOME=$(/usr/libexec/java_home -v "14")
 

@@ -46,7 +46,6 @@ install --cask finicky
 install --cask firefox
 install --cask fork
 install --cask google-chrome
-install --cask jasper
 install --cask jetbrains-toolbox
 install --cask karabiner-elements
 install --cask keka
@@ -62,6 +61,7 @@ install --cask vlc
 install --cask zoom
 
 install --cask yuki-yano/swiftdialog/swift-dialog
+install --cask --no-quarantine lambdalisue/arto/arto
 
 # Remove outdated versions
 cleanup
