@@ -143,6 +143,10 @@ snippets:
       lbuffer: '^git\s+'
     evaluate: true
 
+  - name: mkdir -p
+    keyword: mkdir
+    snippet: mkdir -p
+
   - name: git quick save
     keyword: c
     snippet: git-quick-save "{{message}}"
@@ -151,13 +155,21 @@ snippets:
     keyword: nr
     snippet: ni run
 
-  - name: brew update
-    keyword: brup
-    snippet: brew update && brew outdated
+  - name: brew
+    keyword: b
+    snippet: brew
 
-  - name: brew upgrade
-    keyword: brug
-    snippet: brew upgrade
+  - name: brew update
+    keyword: u
+    snippet: update && brew outdated
+    context:
+      - lbuffer: '^brew\s+u$'
+
+  - name: brew update
+    keyword: g
+    snippet: upgrade
+    context:
+      - lbuffer: '^brew\s+g$'
 
   - name: codex yolo
     keyword: yolo
