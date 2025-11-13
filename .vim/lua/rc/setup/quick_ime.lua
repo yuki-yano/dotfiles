@@ -197,6 +197,7 @@ if M.is_editprompt() then
   })
   vim.keymap.set({ 'n', 'i' }, '<C-g>', '<Cmd>quit!<CR>', { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n' }, 'q', send_editprompt, { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'n' }, '<CR>', send_editprompt, { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n', 'i' }, '<C-c>', send_editprompt, { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n' }, 'ZZ', send_editprompt, { silent = true, buffer = true, nowait = true })
 
@@ -270,6 +271,7 @@ elseif M.is_quick_ime() then
   })
 
   vim.keymap.set({ 'n', 'i' }, '<C-g>', quick_ime_detach, { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'n' }, '<CR>', send_quick_ime, { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n', 'i' }, '<C-c>', send_quick_ime, { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n' }, 'ZZ', send_quick_ime, { silent = true, buffer = true, nowait = true })
 else
