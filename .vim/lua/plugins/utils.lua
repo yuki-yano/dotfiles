@@ -789,4 +789,99 @@ return {
       require('denops-lazy').load('vinsert.vim')
     end,
   },
+  {
+    'yuki-yano/aitrans.nvim',
+    lazy = false,
+    dev = true,
+    dependencies = {
+      { 'vim-denops/denops.vim' },
+      { 'yuki-yano/denops-lazy.nvim' },
+    },
+    config = function()
+      require('denops-lazy').load('aitrans.nvim')
+      vim.g.aitrans_chat = { log_dir = vim.fn.expand('~/.cache/aitrans') }
+      vim.g.aitrans_debug = false
+
+      vim.g.aitrans_providers = {
+        openai = {
+          model = 'gpt-5-mini',
+        },
+        ['codex-cli'] = {
+          command = 'codex',
+        },
+        ['claude-cli'] = {
+          command = 'claude',
+        },
+      }
+
+      vim.g.aitrans_templates = {
+        ['empty'] = {
+          title = 'Empty Template',
+          desc = 'An empty template that does nothing.',
+          default_out = 'chat',
+          default_chat = {
+            split = 'vertical',
+          },
+          default_provider = {
+            name = 'codex-cli',
+          },
+          builder = function()
+            return {
+              system = '',
+              prompt = '',
+            }
+          end,
+        },
+        ['translate-to-ja'] = {
+          title = 'Translate to Japanese',
+          desc = '選択した英文を日本語へ訳す',
+          -- default_out = 'scratch',
+          -- default_out = 'append',
+          default_out = 'chat',
+          -- default_provider = {
+          --   name = 'codex-cli',
+          -- },
+          default_provider = {
+            name = 'openai',
+          },
+          default_request_args_json = {
+            reasoning = { effort = 'minimal' },
+            text = { verbosity = 'medium' },
+          },
+          builder = function(ctx)
+            local text = ctx.selection ~= '' and ctx.selection or ctx.selection_lines[1] or ''
+            return {
+              system = 'You are a professional translator who outputs fluent Japanese.',
+              prompt = string.format(
+                [[Please translate the following text into natural Japanese.
+
+%s
+
+            ]],
+                text
+              ),
+            }
+          end,
+        },
+      }
+
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = 'aitrans-compose.markdown',
+        callback = function(args)
+          vim.keymap.set({ 'n', 'i' }, '<C-c>', function()
+            vim.fn['aitrans#compose#submit']()
+          end, { buffer = args.buf })
+        end,
+      })
+
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = 'aitrans-chat-input',
+        callback = function(args)
+          vim.keymap.set({ 'n', 'i' }, '<C-c>', function()
+            vim.fn['aitrans#chat#submit']()
+          end, { buffer = args.buf })
+        end,
+      })
+    end,
+  },
 }
