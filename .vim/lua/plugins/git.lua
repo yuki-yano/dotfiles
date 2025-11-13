@@ -2,7 +2,6 @@ return {
   -- TODO: migrate from gina
   {
     'lambdalisue/gin.vim',
-    enabled = true,
     lazy = false,
     dependencies = {
       { 'vim-denops/denops.vim' },

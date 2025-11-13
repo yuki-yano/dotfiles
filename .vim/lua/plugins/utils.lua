@@ -476,7 +476,6 @@ return {
   { 'dstein64/vim-startuptime', cmd = { 'StartupTime' } },
   {
     'segeljakt/vim-silicon',
-    enabled = true,
     cmd = { 'Silicon' },
     init = function()
       vim.g.silicon = {
@@ -485,36 +484,6 @@ return {
         background = color.base().black,
         output = '~/Downloads/silicon-{time:%Y-%m-%d-%H%M%S}.png',
       }
-    end,
-  },
-  {
-    'skanehira/denops-silicon.vim',
-    enabled = false,
-    dependencies = {
-      { 'vim-denops/denops.vim' },
-      { 'yuki-yano/denops-lazy.nvim' },
-    },
-    cmd = { 'Silicon' },
-    config = function()
-      require('denops-lazy').load('denops-silicon.vim')
-
-      vim.g.silicon_options = {
-        font = 'SF Mono Square',
-        theme = 'OneHalfDark',
-        background_color = color.base().black,
-      }
-    end,
-  },
-  {
-    'krivahtoo/silicon.nvim',
-    enabled = false,
-    build = './install.sh',
-    cmd = { 'Silicon' },
-    config = function()
-      require('silicon').setup({
-        font = 'SF Mono Square',
-        theme = 'OneHalfDark',
-      })
     end,
   },
   { 'powerman/vim-plugin-AnsiEsc', cmd = { 'AnsiEsc' } },
@@ -585,7 +554,7 @@ return {
   },
   {
     'yuki-yano/resonator.vim',
-    enabled = not is_ime() and not vim.g.is_edit_command_line,
+    cond = not is_ime() and not vim.g.is_edit_command_line,
     lazy = true,
     dev = true,
     event = { 'BufRead' },
@@ -628,7 +597,7 @@ return {
   {
     'yuki-yano/clipboard-image-to-agent.nvim',
     dev = true,
-    enabled = is_ime(),
+    cond = is_ime(),
     lazy = false,
     config = function()
       local clip = require('clipboard_image_to_agent')

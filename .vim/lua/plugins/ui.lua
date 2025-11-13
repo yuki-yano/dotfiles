@@ -13,7 +13,7 @@ local is_ime = require('rc.setup.quick_ime').is_ime
 return {
   {
     'nvim-lualine/lualine.nvim',
-    enabled = not is_ime() and not vim.g.is_edit_command_line,
+    cond = not is_ime() and not vim.g.is_edit_command_line,
     dependencies = {
       { 'yuki-yano/vinsert.vim' },
     },
@@ -214,7 +214,7 @@ return {
   },
   {
     'akinsho/bufferline.nvim',
-    enabled = not is_ime(),
+    cond = not is_ime(),
     dependencies = {
       { 'tiagovla/scope.nvim' },
     },
@@ -321,7 +321,7 @@ return {
   },
   {
     'Bekaboo/dropbar.nvim',
-    enabled = not is_ime() and not vim.g.is_edit_command_line,
+    cond = not is_ime() and not vim.g.is_edit_command_line,
     event = { 'LspAttach' },
     config = function()
       local dropbar = require('dropbar')
@@ -461,7 +461,6 @@ return {
   },
   {
     'petertriho/nvim-scrollbar',
-    enabled = true,
     dependencies = {
       { 'lewis6991/gitsigns.nvim' },
     },
@@ -924,7 +923,6 @@ return {
   },
   {
     'yuki-yano/highlight-undo.nvim',
-    enabled = true,
     lazy = true,
     dev = true,
     dependencies = {
@@ -1008,7 +1006,7 @@ return {
   },
   {
     'folke/noice.nvim',
-    enabled = enable_noice,
+    cond = enable_noice,
     dependencies = {
       { 'MunifTanjim/nui.nvim' },
       { 'rcarriga/nvim-notify' },

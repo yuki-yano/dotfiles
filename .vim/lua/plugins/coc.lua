@@ -232,8 +232,8 @@ local plugins = {
 }
 
 for _, plugin in ipairs(plugins) do
-  if plugin.enabled == nil then
-    plugin.enabled = vim.env.LSP == 'coc'
+  if plugin.cond == nil then
+    plugin.cond = vim.env.LSP == 'coc'
   end
 end
 

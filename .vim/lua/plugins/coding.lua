@@ -1472,7 +1472,6 @@ return {
   },
   {
     'yuki-yano/haritsuke.vim',
-    enabled = true,
     dev = true,
     lazy = false,
     dependencies = {
@@ -1651,23 +1650,6 @@ return {
     cmd = { 'Neogen' },
     config = function()
       require('neogen').setup()
-    end,
-  },
-  {
-    'yuki-yano/delete-mark.nvim',
-    enabled = false,
-    dev = false,
-    keys = {
-      { '<C-e>', mode = { 'n', 'x', 'i' } },
-    },
-    config = function()
-      require('delete-mark').setup({
-        highlight = {
-          mark = { fg = color.base().black, bg = color.base().red, bold = true },
-          sign = { fg = color.base().red },
-        },
-        sign = todo_icons.delete,
-      })
     end,
   },
   {
