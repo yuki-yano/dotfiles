@@ -2,7 +2,7 @@
 
 import { readAll } from "jsr:@std/io@0.224.0/read-all";
 
-const ENABLED = true;
+const ENABLED = false;
 
 interface ToolInput {
   tool_name?: string;
