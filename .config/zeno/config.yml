@@ -149,7 +149,7 @@ snippets:
 
   - name: git quick save
     keyword: c
-    snippet: git-quick-save "{{message}}"
+    snippet: git quick-save "{{message}}"
 
   - name: nr to ni run
     keyword: nr
