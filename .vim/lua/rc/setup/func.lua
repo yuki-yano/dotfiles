@@ -343,6 +343,19 @@ local function yank_content(content, has_diagnostics)
     notification = notification .. ' (with ' .. (#lines - 2) .. ' diagnostics)'
   end
   vim.notify(notification, vim.log.levels.INFO, { title = 'Claude Code Yank' })
+
+  pcall(
+    vim.fn['haritsuke#notify'],
+    'onTextYankPost',
+    {
+      {
+        operator = 'y',
+        regname = '"',
+        regtype = vim.fn.getregtype('"'),
+        regcontents = vim.fn.getreg('"', 1, true),
+      },
+    }
+  )
 end
 
 -- Normal mode: yank file path as @path/to/file

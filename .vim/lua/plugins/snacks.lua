@@ -297,9 +297,19 @@ return {
           end,
           format = 'text',
           preview = 'preview',
+
           confirm = function(picker, item)
             picker:close()
             vim.fn.setreg('"', item.yank, item.type)
+
+            pcall(vim.fn['haritsuke#notify'], 'onTextYankPost', {
+              {
+                operator = 'y',
+                regname = '"',
+                regtype = item.type,
+                regcontents = type(item.yank) == 'table' and item.yank or { item.yank },
+              },
+            })
           end,
         })
       end)

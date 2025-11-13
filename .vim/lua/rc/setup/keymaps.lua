@@ -133,9 +133,20 @@ vim.keymap.set({ 'n' }, 'sC', function()
 end)
 
 vim.keymap.set({ 'n', 'x' }, 'sp', function()
-  vim.fn.setreg('"', vim.fn.getreg('+'))
+  local regtype = vim.fn.getregtype('+')
+  local regcontents = vim.fn.getreg('+', 1, true)
+
+  vim.fn.setreg('"', regcontents, regtype)
+
+  pcall(vim.fn['haritsuke#notify'], 'onTextYankPost', {{
+    operator = 'y',
+    regname = '"',
+    regtype = regtype,
+    regcontents = regcontents,
+  }})
+
   vim.notify('Copied from OS clipboard to " register', vim.log.levels.INFO)
-end)
+end, { silent = true })
 
 -- Terminal
 vim.keymap.set({ 't' }, '<Esc>', [[<C-\><C-n>]])
