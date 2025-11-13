@@ -433,8 +433,8 @@ return {
       require('copilot').setup({
         filetypes = {
           markdown = true,
-          ['markdown.editprompt'] = true,
-          ['markdown.quickime'] = true,
+          ['markdown.editprompt'] = false,
+          ['markdown.quickime'] = false,
         },
         suggestion = {
           auto_trigger = true,
