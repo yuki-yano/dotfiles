@@ -11,6 +11,8 @@ return {
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'lambdalisue/gin.vim' },
+      { 'yuki-yano/snacks-action-layer.nvim' },
+      { 'yuki-yano/snacks-smart-git-status.nvim' },
     },
     init = function()
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
@@ -34,65 +36,57 @@ return {
     end,
     config = function()
       local snacks = require('snacks')
-      if not snacks.picker.format._git_status_dual_highlight_override then
-        local original_git_status_format = snacks.picker.format.git_status
-        local stage_hls = {
-          A = 'SnacksPickerGitStatusAdded',
-          C = 'SnacksPickerGitStatusCopied',
-          D = 'SnacksPickerGitStatusDeleted',
-          M = 'SnacksPickerGitStatusStaged',
-          R = 'SnacksPickerGitStatusRenamed',
-          U = 'SnacksPickerGitStatusUnmerged',
-          ['?'] = 'SnacksPickerGitStatusUntracked',
-          ['!'] = 'SnacksPickerGitStatusIgnored',
-        }
-        local work_hls = {
-          A = 'SnacksPickerGitStatusAdded',
-          C = 'SnacksPickerGitStatusCopied',
-          D = 'SnacksPickerGitStatusDeleted',
-          M = 'SnacksPickerGitStatusModified',
-          R = 'SnacksPickerGitStatusRenamed',
-          U = 'SnacksPickerGitStatusUnmerged',
-          ['?'] = 'SnacksPickerGitStatusUntracked',
-          ['!'] = 'SnacksPickerGitStatusIgnored',
-        }
-        local function resolve_hl(char, map, fallback)
-          if not char or char == '' then
-            return fallback
-          end
-          if char:match('^%s$') then
-            return nil
-          end
-          return map[char] or fallback
-        end
-        snacks.picker.format.git_status = function(item, picker)
-          local ret = original_git_status_format(item, picker)
-          local first = ret[1]
-          if type(first) ~= 'table' or type(first[1]) ~= 'string' then
-            return ret
-          end
-          local status_text = first[1]
-          if status_text == '' then
-            return ret
-          end
-          if #status_text < 2 then
-            status_text = status_text .. (' '):rep(2 - #status_text)
-          elseif #status_text > 2 then
-            status_text = status_text:sub(-2)
-          end
-          local stage_char = status_text:sub(1, 1)
-          local work_char = status_text:sub(2, 2)
-          local default_stage_hl = first[2] or 'SnacksPickerGitStatus'
-          first[1] = stage_char
-          first[2] = resolve_hl(stage_char, stage_hls, default_stage_hl)
-          local work_hl = resolve_hl(work_char, work_hls, 'SnacksPickerGitStatus')
-          table.insert(ret, 2, { work_char, work_hl })
-          return ret
-        end
-        snacks.picker.format._git_status_dual_highlight_override = true
-      end
 
       local git_config = require('plugins.config.snacks.git').setup(snacks)
+      local action_layer_overrides
+      if git_config and git_config.action_layer then
+        local ok_action_layer, action_layer = pcall(require, 'snacks_action_layer')
+        if ok_action_layer then
+          action_layer_overrides = action_layer.setup(git_config.action_layer)
+        else
+          vim.notify('snacks_action_layer is not available', vim.log.levels.WARN, { title = 'Snacks' })
+        end
+      end
+      local smart_git_status_opts
+      local git_handlers = git_config and git_config.handlers or nil
+      if git_handlers then
+        local function summary_preview(ctx)
+          return { text = git_handlers.summary(ctx.items) }
+        end
+        smart_git_status_opts = {
+          actions = {
+            git_commit = {
+              handler = function(ctx)
+                git_handlers.commit(ctx.picker, ctx.items)
+              end,
+            },
+          },
+          custom_actions = {
+            {
+              id = 'gin_patch',
+              label = 'Patch (:GinPatch)',
+              handler = function(ctx)
+                git_handlers.patch(ctx.picker, ctx.items)
+              end,
+              preview = summary_preview,
+            },
+            {
+              id = 'gin_chaperon',
+              label = 'Chaperon (:GinChaperon)',
+              handler = function(ctx)
+                git_handlers.chaperon(ctx.picker, ctx.items)
+              end,
+              preview = summary_preview,
+            },
+          },
+          highlights = {
+            dual_status = true,
+          },
+          git = {
+            enable_delta = true,
+          },
+        }
+      end
 
       ---@type snacks.picker.Config
       local picker_opts = {
@@ -153,6 +147,10 @@ return {
         picker_opts = merge(picker_opts, git_config.picker)
       end
 
+      if action_layer_overrides and action_layer_overrides.picker then
+        picker_opts = merge(picker_opts, action_layer_overrides.picker)
+      end
+
       ---@type snacks.Config
       local opts = {
         bigfile = { enabled = true },
@@ -166,6 +164,15 @@ return {
           notify_jump = true,
         },
       }
+
+      if smart_git_status_opts then
+        local ok_smart, smart_git_status = pcall(require, 'snacks_smart_git_status')
+        if ok_smart then
+          smart_git_status.setup(smart_git_status_opts, opts)
+        else
+          vim.notify('snacks-smart-git-status is not available', vim.log.levels.WARN, { title = 'Snacks' })
+        end
+      end
 
       snacks.setup(opts)
       snacks.words.enable()
@@ -405,5 +412,13 @@ return {
         })
       end)
     end,
+  },
+  {
+    'yuki-yano/snacks-action-layer.nvim',
+    dev = true,
+  },
+  {
+    'yuki-yano/snacks-smart-git-status.nvim',
+    dev = true,
   },
 }

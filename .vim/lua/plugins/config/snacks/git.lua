@@ -44,6 +44,19 @@ function M.setup(snacks)
     return items
   end
 
+  local function build_selection_summary(selection)
+    local summary = {}
+    for _, item in ipairs(selection or {}) do
+      local status = item.status or '  '
+      local filename = item.file or ''
+      summary[#summary + 1] = ('%s %s'):format(status, filename)
+    end
+    if vim.tbl_isempty(summary) then
+      summary[1] = 'No files selected'
+    end
+    return table.concat(summary, '\n')
+  end
+
   local function refresh_git_status_picker(picker)
     if not picker or picker.closed or not picker.list then
       return
@@ -180,86 +193,68 @@ function M.setup(snacks)
     end)
   end
 
-  local function open_actions_picker(picker)
-    local items = sanitize_selection(picker:selected({ fallback = true }))
-    if vim.tbl_isempty(items) then
-      return
-    end
-    local prev_auto_close = picker.opts.auto_close
-    picker.opts.auto_close = false
-
-    local summary = {}
-    for _, item in ipairs(items) do
-      summary[#summary + 1] = ('%s %s'):format(item.status or '  ', item.file or '')
-    end
-    local preview_text = table.concat(summary, '\n')
-    local target_ref = picker:ref()
-
-    local function with_target(fn)
-      local target = target_ref()
-      if target then
-        fn(target)
-      end
-    end
-
-    snacks.picker.pick({
-      source = 'git_status_actions',
-      title = 'Git Actions',
-      prompt = '> ',
-      layout = 'select',
-      format = 'text',
-      confirm = 'item_action',
-      on_close = function()
-        local target = target_ref()
-        if target then
-          target.opts.auto_close = prev_auto_close
-          if not target.closed then
-            target:focus('list', { show = true })
-          end
-        elseif picker then
-          picker.opts.auto_close = prev_auto_close
-        end
-      end,
-      items = {
-        {
-          text = 'Add (git add)',
-          action = function()
-            with_target(function(target)
-              stage_selection(target, items)
-            end)
-          end,
-          preview = { text = preview_text },
+  local action_layer_config = {
+    pickers = {
+      git_status = {
+        actions = {
+          stage = {
+            label = 'Add (git add)',
+            handler = function(ctx)
+              stage_selection(ctx.picker, ctx.items)
+            end,
+            preview = function(ctx)
+              return { text = build_selection_summary(ctx.items) }
+            end,
+          },
+          reset = {
+            label = 'Reset (git restore --staged)',
+            handler = function(ctx)
+              reset_selection(ctx.picker, ctx.items)
+            end,
+            preview = function(ctx)
+              return { text = build_selection_summary(ctx.items) }
+            end,
+          },
+          patch = {
+            label = 'Patch (:GinPatch)',
+            handler = function(ctx)
+              patch_selection(ctx.picker, ctx.items)
+            end,
+            preview = function(ctx)
+              return { text = build_selection_summary(ctx.items) }
+            end,
+          },
+          chaperon = {
+            label = 'Chaperon (:GinChaperon)',
+            handler = function(ctx)
+              chaperon_selection(ctx.picker, ctx.items)
+            end,
+            preview = function(ctx)
+              return { text = build_selection_summary(ctx.items) }
+            end,
+          },
+          commit = {
+            label = 'Commit (Gin)',
+            handler = function(ctx)
+              commit_selection(ctx.picker, ctx.items)
+            end,
+            preview = function(ctx)
+              return { text = build_selection_summary(ctx.items) }
+            end,
+          },
         },
-        {
-          text = 'Reset (git restore --staged)',
-          action = function()
-            with_target(function(target)
-              reset_selection(target, items)
-            end)
-          end,
-          preview = { text = preview_text },
-        },
-        {
-          text = 'Patch (:Gin patch)',
-          action = function()
-            with_target(function(target)
-              patch_selection(target, items)
-            end)
-          end,
-          preview = { text = preview_text },
-        },
-        {
-          text = 'Chaperon (:Gin chaperon)',
-          action = function()
-            with_target(function(target)
-              chaperon_selection(target, items)
-            end)
-          end,
-          preview = { text = preview_text },
+        order = { 'stage', 'reset', 'patch', 'chaperon', 'commit' },
+        keymaps = {
+          input = {
+            ['>'] = { 'action_layer:open', mode = { 'n', 'i' }, nowait = true },
+          },
+          list = {
+            ['>'] = { 'action_layer:open', mode = { 'n' }, nowait = true },
+          },
         },
       },
-    })
-  end
+    },
+  }
 
   local function build_git_reflog_items(opts)
     opts = opts or {}
@@ -473,24 +468,6 @@ function M.setup(snacks)
 
   local picker_overrides = {
     actions = {
-      git_stage_selected = function(picker, _, action)
-        stage_selection(picker, action and action.selection)
-      end,
-      git_reset_selected = function(picker, _, action)
-        reset_selection(picker, action and action.selection)
-      end,
-      git_commit_selected = function(picker, _, action)
-        commit_selection(picker, action and action.selection)
-      end,
-      git_patch_selected = function(picker, _, action)
-        patch_selection(picker, action and action.selection)
-      end,
-      git_chaperon_selected = function(picker, _, action)
-        chaperon_selection(picker, action and action.selection)
-      end,
-      git_status_actions = function(picker)
-        open_actions_picker(picker)
-      end,
       git_reflog_diffview = function(picker, item, action)
         local target = item
         if action and type(action) == 'table' and action.selection and action.selection[1] then
@@ -518,124 +495,20 @@ function M.setup(snacks)
         end)
       end,
     },
-    sources = {
-      git_status = {
-        win = {
-          input = {
-            keys = {
-              ['<Tab>'] = { 'select_and_next', mode = { 'n', 'i' } },
-              ['<S-Tab>'] = { 'select_and_prev', mode = { 'n', 'i' } },
-              ['>'] = { 'git_status_actions', mode = { 'n', 'i' }, nowait = true },
-              ['<C-a>'] = { 'git_stage_selected', mode = { 'n', 'i' }, nowait = true },
-              ['<C-r>'] = { 'git_reset_selected', mode = { 'n', 'i' }, nowait = true },
-              ['<C-c>'] = { 'git_commit_selected', mode = { 'n', 'i' }, nowait = true },
-            },
-          },
-          list = {
-            keys = {
-              ['<Tab>'] = { 'select_and_next', mode = { 'n', 'x' } },
-              ['<S-Tab>'] = { 'select_and_prev', mode = { 'n', 'x' } },
-              ['>'] = { 'git_status_actions', mode = { 'n' }, nowait = true },
-              ['<C-a>'] = { 'git_stage_selected', mode = { 'n' }, nowait = true },
-              ['<C-r>'] = { 'git_reset_selected', mode = { 'n' }, nowait = true },
-              ['<C-c>'] = { 'git_commit_selected', mode = { 'n' }, nowait = true },
-            },
-          },
-        },
-      },
-    },
   }
-
-  local delta_available = vim.fn.executable('delta') == 1
-  if delta_available then
-    local delta_theme
-    local theme_output = vim.fn.systemlist({ 'git', 'config', '--get', 'delta.syntax-theme' })
-    if vim.v.shell_error == 0 and theme_output and theme_output[1] and theme_output[1] ~= '' then
-      delta_theme = theme_output[1]
-    end
-
-    local delta_cmd = {
-      'delta',
-      '--paging=never',
-      '--no-gitconfig',
-      '--hunk-header-decoration-style=none',
-      '--hunk-header-style=raw',
-      '--file-style=omit',
-      '--line-numbers',
-      '--line-numbers-left-format={nm:>4} ',
-      '--line-numbers-right-format= {np:<4}',
-      '--keep-plus-minus-markers',
-    }
-    if delta_theme then
-      table.insert(delta_cmd, '--syntax-theme=' .. delta_theme)
-    end
-
-    picker_overrides.previewers = merge(picker_overrides.previewers or {}, {
-      diff = {
-        builtin = false,
-        cmd = delta_cmd,
-      },
-    })
-
-    local preview = require('snacks.picker.preview')
-    if not preview._git_diff_delta_override then
-      local original_git_diff = preview.git_diff
-      preview.git_diff = function(ctx)
-        local diff_opts = ctx.picker.opts.previewers and ctx.picker.opts.previewers.diff or nil
-        local diff_cmd = diff_opts and diff_opts.cmd or nil
-        local should_use_delta = diff_cmd and diff_cmd[1] == 'delta' and vim.fn.executable('delta') == 1
-        if not should_use_delta then
-          return original_git_diff(ctx)
-        end
-
-        local cwd = ctx.item.cwd or ctx.picker:cwd() or (vim.uv or vim.loop).cwd() or vim.fn.getcwd()
-        local git_cmd = { 'git', '-c', 'delta.' .. vim.o.background .. '=true', 'diff', 'HEAD' }
-        if ctx.item.file then
-          vim.list_extend(git_cmd, { '--', ctx.item.file })
-        end
-
-        local ok, result = pcall(function()
-          return vim.system(git_cmd, { cwd = cwd, text = true }):wait()
-        end)
-        if not ok or not result or result.code ~= 0 or not result.stdout or result.stdout == '' then
-          return original_git_diff(ctx)
-        end
-
-        local delta_cmd = vim.deepcopy(diff_cmd)
-        if delta_cmd[1] == 'delta' then
-          table.insert(delta_cmd, 2, '--' .. vim.o.background)
-        end
-
-        local delta_result = vim.system(delta_cmd, {
-          cwd = cwd,
-          text = true,
-          stdin = result.stdout,
-        }):wait()
-        if not delta_result or delta_result.code ~= 0 or not delta_result.stdout or delta_result.stdout == '' then
-          return original_git_diff(ctx)
-        end
-
-        local job = preview.cmd(delta_cmd, ctx, {
-          output = delta_result.stdout,
-        })
-        vim.defer_fn(function()
-          local preview_win = ctx.preview and ctx.preview.win
-          local win = preview_win and preview_win.win or nil
-          if win and vim.api.nvim_win_is_valid(win) then
-            vim.api.nvim_win_call(win, function()
-              vim.cmd('normal! ggzt')
-            end)
-          end
-        end, 10)
-        return job
-      end
-      preview._git_diff_delta_override = true
-    end
-  end
 
   return {
     picker = picker_overrides,
     apply_keymaps = apply_keymaps,
+    action_layer = action_layer_config,
+    handlers = {
+      stage = stage_selection,
+      reset = reset_selection,
+      commit = commit_selection,
+      patch = patch_selection,
+      chaperon = chaperon_selection,
+      summary = build_selection_summary,
+    },
   }
 end
 
