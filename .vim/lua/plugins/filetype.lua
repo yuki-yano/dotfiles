@@ -41,10 +41,26 @@ return {
     end,
   },
   {
+    'OXY2DEV/markview.nvim',
+    lazy = false,
+    config = function()
+      require('markview').setup({
+        preview = {
+          icon_provider = 'devicons',
+        },
+        markdown = {
+          list_items = {
+            shift_width = 2,
+          },
+        },
+      })
+    end,
+  },
+  {
     'MeanderingProgrammer/render-markdown.nvim',
     enabled = false,
     ft = { 'markdown' },
-    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
     opts = {
       html = {
         render_modes = { 'n', 'i' },
