@@ -39,8 +39,6 @@ return {
       })
     end,
     config = function()
-      local vimx = require('artemis')
-
       vim.api.nvim_create_autocmd({ 'FileType' }, {
         pattern = { 'fern' },
         callback = function()
@@ -102,7 +100,7 @@ return {
             blend = 50,
           })
 
-          vimx.fn.glyph_palette.apply()
+          vim.fn['glyph_palette#apply']()
         end,
       })
     end,
@@ -110,8 +108,7 @@ return {
   {
     'lambdalisue/fern-git-status.vim',
     config = function()
-      local vimx = require('artemis')
-      vimx.fn.fern_git_status.init()
+      vim.fn['fern_git_status#init']()
     end,
   },
   {

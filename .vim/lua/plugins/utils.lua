@@ -155,10 +155,8 @@ return {
     'kyoh86/vim-ripgrep',
     cmd = { 'Rg' },
     config = function()
-      local vimx = require('artemis')
-
       vim.api.nvim_create_user_command('Rg', function(opts)
-        vimx.fn.ripgrep.search(opts.args)
+        vim.fn['ripgrep#search'](opts.args)
       end, {
         nargs = '*',
         complete = 'file',
@@ -169,8 +167,6 @@ return {
     'rbtnn/vim-layout',
     cmd = { 'SaveProjectLayout', 'LoadProjectLayout' },
     config = function()
-      local vimx = require('artemis')
-
       -- FIX: Respond to cases where the project root and repository root do not match
       local function project_layout_file()
         return vim.fn.substitute(vim.fn.trim(vim.fn.system('git branch --show-current')), '/', '_', 'g')
@@ -179,7 +175,7 @@ return {
 
       vim.api.nvim_create_user_command('SaveProjectLayout', function()
         if vim.fn.isdirectory(vim.fn.getcwd() .. '/.git') == 1 then
-          vimx.fn.layout.save(vim.fn.getcwd() .. '/.git/' .. project_layout_file())
+          vim.fn['layout#save'](vim.fn.getcwd() .. '/.git/' .. project_layout_file())
         else
           vim.api.nvim_err_writeln('Not git project')
         end
@@ -187,7 +183,7 @@ return {
 
       vim.api.nvim_create_user_command('LoadProjectLayout', function()
         if vim.fn.filereadable(vim.fn.getcwd() .. '/.git/' .. project_layout_file()) == 1 then
-          vimx.fn.layout.load(vim.fn.getcwd() .. '/.git/' .. project_layout_file())
+          vim.fn['layout#load'](vim.fn.getcwd() .. '/.git/' .. project_layout_file())
         else
           vim.api.nvim_err_writeln('Undefined layout file')
         end
@@ -587,8 +583,7 @@ return {
     config = function()
       require('denops-lazy').load('auto-backup.vim')
       vim.api.nvim_create_user_command('AutoBackupFiles', function()
-        local vimx = require('artemis')
-        local path = vimx.fn.auto_backup.get_backup_dir()
+        local path = vim.fn['auto_backup#get_backup_dir']()
         vim.cmd('Fern ' .. path .. ' -drawer')
         vim.cmd('wincmd =')
       end, {})

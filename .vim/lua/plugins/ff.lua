@@ -133,8 +133,7 @@ return {
       -- )
     end,
     config = function()
-      local vimx = require('artemis')
-      vimx.fn.fzf_preview.rpc.initialize()
+      vim.fn['fzf_preview#rpc#initialize']()
 
       vim.api.nvim_create_autocmd({ 'User' }, {
         pattern = { 'fzf_preview#rpc#initialized' },
@@ -150,7 +149,7 @@ return {
           vim.fn.remove(custom_processes['open-file'], 'ctrl-x')
 
           custom_processes['open-file-with-tag-stack'] =
-            vimx.fn.fzf_preview.rpc.get_default_processes('open-file-with-tag-stack')
+            vim.fn['fzf_preview#rpc#get_default_processes']('open-file-with-tag-stack')
           custom_processes['open-file-with-tag-stack']['ctrl-s'] =
             custom_processes['open-file-with-tag-stack']['ctrl-x']
           vim.fn.remove(custom_processes['open-file-with-tag-stack'], 'ctrl-x')
@@ -198,9 +197,7 @@ return {
     config = function()
       require('denops-lazy').load('ddu.vim', { wait_load = false })
 
-      local vimx = require('artemis')
-
-      vimx.fn.ddu.custom.patch_global({
+      vim.fn['ddu#custom#patch_global']({
         ui = 'ff',
         uiParams = {
           ff = {
@@ -244,7 +241,7 @@ return {
         local halfWidth = math.floor(vim.o.columns * 0.5)
         local previewCol = halfWidth - 2
 
-        vimx.fn.ddu.custom.patch_global({
+        vim.fn['ddu#custom#patch_global']({
           uiParams = {
             ff = {
               winWidth = width,
@@ -272,57 +269,57 @@ return {
 
           vim.keymap.set({ 'n' }, '<CR>', function()
             vim.cmd([[stopinsert]])
-            vimx.fn.ddu.ui.do_action('itemAction')
+            vim.fn['ddu#ui#do_action']('itemAction')
           end, { buffer = true })
           vim.keymap.set({ 'n' }, '<Space>', function()
-            vimx.fn.ddu.ui.do_action('toggleSelectItem')
-            vimx.fn.ddu.ui.do_action('cursorNext')
+            vim.fn['ddu#ui#do_action']('toggleSelectItem')
+            vim.fn['ddu#ui#do_action']('cursorNext')
           end, { buffer = true })
           vim.keymap.set({ 'n' }, 'i', function()
-            vimx.fn.ddu.ui.do_action('openFilterWindow')
+            vim.fn['ddu#ui#do_action']('openFilterWindow')
           end, { buffer = true })
           vim.keymap.set({ 'n' }, '>', function()
-            vimx.fn.ddu.ui.do_action('chooseAction')
+            vim.fn['ddu#ui#do_action']('chooseAction')
           end, { buffer = true })
 
           vim.keymap.set({ 'n' }, 'q', function()
-            vimx.fn.ddu.ui.do_action('quit')
+            vim.fn['ddu#ui#do_action']('quit')
           end, { buffer = true })
           vim.keymap.set({ 'n' }, '<Esc><Esc>', function()
-            vimx.fn.ddu.ui.do_action('quit')
+            vim.fn['ddu#ui#do_action']('quit')
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<C-g>', function()
             vim.cmd([[stopinsert]])
-            vimx.fn.ddu.ui.do_action('quit')
+            vim.fn['ddu#ui#do_action']('quit')
           end, { buffer = true, nowait = true })
           vim.keymap.set({ 'n', 'i' }, '<C-c>', function()
             vim.cmd([[stopinsert]])
-            vimx.fn.ddu.ui.do_action('quit')
+            vim.fn['ddu#ui#do_action']('quit')
           end, { buffer = true })
 
           vim.keymap.set({ 'n' }, 'j', function()
-            vimx.fn.ddu.ui.do_action('cursorNext')
+            vim.fn['ddu#ui#do_action']('cursorNext')
           end, { buffer = true })
           vim.keymap.set({ 'n' }, 'k', function()
-            vimx.fn.ddu.ui.do_action('cursorPrevious')
+            vim.fn['ddu#ui#do_action']('cursorPrevious')
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<C-n>', function()
-            vimx.fn.ddu.ui.do_action('cursorNext')
+            vim.fn['ddu#ui#do_action']('cursorNext')
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<C-p>', function()
-            vimx.fn.ddu.ui.do_action('cursorPrevious')
+            vim.fn['ddu#ui#do_action']('cursorPrevious')
           end, { buffer = true })
 
           vim.keymap.set({ 'n', 'i' }, '<C-d>', function()
             local ctrl_d = vim.api.nvim_replace_termcodes('<C-d>', true, true, true)
-            vimx.fn.ddu.ui.do_action('previewExecute', { command = 'normal! ' .. ctrl_d })
+            vim.fn['ddu#ui#do_action']('previewExecute', { command = 'normal! ' .. ctrl_d })
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<C-u>', function()
             local ctrl_u = vim.api.nvim_replace_termcodes('<C-u>', true, true, true)
-            vimx.fn.ddu.ui.do_action('previewExecute', { command = 'normal! ' .. ctrl_u })
+            vim.fn['ddu#ui#do_action']('previewExecute', { command = 'normal! ' .. ctrl_u })
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '?', function()
-            vimx.fn.ddu.ui.do_action('toggleAutoAction')
+            vim.fn['ddu#ui#do_action']('toggleAutoAction')
           end, { buffer = true })
         end,
       })
@@ -331,56 +328,56 @@ return {
         callback = function()
           vim.keymap.set({ 'n', 'i' }, '<CR>', function()
             vim.cmd([[stopinsert]])
-            vimx.fn.ddu.ui.do_action('itemAction')
+            vim.fn['ddu#ui#do_action']('itemAction')
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '>', function()
-            vimx.fn.ddu.ui.do_action('chooseAction')
+            vim.fn['ddu#ui#do_action']('chooseAction')
           end, { buffer = true })
 
           vim.keymap.set({ 'n' }, 'q', function()
-            vimx.fn.ddu.ui.do_action('quit')
+            vim.fn['ddu#ui#do_action']('quit')
           end, { buffer = true })
           vim.keymap.set({ 'n' }, '<Esc><Esc>', function()
             vim.cmd([[stopinsert]])
-            vimx.fn.ddu.ui.do_action('quit')
+            vim.fn['ddu#ui#do_action']('quit')
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<C-g>', function()
             vim.cmd([[stopinsert]])
-            vimx.fn.ddu.ui.do_action('quit')
+            vim.fn['ddu#ui#do_action']('quit')
           end, { buffer = true, nowait = true })
           vim.keymap.set({ 'n', 'i' }, '<C-c>', function()
             vim.cmd([[stopinsert]])
-            vimx.fn.ddu.ui.do_action('quit')
+            vim.fn['ddu#ui#do_action']('quit')
           end, { buffer = true })
 
           vim.keymap.set({ 'n', 'i' }, '<C-n>', function()
-            vimx.fn.ddu.ui.do_action('cursorNext')
+            vim.fn['ddu#ui#do_action']('cursorNext')
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<C-p>', function()
-            vimx.fn.ddu.ui.do_action('cursorPrevious')
+            vim.fn['ddu#ui#do_action']('cursorPrevious')
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<Tab>', function()
-            vimx.fn.ddu.ui.do_action('toggleSelectItem')
-            vimx.fn.ddu.ui.do_action('cursorNext')
+            vim.fn['ddu#ui#do_action']('toggleSelectItem')
+            vim.fn['ddu#ui#do_action']('cursorNext')
           end, { buffer = true })
 
           vim.keymap.set({ 'n', 'i' }, '<C-d>', function()
             local ctrl_d = vim.api.nvim_replace_termcodes('<C-d>', true, true, true)
-            vimx.fn.ddu.ui.do_action('previewExecute', { command = 'normal! ' .. ctrl_d })
+            vim.fn['ddu#ui#do_action']('previewExecute', { command = 'normal! ' .. ctrl_d })
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '<C-u>', function()
             local ctrl_u = vim.api.nvim_replace_termcodes('<C-u>', true, true, true)
-            vimx.fn.ddu.ui.do_action('previewExecute', { command = 'normal! ' .. ctrl_u })
+            vim.fn['ddu#ui#do_action']('previewExecute', { command = 'normal! ' .. ctrl_u })
           end, { buffer = true })
           vim.keymap.set({ 'n', 'i' }, '?', function()
-            vimx.fn.ddu.ui.do_action('toggleAutoAction')
+            vim.fn['ddu#ui#do_action']('toggleAutoAction')
           end, { buffer = true })
 
           vim.keymap.set({ 'i' }, "'", "'", { buffer = true })
         end,
       })
 
-      vimx.fn.ddu.custom.patch_global({
+      vim.fn['ddu#custom#patch_global']({
         kindOptions = {
           action = {
             defaultAction = 'do',
@@ -396,7 +393,7 @@ return {
           },
         },
       })
-      vimx.fn.ddu.custom.patch_global({
+      vim.fn['ddu#custom#patch_global']({
         sourceOptions = {
           _ = {
             matchers = { 'matcher_fzf' },
@@ -404,14 +401,14 @@ return {
           },
         },
       })
-      vimx.fn.ddu.custom.patch_global({
+      vim.fn['ddu#custom#patch_global']({
         filterParams = {
           matcher_fzf = {
             highlightMatched = 'Search',
           },
         },
       })
-      vimx.fn.ddu.custom.patch_global({
+      vim.fn['ddu#custom#patch_global']({
         kindParams = {
           help = {
             histadd = true,

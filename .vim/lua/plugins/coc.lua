@@ -26,8 +26,6 @@ local plugins = {
       })
     end,
     config = function()
-      local vimx = require('artemis')
-
       vim.g.coc_global_extensions = {
         'coc-copilot',
         'coc-deno',
@@ -55,9 +53,9 @@ local plugins = {
       }
 
       vim.keymap.set({ 'i' }, '<C-Space>', function()
-        vimx.fn.copilot.Suggest()
-        vimx.fn.copilot.Next()
-        vimx.fn.copilot.Previous()
+        vim.fn['copilot#Suggest']()
+        vim.fn['copilot#Next']()
+        vim.fn['copilot#Previous']()
 
         return vim.fn['coc#refresh']()
       end, { expr = true, silent = true })
@@ -68,7 +66,7 @@ local plugins = {
         if vim.tbl_contains({ 'vim', 'help' }, vim.o.filetype) then
           vim.cmd('h ' .. vim.fn.expand('<cword>'))
         elseif vim.fn['coc#rpc#ready']() then
-          vimx.fn.CocActionAsync('doHover')
+          vim.fn.CocActionAsync('doHover')
         end
       end)
 
@@ -109,11 +107,11 @@ local plugins = {
       )
 
       vim.keymap.set({ 'i' }, '<CR>', function()
-        if vimx.fn.coc.pum.visible() == 1 then
-          return vimx.fn.coc.pum.confirm()
+        if vim.fn['coc#pum#visible']() == 1 then
+          return vim.fn['coc#pum#confirm']()
         end
 
-        vimx.fn.coc.on_enter()
+        vim.fn['coc#on_enter']()
 
         return require('insx').expand('<CR>')
       end, { expr = true, silent = true, replace_keycodes = false })
@@ -121,13 +119,13 @@ local plugins = {
       vim.api.nvim_create_autocmd({ 'CursorHold' }, {
         pattern = '*',
         callback = function()
-          vimx.fn.CocActionAsync('highlight')
+          vim.fn.CocActionAsync('highlight')
         end,
       })
       vim.api.nvim_create_autocmd({ 'User' }, {
         pattern = 'CocJumpPlaceholder',
         callback = function()
-          vimx.fn.CocActionAsync('showSignatureHelp')
+          vim.fn.CocActionAsync('showSignatureHelp')
         end,
       })
 
@@ -192,7 +190,7 @@ local plugins = {
 
       -- vim.list_extend(escesc, {
       --   function()
-      --     vimx.fn.coc.float.close_all()
+      --     vim.fn['coc#float#close_all']()
       --   end,
       -- })
     end,

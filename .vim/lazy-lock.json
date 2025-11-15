@@ -144,7 +144,6 @@
   "tsnip.nvim": { "branch": "main", "commit": "d01f5228250f793d40849a1e1f9f001fc36087ae" },
   "typescript.nvim": { "branch": "main", "commit": "4de85ef699d7e6010528dcfbddc2ed4c2c421467" },
   "undotree": { "branch": "master", "commit": "0f1c9816975b5d7f87d5003a19c53c6fd2ff6f7f" },
-  "vim-artemis": { "branch": "main", "commit": "ad7f79f77491b0af17d40d12a1a178d350d7d628" },
   "vim-asterisk": { "branch": "master", "commit": "77e97061d6691637a034258cc415d98670698459" },
   "vim-deno-cache": { "branch": "main", "commit": "d7f291ecec3d96ab77825cd687393fb98b58f4af" },
   "vim-devicons": { "branch": "master", "commit": "71f239af28b7214eebb60d4ea5bd040291fb7e33" },

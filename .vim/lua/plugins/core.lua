@@ -26,7 +26,6 @@ return {
       end, {})
     end,
   },
-  { 'tani/vim-artemis' },
   { 'kana/vim-operator-user' },
   { 'kana/vim-textobj-user' },
   { 'tpope/vim-repeat', event = { 'VeryLazy' } },

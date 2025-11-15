@@ -514,8 +514,6 @@ return {
       })
     end,
     config = function()
-      local vimx = require('artemis')
-
       local sandwich_recipes = vim.fn.deepcopy(vim.g['sandwich#default_recipes'])
       sandwich_recipes = list_concat({
         sandwich_recipes,
@@ -598,7 +596,7 @@ return {
 
       vim.g['sandwich#recipes'] = sandwich_recipes
 
-      vimx.fn.operator.sandwich.set('add', 'char', 'skip_space', 1)
+      vim.fn['operator#sandwich#set']('add', 'char', 'skip_space', 1)
       vim.cmd([[autocmd ModeChanged [vV\x16]*:* call operator#sandwich#set('add', 'char', 'skip_space', 1)]])
       vim.cmd([[autocmd ModeChanged *:[vV\x16]* call operator#sandwich#set('add', 'char', 'skip_space', 0)]])
 
@@ -655,12 +653,10 @@ return {
       vim.g.lexima_enable_endwise_rules = false
     end,
     config = function()
-      local vimx = require('artemis')
-
       local rules = {}
 
       for _, rule in ipairs(rules) do
-        vimx.fn.lexima.add_rule(rule)
+        vim.fn['lexima#add_rule'](rule)
       end
     end,
   },
