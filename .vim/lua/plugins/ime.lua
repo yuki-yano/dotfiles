@@ -10,22 +10,22 @@ return {
     },
     event = { 'InsertEnter' },
     init = function()
-      local vimx = require('artemis')
-
       vim.keymap.set({ 'i' }, '<C-j>', '<Plug>(skkeleton-toggle)')
       vim.api.nvim_create_autocmd({ 'User' }, {
         pattern = { 'skkeleton-initialize-pre' },
         callback = function()
-          vimx.fn.skkeleton.config({
+          vim.fn['skkeleton#config']({
             eggLikeNewline = true,
-            globalJisyo = vim.fn.stdpath('cache') .. '/lazy/dict/SKK-JISYO.L',
+            globalDictionaries = {
+              vim.fn.stdpath('cache') .. '/lazy/dict/SKK-JISYO.L',
+            },
           })
         end,
       })
       vim.api.nvim_create_autocmd({ 'User' }, {
         pattern = { 'DenopsPluginPost:skkeleton' },
         callback = function()
-          vimx.fn.skkeleton.initialize()
+          vim.fn['skkeleton#initialize']()
         end,
       })
     end,
