@@ -9,6 +9,11 @@ local is_editprompt = require('rc.setup.quick_ime').is_editprompt
 
 return {
   {
+    'yuki-yano/fallback-map.nvim',
+    dir = '~/repos/github.com/yuki-yano/fallback-map.nvim',
+    lazy = true,
+  },
+  {
     'hrsh7th/nvim-cmp',
     event = vim.env.LSP == 'nvim' and { 'InsertEnter', 'CmdlineEnter' } or { 'VeryLazy' },
     dependencies = {
@@ -425,12 +430,19 @@ return {
   {
     'zbirenbaum/copilot.lua',
     dependencies = {
+      {
+        'yuki-yano/fallback-map.nvim',
+        dev = true,
+      },
       -- { 'copilotlsp-nvim/copilot-lsp' },
     },
     event = { 'InsertEnter' },
     cmd = { 'Copilot' },
     config = function()
-      require('copilot').setup({
+      local copilot = require('copilot')
+      local suggestion = require('copilot.suggestion')
+
+      copilot.setup({
         filetypes = {
           markdown = true,
           ['markdown.editprompt'] = false,
@@ -439,12 +451,25 @@ return {
         suggestion = {
           auto_trigger = true,
           keymap = {
-            accept = '<Tab>',
+            -- Tab is handled via fallback_map, disable Copilot's Tab mapping
+            accept = false,
             next = '<M-n>',
             prev = '<M-p>',
             dismiss = false,
           },
         },
+      })
+
+      local fallback = require('fallback_map')
+      fallback.register('i', '<Tab>', {
+        priority = 100,
+        enabled = function()
+          return suggestion.is_visible()
+        end,
+        run = function()
+          suggestion.accept()
+          return ''
+        end,
       })
     end,
   },
@@ -685,12 +710,16 @@ return {
     'hrsh7th/nvim-insx',
     enabled = true,
     dependencies = {
-      { 'cohama/lexima.vim' }, -- NOTE: Load before insx
+      {
+        'yuki-yano/fallback-map.nvim',
+        dev = true,
+      },
       { 'L3MON4D3/LuaSnip' },
     },
     event = { 'InsertEnter', 'CmdlineEnter' },
     config = function()
       local insx = require('insx')
+      local keymap = require('insx.kit.Vim.Keymap')
       local esc = insx.helper.regex.esc
       local fast_wrap = require('insx.recipe.fast_wrap')
       local fast_break = require('insx.recipe.fast_break')
@@ -1002,51 +1031,46 @@ return {
 
       -- markdown headings / list helpers (ported from former lexima rules)
       local markdown_rules = {
-        -- -- headings '# '
-        -- { key = '#', pattern = [=[^\%#\%(#\)\@!]=], input = '#<Space>' },
-        -- { key = '#', pattern = [=[#\s\%#]=], input = '<BS>#<Space>' },
-        -- { key = '<C-h>', pattern = [=[^#\s\%#]=], input = '<BS><BS>' },
-        -- { key = '<C-h>', pattern = [=[##\s\%#]=], input = '<BS><BS><Space>' },
-        -- { key = '<BS>', pattern = [=[^#\s\%#]=], input = '<BS><BS>' },
-        -- { key = '<BS>', pattern = [=[##\s\%#]=], input = '<BS><BS><Space>' },
-        -- -- unordered list '- '
-        -- { key = '-', pattern = [=[^\s*\%#]=], input = '-<Space>' },
-        -- { key = '<Tab>', pattern = [=[^\s*-\s\%#]=], input = '<Home><Tab><End>' },
-        -- { key = '<Tab>', pattern = [=[^\s*-\s\w.*\%#]=], input = '<Home><Tab><End>' },
-        -- { key = '<S-Tab>', pattern = [=[^\s\+-\s\%#]=], input = '<Home><Del><Del><End>' },
-        -- { key = '<S-Tab>', pattern = [=[^\s\+-\s\w.*\%#]=], input = '<Home><Del><Del><End>' },
-        -- { key = '<S-Tab>', pattern = [=[^-\s\w.*\%#]=], input = '' },
-        -- { key = '<C-h>', pattern = [=[^-\s\%#]=], input = '<C-w><BS>' },
-        -- { key = '<C-h>', pattern = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><BS>' },
-        -- { key = '<BS>', pattern = [=[^-\s\%#]=], input = '<C-w><BS>' },
-        -- { key = '<BS>', pattern = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><BS>' },
-        -- { key = '<CR>', pattern = [=[^-\s\%#]=], input = '<C-w><CR>' },
-        -- { key = '<CR>', pattern = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><CR>' },
-        -- { key = '<CR>', pattern = [=[^\s*-\s\w.*\%#]=], input = '<CR>-<Space>' },
-        -- -- checkbox '- [ ]' basics
-        -- { key = '[', pattern = [=[^\s*-\s\%#]=], input = '<Left><Space>[]<Left>' },
-        -- { key = '<Tab>', pattern = [=[^\s*-\s\[\%#\]\s]=], input = '<Home><Tab><End><Left><Left>' },
-        -- { key = '<S-Tab>', pattern = [=[^-\s\[\%#\]\s]=], input = '' },
-        -- { key = '<S-Tab>', pattern = [=[^\s\+-\s\[\%#\]\s]=], input = '<Home><Del><Del><End><Left><Left>' },
-        -- { key = '<C-h>', pattern = [=[^\s*-\s\[\%#\]]=], input = '<BS><Del><Del>' },
-        -- { key = '<BS>', pattern = [=[^\s*-\s\[\%#\]]=], input = '<BS><Del><Del>' },
-        -- { key = '<Space>', pattern = [=[^\s*-\s\[\%#\]]=], input = '<Space><End>' },
-        -- { key = 'x', pattern = [=[^\s*-\s\[\%#\]]=], input = 'x<End>' },
-        -- { key = '<CR>', pattern = [=[^-\s\[\%#\]]=], input = '<End><C-w><C-w><C-w><CR>' },
-        -- { key = '<CR>', pattern = [=[^\s\+-\s\[\%#\]]=], input = '<End><C-w><C-w><C-w><C-w><CR>' },
-        -- -- checkbox indentation
-        -- { key = '<Tab>', pattern = [=[^\s*-\s\[\(\s\|x\)\]\s\%#]=], input = '<Home><Tab><End>' },
-        -- { key = '<Tab>', pattern = [=[^\s*-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '<Home><Tab><End>' },
-        -- { key = '<S-Tab>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<Home><Del><Del><End>' },
-        -- { key = '<S-Tab>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '<Home><Del><Del><End>' },
-        -- { key = '<S-Tab>', pattern = [=[^-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '' },
-        -- { key = '<C-h>', pattern = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><BS>' },
-        -- { key = '<C-h>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><C-w><BS>' },
-        -- { key = '<BS>', pattern = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><BS>' },
-        -- { key = '<BS>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><C-w><BS>' },
-        -- { key = '<CR>', pattern = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><CR>' },
-        -- { key = '<CR>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><C-w><CR>' },
-        -- { key = '<CR>', pattern = [=[^\s*-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '<CR>-<Space>[]<Space><Left><Left>' },
+        -- headings '# '
+        { key = '#', pattern = [=[^\%#\%(#\)\@!]=], input = '#<Space>' },
+        { key = '#', pattern = [=[#\s\%#]=], input = '<BS>#<Space>' },
+        { key = '<C-h>', pattern = [=[^#\s\%#]=], input = '<BS><BS>' },
+        { key = '<C-h>', pattern = [=[##\s\%#]=], input = '<BS><BS><Space>' },
+        { key = '<BS>', pattern = [=[^#\s\%#]=], input = '<BS><BS>' },
+        { key = '<BS>', pattern = [=[##\s\%#]=], input = '<BS><BS><Space>' },
+        -- unordered list '- '
+        { key = '-', pattern = [=[^\s*\%#]=], input = '-<Space>' },
+        { key = '<Tab>', pattern = [=[^\s*-\s\%#]=], input = '<Home><Tab><End>' },
+        { key = '<S-Tab>', pattern = [=[^\s\+-\s\%#]=], input = '<Home><Del><Del><End>' },
+        { key = '<S-Tab>', pattern = [=[^-\s\w.*\%#]=], input = '' },
+        { key = '<C-h>', pattern = [=[^-\s\%#]=], input = '<C-w><BS>' },
+        { key = '<C-h>', pattern = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><BS>' },
+        { key = '<BS>', pattern = [=[^-\s\%#]=], input = '<C-w><BS>' },
+        { key = '<BS>', pattern = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><BS>' },
+        { key = '<CR>', pattern = [=[^-\s\%#]=], input = '<C-w><CR>' },
+        { key = '<CR>', pattern = [=[^\s\+-\s\%#]=], input = '<C-w><C-w><CR>' },
+        { key = '<CR>', pattern = [=[^\s*-\s\w.*\%#]=], input = '<CR>-<Space>' },
+        -- checkbox '- [ ]' basics
+        { key = '[', pattern = [=[^\s*-\s\%#]=], input = '<Left><Space>[]<Left>' },
+        { key = '<Tab>', pattern = [=[^\s*-\s\[\%#\]\s]=], input = '<Home><Tab><End><Left><Left>' },
+        { key = '<S-Tab>', pattern = [=[^-\s\[\%#\]\s]=], input = '' },
+        { key = '<S-Tab>', pattern = [=[^\s\+-\s\[\%#\]\s]=], input = '<Home><Del><Del><End><Left><Left>' },
+        { key = '<C-h>', pattern = [=[^\s*-\s\[\%#\]]=], input = '<BS><Del><Del>' },
+        { key = '<BS>', pattern = [=[^\s*-\s\[\%#\]]=], input = '<BS><Del><Del>' },
+        { key = '<Space>', pattern = [=[^\s*-\s\[\%#\]]=], input = '<Space><End>' },
+        { key = 'x', pattern = [=[^\s*-\s\[\%#\]]=], input = 'x<End>' },
+        { key = '<CR>', pattern = [=[^-\s\[\%#\]]=], input = '<End><C-w><C-w><C-w><CR>' },
+        { key = '<CR>', pattern = [=[^\s\+-\s\[\%#\]]=], input = '<End><C-w><C-w><C-w><C-w><CR>' },
+        -- checkbox indentation
+        { key = '<Tab>', pattern = [=[^\s*-\s\[\(\s\|x\)\]\s\%#]=], input = '<Home><Tab><End>' },
+        { key = '<S-Tab>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<Home><Del><Del><End>' },
+        { key = '<C-h>', pattern = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><BS>' },
+        { key = '<C-h>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><C-w><BS>' },
+        { key = '<BS>', pattern = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><BS>' },
+        { key = '<BS>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><C-w><BS>' },
+        { key = '<CR>', pattern = [=[^-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><CR>' },
+        { key = '<CR>', pattern = [=[^\s\+-\s\[\(\s\|x\)\]\s\%#]=], input = '<C-w><C-w><C-w><C-w><CR>' },
+        { key = '<CR>', pattern = [=[^\s*-\s\[\(\s\|x\)\]\s\w.*\%#]=], input = '<CR>-<Space>[]<Space><Left><Left>' },
       }
 
       for _, rule in ipairs(markdown_rules) do
@@ -1064,6 +1088,18 @@ return {
           end,
         })
       end
+
+      local fallback = require('fallback_map')
+      fallback.register('i', '<Tab>', {
+        priority = 200,
+        enabled = function()
+          return #insx.detect('<Tab>') > 0
+        end,
+        run = function()
+          keymap.send(insx.expand('<Tab>'))
+          return ''
+        end,
+      })
     end,
   },
   {
