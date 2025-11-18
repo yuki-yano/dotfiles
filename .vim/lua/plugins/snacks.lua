@@ -117,6 +117,7 @@ return {
               ['!'] = { 'toggle_hidden', mode = { 'n' } },
               ['I'] = { 'toggle_ignored', mode = { 'n' } },
               ['P'] = { 'toggle_preview', mode = { 'n' } },
+              ['?'] = { 'toggle_preview', mode = { 'i' } },
               ['<C-l>'] = { 'toggle_live', mode = { 'n', 'i' } },
             },
             b = {
@@ -132,6 +133,7 @@ return {
               ['!'] = { 'toggle_hidden', mode = { 'n' } },
               ['I'] = { 'toggle_ignored', mode = { 'n' } },
               ['P'] = { 'toggle_preview', mode = { 'n' } },
+              ['?'] = { 'toggle_preview', mode = { 'i' } },
               ['<C-w><C-w>'] = { 'cycle_win', mode = { 'n' } },
             },
           },
