@@ -160,16 +160,12 @@ snippets:
     snippet: brew
 
   - name: brew update
-    keyword: u
-    snippet: update && brew outdated
-    context:
-      - lbuffer: '^brew\s+u$'
+    keyword: bu
+    snippet: brew update && brew outdated
 
   - name: brew update
-    keyword: g
-    snippet: upgrade
-    context:
-      - lbuffer: '^brew\s+g$'
+    keyword: bg
+    snippet: brew upgrade
 
   - name: codex yolo
     keyword: yolo
