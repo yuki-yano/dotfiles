@@ -488,6 +488,30 @@ async function handleSelection(lines: string[]): Promise<void> {
   }
 
   if (key === "ctrl-q") {
+    const targets = new Set<string>();
+    for (const line of selections) {
+      const [action, name] = line.split("\t");
+      if (!action) continue;
+      if (action === "session" && name) {
+        targets.add(name);
+      } else if (action === "window" && name) {
+        const sessionName = name.split(":")[0] ?? "";
+        if (sessionName) {
+          targets.add(sessionName);
+        }
+      }
+    }
+
+    const inTmux = Boolean(Deno.env.get("TMUX"));
+    if (inTmux && targets.size > 0) {
+      const sessions = await collectSessions();
+      const current = sessions.find((session) => session.isCurrent);
+      const fallback = sessions.find((session) => !targets.has(session.name));
+      if (current && targets.has(current.name) && fallback) {
+        await runCommand("tmux", ["switch-client", "-t", fallback.name], { allowFail: true });
+      }
+    }
+
     for (const line of selections) {
       const [action, name] = line.split("\t");
       if (!action) continue;
