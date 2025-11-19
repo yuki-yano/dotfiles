@@ -417,7 +417,6 @@ async function runFzf(
     "--exact",
     "--expect=enter,ctrl-q,ctrl-t,ctrl-r",
     "--multi",
-    "--bind=ctrl-a:select-all,ctrl-d:deselect-all",
   ];
 
   const args = useFzfTmux
@@ -459,6 +458,31 @@ async function handleSelection(lines: string[]): Promise<void> {
   const key = keyRaw?.trim() || "enter";
 
   if (key === "ctrl-t") {
+    const inTmux = Boolean(Deno.env.get("TMUX"));
+    const inPopup = Boolean(Deno.env.get("TMUX_POPUP"));
+
+    if (inTmux) {
+      const created = (await runCommand("tmux", [
+        "new-session",
+        "-d",
+        "-P",
+        "-F",
+        "#{session_name}",
+      ], { allowFail: true })).trim();
+
+      const target = created || "";
+      if (target) {
+        await runCommand("tmux", ["switch-client", "-t", target], { allowFail: true });
+      } else {
+        await runCommand("tmux", ["new-session"], { allowFail: true, inheritStdio: true });
+      }
+
+      if (inPopup) {
+        Deno.exit(0);
+      }
+      return;
+    }
+
     await runCommand("tmux", ["new-session"], { allowFail: true, inheritStdio: true });
     return;
   }
