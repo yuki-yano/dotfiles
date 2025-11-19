@@ -54,6 +54,7 @@ install --cask keycastr
 install --cask krisp
 install --cask mplayerx
 install --cask ngrok
+install --cask obsidian
 install --cask tableplus
 install --cask vagrant
 install --cask visual-studio-code
