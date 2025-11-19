@@ -77,7 +77,7 @@ local function send_editprompt()
   end)
 
   vim.cmd('startinsert')
-  vim.system({ 'editprompt', '--', content }, { text = true }, function(obj)
+  vim.system({ 'editprompt', '--auto-send', '--', content }, { text = true }, function(obj)
     vim.schedule(function()
       if obj.code == 0 then
         vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {})
