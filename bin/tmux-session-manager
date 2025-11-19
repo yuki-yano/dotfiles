@@ -8,7 +8,6 @@ import { fromFileUrl } from "jsr:@std/path@1.1.3";
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
-type Mode = "select" | "kill";
 type Action = "session" | "window" | "create" | "server";
 
 type WindowInfo = {
@@ -341,9 +340,8 @@ function decodeTmuxString(value: string): string {
     .replace(/\\\\/g, "\\");
 }
 
-function formatSessionDisplay(session: SessionInfo, mode: Mode): string {
-  const starColor = mode === "kill" ? colors.red : colors.green;
-  const marker = session.isCurrent ? starColor("*") : " ";
+function formatSessionDisplay(session: SessionInfo): string {
+  const marker = session.isCurrent ? colors.green("*") : " ";
   return `${marker} ${colors.bold(session.name)}  ${colors.dim("|")} ${colors.dim("windows")} ${colors.cyan(String(session.totalWindows))}  ${colors.dim("|")} ${colors.dim("panes")} ${colors.cyan(String(session.totalPanes))}`;
 }
 
@@ -351,51 +349,39 @@ function formatWindowDisplay(
   session: SessionInfo,
   window: WindowInfo,
   isLast: boolean,
-  mode: Mode,
 ): string {
   const branch = isLast ? "  └─" : "  ├─";
-  const starColor = mode === "kill" ? colors.red : colors.green;
-  const marker = window.active ? starColor("*") : " ";
+  const marker = window.active ? colors.green("*") : " ";
   const commandLabel = window.command ? `  ${colors.dim("|")} ${colors.dim("cmd")} ${colors.magenta(window.command)}` : "";
   return `${branch} ${marker} ${colors.bold(session.name)}:${colors.cyan(window.index)} ${window.name}  ${colors.dim("|")} ${colors.dim("panes")} ${colors.cyan(String(window.panes))}${commandLabel}`;
 }
 
-function buildEntries(sessions: SessionInfo[], mode: Mode): Entry[] {
+function buildEntries(sessions: SessionInfo[]): Entry[] {
   const entries: Entry[] = [];
 
   for (const session of sessions) {
     entries.push({
       action: "session",
       name: session.name,
-      display: formatSessionDisplay(session, mode),
+      display: formatSessionDisplay(session),
     });
 
     session.windows.forEach((window, index) => {
       entries.push({
         action: "window",
         name: `${session.name}:${window.index}`,
-        display: formatWindowDisplay(session, window, index === session.windows.length - 1, mode),
+        display: formatWindowDisplay(session, window, index === session.windows.length - 1),
       });
     });
   }
 
-  if (mode === "select" && !Deno.env.get("TMUX")) {
+  const sessionCount = sessions.length;
+  if (sessionCount > 1) {
     entries.push({
-      action: "create",
+      action: "server",
       name: "",
-      display: `${colors.green("create")} [ ${colors.bold("new session") } | ${colors.cyan("tmux new-session")} ]`,
+      display: `  ${colors.red("✖")} ${colors.bold("tmux server")}  ${colors.dim("|")} ${colors.cyan("tmux kill-server")}`,
     });
-  }
-
-  if (mode === "kill") {
-    const sessionCount = sessions.length;
-    if (sessionCount > 1) {
-      entries.push({
-        action: "server",
-        name: "",
-        display: `  ${colors.red("✖")} ${colors.bold("tmux server")}  ${colors.dim("|")} ${colors.cyan("tmux kill-server")}`,
-      });
-    }
   }
 
   return entries;
@@ -407,7 +393,6 @@ type RunFzfOptions = {
 
 async function runFzf(
   entries: Entry[],
-  mode: Mode,
   options: RunFzfOptions = {},
 ): Promise<string[]> {
   if (entries.length === 0) {
@@ -420,7 +405,8 @@ async function runFzf(
 
   const commonArgs = [
     "--ansi",
-    `--prompt=${mode === "kill" ? "Kill" : "Session"}> `,
+    "--prompt=Session> ",
+    "--header=Enter: switch | C-q: kill | C-t: new | C-r: rename",
     `--delimiter=${"\t"}`,
     "--with-nth=3",
     "--cycle",
@@ -429,11 +415,10 @@ async function runFzf(
     "--no-info",
     "--no-sort",
     "--exact",
+    "--expect=enter,ctrl-q,ctrl-t,ctrl-r",
+    "--multi",
+    "--bind=ctrl-a:select-all,ctrl-d:deselect-all",
   ];
-
-  if (mode === "kill") {
-    commonArgs.push("--multi", "--bind=ctrl-a:select-all,ctrl-d:deselect-all");
-  }
 
   const args = useFzfTmux
     ? ["-p", "50%,50%", ...commonArgs]
@@ -465,13 +450,21 @@ async function runFzf(
   return text.split(/\r?\n/);
 }
 
-async function handleSelection(lines: string[], mode: Mode): Promise<void> {
+async function handleSelection(lines: string[]): Promise<void> {
   if (lines.length === 0) {
     return;
   }
 
-  if (mode === "kill") {
-    for (const line of lines) {
+  const [keyRaw, ...selections] = lines;
+  const key = keyRaw?.trim() || "enter";
+
+  if (key === "ctrl-t") {
+    await runCommand("tmux", ["new-session"], { allowFail: true, inheritStdio: true });
+    return;
+  }
+
+  if (key === "ctrl-q") {
+    for (const line of selections) {
       const [action, name] = line.split("\t");
       if (!action) continue;
       if (action === "session" && name) {
@@ -485,11 +478,25 @@ async function handleSelection(lines: string[], mode: Mode): Promise<void> {
     return;
   }
 
-  const [line] = lines;
-  const [action, name] = line.split("\t");
-  if (!action) {
+  if (key === "ctrl-r") {
+    const [line] = selections;
+    if (!line) return;
+    const [action, name] = line.split("\t");
+    if (!action) return;
+    const sessionName = action === "session" ? name : action === "window" ? (name.split(":")[0] ?? "") : "";
+    if (!sessionName) return;
+    const current = sessionName;
+    const next = prompt(`Rename session '${current}' to:`, current)?.trim();
+    if (!next || next === current) return;
+    await runCommand("tmux", ["rename-session", "-t", current, next], { allowFail: true });
     return;
   }
+
+  // default: enter / attach / switch
+  const [line] = selections;
+  if (!line) return;
+  const [action, name] = line.split("\t");
+  if (!action) return;
 
   if (action === "session" && name) {
     if (Deno.env.get("TMUX")) {
@@ -506,12 +513,10 @@ async function handleSelection(lines: string[], mode: Mode): Promise<void> {
       await runCommand("tmux", ["select-window", "-t", name], { allowFail: true });
       await runCommand("tmux", ["attach", "-t", sessionName], { allowFail: true, inheritStdio: true });
     }
-  } else if (action === "create") {
-    await runCommand("tmux", ["new-session"], { allowFail: true, inheritStdio: true });
   }
 }
 
-async function openPopupIfNeeded(mode: Mode, popup: boolean): Promise<void> {
+async function openPopupIfNeeded(popup: boolean): Promise<void> {
   if (!Deno.env.get("TMUX") || popup) {
     return;
   }
@@ -523,7 +528,7 @@ async function openPopupIfNeeded(mode: Mode, popup: boolean): Promise<void> {
   ], { allowFail: true })).trim() || Deno.env.get("HOME") || Deno.cwd();
 
   const scriptPath = fromFileUrl(import.meta.url);
-  const args = mode === "kill" ? ["--kill", "--popup"] : ["--popup"];
+  const args = ["--popup"];
 
   try {
     const popupCmd = new Deno.Command("tmux", {
@@ -559,17 +564,15 @@ async function openPopupIfNeeded(mode: Mode, popup: boolean): Promise<void> {
 async function main(): Promise<void> {
   const cli = new Command()
     .name("tmux-session-manager")
-    .description("tmux session selector/killer manager")
-    .option("--kill", "Kill session(s) instead of selecting/attaching", { default: false })
+    .description("tmux session manager with unified fzf shortcuts")
     .option("--popup", "Internal flag to skip popup", { default: false })
-    .action(async ({ kill, popup }: { kill: boolean; popup: boolean }) => {
-      const mode: Mode = kill ? "kill" : "select";
-      await openPopupIfNeeded(mode, popup);
+    .action(async ({ popup }: { popup: boolean }) => {
+      await openPopupIfNeeded(popup);
 
       const sessions = await collectSessions();
-      const entries = buildEntries(sessions, mode);
-      const lines = await runFzf(entries, mode, { forcePlain: popup });
-      await handleSelection(lines, mode);
+      const entries = buildEntries(sessions);
+      const lines = await runFzf(entries, { forcePlain: popup });
+      await handleSelection(lines);
     });
 
   await cli.parse(Deno.args);
