@@ -1,4 +1,12 @@
 snippets:
+  - name: zeno preprompt
+    keyword: zp
+    snippet: zeno-preprompt
+  - name: zeno preprompt snippet
+    keyword: zps
+    snippet: zeno-preprompt-snippet
+
+
   - name: git status
     keyword: gs
     snippet: git status --short --branch

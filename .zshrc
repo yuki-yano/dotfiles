@@ -601,9 +601,10 @@ if [[ -n $ZENO_LOADED ]]; then
   bindkey '^m'   zeno-auto-snippet-and-accept-line
   bindkey '^xs'  zeno-insert-snippet
   bindkey '^x^s' zeno-insert-snippet
+  bindkey '^xp'  zeno-preprompt
+  bindkey '^xP'  zeno-preprompt-snippet
   bindkey '^i'   zeno-completion
-  # Use atuin
-  # bindkey '^r'   zeno-history-selection
+  bindkey '\ef'  zeno-snippet-next-placeholder
 
   bindkey '^x '  zeno-insert-space
   bindkey '^x^m' accept-line
