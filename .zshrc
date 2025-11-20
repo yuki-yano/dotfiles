@@ -505,18 +505,9 @@ bindkey '^x^e' edit-command-line
 
 # Misc {{{
 
-# Auto execute rehash when executing anyenv command
-# add-zsh-hook preexec env_rehash
-#
-# function env_rehash() {
-#   if   echo "$1" | grep rbenv  > /dev/null ; then
-#     rbenv rehash
-#   elif echo "$1" | grep pyenv  > /dev/null ; then
-#     pyenv rehash
-#   elif echo "$1" | grep nodenv > /dev/null ; then
-#     nodenv rehash
-#   fi
-# }
+ if [[ -f $HOME/dotfiles/bin/ghq-project-selector.zsh ]]; then
+   source $HOME/dotfiles/bin/ghq-project-selector.zsh
+ fi
 
 # Automatically save the current git state to reflog
 add-zsh-hook preexec git_auto_save
