@@ -22,7 +22,58 @@ return {
     end,
   },
   {
+    'echasnovski/mini.diff',
+    version = false,
+    event = { 'BufRead' },
+    init = function()
+      local function set_nr_hl(name, target)
+        local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = target, link = false })
+        if not ok then
+          return
+        end
+        vim.api.nvim_set_hl(0, name, {
+          fg = hl.fg,
+          bg = 'NONE',
+        })
+      end
+      vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
+        pattern = { '*' },
+        callback = function()
+          set_nr_hl('MiniDiffSignAdd', 'DiffAdd')
+          set_nr_hl('MiniDiffSignChange', 'DiffChange')
+          set_nr_hl('MiniDiffSignDelete', 'DiffDelete')
+        end,
+      })
+    end,
+    config = function()
+      local diff = require('mini.diff')
+      diff.setup({
+        view = {
+          style = 'number',
+          signs = { add = '+', change = '~', delete = '-' },
+        },
+        mappings = {
+          apply = '',
+          reset = '',
+          textobject = '',
+          goto_first = '',
+          goto_prev = '',
+          goto_next = '',
+          goto_last = '',
+        },
+      })
+
+      vim.keymap.set({ 'n' }, 'gp', function()
+        diff.goto_hunk('prev')
+      end)
+      vim.keymap.set({ 'n' }, 'gn', function()
+        diff.goto_hunk('next')
+      end)
+    end,
+  },
+  {
     'lewis6991/gitsigns.nvim',
+    enabled = false,
     event = { 'BufRead' },
     init = function()
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
@@ -51,17 +102,6 @@ return {
         current_line_blame = false,
         trouble = false,
       })
-
-      vim.keymap.set({ 'n' }, 'gp', require('gitsigns').prev_hunk)
-      vim.keymap.set({ 'n' }, 'gn', require('gitsigns').next_hunk)
-      vim.keymap.set({ 'n' }, 'gh', require('gitsigns').preview_hunk)
-      vim.keymap.set({ 'n' }, 'gq', require('gitsigns').setqflist)
-      vim.keymap.set({ 'n' }, 'gl', require('gitsigns').setloclist)
-      vim.keymap.set({ 'n' }, 'gP', require('gitsigns').preview_hunk)
-      -- vim.keymap.set({ 'n', 'x' }, 'ga', ':Gitsigns stage_hunk<CR>', { silent = true })
-      -- vim.keymap.set({ 'n', 'x' }, 'gr', ':Gitsigns reset_hunk<CR>', { silent = true })
-      -- vim.keymap.set({ 'n', 'x' }, 'gu', require('gitsigns').undo_stage_hunk)
-      -- vim.keymap.set({ 'n', 'x' }, 'gR', require('gitsigns').reset_buffer)
     end,
   },
   {
