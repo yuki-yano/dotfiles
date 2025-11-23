@@ -94,4 +94,16 @@ M.lazy_setup = function(opts)
   require('lazy').setup('plugins', opts)
 end
 
+-- Before updating plugins, reset the 'doc/tags-ja' file in the 'vimdoc-ja' repository to avoid conflicts.
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'LazyUpdatePre',
+  callback = function()
+    local root = require('lazy.core.config').options.root
+    local repo = root .. '/vimdoc-ja'
+    if vim.fn.isdirectory(repo) == 1 then
+      vim.fn.system({ 'git', '-C', repo, 'checkout', '--', 'doc/tags-ja' })
+    end
+  end,
+})
+
 return M
