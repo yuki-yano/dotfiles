@@ -24,7 +24,7 @@ description: Analyze git changes and create an organized commit plan with logica
 
 ## 目標
 
-Git変更を分析し、意図別に論理的なコミット計画を作成する。同一ファイルに複数の意図がある場合は`git add -p`で分割。
+Git変更を分析し、意図別に論理的なコミット計画を作成する。
 
 ## 実行手順
 
@@ -71,65 +71,43 @@ git diff -- <path>
 
 ### 3. 意図別コミット計画
 
-以下の形式で出力（コミットメッセージは作業内容を詳細に記述）:
+以下のフォーマットで出力（句読点や空行も含めて再現）:
+
+```
+コミット計画
+
+[1] <type>: <サマリ>
+- <file1>
+- <file2> [部分] Lxx-Lyy
+
+実行コマンド:
+git add <file...>
+git commit
+
+コミットメッセージ:
+<type>: <サマリ>
+
+- 箇条書き1
+- 箇条書き2
+```
 
 自然言語指示による調整：
 - GROUPING="merge" の場合：同じタイプの変更をできるだけまとめる
 - GROUPING="split" の場合：ファイル単位で細かく分割
 - COMMIT_TYPE が指定された場合：そのタイプの変更のみを計画に含める
 
-**コミット計画**
-
-**[1] feat: ユーザー認証機能**
-- `src/auth.ts` (新規)
-- `src/api.ts` [部分] L45-L89
-- `src/types.ts` [部分] L12-L25
-
-実行コマンド:
-```bash
-git add src/auth.ts
-git add --patch src/api.ts    # L45-L89を選択
-git add --patch src/types.ts   # L12-L25を選択
-git commit
-```
-
-コミットメッセージ:
-```
-feat: Add user authentication
-
-- Implement JWT-based authentication system
-- Add login/logout API endpoints
-- Define authentication types and interfaces
-- Handle token validation and refresh
-```
-
-**複雑な部分的ステージングが必要な場合**:
-```bash
-# バックアップを作成
-cp src/api.ts src/api.ts.backup
-
-# 該当行以外を一時的に元に戻す
-# (エディタで L45-L89 以外を手動で revert するか、
-#  パッチを適用して必要な部分のみ残す)
-git add src/api.ts
-git commit  # エディタでメッセージを記述
-
-# 元のファイルを復元
-mv src/api.ts.backup src/api.ts
-```
-
-（各コミットごとに同様の形式で続く）
-
 ### 4. 実行モード選択
 
-- **[a] 自動実行**: 順次実行（部分的変更では`git add -p`起動）
-  - add -pでエラーが発生した場合は停止し、手動での対処を促す
+- **[a] 自動実行**: 順次実行（部分的変更は編集済みパッチ→`git apply --cached`/逆パッチ。手動介入できる場合のみ add -p）
+  - パッチ適用でエラーが発生した場合は停止し、手動での対処を促す
 - **[i] インタラクティブ**: 各コミット前に確認
 - **[e] 計画を編集**: コミットの統合・分割・順序変更
   - `1,2を統合` / `3を分割` / `1と3を入れ替え` / `2のメッセージ: 新内容`
 - **[d] ドライラン**: コマンド確認のみ
 
-## git add --patch 操作
+## git add --patch 操作（手動時のみ・非推奨）
+
+非対話エージェントでは `git apply --cached` / 逆パッチを優先し、ここは人手で対話できる場合のリファレンス。可能な限りパッチ編集で対応する。
 
 - `y` - ステージング / `n` - スキップ
 - `s` - 分割（可能な場合）
@@ -146,152 +124,68 @@ mv src/api.ts.backup src/api.ts
 - **Why**: 変更の理由や背景を含める
 - **影響**: 影響範囲や注意点があれば記載
 
-### 自動的な行単位ステージング
+### 部分適用の基本（非対話エージェント優先度）
 
-ハンクに複数の意図が混在する場合の対処:
+- 非対話: パッチ編集＋`git apply --cached`/`git apply -R --cached`
+- 手動のみ: `git add -p`（最終手段）
+- 詳細な注意は「diffパッチアプローチ使用時の注意」を参照
 
-**方法1: git add --patch の代替手段**
+#### 逆パッチ例（残す差分が多い場合）
 ```bash
-# 一時的にインデックスに追加してから部分的に削除
-git add <file>
-git reset --patch <file>  # 不要な部分を選択的にアンステージ
-```
-
-**方法2: diffパッチファイルを使った精密な分割**
-
-`git add -p` で分割できない大きなハンクがあり、意図別に正確に分けたい場合に有効です。
-
-```bash
-# 1. 対象ファイルの現在の変更をパッチファイルとして保存
-git diff package.json > package.json.full.patch
-
-# 2. 現在のファイルをバックアップ（安全のため）
-cp package.json package.json.working
-
-# 3. 対象ファイルの変更を一時的にリセット（他のファイルには影響しない）
-git checkout HEAD -- package.json
-
-# 4. 意図別のパッチファイルを作成
-cp package.json.full.patch package.json.npm-only.patch
-
-# 5. package.json.npm-only.patch を編集して、特定の意図の変更のみを残す
-# （例：npm公開設定の変更行のみ残し、ビルド設定の変更行は削除）
-# パッチファイルの編集時の注意:
-# - @@で始まるハンクヘッダーの行数情報を修正
-# - +で始まる追加行、-で始まる削除行を適切に調整
-# - コンテキスト行（スペースで始まる行）は維持
-# - **重要**: ファイルの末尾に必ず改行を入れる（改行がないとgit applyでエラーになる）
-
-# 6. 編集したパッチを適用（--check で事前確認）
-git apply --check package.json.npm-only.patch
-if [ $? -eq 0 ]; then
-    git apply package.json.npm-only.patch
-else
-    echo "パッチの適用に失敗しました。パッチファイルを確認してください。"
-    # エラー時は元のファイルを復元して終了
-    cp package.json.working package.json
-    rm -f package.json.working package.json.full.patch package.json.npm-only.patch
-    exit 1
-fi
-
-# 7. ステージングしてコミット
 git add package.json
-git commit -m "feat: Add npm package publishing configuration"
-
-# 8. フルパッチを再適用して元の状態に戻す
-git apply package.json.full.patch
-
-# 9. 適用済みの変更との差分を確認
-diff package.json package.json.working
-if [ $? -ne 0 ]; then
-    echo "警告: ファイルの内容に差異があります。手動で確認してください。"
-    # 必要に応じて: cp package.json.working package.json
-fi
-
-# 10. クリーンアップ
-rm -f package.json.working package.json.full.patch package.json.npm-only.patch
-```
-
-**より簡単な代替方法: 逆パッチアプローチ**
-
-```bash
-# 1. ファイル全体をステージング
-git add package.json
-
-# 2. ステージングされた内容から不要な部分だけを含む逆パッチを作成
-# （git diff --cached で現在のステージング内容を確認しながら）
 git diff --cached package.json > staged.patch
-
-# 3. staged.patch を編集して、除外したい変更（ビルド設定など）のみを残す
-# 注意: この時、残したい変更（npm設定）の行は削除する
-
-# 4. 逆パッチを適用して不要な部分をアンステージ
+# staged.patch を編集し、除外したい変更だけを残す
 git apply -R --cached staged.patch
-
-# 5. 結果を確認
-git diff --cached package.json  # ステージングされた内容を確認
-
-# 6. コミット
-git commit -m "feat: Add npm package publishing configuration"
-
-# 7. クリーンアップ
+git diff --cached package.json
 rm -f staged.patch
 ```
 
-**利点**:
-- git add --patch で分割できない複雑な変更を意図別に正確に分離できる
-- 各コミットに含める内容を完全にコントロール可能
-- 大きなファイルの多数の変更を論理的に整理できる
+#### 正方向パッチ例（入れたい差分だけを明示）
+```bash
+git diff package.json > package.patch
+cp package.json package.json.working
+cp package.patch package.only.patch
+# package.only.patch を「入れたい差分だけ」に編集
+git apply --check --cached package.only.patch
+git apply --cached package.only.patch
+git diff --cached package.json
+diff package.json package.json.working
+rm -f package.json.working package.patch package.only.patch
+```
 
-**注意点**:
-- 必ずバックアップを取ってから実行する
-- ファイルの一時的な変更が発生するため、慎重に作業する
-- 作業後は必ず元のファイルを復元する
-
-**実際の使用例**:
-package.json に以下の変更が混在している場合：
-- npm公開設定（main, exports, bin, files）
-- ビルド設定（build script, tsdown追加）
-- メタ情報（author, repository）
-
-これらを3つの異なるコミットに分けたいが、git add --patch では1つのハンクになってしまう場合に、この方法で各変更を個別にステージング・コミットできます。
-
-**推奨**: 複雑な場合はdiffパッチを使用して意図別に正確に分割
+#### 手動フォールバック（対話可能な場合のみ）
+```bash
+git add <file>
+git reset --patch <file>
+```
 
 ## 重要な注意事項
 
-### add --patch での段階的コミット
+### add --patch での段階的コミット（手動時のみ）
 
-- **警告**: 後のコミットでは、前のコミットで選択した部分が既にコミット済みのため、表示されるハンクが変わります
-- **対策**: 各コミットで必要な行番号範囲を明確に記録し、ハンクの内容を確認してから選択
-- **例**: 
-  - 1回目: L1-100のうちL45-89を選択 → 2つのハンクに分かれる可能性
-  - 2回目: 残りのL1-44とL90-100が新しいハンクとして表示される
-- **ハンク分割できない場合**: `s`が効かない大きなハンクは`e`で編集
-- **重要**: コミットが完了した後、次のコミットを開始する前に、必ず `git diff` で残りの変更を再確認すること。前のコミットによってハンクの行番号がずれている可能性があるため
+- apply/逆パッチで対処できない場合の備忘
+- 前のコミットで選択済みの部分は表示されないので、各コミット開始前に `git diff` を確認
+- `s` で分割できない場合は `e` で編集、どうしても難しいときだけ使う
 
-### diffパッチアプローチ使用時の注意
+### diffパッチアプローチ使用時の注意（共通の基本）
 
 - **ファイル単位での操作**: `git checkout HEAD -- <file>` で特定ファイルのみリセット（他のファイルに影響なし）
 - **バックアップの作成**: 作業前に必ず `.working` ファイルとしてバックアップ
-- **パッチファイルの編集**: 
-  - ハンクヘッダーの行数情報（`@@ -行,数 +行,数 @@`）を正確に修正
-  - **必須**: ファイルの末尾に改行を入れる（改行がないと`git apply`でエラーになる）
-- **事前検証**: `git apply --check` でパッチが正しく適用できるか確認
-- **エラー時の復旧**: エラーが発生した場合は即座にバックアップから復元
-- **逆パッチアプローチ**: より簡単で安全な代替方法として推奨
+- **パッチ編集の基本**: ハンクヘッダー、末尾改行を整えた上で `git apply --check` で検証
+- **エラー時の復旧**: エラーが出たら即バックアップから戻す
+- **逆パッチアプローチ**: 「残す方が多い」ケースでは行数調整不要で安全
 
 ### エラー時の対処
 
 ```bash
 git reset HEAD <file>  # ステージングを取り消し
 git checkout HEAD -- <file>  # 最後のコミットの状態に戻す
-git reset --hard $BACKUP_BRANCH  # 完全にやり直し
+git reset --hard $BACKUP_BRANCH  # 完全にやり直し（破壊的なので要確認）
 ```
 
 ### 実行時の原則
 
-- **自動修正の禁止**: add -pで失敗しても、ファイルを変更して解決しようとしない
+- **自動修正の禁止**: パッチ適用（apply --cached / 逆パッチ・add -p）が失敗しても、ファイルを書き換えて力技で解決しようとしない
 - **確認優先**: 不安な場合は`git diff --cached`でステージング内容を確認
 - **段階的実行**: 各コミット後に`git log -1 --stat`で結果を確認
 
@@ -299,7 +193,7 @@ git reset --hard $BACKUP_BRANCH  # 完全にやり直し
 
 1. 全体の変更から異なる意図を識別
 2. 1コミット = 1つの意図
-3. 同一ファイルでも意図別に`git add -p`で分割
+3. 同一ファイルでも意図別に`git apply --cached`/逆パッチで分割（手動時のみ`git add -p`）
 4. ビルドが壊れない順序で実行
 5. コミットメッセージは以下の形式で詳細に記述：
    - 1行目: 簡潔な要約（型: 内容）
