@@ -32,10 +32,6 @@ vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
   end,
 })
 
--- Toggle line number
-vim.g.enable_number = true
-vim.g.enable_relative_number = true
-
 local function set_number(current)
   local winnrs = current and { vim.fn.winnr() } or vim.fn.range(1, vim.fn.winnr('$'))
   for _, winnr in ipairs(winnrs) do

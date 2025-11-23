@@ -1,3 +1,6 @@
+vim.g.enable_number = true
+vim.g.enable_relative_number = false
+
 vim.cmd([[filetype plugin indent on]])
 vim.cmd([[syntax enable]])
 
@@ -31,9 +34,9 @@ vim.opt.list = true
 vim.opt.listchars = { tab = '^ ', trail = '_', extends = '>', precedes = '<' }
 vim.opt.matchpairs:append('<:>')
 vim.opt.matchtime = 1
-vim.opt.number = true
+vim.opt.number = vim.g.enable_number
 vim.opt.pumheight = 40
-vim.opt.relativenumber = true
+vim.opt.relativenumber = vim.g.enable_relative_number
 vim.opt.scrolloff = 5
 vim.opt.shortmess:append('I')
 vim.opt.showmode = false
