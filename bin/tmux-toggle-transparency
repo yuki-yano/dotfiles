@@ -2,21 +2,41 @@
 
 set -euo pipefail
 
+apply_mode() {
+  local mode="$1"
+  if [[ "$mode" == "transparent" ]]; then
+    tmux set -g window-style 'bg=default'
+    tmux set -g window-active-style 'bg=default'
+    tmux set -g pane-border-style 'fg=#4A4A4A,bg=default'
+    tmux set -g pane-active-border-style 'fg=#8295D1,bg=default'
+  else
+    tmux set -g window-style 'bg=#232333'
+    tmux set -g window-active-style 'bg=#181825'
+    tmux set -g pane-border-style 'fg=#4A4A4A,bg=#222333'
+    tmux set -g pane-active-border-style 'fg=#8295D1,bg=#222333'
+  fi
+}
+
+action="${1:-toggle}"
 current_mode=$(tmux show -gqv '@theme_mode')
+current_mode=${current_mode:-transparent}
 
-if [[ -z "$current_mode" || "$current_mode" == "transparent" ]]; then
-  next_mode="solid"
-else
-  next_mode="transparent"
-fi
-
-tmux set -g @theme_mode "$next_mode"
-if [[ "$next_mode" == "transparent" ]]; then
-  tmux set -g window-style 'bg=default'
-  tmux set -g window-active-style 'bg=default'
-else
-  tmux set -g window-style 'bg=#232333'
-  tmux set -g window-active-style 'bg=#181825'
-fi
-
-tmux display-message "tmux theme mode: ${next_mode}"
+case "$action" in
+  apply)
+    apply_mode "$current_mode"
+    ;;
+  toggle)
+    if [[ "$current_mode" == "transparent" ]]; then
+      next_mode="solid"
+    else
+      next_mode="transparent"
+    fi
+    tmux set -g @theme_mode "$next_mode"
+    apply_mode "$next_mode"
+    tmux display-message "tmux theme mode: ${next_mode}"
+    ;;
+  *)
+    echo "usage: $(basename "$0") [toggle|apply]" >&2
+    exit 1
+    ;;
+esac
