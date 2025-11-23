@@ -132,6 +132,35 @@ vim.keymap.set({ 'n' }, 'sC', function()
   vim.notify('Both HTML and plain text have been set to the clipboard.', vim.log.levels.INFO)
 end)
 
+-- <M-v> comes from tmux: Insert pastes OS clipboard; other modes recreate tmux vertical split
+vim.keymap.set({ 'n', 'v', 'i' }, '<M-v>', function()
+  local mode = vim.fn.mode(1):sub(1, 1)
+
+  if mode == 'i' then
+    local clipboard = ''
+
+    if vim.fn.executable('pbpaste') == 1 then
+      clipboard = vim.fn.system('pbpaste')
+      if vim.v.shell_error ~= 0 then
+        clipboard = ''
+      end
+    end
+
+    if clipboard == '' then
+      clipboard = vim.fn.getreg('+')
+    end
+
+    if clipboard ~= '' then
+      vim.api.nvim_paste(clipboard, true, -1)
+    end
+    return
+  end
+
+  if vim.env.TMUX then
+    vim.fn.system({ 'tmux', 'split-window', '-h', '-c', vim.fn.getcwd() })
+  end
+end, { silent = true, desc = 'Insert: paste clipboard; other: tmux vertical split' })
+
 vim.keymap.set({ 'n', 'x' }, 'sp', function()
   local regtype = vim.fn.getregtype('+')
   local regcontents = vim.fn.getreg('+', 1, true)
