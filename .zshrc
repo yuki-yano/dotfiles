@@ -601,8 +601,8 @@ if [[ -n $ZENO_LOADED ]]; then
   bindkey '^m'   zeno-auto-snippet-and-accept-line
   bindkey '^xs'  zeno-insert-snippet
   bindkey '^x^s' zeno-insert-snippet
-  bindkey '^xp'  zeno-preprompt
-  bindkey '^xP'  zeno-preprompt-snippet
+  bindkey '^xp'  zeno-preprompt-snippet
+  bindkey '^x^p' zeno-preprompt-snippet
   bindkey '^i'   zeno-completion
   bindkey '\ef'  zeno-snippet-next-placeholder
 
@@ -610,7 +610,10 @@ if [[ -n $ZENO_LOADED ]]; then
   bindkey '^x^m' accept-line
   bindkey '^x^z' zeno-toggle-auto-snippet
 
-  bindkey '^r' zeno-smart-history-selection
+  bindkey '^r'   zeno-smart-history-selection
+
+  alias by='zeno-preprompt'
+  alias bys='zeno-preprompt-snippet'
 
   ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(zeno-auto-snippet-and-accept-line)
 fi
