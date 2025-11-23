@@ -76,7 +76,10 @@ return {
     'kevinhwang91/nvim-hlslens',
     dependencies = {
       { 'petertriho/nvim-scrollbar' },
-      { 'haya14busa/vim-asterisk' },
+      {
+        'yuki-yano/asterisk.nvim',
+        dev = true,
+      },
     },
     init = function()
       vim.keymap.set({ 'n' }, '/', '<Cmd>lua require("hlslens").enable()<CR>/')
@@ -155,7 +158,7 @@ return {
   },
   {
     'yuki-yano/fuzzy-motion.vim',
-    dev = false,
+    dev = true,
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'yuki-yano/denops-lazy.nvim' },
