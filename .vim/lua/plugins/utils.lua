@@ -596,12 +596,26 @@ return {
     lazy = false,
     config = function()
       local clip = require('clipboard_image_to_agent')
-      clip.setup()
+      clip.setup({
+        fallback = function(err)
+          local lower = err and err:lower() or ''
+          if not lower:find('image') and not lower:find('clipboard') then
+            return nil
+          end
 
-      vim.keymap.set({ 'i' }, '<C-v>', function()
-        local ok, err = clip.paste()
-        if not ok and err then
-          vim.notify(err, vim.log.levels.WARN, { title = 'clipboard-image-to-agent.nvim' })
+          local text = vim.fn.getreg('+')
+          if text == '' then
+            return nil
+          end
+
+          return { text = text, trailing_space = false }
+        end,
+      })
+
+      vim.keymap.set('i', '<C-v>', function()
+        local ok, msg = clip.paste()
+        if not ok and msg then
+          vim.notify(msg, vim.log.levels.WARN, { title = 'clipboard-image-to-agent.nvim' })
         end
       end)
     end,
