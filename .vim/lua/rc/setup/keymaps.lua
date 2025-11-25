@@ -107,29 +107,31 @@ vim.keymap.set({ 'n' }, 'sc', function()
 end)
 
 vim.keymap.set({ 'n' }, 'sC', function()
+  -- For some reason, it doesn't work without this line
+  vim.fn.setreg('+', vim.fn.getreg('"'))
+
   local md = vim.fn.getreg('"')
 
-  if vim.fn.executable('pandoc') == 0 then
-    vim.fn.system({ 'pbcopy' }, md)
+  if md == '' then
+    vim.notify('No markdown found in the unnamed register.', vim.log.levels.ERROR)
     return
   end
 
-  local html = vim.fn.system({ 'pandoc', '-f', 'markdown', '-t', 'html', '--wrap=none' }, md)
-  html = html:gsub('"', '\\"'):gsub('\n', '')
+  if vim.fn.executable('mdjanai') == 0 then
+    vim.notify('mdjanai not found.', vim.log.levels.ERROR)
+    return
+  end
 
-  local hex = vim.fn.system(string.format([[printf '%%s' "%s" | hexdump -ve '1/1 "%%02x"']], html)):gsub('%s+$', '')
+  local mdjanai_path = vim.fn.exepath('mdjanai')
+  local output = vim.fn.systemlist({ mdjanai_path, md })
+  local ok = vim.v.shell_error == 0
 
-  local plain = vim.fn.system({ 'pandoc', '-f', 'markdown', '-t', 'plain' }, md)
-  plain = plain:gsub('"', '\\"'):gsub('\n', '\\n')
+  if ok then
+    vim.notify('Copied via mdjanai.', vim.log.levels.INFO)
+    return
+  end
 
-  local script = table.concat({
-    'set the clipboard to {',
-    '«class HTML»:«data HTML' .. hex .. '», ',
-    'string:"' .. plain .. '"}',
-  }, '')
-  vim.fn.system({ 'osascript', '-e', script })
-
-  vim.notify('Both HTML and plain text have been set to the clipboard.', vim.log.levels.INFO)
+  vim.notify('mdjanai execution failed: ' .. table.concat(output, '\n'), vim.log.levels.ERROR)
 end)
 
 -- <M-v> comes from tmux: Insert pastes OS clipboard; other modes recreate tmux vertical split
