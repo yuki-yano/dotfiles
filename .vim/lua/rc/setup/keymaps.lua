@@ -169,12 +169,16 @@ vim.keymap.set({ 'n', 'x' }, 'sp', function()
 
   vim.fn.setreg('"', regcontents, regtype)
 
-  pcall(vim.fn['haritsuke#notify'], 'onTextYankPost', {{
-    operator = 'y',
-    regname = '"',
-    regtype = regtype,
-    regcontents = regcontents,
-  }})
+  pcall(
+    vim.fn['haritsuke#notify'],
+    'onTextYankPost',
+    { {
+      operator = 'y',
+      regname = '"',
+      regtype = regtype,
+      regcontents = regcontents,
+    } }
+  )
 
   vim.notify('Copied from OS clipboard to " register', vim.log.levels.INFO)
 end, { silent = true })
@@ -218,4 +222,4 @@ vim.keymap.set('n', '<Plug>(z2)z', 'zb<Plug>(z0)')
 vim.keymap.set('n', '<Plug>(z0)z', 'zz<Plug>(z1)')
 
 -- _ to -
-vim.keymap.set({'n', 'x'}, '-', '_')
+vim.keymap.set({ 'n', 'x' }, '-', '_')

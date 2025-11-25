@@ -265,6 +265,7 @@ elseif M.is_quick_ime() then
   })
   vim.api.nvim_create_autocmd({ 'VimEnter' }, {
     pattern = { '*' },
+    group = quick_ime_group,
     callback = function()
       vim.bo.filetype = 'markdown.quickime'
     end,
