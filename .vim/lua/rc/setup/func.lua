@@ -356,7 +356,7 @@ end
 
 -- Normal mode: yank file path as @path/to/file
 vim.keymap.set('n', 'ga', function()
-  local content = '@' .. get_relative_filepath()
+  local content = get_relative_filepath()
   yank_content(content, false)
   vim.fn.setreg('+', vim.fn.getreg('"'))
 end, { desc = 'Yank file path for Claude Code' })
@@ -374,7 +374,7 @@ vim.keymap.set('x', 'ga', function()
   local end_line = math.max(vstart[2], vend[2])
 
   -- Build the base content
-  local content = '@' .. filepath .. '#L' .. start_line
+  local content = filepath .. '#L' .. start_line
   if start_line ~= end_line then
     content = content .. '-' .. end_line
   end
