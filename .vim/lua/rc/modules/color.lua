@@ -77,7 +77,7 @@ palette['gruvbox-material'] = function()
           bg = search,
         },
       },
-      focus_inactive = '#222423', -- Slightly darker, between background (#1D2021) and black (#32302F)
+      focus_inactive = '#222333', -- Slightly darker, between background (#1D2021) and black (#32302F)
     },
   }
 end
@@ -191,7 +191,7 @@ palette['catppuccin'] = function()
         bg = catppuccin_palette.surface0, -- #313244
         bg_alt = '#232333', -- Slightly darker, between base (#1E1E2E) and surface0 (#313244)
       },
-      focus_inactive = '#232333', -- Slightly darker, between base (#1E1E2E) and surface0 (#313244)
+      focus_inactive = '#1D1E2E',
     },
   }
 end
