@@ -95,7 +95,7 @@ Prefer Deno tasks, but the legacy `Rakefile` mirrors the same targets (`bundle e
 - `.config/` – app-level configs for Alacritty, WezTerm, Atuin, Bat themes, cage presets, Claude tasks, efm-langserver, Karabiner, mise, Neovim, ripgrep, skhd, tabtab, VDE layouts, vivid color themes, WezTerm, yabai, and zeno snippets.
 - `.vim/`, `.vimrc` – Neovim/Lua configuration (lazy.nvim, rc modules, LuaSnip + tsnip, sessions, docs) synced with `.config/nvim` runtime files.
 - `.tmux.conf`, `.tmux/` – tmux settings and the `tmux-256color.terminfo` source.
-- `.hammerspoon/`, `.finicky.js`, `.config/yabai/yabairc`, `.config/skhd/skhdrc`, `.config/karabiner/karabiner.json` – macOS automation suite (window manager, hotkeys, IME helpers, URL routing, spoons).
+- `.hammerspoon/`, `.finicky.js`, `.config/yabai/yabairc`, `.config/skhd/skhdrc`, `.config/karabiner/karabiner.json` – macOS automation suite (window manager, hotkeys, IME helpers, URL routing, spoons). `karabiner.json` is generated from `.config/karabiner/karabiner.ts` via Deno (`deno task karabiner:build` / `karabiner:watch`).
 - `.ctags.d/config.ctags`, `.tigrc`, `.config/ripgrep/rc`, `.config/vivid/themes/catppuccin.yml` – CLI defaults for tags, tig, search, and colors.
 - `.claude/`, `.config/claude/{CLAUDE.md,commands,settings.json}`, and `.config/cage/presets.yml` – Claude Code docs, command presets, settings, and Warashi cage layouts that integrate AI tooling with tmux.
 - `bin/` – helper scripts (tmux status widgets, git utilities like `git-quick-save`, tmux session manager, ghq selector, wifi/battery monitors, Claude hooks, TypeScript-based Yabai controllers, quick IME toggles). Every script is intended to run from PATH.
@@ -134,7 +134,7 @@ Prefer Deno tasks, but the legacy `Rakefile` mirrors the same targets (`bundle e
 ## Window & Input Automation
 
 - **Yabai + skhd** – `.config/yabai/yabairc` defines tiling layout, gaps/padding, opacity, and universal rules. `.config/skhd/skhdrc` maps `cmd+ctrl` combos to focus/swap windows, floats predet positions, toggles splits, rotates trees, and uses TypeScript helpers (`bin/yabai-focus.ts`, `yabai-full.ts`, `yabai-resize.ts`) for custom logic.
-- **Karabiner-Elements** – `.config/karabiner/karabiner.json` is tuned for Alacritty/Claude workflows: Command/Shift+Return becomes backslash+Enter, IME toggles are inserted around shortcuts, and delayed actions ensure Japanese/English mode toggles fire correctly.
+- **Karabiner-Elements** – `.config/karabiner/karabiner.json` is tuned for Alacritty/Claude workflows: Command/Shift+Return becomes backslash+Enter, IME toggles are inserted around shortcuts, and delayed actions ensure Japanese/English mode toggles fire correctly. Edit `.config/karabiner/karabiner.ts` and run `deno task karabiner:build` to apply (or `karabiner:watch` to auto-rebuild).
 - **Hammerspoon** – `.hammerspoon/init.lua` (plus `Spoons/`) automates window hints, space management, and integrates with other tooling.
 - **Finicky** – `.finicky.js` routes specific sites (TypeScript docs, Google Docs) to Chrome while Firefox stays default.
 - **Quick IME helpers** – `bin/quick-ime.sh` plus Alacritty/WezTerm settings make it easy to toggle IME state from scripts, and Karabiner rules keep text entry stable.
