@@ -429,6 +429,7 @@ return {
   },
   {
     'zbirenbaum/copilot.lua',
+    enabled = false,
     dependencies = {
       {
         'yuki-yano/fallback-map.nvim',
