@@ -17,6 +17,16 @@ apply_mode() {
   fi
 }
 
+set_nvim_env() {
+  local mode="$1"
+
+  if [[ "$mode" == "transparent" ]]; then
+    tmux set-environment -g NVIM_TRANSPARENCY 1
+  else
+    tmux set-environment -g NVIM_TRANSPARENCY 0
+  fi
+}
+
 action="${1:-toggle}"
 current_mode=$(tmux show -gqv '@theme_mode')
 current_mode=${current_mode:-transparent}
@@ -24,6 +34,7 @@ current_mode=${current_mode:-transparent}
 case "$action" in
   apply)
     apply_mode "$current_mode"
+    set_nvim_env "$current_mode"
     ;;
   toggle)
     if [[ "$current_mode" == "transparent" ]]; then
@@ -33,6 +44,7 @@ case "$action" in
     fi
     tmux set -g @theme_mode "$next_mode"
     apply_mode "$next_mode"
+    set_nvim_env "$next_mode"
     tmux display-message "tmux theme mode: ${next_mode}"
     ;;
   *)
