@@ -15,9 +15,9 @@ return {
     init = function()
       vim.g['fern#disable_default_mappings'] = true
       vim.g['fern#drawer_width'] = 40
-      vim.g['fern#renderer'] = 'nvim-web-devicons'
       vim.g['fern#hide_cursor'] = true
       vim.g['fern#window_selector_use_popup'] = true
+      vim.g['fern#default_hidden'] = true
       vim.g['fern_preview_window_highlight'] = 'Normal:Normal,FloatBorder:Normal'
       vim.g['fern_preview_window_calculator'] = {
         width = function()
@@ -39,9 +39,18 @@ return {
       })
     end,
     config = function()
-      vim.api.nvim_create_autocmd({ 'FileType' }, {
-        pattern = { 'fern' },
+      local ns = vim.api.nvim_create_namespace('fern-colors')
+
+      vim.g['fern#renderer'] = 'nvim-web-devicons'
+      vim.g['glyph_palette#palette'] = require('fr-web-icons').palette()
+      vim.fn['glyph_palette#apply']()
+
+      vim.api.nvim_create_autocmd({ 'BufEnter' }, {
         callback = function()
+          if vim.bo.filetype ~= 'fern' then
+            return
+          end
+
           vim.cmd([[
             nnoremap <silent>        <buffer> <Plug>(fern-page-down-wrapper) <C-d>
             nnoremap <silent>        <buffer> <Plug>(fern-page-up-wrapper)   <C-u>
@@ -95,12 +104,71 @@ return {
 
           vim.opt_local.number = false
           vim.opt_local.relativenumber = false
-          vim.api.nvim_set_hl(0, 'FernCursorLine', {
-            bg = '#45475A',
-            blend = 50,
+          vim.opt_local.winfixbuf = true
+
+          vim.api.nvim_win_set_hl_ns(0, ns)
+          vim.api.nvim_set_hl(ns, 'CursorLine', {
+            fg = color.base().black,
+            bg = color.base().blue,
           })
 
           vim.fn['glyph_palette#apply']()
+        end,
+      })
+
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'FernHighlight',
+        callback = function()
+          vim.api.nvim_win_set_hl_ns(0, ns)
+          vim.api.nvim_set_hl(ns, 'CursorLine', {
+            fg = color.base().black,
+            bg = color.base().blue,
+          })
+        end,
+      })
+
+      vim.api.nvim_create_autocmd('BufLeave', {
+        callback = function()
+          if vim.bo.filetype ~= 'fern' then
+            return
+          end
+
+          local catppuccin_palette = require('catppuccin.palettes').get_palette('mocha')
+          vim.api.nvim_win_set_hl_ns(0, ns)
+          vim.api.nvim_set_hl(ns, 'CursorLine', {
+            fg = catppuccin_palette.surface0,
+            bg = catppuccin_palette.overlay2,
+            blend = 50,
+          })
+        end,
+      })
+
+      local function fern_drawer_exists()
+        for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+          local buf = vim.api.nvim_win_get_buf(win)
+          local name = vim.api.nvim_buf_get_name(buf)
+          if vim.fn['fern#internal#drawer#is_drawer'](name) == 1 then
+            return true
+          end
+        end
+        return false
+      end
+
+      vim.api.nvim_create_autocmd({ 'BufEnter', 'WinEnter' }, {
+        callback = function(args)
+          if vim.bo[args.buf].filetype == 'fern' or vim.bo[args.buf].buftype ~= '' then
+            return
+          end
+          if not fern_drawer_exists() then
+            return
+          end
+
+          vim.cmd(
+            string.format(
+              [[silent FernDo -drawer -stay FernReveal %s]],
+              vim.fn.fnameescape(vim.api.nvim_buf_get_name(args.buf))
+            )
+          )
         end,
       })
     end,
