@@ -133,7 +133,12 @@ return {
             return
           end
 
-          local catppuccin_palette = require('catppuccin.palettes').get_palette('mocha')
+          local ok, catppuccin_palettes = pcall(require, 'catppuccin.palettes')
+          if not ok then
+            return
+          end
+
+          local catppuccin_palette = catppuccin_palettes.get_palette('mocha')
           vim.api.nvim_win_set_hl_ns(0, ns)
           vim.api.nvim_set_hl(ns, 'CursorLine', {
             fg = catppuccin_palette.surface0,
