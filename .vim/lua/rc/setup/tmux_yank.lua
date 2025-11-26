@@ -37,6 +37,25 @@ local function sync_yank_to_clipboard()
   vim.notify('Copied to OS clipboard.', vim.log.levels.INFO)
 end
 
+local function trim_trailing_blank_lines()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+  local last_nonblank
+
+  for i = #lines, 1, -1 do
+    if lines[i]:match('%S') then
+      last_nonblank = i
+      break
+    end
+  end
+
+  local new_end = last_nonblank or 1
+
+  if new_end < #lines then
+    vim.api.nvim_buf_set_lines(bufnr, new_end, -1, false, {})
+  end
+end
+
 if M.is_tmux_yank() then
   apply_mode_opts()
   local augroup = vim.api.nvim_create_augroup('rc_tmux_yank', { clear = true })
@@ -48,6 +67,7 @@ if M.is_tmux_yank() then
     group = augroup,
     pattern = { '*' },
     callback = function()
+      trim_trailing_blank_lines()
       vim.cmd('normal! G')
     end,
   })
