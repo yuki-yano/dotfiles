@@ -81,6 +81,7 @@ path=(~/.deno/bin(N-/) $path)
 
 # bun
 path=(~/.bun/bin(N-/) $path)
+path=(~/.cache/.bun/bin(N-/) $path)
 
 # Ruby
 path=(/opt/homebrew/opt/ruby/bin(N-/) $path)
