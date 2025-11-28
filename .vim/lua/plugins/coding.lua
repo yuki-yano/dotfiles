@@ -159,64 +159,23 @@ return {
         require('cmp_claudecode').setup()
         require('cmp_prompt_abbr').setup({
           keyword_length = 1,
+          label_fn = function(item)
+            return string.format('%s → %s', item.source, item.target)
+          end,
           mappings = {
-            { source = ';jp', target = '日本語で説明して', label = ';jp →日本語で説明して' },
-            { source = ';co', target = 'commitをして', label = ';co →commitをして' },
-            {
-              source = ';gb',
-              target = '作業用のbranchを作成してから作業を始めて',
-              label = ';gb →作業用のbranchを作成してから作業を始めて',
-            },
-            {
-              source = ';noe',
-              target = 'まだ実際の編集はしないで',
-              label = ';noe →まだ実際の編集はしないで',
-            },
-            {
-              source = ';nd',
-              target = '完了したらDiscordに通知して',
-              label = ';nd →完了したらDiscordに通知して',
-            },
-            {
-              source = ';ns',
-              target = '完了したらスマホに通知して',
-              label = ';ns →完了したらスマホに通知して',
-            },
-            {
-              source = ';na',
-              target = '完了したらDiscordとスマホに通知して',
-              label = ';na →完了したらDiscordとスマホに通知して',
-            },
-            {
-              source = ';sir',
-              target = 'sddでinitとrequirementsを実行して',
-              label = ';sir → sddでinitとrequirementsを実行して',
-            },
-            {
-              source = ';sird',
-              target = 'sddでinitとrequirementsとdesignを実行して',
-              label = ';sird → sddでinitとrequirementsとdesignを実行して',
-            },
-            {
-              source = ';sd',
-              target = '承認するからsddでdesignを実行して',
-              label = ';sd →承認するからsddでdesignを実行して',
-            },
-            {
-              source = ';st',
-              target = '承認するからsddでtasksを実行して',
-              label = ';st →承認するからsddでtasksを実行して',
-            },
-            {
-              source = ';si',
-              target = '承認するからsddでimplを実行して',
-              label = ';si →承認するからsddでimplを実行して',
-            },
-            {
-              source = ';hitl',
-              target = '分からない事があったらhitl mcpで人に確認して',
-              label = ';hitl →分からない事があったらhitl mcpで人に確認して',
-            },
+            { source = ';jp', target = '日本語で説明して' },
+            { source = ';co', target = 'commitをして' },
+            { source = ';gb', target = '作業用のbranchを作成してから作業を始めて' },
+            { source = ';noe', target = 'まだ実際の編集はしないで' },
+            { source = ';nd', target = '完了したらDiscordに通知して' },
+            { source = ';ns', target = '完了したらスマホに通知して' },
+            { source = ';na', target = '完了したらDiscordとスマホに通知して' },
+            { source = ';sir', target = 'sddでinitとrequirementsを実行して' },
+            { source = ';sird', target = 'sddでinitとrequirementsとdesignを実行して' },
+            { source = ';sd', target = '承認するからsddでdesignを実行して' },
+            { source = ';st', target = '承認するからsddでtasksを実行して' },
+            { source = ';si', target = '承認するからsddでimplを実行して' },
+            { source = ';hitl', target = '分からない事があったらhitl mcpで人に確認して' },
           },
         })
         table.insert(sources, 1, {
