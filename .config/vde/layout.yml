@@ -41,3 +41,23 @@ presets:
         - name: "coding agent"
           command: "codex --yolo"
           focus: true
+  three-parallel-ai:
+    name: three-parallel-ai
+    description: "zsh + 3ai"
+    layout:
+      type: horizontal
+      ratio: [25, 25, 25, 25]
+      panes:
+        - type: vertical
+          ratio: [70, 30]
+          panes:
+            - name: zsh
+            - name: editprompt
+              command: "editprompt open --target-pane {{pane_id:codex}} --target-pane {{pane_id:claude}} --target-pane {{pane_id:gemini}}"
+              focus: true
+        - name: codex
+          command: "codex --yolo"
+        - name: claude
+          command: "claude --dangerously-skip-permissions"
+        - name: gemini
+          command: "gemini --yolo"
