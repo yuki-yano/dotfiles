@@ -462,7 +462,7 @@ return {
   {
     'petertriho/nvim-scrollbar',
     dependencies = {
-      { 'lewis6991/gitsigns.nvim' },
+      -- { 'lewis6991/gitsigns.nvim' },
     },
     event = { 'BufRead' },
     config = function()
@@ -501,7 +501,7 @@ return {
       })
 
       require('scrollbar.handlers.search').setup()
-      require('scrollbar.handlers.gitsigns').setup()
+      -- require('scrollbar.handlers.gitsigns').setup()
     end,
   },
   {
