@@ -49,7 +49,7 @@ presets:
       ratio: [25, 25, 25, 25]
       panes:
         - type: vertical
-          ratio: [70, 30]
+          ratio: [75, 25]
           panes:
             - name: zsh
             - name: editprompt
