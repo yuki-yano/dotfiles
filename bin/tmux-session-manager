@@ -618,6 +618,13 @@ async function main(): Promise<void> {
       await openPopupIfNeeded(popup);
 
       const sessions = await collectSessions();
+      const inTmux = Boolean(Deno.env.get("TMUX"));
+
+      if (!inTmux && sessions.length === 0) {
+        await runCommand("tmux", ["new-session"], { inheritStdio: true });
+        return;
+      }
+
       const entries = buildEntries(sessions);
       const lines = await runFzf(entries, { forcePlain: popup });
       await handleSelection(lines);
