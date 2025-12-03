@@ -55,7 +55,11 @@ return {
     end,
   },
   { 'lambdalisue/suda.vim', cmd = { 'SudaRead', 'SudaWrite' } },
-  { 'lambdalisue/vim-manpager', cmd = { 'ASMANPAGER' } },
+  {
+    'lambdalisue/vim-manpager',
+    cond = false,
+    cmd = { 'ASMANPAGER' },
+  },
   {
     'thinca/vim-quickrun',
     dependencies = {

@@ -69,7 +69,6 @@ local lazy_setup_default_opts = {
       disabled_plugins = {
         'editorconfig',
         'gzip',
-        'man',
         'matchit',
         'matchparen',
         'netrwPlugin',

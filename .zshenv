@@ -22,8 +22,7 @@ export EDITOR=nvim
 export VISUAL=nvim
 alias vi=nvim
 
-# lambdalisue/vim-manpager
-export MANPAGER='nvim -c ASMANPAGER -'
+export MANPAGER="nvim +Man!"
 
 # Disable path_helper
 # show: http://qiita.com/t-takaai/items/8574ff312f2caa5177c2
