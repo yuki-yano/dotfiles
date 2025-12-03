@@ -73,5 +73,8 @@
     "type": "command",
     "command": "~/dotfiles/bin/cc-statusline.ts"
   },
+  "enabledPlugins": {
+    "frontend-design@claude-code-plugins": true
+  },
   "alwaysThinkingEnabled": true
 }
