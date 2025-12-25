@@ -134,27 +134,33 @@ vim.keymap.set({ 'n' }, 'sC', function()
   vim.notify('mdjanai execution failed: ' .. table.concat(output, '\n'), vim.log.levels.ERROR)
 end)
 
+local function paste_os_clipboard_in_insert()
+  local clipboard = ''
+
+  if vim.fn.executable('pbpaste') == 1 then
+    clipboard = vim.fn.system('pbpaste')
+    if vim.v.shell_error ~= 0 then
+      clipboard = ''
+    end
+  end
+
+  if clipboard == '' then
+    clipboard = vim.fn.getreg('+')
+  end
+
+  if clipboard ~= '' then
+    vim.api.nvim_paste(clipboard, true, -1)
+  end
+end
+
+vim.keymap.set({ 'i' }, '<C-v>', paste_os_clipboard_in_insert, { silent = true })
+
 -- <M-v> comes from tmux: Insert pastes OS clipboard; other modes recreate tmux vertical split
 vim.keymap.set({ 'n', 'v', 'i' }, '<M-v>', function()
   local mode = vim.fn.mode(1):sub(1, 1)
 
   if mode == 'i' then
-    local clipboard = ''
-
-    if vim.fn.executable('pbpaste') == 1 then
-      clipboard = vim.fn.system('pbpaste')
-      if vim.v.shell_error ~= 0 then
-        clipboard = ''
-      end
-    end
-
-    if clipboard == '' then
-      clipboard = vim.fn.getreg('+')
-    end
-
-    if clipboard ~= '' then
-      vim.api.nvim_paste(clipboard, true, -1)
-    end
+    paste_os_clipboard_in_insert()
     return
   end
 
