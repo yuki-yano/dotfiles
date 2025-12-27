@@ -108,8 +108,9 @@ return {
 
           vim.api.nvim_win_set_hl_ns(0, ns)
           vim.api.nvim_set_hl(ns, 'CursorLine', {
-            fg = color.base().black,
-            bg = color.base().blue,
+            fg = 'NONE',
+            bg = color.base().visual,
+            blend = 15,
           })
 
           vim.fn['glyph_palette#apply']()
@@ -121,8 +122,9 @@ return {
         callback = function()
           vim.api.nvim_win_set_hl_ns(0, ns)
           vim.api.nvim_set_hl(ns, 'CursorLine', {
-            fg = color.base().black,
-            bg = color.base().blue,
+            fg = 'NONE',
+            bg = color.base().visual,
+            blend = 15,
           })
         end,
       })

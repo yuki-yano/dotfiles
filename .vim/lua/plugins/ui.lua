@@ -430,24 +430,24 @@ return {
     'mvllow/modes.nvim',
     event = { 'ModeChanged' },
     config = function()
-      local is_catppuccin = vim.env.NVIM_COLORSCHEME == 'catppuccin'
       local opts = {}
+      local base = color.base()
 
-      if is_catppuccin then
-        local base = color.base()
+      opts.colors = {
+        bg = base.background,
+        copy = base.yellow,
+        delete = base.red,
+        change = base.orange,
+        format = base.cyan,
+        insert = base.green,
+        replace = base.blue,
+        select = base.magenta,
+        visual = base.purple,
+      }
 
-        opts.colors = {
-          bg = base.background,
-          copy = base.yellow,
-          delete = base.red,
-          change = base.orange,
-          format = base.cyan,
-          insert = base.green,
-          replace = base.blue,
-          select = base.magenta,
-          visual = base.purple,
-        }
-      end
+      opts.ignore = {
+        '!fern',
+      }
 
       require('modes').setup(opts)
     end,
