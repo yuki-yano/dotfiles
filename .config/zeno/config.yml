@@ -6,7 +6,6 @@ snippets:
     keyword: zps
     snippet: zeno-preprompt-snippet
 
-
   - name: git status
     keyword: gs
     snippet: git status --short --branch
