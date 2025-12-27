@@ -1,6 +1,7 @@
 local color = require('rc.modules.color')
 local is_editprompt = require('rc.setup.quick_ime').is_editprompt
 local is_ime = require('rc.setup.quick_ime').is_ime
+local dedent = require('rc.modules.utils').dedent
 
 return {
   { 'farmergreg/vim-lastplace', event = { 'BufReadPre' } },
@@ -835,11 +836,11 @@ return {
             return {
               system = 'You are a professional translator who outputs fluent Japanese.',
               prompt = string.format(
-                [[Please translate the following text into natural Japanese.
+                dedent([[
+                  Please translate the following text into natural Japanese.
 
-%s
-
-            ]],
+                  %s
+                ]]),
                 text
               ),
             }
