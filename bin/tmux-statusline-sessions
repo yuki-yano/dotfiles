@@ -3,19 +3,22 @@
 current_session=$(tmux display-message -p '#S' 2>/dev/null)
 
 output="#[fg=#A5A1F2,bg=#352F63,nobold]"
+session_list_format=$(printf '#{session_id}\t#{session_name}')
 
-while IFS= read -r session; do
-  if [ -z "$session" ]; then
+while IFS=$'\t' read -r session_id session_name; do
+  if [ -z "$session_name" ]; then
     continue
   fi
 
   output+=" "
+  output+="#[range=session|${session_id}]"
 
-  if [ "$session" = "$current_session" ]; then
-    output+="#[fg=#B4BEFE,bg=#352F63,nobold]#[fg=#1E1E2E,bg=#B4BEFE,bold] ${session} #[fg=#B4BEFE,bg=#352F63,nobold]#[fg=#A5A1F2,bg=#352F63,nobold]"
+  if [ "$session_name" = "$current_session" ]; then
+    output+="#[fg=#B4BEFE,bg=#352F63,nobold]#[fg=#1E1E2E,bg=#B4BEFE,bold] ${session_name} #[fg=#B4BEFE,bg=#352F63,nobold]#[fg=#A5A1F2,bg=#352F63,nobold]"
   else
-    output+="#[fg=#C6D0F5,bg=#352F63,nobold] ${session} #[fg=#A5A1F2,bg=#352F63,nobold]"
+    output+="#[fg=#C6D0F5,bg=#352F63,nobold] ${session_name} #[fg=#A5A1F2,bg=#352F63,nobold]"
   fi
-done < <(tmux list-sessions -F '#{session_name}')
+  output+="#[norange]"
+done < <(tmux list-sessions -F "$session_list_format")
 
 printf '%s' "$output"
