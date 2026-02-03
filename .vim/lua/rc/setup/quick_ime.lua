@@ -59,6 +59,84 @@ local function set_clipboard(text)
   vim.fn.system('pbcopy', text)
 end
 
+local function normalize_positions(start_pos, end_pos)
+  local start_row = start_pos[2] - 1
+  local start_col = start_pos[3] - 1
+  local end_row = end_pos[2] - 1
+  local end_col = end_pos[3] - 1
+  if start_row > end_row or (start_row == end_row and start_col > end_col) then
+    start_row, end_row = end_row, start_row
+    start_col, end_col = end_col, start_col
+  end
+  return start_row, start_col, end_row, end_col
+end
+
+local function get_visual_selection(bufnr, mode, start_pos, end_pos)
+  start_pos = start_pos or vim.fn.getpos("'<")
+  end_pos = end_pos or vim.fn.getpos("'>")
+  local start_row, start_col, end_row, end_col = normalize_positions(start_pos, end_pos)
+
+  if mode == 'V' then
+    local lines = vim.api.nvim_buf_get_lines(bufnr, start_row, end_row + 1, false)
+    local text = table.concat(lines, '\n')
+    local function delete()
+      vim.api.nvim_buf_set_lines(bufnr, start_row, end_row + 1, false, {})
+    end
+    return { text = text, delete = delete, start_row = start_row, start_col = 0 }
+  elseif mode == '\022' then
+    local lines = vim.api.nvim_buf_get_lines(bufnr, start_row, end_row + 1, false)
+    local block_start_col = math.min(start_col, end_col)
+    local block_end_col = math.max(start_col, end_col)
+    local parts = {}
+    for i, line in ipairs(lines) do
+      parts[i] = line:sub(block_start_col + 1, block_end_col + 1)
+    end
+    local text = table.concat(parts, '\n')
+    local function delete()
+      for row = start_row, end_row do
+        local line = vim.api.nvim_buf_get_lines(bufnr, row, row + 1, false)[1] or ''
+        local line_len = #line
+        if block_start_col < line_len then
+          local end_col_excl = math.min(block_end_col + 1, line_len)
+          vim.api.nvim_buf_set_text(bufnr, row, block_start_col, row, end_col_excl, { '' })
+        end
+      end
+    end
+    return { text = text, delete = delete, start_row = start_row, start_col = block_start_col }
+  else
+    local lines = vim.api.nvim_buf_get_text(bufnr, start_row, start_col, end_row, end_col + 1, {})
+    local text = table.concat(lines, '\n')
+    local function delete()
+      local end_line = vim.api.nvim_buf_get_lines(bufnr, end_row, end_row + 1, false)[1] or ''
+      local end_col_excl = math.min(end_col + 1, #end_line)
+      vim.api.nvim_buf_set_text(bufnr, start_row, start_col, end_row, end_col_excl, { '' })
+    end
+    return { text = text, delete = delete, start_row = start_row, start_col = start_col }
+  end
+end
+
+local function clamp_cursor(bufnr, row, col)
+  local line_count = vim.api.nvim_buf_line_count(bufnr)
+  if line_count < 1 then
+    return 1, 0
+  end
+  row = math.max(1, math.min(row, line_count))
+  local line = vim.api.nvim_buf_get_lines(bufnr, row - 1, row, false)[1] or ''
+  local max_col = #line
+  if col < 0 then
+    col = 0
+  elseif col > max_col then
+    col = max_col
+  end
+  return row, col
+end
+
+local function exit_to_normal()
+  vim.cmd('stopinsert')
+  local esc = vim.api.nvim_replace_termcodes('<Esc>', true, false, true)
+  vim.api.nvim_feedkeys(esc, 'nx', false)
+end
+
 local function send_editprompt()
   local bufnr = (M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr)) and M.bufnr or vim.api.nvim_get_current_buf()
   local text = get_buffer_text(bufnr)
@@ -76,7 +154,6 @@ local function send_editprompt()
     require('cmp').confirm({ select = true })
   end)
 
-  vim.cmd('startinsert')
   vim.system({ 'editprompt', 'input', '--auto-send', '--', content }, { text = true }, function(obj)
     vim.schedule(function()
       if obj.code == 0 then
@@ -85,6 +162,49 @@ local function send_editprompt()
         if win ~= -1 then
           vim.api.nvim_win_set_cursor(win, { 1, 0 }) -- Move cursor back to buffer start
         end
+      else
+        vim.notify('editprompt failed: ' .. (obj.stderr or 'unknown error'), vim.log.levels.ERROR)
+      end
+    end)
+  end)
+end
+
+local function send_editprompt_visual()
+  local bufnr = (M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr)) and M.bufnr or vim.api.nvim_get_current_buf()
+  local mode = vim.fn.mode()
+  local start_pos = vim.fn.getpos('v')
+  local end_pos = vim.fn.getpos('.')
+  exit_to_normal()
+  local selection = get_visual_selection(bufnr, mode, start_pos, end_pos)
+  if not selection or selection.text == '' then
+    return
+  end
+
+  local content = ''
+  local text = selection.text
+  if text ~= '' then
+    local lines = vim.split(text, '\n', { plain = true })
+    content = table.concat(lines, '\n')
+    if content ~= '' and not content:find('\n$') then
+      content = content .. '\n'
+    end
+    set_clipboard(text)
+  end
+
+  pcall(function()
+    require('cmp').confirm({ select = true })
+  end)
+
+  vim.system({ 'editprompt', 'input', '--auto-send', '--', content }, { text = true }, function(obj)
+    vim.schedule(function()
+      if obj.code == 0 then
+        selection.delete()
+        local win = vim.fn.bufwinid(bufnr)
+        if win ~= -1 then
+          local row, col = clamp_cursor(bufnr, selection.start_row + 1, selection.start_col)
+          vim.api.nvim_win_set_cursor(win, { row, col })
+        end
+        exit_to_normal()
       else
         vim.notify('editprompt failed: ' .. (obj.stderr or 'unknown error'), vim.log.levels.ERROR)
       end
@@ -199,6 +319,7 @@ if M.is_editprompt() then
   vim.keymap.set({ 'n' }, 'q', send_editprompt, { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n' }, '<CR>', send_editprompt, { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n', 'i' }, '<C-c>', send_editprompt, { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'x' }, '<C-c>', send_editprompt_visual, { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n' }, 'ZZ', send_editprompt, { silent = true, buffer = true, nowait = true })
 
   local function is_buffer_empty(bufnr)
