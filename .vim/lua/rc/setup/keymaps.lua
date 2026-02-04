@@ -153,6 +153,34 @@ local function paste_os_clipboard_in_insert()
   end
 end
 
+local function sync_clipboard_from_unnamed()
+  local regtype = vim.fn.getregtype('"')
+  local regcontents = vim.fn.getreg('"', 1, true)
+  if type(regcontents) ~= 'table' then
+    regcontents = { regcontents }
+  end
+  local text = table.concat(regcontents, '\n')
+  if regtype == 'V' and text ~= '' and not text:find('\n$') then
+    text = text .. '\n'
+  end
+
+  if vim.fn.executable('pbcopy') == 1 then
+    vim.fn.system('pbcopy', text)
+    return
+  end
+
+  if text ~= '' then
+    vim.fn.setreg('+', text, regtype)
+  end
+end
+
+local function cut_visual_to_clipboard_and_insert()
+  vim.cmd('normal! y')
+  sync_clipboard_from_unnamed()
+  vim.cmd('normal! gv"_d')
+  vim.cmd('startinsert')
+end
+
 vim.keymap.set({ 'i' }, '<C-v>', paste_os_clipboard_in_insert, { silent = true })
 
 -- <M-v> comes from tmux: Insert pastes OS clipboard; other modes recreate tmux vertical split
@@ -168,6 +196,11 @@ vim.keymap.set({ 'n', 'v', 'i' }, '<M-v>', function()
     vim.fn.system({ 'tmux', 'split-window', '-h', '-c', vim.fn.getcwd() })
   end
 end, { silent = true, desc = 'Insert: paste clipboard; other: tmux vertical split' })
+
+-- <M-c> comes from tmux: Visual yanks to OS clipboard; Normal does nothing
+vim.keymap.set({ 'n' }, '<M-c>', '<Nop>', { silent = true })
+vim.keymap.set({ 'i' }, '<M-c>', '<Nop>', { silent = true })
+vim.keymap.set({ 'x' }, '<M-c>', cut_visual_to_clipboard_and_insert, { silent = true })
 
 vim.keymap.set({ 'n', 'x' }, 'sp', function()
   local regtype = vim.fn.getregtype('+')
