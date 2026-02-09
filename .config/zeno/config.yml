@@ -116,11 +116,6 @@ snippets:
     keyword: t
     snippet: tmux-session-manager
 
-  - name: tmux session killer
-    keyword: tk
-    snippet: tmux-session-manager --kill
-
-
   - name: "null"
     keyword: "null"
     snippet: ">/dev/null 2>&1"
@@ -158,6 +153,9 @@ snippets:
     keyword: c
     snippet: git quick-save "{{message}}"
 
+  - name: n to ni
+    keyword: n
+    snippet: ni
   - name: nr to ni run
     keyword: nr
     snippet: ni run
@@ -183,6 +181,9 @@ snippets:
   - name: claude
     keyword: cc
     snippet: claude --dangerously-skip-permissions
+  - name: opencode
+    keyword: oc
+    snippet: opencode
 
   - name: codex oneline
     keyword: '?'
