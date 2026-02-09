@@ -1,0 +1,87 @@
+{
+  "bind": "127.0.0.1",
+  "port": 11080,
+  "attachOnServe": true,
+  "allowedOrigins": [],
+  "rateLimit": {
+    "send": {
+      "windowMs": 1000,
+      "max": 10
+    },
+    "screen": {
+      "windowMs": 1000,
+      "max": 10
+    },
+    "raw": {
+      "windowMs": 1000,
+      "max": 200
+    }
+  },
+  "dangerKeys": [
+    "C-c",
+    "C-d",
+    "C-z",
+    "C-\\",
+    "F12"
+  ],
+  "dangerCommandPatterns": [
+    "rm\\s+(-rf?|--recursive)",
+    "sudo\\s+rm",
+    "mkfs",
+    "dd\\s+if=",
+    ">\\s*/dev/",
+    "chmod\\s+777",
+    "curl.*\\|\\s*(ba)?sh",
+    "wget.*\\|\\s*(ba)?sh"
+  ],
+  "activity": {
+    "pollIntervalMs": 1000,
+    "runningThresholdMs": 15000,
+    "inactiveThresholdMs": 60000
+  },
+  "hooks": {
+    "ttyCacheTtlMs": 60000,
+    "ttyCacheMax": 200
+  },
+  "input": {
+    "maxTextLength": 2000,
+    "enterKey": "C-m",
+    "enterDelayMs": 100
+  },
+  "screen": {
+    "mode": "text",
+    "defaultLines": 2000,
+    "maxLines": 2000,
+    "joinLines": false,
+    "ansi": true,
+    "altScreen": "auto",
+    "highlightCorrection": {
+      "codex": true,
+      "claude": true
+    },
+    "image": {
+      "enabled": true,
+      "backend": "alacritty",
+      "format": "png",
+      "cropPane": true,
+      "timeoutMs": 5000
+    }
+  },
+  "logs": {
+    "maxPaneLogBytes": 2000000,
+    "maxEventLogBytes": 2000000,
+    "retainRotations": 5
+  },
+  "multiplexer": {
+    "backend": "tmux",
+    "wezterm": {
+      "cliPath": "wezterm",
+      "target": "auto"
+    }
+  },
+  "tmux": {
+    "socketName": null,
+    "socketPath": null,
+    "primaryClient": null
+  }
+}
