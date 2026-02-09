@@ -24,6 +24,8 @@ type SessionInfo = {
   totalWindows: number;
   totalPanes: number;
   isCurrent: boolean;
+  attachedClients: number;
+  lastActivity: number;
 };
 
 type Entry = {
@@ -41,6 +43,374 @@ type PaneInfo = {
   id: string;
   pid: string;
 };
+
+type PreviewSessionInfo = {
+  name: string;
+  attached: number;
+  windows: number;
+  created: number;
+  activity: number;
+};
+
+type PreviewPaneInfo = {
+  index: string;
+  command: string;
+  width: number;
+  height: number;
+  active: boolean;
+};
+
+const DEFAULT_PREVIEW_WIDTH = "65";
+const DEFAULT_PREVIEW_REFRESH_MS = 0;
+const DEFAULT_SESSION_CAPTURE_LINES = 15;
+const DEFAULT_PANE_CAPTURE_LINES = 16;
+const DEFAULT_FZF_BORDER = "rounded";
+
+const SYMBOLS = {
+  sessionCurrent: "●",
+  sessionAttached: "○",
+  sessionDetached: "·",
+  activityActive: "*",
+  activityIdle: "·",
+  active: "▸",
+  inactive: "·",
+  server: "✖",
+} as const;
+
+export function normalizeRefreshMs(value: string | number | null | undefined): number {
+  if (typeof value === "number") {
+    if (Number.isFinite(value) && value >= 0) {
+      return Math.floor(value);
+    }
+    return 0;
+  }
+  if (!value) {
+    return 0;
+  }
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return 0;
+  }
+  return parsed;
+}
+
+export function buildPreviewWindowOption(widthValue: string): string {
+  const normalized = widthValue.trim();
+  if (/^\d+$/.test(normalized)) {
+    return `right:${normalized}%:border-left`;
+  }
+  if (/^\d+%$/.test(normalized)) {
+    return `right:${normalized}:border-left`;
+  }
+  return `right:${DEFAULT_PREVIEW_WIDTH}%:border-left`;
+}
+
+export function splitWindowTarget(target: string): { sessionName: string; windowIndex: string } | null {
+  const sep = target.lastIndexOf(":");
+  if (sep <= 0 || sep >= target.length - 1) {
+    return null;
+  }
+  return {
+    sessionName: target.slice(0, sep),
+    windowIndex: target.slice(sep + 1),
+  };
+}
+
+export function computeSessionCaptureLines(
+  previewLines: number | null | undefined,
+  windowCount: number,
+  fallback = DEFAULT_SESSION_CAPTURE_LINES,
+): number {
+  const safeWindowCount = Math.max(0, Math.floor(windowCount));
+  const safePreviewLines = previewLines && Number.isFinite(previewLines) ? Math.floor(previewLines) : 0;
+  const staticLines = 11;
+  const dynamicLines = 1 + safeWindowCount + 1;
+  const margin = staticLines + dynamicLines;
+  if (safePreviewLines > margin + 3) {
+    return safePreviewLines - margin;
+  }
+  return fallback;
+}
+
+export function computePerPaneCaptureLines(
+  previewLines: number | null | undefined,
+  paneCount: number,
+  fallback = DEFAULT_PANE_CAPTURE_LINES,
+): number {
+  const safePaneCount = Math.max(1, Math.floor(paneCount));
+  const safePreviewLines = previewLines && Number.isFinite(previewLines) ? Math.floor(previewLines) : 0;
+  const headerLines = 4;
+  const listLines = 1 + safePaneCount + 1;
+  const staticLines = headerLines + listLines;
+
+  if (safePreviewLines > 0) {
+    const available = safePreviewLines - staticLines;
+    if (available > (2 * safePaneCount + 1)) {
+      const computed = Math.floor(available / safePaneCount) - 2;
+      return Math.max(fallback, computed, 3);
+    }
+  }
+
+  return fallback;
+}
+
+function readPreviewLines(): number | null {
+  const raw = Deno.env.get("FZF_PREVIEW_LINES");
+  if (!raw) {
+    return null;
+  }
+  const parsed = Number.parseInt(raw, 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return null;
+  }
+  return parsed;
+}
+
+function readPreviewColumns(): number | null {
+  const raw = Deno.env.get("FZF_PREVIEW_COLUMNS");
+  if (!raw) {
+    return null;
+  }
+  const parsed = Number.parseInt(raw, 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return null;
+  }
+  return parsed;
+}
+
+function visibleLength(text: string): number {
+  return Array.from(stripAnsi(text)).length;
+}
+
+export function truncateAnsiText(text: string, max: number): string {
+  if (max <= 0) {
+    return "";
+  }
+
+  if (visibleLength(text) <= max) {
+    return text;
+  }
+
+  if (max === 1) {
+    return "…";
+  }
+
+  const target = max - 1;
+  const ansiPattern = /\x1b\[[0-9;]*m/g;
+  let result = "";
+  let visible = 0;
+  let lastIndex = 0;
+
+  for (const match of text.matchAll(ansiPattern)) {
+    const index = match.index ?? 0;
+    const plainChunk = text.slice(lastIndex, index);
+    const plainChars = Array.from(plainChunk);
+
+    for (const char of plainChars) {
+      if (visible >= target) {
+        result += "…";
+        if (/\x1b\[[0-9;]*m/.test(result) && !result.endsWith("\x1b[0m")) {
+          result += "\x1b[0m";
+        }
+        return result;
+      }
+      result += char;
+      visible += 1;
+    }
+
+    result += match[0];
+    lastIndex = index + match[0].length;
+  }
+
+  const rest = text.slice(lastIndex);
+  for (const char of Array.from(rest)) {
+    if (visible >= target) {
+      result += "…";
+      if (/\x1b\[[0-9;]*m/.test(result) && !result.endsWith("\x1b[0m")) {
+        result += "\x1b[0m";
+      }
+      return result;
+    }
+    result += char;
+    visible += 1;
+  }
+
+  result += "…";
+  if (/\x1b\[[0-9;]*m/.test(result) && !result.endsWith("\x1b[0m")) {
+    result += "\x1b[0m";
+  }
+  return result;
+}
+
+function padAnsiRight(text: string, width: number): string {
+  const len = visibleLength(text);
+  if (len >= width) {
+    return text;
+  }
+  return text + " ".repeat(width - len);
+}
+
+function fitPreviewLine(line: string, padding = 3): string {
+  const columns = readPreviewColumns();
+  if (!columns) {
+    return line;
+  }
+  const maxWidth = Math.max(20, columns - padding);
+  return truncateAnsiText(line, maxWidth);
+}
+
+function shellEscape(value: string): string {
+  return `'${value.replaceAll("'", `'\\''`)}'`;
+}
+
+function parseIntSafe(raw: string | undefined, fallback = 0): number {
+  const parsed = Number.parseInt(raw ?? "", 10);
+  if (Number.isFinite(parsed)) {
+    return parsed;
+  }
+  return fallback;
+}
+
+function formatAgoFromEpoch(epochSeconds: number): string {
+  if (!Number.isFinite(epochSeconds) || epochSeconds <= 0) {
+    return "unknown";
+  }
+
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const delta = Math.max(0, nowSeconds - epochSeconds);
+
+  if (delta < 60) {
+    return `${delta}s ago`;
+  }
+  if (delta < 3600) {
+    return `${Math.floor(delta / 60)}m ago`;
+  }
+  if (delta < 86_400) {
+    return `${Math.floor(delta / 3600)}h ago`;
+  }
+  return `${Math.floor(delta / 86_400)}d ago`;
+}
+
+function getPaneIcon(command: string): string {
+  switch (command) {
+    case "vim":
+    case "nvim":
+      return "V";
+    case "bash":
+    case "zsh":
+    case "fish":
+      return "S";
+    case "ssh":
+      return "K";
+    default:
+      return "C";
+  }
+}
+
+function stripAnsi(text: string): string {
+  return text.replace(/\x1b\[[0-9;]*m/g, "");
+}
+
+function truncateText(text: string, max: number): string {
+  const chars = Array.from(text);
+  if (chars.length <= max) {
+    return text;
+  }
+  if (max <= 1) {
+    return "…";
+  }
+  return `${chars.slice(0, max - 1).join("")}…`;
+}
+
+function padVisible(text: string, width: number): string {
+  const current = Array.from(stripAnsi(text)).length;
+  if (current >= width) {
+    return truncateText(text, width);
+  }
+  return text + " ".repeat(width - current);
+}
+
+function renderHeaderBox(title: string, width = 60): string[] {
+  const safeTitle = padVisible(` ${truncateText(title, width - 2)} `, width);
+  return [
+    colors.magenta(`╔${"═".repeat(width)}╗`),
+    `${colors.magenta("║")}${colors.bold(colors.cyan(safeTitle))}${colors.magenta("║")}`,
+    colors.magenta(`╚${"═".repeat(width)}╝`),
+  ];
+}
+
+function renderInfoBlock(rows: Array<{ label: string; value: string }>, title = "Info"): string[] {
+  const lines = [colors.bold(colors.blue(`┌─ ${title}`))];
+  if (rows.length === 0) {
+    lines.push(`${colors.blue("└─")} ${colors.dim("(none)")}`);
+    return lines;
+  }
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const branch = i === rows.length - 1 ? "└─" : "├─";
+    lines.push(`${colors.blue(branch)} ${colors.dim(row.label.padEnd(14))} ${row.value}`);
+  }
+
+  return lines;
+}
+
+function renderPanePreviewBlock(
+  title: string,
+  paneLines: string[],
+  emptyLabel: string,
+): string[] {
+  const columns = readPreviewColumns();
+  const innerWidth = columns ? Math.max(24, columns - 2) : 76;
+  const normalizedTitle = padVisible(` ${truncateText(stripAnsi(title), innerWidth - 2)} `, innerWidth);
+  const body = paneLines.length > 0 ? paneLines : [emptyLabel];
+
+  const lines: string[] = [];
+  lines.push(colors.blue(`┌${"─".repeat(innerWidth)}┐`));
+  lines.push(`${colors.blue("│")}${colors.bold(colors.cyan(normalizedTitle))}${colors.blue("│")}`);
+  lines.push(colors.blue(`├${"─".repeat(innerWidth)}┤`));
+  for (const line of body) {
+    const content = padAnsiRight(truncateAnsiText(line, innerWidth), innerWidth);
+    lines.push(`${colors.blue("│")}${content}${colors.blue("│")}`);
+  }
+  lines.push(colors.blue(`└${"─".repeat(innerWidth)}┘`));
+  return lines;
+}
+
+function getSessionStateSymbol(session: SessionInfo): string {
+  if (session.isCurrent) {
+    return colors.green(SYMBOLS.sessionCurrent);
+  }
+  if (session.attachedClients > 0) {
+    return colors.yellow(SYMBOLS.sessionAttached);
+  }
+  return colors.dim(SYMBOLS.sessionDetached);
+}
+
+function getActivityBadge(lastActivity: number): string {
+  if (!Number.isFinite(lastActivity) || lastActivity <= 0) {
+    return colors.dim(SYMBOLS.activityIdle);
+  }
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const delta = Math.max(0, nowSeconds - lastActivity);
+  if (delta <= 3600) {
+    return colors.yellow(SYMBOLS.activityActive);
+  }
+  return colors.dim(SYMBOLS.activityIdle);
+}
+
+function buildFzfBorderOption(style: string): string {
+  const normalized = style.trim().toLowerCase();
+  if (["", "none", "0", "false", "off"].includes(normalized)) {
+    return "--border=none";
+  }
+  return `--border=${style.trim()}`;
+}
+
+async function getTmuxOption(name: string, fallback: string): Promise<string> {
+  const value = (await runCommand("tmux", ["show-option", "-gqv", `@${name}`], { allowFail: true })).trim();
+  return value.length > 0 ? value : fallback;
+}
 
 async function runCommand(
   cmd: string,
@@ -82,6 +452,39 @@ async function commandExists(cmd: string): Promise<boolean> {
 
 const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
+async function collectWindowsForSession(name: string): Promise<WindowInfo[]> {
+  const windowOutput = await runCommand("tmux", [
+    "list-windows",
+    "-t",
+    `${name}:`,
+    "-F",
+    "#{window_index}\t#{window_panes}\t#{window_active}\t#{window_name}\t#{pane_current_command}",
+  ], { allowFail: true });
+
+  const lines = windowOutput
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+
+  const windows: WindowInfo[] = [];
+  for (const line of lines) {
+    const [index, panesStr, activeStr, rawName, rawCommand] = line.split("\t");
+    if (!index) {
+      continue;
+    }
+
+    windows.push({
+      index,
+      name: rawName ? decodeTmuxString(rawName) : "(unnamed)",
+      panes: parseIntSafe(panesStr, 0),
+      active: activeStr === "1",
+      command: decodeTmuxString(rawCommand ?? "").trim(),
+    });
+  }
+
+  return windows;
+}
+
 async function collectSessions(): Promise<SessionInfo[]> {
   const inTmux = Boolean(Deno.env.get("TMUX"));
   const currentSession = inTmux
@@ -95,65 +498,121 @@ async function collectSessions(): Promise<SessionInfo[]> {
   const sessionsRaw = await runCommand("tmux", [
     "list-sessions",
     "-F",
-    "#{session_name}",
+    "#{session_name}\t#{session_attached}\t#{session_activity}",
   ], { allowFail: true });
 
-  const sessionNames = sessionsRaw
+  const sessionMetas = sessionsRaw
     .split(/\r?\n/)
-    .map((name) => name.trim())
-    .filter((name) => name.length > 0);
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .map((line) => {
+      const [name, attached, activity] = line.split("\t");
+      return {
+        name: (name ?? "").trim(),
+        attachedClients: parseIntSafe(attached, 0),
+        lastActivity: parseIntSafe(activity, 0),
+      };
+    })
+    .filter((meta) => meta.name.length > 0);
 
   const sessions: SessionInfo[] = [];
-
-  for (const name of sessionNames) {
-    const windowOutput = await runCommand("tmux", [
-      "list-windows",
-      "-t",
-      `${name}:`,
-      "-F",
-      "#{window_index}\t#{window_panes}\t#{window_active}\t#{window_name}\t#{pane_current_command}",
-    ], { allowFail: true });
-
-    const windows: WindowInfo[] = [];
-    let paneTotal = 0;
-
-    const lines = windowOutput
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
-
-    for (const line of lines) {
-      const [
-        index,
-        panesStr,
-        activeStr,
-        b64Name,
-        b64Command,
-      ] = line.split("\t");
-      if (!index) continue;
-      const panes = Number.parseInt(panesStr ?? "0", 10) || 0;
-      paneTotal += panes;
-      const nameDecoded = b64Name ?? "";
-      const commandDecoded = b64Command ?? "";
-      windows.push({
-        index,
-        name: nameDecoded.length > 0 ? decodeTmuxString(nameDecoded) : "(unnamed)",
-        panes,
-        active: activeStr === "1",
-        command: decodeTmuxString(commandDecoded).trim(),
-      });
-    }
-
+  for (const meta of sessionMetas) {
+    const windows = await collectWindowsForSession(meta.name);
+    const paneTotal = windows.reduce((sum, window) => sum + window.panes, 0);
     sessions.push({
-      name,
+      name: meta.name,
       windows,
       totalWindows: windows.length,
       totalPanes: paneTotal,
-      isCurrent: inTmux && name === currentSession,
+      isCurrent: inTmux && meta.name === currentSession,
+      attachedClients: meta.attachedClients,
+      lastActivity: meta.lastActivity,
     });
   }
 
   return sessions;
+}
+
+async function collectPreviewSessionInfo(sessionName: string): Promise<PreviewSessionInfo | null> {
+  const raw = await runCommand("tmux", [
+    "list-sessions",
+    "-F",
+    "#{session_name}\t#{session_attached}\t#{session_windows}\t#{session_created}\t#{session_activity}",
+  ], { allowFail: true });
+
+  const lines = raw
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+
+  for (const line of lines) {
+    const [name, attached, windows, created, activity] = line.split("\t");
+    if (name !== sessionName) {
+      continue;
+    }
+
+    return {
+      name,
+      attached: parseIntSafe(attached, 0),
+      windows: parseIntSafe(windows, 0),
+      created: parseIntSafe(created, 0),
+      activity: parseIntSafe(activity, 0),
+    };
+  }
+
+  return null;
+}
+
+async function collectPreviewPanes(sessionName: string, windowIndex: string): Promise<PreviewPaneInfo[]> {
+  const raw = await runCommand("tmux", [
+    "list-panes",
+    "-t",
+    `${sessionName}:${windowIndex}`,
+    "-F",
+    "#{pane_index}\t#{pane_current_command}\t#{pane_width}\t#{pane_height}\t#{pane_active}",
+  ], { allowFail: true });
+
+  return raw
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .map((line) => {
+      const [index, command, width, height, active] = line.split("\t");
+      return {
+        index: index ?? "",
+        command: (command ?? "").trim(),
+        width: parseIntSafe(width, 0),
+        height: parseIntSafe(height, 0),
+        active: active === "1",
+      };
+    })
+    .filter((pane) => pane.index.length > 0);
+}
+
+async function capturePaneTail(target: string, tailLines: number): Promise<string[]> {
+  if (tailLines <= 0) {
+    return [];
+  }
+
+  const raw = await runCommand("tmux", [
+    "capture-pane",
+    "-t",
+    target,
+    "-J",
+    "-N",
+    "-e",
+    "-p",
+  ], { allowFail: true });
+
+  if (!raw) {
+    return [];
+  }
+
+  const lines = raw.replace(/\r/g, "").split("\n");
+  while (lines.length > 0 && lines[lines.length - 1] === "") {
+    lines.pop();
+  }
+  return lines.slice(-tailLines);
 }
 
 async function collectPaneInfo(target: string, recursive: boolean): Promise<PaneInfo[]> {
@@ -202,9 +661,9 @@ async function cleanKillTarget(options: CleanKillOptions): Promise<void> {
   const panesToSignal = panes.filter((pane) => pane.id !== currentPane);
 
   if (panesToSignal.length > 0) {
-    await Promise.all(panesToSignal.map((pane) =>
-      runCommand("tmux", ["send-keys", "-t", pane.id, "C-c"], { allowFail: true })
-    ));
+    await Promise.all(
+      panesToSignal.map((pane) => runCommand("tmux", ["send-keys", "-t", pane.id, "C-c"], { allowFail: true })),
+    );
   }
 
   if (panesToSignal.length > 0) {
@@ -229,9 +688,7 @@ async function cleanKillTarget(options: CleanKillOptions): Promise<void> {
   }
 
   if (pgids.size > 0) {
-    await Promise.all(Array.from(pgids).map((pgid) =>
-      runCommand("kill", ["-TERM", `-${pgid}`], { allowFail: true })
-    ));
+    await Promise.all(Array.from(pgids).map((pgid) => runCommand("kill", ["-TERM", `-${pgid}`], { allowFail: true })));
   }
 
   if (pgids.size > 0) {
@@ -239,12 +696,14 @@ async function cleanKillTarget(options: CleanKillOptions): Promise<void> {
   }
 
   if (pgids.size > 0) {
-    await Promise.all(Array.from(pgids).map(async (pgid) => {
-      const stillRunning = (await runCommand("ps", ["-o", "pid=", "-g", pgid], { allowFail: true })).trim();
-      if (stillRunning) {
-        await runCommand("kill", ["-KILL", `-${pgid}`], { allowFail: true });
-      }
-    }));
+    await Promise.all(
+      Array.from(pgids).map(async (pgid) => {
+        const stillRunning = (await runCommand("ps", ["-o", "pid=", "-g", pgid], { allowFail: true })).trim();
+        if (stillRunning) {
+          await runCommand("kill", ["-KILL", `-${pgid}`], { allowFail: true });
+        }
+      }),
+    );
   }
 
   await runCommand(options.finalCommand.cmd, options.finalCommand.args, { allowFail: true });
@@ -331,18 +790,22 @@ function decodeTmuxString(value: string): string {
   // tmux can encode special characters, decode common sequences.
   if (!value) return "";
   return value
-    .replace(/\\x([0-9a-fA-F]{2})/g, (_, hex) =>
-      String.fromCharCode(Number.parseInt(hex, 16))
-    )
-    .replace(/\\([0-7]{1,3})/g, (_, oct) =>
-      String.fromCharCode(Number.parseInt(oct, 8))
-    )
+    .replace(/\\x([0-9a-fA-F]{2})/g, (_, hex) => String.fromCharCode(Number.parseInt(hex, 16)))
+    .replace(/\\([0-7]{1,3})/g, (_, oct) => String.fromCharCode(Number.parseInt(oct, 8)))
     .replace(/\\\\/g, "\\");
 }
 
 function formatSessionDisplay(session: SessionInfo): string {
-  const marker = session.isCurrent ? colors.green("*") : " ";
-  return `${marker} ${colors.bold(session.name)}  ${colors.dim("|")} ${colors.dim("windows")} ${colors.cyan(String(session.totalWindows))}  ${colors.dim("|")} ${colors.dim("panes")} ${colors.cyan(String(session.totalPanes))}`;
+  const state = getSessionStateSymbol(session);
+  const activity = getActivityBadge(session.lastActivity);
+  const attached = session.attachedClients > 0
+    ? colors.yellow(`attached:${session.attachedClients}`)
+    : colors.dim("detached");
+  return `${state} ${activity} ${colors.bold(session.name)}  ${colors.dim("|")} ${colors.dim("win")} ${
+    colors.cyan(String(session.totalWindows))
+  }  ${colors.dim("|")} ${colors.dim("pane")} ${colors.cyan(String(session.totalPanes))}  ${
+    colors.dim("|")
+  } ${attached}`;
 }
 
 function formatWindowDisplay(
@@ -351,9 +814,13 @@ function formatWindowDisplay(
   isLast: boolean,
 ): string {
   const branch = isLast ? "  └─" : "  ├─";
-  const marker = window.active ? colors.green("*") : " ";
-  const commandLabel = window.command ? `  ${colors.dim("|")} ${colors.dim("cmd")} ${colors.magenta(window.command)}` : "";
-  return `${branch} ${marker} ${colors.bold(session.name)}:${colors.cyan(window.index)} ${window.name}  ${colors.dim("|")} ${colors.dim("panes")} ${colors.cyan(String(window.panes))}${commandLabel}`;
+  const marker = window.active ? colors.green(SYMBOLS.active) : colors.dim(SYMBOLS.inactive);
+  const commandLabel = window.command
+    ? `  ${colors.dim("|")} ${colors.dim("cmd")} ${colors.magenta(truncateText(window.command, 28))}`
+    : "";
+  return `${branch} ${marker} ${colors.bold(session.name)}:${colors.cyan(window.index)} ${
+    truncateText(window.name, 24)
+  }  ${colors.dim("|")} ${colors.dim("pane")} ${colors.cyan(String(window.panes))}${commandLabel}`;
 }
 
 function buildEntries(sessions: SessionInfo[]): Entry[] {
@@ -380,11 +847,196 @@ function buildEntries(sessions: SessionInfo[]): Entry[] {
     entries.push({
       action: "server",
       name: "",
-      display: `  ${colors.red("✖")} ${colors.bold("tmux server")}  ${colors.dim("|")} ${colors.cyan("tmux kill-server")}`,
+      display: `  ${colors.red(SYMBOLS.server)} ${colors.bold("tmux server")}  ${colors.dim("|")} ${
+        colors.cyan("tmux kill-server")
+      }`,
     });
   }
 
   return entries;
+}
+
+async function renderSessionPreview(sessionName: string): Promise<string> {
+  const info = await collectPreviewSessionInfo(sessionName);
+  if (!info) {
+    return colors.red(`Session not found: ${sessionName}`);
+  }
+
+  const windows = await collectWindowsForSession(sessionName);
+  const activeWindow = windows.find((window) => window.active) ?? windows[0];
+  const captureLines = computeSessionCaptureLines(readPreviewLines(), windows.length);
+  const panePreview = activeWindow ? await capturePaneTail(`${sessionName}:${activeWindow.index}.0`, captureLines) : [];
+
+  const lines: string[] = [];
+  lines.push(...renderHeaderBox(`Session ${sessionName}`));
+  lines.push("");
+  lines.push(
+    ...renderInfoBlock([
+      {
+        label: "Status",
+        value: info.attached > 0 ? colors.yellow(`attached (${info.attached})`) : colors.dim("detached"),
+      },
+      { label: "Windows", value: colors.cyan(String(info.windows)) },
+      { label: "Created", value: colors.dim(formatAgoFromEpoch(info.created)) },
+      {
+        label: "Last Activity",
+        value: `${getActivityBadge(info.activity)} ${colors.dim(formatAgoFromEpoch(info.activity))}`,
+      },
+    ], "Session Info"),
+  );
+  lines.push("");
+  lines.push(colors.bold(colors.blue("┌─ Windows")));
+  if (windows.length === 0) {
+    lines.push(`${colors.blue("└─")} ${colors.dim("(no windows)")}`);
+  } else {
+    for (let i = 0; i < windows.length; i++) {
+      const window = windows[i];
+      const marker = window.active ? colors.green(SYMBOLS.active) : colors.dim(SYMBOLS.inactive);
+      const branch = i === windows.length - 1 ? "└─" : "├─";
+      const commandLabel = window.command.length > 0 ? ` ${colors.dim(`cmd:${truncateText(window.command, 28)}`)}` : "";
+      lines.push(
+        `${colors.blue(branch)} ${marker} ${colors.cyan(window.index)} ${truncateText(window.name, 26)} ${
+          colors.dim(`[${window.panes}P]`)
+        }${commandLabel}`,
+      );
+    }
+  }
+  lines.push("");
+  const activePreviewTitle = activeWindow
+    ? `Active Pane ${sessionName}:${activeWindow.index}.0 (last ${captureLines} lines)`
+    : `Active Pane (last ${captureLines} lines)`;
+  lines.push(
+    ...renderPanePreviewBlock(
+      activePreviewTitle,
+      panePreview.map((line) => fitPreviewLine(line)),
+      activeWindow ? "(preview not available)" : "(active window not found)",
+    ),
+  );
+
+  return lines.join("\n");
+}
+
+async function renderWindowPreview(target: string): Promise<string> {
+  const resolved = splitWindowTarget(target);
+  if (!resolved) {
+    return colors.red(`Invalid window target: ${target}`);
+  }
+
+  const { sessionName, windowIndex } = resolved;
+  const windows = await collectWindowsForSession(sessionName);
+  const targetWindow = windows.find((window) => window.index === windowIndex);
+  if (!targetWindow) {
+    return colors.red(`Window not found: ${sessionName}:${windowIndex}`);
+  }
+
+  const panes = await collectPreviewPanes(sessionName, windowIndex);
+  const perPaneLines = computePerPaneCaptureLines(readPreviewLines(), panes.length);
+
+  const lines: string[] = [];
+  lines.push(...renderHeaderBox(`Window ${sessionName}:${windowIndex}`));
+  lines.push("");
+  lines.push(
+    ...renderInfoBlock([
+      { label: "Name", value: truncateText(targetWindow.name, 40) },
+      { label: "Panes", value: colors.cyan(String(targetWindow.panes)) },
+      {
+        label: "Command",
+        value: targetWindow.command ? colors.magenta(targetWindow.command) : colors.dim("(unknown)"),
+      },
+    ], "Window Info"),
+  );
+  lines.push("");
+  lines.push(colors.bold(colors.blue("┌─ Pane List")));
+
+  if (panes.length === 0) {
+    lines.push(`${colors.blue("└─")} ${colors.dim("(no panes)")}`);
+    return lines.join("\n");
+  }
+
+  for (let i = 0; i < panes.length; i++) {
+    const pane = panes[i];
+    const marker = pane.active ? colors.green(SYMBOLS.active) : colors.dim(SYMBOLS.inactive);
+    const branch = i === panes.length - 1 ? "└─" : "├─";
+    lines.push(
+      `${colors.blue(branch)} ${marker} ${pane.index}: ${getPaneIcon(pane.command)} ${
+        truncateText(pane.command || "(unknown)", 20)
+      } ${colors.dim(`(${pane.width}x${pane.height})`)}`,
+    );
+  }
+
+  lines.push("");
+  lines.push(colors.bold(colors.blue(`┌─ Pane Preview (last ${perPaneLines} lines each)`)));
+
+  for (let i = 0; i < panes.length; i++) {
+    const pane = panes[i];
+    const paneLines = await capturePaneTail(`${sessionName}:${windowIndex}.${pane.index}`, perPaneLines);
+    const titlePrefix = pane.active ? SYMBOLS.active : SYMBOLS.inactive;
+    const title = `${titlePrefix} Pane ${pane.index} (${truncateText(pane.command || "unknown", 24)})`;
+    lines.push(
+      ...renderPanePreviewBlock(
+        title,
+        paneLines.map((paneLine) => fitPreviewLine(paneLine)),
+        "(preview not available)",
+      ),
+    );
+    if (i < panes.length - 1) {
+      lines.push("");
+    }
+  }
+
+  return lines.join("\n");
+}
+
+function renderServerPreview(): string {
+  return [
+    ...renderHeaderBox("tmux server", 46),
+    "",
+    "Selecting this row with Ctrl-q will run:",
+    colors.cyan("tmux kill-server"),
+    "",
+    colors.dim("All sessions will be terminated."),
+    colors.dim("Use with caution."),
+  ].join("\n");
+}
+
+async function renderPreviewOnce(action: string, name: string): Promise<string> {
+  if (action === "session") {
+    return await renderSessionPreview(name);
+  }
+  if (action === "window") {
+    return await renderWindowPreview(name);
+  }
+  if (action === "server") {
+    return renderServerPreview();
+  }
+  return colors.dim("Preview not available");
+}
+
+async function runPreviewRenderer(action: string, name: string): Promise<void> {
+  const refreshMs = normalizeRefreshMs(Deno.env.get("PREVIEW_REFRESH_MS"));
+  const print = async (text: string, clear = false) => {
+    if (clear) {
+      await Deno.stdout.write(encoder.encode("\u001b[H\u001b[2J"));
+    }
+    const normalized = text.endsWith("\n") ? text : `${text}\n`;
+    await Deno.stdout.write(encoder.encode(normalized));
+  };
+
+  try {
+    if (refreshMs <= 0) {
+      await print(await renderPreviewOnce(action, name));
+      return;
+    }
+
+    while (true) {
+      await print(await renderPreviewOnce(action, name), true);
+      await sleep(refreshMs);
+    }
+  } catch (error) {
+    if (!(error instanceof Deno.errors.BrokenPipe)) {
+      throw error;
+    }
+  }
 }
 
 type RunFzfOptions = {
@@ -402,11 +1054,23 @@ async function runFzf(
   const inTmux = Boolean(Deno.env.get("TMUX"));
   const useFzfTmux = !options.forcePlain && inTmux && await commandExists("fzf-tmux");
   const baseCmd = useFzfTmux ? "fzf-tmux" : "fzf";
+  const scriptPath = fromFileUrl(import.meta.url);
+  const previewWidth = await getTmuxOption("session-manager-preview-width", DEFAULT_PREVIEW_WIDTH);
+  const fzfBorderStyle = await getTmuxOption("session-manager-fzf-border", DEFAULT_FZF_BORDER);
+  const fzfBorderOption = buildFzfBorderOption(fzfBorderStyle);
+  const previewRefreshMs = normalizeRefreshMs(
+    await getTmuxOption("session-manager-preview-refresh-ms", String(DEFAULT_PREVIEW_REFRESH_MS)),
+  );
+  const previewCommand = `PREVIEW_REFRESH_MS=${previewRefreshMs} ${
+    shellEscape(scriptPath)
+  } --popup --render-preview {1} --preview-name {2}`;
+  const previewWindow = buildPreviewWindowOption(previewWidth);
 
   const commonArgs = [
     "--ansi",
-    "--prompt=Session> ",
-    "--header=Enter: switch | C-q: kill | C-t: new | C-r: rename",
+    "--prompt=tmux> ",
+    "--header=Enter switch | C-q kill | C-t new | C-r rename | C-/ preview | C-l refresh | C-d/C-u scroll",
+    fzfBorderOption,
     `--delimiter=${"\t"}`,
     "--with-nth=3",
     "--cycle",
@@ -417,11 +1081,15 @@ async function runFzf(
     "--exact",
     "--expect=enter,ctrl-q,ctrl-t,ctrl-r",
     "--multi",
+    `--preview=${previewCommand}`,
+    `--preview-window=${previewWindow}`,
+    "--bind=ctrl-/:toggle-preview",
+    "--bind=ctrl-l:refresh-preview",
+    "--bind=ctrl-d:preview-page-down",
+    "--bind=ctrl-u:preview-page-up",
   ];
 
-  const args = useFzfTmux
-    ? ["-p", "50%,50%", ...commonArgs]
-    : commonArgs;
+  const args = useFzfTmux ? ["-p", "50%,50%", ...commonArgs] : commonArgs;
 
   const command = new Deno.Command(baseCmd, {
     args,
@@ -495,7 +1163,7 @@ async function handleSelection(lines: string[]): Promise<void> {
       if (action === "session" && name) {
         targets.add(name);
       } else if (action === "window" && name) {
-        const sessionName = name.split(":")[0] ?? "";
+        const sessionName = splitWindowTarget(name)?.sessionName ?? "";
         if (sessionName) {
           targets.add(sessionName);
         }
@@ -531,7 +1199,11 @@ async function handleSelection(lines: string[]): Promise<void> {
     if (!line) return;
     const [action, name] = line.split("\t");
     if (!action) return;
-    const sessionName = action === "session" ? name : action === "window" ? (name.split(":")[0] ?? "") : "";
+    const sessionName = action === "session"
+      ? name
+      : action === "window"
+      ? (splitWindowTarget(name)?.sessionName ?? "")
+      : "";
     if (!sessionName) return;
     const current = sessionName;
     const next = prompt(`Rename session '${current}' to:`, current)?.trim();
@@ -553,7 +1225,7 @@ async function handleSelection(lines: string[]): Promise<void> {
       await runCommand("tmux", ["attach", "-t", name], { allowFail: true, inheritStdio: true });
     }
   } else if (action === "window" && name) {
-    const sessionName = name.split(":")[0] ?? name;
+    const sessionName = splitWindowTarget(name)?.sessionName ?? name;
     if (Deno.env.get("TMUX")) {
       await runCommand("tmux", ["switch-client", "-t", sessionName], { allowFail: true });
       await runCommand("tmux", ["select-window", "-t", name], { allowFail: true });
@@ -614,7 +1286,16 @@ async function main(): Promise<void> {
     .name("tmux-session-manager")
     .description("tmux session manager with unified fzf shortcuts")
     .option("--popup", "Internal flag to skip popup", { default: false })
-    .action(async ({ popup }: { popup: boolean }) => {
+    .option("--render-preview <action:string>", "Internal preview renderer")
+    .option("--preview-name <name:string>", "Internal preview target")
+    .action(async (
+      { popup, renderPreview, previewName }: { popup: boolean; renderPreview?: string; previewName?: string },
+    ) => {
+      if (renderPreview && typeof previewName === "string") {
+        await runPreviewRenderer(renderPreview, previewName);
+        return;
+      }
+
       await openPopupIfNeeded(popup);
 
       const sessions = await collectSessions();
