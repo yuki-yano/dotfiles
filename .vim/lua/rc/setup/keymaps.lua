@@ -197,8 +197,12 @@ vim.keymap.set({ 'n', 'v', 'i' }, '<M-v>', function()
   end
 end, { silent = true, desc = 'Insert: paste clipboard; other: tmux vertical split' })
 
--- <M-c> comes from tmux: Visual yanks to OS clipboard; Normal does nothing
-vim.keymap.set({ 'n' }, '<M-c>', '<Nop>', { silent = true })
+-- <M-c> comes from tmux: Normal recreates tmux new-window; Visual keeps clipboard cut behavior
+vim.keymap.set({ 'n' }, '<M-c>', function()
+  if vim.env.TMUX then
+    vim.fn.system({ 'tmux', 'new-window', '-c', '#{pane_current_path}' })
+  end
+end, { silent = true, desc = 'Tmux new window from Neovim normal mode' })
 vim.keymap.set({ 'i' }, '<M-c>', '<Nop>', { silent = true })
 vim.keymap.set({ 'x' }, '<M-c>', cut_visual_to_clipboard_and_insert, { silent = true })
 

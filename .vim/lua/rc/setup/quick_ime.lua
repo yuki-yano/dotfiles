@@ -137,7 +137,8 @@ local function exit_to_normal()
   vim.api.nvim_feedkeys(esc, 'nx', false)
 end
 
-local function send_editprompt()
+local function send_editprompt(opts)
+  local auto_send = not opts or opts.auto_send ~= false
   local bufnr = (M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr)) and M.bufnr or vim.api.nvim_get_current_buf()
   local text = get_buffer_text(bufnr)
   local content = ''
@@ -154,7 +155,13 @@ local function send_editprompt()
     require('cmp').confirm({ select = true })
   end)
 
-  vim.system({ 'editprompt', 'input', '--auto-send', '--', content }, { text = true }, function(obj)
+  local cmd = { 'editprompt', 'input' }
+  if auto_send then
+    table.insert(cmd, '--auto-send')
+  end
+  vim.list_extend(cmd, { '--', content })
+
+  vim.system(cmd, { text = true }, function(obj)
     vim.schedule(function()
       if obj.code == 0 then
         vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {})
@@ -169,7 +176,8 @@ local function send_editprompt()
   end)
 end
 
-local function send_editprompt_visual()
+local function send_editprompt_visual(opts)
+  local auto_send = not opts or opts.auto_send ~= false
   local bufnr = (M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr)) and M.bufnr or vim.api.nvim_get_current_buf()
   local mode = vim.fn.mode()
   local start_pos = vim.fn.getpos('v')
@@ -195,7 +203,13 @@ local function send_editprompt_visual()
     require('cmp').confirm({ select = true })
   end)
 
-  vim.system({ 'editprompt', 'input', '--auto-send', '--', content }, { text = true }, function(obj)
+  local cmd = { 'editprompt', 'input' }
+  if auto_send then
+    table.insert(cmd, '--auto-send')
+  end
+  vim.list_extend(cmd, { '--', content })
+
+  vim.system(cmd, { text = true }, function(obj)
     vim.schedule(function()
       if obj.code == 0 then
         selection.delete()
@@ -319,7 +333,13 @@ if M.is_editprompt() then
   vim.keymap.set({ 'n' }, 'q', send_editprompt, { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n' }, '<CR>', send_editprompt, { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n', 'i' }, '<C-c>', send_editprompt, { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'n', 'i' }, 'g<C-c>', function()
+    send_editprompt({ auto_send = false })
+  end, { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'x' }, '<C-c>', send_editprompt_visual, { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'x' }, 'g<C-c>', function()
+    send_editprompt_visual({ auto_send = false })
+  end, { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n' }, 'ZZ', send_editprompt, { silent = true, buffer = true, nowait = true })
 
   local function is_buffer_empty(bufnr)
