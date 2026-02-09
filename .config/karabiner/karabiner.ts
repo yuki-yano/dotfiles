@@ -156,9 +156,7 @@ const imeRules = [
         .to(eisuu)
         .to(key, "control")
     ),
-    withMapper(["h", "j", "k", "l", "v", "s"])((key) =>
-      map(key, "right_command").to(eisuu).to(key, "right_command")
-    ),
+    withMapper(["h", "j", "k", "l", "v", "s"])((key) => map(key, "right_command").to(eisuu).to(key, "right_command")),
   ]),
 ];
 
@@ -174,6 +172,11 @@ const candsRules = [
   ]),
 ];
 
-const rules = [...alacrittyRules, ...cursorEditorRules, ...imeControlRules, ...imeRules];
+const rules = [
+  ...alacrittyRules,
+  ...cursorEditorRules,
+  ...imeControlRules,
+  ...imeRules,
+];
 
 writeToProfile(profileName, rules);
