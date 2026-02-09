@@ -1,6 +1,9 @@
 {
   "env": {
-    "DISABLE_AUTOUPDATER": "1"
+    "DISABLE_AUTOUPDATER": "1",
+    "ENABLE_TOOL_SEARCH": "true",
+    "ENABLE_EXPERIMENTAL_MCP_CLI": "false",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "includeCoAuthoredBy": false,
   "permissions": {
@@ -71,10 +74,11 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "~/dotfiles/bin/cc-statusline.ts"
+    "command": "bun ~/.claude/plugins/cache/claude-hud/claude-hud/dist/index.js"
   },
   "enabledPlugins": {
-    "frontend-design@claude-code-plugins": true
+    "frontend-design@claude-code-plugins": true,
+    "claude-hud@claude-hud": true
   },
   "alwaysThinkingEnabled": true
 }
