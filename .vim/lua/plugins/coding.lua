@@ -136,6 +136,26 @@ return {
         symbol_map = codicons,
       })
 
+      -- NOTE: AI-generated monkey patch. Shift the scrollbar thumb inside the border.
+      do
+        local window = require('cmp.utils.window')
+        if not window._cmp_scrollbar_inner_border then
+          window._cmp_scrollbar_inner_border = true
+          local original_update = window.update
+          window.update = function(self)
+            original_update(self)
+            local info = self:info()
+            if info.scrollable and info.border_info.visible and self.thumb_win and vim.api.nvim_win_is_valid(self.thumb_win) then
+              local cfg = vim.api.nvim_win_get_config(self.thumb_win)
+              if cfg.col > 0 then
+                cfg.col = cfg.col - 1
+                vim.api.nvim_win_set_config(self.thumb_win, cfg)
+              end
+            end
+          end
+        end
+      end
+
       -- NOTE: force_keyword_length is used from manual complete
       local sources = {
         { name = 'luasnip', keyword_length = 2, force_keyword_length = true },
@@ -269,12 +289,12 @@ return {
             })
           or {},
         window = {
-          completion = cmp.config.window.bordered({}),
-          documentation = cmp.config.window.bordered({}),
+          completion = cmp.config.window.bordered({ border = 'rounded' }),
+          documentation = cmp.config.window.bordered({ border = 'rounded' }),
         },
         sources = cmp.config.sources(sources),
         formatting = {
-          fields = { 'kind', 'abbr', 'menu' },
+          fields = { 'icon', 'abbr', 'menu' },
           expandable_indicator = true,
           format = lspkind.cmp_format({
             mode = 'symbol',
@@ -328,7 +348,7 @@ return {
           { name = 'buffer' },
         }),
         formatting = {
-          fields = { 'kind', 'abbr' },
+          fields = { 'icon', 'abbr' },
           format = lspkind.cmp_format({ mode = 'symbol' }),
         },
       }
@@ -360,7 +380,7 @@ return {
           },
         }),
         formatting = {
-          fields = { 'kind', 'abbr', 'menu' },
+          fields = { 'icon', 'abbr', 'menu' },
           expandable_indicator = true,
           format = function(entry, vim_item)
             if vim.tbl_contains({ 'path', 'fuzzy_path' }, entry.source.name) then
