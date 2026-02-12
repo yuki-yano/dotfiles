@@ -1,0 +1,287 @@
+#compdef vw vde-worktree
+
+_vw_worktree_branches_raw() {
+  command git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
+  command git worktree list --porcelain 2>/dev/null \
+    | command sed -n 's/^branch refs\/heads\///p' \
+    | command sort -u
+}
+
+_vw_worktree_candidate_rows_raw() {
+  command git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
+  local vw_bin="${words[1]:-vw}"
+  command -v "$vw_bin" >/dev/null 2>&1 || return 0
+
+  command "$vw_bin" list --json 2>/dev/null | command node -e '
+const fs = require("fs")
+const home = process.env.HOME || ""
+const toDisplayPath = (path) => {
+  if (typeof path !== "string" || path.length === 0) return ""
+  if (home.length === 0) return path
+  if (path === home) return "~"
+  if (path.startsWith(`${home}/`)) return `~${path.slice(home.length)}`
+  return path
+}
+const toFlag = (value) => {
+  if (value === true) return "yes"
+  if (value === false) return "no"
+  return "unknown"
+}
+let payload
+try {
+  payload = JSON.parse(fs.readFileSync(0, "utf8"))
+} catch {
+  process.exit(0)
+}
+const worktrees = Array.isArray(payload.worktrees) ? payload.worktrees : []
+for (const worktree of worktrees) {
+  if (typeof worktree?.branch !== "string" || worktree.branch.length === 0) continue
+  const merged = toFlag(worktree?.merged?.overall)
+  const dirty = worktree?.dirty === true ? "yes" : "no"
+  const locked = worktree?.locked?.value === true ? "yes" : "no"
+  const path = toDisplayPath(worktree?.path)
+  const summary = `merged=${merged} dirty=${dirty} locked=${locked}${path ? ` path=${path}` : ""}`
+  const sanitized = summary.replace(/[\t\r\n]+/g, " ").trim()
+  process.stdout.write(`${worktree.branch}\t${sanitized}\n`)
+}
+' 2>/dev/null
+}
+
+_vw_local_branches_raw() {
+  command git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
+  command git for-each-ref --format='%(refname:short)' refs/heads 2>/dev/null | command sort -u
+}
+
+_vw_remote_branches_raw() {
+  command git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
+  command git for-each-ref --format='%(refname:short)' refs/remotes 2>/dev/null \
+    | command sed '/\/HEAD$/d' \
+    | command sort -u
+}
+
+_vw_hook_names_raw() {
+  command git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
+  local repo_root
+  repo_root="$(command git rev-parse --show-toplevel 2>/dev/null)" || return 0
+  command ls -1 "$repo_root/.vde/worktree/hooks" 2>/dev/null \
+    | command grep -E '^(pre|post)-' \
+    | command sort -u
+}
+
+_vw_describe_values() {
+  local label="$1"
+  shift
+  local -a values
+  values=("$@")
+  if (( ${#values} == 0 )); then
+    _message "no ${label} candidates"
+    return 0
+  fi
+  _describe -t "${label}" "${label}" values
+}
+
+_vw_complete_worktree_branches() {
+  local -a values
+  values=("${(@f)$(_vw_worktree_branches_raw)}")
+  _vw_describe_values "worktree-branch" "${values[@]}"
+}
+
+_vw_complete_worktree_branches_with_meta() {
+  local -a rows branches descriptions
+  local row branch summary
+  rows=("${(@f)$(_vw_worktree_candidate_rows_raw)}")
+
+  for row in "${rows[@]}"; do
+    branch="${row%%$'\t'*}"
+    summary="${row#*$'\t'}"
+    if [[ -z "${branch}" ]]; then
+      continue
+    fi
+
+    branches+=("${branch}")
+    descriptions+=("${summary}")
+  done
+
+  if (( ${#branches} > 0 )); then
+    compadd -Ql -d descriptions -a branches
+    return 0
+  fi
+
+  _vw_complete_worktree_branches
+}
+
+_vw_complete_local_branches() {
+  local -a values
+  values=("${(@f)$(_vw_local_branches_raw)}")
+  _vw_describe_values "local-branch" "${values[@]}"
+}
+
+_vw_complete_switch_branches() {
+  local -a values
+  values=("${(@u)${(@f)$(_vw_worktree_branches_raw)} ${(@f)$(_vw_local_branches_raw)}}")
+  _vw_describe_values "branch" "${values[@]}"
+}
+
+_vw_complete_remote_branches() {
+  local -a values
+  values=("${(@f)$(_vw_remote_branches_raw)}")
+  _vw_describe_values "remote-branch" "${values[@]}"
+}
+
+_vw_complete_hooks() {
+  local -a values
+  values=("${(@f)$(_vw_hook_names_raw)}")
+  _vw_describe_values "hook" "${values[@]}"
+}
+
+_vw() {
+  local curcontext="$curcontext" state
+  local -a line
+  typeset -a commands
+  typeset -a global_options
+
+  commands=(
+    "init:Initialize directories, hooks, and managed exclude entries"
+    "list:List worktrees with status metadata"
+    "status:Show a single worktree status"
+    "path:Print absolute worktree path for branch"
+    "new:Create branch + worktree under .worktree"
+    "switch:Idempotent branch entrypoint"
+    "mv:Rename current non-primary worktree branch and move its directory"
+    "del:Delete worktree + branch with safety checks"
+    "gone:Bulk cleanup by safety-filtered candidate selection"
+    "get:Fetch remote branch and attach worktree"
+    "extract:Extract current primary branch into .worktree"
+    "use:Checkout target branch in primary worktree"
+    "exec:Run command in target branch worktree"
+    "invoke:Manually run hook script"
+    "copy:Copy repo-root files/dirs to target worktree"
+    "link:Create symlink from target worktree to repo-root file"
+    "lock:Create or update lock metadata"
+    "unlock:Remove lock metadata"
+    "cd:Interactive fzf picker that prints selected worktree path"
+    "completion:Print or install shell completion scripts"
+    "help:Show help"
+  )
+
+  global_options=(
+    "--json[Output machine-readable JSON]"
+    "--verbose[Enable verbose logs]"
+    "--no-hooks[Disable hooks for this run]"
+    "--allow-unsafe[Allow unsafe behavior in non-TTY mode]"
+    "--strict-post-hooks[Fail when post hooks fail]"
+    "--hook-timeout-ms[Override hook timeout]:ms:"
+    "--lock-timeout-ms[Override repository lock timeout]:ms:"
+    "--help[Show help]"
+    "--version[Show version]"
+  )
+
+  _arguments -C \
+    $global_options \
+    "1:command:->command" \
+    "*:: :->arguments"
+
+  case $state in
+    command)
+      _describe -t commands "vw command" commands
+      return
+      ;;
+    arguments)
+      local current_command="${line[1]:-${words[2]}}"
+      case "${current_command}" in
+        status)
+          _arguments \
+            "1:branch:_vw_complete_worktree_branches_with_meta"
+          ;;
+        path)
+          _arguments \
+            "1:branch:_vw_complete_worktree_branches_with_meta"
+          ;;
+        switch)
+          _arguments \
+            "1:branch:_vw_complete_switch_branches"
+          ;;
+        mv)
+          _arguments \
+            "1:new-branch:_vw_complete_local_branches"
+          ;;
+        del)
+          _arguments \
+            "1:branch:_vw_complete_worktree_branches_with_meta" \
+            "--force-dirty[Allow dirty worktree for del]" \
+            "--allow-unpushed[Allow unpushed commits for del]" \
+            "--force-unmerged[Allow unmerged worktree for del]" \
+            "--force-locked[Allow deleting locked worktree]" \
+            "--force[Enable all del force flags]"
+          ;;
+        gone)
+          _arguments \
+            "--apply[Apply deletion]" \
+            "--dry-run[Dry-run mode]"
+          ;;
+        get)
+          _arguments \
+            "1:remote-branch:_vw_complete_remote_branches"
+          ;;
+        extract)
+          _arguments \
+            "--current[Extract current worktree branch]" \
+            "--from[Path used by extract --from]:path:_files" \
+            "--stash[Allow stash when dirty]"
+          ;;
+        use)
+          _arguments \
+            "1:branch:_vw_complete_switch_branches" \
+            "--allow-agent[Allow non-TTY execution for use]" \
+            "--allow-unsafe[Allow unsafe behavior in non-TTY mode]"
+          ;;
+        exec)
+          _arguments \
+            "1:branch:_vw_complete_worktree_branches_with_meta"
+          ;;
+        invoke)
+          _arguments \
+            "1:hook:_vw_complete_hooks"
+          ;;
+        copy)
+          _arguments \
+            "*:repo-relative-path:_files"
+          ;;
+        link)
+          _arguments \
+            "*:repo-relative-path:_files" \
+            "--no-fallback[Disable copy fallback when symlink fails]"
+          ;;
+        lock)
+          _arguments \
+            "1:branch:_vw_complete_worktree_branches_with_meta" \
+            "--owner[Lock owner]:owner:" \
+            "--reason[Lock reason]:reason:"
+          ;;
+        unlock)
+          _arguments \
+            "1:branch:_vw_complete_worktree_branches_with_meta" \
+            "--owner[Unlock owner]:owner:" \
+            "--force[Force unlock]"
+          ;;
+        cd)
+          _arguments \
+            "--prompt[Custom fzf prompt]:prompt:" \
+            "--fzf-arg[Extra argument passed to fzf]:arg:"
+          ;;
+        completion)
+          _arguments \
+            "1:shell:(zsh fish)" \
+            "--install[Install completion file to default or --path]" \
+            "--path[Install destination file path]:path:_files"
+          ;;
+        help)
+          _arguments \
+            "1:command:(${(j: :)${commands%%:*}})"
+          ;;
+      esac
+      ;;
+  esac
+}
+
+compdef _vw vw vde-worktree

@@ -112,6 +112,10 @@ snippets:
     keyword: f
     snippet: ghq-project-selector
 
+  - name: vcd
+    keyword: vcd
+    snippet: cd "$(vw cd)"
+
   - name: tmux session selector
     keyword: t
     snippet: tmux-session-manager
