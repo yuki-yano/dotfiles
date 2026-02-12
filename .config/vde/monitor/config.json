@@ -52,6 +52,7 @@
     "mode": "text",
     "defaultLines": 2000,
     "maxLines": 2000,
+    "includeTruncated": false,
     "joinLines": false,
     "ansi": true,
     "altScreen": "auto",
@@ -78,6 +79,10 @@
       "cliPath": "wezterm",
       "target": "auto"
     }
+  },
+  "fileNavigator": {
+    "includeIgnoredPaths": [],
+    "autoExpandMatchLimit": 100
   },
   "tmux": {
     "socketName": null,

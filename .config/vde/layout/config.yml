@@ -38,12 +38,19 @@ presets:
           panes:
             - name: "work-center-top"
             - name: "work-center-bottom"
-        - name: "coding agent"
-          command: "codex --yolo"
-          focus: true
+        - type: vertical
+          ratio: [8, 2]
+          panes:
+            - name: "codex"
+              command: "codex --yolo"
+            - name: "editprompt"
+              command: "editprompt open --target-pane {{pane_id:codex}}"
+              focus: true
+              ephemeral: true
   codex-and-claude:
     name: codex-and-claude
     description: "Input to Codex and Claude in parallel"
+    windowMode: current-window
     layout:
       type: horizontal
       ratio: [25, 37.5, 37.5]
