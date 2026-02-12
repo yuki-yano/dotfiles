@@ -60,15 +60,11 @@ type PreviewPaneInfo = {
   active: boolean;
 };
 
+const DEFAULT_PREVIEW_WIDTH = "65";
+const DEFAULT_PREVIEW_REFRESH_MS = 0;
 const DEFAULT_SESSION_CAPTURE_LINES = 15;
 const DEFAULT_PANE_CAPTURE_LINES = 16;
-const DEFAULT_FZF_BORDER = "none";
-const DEFAULT_POPUP_WIDTH = "50%";
-const DEFAULT_POPUP_HEIGHT = "50%";
-const DEFAULT_POPUP_BORDER_LINES = "rounded";
-const DEFAULT_POPUP_STYLE = "fg=#c6c6c6,bg=#1C1C1C";
-const DEFAULT_POPUP_BORDER_STYLE = "fg=#8295D1,bg=#1C1C1C";
-const DEFAULT_POPUP_TITLE = " Session Manager ";
+const DEFAULT_FZF_BORDER = "rounded";
 
 const SYMBOLS = {
   sessionCurrent: "●",
@@ -80,6 +76,34 @@ const SYMBOLS = {
   inactive: "·",
   server: "✖",
 } as const;
+
+export function normalizeRefreshMs(value: string | number | null | undefined): number {
+  if (typeof value === "number") {
+    if (Number.isFinite(value) && value >= 0) {
+      return Math.floor(value);
+    }
+    return 0;
+  }
+  if (!value) {
+    return 0;
+  }
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return 0;
+  }
+  return parsed;
+}
+
+export function buildPreviewWindowOption(widthValue: string): string {
+  const normalized = widthValue.trim();
+  if (/^\d+$/.test(normalized)) {
+    return `right:${normalized}%:border-left`;
+  }
+  if (/^\d+%$/.test(normalized)) {
+    return `right:${normalized}:border-left`;
+  }
+  return `right:${DEFAULT_PREVIEW_WIDTH}%:border-left`;
+}
 
 export function splitWindowTarget(target: string): { sessionName: string; windowIndex: string } | null {
   const sep = target.lastIndexOf(":");
@@ -235,6 +259,10 @@ function fitPreviewLine(line: string, padding = 3): string {
   return truncateAnsiText(line, maxWidth);
 }
 
+function shellEscape(value: string): string {
+  return `'${value.replaceAll("'", `'\\''`)}'`;
+}
+
 function parseIntSafe(raw: string | undefined, fallback = 0): number {
   const parsed = Number.parseInt(raw ?? "", 10);
   if (Number.isFinite(parsed)) {
@@ -305,9 +333,9 @@ function padVisible(text: string, width: number): string {
 function renderHeaderBox(title: string, width = 60): string[] {
   const safeTitle = padVisible(` ${truncateText(title, width - 2)} `, width);
   return [
-    colors.magenta(`┌${"─".repeat(width)}┐`),
-    `${colors.magenta("│")}${colors.bold(colors.cyan(safeTitle))}${colors.magenta("│")}`,
-    colors.magenta(`└${"─".repeat(width)}┘`),
+    colors.magenta(`╔${"═".repeat(width)}╗`),
+    `${colors.magenta("║")}${colors.bold(colors.cyan(safeTitle))}${colors.magenta("║")}`,
+    colors.magenta(`╚${"═".repeat(width)}╝`),
   ];
 }
 
@@ -377,22 +405,6 @@ function buildFzfBorderOption(style: string): string {
     return "--border=none";
   }
   return `--border=${style.trim()}`;
-}
-
-function nonEmptyOption(value: string): string | null {
-  const normalized = value.trim();
-  return normalized.length > 0 ? normalized : null;
-}
-
-function buildPopupBorderArgs(style: string): string[] {
-  const normalized = style.trim().toLowerCase();
-  if (["", "default", "inherit"].includes(normalized)) {
-    return [];
-  }
-  if (["none", "off", "0", "false", "no"].includes(normalized)) {
-    return ["-B"];
-  }
-  return ["-b", style.trim()];
 }
 
 async function getTmuxOption(name: string, fallback: string): Promise<string> {
@@ -1000,6 +1012,33 @@ async function renderPreviewOnce(action: string, name: string): Promise<string> 
   return colors.dim("Preview not available");
 }
 
+async function runPreviewRenderer(action: string, name: string): Promise<void> {
+  const refreshMs = normalizeRefreshMs(Deno.env.get("PREVIEW_REFRESH_MS"));
+  const print = async (text: string, clear = false) => {
+    if (clear) {
+      await Deno.stdout.write(encoder.encode("\u001b[H\u001b[2J"));
+    }
+    const normalized = text.endsWith("\n") ? text : `${text}\n`;
+    await Deno.stdout.write(encoder.encode(normalized));
+  };
+
+  try {
+    if (refreshMs <= 0) {
+      await print(await renderPreviewOnce(action, name));
+      return;
+    }
+
+    while (true) {
+      await print(await renderPreviewOnce(action, name), true);
+      await sleep(refreshMs);
+    }
+  } catch (error) {
+    if (!(error instanceof Deno.errors.BrokenPipe)) {
+      throw error;
+    }
+  }
+}
+
 type RunFzfOptions = {
   forcePlain?: boolean;
 };
@@ -1015,13 +1054,22 @@ async function runFzf(
   const inTmux = Boolean(Deno.env.get("TMUX"));
   const useFzfTmux = !options.forcePlain && inTmux && await commandExists("fzf-tmux");
   const baseCmd = useFzfTmux ? "fzf-tmux" : "fzf";
+  const scriptPath = fromFileUrl(import.meta.url);
+  const previewWidth = await getTmuxOption("session-manager-preview-width", DEFAULT_PREVIEW_WIDTH);
   const fzfBorderStyle = await getTmuxOption("session-manager-fzf-border", DEFAULT_FZF_BORDER);
   const fzfBorderOption = buildFzfBorderOption(fzfBorderStyle);
+  const previewRefreshMs = normalizeRefreshMs(
+    await getTmuxOption("session-manager-preview-refresh-ms", String(DEFAULT_PREVIEW_REFRESH_MS)),
+  );
+  const previewCommand = `PREVIEW_REFRESH_MS=${previewRefreshMs} ${
+    shellEscape(scriptPath)
+  } --popup --render-preview {1} --preview-name {2}`;
+  const previewWindow = buildPreviewWindowOption(previewWidth);
 
   const commonArgs = [
     "--ansi",
     "--prompt=tmux> ",
-    "--header=Enter switch | C-q kill | C-t new | C-r rename",
+    "--header=Enter switch | C-q kill | C-t new | C-r rename | C-/ preview | C-l refresh | C-d/C-u scroll",
     fzfBorderOption,
     `--delimiter=${"\t"}`,
     "--with-nth=3",
@@ -1033,6 +1081,12 @@ async function runFzf(
     "--exact",
     "--expect=enter,ctrl-q,ctrl-t,ctrl-r",
     "--multi",
+    `--preview=${previewCommand}`,
+    `--preview-window=${previewWindow}`,
+    "--bind=ctrl-/:toggle-preview",
+    "--bind=ctrl-l:refresh-preview",
+    "--bind=ctrl-d:preview-page-down",
+    "--bind=ctrl-u:preview-page-up",
   ];
 
   const args = useFzfTmux ? ["-p", "50%,50%", ...commonArgs] : commonArgs;
@@ -1194,51 +1248,22 @@ async function openPopupIfNeeded(popup: boolean): Promise<void> {
   ], { allowFail: true })).trim() || Deno.env.get("HOME") || Deno.cwd();
 
   const scriptPath = fromFileUrl(import.meta.url);
-  const scriptArgs = ["--popup"];
-  const [
-    popupWidth,
-    popupHeight,
-    popupBorderLines,
-    popupStyle,
-    popupBorderStyle,
-    popupTitle,
-  ] = await Promise.all([
-    getTmuxOption("session-manager-popup-width", DEFAULT_POPUP_WIDTH),
-    getTmuxOption("session-manager-popup-height", DEFAULT_POPUP_HEIGHT),
-    getTmuxOption("session-manager-popup-border-lines", DEFAULT_POPUP_BORDER_LINES),
-    getTmuxOption("session-manager-popup-style", DEFAULT_POPUP_STYLE),
-    getTmuxOption("session-manager-popup-border-style", DEFAULT_POPUP_BORDER_STYLE),
-    getTmuxOption("session-manager-popup-title", DEFAULT_POPUP_TITLE),
-  ]);
-
-  const popupArgs = [
-    "display-popup",
-    "-E",
-    "-w",
-    popupWidth,
-    "-h",
-    popupHeight,
-    ...buildPopupBorderArgs(popupBorderLines),
-    "-d",
-    paneDir,
-  ];
-  const normalizedPopupStyle = nonEmptyOption(popupStyle);
-  if (normalizedPopupStyle) {
-    popupArgs.push("-s", normalizedPopupStyle);
-  }
-  const normalizedPopupBorderStyle = nonEmptyOption(popupBorderStyle);
-  if (normalizedPopupBorderStyle) {
-    popupArgs.push("-S", normalizedPopupBorderStyle);
-  }
-  const normalizedPopupTitle = nonEmptyOption(popupTitle);
-  if (normalizedPopupTitle) {
-    popupArgs.push("-T", normalizedPopupTitle);
-  }
-  popupArgs.push(scriptPath, ...scriptArgs);
+  const args = ["--popup"];
 
   try {
     const popupCmd = new Deno.Command("tmux", {
-      args: popupArgs,
+      args: [
+        "display-popup",
+        "-E",
+        "-w",
+        "50%",
+        "-h",
+        "50%",
+        "-d",
+        paneDir,
+        scriptPath,
+        ...args,
+      ],
       stdout: "null",
       stderr: "piped",
     });
@@ -1261,9 +1286,16 @@ async function main(): Promise<void> {
     .name("tmux-session-manager")
     .description("tmux session manager with unified fzf shortcuts")
     .option("--popup", "Internal flag to skip popup", { default: false })
+    .option("--render-preview <action:string>", "Internal preview renderer")
+    .option("--preview-name <name:string>", "Internal preview target")
     .action(async (
-      { popup }: { popup: boolean },
+      { popup, renderPreview, previewName }: { popup: boolean; renderPreview?: string; previewName?: string },
     ) => {
+      if (renderPreview && typeof previewName === "string") {
+        await runPreviewRenderer(renderPreview, previewName);
+        return;
+      }
+
       await openPopupIfNeeded(popup);
 
       const sessions = await collectSessions();
