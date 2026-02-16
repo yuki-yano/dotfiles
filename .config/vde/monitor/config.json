@@ -36,6 +36,7 @@
   ],
   "activity": {
     "pollIntervalMs": 1000,
+    "vwGhRefreshIntervalMs": 30000,
     "runningThresholdMs": 15000,
     "inactiveThresholdMs": 60000
   },
