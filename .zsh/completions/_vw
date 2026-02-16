@@ -7,6 +7,24 @@ _vw_worktree_branches_raw() {
     | command sort -u
 }
 
+_vw_default_branch_raw() {
+  command git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
+  local configured
+  configured="$(command git config --get vde-worktree.baseBranch 2>/dev/null)"
+  if [[ -n "${configured}" ]]; then
+    print -r -- "${configured}"
+    return 0
+  fi
+  if command git show-ref --verify --quiet refs/heads/main 2>/dev/null; then
+    print -r -- "main"
+    return 0
+  fi
+  if command git show-ref --verify --quiet refs/heads/master 2>/dev/null; then
+    print -r -- "master"
+    return 0
+  fi
+}
+
 _vw_worktree_candidate_rows_raw() {
   command git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
   local vw_bin="${words[1]:-vw}"
@@ -110,6 +128,25 @@ _vw_complete_worktree_branches_with_meta() {
   _vw_complete_worktree_branches
 }
 
+_vw_complete_use_branches() {
+  local -a branches
+  local default_branch
+  branches=("${(@f)$(_vw_worktree_branches_raw)}")
+  default_branch="$(_vw_default_branch_raw | command head -n 1)"
+  if [[ -n "${default_branch}" ]]; then
+    branches+=("${default_branch}")
+  fi
+
+  branches=("${(@u)branches}")
+
+  if (( ${#branches} > 0 )); then
+    _vw_describe_values "branch" "${branches[@]}"
+    return 0
+  fi
+
+  _vw_complete_worktree_branches
+}
+
 _vw_complete_local_branches() {
   local -a values
   values=("${(@f)$(_vw_local_branches_raw)}")
@@ -118,7 +155,11 @@ _vw_complete_local_branches() {
 
 _vw_complete_switch_branches() {
   local -a values
-  values=("${(@u)${(@f)$(_vw_worktree_branches_raw)} ${(@f)$(_vw_local_branches_raw)}}")
+  values=(
+    "${(@f)$(_vw_worktree_branches_raw)}"
+    "${(@f)$(_vw_local_branches_raw)}"
+  )
+  values=("${(@u)values}")
   _vw_describe_values "branch" "${values[@]}"
 }
 
@@ -231,7 +272,8 @@ _vw() {
           ;;
         use)
           _arguments \
-            "1:branch:_vw_complete_switch_branches" \
+            "1:branch:_vw_complete_use_branches" \
+            "--allow-shared[Allow checkout when branch is attached by another worktree]" \
             "--allow-agent[Allow non-TTY execution for use]" \
             "--allow-unsafe[Allow unsafe behavior in non-TTY mode]"
           ;;
