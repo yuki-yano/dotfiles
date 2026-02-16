@@ -48,9 +48,9 @@ function ghq-project-selector() {
   fi
 
   if [[ "$has_bat" -eq 1 ]]; then
-    preview_cmd='bat $(eval echo {})/README.md'
+    preview_cmd='bat --color=always --paging=never --style=plain --theme="Catppuccin Mocha" "$(eval echo {})/README.md"'
   else
-    preview_cmd='cat $(eval echo {})/README.md'
+    preview_cmd='cat "$(eval echo {})/README.md"'
   fi
 
   local dir
