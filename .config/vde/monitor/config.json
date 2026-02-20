@@ -81,6 +81,16 @@
       "target": "auto"
     }
   },
+  "launch": {
+    "agents": {
+      "codex": {
+        "options": ["--yolo"]
+      },
+      "claude": {
+        "options": ["--dangerously-skip-permissions"]
+      }
+    }
+  },
   "fileNavigator": {
     "includeIgnoredPaths": [],
     "autoExpandMatchLimit": 100

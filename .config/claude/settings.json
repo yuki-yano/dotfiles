@@ -9,7 +9,6 @@
   "permissions": {
     "defaultMode": "acceptEdits"
   },
-  "model": "opus",
   "hooks": {
     "Stop": [
       {
@@ -17,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "vde-notifier --claude --notifier swiftdialog"
+            "command": "vde-notifier --claude"
           }
         ]
       }
@@ -72,8 +71,13 @@
       }
     ]
   },
-  "enabledPlugins": {
-    "frontend-design@claude-code-plugins": true
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline/claude-hud.sh"
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "skipDangerousModePermissionPrompt": true,
+  "enabledPlugins": {
+    "claude-hud@claude-hud": true
+  }
 }

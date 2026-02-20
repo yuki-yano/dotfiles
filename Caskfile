@@ -61,7 +61,7 @@ install --cask visual-studio-code
 install --cask vlc
 install --cask zoom
 
-install --cask yuki-yano/swiftdialog/swift-dialog
+install --cask yuki-yano/vde-notifier/vde-notifier-app
 install --cask --no-quarantine lambdalisue/arto/arto
 
 # Remove outdated versions
