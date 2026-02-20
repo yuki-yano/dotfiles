@@ -425,8 +425,8 @@ return {
       copilot.setup({
         filetypes = {
           markdown = true,
-          ['markdown.editprompt'] = false,
-          ['markdown.quickime'] = false,
+          ['markdown.editprompt'] = true,
+          ['markdown.quickime'] = true,
         },
         suggestion = {
           auto_trigger = true,
