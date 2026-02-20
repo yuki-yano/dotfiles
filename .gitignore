@@ -11,6 +11,8 @@ tmp/
 
 # Config
 /.config/*
+/.config/karabiner/automatic_backups
+
 !/.config/alacritty/
 !/.config/atuin
 !/.config/bat/
@@ -20,19 +22,19 @@ tmp/
 !/.config/karabiner
 !/.config/mise
 !/.config/nvim
+!/.config/octorus
 !/.config/previm
 !/.config/ripgrep
 !/.config/skhd
 !/.config/snippets
 !/.config/tabtab
 !/.config/tridactyl
+!/.config/vde
 !/.config/vivid
 !/.config/vscode
+!/.config/wezterm
 !/.config/yabai
 !/.config/zeno
-!/.config/vde
-!/.config/wezterm
-/.config/karabiner/automatic_backups
 
 # data
 /data

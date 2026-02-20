@@ -8,6 +8,7 @@ uvx = true
 
 [tools]
 bun = "latest"
+"cargo:octorus" = "latest"
 "cargo:similarity-ts" = "latest"
 node = "latest"
 "npm:@aikidosec/safe-chain" = "latest"
