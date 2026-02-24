@@ -10,6 +10,38 @@
     "defaultMode": "acceptEdits"
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "vde-monitor-hook PreToolUse"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "vde-monitor-hook PostToolUse"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "vde-monitor-hook Notification"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "matcher": "",
@@ -19,53 +51,22 @@
             "command": "vde-notifier --claude"
           }
         ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/dotfiles/bin/claude-pre_tool_use-hook_bash.ts"
-          }
-        ]
       },
       {
-        "matcher": "Grep",
         "hooks": [
           {
             "type": "command",
-            "command": "~/dotfiles/bin/claude-pre_tool_use-hook_grep.ts"
+            "command": "vde-monitor-hook Stop"
           }
         ]
       }
     ],
-    "PostToolUse": [
+    "UserPromptSubmit": [
       {
-        "matcher": "Edit",
         "hooks": [
           {
             "type": "command",
-            "command": "~/dotfiles/bin/claude-post_tool_use-hook_eol.ts"
-          }
-        ]
-      },
-      {
-        "matcher": "MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/dotfiles/bin/claude-post_tool_use-hook_eol.ts"
-          }
-        ]
-      },
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/dotfiles/bin/claude-post_tool_use-hook_eol.ts"
+            "command": "vde-monitor-hook UserPromptSubmit"
           }
         ]
       }
