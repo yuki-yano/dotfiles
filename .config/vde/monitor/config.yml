@@ -1,0 +1,20 @@
+multiplexer:
+  backend: tmux
+screen:
+  image:
+    backend: alacritty
+dangerKeys:
+  - C-c
+  - C-d
+  - C-z
+dangerCommandPatterns: []
+launch:
+  agents:
+    codex:
+      options:
+        - --yolo
+    claude:
+      options:
+        - --dangerously-skip-permissions
+workspaceTabs:
+  displayMode: all
