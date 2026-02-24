@@ -137,19 +137,32 @@ local function exit_to_normal()
   vim.api.nvim_feedkeys(esc, 'nx', false)
 end
 
+local function has_sendable_text(text)
+  return type(text) == 'string' and text:find('%S') ~= nil
+end
+
+local function to_send_content(text)
+  if not has_sendable_text(text) then
+    return nil
+  end
+
+  local content = table.concat(vim.split(text, '\n', { plain = true }), '\n')
+  if not content:find('\n$') then
+    content = content .. '\n'
+  end
+
+  return content
+end
+
 local function send_editprompt(opts)
   local auto_send = not opts or opts.auto_send ~= false
   local bufnr = (M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr)) and M.bufnr or vim.api.nvim_get_current_buf()
   local text = get_buffer_text(bufnr)
-  local content = ''
-  if text ~= '' then
-    local lines = vim.split(text, '\n', { plain = true })
-    content = table.concat(lines, '\n')
-    if content ~= '' and not content:find('\n$') then
-      content = content .. '\n'
-    end
-    set_clipboard(text)
+  local content = to_send_content(text)
+  if not content then
+    return
   end
+  set_clipboard(text)
 
   pcall(function()
     require('cmp').confirm({ select = true })
@@ -184,20 +197,16 @@ local function send_editprompt_visual(opts)
   local end_pos = vim.fn.getpos('.')
   exit_to_normal()
   local selection = get_visual_selection(bufnr, mode, start_pos, end_pos)
-  if not selection or selection.text == '' then
+  if not selection then
     return
   end
 
-  local content = ''
   local text = selection.text
-  if text ~= '' then
-    local lines = vim.split(text, '\n', { plain = true })
-    content = table.concat(lines, '\n')
-    if content ~= '' and not content:find('\n$') then
-      content = content .. '\n'
-    end
-    set_clipboard(text)
+  local content = to_send_content(text)
+  if not content then
+    return
   end
+  set_clipboard(text)
 
   pcall(function()
     require('cmp').confirm({ select = true })
@@ -345,6 +354,29 @@ if M.is_editprompt() then
   local function is_buffer_empty(bufnr)
     return get_buffer_text(bufnr) == ''
   end
+
+  local function is_buffer_blank_or_whitespace(bufnr)
+    local text = get_buffer_text(bufnr)
+    return not has_sendable_text(text)
+  end
+
+  vim.keymap.set('n', '<C-d>', function()
+    if is_buffer_blank_or_whitespace() then
+      vim.cmd('quit!')
+      return
+    end
+    vim.cmd('normal! <C-d>')
+  end, { silent = true, buffer = true, nowait = true })
+
+  vim.keymap.set('i', '<C-d>', function()
+    if is_buffer_blank_or_whitespace() then
+      vim.schedule(function()
+        vim.cmd('quit!')
+      end)
+      return ''
+    end
+    return '<C-d>'
+  end, { silent = true, buffer = true, nowait = true, expr = true })
 
   local function map_tmux_normal_nav(lhs, dir)
     vim.keymap.set('n', lhs, function()
