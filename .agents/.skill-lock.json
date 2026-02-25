@@ -1,0 +1,89 @@
+{
+  "version": 3,
+  "skills": {
+    "vercel-composition-patterns": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/agent-skills.git",
+      "skillPath": "skills/composition-patterns/SKILL.md",
+      "skillFolderHash": "",
+      "installedAt": "2026-01-27T04:52:28.026Z",
+      "updatedAt": "2026-02-24T10:23:49.627Z"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/agent-skills.git",
+      "skillPath": "skills/react-best-practices/SKILL.md",
+      "skillFolderHash": "079b06a135401704ea94ab74c7c9d86c92ba259f",
+      "installedAt": "2026-01-27T04:52:28.041Z",
+      "updatedAt": "2026-01-27T04:52:28.041Z"
+    },
+    "hono-routing": {
+      "source": "jezweb/claude-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/jezweb/claude-skills.git",
+      "skillPath": "skills/hono-routing/SKILL.md",
+      "skillFolderHash": "bcbd5665291da91fa8322b6dcc2f8f9fb34ae818",
+      "installedAt": "2026-01-27T05:00:23.961Z",
+      "updatedAt": "2026-01-27T05:00:23.961Z"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "skillFolderHash": "928950704df8a8b885c03de5da626331e6f29cf8",
+      "installedAt": "2026-01-27T05:05:30.797Z",
+      "updatedAt": "2026-01-27T05:05:30.797Z"
+    },
+    "typescript-advanced-types": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/wshobson/agents.git",
+      "skillPath": "plugins/javascript-typescript/skills/typescript-advanced-types/SKILL.md",
+      "skillFolderHash": "782e78a277e639718b0f9fec905ca51bb16a5a95",
+      "installedAt": "2026-01-27T06:33:16.488Z",
+      "updatedAt": "2026-01-27T06:33:16.488Z"
+    },
+    "agent-browser": {
+      "source": "vercel-labs/agent-browser",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/agent-browser.git",
+      "skillPath": "skills/agent-browser/SKILL.md",
+      "skillFolderHash": "",
+      "installedAt": "2026-01-27T08:49:59.216Z",
+      "updatedAt": "2026-02-24T10:19:18.217Z"
+    },
+    "react-doctor": {
+      "source": "millionco/react-doctor",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/millionco/react-doctor.git",
+      "skillPath": "skills/react-doctor/SKILL.md",
+      "skillFolderHash": "",
+      "installedAt": "2026-02-19T04:23:10.496Z",
+      "updatedAt": "2026-02-24T10:23:51.734Z"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/skills.git",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "skillFolderHash": "c2f31172b6f256272305a5e6e7228b258446899f",
+      "installedAt": "2026-02-19T04:23:24.650Z",
+      "updatedAt": "2026-02-19T04:23:24.650Z"
+    },
+    "context7": {
+      "source": "intellectronica/agent-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/intellectronica/agent-skills.git",
+      "skillPath": "skills/context7/SKILL.md",
+      "skillFolderHash": "c7ab574e006997d98e8a2d8fb7a1db0d2477b180",
+      "installedAt": "2026-02-20T11:53:52.725Z",
+      "updatedAt": "2026-02-20T11:53:52.725Z"
+    }
+  },
+  "dismissed": {
+    "findSkillsPrompt": true
+  }
+}

@@ -4,6 +4,7 @@ import { $ } from "@david/dax";
 
 // 設定
 const DOTFILES_SRCS = [
+  ".agents",
   ".bashrc",
   ".config",
   ".ctags.d",

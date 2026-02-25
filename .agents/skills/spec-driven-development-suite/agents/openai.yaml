@@ -1,0 +1,3 @@
+interface:
+  display_name: "仕様駆動開発スイート"
+  short_description: "仕様駆動開発を単体運用で完結させる"

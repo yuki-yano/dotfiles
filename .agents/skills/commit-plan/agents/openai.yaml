@@ -1,0 +1,4 @@
+interface:
+  display_name: "コミット計画"
+  short_description: "Git差分を意図別に整理し安全にコミット計画を進める"
+  default_prompt: "$commit-plan を使って、まず計画のみ提示し、1文字確認後に実行してください。"

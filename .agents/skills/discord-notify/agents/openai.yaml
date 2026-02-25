@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deno Discord 通知"
+  short_description: "Discord通知規約を守ってDenoで通知送信"
+  default_prompt: "$deno-discord-notify を使って、明示要求時のみ Discord 通知を作成し、タイトル規約と本文規約を満たして送信してください。"

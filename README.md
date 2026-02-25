@@ -84,11 +84,11 @@ Put `~/dotfiles/bin` on your `PATH` (zsh does this automatically) so helper scri
 | `deno task coteditor:install` / `coteditor:uninstall` | Symlink/unsymlink the CotEditor CLI. |
 | `deno task help` | Prints grouped help text with descriptions of every task. |
 
-Prefer Deno tasks, but the legacy `Rakefile` mirrors the same targets (`bundle exec rake dotfiles:install`, `rake brew:bundle`, etc.) if Ruby is easier in a constrained environment.
+This repository uses Deno tasks as the single automation entrypoint (`deno task ...`).
 
 ## Repository Overview
 
-- `deno.json`, `tasks.ts`, `Rakefile` – automation entrypoints (Deno-first, Ruby fallback) controlling symlinks, Homebrew/MAS installations, npm globals, tmux terminfo, CotEditor CLI, and dry-run behavior.
+- `deno.json`, `tasks.ts` – automation entrypoints controlling symlinks, Homebrew/MAS installations, npm globals, tmux terminfo, CotEditor CLI, and dry-run behavior.
 - `Brewfile`, `Caskfile`, `Masfile`, `NpmGlobal` – declarative manifests for CLI formulae, casks, App Store apps, and yarn global packages.
 - `.envrc` – placeholder for direnv; add secrets or environment-specific exports locally.
 - `.bashrc`, `.zshenv`, `.zprofile`, `.zshrc`, `.zsh/` – shell bootstrap; zsh is the primary shell, bash is still configured for sandboxed Homebrew calls.

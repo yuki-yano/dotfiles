@@ -1,0 +1,4 @@
+interface:
+  display_name: "OSS Implementation Research"
+  short_description: "opensrcを優先し、履歴調査時のみcloneでOSS実装を調査する"
+  default_prompt: "Use $oss-implementation-research with an opensrc-first workflow: fetch sources with opensrc into a safe reference location via --cwd and --modify=false, and escalate to git clone only when commit-level history analysis is required."

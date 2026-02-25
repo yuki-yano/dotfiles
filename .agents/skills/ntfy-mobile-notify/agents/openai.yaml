@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ntfy スマホ通知"
+  short_description: "明示要求時のみntfyでスマホ通知を送信"
+  default_prompt: "$ntfy-mobile-notify を使って、Codex/Claude Code の出し分けとタイトル規約、100-200字要約の条件を満たすスマホ通知を送信してください。"
