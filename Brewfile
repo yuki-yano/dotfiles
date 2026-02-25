@@ -73,6 +73,7 @@ install delphinus/sfmono-square/sfmono-square
 install curl
 install efm-langserver
 install fastfetch
+install gitleaks
 install global
 install gojq
 install graphviz
