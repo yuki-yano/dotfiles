@@ -20,6 +20,7 @@ presets:
                 - name: "term3"
         - name: "coding agent"
           command: "codex --yolo"
+
   ai-workbench:
     name: "AI Assisted Workbench"
     description: "Three columns across; left and center columns split into upper and lower panes, rightmost reserved for the AI client"
@@ -39,7 +40,7 @@ presets:
             - name: "work-center-top"
             - name: "work-center-bottom"
         - type: vertical
-          ratio: [8, 2]
+          ratio: [1, "22c"]
           panes:
             - name: "codex"
               command: "codex --yolo"
@@ -47,6 +48,7 @@ presets:
               command: "editprompt open --target-pane {{pane_id:codex}}"
               focus: true
               ephemeral: true
+
   codex-and-claude:
     name: codex-and-claude
     description: "Input to Codex and Claude in parallel"
@@ -56,14 +58,26 @@ presets:
       ratio: [25, 37.5, 37.5]
       panes:
         - type: vertical
-          ratio: [75, 25]
+          ratio: [1, "22c"]
           panes:
             - name: zsh
             - name: editprompt
               command: "editprompt open --target-pane {{pane_id:codex}} --target-pane {{pane_id:claude}}"
               focus: true
               ephemeral: true
-        - name: codex
-          command: "codex --yolo"
-        - name: claude
-          command: "claude --dangerously-skip-permissions"
+        - type: vertical
+          ratio: [1, "22c"]
+          panes:
+            - name: codex
+              command: "codex --yolo"
+            - name: editprompt-codex
+              command: "editprompt open --target-pane {{pane_id:codex}}"
+              ephemeral: true
+        - type: vertical
+          ratio: [1, "22c"]
+          panes:
+            - name: claude
+              command: "claude --dangerously-skip-permissions"
+            - name: editprompt-claude
+              command: "editprompt open --target-pane {{pane_id:claude}}"
+              ephemeral: true
