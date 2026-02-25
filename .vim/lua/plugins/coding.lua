@@ -183,7 +183,6 @@ return {
             return string.format('%s → %s', item.source, item.target)
           end,
           mappings = {
-            { source = ';jp', target = '日本語で説明して' },
             { source = ';co', target = 'commitをして' },
             { source = ';gb', target = '作業用のbranchを作成してから作業を始めて' },
             { source = ';noe', target = 'まだ実際の編集はしないで' },
@@ -195,7 +194,8 @@ return {
             { source = ';sd', target = '承認するからsddでdesignを実行して' },
             { source = ';st', target = '承認するからsddでtasksを実行して' },
             { source = ';si', target = '承認するからsddでimplを実行して' },
-            { source = ';hitl', target = '分からない事があったらhitl mcpで人に確認して' },
+            { source = ';re', target = 'レビューして' },
+            { source = ';rer', target = '再レビューして' },
           },
         })
         table.insert(sources, 1, {
