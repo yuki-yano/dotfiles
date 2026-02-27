@@ -127,8 +127,8 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 
 - `.tmux.conf` moves the prefix to `Ctrl-y`, sets `default-terminal` to `tmux-256color`, configures vi-style copy-mode bindings, uses mouse mode, and integrates with `reattach-to-user-namespace` for clipboard access.
 - Smart pane navigation uses helper scripts (`bin/tmux-smart-switch-pane`) and process detection to seamlessly move between Neovim, Claude panes, zsh shells, or fzf prompts.
-- Key bindings trigger scripts: `M-r` launches `tmux-session-manager`, `M-t` runs `ghq-project-selector.zsh`, `M-u` toggles transparent panes, `M-i` opens `editprompt`, `M-c` spawns cwd windows, etc.
-- Status line widgets call binaries in `bin/`: `tmux-statusline-sessions`, `tmux-status-ccusage`, `tmux-pwd`, `wifi`, `battery`, plus `tmux-auto-rename-session` keeps session names fresh.
+- Key bindings trigger scripts: `M-r` launches `bunx --bun vtm session-manager`, `M-t` runs `ghq-project-selector.zsh`, `M-u` toggles transparent panes, `M-i` opens `editprompt`, `M-c` spawns cwd windows, etc.
+- Status line widgets call binaries in `bin/` and external tools: `vtm statusline-sessions`, `tmux-status-ccusage`, `tmux-pwd`, `wifi`, `battery`, plus `tmux-auto-rename-session` keeps session names fresh.
 - `.tmux/tmux-256color.terminfo` plus `deno task tmux:install` ensures colors/italics are correct in WezTerm/Alacritty.
 
 ## Window & Input Automation
