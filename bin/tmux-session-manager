@@ -48,6 +48,7 @@ type RunCommandOptions = {
 type PaneInfo = {
   id: string;
   pid: string;
+  tty: string;
 };
 
 type PreviewSessionInfo = {
@@ -652,13 +653,70 @@ async function capturePaneTail(target: string, tailLines: number): Promise<strin
   return lines.slice(-tailLines);
 }
 
+function basenameFromPath(path: string): string {
+  const normalized = path.replace(/\/+$/, "");
+  if (!normalized) {
+    return "";
+  }
+  const parts = normalized.split("/");
+  return parts[parts.length - 1] ?? "";
+}
+
+function shortenPath(path: string): string {
+  if (!path) {
+    return "";
+  }
+  const home = Deno.env.get("HOME") ?? "";
+  if (home && path.startsWith(`${home}/`)) {
+    return `~/${path.slice(home.length + 1)}`;
+  }
+  if (home && path === home) {
+    return "~";
+  }
+  return path;
+}
+
+async function collectPaneCurrentPath(target: string): Promise<string> {
+  const path = (await runCommand("tmux", [
+    "display-message",
+    "-p",
+    "-t",
+    target,
+    "#{pane_current_path}",
+  ], { allowFail: true })).trim();
+  return path;
+}
+
+type RepoInfo = {
+  name: string;
+  rootPath: string;
+};
+
+async function collectRepoInfo(path: string): Promise<RepoInfo | null> {
+  if (!path) {
+    return null;
+  }
+  const gitRoot = (await runCommand("git", ["-C", path, "rev-parse", "--show-toplevel"], { allowFail: true })).trim();
+  if (!gitRoot) {
+    return null;
+  }
+  const name = basenameFromPath(gitRoot);
+  if (!name) {
+    return null;
+  }
+  return {
+    name,
+    rootPath: gitRoot,
+  };
+}
+
 async function collectPaneInfo(target: string, recursive: boolean): Promise<PaneInfo[]> {
   const args = ["list-panes"];
   if (recursive) {
     args.push("-s");
   }
   args.push("-t", target);
-  args.push("-F", "#{pane_id}\t#{pane_pid}");
+  args.push("-F", "#{pane_id}\t#{pane_pid}\t#{pane_tty}");
   const output = await runCommand("tmux", args, { allowFail: true });
   if (!output) {
     return [];
@@ -669,18 +727,84 @@ async function collectPaneInfo(target: string, recursive: boolean): Promise<Pane
     .map((line) => line.trim())
     .filter((line) => line.length > 0)
     .map((line) => {
-      const [id, pid] = line.split("\t");
+      const [id, pid, tty] = line.split("\t");
       return {
         id: (id ?? "").trim(),
         pid: (pid ?? "").trim(),
+        tty: (tty ?? "").trim(),
       };
     })
     .filter((pane) => pane.id.length > 0);
 }
 
+async function collectSinglePaneInfo(target: string): Promise<PaneInfo[]> {
+  const output = await runCommand("tmux", [
+    "display-message",
+    "-p",
+    "-t",
+    target,
+    "#{pane_id}\t#{pane_pid}\t#{pane_tty}",
+  ], { allowFail: true });
+  if (!output) {
+    return [];
+  }
+
+  const [line] = output
+    .split(/\r?\n/)
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0);
+  if (!line) {
+    return [];
+  }
+
+  const [id, pid, tty] = line.split("\t");
+  const pane: PaneInfo = {
+    id: (id ?? "").trim(),
+    pid: (pid ?? "").trim(),
+    tty: (tty ?? "").trim(),
+  };
+  return pane.id ? [pane] : [];
+}
+
+function addPgidsFromOutput(output: string, pgids: Set<string>): void {
+  for (const part of output.split(/\s+/)) {
+    if (/^\d+$/.test(part)) {
+      pgids.add(part);
+    }
+  }
+}
+
+function normalizePaneTty(tty: string): string {
+  const normalized = tty.trim();
+  if (!normalized || normalized === "?" || normalized === "-") {
+    return "";
+  }
+  return normalized.startsWith("/dev/") ? normalized.slice("/dev/".length) : normalized;
+}
+
+async function collectPanePgids(pane: PaneInfo): Promise<Set<string>> {
+  const pgids = new Set<string>();
+  const tty = normalizePaneTty(pane.tty);
+
+  if (tty) {
+    const ttyOutput = await runCommand("ps", ["-t", tty, "-o", "pgid="], { allowFail: true });
+    addPgidsFromOutput(ttyOutput, pgids);
+  }
+
+  const pid = pane.pid;
+  if (pid && /^\d+$/.test(pid)) {
+    const pgidOutput = await runCommand("ps", ["-o", "pgid=", "-p", pid], { allowFail: true });
+    addPgidsFromOutput(pgidOutput, pgids);
+  }
+
+  return pgids;
+}
+
 type CleanKillOptions = {
   target: string;
   recursive: boolean;
+  singlePane?: boolean;
+  includeCurrentPane?: boolean;
   finalCommand: {
     cmd: string;
     args: string[];
@@ -688,14 +812,18 @@ type CleanKillOptions = {
 };
 
 async function cleanKillTarget(options: CleanKillOptions): Promise<void> {
-  const panes = await collectPaneInfo(options.target, options.recursive);
+  const panes = options.singlePane
+    ? await collectSinglePaneInfo(options.target)
+    : await collectPaneInfo(options.target, options.recursive);
   if (panes.length === 0) {
     await runCommand(options.finalCommand.cmd, options.finalCommand.args, { allowFail: true });
     return;
   }
 
   const currentPane = Deno.env.get("TMUX_PANE") ?? "";
-  const panesToSignal = panes.filter((pane) => pane.id !== currentPane);
+  const panesToSignal = options.includeCurrentPane
+    ? panes
+    : panes.filter((pane) => pane.id !== currentPane);
 
   if (panesToSignal.length > 0) {
     await Promise.all(
@@ -710,17 +838,11 @@ async function cleanKillTarget(options: CleanKillOptions): Promise<void> {
   const pgids = new Set<string>();
 
   for (const pane of panesToSignal) {
-    const pid = pane.pid;
-    if (!pid || !/^\d+$/.test(pid)) {
-      continue;
-    }
-    const pgidOutput = (await runCommand("ps", ["-o", "pgid=", "-p", pid], { allowFail: true })).trim();
-    if (!pgidOutput) {
-      continue;
-    }
-    const normalized = pgidOutput.split(/\s+/).find((part) => part.length > 0);
-    if (normalized) {
-      pgids.add(normalized);
+    const panePgids = await collectPanePgids(pane);
+    for (const pgid of panePgids) {
+      if (pgid.length > 0) {
+        pgids.add(pgid);
+      }
     }
   }
 
@@ -806,6 +928,47 @@ async function killWindowClean(name: string): Promise<void> {
       args: ["kill-window", "-t", name],
     },
   });
+}
+
+async function killPaneClean(name: string): Promise<void> {
+  await cleanKillTarget({
+    target: name,
+    recursive: false,
+    singlePane: true,
+    includeCurrentPane: true,
+    finalCommand: {
+      cmd: "tmux",
+      args: ["kill-pane", "-t", name],
+    },
+  });
+}
+
+type DirectCommandResult = { handled: boolean; exitCode?: number };
+
+async function handleDirectCommand(args: string[]): Promise<DirectCommandResult> {
+  const [name, target] = args;
+
+  if (name !== "kill-window" && name !== "kill-pane") {
+    return { handled: false };
+  }
+
+  if (target === "-h" || target === "--help") {
+    console.log(`Usage: tmux-session-manager ${name} <target>`);
+    return { handled: true, exitCode: 0 };
+  }
+
+  if (!target) {
+    console.error(`Usage: tmux-session-manager ${name} <target>`);
+    return { handled: true, exitCode: 2 };
+  }
+
+  if (name === "kill-window") {
+    await killWindowClean(target);
+  } else {
+    await killPaneClean(target);
+  }
+
+  return { handled: true };
 }
 
 async function killServerClean(): Promise<void> {
@@ -962,8 +1125,11 @@ async function renderSessionPreview(sessionName: string): Promise<string> {
 
   const windows = await collectWindowsForSession(sessionName);
   const activeWindow = windows.find((window) => window.active) ?? windows[0];
+  const activePaneTarget = activeWindow ? `${sessionName}:${activeWindow.index}.0` : "";
+  const activePanePath = activePaneTarget ? await collectPaneCurrentPath(activePaneTarget) : "";
+  const repoInfo = activePanePath ? await collectRepoInfo(activePanePath) : null;
   const captureLines = computeSessionCaptureLines(readPreviewLines(), windows.length);
-  const panePreview = activeWindow ? await capturePaneTail(`${sessionName}:${activeWindow.index}.0`, captureLines) : [];
+  const panePreview = activePaneTarget ? await capturePaneTail(activePaneTarget, captureLines) : [];
 
   const lines: string[] = [];
   lines.push(...renderHeaderBox(`Session ${sessionName}`));
@@ -979,6 +1145,16 @@ async function renderSessionPreview(sessionName: string): Promise<string> {
       {
         label: "Last Activity",
         value: `${getActivityBadge(info.activity)} ${colors.dim(formatAgoFromEpoch(info.activity))}`,
+      },
+      {
+        label: "Repo",
+        value: repoInfo
+          ? `${colors.cyan(repoInfo.name)} ${colors.dim(`(${truncateText(shortenPath(repoInfo.rootPath), 44)})`)}`
+          : colors.dim("(not git repo)"),
+      },
+      {
+        label: "Path",
+        value: activePanePath ? colors.dim(truncateText(shortenPath(activePanePath), 52)) : colors.dim("(unknown)"),
       },
     ], "Session Info"),
   );
@@ -1028,6 +1204,10 @@ async function renderWindowPreview(target: string): Promise<string> {
   }
 
   const panes = await collectPreviewPanes(sessionName, windowIndex);
+  const activePane = panes.find((pane) => pane.active) ?? panes[0];
+  const activePaneTarget = activePane ? `${sessionName}:${windowIndex}.${activePane.index}` : "";
+  const activePanePath = activePaneTarget ? await collectPaneCurrentPath(activePaneTarget) : "";
+  const repoInfo = activePanePath ? await collectRepoInfo(activePanePath) : null;
   const perPaneLines = computePerPaneCaptureLines(readPreviewLines(), panes.length);
 
   const lines: string[] = [];
@@ -1040,6 +1220,16 @@ async function renderWindowPreview(target: string): Promise<string> {
       {
         label: "Command",
         value: targetWindow.command ? colors.magenta(targetWindow.command) : colors.dim("(unknown)"),
+      },
+      {
+        label: "Repo",
+        value: repoInfo
+          ? `${colors.cyan(repoInfo.name)} ${colors.dim(`(${truncateText(shortenPath(repoInfo.rootPath), 44)})`)}`
+          : colors.dim("(not git repo)"),
+      },
+      {
+        label: "Path",
+        value: activePanePath ? colors.dim(truncateText(shortenPath(activePanePath), 52)) : colors.dim("(unknown)"),
       },
     ], "Window Info"),
   );
@@ -1155,7 +1345,7 @@ async function runFzf(
   const scriptPath = fromFileUrl(import.meta.url);
   const previewWidth = await getTmuxOption("session-manager-preview-width", DEFAULT_PREVIEW_WIDTH);
   const fzfBorderStyle = await getTmuxOption("session-manager-fzf-border", DEFAULT_FZF_BORDER);
-  const fzfBorderOption = buildFzfBorderOption(fzfBorderStyle);
+  const fzfBorderOption = inTmux ? "--border=none" : buildFzfBorderOption(fzfBorderStyle);
   const previewRefreshMs = normalizeRefreshMs(
     await getTmuxOption("session-manager-preview-refresh-ms", String(DEFAULT_PREVIEW_REFRESH_MS)),
   );
@@ -1167,7 +1357,7 @@ async function runFzf(
   const commonArgs = [
     "--ansi",
     "--prompt=tmux> ",
-    "--header=Enter switch | C-q kill | C-t new | C-r rename | C-/ preview | C-l refresh | C-d/C-u scroll",
+    "--header=Enter switch | C-q kill | C-t new | C-r rename | C-d/C-u scroll",
     fzfBorderOption,
     `--delimiter=${"\t"}`,
     "--with-nth=3",
@@ -1181,8 +1371,6 @@ async function runFzf(
     "--multi",
     `--preview=${previewCommand}`,
     `--preview-window=${previewWindow}`,
-    "--bind=ctrl-/:toggle-preview",
-    "--bind=ctrl-l:refresh-preview",
     "--bind=ctrl-d:preview-page-down",
     "--bind=ctrl-u:preview-page-up",
   ];
@@ -1380,13 +1568,22 @@ async function openPopupIfNeeded(popup: boolean): Promise<void> {
 }
 
 async function main(): Promise<void> {
+  const directResult = await handleDirectCommand(Deno.args);
+  if (directResult.handled) {
+    if (typeof directResult.exitCode === "number") {
+      Deno.exit(directResult.exitCode);
+    }
+    return;
+  }
+
   const cli = new Command()
     .name("tmux-session-manager")
     .description("tmux session manager with unified fzf shortcuts")
     .option("--popup", "Internal flag to skip popup", { default: false })
     .option("--render-preview <action:string>", "Internal preview renderer")
-    .option("--preview-name <name:string>", "Internal preview target")
-    .action(async (
+    .option("--preview-name <name:string>", "Internal preview target");
+
+  cli.action(async (
       { popup, renderPreview, previewName }: { popup: boolean; renderPreview?: string; previewName?: string },
     ) => {
       if (renderPreview && typeof previewName === "string") {
