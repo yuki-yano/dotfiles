@@ -1,0 +1,4 @@
+interface:
+  display_name: "Draw.io 図作成"
+  short_description: "draw.io図を生成しPNG/SVG/PDFへ書き出す"
+  default_prompt: "$drawio を使って、要件から draw.io の .drawio を生成し、必要なら .drawio.png / .drawio.svg / .drawio.pdf まで出力してください。"

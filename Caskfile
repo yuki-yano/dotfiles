@@ -42,6 +42,7 @@ install --cask cleanshot
 install --cask default-folder-x
 install --cask discord
 install --cask docker
+install --cask drawio
 install --cask finicky
 install --cask firefox
 install --cask fork
