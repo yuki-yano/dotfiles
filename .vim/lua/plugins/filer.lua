@@ -14,6 +14,7 @@ return {
     cmd = { 'Fern' },
     init = function()
       vim.g['fern#disable_default_mappings'] = true
+      vim.g['fern#disable_auto_buffer_delete'] = true
       vim.g['fern#drawer_width'] = 40
       vim.g['fern#hide_cursor'] = true
       vim.g['fern#window_selector_use_popup'] = true
