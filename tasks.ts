@@ -30,6 +30,9 @@ if (!HOME) {
   Deno.exit(1);
 }
 const ZINIT_DIR = `${HOME}/.zinit`;
+const CLAUDE_DIR = `${SRC_DIR}/.config/claude`;
+const AGENTS_SKILLS_DIR = `${HOME}/.agents/skills`;
+const CLAUDE_SKILLS_DIR = `${CLAUDE_DIR}/skills`;
 
 // グローバル設定
 let DRY_RUN = false;
@@ -122,6 +125,36 @@ const tasks: Record<string, () => Promise<void> | void> = {
       }
     }
     console.log(DRY_RUN ? "[DRY RUN] Done!" : "Done!");
+  },
+
+  async "claude:link"() {
+    if (!(await fileExists(AGENTS_SKILLS_DIR))) {
+      console.error(`ERROR: ${AGENTS_SKILLS_DIR} does not exist`);
+      Deno.exit(1);
+    }
+
+    if (!(await fileExists(CLAUDE_DIR))) {
+      if (DRY_RUN) {
+        console.log(`[DRY RUN] Would create directory: ${CLAUDE_DIR}`);
+      } else {
+        await Deno.mkdir(CLAUDE_DIR, { recursive: true });
+      }
+    }
+
+    if (await fileExists(CLAUDE_SKILLS_DIR)) {
+      if (!(await isSymlink(CLAUDE_SKILLS_DIR))) {
+        console.error(`ERROR: ${CLAUDE_SKILLS_DIR} already exists and is not a symlink`);
+        console.error("Move or back up it before linking");
+        Deno.exit(1);
+      }
+    }
+
+    if (DRY_RUN) {
+      console.log(`[DRY RUN] Would link ${AGENTS_SKILLS_DIR} to ${CLAUDE_SKILLS_DIR}`);
+    } else {
+      await $`ln -sfn ${AGENTS_SKILLS_DIR} ${CLAUDE_SKILLS_DIR}`;
+      console.log(`Linked ${CLAUDE_SKILLS_DIR} -> ${AGENTS_SKILLS_DIR}`);
+    }
   },
 
   async "zsh:zinit:install"() {
@@ -336,6 +369,9 @@ const tasks: Record<string, () => Promise<void> | void> = {
     console.log("");
     console.log("  Dotfiles:");
     console.log("    deno task dotfiles:install    - Install dotfiles symlinks");
+    console.log(
+      "    deno task claude:link         - Link .config/claude/skills to ~/.agents/skills",
+    );
     console.log("");
     console.log("  Zsh:");
     console.log("    deno task zsh:zinit:install   - Install zinit plugin manager");
