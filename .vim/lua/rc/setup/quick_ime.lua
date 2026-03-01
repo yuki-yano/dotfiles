@@ -154,6 +154,30 @@ local function to_send_content(text)
   return content
 end
 
+local function should_save_editprompt_clipboard(text)
+  if type(text) ~= 'string' or text == '' then
+    return false
+  end
+
+  local lines = vim.split(text, '\n', { plain = true })
+  local first_line = lines[1] or ''
+  if not first_line:find('^/') then
+    return true
+  end
+
+  local first_line_args = first_line:match('^/%S*%s*(.*)$') or ''
+  if has_sendable_text(first_line_args) then
+    return true
+  end
+
+  local trailing_lines = {}
+  for i = 2, #lines do
+    trailing_lines[#trailing_lines + 1] = lines[i]
+  end
+  local trailing_text = table.concat(trailing_lines, '\n')
+  return has_sendable_text(trailing_text)
+end
+
 local function send_editprompt(opts)
   local auto_send = not opts or opts.auto_send ~= false
   local bufnr = (M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr)) and M.bufnr or vim.api.nvim_get_current_buf()
@@ -162,7 +186,9 @@ local function send_editprompt(opts)
   if not content then
     return
   end
-  set_clipboard(text)
+  if should_save_editprompt_clipboard(text) then
+    set_clipboard(text)
+  end
 
   pcall(function()
     require('cmp').confirm({ select = true })
@@ -206,7 +232,9 @@ local function send_editprompt_visual(opts)
   if not content then
     return
   end
-  set_clipboard(text)
+  if should_save_editprompt_clipboard(text) then
+    set_clipboard(text)
+  end
 
   pcall(function()
     require('cmp').confirm({ select = true })
