@@ -126,4 +126,7 @@ path=(/Applications/Alacritty.app/Contents/MacOS/(N-/) $path)
 # Added by Antigravity
 path=(~/.antigravity/antigravity/bin(N-/) $path)
 
+# Added by Obsidian
+export PATH="$PATH:/Applications/Obsidian.app/Contents/MacOS"
+
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:
