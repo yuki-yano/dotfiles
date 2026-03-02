@@ -18,6 +18,7 @@ tmp/
 !/.config/bat/
 !/.config/cage
 !/.config/claude/
+!/.config/codex-template/
 !/.config/efm-langserver
 !/.config/karabiner
 !/.config/mise

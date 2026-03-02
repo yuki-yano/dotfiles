@@ -1,6 +1,11 @@
 #!/usr/bin/env -S deno run --allow-read --allow-write --allow-env --allow-run --allow-sys
 
 import { $ } from "@david/dax";
+import {
+  applyCodexTemplate,
+  CodexTemplateApplyError,
+  formatCodexTemplateApplyError,
+} from "./bin/codex-template-apply.ts";
 
 // 設定
 const DOTFILES_SRCS = [
@@ -36,6 +41,7 @@ const CLAUDE_SKILLS_DIR = `${CLAUDE_DIR}/skills`;
 
 // グローバル設定
 let DRY_RUN = false;
+let APPLY = false;
 
 // ユーティリティ関数
 async function readLines(filename: string): Promise<string[]> {
@@ -70,19 +76,6 @@ function validateBrewCommand(command: string): boolean {
   const allowedCommands = ["install", "tap", "cask"];
   const parts = command.trim().split(/\s+/);
   return parts.length > 0 && allowedCommands.includes(parts[0]);
-}
-
-async function getBrewPrefix(): Promise<string> {
-  try {
-    const prefix = await $`brew --prefix`.text();
-    return prefix.trim();
-  } catch {
-    // Fallback for common paths
-    if (await fileExists("/opt/homebrew/bin/brew")) {
-      return "/opt/homebrew";
-    }
-    return "/usr/local";
-  }
 }
 
 // タスク定義
@@ -157,6 +150,22 @@ const tasks: Record<string, () => Promise<void> | void> = {
     }
   },
 
+  async "codex:template"() {
+    const dryRun = DRY_RUN || !APPLY;
+    const changed = await applyCodexTemplate({ dryRun });
+
+    if (dryRun) {
+      if (changed) {
+        console.log("");
+        console.log("Dry-run passed.");
+        console.log("To apply changes, run: deno task codex:template -- --apply");
+      } else {
+        console.log("");
+        console.log("Dry-run passed. No changes to apply.");
+      }
+    }
+  },
+
   async "zsh:zinit:install"() {
     if (await fileExists(ZINIT_DIR)) {
       console.error("Zinit directory already exists");
@@ -185,61 +194,6 @@ const tasks: Record<string, () => Promise<void> | void> = {
     } else {
       await $`rm -rf ${ZINIT_DIR}`;
       console.log(`Remove directory ${ZINIT_DIR}`);
-    }
-  },
-
-  async "tmux:install"() {
-    const terminfoPath = ".tmux/tmux-256color.terminfo";
-
-    if (!(await fileExists(terminfoPath))) {
-      console.error(`ERROR: ${terminfoPath} not found`);
-      Deno.exit(1);
-    }
-
-    if (DRY_RUN) {
-      console.log(`[DRY RUN] Would install terminfo from ${terminfoPath}`);
-    } else {
-      await $`tic -x ${terminfoPath}`;
-      console.log("tmux terminfo installed");
-    }
-  },
-
-  async "npm:install"() {
-    if (!(await fileExists("NpmGlobal"))) {
-      console.error("ERROR: NpmGlobal file not found");
-      Deno.exit(1);
-    }
-
-    const packages = await readLines("NpmGlobal");
-    if (packages.length === 0) {
-      console.log("No packages to install");
-      return;
-    }
-
-    if (DRY_RUN) {
-      console.log(`[DRY RUN] Would install: ${packages.join(", ")}`);
-    } else {
-      await $`yarn global add ${packages.join(" ")}`.printCommand();
-    }
-  },
-
-  async "npm:uninstall"() {
-    const globalDir = await $`yarn global dir`.text();
-    const dirPath = globalDir.trim();
-
-    if (DRY_RUN) {
-      console.log(`[DRY RUN] Would remove: ${dirPath}`);
-    } else {
-      await $`rm -rf ${dirPath}`;
-      console.log("Global node modules removed");
-    }
-  },
-
-  async "npm:upgrade"() {
-    if (DRY_RUN) {
-      console.log("[DRY RUN] Would run: yarn global upgrade");
-    } else {
-      await $`yarn global upgrade`.printCommand();
     }
   },
 
@@ -329,41 +283,6 @@ const tasks: Record<string, () => Promise<void> | void> = {
     }
   },
 
-  async "coteditor:install"() {
-    const brewPrefix = await getBrewPrefix();
-    const cotPath = "/Applications/CotEditor.app/Contents/SharedSupport/bin/cot";
-    const destPath = `${brewPrefix}/bin/cot`;
-
-    if (!(await fileExists(cotPath))) {
-      console.error("ERROR: CotEditor.app not found");
-      Deno.exit(1);
-    }
-
-    if (DRY_RUN) {
-      console.log(`[DRY RUN] Would link ${cotPath} to ${destPath}`);
-    } else {
-      await $`ln -sfn ${cotPath} ${destPath}`;
-      console.log("CotEditor command line tool installed");
-    }
-  },
-
-  async "coteditor:uninstall"() {
-    const brewPrefix = await getBrewPrefix();
-    const destPath = `${brewPrefix}/bin/cot`;
-
-    if (!(await fileExists(destPath))) {
-      console.log("CotEditor command line tool not found");
-      return;
-    }
-
-    if (DRY_RUN) {
-      console.log(`[DRY RUN] Would remove ${destPath}`);
-    } else {
-      await $`rm ${destPath}`;
-      console.log("CotEditor command line tool removed");
-    }
-  },
-
   help() {
     console.log("Available tasks:");
     console.log("");
@@ -372,18 +291,13 @@ const tasks: Record<string, () => Promise<void> | void> = {
     console.log(
       "    deno task claude:link         - Link .config/claude/skills to ~/.agents/skills",
     );
+    console.log(
+      "    deno task codex:template      - Dry-run apply codex template (use -- --apply to write)",
+    );
     console.log("");
     console.log("  Zsh:");
     console.log("    deno task zsh:zinit:install   - Install zinit plugin manager");
     console.log("    deno task zsh:zinit:uninstall - Uninstall zinit");
-    console.log("");
-    console.log("  tmux:");
-    console.log("    deno task tmux:install        - Install tmux terminfo");
-    console.log("");
-    console.log("  Node.js:");
-    console.log("    deno task npm:install         - Install global npm packages");
-    console.log("    deno task npm:uninstall       - Remove all global packages");
-    console.log("    deno task npm:upgrade         - Upgrade global packages");
     console.log("");
     console.log("  Homebrew:");
     console.log("    deno task brew:bundle         - Install Homebrew packages");
@@ -392,12 +306,9 @@ const tasks: Record<string, () => Promise<void> | void> = {
     console.log("  Mac App Store:");
     console.log("    deno task mas:install         - Install App Store apps");
     console.log("");
-    console.log("  CotEditor:");
-    console.log("    deno task coteditor:install   - Install command line tool");
-    console.log("    deno task coteditor:uninstall - Remove command line tool");
-    console.log("");
     console.log("Options:");
     console.log("    --dry-run                     - Show what would be done without making changes");
+    console.log("    --apply                       - Execute codex:template write (default is dry-run)");
   },
 };
 
@@ -409,6 +320,12 @@ if (import.meta.main) {
   if (dryRunIndex !== -1) {
     DRY_RUN = true;
     args.splice(dryRunIndex, 1);
+  }
+
+  const applyIndex = args.indexOf("--apply");
+  if (applyIndex !== -1) {
+    APPLY = true;
+    args.splice(applyIndex, 1);
   }
 
   const taskName = args[0];
@@ -429,6 +346,11 @@ if (import.meta.main) {
   try {
     await task();
   } catch (error) {
+    if (error instanceof CodexTemplateApplyError) {
+      console.error(formatCodexTemplateApplyError(error));
+      Deno.exit(1);
+    }
+
     console.error(`Task failed: ${taskName}`);
     console.error(error);
     Deno.exit(1);

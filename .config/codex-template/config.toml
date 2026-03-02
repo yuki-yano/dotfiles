@@ -1,0 +1,44 @@
+model = "gpt-5.3-codex"
+model_reasoning_effort = "xhigh"
+network_access = true
+web_search_request = true
+notify = [
+  "vde-notifier",
+  "--codex",
+  "--skip-codex-subagent",
+  "--skip-codex-non-interactive",
+  "--",
+  "vde-monitor-summary",
+  "--async"
+]
+tool_output_token_limit = 25000
+suppress_unstable_features_warning = true
+personality = "pragmatic"
+
+[agents]
+max_threads = 32
+max_depth = 2
+
+[agents.explorer]
+description = "Codebase research agent. Use for all code investigation, no edits."
+config_file = "~/.codex/agents/explorer.toml"
+
+[agents.worker]
+description = "Coding and bug fix agent. Use for implementation, refactoring, and running tests."
+config_file = "~/.codex/agents/worker.toml"
+
+[features]
+unified_exec = true
+shell_snapshot = true
+steer = true
+skills = true
+collaboration_modes = true
+apps = true
+multi_agent = true
+voice_transcription = true
+default_mode_request_user_input = true
+responses_websockets_v2 = true
+
+[tui]
+status_line = ["model-with-reasoning", "current-dir", "git-branch", "context-remaining"]
+theme = "catppuccin-mocha"
