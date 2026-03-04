@@ -8,10 +8,10 @@ extensions="${SIMILARITY_EXTENSIONS:-ts,tsx,js,jsx}"
 allow_excluded_target="${SIMILARITY_ALLOW_EXCLUDED_TARGET:-0}"
 timestamp="$(date +"%Y%m%d-%H%M%S")"
 run_id="${timestamp}-$$"
-run_dir="docs/tmp/duplication/runs/${run_id}"
+run_dir="z-ai/tmp/duplication/runs/${run_id}"
 report_path="${run_dir}/similarity-report.txt"
 meta_path="${run_dir}/scan-meta.env"
-plans_root="docs/plans"
+plans_root="z-ai/plans"
 active_dir="${plans_root}/active"
 completed_dir="${plans_root}/completed"
 cancelled_dir="${plans_root}/cancelled"
@@ -32,7 +32,7 @@ resolve_abs_path() {
 is_excluded_path() {
   local path="$1"
   case "${path}/" in
-    */node_modules/*|*/dist/*|*/build/*|*/coverage/*|*/.git/*|*/docs/tmp/*)
+    */node_modules/*|*/dist/*|*/build/*|*/coverage/*|*/.git/*|*/z-ai/tmp/*)
       return 0
       ;;
     *)
@@ -70,7 +70,7 @@ fi
 if [ -d "${target_path}" ]; then
   files_scanned="$(rg --files "${target_path}" 2>/dev/null \
     | rg '\.(ts|tsx|js|jsx)$' \
-    | rg -v '/(node_modules|dist|build|coverage|\.git|docs/tmp)/' \
+    | rg -v '/(node_modules|dist|build|coverage|\.git|z-ai/tmp)/' \
     | wc -l \
     | tr -d ' ' || true)"
 
@@ -81,7 +81,7 @@ if [ -d "${target_path}" ]; then
     -g '!**/build/**' \
     -g '!**/coverage/**' \
     -g '!**/.git/**' \
-    -g '!**/docs/tmp/**' 2>/dev/null \
+    -g '!**/z-ai/tmp/**' 2>/dev/null \
     | wc -l \
     | tr -d ' ' || true)"
 elif [ -f "${target_path}" ]; then
@@ -116,7 +116,7 @@ similarity-ts "${target_path}" \
   --exclude build \
   --exclude coverage \
   --exclude .git \
-  --exclude docs/tmp \
+  --exclude z-ai/tmp \
   > "${report_path}"
 
 {

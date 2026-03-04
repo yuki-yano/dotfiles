@@ -5,13 +5,13 @@
 分析対象: `<target_path>`
 スキャン閾値: `<threshold>`
 分析対象規模: `<files_scanned> files / <total_lines> lines`
-生ログ: `<docs/tmp/duplication/runs/<run-id>/similarity-report.txt>`
-計画ファイル: `<docs/plans/active/refactor-duplications-<run-id>.md>`
+生ログ: `<z-ai/tmp/duplication/runs/<run-id>/similarity-report.txt>`
+計画ファイル: `<z-ai/plans/active/refactor-duplications-<run-id>.md>`
 
 ## 状態遷移
 
-- 完了時: `状態: completed` に更新し、`docs/plans/completed/` へ移動
-- 中止時: `状態: cancelled` に更新し、`docs/plans/cancelled/` へ移動
+- 完了時: `状態: completed` に更新し、`z-ai/plans/completed/` へ移動
+- 中止時: `状態: cancelled` に更新し、`z-ai/plans/cancelled/` へ移動
 
 ## 検出概要
 

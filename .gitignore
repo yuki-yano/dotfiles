@@ -40,9 +40,6 @@ tmp/
 # data
 /data
 
-# ai
-/ai/
-
 # aider
 .aider*
 

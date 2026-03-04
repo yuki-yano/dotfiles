@@ -1,6 +1,3 @@
-# worktree
-.worktree
-
 # Shell
 .envrc
 
@@ -61,4 +58,4 @@ cspell.json
 .idea
 
 # AI
-security.lock
+/z-ai

@@ -1,4 +1,4 @@
 interface:
   display_name: "重複コード検知"
   short_description: "similarity-tsで重複を分析しリファクタ計画を作成する"
-  default_prompt: "$detect-code-duplication を使って TypeScript/JavaScript の重複を検知し、計画を docs/plans/active に作成して、完了時は completed・中止時は cancelled へ移動してください。"
+  default_prompt: "$detect-code-duplication を使って TypeScript/JavaScript の重複を検知し、計画を z-ai/plans/active に作成して、完了時は completed・中止時は cancelled へ移動してください。"

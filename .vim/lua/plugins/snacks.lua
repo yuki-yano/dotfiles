@@ -355,27 +355,12 @@ return {
       -- AI directory picker
       vim.keymap.set({ 'n' }, '<Plug>(ff)i', function()
         local cwd = vim.fn.getcwd()
-        local ai_dir = cwd .. '/ai'
-        local tmp_ai_dir = cwd .. '/tmp/ai'
-        local docs_dir = cwd .. '/docs'
-        local kiro_dir = cwd .. '/.kiro'
-        local has_ai = vim.fn.isdirectory(ai_dir) == 1
-        local has_tmp_ai = vim.fn.isdirectory(tmp_ai_dir) == 1
-        local has_docs = vim.fn.isdirectory(docs_dir) == 1
-        local has_kiro = vim.fn.isdirectory(kiro_dir) == 1
+        local z_ai_dir = cwd .. '/z-ai'
+        local has_z_ai = vim.fn.isdirectory(z_ai_dir) == 1
         local dirs = {}
 
-        if has_ai then
-          table.insert(dirs, 'ai')
-        end
-        if has_tmp_ai then
-          table.insert(dirs, 'tmp/ai')
-        end
-        if has_docs then
-          table.insert(dirs, 'docs')
-        end
-        if has_kiro then
-          table.insert(dirs, '.kiro')
+        if has_z_ai then
+          table.insert(dirs, 'z-ai')
         end
 
         if #dirs > 0 then
@@ -388,7 +373,7 @@ return {
             },
           })
         else
-          vim.notify('ai, tmp/ai, docs, or .kiro directory not found in current directory', vim.log.levels.WARN)
+          vim.notify('z-ai directory not found in current directory', vim.log.levels.WARN)
         end
       end)
     end,

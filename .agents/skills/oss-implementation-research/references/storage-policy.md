@@ -25,7 +25,7 @@
 
 ```bash
 repo_root="$(git rev-parse --show-toplevel)"
-candidate_base_dir="tmp/ai/references"
+candidate_base_dir="z-ai/references"
 find . -maxdepth 4 -type d
 git check-ignore -v "$candidate_base_dir/opensrc/.codex-ignore-probe"
 real_base="$(cd "$repo_root/$candidate_base_dir" && pwd -P)"
@@ -40,7 +40,7 @@ case "$real_base" in "$repo_root"|"$repo_root"/*) : ;; *) echo "outside-repo";; 
 
 - opensrc の base dir が決まっている場合は `<base-dir>/git-clones` を優先する。
 - opensrc と clone fallback を近い場所に置き、調査ログとの対応を取りやすくする。
-- 例: `target_dir="tmp/ai/references/git-clones"; git check-ignore -v "$target_dir/.codex-ignore-probe"` で追跡対象外を確認する。
+- 例: `target_dir="z-ai/references/git-clones"; git check-ignore -v "$target_dir/.codex-ignore-probe"` で追跡対象外を確認する。
 
 ## 曖昧時の扱い
 

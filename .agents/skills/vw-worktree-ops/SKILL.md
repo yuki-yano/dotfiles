@@ -154,7 +154,7 @@ vw absorb feature/foo --from feature/foo --keep-stash --allow-agent --allow-unsa
 補足:
 - primary worktree は clean である必要がある。
 - source worktree が dirty の場合は自動で stash して apply する。
-- `--from` は vw 管理 worktree 名のみ指定可能（`.worktree/` プレフィックス不可）。
+- `--from` は vw 管理 worktree 名のみ指定可能（`vde-worktree` 設定の `paths.worktreeRoot` 配下の実体パスを直接指定しない）。
 - `--keep-stash` を指定しない場合、適用後に stash エントリは drop される。
 - 非 TTY 実行では `--allow-agent` と `--allow-unsafe` を両方要求する。
 
@@ -169,7 +169,7 @@ vw unabsorb feature/foo --to feature/foo --keep-stash --allow-agent --allow-unsa
 - primary worktree は対象 branch に checkout されている必要がある。
 - primary worktree は dirty である必要がある。
 - target worktree は clean である必要がある。
-- `--to` は vw 管理 worktree 名のみ指定可能（`.worktree/` プレフィックス不可）。
+- `--to` は vw 管理 worktree 名のみ指定可能（`vde-worktree` 設定の `paths.worktreeRoot` 配下の実体パスを直接指定しない）。
 - `--keep-stash` を指定しない場合、適用後に stash エントリは drop される。
 - 非 TTY 実行では `--allow-agent` と `--allow-unsafe` を両方要求する。
 

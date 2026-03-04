@@ -7,18 +7,17 @@ description: similarity-ts を使って TypeScript/JavaScript の重複コード
 
 ## Overview
 
-重複コード検知を再現可能な手順で実行し、`docs/plans/active/` に優先度付きの計画を出力する。
-生ログは `docs/tmp/duplication/runs/<run-id>/` に保存し、計画書と分離する。
+重複コード検知を再現可能な手順で実行し、`z-ai/plans/active/` に優先度付きの計画を出力する。
+生ログは `z-ai/tmp/duplication/runs/<run-id>/` に保存し、計画書と分離する。
 
 ## Output Policy
 
-- 生ログ: `docs/tmp/duplication/runs/<run-id>/similarity-report.txt`
-- 実行メタ情報: `docs/tmp/duplication/runs/<run-id>/scan-meta.env`
-- 計画（作成時）: `docs/plans/active/refactor-duplications-<run-id>.md`
-- 計画（完了時）: `docs/plans/completed/`
-- 計画（中止時）: `docs/plans/cancelled/`
+- 生ログ: `z-ai/tmp/duplication/runs/<run-id>/similarity-report.txt`
+- 実行メタ情報: `z-ai/tmp/duplication/runs/<run-id>/scan-meta.env`
+- 計画（作成時）: `z-ai/plans/active/refactor-duplications-<run-id>.md`
+- 計画（完了時）: `z-ai/plans/completed/`
+- 計画（中止時）: `z-ai/plans/cancelled/`
 - 常に `mkdir -p` で出力先を作成する。
-- `ai/tmp` や `tmp/ai` には書き込まない。
 
 ## Plan States
 
@@ -42,7 +41,7 @@ description: similarity-ts を使って TypeScript/JavaScript の重複コード
   - `--threshold 0.60` 相当（環境変数 `SIMILARITY_THRESHOLD` で上書き可）
   - 拡張子 `ts,tsx,js,jsx`
   - 最小行数 `3`
-- 除外: `node_modules`, `dist`, `build`, `coverage`, `.git`, `docs/tmp`
+- 除外: `node_modules`, `dist`, `build`, `coverage`, `.git`, `z-ai/tmp`
 - 除外ディレクトリ配下を `target_path` で直接指定した場合もエラー終了する。
 - 除外ディレクトリを意図的に対象にする場合のみ `SIMILARITY_ALLOW_EXCLUDED_TARGET=1` を指定する。
 - スクリプト出力の `REPORT_PATH` と `PLAN_PATH` を控える。
