@@ -1,13 +1,13 @@
 ---
-name: deno-discord-notify
+name: discord-notify
 description: Discord 通知運用を統一する。ユーザーが明示要求した場合にのみ通知し、タイトル規約 `[$REPO_NAME] Codex ...` と詳細本文ルール（数百文字・改行）を守って Deno スクリプトで Webhook 送信する。実行主体が Claude か Codex かを判定し、username を切り替える運用に対応する。
 ---
 
-# Deno Discord Notify
+# Discord Notify
 
 ## 概要
 
-Discord 通知の運用ルールを守りつつ、`~/.agents/skills/deno-discord-notify/scripts/send_discord_notification.ts` を直接実行して通知を送信する。
+Discord 通知の運用ルールを守りつつ、`~/.agents/skills/discord-notify/scripts/send_discord_notification.ts` を直接実行して通知を送信する。
 
 ## 通知ポリシー
 
@@ -70,7 +70,7 @@ export DISCORD_NOTIFY_AVATAR_URL="https://avatars.githubusercontent.com/u/149570
 
 ```bash
 REPO_NAME=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "non-git")
-SKILL_SCRIPT="$HOME/.agents/skills/deno-discord-notify/scripts/send_discord_notification.ts"
+SKILL_SCRIPT="$HOME/.agents/skills/discord-notify/scripts/send_discord_notification.ts"
 
 deno run --allow-env --allow-net \
   "$SKILL_SCRIPT" \

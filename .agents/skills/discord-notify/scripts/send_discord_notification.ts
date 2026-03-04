@@ -40,7 +40,7 @@ const DEFAULT_AVATAR_URL = "https://avatars.githubusercontent.com/u/14957082";
 const AGENT_ENV_NAME = "DISCORD_NOTIFY_AGENT";
 
 const usage = `Usage:
-  deno run --allow-env --allow-net ~/.agents/skills/deno-discord-notify/scripts/send_discord_notification.ts --title "<title>" --body "<body>" [options]
+  deno run --allow-env --allow-net ~/.agents/skills/discord-notify/scripts/send_discord_notification.ts --title "<title>" --body "<body>" [options]
 
 Options:
   --title <value>         Required notification title
