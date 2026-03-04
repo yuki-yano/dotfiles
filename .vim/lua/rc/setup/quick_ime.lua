@@ -178,9 +178,154 @@ local function should_save_editprompt_clipboard(text)
   return has_sendable_text(trailing_text)
 end
 
+local editprompt_send_logs = {}
+local editprompt_sent_history = {}
+local editprompt_history_index = nil
+local editprompt_history_temp = nil
+local editprompt_stash_stack = {}
+
+M.editprompt_send_logs = editprompt_send_logs
+M.editprompt_sent_history = editprompt_sent_history
+M.editprompt_stash_stack = editprompt_stash_stack
+
+local function get_active_bufnr()
+  return (M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr)) and M.bufnr or vim.api.nvim_get_current_buf()
+end
+
+local function set_buffer_text(bufnr, text)
+  local lines = {}
+  if text ~= '' then
+    lines = vim.split(text, '\n', { plain = true })
+  end
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
+
+  local row = 1
+  local col = 0
+  if #lines > 0 then
+    row = #lines
+    col = #(lines[#lines] or '')
+  end
+
+  local win = vim.fn.bufwinid(bufnr)
+  if win ~= -1 then
+    vim.api.nvim_win_set_cursor(win, { row, col })
+  end
+end
+
+local function reset_editprompt_history_cursor()
+  editprompt_history_index = nil
+  editprompt_history_temp = nil
+end
+
+local function remember_confirmed_editprompt_history(text)
+  editprompt_sent_history[#editprompt_sent_history + 1] = text
+  reset_editprompt_history_cursor()
+end
+
+local function ensure_editprompt_history_session(bufnr)
+  local newest_index = #editprompt_sent_history + 1
+  if editprompt_history_index == nil then
+    editprompt_history_temp = get_buffer_text(bufnr)
+    editprompt_history_index = newest_index
+    return
+  end
+  if editprompt_history_index == newest_index then
+    editprompt_history_temp = get_buffer_text(bufnr)
+  end
+end
+
+local function navigate_editprompt_history(step)
+  local bufnr = get_active_bufnr()
+  ensure_editprompt_history_session(bufnr)
+
+  local newest_index = #editprompt_sent_history + 1
+  local next_index = editprompt_history_index + step
+  if next_index < 1 then
+    next_index = 1
+  elseif next_index > newest_index then
+    next_index = newest_index
+  end
+  editprompt_history_index = next_index
+
+  local text = ''
+  if next_index == newest_index then
+    text = editprompt_history_temp or ''
+  else
+    text = editprompt_sent_history[next_index] or ''
+  end
+  set_buffer_text(bufnr, text)
+end
+
+local function navigate_editprompt_history_async(step)
+  vim.schedule(function()
+    navigate_editprompt_history(step)
+  end)
+end
+
+local function push_editprompt_stash()
+  local bufnr = get_active_bufnr()
+  local text = get_buffer_text(bufnr)
+  if text == '' then
+    return
+  end
+
+  editprompt_stash_stack[#editprompt_stash_stack + 1] = text
+  vim.notify('editprompt stash push:\n' .. text, vim.log.levels.INFO)
+  set_buffer_text(bufnr, '')
+  reset_editprompt_history_cursor()
+end
+
+local function pop_editprompt_stash(bufnr)
+  local stashed = table.remove(editprompt_stash_stack)
+  if stashed == nil then
+    return false
+  end
+  set_buffer_text(bufnr, stashed)
+  reset_editprompt_history_cursor()
+  return true
+end
+
+local function append_editprompt_send_log(entry)
+  editprompt_send_logs[#editprompt_send_logs + 1] = entry
+end
+
+local function dispatch_editprompt_input(opts)
+  local cmd = { 'editprompt', 'input' }
+  if opts.auto_send then
+    table.insert(cmd, '--auto-send')
+  end
+  vim.list_extend(cmd, { '--', opts.content })
+
+  vim.system(cmd, { text = true }, function(obj)
+    vim.schedule(function()
+      local success = obj.code == 0
+      append_editprompt_send_log({
+        text = opts.text,
+        source = opts.source,
+        auto_send = opts.auto_send,
+        success = success,
+        code = obj.code,
+        sent_at = os.date('%Y-%m-%d %H:%M:%S'),
+      })
+
+      if success then
+        remember_confirmed_editprompt_history(opts.text)
+        if opts.on_success then
+          opts.on_success()
+        end
+        pop_editprompt_stash(opts.bufnr)
+      else
+        vim.notify('editprompt failed: ' .. (obj.stderr or 'unknown error'), vim.log.levels.ERROR)
+      end
+    end)
+  end)
+end
+
 local function send_editprompt(opts)
-  local auto_send = not opts or opts.auto_send ~= false
-  local bufnr = (M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr)) and M.bufnr or vim.api.nvim_get_current_buf()
+  opts = opts or {}
+  local auto_send = opts.auto_send ~= false
+  local source = opts.source or 'send_editprompt'
+  local bufnr = get_active_bufnr()
   local text = get_buffer_text(bufnr)
   local content = to_send_content(text)
   if not content then
@@ -194,30 +339,23 @@ local function send_editprompt(opts)
     require('cmp').confirm({ select = true })
   end)
 
-  local cmd = { 'editprompt', 'input' }
-  if auto_send then
-    table.insert(cmd, '--auto-send')
-  end
-  vim.list_extend(cmd, { '--', content })
-
-  vim.system(cmd, { text = true }, function(obj)
-    vim.schedule(function()
-      if obj.code == 0 then
-        vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {})
-        local win = vim.fn.bufwinid(bufnr)
-        if win ~= -1 then
-          vim.api.nvim_win_set_cursor(win, { 1, 0 }) -- Move cursor back to buffer start
-        end
-      else
-        vim.notify('editprompt failed: ' .. (obj.stderr or 'unknown error'), vim.log.levels.ERROR)
-      end
-    end)
-  end)
+  dispatch_editprompt_input({
+    bufnr = bufnr,
+    text = text,
+    content = content,
+    auto_send = auto_send,
+    source = source,
+    on_success = function()
+      set_buffer_text(bufnr, '')
+    end,
+  })
 end
 
 local function send_editprompt_visual(opts)
-  local auto_send = not opts or opts.auto_send ~= false
-  local bufnr = (M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr)) and M.bufnr or vim.api.nvim_get_current_buf()
+  opts = opts or {}
+  local auto_send = opts.auto_send ~= false
+  local source = opts.source or 'send_editprompt_visual'
+  local bufnr = get_active_bufnr()
   local mode = vim.fn.mode()
   local start_pos = vim.fn.getpos('v')
   local end_pos = vim.fn.getpos('.')
@@ -240,27 +378,22 @@ local function send_editprompt_visual(opts)
     require('cmp').confirm({ select = true })
   end)
 
-  local cmd = { 'editprompt', 'input' }
-  if auto_send then
-    table.insert(cmd, '--auto-send')
-  end
-  vim.list_extend(cmd, { '--', content })
-
-  vim.system(cmd, { text = true }, function(obj)
-    vim.schedule(function()
-      if obj.code == 0 then
-        selection.delete()
-        local win = vim.fn.bufwinid(bufnr)
-        if win ~= -1 then
-          local row, col = clamp_cursor(bufnr, selection.start_row + 1, selection.start_col)
-          vim.api.nvim_win_set_cursor(win, { row, col })
-        end
-        exit_to_normal()
-      else
-        vim.notify('editprompt failed: ' .. (obj.stderr or 'unknown error'), vim.log.levels.ERROR)
+  dispatch_editprompt_input({
+    bufnr = bufnr,
+    text = text,
+    content = content,
+    auto_send = auto_send,
+    source = source,
+    on_success = function()
+      selection.delete()
+      local win = vim.fn.bufwinid(bufnr)
+      if win ~= -1 then
+        local row, col = clamp_cursor(bufnr, selection.start_row + 1, selection.start_col)
+        vim.api.nvim_win_set_cursor(win, { row, col })
       end
-    end)
-  end)
+      exit_to_normal()
+    end,
+  })
 end
 
 local function get_env_from_tmux(var)
@@ -367,17 +500,70 @@ if M.is_editprompt() then
     end,
   })
   vim.keymap.set({ 'n', 'i' }, '<C-g>', '<Cmd>quit!<CR>', { silent = true, buffer = true, nowait = true })
-  vim.keymap.set({ 'n' }, 'q', send_editprompt, { silent = true, buffer = true, nowait = true })
-  vim.keymap.set({ 'n' }, '<CR>', send_editprompt, { silent = true, buffer = true, nowait = true })
-  vim.keymap.set({ 'n', 'i' }, '<C-c>', send_editprompt, { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'n' }, 'q', function()
+    send_editprompt({ source = 'n_q' })
+  end, { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'n' }, '<CR>', function()
+    send_editprompt({ source = 'n_cr' })
+  end, { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'n', 'i' }, '<C-c>', function()
+    send_editprompt({ source = 'ni_ctrl_c' })
+  end, { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'n', 'i' }, 'g<C-c>', function()
-    send_editprompt({ auto_send = false })
+    send_editprompt({ auto_send = false, source = 'ni_g_ctrl_c' })
   end, { silent = true, buffer = true, nowait = true })
-  vim.keymap.set({ 'x' }, '<C-c>', send_editprompt_visual, { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'x' }, '<C-c>', function()
+    send_editprompt_visual({ source = 'x_ctrl_c' })
+  end, { silent = true, buffer = true, nowait = true })
   vim.keymap.set({ 'x' }, 'g<C-c>', function()
-    send_editprompt_visual({ auto_send = false })
+    send_editprompt_visual({ auto_send = false, source = 'x_g_ctrl_c' })
   end, { silent = true, buffer = true, nowait = true })
-  vim.keymap.set({ 'n' }, 'ZZ', send_editprompt, { silent = true, buffer = true, nowait = true })
+  vim.keymap.set({ 'n' }, 'ZZ', function()
+    send_editprompt({ source = 'n_zz' })
+  end, { silent = true, buffer = true, nowait = true })
+
+  vim.keymap.set('n', '<C-p>', function()
+    navigate_editprompt_history(-1)
+  end, { silent = true, buffer = true, nowait = true })
+  vim.keymap.set('n', '<Up>', function()
+    navigate_editprompt_history(-1)
+  end, { silent = true, buffer = true, nowait = true })
+  vim.keymap.set('n', '<C-n>', function()
+    navigate_editprompt_history(1)
+  end, { silent = true, buffer = true, nowait = true })
+  vim.keymap.set('n', '<Down>', function()
+    navigate_editprompt_history(1)
+  end, { silent = true, buffer = true, nowait = true })
+
+  vim.keymap.set('i', '<C-p>', function()
+    if vim.fn.pumvisible() == 1 then
+      return '<C-p>'
+    end
+    navigate_editprompt_history_async(-1)
+    return ''
+  end, { silent = true, buffer = true, nowait = true, expr = true })
+  vim.keymap.set('i', '<C-n>', function()
+    if vim.fn.pumvisible() == 1 then
+      return '<C-n>'
+    end
+    navigate_editprompt_history_async(1)
+    return ''
+  end, { silent = true, buffer = true, nowait = true, expr = true })
+  vim.keymap.set('i', '<Up>', function()
+    navigate_editprompt_history_async(-1)
+    return ''
+  end, { silent = true, buffer = true, nowait = true, expr = true })
+  vim.keymap.set('i', '<Down>', function()
+    navigate_editprompt_history_async(1)
+    return ''
+  end, { silent = true, buffer = true, nowait = true, expr = true })
+
+  vim.keymap.set('n', '<C-q>', function()
+    push_editprompt_stash()
+  end, { silent = true, buffer = true, nowait = true })
+  vim.keymap.set('i', '<C-q>', function()
+    vim.schedule(push_editprompt_stash)
+  end, { silent = true, buffer = true, nowait = true })
 
   local function is_buffer_empty(bufnr)
     return get_buffer_text(bufnr) == ''

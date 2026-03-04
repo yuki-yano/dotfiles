@@ -268,6 +268,28 @@ return {
                   fallback()
                 end
               end),
+              ['<Up>'] = cmp.mapping(function(fallback)
+                if is_editprompt() then
+                  fallback()
+                  return
+                end
+                if cmp.visible() then
+                  cmp.select_prev_item({ behavior = types.cmp.SelectBehavior.Select })
+                else
+                  fallback()
+                end
+              end),
+              ['<Down>'] = cmp.mapping(function(fallback)
+                if is_editprompt() then
+                  fallback()
+                  return
+                end
+                if cmp.visible() then
+                  cmp.select_next_item({ behavior = types.cmp.SelectBehavior.Select })
+                else
+                  fallback()
+                end
+              end),
               ['<C-f>'] = cmp.mapping(function(fallback)
                 if luasnip.jumpable(1) then
                   luasnip.jump(1)
