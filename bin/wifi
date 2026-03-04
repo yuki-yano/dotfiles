@@ -11,6 +11,69 @@ if ! command -v jq >/dev/null 2>&1; then
   exit 1
 fi
 
+# Decode SSID from scutil's cached scan record to avoid "<redacted>".
+get_ssid_from_scutil() {
+  local iface="$1"
+  /usr/bin/python3 - "$iface" <<'PY'
+import plistlib
+import re
+import subprocess
+import sys
+
+iface = sys.argv[1]
+key = f"State:/Network/Interface/{iface}/AirPort"
+
+try:
+    state = subprocess.check_output(
+        ["scutil"],
+        input=f"show {key}\n",
+        text=True,
+        stderr=subprocess.DEVNULL,
+    )
+except Exception:
+    raise SystemExit(0)
+
+match = re.search(r"CachedScanRecord\s*:\s*<data>\s*0x([0-9A-Fa-f]+)", state)
+if not match:
+    raise SystemExit(0)
+
+try:
+    plist = plistlib.loads(bytes.fromhex(match.group(1)))
+except Exception:
+    raise SystemExit(0)
+
+objects = plist.get("$objects")
+root = plist.get("$top", {}).get("root")
+if objects is None or root is None:
+    raise SystemExit(0)
+
+UID = plistlib.UID
+
+def decode(value):
+    if isinstance(value, UID):
+        return decode(objects[value.data])
+    if isinstance(value, list):
+        return [decode(item) for item in value]
+    if isinstance(value, dict):
+        if "NS.keys" in value and "NS.objects" in value:
+            keys = decode(value["NS.keys"])
+            vals = decode(value["NS.objects"])
+            return {k: v for k, v in zip(keys, vals) if isinstance(k, str)}
+        if "NS.data" in value:
+            return decode(value["NS.data"])
+        if "NS.string" in value:
+            return decode(value["NS.string"])
+        return {k: decode(v) for k, v in value.items() if k != "$class"}
+    return value
+
+decoded = decode(root)
+if isinstance(decoded, dict):
+    ssid = decoded.get("SSID_STR")
+    if isinstance(ssid, str) and ssid:
+        print(ssid)
+PY
+}
+
 # Retrieve JSON data
 json=$(system_profiler -json SPAirPortDataType -detailLevel basic 2>/dev/null)
 if [[ -z "$json" ]]; then
@@ -38,6 +101,15 @@ ssid=$(jq -r --arg IF "$iface" '
   | select(._name == $IF)
   | .spairport_current_network_information._name
 ' <<<"$json")
+
+if [[ "$ssid" == "<redacted>" || "$ssid" == "null" || -z "$ssid" ]]; then
+  ssid=$(get_ssid_from_scutil "$iface")
+fi
+
+if [[ -z "$ssid" ]]; then
+  echo "#[fg=red]offline"
+  exit 1
+fi
 
 rssi=$(jq -r --arg IF "$iface" '
   .SPAirPortDataType[0]
