@@ -11,6 +11,7 @@ type ApplyCodexTemplateOptions = {
   startMarker?: string;
   endMarker?: string;
   dryRun?: boolean;
+  copyTargets?: string[];
 };
 
 export class CodexTemplateApplyError extends Error {
@@ -39,6 +40,39 @@ export function formatCodexTemplateApplyError(error: CodexTemplateApplyError): s
 
 function escapeForRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+export function stripNvimDirectiveLines(templateBody: string): string {
+  return templateBody
+    .split("\n")
+    .filter((line) => !/^\s*#\s*@nvim\b/.test(line))
+    .join("\n");
+}
+
+async function collectRelativeFilePaths(rootDirectory: string, prefix = ""): Promise<string[]> {
+  const currentDirectory = prefix ? join(rootDirectory, prefix) : rootDirectory;
+  const files: string[] = [];
+
+  for await (const entry of Deno.readDir(currentDirectory)) {
+    const nextPrefix = prefix ? join(prefix, entry.name) : entry.name;
+    if (entry.isDirectory) {
+      files.push(...await collectRelativeFilePaths(rootDirectory, nextPrefix));
+      continue;
+    }
+    if (entry.isFile) {
+      files.push(nextPrefix);
+      continue;
+    }
+    throw new CodexTemplateApplyError(
+      "Template copy target contains unsupported entry type.",
+      [
+        `Path: ${join(rootDirectory, nextPrefix)}`,
+        "Only regular files and directories are supported.",
+      ],
+    );
+  }
+
+  return files.sort();
 }
 
 function normalizeManagedSection(
@@ -174,18 +208,74 @@ async function updateFileIfNeeded(
   return true;
 }
 
+async function updateTemplateTextFileIfNeeded(
+  templatePath: string,
+  outputPath: string,
+  dryRun = false,
+): Promise<boolean> {
+  const templateBody = await Deno.readTextFile(templatePath);
+  const normalized = normalizeTrailingNewline(stripNvimDirectiveLines(templateBody));
+  return await updateFileIfNeeded(outputPath, normalized, dryRun);
+}
+
+async function applyCopyTarget(
+  templateDir: string,
+  outputDir: string,
+  copyTarget: string,
+  dryRun = false,
+): Promise<boolean> {
+  const templatePath = join(templateDir, copyTarget);
+
+  let templateStat: Deno.FileInfo;
+  try {
+    templateStat = await Deno.stat(templatePath);
+  } catch (error) {
+    if (error instanceof Deno.errors.NotFound) {
+      throw new CodexTemplateApplyError(
+        "Template copy target was not found.",
+        [
+          `Missing target: ${templatePath}`,
+          "Create the file or directory under .config/codex-template.",
+        ],
+      );
+    }
+    throw error;
+  }
+
+  if (templateStat.isFile) {
+    const outputPath = join(outputDir, copyTarget);
+    return await updateTemplateTextFileIfNeeded(templatePath, outputPath, dryRun);
+  }
+
+  if (templateStat.isDirectory) {
+    const relativeFiles = await collectRelativeFilePaths(templatePath);
+    let hasChanged = false;
+    for (const relativeFilePath of relativeFiles) {
+      const sourcePath = join(templatePath, relativeFilePath);
+      const destinationPath = join(outputDir, copyTarget, relativeFilePath);
+      const changed = await updateTemplateTextFileIfNeeded(sourcePath, destinationPath, dryRun);
+      hasChanged = hasChanged || changed;
+    }
+    return hasChanged;
+  }
+
+  throw new CodexTemplateApplyError(
+    "Template copy target must be a file or directory.",
+    [`Target: ${templatePath}`],
+  );
+}
+
 export async function applyCodexTemplate(options: ApplyCodexTemplateOptions = {}): Promise<boolean> {
   const startMarker = options.startMarker ?? START_MARKER;
   const endMarker = options.endMarker ?? END_MARKER;
   const templateDir = options.templateDir ?? `${Deno.cwd()}/.config/codex-template`;
   const outputDir = options.outputDir ?? resolveCodexHome();
+  const copyTargets = [...new Set(options.copyTargets ?? ["AGENTS.md"])];
 
   const configTemplatePath = join(templateDir, "config.toml");
-  const agentsTemplatePath = join(templateDir, "AGENTS.md");
   const configOutputPath = join(outputDir, "config.toml");
-  const agentsOutputPath = join(outputDir, "AGENTS.md");
 
-  const configTemplateBody = await Deno.readTextFile(configTemplatePath);
+  const configTemplateBody = stripNvimDirectiveLines(await Deno.readTextFile(configTemplatePath));
   const currentConfig = await Deno.readTextFile(configOutputPath).catch((error: unknown) => {
     if (error instanceof Deno.errors.NotFound) {
       throw new CodexTemplateApplyError(
@@ -208,12 +298,14 @@ export async function applyCodexTemplate(options: ApplyCodexTemplateOptions = {}
     endMarker,
   );
 
-  const agentsTemplate = normalizeTrailingNewline(await Deno.readTextFile(agentsTemplatePath));
-
   const configChanged = await updateFileIfNeeded(configOutputPath, mergedConfig, options.dryRun);
-  const agentsChanged = await updateFileIfNeeded(agentsOutputPath, agentsTemplate, options.dryRun);
+  let copiedChanged = false;
+  for (const copyTarget of copyTargets) {
+    const changed = await applyCopyTarget(templateDir, outputDir, copyTarget, options.dryRun);
+    copiedChanged = copiedChanged || changed;
+  }
 
-  return configChanged || agentsChanged;
+  return configChanged || copiedChanged;
 }
 
 function parseCliArgs(args: string[]): ApplyCodexTemplateOptions {

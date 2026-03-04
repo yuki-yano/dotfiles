@@ -7,7 +7,6 @@ import {
   formatCodexTemplateApplyError,
 } from "./bin/codex-template-apply.ts";
 
-// 設定
 const DOTFILES_SRCS = [
   ".agents",
   ".bashrc",
@@ -38,12 +37,11 @@ const ZINIT_DIR = `${HOME}/.zinit`;
 const CLAUDE_DIR = `${SRC_DIR}/.config/claude`;
 const AGENTS_SKILLS_DIR = `${HOME}/.agents/skills`;
 const CLAUDE_SKILLS_DIR = `${CLAUDE_DIR}/skills`;
+const CODEX_TEMPLATE_COPY_TARGETS = ["AGENTS.md", "agents"];
 
-// グローバル設定
 let DRY_RUN = false;
 let APPLY = false;
 
-// ユーティリティ関数
 async function readLines(filename: string): Promise<string[]> {
   const content = await Deno.readTextFile(filename);
   return content.split("\n").filter((line) => line && !line.startsWith("#"));
@@ -152,7 +150,10 @@ const tasks: Record<string, () => Promise<void> | void> = {
 
   async "codex:template"() {
     const dryRun = DRY_RUN || !APPLY;
-    const changed = await applyCodexTemplate({ dryRun });
+    const changed = await applyCodexTemplate({
+      dryRun,
+      copyTargets: CODEX_TEMPLATE_COPY_TARGETS,
+    });
 
     if (dryRun) {
       if (changed) {
@@ -312,7 +313,6 @@ const tasks: Record<string, () => Promise<void> | void> = {
   },
 };
 
-// メイン処理
 if (import.meta.main) {
   // Check for --dry-run flag
   const args = [...Deno.args];

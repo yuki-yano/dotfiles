@@ -1,3 +1,4 @@
+# @nvim.on_save deno task codex:template -- --apply
 model = "gpt-5.3-codex"
 model_reasoning_effort = "xhigh"
 network_access = true

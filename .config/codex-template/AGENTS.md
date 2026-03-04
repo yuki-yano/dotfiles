@@ -1,3 +1,4 @@
+# @nvim.on_save deno task codex:template -- --apply
 ## 前提
 
 日本語で思考して日本語で回答する
