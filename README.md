@@ -32,10 +32,10 @@ desktop automation, and AI-first tooling for day-to-day development.
   LuaSnip/tsnip snippets, transparency/theme toggles, and efm-langserver integration.
 - 🧭 **tmux-first workflow** – prefix on `Ctrl-y`, smart pane routing for Neovim/Claude panes, tmux status extensions
   (battery, wifi, Claude usage), and helper binaries under `bin/`.
-- 🪟 **Desktop automation** – Yabai tiling, skhd key bindings, Karabiner IME helpers, Finicky browser routing, and
-  Hammerspoon scripts ensure the tiling, keyboard, and app launch workflow stays cohesive.
-- 🤖 **AI-native tooling** – `.claude/`, `.config/claude/{commands,settings.json}`, cage/ccusage helpers, and
-  `bin/claude-*` hooks keep Claude Code deeply integrated into tmux and shell workflows.
+- 🪟 **Desktop automation** – Yabai/skhd key bindings, Karabiner IME helpers, Finicky browser routing, and a tracked
+  Hammerspoon entrypoint (`.hammerspoon/init.lua`) keep the keyboard and window workflow cohesive.
+- 🤖 **AI-native tooling** – `.config/claude/settings.json` hooks, cage/ccusage helpers, and `vde-*` workflows keep
+  Claude/Codex operations integrated with tmux and shell tooling.
 - 📦 **Unified manifests** – `Brewfile`, `Caskfile`, `Masfile`, and `mise` runtime definitions document every CLI, GUI,
   and runtime dependency.
 - 🧰 **Script library** – `bin/` hosts tmux automation, Yabai TypeScript helpers, git utilities, quick IME toggles, and
@@ -88,7 +88,7 @@ and `tasks.ts` validates input before it shells out.
 | `deno task dotfiles:install [-- --dry-run]`           | Symlinks the files listed in `DOTFILES_SRCS` to `$HOME`, warning if a non-symlink already exists.                                                                                             |
 | `deno task codex:template [-- --apply]`               | Dry-run by default. Applies `.config/codex-template/config.toml` (managed section merge) and copy targets (`AGENTS.md`, `agents/**`) to `~/.codex` only with `--apply` (`template` has no markers; `~/.codex/config.toml` must contain marker block). |
 | `deno task zsh:zinit:install` / `zsh:zinit:uninstall` | Manage the zinit plugin manager under `~/.zinit`.                                                                                                                                             |
-| `deno task brew:bundle`                               | Executes the curated commands in `Brewfile`, rejecting anything outside `install/tap/cask`.                                                                                                   |
+| `deno task brew:bundle`                               | Executes curated commands in `Brewfile`, allowing only `install`, `tap`, `cask`, `update`, `upgrade`, and `cleanup`.                                                                         |
 | `deno task brew:cask`                                 | Installs GUI apps from `Caskfile`.                                                                                                                                                            |
 | `deno task mas:install`                               | Installs missing Mac App Store apps using IDs from `Masfile`.                                                                                                                                 |
 | `deno task help`                                      | Prints grouped help text with descriptions of every task.                                                                                                                                     |
@@ -109,16 +109,17 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
   `.config/nvim` runtime files.
 - `.tmux.conf`, `.tmux/` – tmux settings and related local assets.
 - `.hammerspoon/`, `.finicky.js`, `.config/yabai/yabairc`, `.config/skhd/skhdrc`, `.config/karabiner/karabiner.json` –
-  macOS automation suite (window manager, hotkeys, IME helpers, URL routing, spoons). `karabiner.json` is generated from
+  macOS automation suite (window manager, hotkeys, IME helpers, URL routing). `karabiner.json` is generated from
   `.config/karabiner/karabiner.ts` via Deno (`deno task karabiner:build` / `karabiner:watch`).
 - `.ctags.d/config.ctags`, `.tigrc`, `.config/ripgrep/rc`, `.config/vivid/themes/catppuccin.yml` – CLI defaults for
   tags, tig, search, and colors.
-- `.claude/`, `.config/claude/{CLAUDE.md,commands,settings.json}`, and `.config/cage/presets.yml` – Claude Code docs,
-  command presets, settings, and Warashi cage layouts that integrate AI tooling with tmux.
+- `.config/claude/{CLAUDE.md,settings.json}` and `.config/cage/presets.yml` – Claude Code settings and Warashi cage
+  layouts that integrate AI tooling with tmux.
+- `z-ai/` – repository-scoped AI working directory. Agent outputs are centralized here (for example:
+  `z-ai/plans/`, `z-ai/tmp/`, and `z-ai/references/`), and the Neovim AI picker (`<Plug>(ff)i`) is scoped to `z-ai/`.
 - `bin/` – helper scripts (tmux status widgets, git utilities like `git-quick-save`, tmux session manager, ghq selector,
   wifi/battery monitors, Claude hooks, TypeScript-based Yabai controllers, quick IME toggles). Every script is intended
   to run from PATH.
-- `.kiri/index.duckdb` – local DuckDB knowledge index consumed by the AI workflow.
 - `stylua.toml` and `cspell.json` – formatting/spell-check rules for Lua and docs.
 - `deno.json` imports `@david/dax` for ergonomic shelling inside TypeScript tasks.
 
@@ -133,8 +134,7 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
   `node`, `python`, `uv`, AI CLI packages such as `@anthropic-ai/claude-code`, `@google/gemini-cli`, `sdd-mcp`,
   `safe-chain`, `vde-*`). Run `mise install` after cloning to sync tool versions.
 - **Shell history & snippets** – `.config/atuin/config.toml` tunes Atuin (fuzzy search with previews).
-  `.config/zeno/config.yml` plus `10-completion.ts` define CLI snippets (git helpers, tmux commands, redirection
-  shorthands).
+  `.config/zeno/config.yml` defines CLI snippets (git helpers, tmux commands, redirection shorthands).
 - **Color & search defaults** – `ripgrep`, `vivid`, and `bat` configs standardize palette and output.
 - **Terminals** – `.config/wezterm/wezterm.lua` and `.config/alacritty/*.toml` share Catppuccin colors, SF Mono Square
   fallback stacks, IME integration, fullscreen toggles, and copy/paste-friendly bindings. The `quick-ime.sh` script plus
@@ -167,15 +167,14 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 
 ## Window & Input Automation
 
-- **Yabai + skhd** – `.config/yabai/yabairc` defines tiling layout, gaps/padding, opacity, and universal rules.
-  `.config/skhd/skhdrc` maps `cmd+ctrl` combos to focus/swap windows, floats predet positions, toggles splits, rotates
-  trees, and uses TypeScript helpers (`bin/yabai-focus.ts`, `yabai-full.ts`, `yabai-resize.ts`) for custom logic.
+- **Yabai + skhd** – `.config/yabai/yabairc` sets layout/gaps/padding/opacity and currently applies `manage=off` for all
+  apps (float-first behavior). `.config/skhd/skhdrc` maps `cmd+ctrl` combos for focus/swap and floating window actions,
+  backed by TypeScript helpers (`bin/yabai-focus.ts`, `yabai-full.ts`, `yabai-resize.ts`).
 - **Karabiner-Elements** – `.config/karabiner/karabiner.json` is tuned for Alacritty/Claude workflows:
   Command/Shift+Return becomes backslash+Enter, IME toggles are inserted around shortcuts, and delayed actions ensure
   Japanese/English mode toggles fire correctly. Edit `.config/karabiner/karabiner.ts` and run
   `deno task karabiner:build` to apply (or `karabiner:watch` to auto-rebuild).
-- **Hammerspoon** – `.hammerspoon/init.lua` (plus `Spoons/`) automates window hints, space management, and integrates
-  with other tooling.
+- **Hammerspoon** – `.hammerspoon/init.lua` is tracked as an entrypoint for host-specific local automation.
 - **Finicky** – `.finicky.js` routes specific sites (TypeScript docs, Google Docs) to Chrome while Firefox stays
   default.
 - **Quick IME helpers** – `bin/quick-ime.sh` plus Alacritty/WezTerm settings make it easy to toggle IME state from
@@ -183,20 +182,20 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 
 ## AI & Workflow Tooling
 
-- `.claude/` + `.config/claude/` store Claude CLI and IDE agent state (history, plans, statsig data, Todo tracking,
-  plugin manifests, session env dumps, shell snapshots).
+- `.config/claude/` stores Claude settings in-repo (`CLAUDE.md`, `settings.json`), while Claude runtime state
+  (history/snapshots/cache) is managed locally on each machine. Repository-scoped agent artifacts are managed under
+  `z-ai/` (`z-ai/plans/`, `z-ai/tmp/`, `z-ai/references/`).
 - `.config/cage/presets.yml` captures Warashi cage (multi-agent) layout presets that pair with tmux automation.
-- `bin/claude-pre_tool_use-hook_*`, `bin/claude-post_tool_use-hook_eol.ts`, `bin/cc-statusline.ts` integrate AI status
-  info into tmux panes and status bars.
+- `.config/claude/settings.json` hooks (`vde-monitor-hook`, `vde-monitor-summary`, `vde-notifier`) provide monitoring and
+  notifications around Claude sessions.
 - `mise` installs AI CLIs (`@anthropic-ai/claude-code`, `@google/gemini-cli`, `@openai/codex`, `editprompt`,
   `@aikidosec/safe-chain`, `sdd-mcp`, `vde-layout`, `vde-notifier`) so they can be invoked anywhere.
 - `Brewfile` includes `claude-code`, `ccusage`, and the Warashi `cage` cask to round out the local agent suite.
-- `.kiri/index.duckdb` underpins fast semantic searches for the Claude knowledge base.
 
 ## Package Definitions
 
 - **`Brewfile`** – grouped installs (shells, editors, languages, container tooling, services/CLIs, fonts, AI helpers,
-  window managers, ntfy). Commands are constrained to `install/tap/cask` for safety.
+  window managers, ntfy). Commands are constrained to `install/tap/cask/update/upgrade/cleanup` for safety.
 - **`Caskfile`** – GUI apps (1Password CLI, AltTab, Bartender, Claude Code, CleanShot, Default Folder X, Docker,
   browsers, JetBrains Toolbox, Karabiner, Keka, OBS, TablePlus, etc.) including quarantine overrides for trusted taps
   (`swiftdialog`, `arto`).
