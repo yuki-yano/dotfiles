@@ -774,6 +774,7 @@ return {
   },
   {
     'yuki-yano/aitrans.nvim',
+    enabled = false,
     lazy = false,
     dev = true,
     dependencies = {
@@ -866,5 +867,11 @@ return {
         end,
       })
     end,
+  },
+  {
+    'yuki-yano/directive-hooks.nvim',
+    enabled = true,
+    lazy = false,
+    dev = true,
   },
 }
