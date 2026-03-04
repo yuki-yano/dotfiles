@@ -70,10 +70,11 @@ function promptYesNo(message: string): boolean {
   return answer?.toLowerCase() === "y";
 }
 
-function validateBrewCommand(command: string): boolean {
-  const allowedCommands = ["install", "tap", "cask"];
+const ALLOWED_BREW_COMMANDS = new Set(["install", "tap", "cask", "update", "upgrade", "cleanup"]);
+
+export function validateBrewCommand(command: string): boolean {
   const parts = command.trim().split(/\s+/);
-  return parts.length > 0 && allowedCommands.includes(parts[0]);
+  return parts.length > 0 && ALLOWED_BREW_COMMANDS.has(parts[0]);
 }
 
 // タスク定義
@@ -208,7 +209,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
     for (const cmd of commands) {
       if (!validateBrewCommand(cmd)) {
         console.error(`ERROR: Invalid brew command: ${cmd}`);
-        console.error("Only 'install', 'tap', and 'cask' commands are allowed");
+        console.error("Only 'install', 'tap', 'cask', 'update', 'upgrade', and 'cleanup' commands are allowed");
         Deno.exit(1);
       }
 
@@ -231,7 +232,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
     for (const cmd of commands) {
       if (!validateBrewCommand(cmd)) {
         console.error(`ERROR: Invalid brew command: ${cmd}`);
-        console.error("Only 'install', 'tap', and 'cask' commands are allowed");
+        console.error("Only 'install', 'tap', 'cask', 'update', 'upgrade', and 'cleanup' commands are allowed");
         Deno.exit(1);
       }
 
