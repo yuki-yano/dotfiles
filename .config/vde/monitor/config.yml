@@ -26,6 +26,7 @@ notifications:
     - pane.task_completed
   summary:
     enabled: true
+    lang: ja
     rename:
       pane: true
       push: true

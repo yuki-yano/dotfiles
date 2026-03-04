@@ -82,11 +82,8 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "bash ~/.claude/statusline/claude-hud.sh"
+    "command": "bash -c 'bun ~/.config/claude/plugins/cache/claude-hud/claude-hud/*/src/index.ts'"
   },
   "alwaysThinkingEnabled": true,
-  "skipDangerousModePermissionPrompt": true,
-  "enabledPlugins": {
-    "claude-hud@claude-hud": true
-  }
+  "skipDangerousModePermissionPrompt": true
 }
