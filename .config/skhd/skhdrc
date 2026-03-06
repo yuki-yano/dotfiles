@@ -1,6 +1,6 @@
 # focus window
-cmd + ctrl - j : yabai-focus.ts
-cmd + ctrl - k : yabai-focus.ts -r
+# cmd + ctrl - j : yabai-focus.ts
+# cmd + ctrl - k : yabai-focus.ts -r
 
 # float win
 cmd + ctrl - 1: yabai -m window --toggle float && yabai -m window --grid 1:10:0:0:7:1
