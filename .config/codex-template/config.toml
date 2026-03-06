@@ -1,6 +1,9 @@
 # @nvim.on_save deno task codex:template -- --apply
-model = "gpt-5.3-codex"
+model = "gpt-5.4"
+model_context_window = 1000000
+model_auto_compact_token_limit = 950000
 model_reasoning_effort = "xhigh"
+plan_mode_reasoning_effort = "xhigh"
 network_access = true
 web_search_request = true
 notify = [
@@ -36,9 +39,10 @@ skills = true
 collaboration_modes = true
 apps = true
 multi_agent = true
-voice_transcription = true
+# voice_transcription = true
 default_mode_request_user_input = true
 responses_websockets_v2 = true
+fast_mode = true
 
 [tui]
 status_line = ["model-with-reasoning", "current-dir", "git-branch", "context-remaining"]

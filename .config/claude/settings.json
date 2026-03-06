@@ -85,5 +85,6 @@
     "command": "bash -c 'bun ~/.config/claude/plugins/cache/claude-hud/claude-hud/*/src/index.ts'"
   },
   "alwaysThinkingEnabled": true,
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "effortLevel": "high"
 }
