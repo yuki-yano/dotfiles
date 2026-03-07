@@ -1,0 +1,141 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+TMUX_BIN="${TMUX_BIN:-tmux}"
+BASE_FG="#A5A1F2"
+BASE_BG="#352F63"
+CURRENT_FG="#1E1E2E"
+CURRENT_BG="#B4BEFE"
+OTHER_FG="#C6D0F5"
+CURRENT_PREFIX=$'\ue0b6'
+CURRENT_SUFFIX=$'\ue0b4'
+
+usage() {
+  cat <<'EOF'
+Usage:
+  tmux-list-sessions
+  tmux-list-sessions switch <index>
+
+Commands:
+  switch <index>  Switch to the session at the given 1-based index.
+EOF
+}
+
+list_sessions() {
+  "$TMUX_BIN" list-sessions -F $'#{session_id}\t#{session_name}'
+}
+
+current_session() {
+  "$TMUX_BIN" display-message -p '#{session_name}'
+}
+
+session_label() {
+  local index="$1"
+  local session_name="$2"
+
+  if (( index <= 9 )); then
+    printf '%s %s' "$index" "$session_name"
+    return 0
+  fi
+
+  printf '%s' "$session_name"
+}
+
+render_sessions() {
+  local current output index session_id session_name label
+
+  current="$(current_session)"
+  output="#[fg=${BASE_FG},bg=${BASE_BG},nobold]"
+  index=1
+
+  while IFS=$'\t' read -r session_id session_name; do
+    if [[ -z "${session_id}" || -z "${session_name}" ]]; then
+      continue
+    fi
+
+    label="$(session_label "$index" "$session_name")"
+    output+=" #[range=session|${session_id}]"
+
+    if [[ "${session_name}" == "${current}" ]]; then
+      output+="#[fg=${CURRENT_BG},bg=${BASE_BG},nobold]${CURRENT_PREFIX}"
+      output+="#[fg=${CURRENT_FG},bg=${CURRENT_BG},bold] ${label} "
+      output+="#[fg=${CURRENT_BG},bg=${BASE_BG},nobold]${CURRENT_SUFFIX}"
+      output+="#[fg=${BASE_FG},bg=${BASE_BG},nobold]"
+    else
+      output+="#[fg=${OTHER_FG},bg=${BASE_BG},nobold] ${label} "
+      output+="#[fg=${BASE_FG},bg=${BASE_BG},nobold]"
+    fi
+
+    output+="#[norange]"
+    index=$((index + 1))
+  done < <(list_sessions)
+
+  printf '%s\n' "${output}"
+}
+
+resolve_session_name() {
+  local target_index="$1"
+  local current_index=1
+  local session_id session_name
+
+  while IFS=$'\t' read -r session_id session_name; do
+    if [[ -z "${session_name}" ]]; then
+      continue
+    fi
+
+    if (( current_index == target_index )); then
+      printf '%s\n' "${session_name}"
+      return 0
+    fi
+
+    current_index=$((current_index + 1))
+  done < <(list_sessions)
+
+  return 1
+}
+
+switch_session() {
+  local target_index="$1"
+  local target_name
+
+  if [[ ! "${target_index}" =~ ^[1-9][0-9]*$ ]]; then
+    printf 'tmux-list-sessions: index must be a positive integer: %s\n' "${target_index}" >&2
+    return 2
+  fi
+
+  target_name="$(resolve_session_name "${target_index}")" || {
+    printf 'tmux-list-sessions: session not found at index %s\n' "${target_index}" >&2
+    return 1
+  }
+
+  exec "$TMUX_BIN" switch-client -t "${target_name}"
+}
+
+main() {
+  case "${1:-render}" in
+    render)
+      if (( $# > 1 )); then
+        usage >&2
+        exit 2
+      fi
+      render_sessions
+      ;;
+    switch)
+      if (( $# != 2 )); then
+        usage >&2
+        exit 2
+      fi
+      switch_session "$2"
+      ;;
+    -h|--help|help)
+      usage
+      ;;
+    *)
+      usage >&2
+      exit 2
+      ;;
+  esac
+}
+
+main "$@"
