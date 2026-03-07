@@ -65,4 +65,29 @@ function M.dedent(text)
   return table.concat(lines, '\n')
 end
 
+function M.with_isolated_undo(callback)
+  local bufnr = vim.api.nvim_get_current_buf()
+
+  local function close_undo_block()
+    if not vim.api.nvim_buf_is_valid(bufnr) then
+      return
+    end
+
+    local undolevels = vim.bo[bufnr].undolevels
+    vim.bo[bufnr].undolevels = undolevels
+  end
+
+  close_undo_block()
+
+  local ok, result1, result2, result3 = xpcall(callback, debug.traceback)
+
+  close_undo_block()
+
+  if not ok then
+    error(result1)
+  end
+
+  return result1, result2, result3
+end
+
 return M

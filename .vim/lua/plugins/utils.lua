@@ -2,6 +2,7 @@ local color = require('rc.modules.color')
 local is_editprompt = require('rc.setup.quick_ime').is_editprompt
 local is_ime = require('rc.setup.quick_ime').is_ime
 local dedent = require('rc.modules.utils').dedent
+local with_isolated_undo = require('rc.modules.utils').with_isolated_undo
 
 return {
   { 'farmergreg/vim-lastplace', event = { 'BufReadPre' } },
@@ -618,7 +619,9 @@ return {
       })
 
       vim.keymap.set('i', '<C-v>', function()
-        local ok, msg = clip.paste()
+        local ok, msg = with_isolated_undo(function()
+          return clip.paste()
+        end)
         if not ok and msg then
           vim.notify(msg, vim.log.levels.WARN, { title = 'clipboard-image-to-agent.nvim' })
         end

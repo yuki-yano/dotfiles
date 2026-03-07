@@ -1,3 +1,5 @@
+local with_isolated_undo = require('rc.modules.utils').with_isolated_undo
+
 -- zero
 vim.keymap.set({ 'n', 'o', 'x' }, '0', [[getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^']], { expr = true })
 vim.keymap.set({ 'n', 'o', 'x' }, '^', '0')
@@ -149,7 +151,9 @@ local function paste_os_clipboard_in_insert()
   end
 
   if clipboard ~= '' then
-    vim.api.nvim_paste(clipboard, true, -1)
+    with_isolated_undo(function()
+      vim.api.nvim_paste(clipboard, true, -1)
+    end)
   end
 end
 
