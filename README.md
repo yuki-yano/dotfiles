@@ -26,30 +26,31 @@ desktop automation, and AI-first tooling for day-to-day development.
   permissions, validates Homebrew commands, and offers a `--dry-run` mode before touching system files.
 - 🔒 **Security-first bootstrapping** – `.bashrc` pre-sets `HOMEBREW_PATH` for sandboxed agent environments, macOS
   keychain tools (`op`, `mas`) are isolated under `.config`, and destructive operations prompt for confirmation.
-- 🖥️ **Modern terminal stack** – zsh with zinit, Atuin, Zeno, direnv, mise, WezTerm, and Alacritty tuned to Catppuccin
-  aesthetics and Japanese/English IME-friendly shortcuts.
+- 🖥️ **Modern terminal stack** – zsh with zinit, Atuin, Zeno, direnv, mise, and an Alacritty-first setup tuned to
+  Catppuccin aesthetics and Japanese/English IME-friendly shortcuts, with WezTerm reserved for the quick-ime flow.
 - 📝 **Neovim power setup** – `.vim/` contains a lazy.nvim-based Lua config, dual native LSP + CoC support,
   LuaSnip/tsnip snippets, transparency/theme toggles, and efm-langserver integration.
 - 🧭 **tmux-first workflow** – prefix on `Ctrl-y`, smart pane routing for Neovim/Claude panes, tmux status extensions
   (battery, wifi, Claude usage), and helper binaries under `bin/`.
-- 🪟 **Desktop automation** – Yabai/skhd key bindings, Karabiner IME helpers, Finicky browser routing, and a tracked
-  Hammerspoon entrypoint (`.hammerspoon/init.lua`) keep the keyboard and window workflow cohesive.
+- 🪟 **Desktop automation** – Shitsurae-managed window layouts/shortcuts, Karabiner IME helpers, and Finicky browser
+  routing keep the keyboard and window workflow cohesive.
 - 🤖 **AI-native tooling** – `.config/claude/settings.json` hooks, cage/ccusage helpers, and `vde-*` workflows keep
   Claude/Codex operations integrated with tmux and shell tooling.
 - 📦 **Unified manifests** – `Brewfile`, `Caskfile`, `Masfile`, and `mise` runtime definitions document every CLI, GUI,
   and runtime dependency.
-- 🧰 **Script library** – `bin/` hosts tmux automation, Yabai TypeScript helpers, git utilities, quick IME toggles, and
+- 🧰 **Script library** – `bin/` hosts tmux automation, Shitsurae helpers, git utilities, quick IME toggles, and
   monitoring commands that the rest of the dotfiles rely on.
 
 ## Requirements
 
-- macOS 13+ (Sonoma/Ventura tested) with administrator rights for Homebrew, MAS, and window manager permissions.
+- macOS 13+ (Sonoma/Ventura tested) with administrator rights for Homebrew/MAS installs and Accessibility permissions
+  for window/input automation apps.
 - [Homebrew](https://brew.sh) with `brew` and `mas` available.
 - [Deno](https://deno.land) ≥ 1.42 for running `deno task`.
 - Node.js + yarn (managed via [`mise`](https://github.com/jdx/mise) in `.config/mise/config.toml`).
 - Mac App Store sign-in (`mas signin`) if you plan to run `mas:install`.
 - Optional but recommended: [direnv](https://direnv.net) to auto-load `.envrc`, `mise` to sync language runtimes,
-  WezTerm/Alacritty, and 1Password CLI (`op`) for secrets-backed commands.
+  Alacritty, WezTerm for `quick-ime`, and 1Password CLI (`op`) for secrets-backed commands.
 
 ## Quick Start
 
@@ -76,7 +77,7 @@ deno task help                # list all tasks
 ```
 
 Put `~/dotfiles/bin` on your `PATH` (zsh does this automatically) so helper scripts such as `tmux-smart-switch-pane`,
-`yabai-focus.ts`, `wifi`, and `battery` are available everywhere.
+`tmux-list-sessions`, `shitsurae-resize.ts`, `wifi`, and `battery` are available everywhere.
 
 ## Task Automation
 
@@ -103,13 +104,14 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 - `.envrc` – placeholder for direnv; add secrets or environment-specific exports locally.
 - `.bashrc`, `.zshenv`, `.zprofile`, `.zshrc`, `.zsh/` – shell bootstrap; zsh is the primary shell, bash is still
   configured for sandboxed Homebrew calls.
-- `.config/` – app-level configs for Alacritty, WezTerm, Atuin, Bat themes, cage presets, Claude tasks, efm-langserver,
-  Karabiner, mise, Neovim, ripgrep, skhd, tabtab, VDE layouts, vivid color themes, WezTerm, yabai, and zeno snippets.
+- `.config/` – app-level configs for Alacritty, WezTerm (`quick-ime` 用), Atuin, Bat themes, cage presets, Claude
+  tasks, efm-langserver, Karabiner, mise, Neovim, ripgrep, shitsurae, tabtab, VDE layouts, vivid color themes, and
+  zeno snippets.
 - `.vim/`, `.vimrc` – Neovim/Lua configuration (lazy.nvim, rc modules, LuaSnip + tsnip, sessions, docs) synced with
   `.config/nvim` runtime files.
 - `.tmux.conf`, `.tmux/` – tmux settings and related local assets.
-- `.hammerspoon/`, `.finicky.js`, `.config/yabai/yabairc`, `.config/skhd/skhdrc`, `.config/karabiner/karabiner.json` –
-  macOS automation suite (window manager, hotkeys, IME helpers, URL routing). `karabiner.json` is generated from
+- `.finicky.js`, `.config/shitsurae/config.yml`, `.config/karabiner/karabiner.json` – macOS automation suite (window
+  layout/shortcuts, IME helpers, URL routing). `karabiner.json` is generated from
   `.config/karabiner/karabiner.ts` via Deno (`deno task karabiner:build` / `karabiner:watch`).
 - `.ctags.d/config.ctags`, `.tigrc`, `.config/ripgrep/rc`, `.config/vivid/themes/catppuccin.yml` – CLI defaults for
   tags, tig, search, and colors.
@@ -118,8 +120,8 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 - `z-ai/` – repository-scoped AI working directory. Agent outputs are centralized here (for example:
   `z-ai/plans/`, `z-ai/tmp/`, and `z-ai/references/`), and the Neovim AI picker (`<Plug>(ff)i`) is scoped to `z-ai/`.
 - `bin/` – helper scripts (tmux status widgets, git utilities like `git-quick-save`, tmux session manager, ghq selector,
-  wifi/battery monitors, Claude hooks, TypeScript-based Yabai controllers, quick IME toggles). Every script is intended
-  to run from PATH.
+  wifi/battery monitors, Claude hooks, Shitsurae resize helpers, quick IME toggles). Every script is intended to run
+  from PATH.
 - `stylua.toml` and `cspell.json` – formatting/spell-check rules for Lua and docs.
 - `deno.json` imports `@david/dax` for ergonomic shelling inside TypeScript tasks.
 
@@ -136,9 +138,12 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 - **Shell history & snippets** – `.config/atuin/config.toml` tunes Atuin (fuzzy search with previews).
   `.config/zeno/config.yml` defines CLI snippets (git helpers, tmux commands, redirection shorthands).
 - **Color & search defaults** – `ripgrep`, `vivid`, and `bat` configs standardize palette and output.
-- **Terminals** – `.config/wezterm/wezterm.lua` and `.config/alacritty/*.toml` share Catppuccin colors, SF Mono Square
-  fallback stacks, IME integration, fullscreen toggles, and copy/paste-friendly bindings. The `quick-ime.sh` script plus
-  `quick-ime.toml` defines instant Japanese/English toggles that interact with Karabiner rules.
+- **Terminals** – `.config/alacritty/*.toml` is the primary terminal setup and carries the day-to-day key bindings,
+  colors, and IME-friendly behavior. `.config/wezterm/wezterm.lua` is currently maintained for the narrow `quick-ime`
+  workflow: spawning a centered temporary window that attaches to an isolated tmux-backed Neovim session. Alacritty
+  maps `Command+1` through `Command+9` to tmux-friendly escape sequences for direct session switching. The
+  `quick-ime.sh` script plus `quick-ime.toml` defines instant Japanese/English toggles that interact with Karabiner
+  rules.
 
 ## Editor & LSP
 
@@ -161,24 +166,25 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 - Smart pane navigation uses helper scripts (`bin/tmux-smart-switch-pane`) and process detection to seamlessly move
   between Neovim, Claude panes, zsh shells, or fzf prompts.
 - Key bindings trigger scripts: `M-r` launches `bunx --bun vtm session-manager`, `M-t` runs `ghq-project-selector.zsh`,
-  `M-u` toggles transparent panes, `M-i` opens `editprompt`, `M-c` spawns cwd windows, etc.
-- Status line widgets call binaries in `bin/` and external tools: `vtm statusline-sessions`, `tmux-status-ccusage`,
+  `M-u` toggles transparent panes, `M-i` opens `editprompt`, `M-c` spawns cwd windows, and `M-1` through `M-9`
+  switch to the corresponding tmux session entry.
+- Status line widgets call binaries in `bin/` and external tools: `tmux-list-sessions`, `tmux-status-ccusage`,
   `tmux-pwd`, `wifi`, `battery`, plus `tmux-auto-rename-session` keeps session names fresh.
 
 ## Window & Input Automation
 
-- **Yabai + skhd** – `.config/yabai/yabairc` sets layout/gaps/padding/opacity and currently applies `manage=off` for all
-  apps (float-first behavior). `.config/skhd/skhdrc` maps `cmd+ctrl` combos for focus/swap and floating window actions,
-  backed by TypeScript helpers (`bin/yabai-focus.ts`, `yabai-full.ts`, `yabai-resize.ts`).
+- **Shitsurae** – `.config/shitsurae/config.yml` defines the default multi-space layout, thumbnail overlay cycle mode,
+  and `cmd+ctrl` global actions for common floating placements (`1`/`2`/`3`, `h`, `l`, `f`). The current layout seeds
+  browser/chat/terminal spaces and replaces the previous `yabai`/`skhd` window-management layer.
 - **Karabiner-Elements** – `.config/karabiner/karabiner.json` is tuned for Alacritty/Claude workflows:
   Command/Shift+Return becomes backslash+Enter, IME toggles are inserted around shortcuts, and delayed actions ensure
   Japanese/English mode toggles fire correctly. Edit `.config/karabiner/karabiner.ts` and run
   `deno task karabiner:build` to apply (or `karabiner:watch` to auto-rebuild).
-- **Hammerspoon** – `.hammerspoon/init.lua` is tracked as an entrypoint for host-specific local automation.
 - **Finicky** – `.finicky.js` routes specific sites (TypeScript docs, Google Docs) to Chrome while Firefox stays
   default.
-- **Quick IME helpers** – `bin/quick-ime.sh` plus Alacritty/WezTerm settings make it easy to toggle IME state from
-  scripts, and Karabiner rules keep text entry stable.
+- **Quick IME helpers** – `bin/quick-ime.sh` uses a dedicated WezTerm window as a temporary IME editor, captures the
+  previously focused window via `shitsurae window current --json`, and restores focus by window ID or bundle ID when
+  the isolated tmux-backed editor detaches. Karabiner rules keep text entry stable.
 
 ## AI & Workflow Tooling
 
@@ -195,10 +201,10 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 ## Package Definitions
 
 - **`Brewfile`** – grouped installs (shells, editors, languages, container tooling, services/CLIs, fonts, AI helpers,
-  window managers, ntfy). Commands are constrained to `install/tap/cask/update/upgrade/cleanup` for safety.
+  display tooling, ntfy). Commands are constrained to `install/tap/cask/update/upgrade/cleanup` for safety.
 - **`Caskfile`** – GUI apps (1Password CLI, AltTab, Bartender, Claude Code, CleanShot, Default Folder X, Docker,
-  browsers, JetBrains Toolbox, Karabiner, Keka, OBS, TablePlus, etc.) including quarantine overrides for trusted taps
-  (`swiftdialog`, `arto`).
+  browsers, JetBrains Toolbox, Karabiner, Keka, OBS, TablePlus, `shitsurae`, etc.) alongside the notifier app casks
+  used by the local agent workflow.
 - **`Masfile`** – Mac App Store IDs for CotEditor, Bear, Spark, MenubarX, Transmit, Evernote, DaisyDisk, PopClip, Yoink,
   Sip, Due, LINE, Unclutter, Slack, Paste, Fantastical, plus a commented history of previous installs.
 - **`deno.json`** – defines every task alias and pins `@david/dax` for shell helpers; run `deno fmt` or `deno task help`
@@ -217,8 +223,8 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
   new apps are added or removed.
 - **Local overrides** – place host-specific adjustments in `.gitconfig.local`, `.tmux.conf.local`, or `~/.zshrc.local`
   (sourced from the main configs) to keep git history clean.
-- **App permissions** – Yabai, skhd, Karabiner, and Hammerspoon all require Accessibility + Full Disk access;
-  re-authorize them after OS upgrades.
+- **App permissions** – `shitsurae` and Karabiner depend on macOS Accessibility permissions; re-authorize them after OS
+  upgrades.
 
 ## License
 
