@@ -5,7 +5,8 @@ model_auto_compact_token_limit = 950000
 model_reasoning_effort = "xhigh"
 plan_mode_reasoning_effort = "xhigh"
 network_access = true
-web_search_request = true
+disable_response_storage = true
+web_search = "live"
 notify = [
   "vde-notifier",
   "--codex",
@@ -15,7 +16,6 @@ notify = [
   "vde-monitor-summary",
   "--async"
 ]
-tool_output_token_limit = 25000
 suppress_unstable_features_warning = true
 personality = "pragmatic"
 
@@ -33,6 +33,7 @@ config_file = "~/.codex/agents/worker.toml"
 
 [features]
 unified_exec = true
+view_image_tool = true
 shell_snapshot = true
 steer = true
 skills = true
