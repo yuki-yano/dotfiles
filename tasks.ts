@@ -16,7 +16,6 @@ const DOTFILES_SRCS = [
   ".gitattributes_global",
   ".gitconfig",
   ".gitignore_global",
-  ".hammerspoon",
   ".tigrc",
   ".tmux.conf",
   ".vim",

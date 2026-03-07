@@ -94,8 +94,6 @@ install wget
 install git tig gh ghq gobo git-delta git-filter-repo
 
 ## Window Manager
-install koekeishiya/formulae/yabai
-install koekeishiya/formulae/skhd
 install displayplacer
 
 ## AI Agent Support

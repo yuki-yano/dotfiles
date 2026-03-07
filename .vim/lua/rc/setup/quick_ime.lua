@@ -426,8 +426,8 @@ local function get_env_from_tmux(var)
   return value
 end
 
-local function get_previous_app()
-  return get_env_from_tmux('QUICK_IME_RETURN_APP')
+local function get_previous_bundle_id()
+  return get_env_from_tmux('QUICK_IME_RETURN_BUNDLE_ID')
 end
 
 local function get_previous_window_id()
@@ -435,24 +435,32 @@ local function get_previous_window_id()
 end
 
 local function focus_previous_target()
-  if vim.fn.executable('yabai') == 1 then
+  if vim.fn.executable('shitsurae') == 1 then
     local window_id = get_previous_window_id()
     if window_id and window_id ~= '' then
-      vim.fn.system({ 'yabai', '-m', 'window', '--focus', window_id })
+      vim.fn.system({ 'shitsurae', 'focus', '--window-id', window_id })
+      if vim.v.shell_error == 0 then
+        return
+      end
+    end
+
+    local bundle_id = get_previous_bundle_id()
+    if bundle_id and bundle_id ~= '' then
+      vim.fn.system({ 'shitsurae', 'focus', '--bundle-id', bundle_id })
       if vim.v.shell_error == 0 then
         return
       end
     end
   end
 
-  local app = get_previous_app()
-  if not app or app == '' then
+  local bundle_id = get_previous_bundle_id()
+  if not bundle_id or bundle_id == '' then
     return
   end
 
-  local escaped = app:gsub('"', '\\"')
+  local escaped = bundle_id:gsub('"', '\\"')
   vim.fn.jobstart(
-    { '/usr/bin/osascript', '-e', string.format('tell application "%s" to activate', escaped) },
+    { '/usr/bin/osascript', '-e', string.format('tell application id "%s" to activate', escaped) },
     { detach = true }
   )
 end

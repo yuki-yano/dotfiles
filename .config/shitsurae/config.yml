@@ -1,0 +1,143 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yuki-yano/shitsurae/refs/heads/main/schemas/shitsurae-config.schema.json
+executionPolicy:
+  spaceMoveMethod: drag
+  spaceMoveMethodInApps:
+    org.alacritty: displayRelay
+
+overlay:
+  showThumbnails: true
+
+layouts:
+  default:
+    initialFocus:
+      slot: 1
+    spaces:
+      - spaceID: 1
+        windows:
+          - slot: 1
+            launch: true
+            match:
+              bundleID: com.google.Chrome
+            frame:
+              x: "0%"
+              y: "0%"
+              width: "67%"
+              height: "100%"
+          - slot: 2
+            launch: true
+            match:
+              bundleID: com.openai.atlas
+            frame:
+              x: "16.5%"
+              y: "0%"
+              width: "67%"
+              height: "100%"
+          - slot: 3
+            launch: true
+            match:
+              bundleID: org.mozilla.firefox
+            frame:
+              x: "33%"
+              y: "0%"
+              width: "67%"
+              height: "100%"
+      - spaceID: 2
+        windows:
+          - slot: 1
+            launch: true
+            match:
+              bundleID: com.hnc.Discord
+            frame:
+              x: "0%"
+              y: "0%"
+              width: "67%"
+              height: "100%"
+          - slot: 2
+            launch: true
+            match:
+              bundleID: com.tinyspeck.slackmacgap
+            frame:
+              x: "16.5%"
+              y: "0%"
+              width: "67%"
+              height: "100%"
+      - spaceID: 3
+        windows:
+          - slot: 1
+            launch: true
+            match:
+              bundleID: org.alacritty
+            frame:
+              x: "0%"
+              y: "0%"
+              width: "100%"
+              height: "100%"
+      - spaceID: 4
+        windows:
+          - slot: 1
+            launch: true
+            match:
+              bundleID: com.pushplaylabs.sidekick
+            frame:
+              x: "16.5%"
+              y: "0%"
+              width: "67%"
+              height: "100%"
+
+shortcuts:
+  cycle:
+    mode: overlay
+    cancelKeys: [esc, "["]
+  focusBySlotEnabledInApps:
+    com.hnc.Discord: false
+    com.tinyspeck.slackmacgap: false
+    org.alacritty: false
+  globalActions:
+    - key: "1"
+      modifiers: [cmd, ctrl]
+      action:
+        type: moveResize
+        x: "0%"
+        y: "0%"
+        width: "67%"
+        height: "100%"
+    - key: "2"
+      modifiers: [cmd, ctrl]
+      action:
+        type: moveResize
+        x: "16.5%"
+        y: "0%"
+        width: "67%"
+        height: "100%"
+    - key: "3"
+      modifiers: [cmd, ctrl]
+      action:
+        type: moveResize
+        x: "33%"
+        y: "0%"
+        width: "67%"
+        height: "100%"
+    - key: h
+      modifiers: [cmd, ctrl]
+      action:
+        type: moveResize
+        x: "0%"
+        y: "0%"
+        width: "50%"
+        height: "100%"
+    - key: l
+      modifiers: [cmd, ctrl]
+      action:
+        type: moveResize
+        x: "50%"
+        y: "0%"
+        width: "50%"
+        height: "100%"
+    - key: f
+      modifiers: [cmd, ctrl]
+      action:
+        type: moveResize
+        x: "0%"
+        y: "0%"
+        width: "100%"
+        height: "100%"

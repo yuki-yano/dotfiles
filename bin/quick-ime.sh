@@ -21,7 +21,7 @@ SESSION="${NVIM_TMUX_SESSION:-ime_nvim}"           # Session name
 ATTACH_FAIL_SLEEP="${ATTACH_FAIL_SLEEP:-2}"        # Seconds to keep window on attach failure
 TMUX_CONF="${TMUX_CONF:-$HOME/.tmux.conf}"         # Optional custom tmux config
 WEZTERM_BIN="${WEZTERM_BIN:-wezterm}"
-YABAI_BIN="${YABAI_BIN:-yabai}"
+SHITSURAE_BIN="${SHITSURAE_BIN:-shitsurae}"
 WEZTERM_APP_PATH="${WEZTERM_APP_PATH:-/Applications/WezTerm.app}"
 WEZTERM_HEADLESS_BOOT="${WEZTERM_HEADLESS_BOOT:-1}"
 # ==============================================================================
@@ -54,17 +54,15 @@ _focus_wezterm_window() {
   return 0
 }
 
-for b in "$WEZTERM_BIN" tmux nvim jq; do
+for b in "$WEZTERM_BIN" "$SHITSURAE_BIN" tmux nvim jq; do
   command -v "$b" >/dev/null 2>&1 || { echo "$b not found" >&2; exit 1; }
 done
 
-PREV_APP=""
+PREV_BUNDLE_ID=""
 PREV_WINDOW_ID=""
-if command -v "$YABAI_BIN" >/dev/null 2>&1; then
-  if window_info=$("$YABAI_BIN" -m query --windows --window 2>/dev/null); then
-    PREV_WINDOW_ID="$(printf '%s' "$window_info" | jq -r '.id // empty')"
-    PREV_APP="$(printf '%s' "$window_info" | jq -r '.app // empty')"
-  fi
+if window_info=$("$SHITSURAE_BIN" window current --json 2>/dev/null); then
+  PREV_WINDOW_ID="$(printf '%s' "$window_info" | jq -r '.windowID // empty')"
+  PREV_BUNDLE_ID="$(printf '%s' "$window_info" | jq -r '.bundleID // empty')"
 fi
 
 export QUICK_IME=1
@@ -72,15 +70,15 @@ export QUICK_IME_TITLE="$TITLE"
 export QUICK_IME_ATTACH_FAIL_SLEEP="$ATTACH_FAIL_SLEEP"
 export QUICK_IME_TMUX_SERVER_NAME="$TMUX_SERVER_NAME"
 export QUICK_IME_SESSION="$SESSION"
-export QUICK_IME_RETURN_APP="$PREV_APP"
+export QUICK_IME_RETURN_BUNDLE_ID="$PREV_BUNDLE_ID"
 export QUICK_IME_RETURN_WINDOW_ID="$PREV_WINDOW_ID"
 
 _tmux detach-client -a -s "$SESSION" 2>/dev/null || true
 _tmux start-server >/dev/null 2>&1 || true
 _tmux set-option -g exit-unattached off >/dev/null 2>&1 || true
 _tmux set-environment -g QUICK_IME 1 >/dev/null 2>&1 || true
-if [[ -n "$QUICK_IME_RETURN_APP" ]]; then
-  _tmux set-environment -g QUICK_IME_RETURN_APP "$QUICK_IME_RETURN_APP" >/dev/null 2>&1 || true
+if [[ -n "$QUICK_IME_RETURN_BUNDLE_ID" ]]; then
+  _tmux set-environment -g QUICK_IME_RETURN_BUNDLE_ID "$QUICK_IME_RETURN_BUNDLE_ID" >/dev/null 2>&1 || true
 fi
 if [[ -n "$QUICK_IME_RETURN_WINDOW_ID" ]]; then
   _tmux set-environment -g QUICK_IME_RETURN_WINDOW_ID "$QUICK_IME_RETURN_WINDOW_ID" >/dev/null 2>&1 || true

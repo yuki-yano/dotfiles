@@ -26,7 +26,7 @@ tmp/
 !/.config/octorus
 !/.config/previm
 !/.config/ripgrep
-!/.config/skhd
+!/.config/shitsurae
 !/.config/snippets
 !/.config/tabtab
 !/.config/tridactyl
@@ -34,7 +34,6 @@ tmp/
 !/.config/vivid
 !/.config/vscode
 !/.config/wezterm
-!/.config/yabai
 !/.config/zeno
 
 # data
