@@ -145,7 +145,12 @@ return {
           window.update = function(self)
             original_update(self)
             local info = self:info()
-            if info.scrollable and info.border_info.visible and self.thumb_win and vim.api.nvim_win_is_valid(self.thumb_win) then
+            if
+              info.scrollable
+              and info.border_info.visible
+              and self.thumb_win
+              and vim.api.nvim_win_is_valid(self.thumb_win)
+            then
               local cfg = vim.api.nvim_win_get_config(self.thumb_win)
               if cfg.col > 0 then
                 cfg.col = cfg.col - 1
@@ -1516,6 +1521,7 @@ return {
         persist_path = vim.fn.stdpath('cache') .. '/haritsuke',
         max_entries = 10000,
         operator_replace_single_undo = true,
+        sync_registers = true,
         debug = false,
       }
 
