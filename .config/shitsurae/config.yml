@@ -2,6 +2,11 @@
 executionPolicy:
   spaceMoveMethod: drag
   spaceMoveMethodInApps:
+    com.google.Chrome: displayRelay
+    com.openai.atlas: displayRelay
+    org.mozilla.firefox: displayRelay
+    com.hnc.Discord: displayRelay
+    com.tinyspeck.slackmacgap: displayRelay
     org.alacritty: displayRelay
 
 overlay:
