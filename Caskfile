@@ -34,7 +34,6 @@ upgrade
 # install --cask vivaldi
 # install --cask xquartz
 install --cask 1password/tap/1password-cli
-install --cask alt-tab
 install --cask appcleaner
 install --cask bartender
 install --cask claude-code

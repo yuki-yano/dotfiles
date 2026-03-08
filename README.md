@@ -202,7 +202,7 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 
 - **`Brewfile`** – grouped installs (shells, editors, languages, container tooling, services/CLIs, fonts, AI helpers,
   display tooling, ntfy). Commands are constrained to `install/tap/cask/update/upgrade/cleanup` for safety.
-- **`Caskfile`** – GUI apps (1Password CLI, AltTab, Bartender, Claude Code, CleanShot, Default Folder X, Docker,
+- **`Caskfile`** – GUI apps (1Password CLI, Bartender, Claude Code, CleanShot, Default Folder X, Docker,
   browsers, JetBrains Toolbox, Karabiner, Keka, OBS, TablePlus, `shitsurae`, etc.) alongside the notifier app casks
   used by the local agent workflow.
 - **`Masfile`** – Mac App Store IDs for CotEditor, Bear, Spark, MenubarX, Transmit, Evernote, DaisyDisk, PopClip, Yoink,
