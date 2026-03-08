@@ -56,8 +56,8 @@ return {
       { 'nvim-tree/nvim-web-devicons' },
       { 'roobert/tailwindcss-colorizer-cmp.nvim' },
       {
-        'biosugar0/cmp-claudecode',
-        dependencies = { 'nvim-lua/plenary.nvim' },
+        'yuki-yano/cmp-coding-agent',
+        dev = true,
       },
       {
         'yuki-yano/cmp-prompt-abbr',
@@ -181,7 +181,12 @@ return {
       }
 
       if is_editprompt() then
-        require('cmp_claudecode').setup()
+        require('cmp_coding_agent').setup({
+          paths = {
+            preserve_at_prefix = false,
+            deep_search = true,
+          },
+        })
         require('cmp_prompt_abbr').setup({
           keyword_length = 1,
           label_fn = function(item)
@@ -209,11 +214,15 @@ return {
           keyword_pattern = [[;[A-Za-z0-9_-]*]],
         })
         table.insert(sources, 1, {
-          name = 'claude_at',
+          name = 'coding_agent_at',
           priority = 900,
         })
         table.insert(sources, 1, {
-          name = 'claude_slash',
+          name = 'coding_agent_dollar',
+          priority = 900,
+        })
+        table.insert(sources, 1, {
+          name = 'coding_agent_slash',
           priority = 900,
         })
       end
@@ -340,14 +349,29 @@ return {
                 rg = '[Rg]',
                 look = '[Look]',
                 path = '[Path]',
-                claude_at = '[Claude @]',
-                claude_slash = '[Claude /]',
+                coding_agent_at = '[Agent @]',
+                coding_agent_dollar = '[Agent $]',
+                coding_agent_slash = '[Agent /]',
                 prompt_abbr = '[Prompt Abbr]',
               }
 
               vim_item = require('tailwindcss-colorizer-cmp').formatter(entry, vim_item)
               if entry.source.name == 'nvim_lsp' then
                 vim_item.menu = '[' .. entry.source.source.client.name .. ']'
+              elseif vim.startswith(entry.source.name, 'coding_agent_') then
+                local suffix_by_source = {
+                  coding_agent_at = '@',
+                  coding_agent_dollar = '$',
+                  coding_agent_slash = '/',
+                }
+                local source_suffix = suffix_by_source[entry.source.name]
+                local item_menu = entry.completion_item.menu
+                local item_label = item_menu and item_menu:match('^%[(.+)%]$')
+                if item_label and source_suffix then
+                  vim_item.menu = string.format('[%s %s]', item_label, source_suffix)
+                else
+                  vim_item.menu = menu[entry.source.name] or '[Agent]'
+                end
               else
                 vim_item.menu = menu[entry.source.name] or entry.source.name
               end
