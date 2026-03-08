@@ -1,0 +1,118 @@
+#!/usr/bin/env sh
+set -eu
+
+append_log() {
+  log_file="${CODEX_NOTIFY_WRAPPER_LOG:-/tmp/codex-notify-vde-monitor.log}"
+  if [ -z "$log_file" ]; then
+    return 0
+  fi
+  timestamp="$(date '+%Y-%m-%dT%H:%M:%S%z')"
+  {
+    printf '[%s] pid=%s ppid=%s\n' "$timestamp" "$$" "${PPID:-}"
+    printf '  args='
+    printf '%s ' "$@"
+    printf '\n'
+    printf '  TMUX_PANE=%s TMUX=%s TERM=%s\n' "${TMUX_PANE:-}" "${TMUX:-}" "${TERM:-}"
+  } >>"$log_file"
+}
+
+append_marker() {
+  marker_file="/tmp/codex-notify-vde-monitor.marker"
+  timestamp="$(date '+%Y-%m-%dT%H:%M:%S%z')"
+  {
+    printf '%s pid=%s ppid=%s tmux_pane=%s\n' \
+      "$timestamp" \
+      "$$" \
+      "${PPID:-}" \
+      "${TMUX_PANE:-}"
+  } >>"$marker_file"
+}
+
+resolve_parent_pid() {
+  ps -o ppid= -p "$1" 2>/dev/null | tr -d ' '
+}
+
+resolve_tty_for_pid() {
+  ps -o tty= -p "$1" 2>/dev/null | tr -d ' '
+}
+
+normalize_tty_path() {
+  case "${1:-}" in
+    "")
+      return 1
+      ;;
+    "?" | "??" | "notty")
+      return 1
+      ;;
+    /dev/*)
+      printf "%s\n" "$1"
+      ;;
+    *)
+      printf "/dev/%s\n" "$1"
+      ;;
+  esac
+}
+
+resolve_tmux_pane_by_tty() {
+  tmux list-panes -a -F '#{pane_tty} #{pane_id}' 2>/dev/null | awk -v tty="$1" '$1 == tty { print $2; exit }'
+}
+
+resolve_tmux_pane() {
+  if [ -n "${TMUX_PANE:-}" ]; then
+    printf "%s\n" "$TMUX_PANE"
+    return 0
+  fi
+
+  pid="$$"
+  depth=0
+  while [ -n "$pid" ] && [ "$depth" -lt 12 ]; do
+    tty_raw="$(resolve_tty_for_pid "$pid")"
+    tty_path="$(normalize_tty_path "$tty_raw" || true)"
+    if [ -n "$tty_path" ]; then
+      pane_id="$(resolve_tmux_pane_by_tty "$tty_path")"
+      if [ -n "$pane_id" ]; then
+        printf "%s\n" "$pane_id"
+        return 0
+      fi
+    fi
+    pid="$(resolve_parent_pid "$pid")"
+    case "$pid" in
+      "" | 0 | 1)
+        break
+        ;;
+    esac
+    depth=$((depth + 1))
+  done
+
+  if [ -n "${TMUX:-}" ]; then
+    pane_id="$(tmux display-message -p '#{pane_id}' 2>/dev/null || true)"
+    if [ -n "$pane_id" ]; then
+      printf "%s\n" "$pane_id"
+      return 0
+    fi
+  fi
+
+  return 1
+}
+
+resolved_pane="$(resolve_tmux_pane || true)"
+if [ -n "$resolved_pane" ]; then
+  export TMUX_PANE="$resolved_pane"
+fi
+append_marker
+append_log "$@"
+{
+  printf '  resolved_tmux_pane=%s\n' "${resolved_pane:-}"
+} >>"${CODEX_NOTIFY_WRAPPER_LOG:-/tmp/codex-notify-vde-monitor.log}"
+
+if [ "$#" -gt 0 ]; then
+  exec vde-notifier "$@"
+fi
+
+exec vde-notifier \
+  --codex \
+  --skip-codex-subagent \
+  --skip-codex-non-interactive \
+  -- \
+  vde-monitor-summary \
+  --async

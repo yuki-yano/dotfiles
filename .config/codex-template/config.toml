@@ -7,15 +7,7 @@ plan_mode_reasoning_effort = "xhigh"
 network_access = true
 disable_response_storage = true
 web_search = "live"
-notify = [
-  "vde-notifier",
-  "--codex",
-  "--skip-codex-subagent",
-  "--skip-codex-non-interactive",
-  "--",
-  "vde-monitor-summary",
-  "--async"
-]
+notify = ["codex-notify-vde-monitor"]
 suppress_unstable_features_warning = true
 personality = "pragmatic"
 
