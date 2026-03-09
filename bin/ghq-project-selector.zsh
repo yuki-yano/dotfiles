@@ -17,11 +17,11 @@ function ghq-project-selector() {
     fi
 
     local rerun_args=${(j: :)${(@q)@}}
-    if tmux display-popup -E "zsh -ic 'ghq-project-selector ${rerun_args}'" 2>/dev/null; then
+    if tmux display-popup -E "GHQ_PROJECT_SELECTOR_DISABLE_FZF_TMUX=1 zsh -ic 'ghq-project-selector ${rerun_args}'" 2>/dev/null; then
       return 0
     fi
 
-    tmux new-window -c "${PWD}" "zsh -ic 'ghq-project-selector ${rerun_args}; exec zsh'" && return 0
+    tmux new-window -c "${PWD}" "GHQ_PROJECT_SELECTOR_DISABLE_FZF_TMUX=1 zsh -ic 'ghq-project-selector ${rerun_args}; exec zsh'" && return 0
     return 1
   fi
 
@@ -41,7 +41,10 @@ function ghq-project-selector() {
   fi
 
   local fzf_cmd preview_cmd
-  if [[ -n "$TMUX" ]] && [[ "$tmux_available" -eq 1 ]] && command -v fzf-tmux >/dev/null 2>&1; then
+  if [[ -z "${GHQ_PROJECT_SELECTOR_DISABLE_FZF_TMUX-}" ]] \
+    && [[ -n "$TMUX" ]] \
+    && [[ "$tmux_available" -eq 1 ]] \
+    && command -v fzf-tmux >/dev/null 2>&1; then
     fzf_cmd=(fzf-tmux -p 50%,50%)
   else
     fzf_cmd=(fzf)
