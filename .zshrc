@@ -5,8 +5,27 @@ SHELDON_POST_CACHE=${SHELDON_CACHE_DIR}/post.zsh
 
 [[ -r $SHELDON_PRE_CACHE ]] && source "$SHELDON_PRE_CACHE"
 
-autoload -Uz compinit
-compinit
+if (( $+functions[zsh-defer] )); then
+  zsh-defer -c '''
+    autoload -Uz compinit
+    ZSH_COMPDUMP=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-${ZSH_VERSION}
+    mkdir -p ${ZSH_COMPDUMP:h}
+    if [[ -s $ZSH_COMPDUMP ]]; then
+      compinit -C -d "$ZSH_COMPDUMP"
+    else
+      compinit -d "$ZSH_COMPDUMP"
+    fi
+  '''
+else
+  autoload -Uz compinit
+  ZSH_COMPDUMP=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-${ZSH_VERSION}
+  mkdir -p ${ZSH_COMPDUMP:h}
+  if [[ -s $ZSH_COMPDUMP ]]; then
+    compinit -C -d "$ZSH_COMPDUMP"
+  else
+    compinit -d "$ZSH_COMPDUMP"
+  fi
+fi
 
 [[ -r $SHELDON_POST_CACHE ]] && source "$SHELDON_POST_CACHE"
 # }}}
