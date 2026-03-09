@@ -1,75 +1,14 @@
-# zinit {{{
-if [[ ! -d $ZPLG_HOME/bin ]]; then
-  if whence git > /dev/null; then
-    git clone --depth 10 https://github.com/zdharma-continuum/zinit.git $ZPLG_HOME/bin
-  fi
-fi
+# sheldon {{{
+SHELDON_CACHE_DIR=${XDG_CACHE_HOME:-$HOME/.cache}/sheldon
+SHELDON_PRE_CACHE=${SHELDON_CACHE_DIR}/pre.zsh
+SHELDON_POST_CACHE=${SHELDON_CACHE_DIR}/post.zsh
 
-if [[ ! -d $ZPFX ]]; then
-  mkdir -p $ZPFX/bin
-  mkdir -p $ZPFX/man/man1
-fi
+[[ -r $SHELDON_PRE_CACHE ]] && source "$SHELDON_PRE_CACHE"
 
-if [[ ! -d $ZPLG_HOME/misc ]]; then
-  mkdir -p $ZPLG_HOME/misc
-fi
+autoload -Uz compinit
+compinit
 
-source $ZPLG_HOME/bin/zinit.zsh
-MANPATH="${ZPFX}/man:${MANPATH}"
-# }}}
-
-# sync loading {{{
-
-zinit ice depth=1 compile'(true)'
-zinit light romkatv/powerlevel10k
-
-zinit ice depth=1 compile'(true)'
-zinit light zsh-users/zsh-autosuggestions
-
-zinit ice lucid depth"1" compile'(true)'
-zinit light woefe/git-prompt.zsh
-
-# }}}
-
-# async loading {{{
-
-# fuzzy finder
-zinit ice wait"0" lucid light-mode from"gh-r" as"program" mv"fzf -> ${ZPFX}/bin/fzf"
-zinit light junegunn/fzf
-
-zinit ice wait"0" lucid light-mode as"program"
-zinit snippet 'https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux'
-
-# PROMPT
-zinit ice lucid wait"!0" depth"1" atinit"zpcompinit; zpcdreplay" atload"set_fast_theme" compile'(true)'
-zinit light zdharma-continuum/fast-syntax-highlighting
-
-# completion
-zinit ice lucid wait"0" depth"1" blockf compile'(true)'
-zinit light zsh-users/zsh-completions
-
-# man
-zinit ice lucid wait"0" as"program" mv"fzf* -> ${ZPFX}/man/man1"
-zinit snippet 'https://github.com/junegunn/fzf/blob/master/man/man1/fzf.1'
-
-# Node
-zinit ice lucid wait"0" as"null" src"ni.zsh" atload"compdef _ni ni" compile'(true)'
-zinit light azu/ni.zsh
-
-# util
-
-## fancy-ctrl-z
-zinit ice lucid wait"1" compile'(true)'
-zinit snippet https://gist.githubusercontent.com/yuki-yano/f1f0d11db6d1d49180bca7e282599932/raw/394a57effdd6d033677a82437a20cd6d12d45a57/fancy-ctrl-z.zsh
-
-## show-buffer-stack
-zinit ice lucid wait"1" compile'(true)' atload"autoload -Uz add-zsh-hook; add-zsh-hook precmd check-buffer-stack; bindkey '^q' show-buffer-stack"
-zinit snippet https://gist.githubusercontent.com/yuki-yano/dc4684c65cf2ba0c2f1612b70d120a34/raw/7652e88d7dbb43ed3f3208f7ca023d1757f2d056/show-buffer-stack.zsh
-
-## show-suspend-jobs
-zinit ice lucid wait"1" compile'(true)'
-zinit snippet https://gist.githubusercontent.com/yuki-yano/636184c3ca326e19cc76351e34ac3517/raw/c6e133d0ac20940c516e0c2e84690499ec49cf1f/show-suspended-jobs.zsh
-
+[[ -r $SHELDON_POST_CACHE ]] && source "$SHELDON_POST_CACHE"
 # }}}
 
 # zsh-autosuggestions {{{
@@ -90,6 +29,7 @@ function set_fast_theme() {
   FAST_HIGHLIGHT_STYLES[globbing]='fg=green,bold'
   FAST_HIGHLIGHT_STYLES[history-expansion]='fg=green,bold'
 }
+typeset -p FAST_HIGHLIGHT_STYLES >/dev/null 2>&1 && set_fast_theme
 # }}}
 
 # alias {{{
@@ -582,14 +522,6 @@ add-zsh-hook chpwd tmux_auto_rename_hook
 # }}}
 
 # zeno {{{
-if [[ -d ~/repos/github.com/yuki-yano/zeno.zsh ]]; then
-  zinit ice lucid blockf
-  zinit light ~/repos/github.com/yuki-yano/zeno.zsh
-else
-  zinit ice lucid depth"1" blockf
-  zinit light yuki-yano/zeno.zsh
-fi
-
 export ZENO_GIT_CAT="bat --color=always --plain --number"
 export ZENO_ENABLE_FZF_TMUX=1
 export ZENO_FZF_TMUX_OPTIONS="-p 50%,50%"

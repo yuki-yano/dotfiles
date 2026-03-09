@@ -26,6 +26,7 @@ tmp/
 !/.config/octorus
 !/.config/previm
 !/.config/ripgrep
+!/.config/sheldon
 !/.config/shitsurae
 !/.config/snippets
 !/.config/tabtab

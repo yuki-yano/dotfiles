@@ -37,11 +37,6 @@ fpath=(~/.zsh/completions(N-/) $fpath)
 # homebrew
 alias brew="PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin brew"
 
-# zinit
-ZPLG_HOME=$HOME/.zinit
-ZPFX=$ZPLG_HOME/polaris
-path=($ZPFX/bin(N-/) $path)
-
 # popd
 alias p=popd
 

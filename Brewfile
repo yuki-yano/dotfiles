@@ -13,6 +13,7 @@ install mas
 install bash binutils coreutils findutils bash-completion
 install tmux reattach-to-user-namespace
 install zsh
+install sheldon
 
 ## Editor
 # install railwaycat/emacsmacport/emacs-mac
@@ -73,6 +74,7 @@ install delphinus/sfmono-square/sfmono-square
 install curl
 install efm-langserver
 install fastfetch
+install fzf
 install gitleaks
 install global
 install gojq

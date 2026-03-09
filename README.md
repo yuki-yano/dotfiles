@@ -26,7 +26,7 @@ desktop automation, and AI-first tooling for day-to-day development.
   permissions, validates Homebrew commands, and offers a `--dry-run` mode before touching system files.
 - 🔒 **Security-first bootstrapping** – `.bashrc` pre-sets `HOMEBREW_PATH` for sandboxed agent environments, macOS
   keychain tools (`op`, `mas`) are isolated under `.config`, and destructive operations prompt for confirmation.
-- 🖥️ **Modern terminal stack** – zsh with zinit, Atuin, Zeno, direnv, mise, and an Alacritty-first setup tuned to
+- 🖥️ **Modern terminal stack** – zsh with sheldon, Atuin, Zeno, direnv, mise, and an Alacritty-first setup tuned to
   Catppuccin aesthetics and Japanese/English IME-friendly shortcuts, with WezTerm reserved for the quick-ime flow.
 - 📝 **Neovim power setup** – `.vim/` contains a lazy.nvim-based Lua config, dual native LSP + CoC support,
   LuaSnip/tsnip snippets, transparency/theme toggles, and efm-langserver integration.
@@ -62,16 +62,17 @@ cd ~/dotfiles
 direnv allow .
 mise install
 
-# Link dotfiles (prompts before replacing non-symlinks)
-deno task dotfiles:install
-
 # Install runtimes & tools
-deno task zsh:zinit:install   # once per machine
-deno task codex:template      # dry-run
-deno task codex:template -- --apply
 deno task brew:bundle
 deno task brew:cask
 deno task mas:install         # requires `mas signin`
+
+# Link dotfiles (prompts before replacing non-symlinks)
+deno task dotfiles:install
+deno task zsh:sheldon:sync
+
+deno task codex:template      # dry-run
+deno task codex:template -- --apply
 
 deno task help                # list all tasks
 ```
@@ -88,7 +89,7 @@ and `tasks.ts` validates input before it shells out.
 | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `deno task dotfiles:install [-- --dry-run]`           | Symlinks the files listed in `DOTFILES_SRCS` to `$HOME`, warning if a non-symlink already exists.                                                                                             |
 | `deno task codex:template [-- --apply]`               | Dry-run by default. Applies `.config/codex-template/config.toml` (managed section merge) and copy targets (`AGENTS.md`, `agents/**`) to `~/.codex` only with `--apply` (`template` has no markers; `~/.codex/config.toml` must contain marker block). |
-| `deno task zsh:zinit:install` / `zsh:zinit:uninstall` | Manage the zinit plugin manager under `~/.zinit`.                                                                                                                                             |
+| `deno task zsh:sheldon:sync` / `zsh:sheldon:update`   | Generate the `sheldon` lock/cache for the `pre` and `post` shell phases under `~/.cache/sheldon`.                                                                                            |
 | `deno task brew:bundle`                               | Executes curated commands in `Brewfile`, allowing only `install`, `tap`, `cask`, `update`, `upgrade`, and `cleanup`.                                                                         |
 | `deno task brew:cask`                                 | Installs GUI apps from `Caskfile`.                                                                                                                                                            |
 | `deno task mas:install`                               | Installs missing Mac App Store apps using IDs from `Masfile`.                                                                                                                                 |
@@ -127,9 +128,9 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 
 ## Shell & Terminal Stack
 
-- **zsh + zinit** – `.zshrc` bootstraps zinit (Powerlevel10k prompt, zsh-autosuggestions, fast-syntax-highlighting,
-  zsh-completions, fzf, ni.zsh, handy snippets, fancy Ctrl-Z/stack helpers). `.zshenv` and `.zprofile` keep PATH/runtime
-  order sane for login shells.
+- **zsh + sheldon** – `.zshrc` bootstraps `sheldon`-generated `pre`/`post` source caches (Powerlevel10k prompt,
+  zsh-autosuggestions, fast-syntax-highlighting, zsh-completions, ni.zsh, handy snippets, local `zeno.zsh`). `fzf` is
+  installed by Homebrew, and `.zshenv` / `.zprofile` keep PATH/runtime order sane for login shells.
 - **Aliases & completions** – eza replaces `ls`, dust/lazygit replacements are wired, `~/.zsh/completions` and
   `.config/tabtab/zsh` host generated completions, and `~/.safe-chain` is sourced when available.
 - **direnv & mise** – `.envrc` and `.config/mise/config.toml` manage per-project env vars plus runtime installs (`bun`,

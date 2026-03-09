@@ -32,11 +32,17 @@ if (!HOME) {
   console.error("ERROR: HOME environment variable is not set");
   Deno.exit(1);
 }
-const ZINIT_DIR = `${HOME}/.zinit`;
 const CLAUDE_DIR = `${SRC_DIR}/.config/claude`;
 const AGENTS_SKILLS_DIR = `${HOME}/.agents/skills`;
 const CLAUDE_SKILLS_DIR = `${CLAUDE_DIR}/skills`;
 const CODEX_TEMPLATE_COPY_TARGETS = ["AGENTS.md", "agents"];
+const SHELDON_CONFIG_FILE = `${SRC_DIR}/.config/sheldon/plugins.toml`;
+const SHELDON_DATA_DIR = `${HOME}/.local/share/sheldon`;
+const SHELDON_CACHE_DIR = `${HOME}/.cache/sheldon`;
+const SHELDON_PHASES = [
+  { profile: "pre", filename: "pre.zsh" },
+  { profile: "post", filename: "post.zsh" },
+];
 
 let DRY_RUN = false;
 let APPLY = false;
@@ -62,6 +68,40 @@ async function isSymlink(path: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+async function ensureCommandAvailable(command: string): Promise<void> {
+  try {
+    const process = new Deno.Command(command, {
+      args: ["--version"],
+      stdout: "null",
+      stderr: "null",
+    });
+    const { code } = await process.output();
+    if (code === 0) {
+      return;
+    }
+  } catch {
+    // handled below
+  }
+
+  console.error(`ERROR: ${command} command not found`);
+  Deno.exit(1);
+}
+
+async function runSheldon(args: string[], profile?: string): Promise<string> {
+  const command = new Deno.Command("sheldon", {
+    args: ["--config-file", SHELDON_CONFIG_FILE, "--data-dir", SHELDON_DATA_DIR, ...args],
+    env: profile ? { SHELDON_PROFILE: profile } : undefined,
+    stdout: "piped",
+    stderr: "piped",
+  });
+  const { code, stdout, stderr } = await command.output();
+  if (code !== 0) {
+    const message = new TextDecoder().decode(stderr).trim();
+    throw new Error(message || `sheldon ${args.join(" ")} failed`);
+  }
+  return new TextDecoder().decode(stdout);
 }
 
 function promptYesNo(message: string): boolean {
@@ -167,34 +207,61 @@ const tasks: Record<string, () => Promise<void> | void> = {
     }
   },
 
-  async "zsh:zinit:install"() {
-    if (await fileExists(ZINIT_DIR)) {
-      console.error("Zinit directory already exists");
+  async "zsh:sheldon:sync"() {
+    if (!(await fileExists(SHELDON_CONFIG_FILE))) {
+      console.error(`ERROR: ${SHELDON_CONFIG_FILE} not found`);
       Deno.exit(1);
     }
 
+    await ensureCommandAvailable("sheldon");
+
     if (DRY_RUN) {
-      console.log(`[DRY RUN] Would create directory: ${ZINIT_DIR}`);
-      console.log(`[DRY RUN] Would clone zinit to ${ZINIT_DIR}/bin`);
-    } else {
-      await Deno.mkdir(ZINIT_DIR);
-      console.log(`>>> Downloading zinit to ${ZINIT_DIR}/bin`);
-      await $`git clone --depth 10 https://github.com/zdharma-continuum/zinit.git ${ZINIT_DIR}/bin`;
-      console.log(">>> Done");
+      console.log(`[DRY RUN] Would run: sheldon --config-file ${SHELDON_CONFIG_FILE} --data-dir ${SHELDON_DATA_DIR} lock`);
+      for (const phase of SHELDON_PHASES) {
+        console.log(
+          `[DRY RUN] Would generate profile '${phase.profile}' to ${SHELDON_CACHE_DIR}/${phase.filename}`,
+        );
+      }
+      return;
+    }
+
+    await Deno.mkdir(SHELDON_CACHE_DIR, { recursive: true });
+    for (const phase of SHELDON_PHASES) {
+      console.log(`Running: sheldon lock (${phase.profile})`);
+      await runSheldon(["lock"], phase.profile);
+      console.log(`Generating sheldon source: ${phase.profile}`);
+      const content = await runSheldon(["source"], phase.profile);
+      await Deno.writeTextFile(`${SHELDON_CACHE_DIR}/${phase.filename}`, content);
     }
   },
 
-  async "zsh:zinit:uninstall"() {
-    if (!(await fileExists(ZINIT_DIR))) {
-      console.error(`${ZINIT_DIR} does not exist`);
+  async "zsh:sheldon:update"() {
+    if (!(await fileExists(SHELDON_CONFIG_FILE))) {
+      console.error(`ERROR: ${SHELDON_CONFIG_FILE} not found`);
       Deno.exit(1);
     }
 
+    await ensureCommandAvailable("sheldon");
+
     if (DRY_RUN) {
-      console.log(`[DRY RUN] Would remove directory: ${ZINIT_DIR}`);
-    } else {
-      await $`rm -rf ${ZINIT_DIR}`;
-      console.log(`Remove directory ${ZINIT_DIR}`);
+      console.log(
+        `[DRY RUN] Would run: sheldon --config-file ${SHELDON_CONFIG_FILE} --data-dir ${SHELDON_DATA_DIR} lock --update`,
+      );
+      for (const phase of SHELDON_PHASES) {
+        console.log(
+          `[DRY RUN] Would generate profile '${phase.profile}' to ${SHELDON_CACHE_DIR}/${phase.filename}`,
+        );
+      }
+      return;
+    }
+
+    await Deno.mkdir(SHELDON_CACHE_DIR, { recursive: true });
+    for (const phase of SHELDON_PHASES) {
+      console.log(`Running: sheldon lock --update (${phase.profile})`);
+      await runSheldon(["lock", "--update"], phase.profile);
+      console.log(`Generating sheldon source: ${phase.profile}`);
+      const content = await runSheldon(["source"], phase.profile);
+      await Deno.writeTextFile(`${SHELDON_CACHE_DIR}/${phase.filename}`, content);
     }
   },
 
@@ -297,8 +364,8 @@ const tasks: Record<string, () => Promise<void> | void> = {
     );
     console.log("");
     console.log("  Zsh:");
-    console.log("    deno task zsh:zinit:install   - Install zinit plugin manager");
-    console.log("    deno task zsh:zinit:uninstall - Uninstall zinit");
+    console.log("    deno task zsh:sheldon:sync    - Lock plugins and generate sheldon source cache");
+    console.log("    deno task zsh:sheldon:update  - Update plugins and regenerate sheldon source cache");
     console.log("");
     console.log("  Homebrew:");
     console.log("    deno task brew:bundle         - Install Homebrew packages");
