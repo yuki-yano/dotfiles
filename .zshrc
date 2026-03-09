@@ -6,7 +6,7 @@ SHELDON_POST_CACHE=${SHELDON_CACHE_DIR}/post.zsh
 [[ -r $SHELDON_PRE_CACHE ]] && source "$SHELDON_PRE_CACHE"
 
 if (( $+functions[zsh-defer] )); then
-  zsh-defer -c '''
+  zsh-defer -c '
     autoload -Uz compinit
     ZSH_COMPDUMP=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-${ZSH_VERSION}
     mkdir -p ${ZSH_COMPDUMP:h}
@@ -15,7 +15,7 @@ if (( $+functions[zsh-defer] )); then
     else
       compinit -d "$ZSH_COMPDUMP"
     fi
-  '''
+  '
 else
   autoload -Uz compinit
   ZSH_COMPDUMP=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-${ZSH_VERSION}
@@ -32,7 +32,7 @@ fi
 
 # zsh-autosuggestions {{{
 ZSH_AUTOSUGGEST_USE_ASYNC=1
-ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(accept-line)
+ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(accept-line zeno-auto-snippet-and-accept-line)
 # }}}
 
 # fast-syntax-highlighting {{{
@@ -540,13 +540,22 @@ add-zsh-hook chpwd tmux_auto_rename_hook
 # }}}
 
 # zeno {{{
-export ZENO_GIT_CAT="bat --color=always --plain --number"
-export ZENO_ENABLE_FZF_TMUX=1
-export ZENO_FZF_TMUX_OPTIONS="-p 50%,50%"
-export ZENO_DISABLE_EXECUTE_CACHE_COMMAND=1
-# export ZENO_DISABLE_SOCK=1
+if (( $+functions[zeno-register-lazy-widgets] )); then
+  zeno-register-lazy-widgets \
+    zeno-auto-snippet \
+    zeno-auto-snippet-and-accept-line \
+    zeno-insert-snippet \
+    zeno-preprompt-snippet \
+    zeno-completion \
+    zeno-snippet-next-placeholder \
+    zeno-insert-space \
+    zeno-toggle-auto-snippet \
+    zeno-smart-history-selection
 
-if [[ -n $ZENO_LOADED ]]; then
+  if (( $+functions[zsh-defer] )); then
+    zsh-defer zeno-preload
+  fi
+
   bindkey ' '    zeno-auto-snippet
   bindkey '^m'   zeno-auto-snippet-and-accept-line
   bindkey '^xs'  zeno-insert-snippet
@@ -562,10 +571,15 @@ if [[ -n $ZENO_LOADED ]]; then
 
   bindkey '^r'   zeno-smart-history-selection
 
-  alias by='zeno-preprompt'
-  alias bys='zeno-preprompt-snippet'
+  function by() {
+    zeno-ensure-loaded || return 1
+    zeno-preprompt "$@"
+  }
 
-  ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(zeno-auto-snippet-and-accept-line)
+  function bys() {
+    zeno-ensure-loaded || return 1
+    zeno-preprompt-snippet "$@"
+  }
 fi
 
 # }}}
