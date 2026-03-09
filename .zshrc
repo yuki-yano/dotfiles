@@ -29,7 +29,6 @@ function set_fast_theme() {
   FAST_HIGHLIGHT_STYLES[globbing]='fg=green,bold'
   FAST_HIGHLIGHT_STYLES[history-expansion]='fg=green,bold'
 }
-typeset -p FAST_HIGHLIGHT_STYLES >/dev/null 2>&1 && set_fast_theme
 # }}}
 
 # alias {{{
