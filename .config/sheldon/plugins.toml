@@ -14,25 +14,16 @@ defer_show_buffer_stack = """{% for file in files %}zsh-defer -c 'source "{{ fil
 github = "romkatv/zsh-defer"
 profiles = ["pre"]
 
-[plugins.powerlevel10k]
-github = "romkatv/powerlevel10k"
-profiles = ["pre"]
-
 [plugins.zsh-completions]
 github = "zsh-users/zsh-completions"
 use = ["zsh-completions.plugin.zsh"]
-profiles = ["pre"]
+profiles = ["post"]
 
 [plugins.zsh-autosuggestions]
 github = "zsh-users/zsh-autosuggestions"
 use = ["zsh-autosuggestions.zsh"]
 profiles = ["post"]
 apply = ["defer_source"]
-
-[plugins.git-prompt]
-github = "woefe/git-prompt.zsh"
-use = ["git-prompt.zsh"]
-profiles = ["post"]
 
 [plugins.fast-syntax-highlighting]
 github = "zdharma-continuum/fast-syntax-highlighting"

@@ -5,6 +5,8 @@ SHELDON_POST_CACHE=${SHELDON_CACHE_DIR}/post.zsh
 
 [[ -r $SHELDON_PRE_CACHE ]] && source "$SHELDON_PRE_CACHE"
 
+[[ -r $SHELDON_POST_CACHE ]] && source "$SHELDON_POST_CACHE"
+
 if (( $+functions[zsh-defer] )); then
   zsh-defer -c '
     autoload -Uz compinit
@@ -26,8 +28,6 @@ else
     compinit -d "$ZSH_COMPDUMP"
   fi
 fi
-
-[[ -r $SHELDON_POST_CACHE ]] && source "$SHELDON_POST_CACHE"
 # }}}
 
 # zsh-autosuggestions {{{
@@ -198,6 +198,19 @@ REPORTTIME=10
 
 # }}}
 
+# Prompt {{{
+for prompt_file in \
+  "$HOME/.zsh/prompt/vendor/async.zsh" \
+  "$HOME/.zsh/prompt/base.zsh" \
+  "$HOME/.zsh/prompt/git.zsh" \
+  "$HOME/.zsh/prompt/async.zsh" \
+  "$HOME/.zsh/prompt/init.zsh"; do
+  [[ -r $prompt_file ]] && source "$prompt_file"
+done
+unset prompt_file
+
+# }}}
+
 # Completion {{{
 
 LISTMAX=1000
@@ -247,116 +260,6 @@ export FZF_COMPLETION_TRIGGER=';'
 
 # atuin {{{
 # eval "$(atuin init zsh)"
-# }}}
-
-# Prompt {{{
-local grey='246'
-local red='1'
-local yellow='3'
-local blue='4'
-local magenta='5'
-local cyan='6'
-local white='7'
-
-function prompt_anyenv() {
-  local ruby_version python_version node_version
-
-  if which rbenv > /dev/null 2>&1; then
-    ruby_version="Ruby-$(rbenv version-name)"
-  fi
-  if which pyenv > /dev/null 2>&1; then
-    if [[ -n "$VIRTUAL_ENV" ]]; then
-      python_version="Python-venv"
-    else
-      python_version="Python-$(pyenv version-name)"
-    fi
-  fi
-  if which nodenv > /dev/null 2>&1; then
-    node_version="Node-$(nodenv version-name)"
-  fi
-  p10k segment -f white -t "[%{$MAGENTA%}${ruby_version}%{$DEFAULT%} %{$GREEN%}${python_version}%{$DEFAULT%} %{$BLUE%}${node_version}%{$DEFAULT%}]"
-}
-
-function prompt_venv() {
-  local venv
-  venv=""
-  if [[ -n "$VIRTUAL_ENV" ]]; then
-    venv="venv:$(basename $VIRTUAL_ENV)"
-    p10k segment -f white -t "[%F{72}${venv}%f]"
-  fi
-}
-
-function prompt_rebasing() {
-  if [[ -d ".git/rebase-merge" ]] || [[ -d ".git/rebase-apply" ]]; then
-    p10k segment -f red -e -t ' Rebasing '
-  fi
-}
-
-function prompt_conflicting() {
-  if [[ -f ".git/MERGE_HEAD" ]]; then
-    p10k segment -f red -e -t ' Conflicting '
-  fi
-}
-
-typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
-  dir
-  vcs
-  conflicting
-  rebasing
-  newline
-  venv
-  prompt_char
-)
-
-function prompt_show_buffer_stack() {
-  p10k segment -f white -e -t '$COMMAND_BUFFER_STACK'
-}
-function prompt_susp_jobs() {
-  p10k segment -f white -e -t '$SUSP_JOBS_RPROMPT'
-}
-
-typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
-  susp_jobs
-  show_buffer_stack
-)
-
-function p10k-on-pre-prompt() { p10k display '1'=show }
-function p10k-on-post-prompt() { p10k display '1'=hide }
-
-typeset -g POWERLEVEL9K_BACKGROUND=
-typeset -g POWERLEVEL9K_{LEFT,RIGHT}_{LEFT,RIGHT}_WHITESPACE=
-typeset -g POWERLEVEL9K_{LEFT,RIGHT}_SUBSEGMENT_SEPARATOR=
-typeset -g POWERLEVEL9K_{LEFT,RIGHT}_SEGMENT_SEPARATOR=
-typeset -g POWERLEVEL9K_VISUAL_IDENTIFIER_EXPANSION=
-
-typeset -g POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
-
-typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_{VIINS,VICMD,VIVIS}_FOREGROUND=$white
-typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_{VIINS,VICMD,VIVIS}_FOREGROUND=$red
-typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIINS_CONTENT_EXPANSION='$'
-typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VICMD_CONTENT_EXPANSION='$'
-typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIVIS_CONTENT_EXPANSION='$'
-typeset -g POWERLEVEL9K_DIR_FOREGROUND=$blue
-typeset -g POWERLEVEL9K_VCS_CONTENT_EXPANSION='$(gitprompt)'
-
-ZSH_THEME_GIT_PROMPT_PREFIX=""
-ZSH_THEME_GIT_PROMPT_SUFFIX=" "
-ZSH_THEME_GIT_PROMPT_SEPARATOR="|"
-ZSH_THEME_GIT_PROMPT_DETACHED="%{$fg_bold[cyan]%}:"
-ZSH_THEME_GIT_PROMPT_BRANCH="%{$fg_bold[white]%} "
-ZSH_THEME_GIT_PROMPT_UPSTREAM_PREFIX="%{$fg[magenta]%}->%{$fg[cyan]%}"
-ZSH_THEME_GIT_PROMPT_UPSTREAM_SUFFIX=" "
-ZSH_THEME_GIT_PROMPT_BEHIND="%{$fg_bold[cyan]%}↓ "
-ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg_bold[cyan]%}↑ "
-ZSH_THEME_GIT_PROMPT_UNMERGED=" %{$fg[red]%}X:"
-ZSH_THEME_GIT_PROMPT_STAGED=" %{$fg[green]%}M:"
-ZSH_THEME_GIT_PROMPT_UNSTAGED=" %{$fg[red]%}M:"
-ZSH_THEME_GIT_PROMPT_UNTRACKED=" %{$fg[red]%}?:"
-ZSH_THEME_GIT_PROMPT_CLEAN=" %{$fg_bold[green]%}✔ "
-ZSH_THEME_GIT_PROMPT_STASHED=" %{$fg[blue]%}Stash:"
-ZSH_GIT_PROMPT_SHOW_UPSTREAM=full
-ZSH_GIT_PROMPT_SHOW_STASH=1
-ZSH_GIT_PROMPT_FORCE_BLANK=1
 # }}}
 
 # tmux {{{
@@ -442,7 +345,7 @@ bindkey '^p' history-beginning-search-backward
 bindkey '^n' history-beginning-search-forward
 bindkey '^y' yank
 
-bindkey "$terminfo[kcbt]" reverse-menu-complete
+[[ -n $terminfo[kcbt] ]] && bindkey "$terminfo[kcbt]" reverse-menu-complete
 
 # Completion bind
 zmodload zsh/complist
