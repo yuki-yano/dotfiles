@@ -2,7 +2,16 @@ dot_prompt_precmd() {
   local exit_code=$?
 
   typeset -g DOT_PROMPT_LAST_EXIT=$exit_code
-  typeset -g DOT_PROMPT_GIT_VISIBLE=1
+  typeset -g DOT_PROMPT_TRANSIENT_ACTIVE=0
+
+  if (( ${DOT_BUFFER_STACK_RESTORE_PENDING:-0} )); then
+    typeset -g DOT_BUFFER_STACK_RESTORE_PENDING=0
+    if (( $+functions[dot-buffer-stack-shift] )) && dot-buffer-stack-shift; then
+      typeset -g DOT_BUFFER_STACK_RESTORE_BUFFER=$REPLY
+    else
+      typeset -g DOT_BUFFER_STACK_RESTORE_BUFFER=""
+    fi
+  fi
 
   if (( DOT_PROMPT_HAS_RENDERED )) && (( ! DOT_PROMPT_SUPPRESS_PRECMD_NEWLINE )); then
     print
@@ -30,19 +39,37 @@ dot_prompt_preexec() {
   esac
 }
 
+dot_prompt_maybe_restore_buffer_stack() {
+  if [[ -z ${DOT_BUFFER_STACK_RESTORE_BUFFER:-} ]]; then
+    return
+  fi
+
+  BUFFER=$DOT_BUFFER_STACK_RESTORE_BUFFER
+  CURSOR=${#BUFFER}
+  typeset -g DOT_BUFFER_STACK_RESTORE_BUFFER=""
+  zle -R
+}
+
 dot_prompt_zle_line_finish() {
-  typeset -g DOT_PROMPT_GIT_VISIBLE=0
+  local stack_size=${#buffer_stack_value_arr[@]}
+
+  if (( stack_size > 0 )); then
+    typeset -g DOT_BUFFER_STACK_RESTORE_PENDING=1
+  fi
+
+  if (( ! ${DOT_PROMPT_ENABLE_TRANSIENT:-0} )); then
+    return
+  fi
+
+  typeset -g DOT_PROMPT_TRANSIENT_ACTIVE=1
+  dot_prompt_build_right_base
+  dot_prompt_build_left "$DOT_PROMPT_LAST_EXIT"
+  dot_prompt_apply_render
 }
 
 dot_prompt_zle_line_init() {
-  typeset -g DOT_PROMPT_GIT_VISIBLE=1
-
-  if (( ${DOT_BUFFER_STACK_RESTORE_PENDING:-0} )) && (( ${#buffer_stack_value_arr:-0} > 0 )) && (( $+functions[dot-buffer-stack-pop] )); then
-    typeset -g DOT_BUFFER_STACK_RESTORE_PENDING=0
-    dot-buffer-stack-pop
-    dot_prompt_refresh_right
-    zle reset-prompt
-  fi
+  typeset -g DOT_PROMPT_TRANSIENT_ACTIVE=0
+  dot_prompt_maybe_restore_buffer_stack
 }
 
 dot_prompt_zle_line_pre_redraw() {
@@ -51,7 +78,7 @@ dot_prompt_zle_line_pre_redraw() {
 
 dot_prompt_clear_screen() {
   typeset -g DOT_PROMPT_SUPPRESS_PRECMD_NEWLINE=1
-  typeset -g DOT_PROMPT_GIT_VISIBLE=1
+  typeset -g DOT_PROMPT_TRANSIENT_ACTIVE=0
   dot_prompt_refresh_right
   dot_prompt_build_git_prompt
   dot_prompt_build_left "$DOT_PROMPT_LAST_EXIT"

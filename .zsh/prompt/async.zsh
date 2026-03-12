@@ -66,7 +66,7 @@ dot_prompt_async_render() {
   dot_prompt_build_git_prompt
   dot_prompt_build_left "$DOT_PROMPT_LAST_EXIT"
   dot_prompt_apply_render
-  dot_prompt_reset_prompt
+  dot_prompt_reset_prompt_full
 }
 
 dot_prompt_async_callback() {

@@ -200,6 +200,8 @@ REPORTTIME=10
 # }}}
 
 # Prompt {{{
+: ${DOT_PROMPT_ENABLE_TRANSIENT:=1}
+
 for prompt_file in \
   "$HOME/.zsh/prompt/vendor/async.zsh" \
   "$HOME/.zsh/prompt/base.zsh" \
@@ -411,7 +413,7 @@ function _fzf-git-reflog-widget() {
     LBUFFER+="$hash"
   fi
 
-  zle reset-prompt
+  zle -R
 }
 zle -N fzf-git-reflog-widget _fzf-git-reflog-widget
 bindkey '^gr' fzf-git-reflog-widget
@@ -481,6 +483,7 @@ typeset -g COMMAND_BUFFER_STACK=""
 typeset -ga buffer_stack_arr=()
 typeset -ga buffer_stack_value_arr=()
 typeset -g DOT_BUFFER_STACK_RESTORE_PENDING=0
+typeset -g DOT_BUFFER_STACK_RESTORE_BUFFER=""
 
 function make-p-buffer-stack() {
   if (( ${#buffer_stack_arr} == 0 )); then
@@ -504,16 +507,23 @@ function dot-buffer-stack-push() {
   make-p-buffer-stack
 }
 
-function dot-buffer-stack-pop() {
+function dot-buffer-stack-shift() {
   if (( ${#buffer_stack_value_arr} == 0 )); then
     return 1
   fi
 
-  BUFFER=$buffer_stack_value_arr[1]
-  CURSOR=${#BUFFER}
+  REPLY=$buffer_stack_value_arr[1]
   shift buffer_stack_value_arr
   shift buffer_stack_arr
   make-p-buffer-stack
+  return 0
+}
+
+function dot-buffer-stack-pop() {
+  dot-buffer-stack-shift || return 1
+
+  BUFFER=$REPLY
+  CURSOR=${#BUFFER}
   return 0
 }
 
@@ -526,15 +536,11 @@ function show-buffer-stack() {
   if (( $+functions[dot_prompt_refresh_right] )); then
     dot_prompt_refresh_right
   fi
-  zle reset-prompt
+  zle -R
 }
 zle -N show-buffer-stack
 
 function dot-prompt-accept-line-or-restore-buffer-stack() {
-  if (( ${#buffer_stack_value_arr} > 0 )); then
-    typeset -g DOT_BUFFER_STACK_RESTORE_PENDING=1
-  fi
-
   if (( $+functions[zeno-auto-snippet-and-accept-line] )); then
     zeno-auto-snippet-and-accept-line
   else

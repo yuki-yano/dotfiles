@@ -1,10 +1,10 @@
 typeset -g DOT_PROMPT_LEFT=""
 typeset -g DOT_PROMPT_RIGHT_BASE=""
 typeset -g DOT_PROMPT_GIT_PROMPT=""
-typeset -g DOT_PROMPT_GIT_VISIBLE=1
 typeset -g DOT_PROMPT_LAST_EXIT=0
 typeset -g DOT_PROMPT_HAS_RENDERED=0
 typeset -g DOT_PROMPT_SUPPRESS_PRECMD_NEWLINE=0
+typeset -g DOT_PROMPT_TRANSIENT_ACTIVE=0
 
 dot_prompt_escape() {
   REPLY=${1//\%/%%}
@@ -39,17 +39,27 @@ dot_prompt_build_left() {
     prompt_color=1
   fi
 
+  if (( ${DOT_PROMPT_ENABLE_TRANSIENT:-0} )) && (( DOT_PROMPT_TRANSIENT_ACTIVE )); then
+    typeset -g DOT_PROMPT_LEFT="%F{${prompt_color}}${prompt_char}%f "
+    return
+  fi
+
   typeset -g DOT_PROMPT_LEFT="%F{4}${path_display}%f"
   if (( $#badges > 0 )); then
     DOT_PROMPT_LEFT+=" ${(j: :)badges}"
   fi
-  if (( ${DOT_PROMPT_GIT_VISIBLE:-1} )) && [[ -n $DOT_PROMPT_GIT_PROMPT ]]; then
+  if [[ -n $DOT_PROMPT_GIT_PROMPT ]]; then
     DOT_PROMPT_LEFT+="${DOT_PROMPT_GIT_PROMPT}"
   fi
   DOT_PROMPT_LEFT+=$'\n'"${venv_segment}%F{${prompt_color}}${prompt_char}%f "
 }
 
 dot_prompt_build_right_base() {
+  if (( ${DOT_PROMPT_ENABLE_TRANSIENT:-0} )) && (( DOT_PROMPT_TRANSIENT_ACTIVE )); then
+    typeset -g DOT_PROMPT_RIGHT_BASE=""
+    return
+  fi
+
   local -a parts=()
   local command_buffer_stack=$COMMAND_BUFFER_STACK
 
@@ -74,6 +84,12 @@ dot_prompt_apply_render() {
 }
 
 dot_prompt_reset_prompt() {
+  if [[ -o zle ]] && zle >/dev/null 2>&1; then
+    zle -R
+  fi
+}
+
+dot_prompt_reset_prompt_full() {
   if [[ -o zle ]] && zle >/dev/null 2>&1; then
     zle reset-prompt
   fi
