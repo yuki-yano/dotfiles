@@ -33,6 +33,7 @@ fi
 # zsh-autosuggestions {{{
 ZSH_AUTOSUGGEST_USE_ASYNC=1
 ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(accept-line zeno-auto-snippet-and-accept-line)
+ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(dot-prompt-accept-line-or-restore-buffer-stack)
 # }}}
 
 # fast-syntax-highlighting {{{
@@ -440,6 +441,125 @@ function tmux_auto_rename_hook() {
 }
 add-zsh-hook chpwd tmux_auto_rename_hook
 
+# show-suspend-jobs {{{
+zmodload -i zsh/parameter
+
+: ${SUSP_JOBS_MAX:=3}
+: ${SUSP_JOBS_ICON:=$'\u23F8'}
+: ${SUSP_JOBS_COLOR:='%F{yellow}'}
+
+typeset -g SUSP_JOBS_RPROMPT=""
+
+function __susp_jobs_update_rprompt() {
+  local -a ids shown
+  local k state txt
+
+  for k in ${(k)jobstates}; do
+    state=${jobstates[$k]}
+    [[ ${state%%:*} == suspended ]] && ids+="$k"
+  done
+
+  if (( ${#ids} )); then
+    local i
+    for i in ${ids}; do
+      txt=${jobtexts[$i]}
+      shown+="${i}:${${txt%% *}:-${txt}}"
+      (( ${#shown} >= SUSP_JOBS_MAX )) && break
+    done
+    local rest=$(( ${#ids} - ${#shown} ))
+    local body="${(j: :)shown}"
+    (( rest > 0 )) && body+=" +${rest}"
+    typeset -g SUSP_JOBS_RPROMPT="${SUSP_JOBS_COLOR}${SUSP_JOBS_ICON} ${body}%f"
+  else
+    typeset -g SUSP_JOBS_RPROMPT=""
+  fi
+}
+# }}}
+
+# show-buffer-stack {{{
+typeset -g COMMAND_BUFFER_STACK=""
+typeset -ga buffer_stack_arr=()
+typeset -ga buffer_stack_value_arr=()
+typeset -g DOT_BUFFER_STACK_RESTORE_PENDING=0
+
+function make-p-buffer-stack() {
+  if (( ${#buffer_stack_arr} == 0 )); then
+    typeset -g COMMAND_BUFFER_STACK=""
+    return
+  fi
+
+  typeset -g COMMAND_BUFFER_STACK="%F{cyan}<Stack:${buffer_stack_arr}>%f"
+}
+
+function dot-buffer-stack-push() {
+  local buffer_value=$1
+  local cmd_str_len=${#buffer_value}
+  local preview
+
+  (( cmd_str_len > 10 )) && cmd_str_len=10
+  preview="[${buffer_value[1,${cmd_str_len}]}]"
+
+  buffer_stack_value_arr=("$buffer_value" ${buffer_stack_value_arr[@]})
+  buffer_stack_arr=("$preview" ${buffer_stack_arr[@]})
+  make-p-buffer-stack
+}
+
+function dot-buffer-stack-pop() {
+  if (( ${#buffer_stack_value_arr} == 0 )); then
+    return 1
+  fi
+
+  BUFFER=$buffer_stack_value_arr[1]
+  CURSOR=${#BUFFER}
+  shift buffer_stack_value_arr
+  shift buffer_stack_arr
+  make-p-buffer-stack
+  return 0
+}
+
+function show-buffer-stack() {
+  [[ -z $BUFFER ]] && return 0
+
+  dot-buffer-stack-push "$BUFFER"
+  BUFFER=""
+  CURSOR=0
+  if (( $+functions[dot_prompt_refresh_right] )); then
+    dot_prompt_refresh_right
+  fi
+  zle reset-prompt
+}
+zle -N show-buffer-stack
+
+function dot-prompt-accept-line-or-restore-buffer-stack() {
+  if (( ${#buffer_stack_value_arr} > 0 )); then
+    typeset -g DOT_BUFFER_STACK_RESTORE_PENDING=1
+  fi
+
+  if (( $+functions[zeno-auto-snippet-and-accept-line] )); then
+    zeno-auto-snippet-and-accept-line
+  else
+    zle accept-line
+  fi
+}
+zle -N dot-prompt-accept-line-or-restore-buffer-stack
+
+bindkey '^q' show-buffer-stack
+# }}}
+
+# fancy-ctrl-z {{{
+function fancy-ctrl-z() {
+  if [[ $#BUFFER -eq 0 ]]; then
+    BUFFER=" fg"
+    zle accept-line
+  else
+    zle push-input
+    zle clear-screen
+  fi
+}
+zle -N fancy-ctrl-z
+bindkey '^Z' fancy-ctrl-z
+# }}}
+
 # }}}
 
 # zeno {{{
@@ -460,7 +580,7 @@ if (( $+functions[zeno-register-lazy-widgets] )); then
   fi
 
   bindkey ' '    zeno-auto-snippet
-  bindkey '^m'   zeno-auto-snippet-and-accept-line
+  bindkey '^m'   dot-prompt-accept-line-or-restore-buffer-stack
   bindkey '^xs'  zeno-insert-snippet
   bindkey '^x^s' zeno-insert-snippet
   bindkey '^xp'  zeno-preprompt-snippet
@@ -483,6 +603,10 @@ if (( $+functions[zeno-register-lazy-widgets] )); then
     zeno-ensure-loaded || return 1
     zeno-preprompt-snippet "$@"
   }
+fi
+
+if (( ! $+functions[zeno-auto-snippet-and-accept-line] )); then
+  bindkey '^m' dot-prompt-accept-line-or-restore-buffer-stack
 fi
 
 # }}}

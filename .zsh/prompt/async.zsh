@@ -90,51 +90,67 @@ dot_prompt_async_callback() {
       ;;
     dot_prompt_git_status)
       local -A info
+      local -a info_items
       local state_changed=0
-      info=("${(Q@)${(z)output}}")
-
-      if [[ $info[pwd] != $PWD ]]; then
-        return
-      fi
-
-      [[ $DOT_PROMPT_GIT_BRANCH != $info[branch] ]] && state_changed=1
-      [[ $DOT_PROMPT_GIT_DETACHED != $info[detached] ]] && state_changed=1
-      [[ $DOT_PROMPT_GIT_UPSTREAM != $info[upstream] ]] && state_changed=1
-      [[ $DOT_PROMPT_GIT_ACTION != $info[action] ]] && state_changed=1
-      [[ $DOT_PROMPT_GIT_CONFLICT != $info[conflict] ]] && state_changed=1
-      [[ $DOT_PROMPT_GIT_TOP != $info[top] ]] && state_changed=1
-      [[ $DOT_PROMPT_GIT_AHEAD != ${info[ahead]:-0} ]] && state_changed=1
-      [[ $DOT_PROMPT_GIT_BEHIND != ${info[behind]:-0} ]] && state_changed=1
-      [[ $DOT_PROMPT_GIT_UNMERGED != ${info[unmerged]:-0} ]] && state_changed=1
-      [[ $DOT_PROMPT_GIT_STAGED != ${info[staged]:-0} ]] && state_changed=1
-      [[ $DOT_PROMPT_GIT_UNSTAGED != ${info[unstaged]:-0} ]] && state_changed=1
-      [[ $DOT_PROMPT_GIT_UNTRACKED != ${info[untracked]:-0} ]] && state_changed=1
-      [[ $DOT_PROMPT_GIT_STASH != ${info[stash]:-0} ]] && state_changed=1
-
-      typeset -g DOT_PROMPT_GIT_BRANCH=$info[branch]
-      typeset -g DOT_PROMPT_GIT_DETACHED=$info[detached]
-      typeset -g DOT_PROMPT_GIT_UPSTREAM=$info[upstream]
-      typeset -g DOT_PROMPT_GIT_ACTION=$info[action]
-      typeset -g DOT_PROMPT_GIT_CONFLICT=$info[conflict]
-      typeset -g DOT_PROMPT_GIT_TOP=$info[top]
-      typeset -g DOT_PROMPT_GIT_AHEAD=${info[ahead]:-0}
-      typeset -g DOT_PROMPT_GIT_BEHIND=${info[behind]:-0}
-      typeset -g DOT_PROMPT_GIT_UNMERGED=${info[unmerged]:-0}
-      typeset -g DOT_PROMPT_GIT_STAGED=${info[staged]:-0}
-      typeset -g DOT_PROMPT_GIT_UNSTAGED=${info[unstaged]:-0}
-      typeset -g DOT_PROMPT_GIT_UNTRACKED=${info[untracked]:-0}
-      typeset -g DOT_PROMPT_GIT_STASH=${info[stash]:-0}
-      if [[ -n $info[top] ]]; then
-        typeset -g DOT_PROMPT_GIT_PWD=$info[top]
+      if (( code != 0 )) || [[ -z $output ]]; then
+        if [[ -n $DOT_PROMPT_GIT_TOP ]]; then
+          dot_prompt_async_reset_repo_state
+          do_render=1
+        fi
       else
-        typeset -g DOT_PROMPT_GIT_PWD=""
-      fi
+        info_items=("${(Q@)${(z)output}}")
+        if (( ${#info_items} == 0 )) || (( ${#info_items} % 2 != 0 )); then
+          if [[ -n $DOT_PROMPT_GIT_TOP ]]; then
+            dot_prompt_async_reset_repo_state
+            do_render=1
+          fi
+        else
+          info=("${info_items[@]}")
 
-      if [[ -z $info[top] ]]; then
-        dot_prompt_async_reset_repo_state
-      fi
+          if [[ $info[pwd] != $PWD ]]; then
+            return
+          fi
 
-      do_render=$state_changed
+          [[ $DOT_PROMPT_GIT_BRANCH != $info[branch] ]] && state_changed=1
+          [[ $DOT_PROMPT_GIT_DETACHED != $info[detached] ]] && state_changed=1
+          [[ $DOT_PROMPT_GIT_UPSTREAM != $info[upstream] ]] && state_changed=1
+          [[ $DOT_PROMPT_GIT_ACTION != $info[action] ]] && state_changed=1
+          [[ $DOT_PROMPT_GIT_CONFLICT != $info[conflict] ]] && state_changed=1
+          [[ $DOT_PROMPT_GIT_TOP != $info[top] ]] && state_changed=1
+          [[ $DOT_PROMPT_GIT_AHEAD != ${info[ahead]:-0} ]] && state_changed=1
+          [[ $DOT_PROMPT_GIT_BEHIND != ${info[behind]:-0} ]] && state_changed=1
+          [[ $DOT_PROMPT_GIT_UNMERGED != ${info[unmerged]:-0} ]] && state_changed=1
+          [[ $DOT_PROMPT_GIT_STAGED != ${info[staged]:-0} ]] && state_changed=1
+          [[ $DOT_PROMPT_GIT_UNSTAGED != ${info[unstaged]:-0} ]] && state_changed=1
+          [[ $DOT_PROMPT_GIT_UNTRACKED != ${info[untracked]:-0} ]] && state_changed=1
+          [[ $DOT_PROMPT_GIT_STASH != ${info[stash]:-0} ]] && state_changed=1
+
+          typeset -g DOT_PROMPT_GIT_BRANCH=$info[branch]
+          typeset -g DOT_PROMPT_GIT_DETACHED=$info[detached]
+          typeset -g DOT_PROMPT_GIT_UPSTREAM=$info[upstream]
+          typeset -g DOT_PROMPT_GIT_ACTION=$info[action]
+          typeset -g DOT_PROMPT_GIT_CONFLICT=$info[conflict]
+          typeset -g DOT_PROMPT_GIT_TOP=$info[top]
+          typeset -g DOT_PROMPT_GIT_AHEAD=${info[ahead]:-0}
+          typeset -g DOT_PROMPT_GIT_BEHIND=${info[behind]:-0}
+          typeset -g DOT_PROMPT_GIT_UNMERGED=${info[unmerged]:-0}
+          typeset -g DOT_PROMPT_GIT_STAGED=${info[staged]:-0}
+          typeset -g DOT_PROMPT_GIT_UNSTAGED=${info[unstaged]:-0}
+          typeset -g DOT_PROMPT_GIT_UNTRACKED=${info[untracked]:-0}
+          typeset -g DOT_PROMPT_GIT_STASH=${info[stash]:-0}
+          if [[ -n $info[top] ]]; then
+            typeset -g DOT_PROMPT_GIT_PWD=$info[top]
+          else
+            typeset -g DOT_PROMPT_GIT_PWD=""
+          fi
+
+          if [[ -z $info[top] ]]; then
+            dot_prompt_async_reset_repo_state
+          fi
+
+          do_render=$state_changed
+        fi
+      fi
       ;;
   esac
 

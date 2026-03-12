@@ -7,8 +7,6 @@ defer_ni = """{% for file in files %}zsh-defer -c 'source "{{ file }}"; compdef 
 {% endfor %}"""
 defer_fast_syntax_highlighting = """{% for file in files %}zsh-defer -c 'source "{{ file }}"; set_fast_theme'
 {% endfor %}"""
-defer_show_buffer_stack = """{% for file in files %}zsh-defer -c 'source "{{ file }}"; autoload -Uz add-zsh-hook; add-zsh-hook precmd check-buffer-stack; bindkey "^q" show-buffer-stack'
-{% endfor %}"""
 
 [plugins.zsh-defer]
 github = "romkatv/zsh-defer"
@@ -35,24 +33,6 @@ github = "azu/ni.zsh"
 use = ["ni.zsh"]
 profiles = ["post"]
 apply = ["defer_ni"]
-
-[plugins.fancy-ctrl-z]
-remote = "https://gist.githubusercontent.com/yuki-yano/f1f0d11db6d1d49180bca7e282599932/raw/394a57effdd6d033677a82437a20cd6d12d45a57/fancy-ctrl-z.zsh"
-use = ["*.zsh"]
-profiles = ["post"]
-apply = ["defer_source"]
-
-[plugins.show-buffer-stack]
-remote = "https://gist.githubusercontent.com/yuki-yano/dc4684c65cf2ba0c2f1612b70d120a34/raw/7652e88d7dbb43ed3f3208f7ca023d1757f2d056/show-buffer-stack.zsh"
-use = ["*.zsh"]
-profiles = ["post"]
-apply = ["defer_show_buffer_stack"]
-
-[plugins.show-suspend-jobs]
-remote = "https://gist.githubusercontent.com/yuki-yano/636184c3ca326e19cc76351e34ac3517/raw/c6e133d0ac20940c516e0c2e84690499ec49cf1f/show-suspended-jobs.zsh"
-use = ["*.zsh"]
-profiles = ["post"]
-apply = ["defer_source"]
 
 [plugins.zeno-env]
 inline = """

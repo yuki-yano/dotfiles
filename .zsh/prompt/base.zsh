@@ -51,11 +51,21 @@ dot_prompt_build_left() {
 
 dot_prompt_build_right_base() {
   local -a parts=()
+  local command_buffer_stack=$COMMAND_BUFFER_STACK
+
+  if (( $+functions[__susp_jobs_update_rprompt] )); then
+    __susp_jobs_update_rprompt
+  fi
 
   [[ -n $SUSP_JOBS_RPROMPT ]] && parts+=("$SUSP_JOBS_RPROMPT")
-  [[ -n $COMMAND_BUFFER_STACK ]] && parts+=("$COMMAND_BUFFER_STACK")
+  [[ -n $command_buffer_stack ]] && parts+=("$command_buffer_stack")
 
   typeset -g DOT_PROMPT_RIGHT_BASE="${(j: :)parts}"
+}
+
+dot_prompt_refresh_right() {
+  dot_prompt_build_right_base
+  RPROMPT=$DOT_PROMPT_RIGHT_BASE
 }
 
 dot_prompt_apply_render() {

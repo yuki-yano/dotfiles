@@ -36,12 +36,23 @@ dot_prompt_zle_line_finish() {
 
 dot_prompt_zle_line_init() {
   typeset -g DOT_PROMPT_GIT_VISIBLE=1
+
+  if (( ${DOT_BUFFER_STACK_RESTORE_PENDING:-0} )) && (( ${#buffer_stack_value_arr:-0} > 0 )) && (( $+functions[dot-buffer-stack-pop] )); then
+    typeset -g DOT_BUFFER_STACK_RESTORE_PENDING=0
+    dot-buffer-stack-pop
+    dot_prompt_refresh_right
+    zle reset-prompt
+  fi
+}
+
+dot_prompt_zle_line_pre_redraw() {
+  dot_prompt_refresh_right
 }
 
 dot_prompt_clear_screen() {
   typeset -g DOT_PROMPT_SUPPRESS_PRECMD_NEWLINE=1
   typeset -g DOT_PROMPT_GIT_VISIBLE=1
-  dot_prompt_build_right_base
+  dot_prompt_refresh_right
   dot_prompt_build_git_prompt
   dot_prompt_build_left "$DOT_PROMPT_LAST_EXIT"
   dot_prompt_apply_render
@@ -67,6 +78,7 @@ dot_prompt_setup() {
   add-zsh-hook zshexit dot_prompt_async_shutdown
   add-zle-hook-widget zle-line-finish dot_prompt_zle_line_finish
   add-zle-hook-widget zle-line-init dot_prompt_zle_line_init
+  add-zle-hook-widget zle-line-pre-redraw dot_prompt_zle_line_pre_redraw
   zle -N clear-screen dot_prompt_clear_screen
 }
 
