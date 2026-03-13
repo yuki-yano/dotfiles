@@ -31,10 +31,10 @@ desktop automation, and AI-first tooling for day-to-day development.
 - 📝 **Neovim power setup** – `.vim/` contains a lazy.nvim-based Lua config, dual native LSP + CoC support,
   LuaSnip/tsnip snippets, transparency/theme toggles, and efm-langserver integration.
 - 🧭 **tmux-first workflow** – prefix on `Ctrl-y`, smart pane routing for Neovim/Claude panes, tmux status extensions
-  (battery, wifi, Claude usage), and helper binaries under `bin/`.
+  (battery, wifi, session context), and helper binaries under `bin/`.
 - 🪟 **Desktop automation** – Shitsurae-managed window layouts/shortcuts, Karabiner IME helpers, and Finicky browser
   routing keep the keyboard and window workflow cohesive.
-- 🤖 **AI-native tooling** – `.config/claude/settings.json` hooks, cage/ccusage helpers, and `vde-*` workflows keep
+- 🤖 **AI-native tooling** – `.config/claude/settings.json` hooks, Warashi cage presets, and `vde-*` workflows keep
   Claude/Codex operations integrated with tmux and shell tooling.
 - 📦 **Unified manifests** – `Brewfile`, `Caskfile`, `Masfile`, and `mise` runtime definitions document every CLI, GUI,
   and runtime dependency.
@@ -165,14 +165,14 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 ## tmux & Session Tools
 
 - `.tmux.conf` moves the prefix to `Ctrl-y`, sets `default-terminal` to `tmux-256color`, configures vi-style copy-mode
-  bindings, uses mouse mode, and integrates with `reattach-to-user-namespace` for clipboard access.
+  bindings, uses mouse mode, and keeps clipboard actions wired through `pbcopy` / `pbpaste`.
 - Smart pane navigation uses helper scripts (`bin/tmux-smart-switch-pane`) and process detection to seamlessly move
   between Neovim, Claude panes, zsh shells, or fzf prompts.
 - Key bindings trigger scripts: `M-r` launches `bunx --bun vtm session-manager`, `M-t` runs `ghq-project-selector.zsh`,
   `M-u` toggles transparent panes, `M-i` opens `editprompt`, `M-c` spawns cwd windows, and `M-1` through `M-9`
   switch to the corresponding tmux session entry.
-- Status line widgets call binaries in `bin/` and external tools: `tmux-list-sessions`, `tmux-status-ccusage`,
-  `tmux-pwd`, `wifi`, `battery`, plus `tmux-auto-rename-session` keeps session names fresh.
+- Status line widgets call binaries in `bin/` and external tools: `tmux-list-sessions`, `tmux-pwd`, `wifi`,
+  `battery`, plus `tmux-auto-rename-session` keeps session names fresh.
 
 ## Window & Input Automation
 
@@ -199,17 +199,19 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
   notifications around Claude sessions.
 - `mise` installs AI CLIs (`@anthropic-ai/claude-code`, `@google/gemini-cli`, `@openai/codex`, `editprompt`,
   `@aikidosec/safe-chain`, `sdd-mcp`, `vde-layout`, `vde-notifier`) so they can be invoked anywhere.
-- `Brewfile` includes `claude-code`, `ccusage`, and the Warashi `cage` cask to round out the local agent suite.
+- The package manifests install desktop-side agent tooling such as Claude Code, Warashi `cage`, `shitsurae`, and
+  `vde-notifier-app`, alongside the CLI helpers used by the shell and tmux workflow.
 
 ## Package Definitions
 
-- **`Brewfile`** – grouped installs (shells, editors, languages, container tooling, services/CLIs, fonts, AI helpers,
-  display tooling, ntfy). Commands are constrained to `install/tap/cask/update/upgrade/cleanup` for safety.
-- **`Caskfile`** – GUI apps (1Password CLI, Bartender, Claude Code, CleanShot, Default Folder X, Docker,
-  browsers, JetBrains Toolbox, Karabiner, Keka, OBS, TablePlus, `shitsurae`, etc.) alongside the notifier app casks
-  used by the local agent workflow.
-- **`Masfile`** – Mac App Store IDs for CotEditor, Bear, Spark, MenubarX, Transmit, Evernote, DaisyDisk, PopClip, Yoink,
-  Sip, Due, LINE, Unclutter, Slack, Paste, Fantastical, plus a commented history of previous installs.
+- **`Brewfile`** – grouped formulae for shell/session tooling, modern CLI utilities, language runtimes, build helpers,
+  Git/review tools, cloud/container commands, local data tools, desktop capture helpers, notifications, and fonts.
+  Commands are constrained to `install/tap/cask/update/upgrade/cleanup` for safety.
+- **`Caskfile`** – GUI and desktop casks including 1Password, 1Password CLI, Claude Code, CleanShot, Draw.io, Finicky,
+  Firefox, Google Chrome, Karabiner-Elements, Obsidian, TablePlus, Visual Studio Code, VLC, Zoom, and local workflow
+  apps such as Warashi `cage`, `arto`, `shitsurae`, and `vde-notifier-app`.
+- **`Masfile`** – Mac App Store IDs for CotEditor, Spark, Transmit, Evernote, DaisyDisk, PopClip, Yoink, LINE,
+  Unclutter, Slack, Paste, and Fantastical, plus a commented history of previous installs.
 - **`deno.json`** – defines every task alias and pins `@david/dax` for shell helpers; run `deno fmt` or `deno task help`
   for ergonomics.
 - **`stylua.toml` & `cspell.json`** – keep Lua and documentation formatting consistent before committing changes.
@@ -222,8 +224,8 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
   `cspell lint README.md` to keep tooling happy.
 - **Runtime sync** – `mise doctor` reveals missing runtimes defined in `.config/mise/config.toml`; re-run `mise install`
   after manifest changes.
-- **Package refresh** – periodically `deno task brew:bundle`, `brew update && brew upgrade`, and review `Masfile` when
-  new apps are added or removed.
+- **Package refresh** – periodically run `deno task brew:bundle`, `deno task brew:cask`, and review `Masfile` when new
+  apps are added or removed.
 - **Local overrides** – place host-specific adjustments in `.gitconfig.local`, `.tmux.conf.local`, or `~/.zshrc.local`
   (sourced from the main configs) to keep git history clean.
 - **App permissions** – `shitsurae` and Karabiner depend on macOS Accessibility permissions; re-authorize them after OS

@@ -58,6 +58,11 @@ async function readLines(filename: string): Promise<string[]> {
   return content.split("\n").filter((line) => line && !line.startsWith("#"));
 }
 
+async function readRawLines(filename: string): Promise<string[]> {
+  const content = await Deno.readTextFile(filename);
+  return content.split("\n");
+}
+
 async function fileExists(path: string): Promise<boolean> {
   try {
     await Deno.stat(path);
@@ -137,6 +142,141 @@ const ALLOWED_BREW_COMMANDS = new Set(["install", "tap", "cask", "update", "upgr
 export function validateBrewCommand(command: string): boolean {
   const parts = command.trim().split(/\s+/);
   return parts.length > 0 && ALLOWED_BREW_COMMANDS.has(parts[0]);
+}
+
+type InstallCommand = {
+  leadingOptions: string[];
+  packages: string[];
+  trailingOptions: string[];
+};
+
+function parseInstallCommand(command: string): InstallCommand | null {
+  const parts = command.trim().split(/\s+/);
+  if (parts[0] !== "install" || parts.length < 2) {
+    return null;
+  }
+
+  const tokens = parts.slice(1);
+  const leadingOptions: string[] = [];
+  const packages: string[] = [];
+  const trailingOptions: string[] = [];
+
+  let seenPackage = false;
+  let inTrailingOptions = false;
+
+  for (const token of tokens) {
+    const isOption = token.startsWith("-");
+
+    if (!seenPackage) {
+      if (isOption) {
+        leadingOptions.push(token);
+        continue;
+      }
+
+      packages.push(token);
+      seenPackage = true;
+      continue;
+    }
+
+    if (inTrailingOptions) {
+      if (!isOption) {
+        return null;
+      }
+
+      trailingOptions.push(token);
+      continue;
+    }
+
+    if (isOption) {
+      trailingOptions.push(token);
+      inTrailingOptions = true;
+      continue;
+    }
+
+    packages.push(token);
+  }
+
+  if (packages.length === 0) {
+    return null;
+  }
+
+  return { leadingOptions, packages, trailingOptions };
+}
+
+function canMergeInstallCommands(left: InstallCommand, right: InstallCommand): boolean {
+  return (
+    left.leadingOptions.join("\0") === right.leadingOptions.join("\0") &&
+    left.trailingOptions.join("\0") === right.trailingOptions.join("\0")
+  );
+}
+
+function formatInstallCommand(command: InstallCommand): string {
+  return [
+    "install",
+    ...command.leadingOptions,
+    ...command.packages,
+    ...command.trailingOptions,
+  ].join(" ");
+}
+
+async function loadBrewCommands(filename: string): Promise<string[]> {
+  const lines = await readRawLines(filename);
+  const commands: string[] = [];
+  let pendingInstall: InstallCommand | null = null;
+
+  const flushPendingInstall = () => {
+    if (!pendingInstall) {
+      return;
+    }
+
+    commands.push(formatInstallCommand(pendingInstall));
+    pendingInstall = null;
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+
+    if (!line || line.startsWith("#")) {
+      continue;
+    }
+
+    if (!validateBrewCommand(line)) {
+      console.error(`ERROR: Invalid brew command: ${line}`);
+      console.error("Only 'install', 'tap', 'cask', 'update', 'upgrade', and 'cleanup' commands are allowed");
+      Deno.exit(1);
+    }
+
+    const installCommand = parseInstallCommand(line);
+    if (!installCommand) {
+      flushPendingInstall();
+      commands.push(line);
+      continue;
+    }
+
+    if (pendingInstall && canMergeInstallCommands(pendingInstall, installCommand)) {
+      pendingInstall.packages.push(...installCommand.packages);
+      continue;
+    }
+
+    flushPendingInstall();
+    pendingInstall = installCommand;
+  }
+
+  flushPendingInstall();
+  return commands;
+}
+
+async function runBrewCommand(command: string): Promise<void> {
+  const args = command.trim().split(/\s+/);
+  const process = new Deno.Command("brew", {
+    args,
+    stdout: "inherit",
+    stderr: "inherit",
+  });
+  const { code } = await process.output();
+  if (code !== 0) {
+    throw new Error(`brew ${command} failed with exit code ${code}`);
+  }
 }
 
 async function validateAgentLinkTargets(): Promise<void> {
@@ -250,7 +390,9 @@ const tasks: Record<string, () => Promise<void> | void> = {
     await ensureCommandAvailable("sheldon");
 
     if (DRY_RUN) {
-      console.log(`[DRY RUN] Would run: sheldon --config-file ${SHELDON_CONFIG_FILE} --data-dir ${SHELDON_DATA_DIR} lock`);
+      console.log(
+        `[DRY RUN] Would run: sheldon --config-file ${SHELDON_CONFIG_FILE} --data-dir ${SHELDON_DATA_DIR} lock`,
+      );
       for (const phase of SHELDON_PHASES) {
         console.log(
           `[DRY RUN] Would generate profile '${phase.profile}' to ${SHELDON_CACHE_DIR}/${phase.filename}`,
@@ -309,19 +451,13 @@ const tasks: Record<string, () => Promise<void> | void> = {
       Deno.exit(1);
     }
 
-    const commands = await readLines("Brewfile");
+    const commands = await loadBrewCommands("Brewfile");
     for (const cmd of commands) {
-      if (!validateBrewCommand(cmd)) {
-        console.error(`ERROR: Invalid brew command: ${cmd}`);
-        console.error("Only 'install', 'tap', 'cask', 'update', 'upgrade', and 'cleanup' commands are allowed");
-        Deno.exit(1);
-      }
-
       if (DRY_RUN) {
         console.log(`[DRY RUN] Would run: brew ${cmd}`);
       } else {
         console.log(`Running: brew ${cmd}`);
-        await $`brew ${cmd}`;
+        await runBrewCommand(cmd);
       }
     }
   },
@@ -332,19 +468,13 @@ const tasks: Record<string, () => Promise<void> | void> = {
       Deno.exit(1);
     }
 
-    const commands = await readLines("Caskfile");
+    const commands = await loadBrewCommands("Caskfile");
     for (const cmd of commands) {
-      if (!validateBrewCommand(cmd)) {
-        console.error(`ERROR: Invalid brew command: ${cmd}`);
-        console.error("Only 'install', 'tap', 'cask', 'update', 'upgrade', and 'cleanup' commands are allowed");
-        Deno.exit(1);
-      }
-
       if (DRY_RUN) {
         console.log(`[DRY RUN] Would run: brew ${cmd}`);
       } else {
         console.log(`Running: brew ${cmd}`);
-        await $`brew ${cmd}`;
+        await runBrewCommand(cmd);
       }
     }
   },

@@ -6,105 +6,66 @@ upgrade
 
 # Packages
 
-## Mas
+## Mac App Store
 install mas
 
-## Shell
-install bash binutils coreutils findutils bash-completion
-install tmux reattach-to-user-namespace
-install zsh
-install sheldon
+## Shell & Session
+install bash zsh sheldon tmux
+
+## Core CLI
+install coreutils findutils
+install gawk gnu-sed gnu-time
+install curl wget
 
 ## Editor
-# install railwaycat/emacsmacport/emacs-mac
-install readline
-install vim
-install utf8proc --HEAD
-install tree-sitter --HEAD
-install neovim --HEAD
-
-## Container
-install orbstack
-
-## Languages
-install boost
-install deno
-install gcc
-install go
-install java
-install lua
-install luarocks busted
-install mise
-install node
-install openssl pkg-config
-install oven-sh/bun/bun
-install perl
-install python
-install ruby
-install shellcheck
-
-## Service
-# install asciinema
-# install terraform
-install awscli
-install session-manager-plugin
-install planetscale/tap/pscale
-
-## Database
-install sqlite
-install mysql-client
+install readline vim
+install utf8proc tree-sitter neovim --HEAD
 
 ## Modern CLI
-install bat ctop direnv dust eza fd glow ripgrep procs vivid atuin
+install bat fd fzf ripgrep
+install eza dust procs
+install direnv
+install jq gojq
+install tree tokei
+install vivid
 
-## GNU Core Utilities
-install autoconf automake cmake gawk gnu-sed gnu-time gpatch gpg2 wget
+## Runtime Tooling
+install mise
 
-## Clipboard util
+## Languages & Runtimes
+install deno node oven-sh/bun/bun
+install go python ruby perl
+install lua luarocks busted
+
+## Build & Validation
+install openssl pkg-config cmake shellcheck
+
+## Git & Review
+install git tig gh ghq git-delta git-filter-repo gitleaks
+
+## Docs & Metadata
 install pandoc
 
-## AI
-install claude-code ccusage
-
-## Font
-install delphinus/sfmono-square/sfmono-square
-
-## Util
-# install universal-ctags --HEAD
-install curl
-install efm-langserver
+## Monitoring
 install fastfetch
-install fzf
-install gitleaks
-install global
-install gojq
-install graphviz
-install itchyny/tap/mmv
-install jq
-install parallel
-install pngpaste
-install rsync
-install silicon
-install tokei
-install tree
-install w3m
-install watch
-install watchman
-install wget
 
-## VCS
-install git tig gh ghq gobo git-delta git-filter-repo
+## File Watching
+install watch watchman
 
-## Window Manager
+## Cloud & Container
+install orbstack
+install awscli session-manager-plugin
+
+## Local Data
+install sqlite
+
+## Desktop & Capture
 install displayplacer
+install pngpaste silicon
+install ffmpeg imagemagick yt-dlp
 
-## AI Agent Support
-install --cask Warashi/tap/cage --no-quarantine
-
-## Media
-install ffmpeg
-install imagemagick
-install youtube-dl
-
-## Notification
+## Notifications
 install ntfy
+
+## Fonts
+install delphinus/sfmono-square/sfmono-square
