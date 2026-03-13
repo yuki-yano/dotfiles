@@ -7,7 +7,12 @@ plan_mode_reasoning_effort = "high"
 network_access = true
 disable_response_storage = true
 web_search = "live"
-notify = ["codex-notify-vde-monitor"]
+notify = [
+  "vde-notifier",
+  "--codex",
+  "--skip-codex-subagent",
+  "--skip-codex-non-interactive"
+]
 suppress_unstable_features_warning = true
 personality = "pragmatic"
 
@@ -36,7 +41,8 @@ multi_agent = true
 default_mode_request_user_input = true
 responses_websockets_v2 = true
 fast_mode = true
+code_mode = true
 
 [tui]
-status_line = ["model-with-reasoning", "current-dir", "git-branch", "context-remaining"]
+status_line = ["model-with-reasoning", "current-dir", "git-branch", "context-remaining", "fast-mode", "context-window-size"]
 theme = "catppuccin-mocha"

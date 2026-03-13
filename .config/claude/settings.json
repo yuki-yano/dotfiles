@@ -56,14 +56,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "vde-monitor-summary --async Stop"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
             "command": "vde-monitor-hook Stop"
           }
         ]
