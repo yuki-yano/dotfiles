@@ -33,8 +33,10 @@ if (!HOME) {
   Deno.exit(1);
 }
 const CLAUDE_DIR = `${SRC_DIR}/.config/claude`;
+const COPILOT_DIR = `${HOME}/.copilot`;
 const AGENTS_SKILLS_DIR = `${HOME}/.agents/skills`;
 const CLAUDE_SKILLS_DIR = `${CLAUDE_DIR}/skills`;
+const COPILOT_SKILLS_DIR = `${COPILOT_DIR}/skills`;
 const CODEX_TEMPLATE_COPY_TARGETS = ["AGENTS.md", "agents"];
 const SHELDON_CONFIG_FILE = `${SRC_DIR}/.config/sheldon/plugins.toml`;
 const SHELDON_DATA_DIR = `${HOME}/.local/share/sheldon`;
@@ -42,6 +44,10 @@ const SHELDON_CACHE_DIR = `${HOME}/.cache/sheldon`;
 const SHELDON_PHASES = [
   { profile: "pre", filename: "pre.zsh" },
   { profile: "post", filename: "post.zsh" },
+];
+const AGENT_LINK_TARGETS = [
+  { dir: CLAUDE_DIR, link: CLAUDE_SKILLS_DIR },
+  { dir: COPILOT_DIR, link: COPILOT_SKILLS_DIR },
 ];
 
 let DRY_RUN = false;
@@ -116,6 +122,14 @@ export function validateBrewCommand(command: string): boolean {
   return parts.length > 0 && ALLOWED_BREW_COMMANDS.has(parts[0]);
 }
 
+async function validateAgentLinkTargets(): Promise<void> {
+  for (const target of AGENT_LINK_TARGETS) {
+    if (await fileExists(target.link) && !(await isSymlink(target.link))) {
+      throw new Error(`${target.link} already exists and is not a symlink\nMove or back up it before linking`);
+    }
+  }
+}
+
 // タスク定義
 const tasks: Record<string, () => Promise<void> | void> = {
   async "dotfiles:install"() {
@@ -158,33 +172,36 @@ const tasks: Record<string, () => Promise<void> | void> = {
     console.log(DRY_RUN ? "[DRY RUN] Done!" : "Done!");
   },
 
-  async "claude:link"() {
+  async "agent:link"() {
     if (!(await fileExists(AGENTS_SKILLS_DIR))) {
       console.error(`ERROR: ${AGENTS_SKILLS_DIR} does not exist`);
       Deno.exit(1);
     }
 
-    if (!(await fileExists(CLAUDE_DIR))) {
+    try {
+      await validateAgentLinkTargets();
+    } catch (error) {
+      console.error(`ERROR: ${(error as Error).message}`);
+      Deno.exit(1);
+    }
+
+    for (const target of AGENT_LINK_TARGETS) {
+      if (!(await fileExists(target.dir))) {
+        if (DRY_RUN) {
+          console.log(`[DRY RUN] Would create directory: ${target.dir}`);
+        } else {
+          await Deno.mkdir(target.dir, { recursive: true });
+        }
+      }
+    }
+
+    for (const target of AGENT_LINK_TARGETS) {
       if (DRY_RUN) {
-        console.log(`[DRY RUN] Would create directory: ${CLAUDE_DIR}`);
+        console.log(`[DRY RUN] Would link ${AGENTS_SKILLS_DIR} to ${target.link}`);
       } else {
-        await Deno.mkdir(CLAUDE_DIR, { recursive: true });
+        await $`ln -sfn ${AGENTS_SKILLS_DIR} ${target.link}`;
+        console.log(`Linked ${target.link} -> ${AGENTS_SKILLS_DIR}`);
       }
-    }
-
-    if (await fileExists(CLAUDE_SKILLS_DIR)) {
-      if (!(await isSymlink(CLAUDE_SKILLS_DIR))) {
-        console.error(`ERROR: ${CLAUDE_SKILLS_DIR} already exists and is not a symlink`);
-        console.error("Move or back up it before linking");
-        Deno.exit(1);
-      }
-    }
-
-    if (DRY_RUN) {
-      console.log(`[DRY RUN] Would link ${AGENTS_SKILLS_DIR} to ${CLAUDE_SKILLS_DIR}`);
-    } else {
-      await $`ln -sfn ${AGENTS_SKILLS_DIR} ${CLAUDE_SKILLS_DIR}`;
-      console.log(`Linked ${CLAUDE_SKILLS_DIR} -> ${AGENTS_SKILLS_DIR}`);
     }
   },
 
@@ -357,7 +374,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
     console.log("  Dotfiles:");
     console.log("    deno task dotfiles:install    - Install dotfiles symlinks");
     console.log(
-      "    deno task claude:link         - Link .config/claude/skills to ~/.agents/skills",
+      "    deno task agent:link          - Link Claude/Copilot skills to ~/.agents/skills",
     );
     console.log(
       "    deno task codex:template      - Dry-run apply codex template (use -- --apply to write)",
