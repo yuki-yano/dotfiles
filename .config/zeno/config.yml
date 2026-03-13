@@ -183,15 +183,12 @@ snippets:
   - name: codex yolo
     keyword: yolo
     snippet: codex --yolo
-  - name: codex
-    keyword: co
-    snippet: codex --yolo
   - name: claude
     keyword: cc
     snippet: claude --dangerously-skip-permissions
-  - name: opencode
-    keyword: oc
-    snippet: opencode
+  - name: copilot
+    keyword: co
+    snippet: copilot --yolo
 
   - name: codex oneline
     keyword: '?'
