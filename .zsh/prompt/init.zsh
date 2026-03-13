@@ -65,6 +65,7 @@ dot_prompt_zle_line_finish() {
   dot_prompt_build_right_base
   dot_prompt_build_left "$DOT_PROMPT_LAST_EXIT"
   dot_prompt_apply_render
+  dot_prompt_reset_prompt_full
 }
 
 dot_prompt_zle_line_init() {
