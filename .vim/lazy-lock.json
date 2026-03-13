@@ -48,6 +48,7 @@
   "dmacro.nvim": { "branch": "main", "commit": "25ab1df31d216c4ff7554c262f92b5c0c6b743f0" },
   "dressing.nvim": { "branch": "master", "commit": "56ef6a969a4990d938c5fed40c370f65e125fc97" },
   "dropbar.nvim": { "branch": "master", "commit": "ce202248134e3949aac375fd66c28e5207785b10" },
+  "editprompt.nvim": { "branch": "main", "commit": "f27b95b10cc66f445be22896f5b309e6241932bf" },
   "fern-git-status.vim": { "branch": "master", "commit": "151336335d3b6975153dad77e60049ca7111da8e" },
   "fern-hijack.vim": { "branch": "master", "commit": "f65524899231b15528066744e714fb344abf0892" },
   "fern-mapping-reload-all.vim": { "branch": "master", "commit": "7769ffb1b052c14f3a7a06c588afc1af5eaa630b" },

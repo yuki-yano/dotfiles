@@ -1,6 +1,6 @@
 local color = require('rc.modules.color')
-local is_editprompt = require('rc.setup.quick_ime').is_editprompt
-local is_ime = require('rc.setup.quick_ime').is_ime
+local is_editprompt = require('rc.modules.ime').is_editprompt
+local is_ime = require('rc.modules.ime').is_ime
 local dedent = require('rc.modules.utils').dedent
 local with_isolated_undo = require('rc.modules.utils').with_isolated_undo
 

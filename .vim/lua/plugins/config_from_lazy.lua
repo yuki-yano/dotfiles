@@ -4,7 +4,6 @@ require('rc.setup.keymaps')
 require('rc.setup.func')
 require('rc.setup.highlight')
 require('rc.setup.extui')
-require('rc.setup.quick_ime')
 require('rc.setup.tmux_yank')
 
 vim.api.nvim_create_autocmd({ 'User' }, {

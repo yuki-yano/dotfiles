@@ -4,7 +4,7 @@ local codicons = require('rc.modules.font').codicons
 local misc_icons = require('rc.modules.font').misc_icons
 local todo_icons = require('rc.modules.font').todo_icons
 local list_concat = require('rc.modules.utils').list_concat
-local is_editprompt = require('rc.setup.quick_ime').is_editprompt
+local is_editprompt = require('rc.modules.ime').is_editprompt
 -- local enable_noice = require('rc.modules.plugin_utils').enable_noice
 
 return {
@@ -234,97 +234,95 @@ return {
 
       cmp.setup({
         enabled = vim.env.LSP == 'nvim',
-        mapping = vim.env.LSP == 'nvim'
-            and cmp.mapping.preset.insert({
-              ['<C-u>'] = cmp.mapping.scroll_docs(-4),
-              ['<C-d>'] = cmp.mapping.scroll_docs(4),
-              ['<C-Space>'] = cmp.mapping(function()
-                local input = vim.api.nvim_get_current_line():sub(1, vim.api.nvim_win_get_cursor(0)[2])
-                local match_list = vim.fn.matchlist(input, [[\k\+$]])
-                local length = vim.fn.len(match_list) == 0 and 0 or vim.fn.len(match_list[1])
+        mapping = vim.env.LSP == 'nvim' and cmp.mapping.preset.insert({
+          ['<C-u>'] = cmp.mapping.scroll_docs(-4),
+          ['<C-d>'] = cmp.mapping.scroll_docs(4),
+          ['<C-Space>'] = cmp.mapping(function()
+            local input = vim.api.nvim_get_current_line():sub(1, vim.api.nvim_win_get_cursor(0)[2])
+            local match_list = vim.fn.matchlist(input, [[\k\+$]])
+            local length = vim.fn.len(match_list) == 0 and 0 or vim.fn.len(match_list[1])
 
-                -- Force use of keyword_length if force_keyword_length is true
-                local manual_sources = {}
-                for _, source in ipairs(sources) do
-                  if source.force_keyword_length then
-                    if length >= source.keyword_length then
-                      table.insert(manual_sources, source)
-                    end
-                  else
-                    table.insert(manual_sources, source)
-                  end
+            -- Force use of keyword_length if force_keyword_length is true
+            local manual_sources = {}
+            for _, source in ipairs(sources) do
+              if source.force_keyword_length then
+                if length >= source.keyword_length then
+                  table.insert(manual_sources, source)
                 end
+              else
+                table.insert(manual_sources, source)
+              end
+            end
 
-                cmp.mapping.complete({
-                  config = {
-                    sources = cmp.config.sources(manual_sources),
-                  },
-                })()
-              end),
-              ['<C-e>'] = cmp.mapping.abort(),
-              ['<CR>'] = cmp.mapping(function(fallback)
-                if cmp.visible() and cmp.get_selected_entry() then
-                  cmp.confirm({ select = true })
-                else
-                  fallback()
-                end
-              end),
-              ['<C-n>'] = cmp.mapping(function(fallback)
-                if cmp.visible() then
-                  cmp.select_next_item({ behavior = types.cmp.SelectBehavior.Insert })
-                else
-                  fallback()
-                end
-              end),
-              ['<C-p>'] = cmp.mapping(function(fallback)
-                if cmp.visible() then
-                  cmp.select_prev_item({ behavior = types.cmp.SelectBehavior.Insert })
-                else
-                  fallback()
-                end
-              end),
-              ['<Up>'] = cmp.mapping(function(fallback)
-                if is_editprompt() then
-                  fallback()
-                  return
-                end
-                if cmp.visible() then
-                  cmp.select_prev_item({ behavior = types.cmp.SelectBehavior.Select })
-                else
-                  fallback()
-                end
-              end),
-              ['<Down>'] = cmp.mapping(function(fallback)
-                if is_editprompt() then
-                  fallback()
-                  return
-                end
-                if cmp.visible() then
-                  cmp.select_next_item({ behavior = types.cmp.SelectBehavior.Select })
-                else
-                  fallback()
-                end
-              end),
-              ['<C-f>'] = cmp.mapping(function(fallback)
-                if luasnip.jumpable(1) then
-                  luasnip.jump(1)
-                elseif vim.snippet.active({ direction = 1 }) then
-                  vim.snippet.jump(1)
-                else
-                  fallback()
-                end
-              end, { 'i', 's' }),
-              ['<C-b>'] = cmp.mapping(function(fallback)
-                if luasnip.jumpable(-1) then
-                  luasnip.jump(-1)
-                elseif vim.snippet.active({ direction = -1 }) then
-                  vim.snippet.jump(-1)
-                else
-                  fallback()
-                end
-              end, { 'i', 's' }),
-            })
-          or {},
+            cmp.mapping.complete({
+              config = {
+                sources = cmp.config.sources(manual_sources),
+              },
+            })()
+          end),
+          ['<C-e>'] = cmp.mapping.abort(),
+          ['<CR>'] = cmp.mapping(function(fallback)
+            if cmp.visible() and cmp.get_selected_entry() then
+              cmp.confirm({ select = true })
+            else
+              fallback()
+            end
+          end),
+          ['<C-n>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_next_item({ behavior = types.cmp.SelectBehavior.Insert })
+            else
+              fallback()
+            end
+          end),
+          ['<C-p>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item({ behavior = types.cmp.SelectBehavior.Insert })
+            else
+              fallback()
+            end
+          end),
+          ['<Up>'] = cmp.mapping(function(fallback)
+            if is_editprompt() then
+              fallback()
+              return
+            end
+            if cmp.visible() then
+              cmp.select_prev_item({ behavior = types.cmp.SelectBehavior.Select })
+            else
+              fallback()
+            end
+          end),
+          ['<Down>'] = cmp.mapping(function(fallback)
+            if is_editprompt() then
+              fallback()
+              return
+            end
+            if cmp.visible() then
+              cmp.select_next_item({ behavior = types.cmp.SelectBehavior.Select })
+            else
+              fallback()
+            end
+          end),
+          ['<C-f>'] = cmp.mapping(function(fallback)
+            if luasnip.jumpable(1) then
+              luasnip.jump(1)
+            elseif vim.snippet.active({ direction = 1 }) then
+              vim.snippet.jump(1)
+            else
+              fallback()
+            end
+          end, { 'i', 's' }),
+          ['<C-b>'] = cmp.mapping(function(fallback)
+            if luasnip.jumpable(-1) then
+              luasnip.jump(-1)
+            elseif vim.snippet.active({ direction = -1 }) then
+              vim.snippet.jump(-1)
+            else
+              fallback()
+            end
+          end, { 'i', 's' }),
+        }) or {},
         window = {
           completion = cmp.config.window.bordered({ border = 'rounded' }),
           documentation = cmp.config.window.bordered({ border = 'rounded' }),
