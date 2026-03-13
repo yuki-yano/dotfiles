@@ -182,6 +182,7 @@ return {
 
       if is_editprompt() then
         require('cmp_coding_agent').setup({
+          agent = 'all',
           paths = {
             preserve_at_prefix = false,
             deep_search = true,
