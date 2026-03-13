@@ -1,4 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/yuki-yano/shitsurae/refs/heads/main/schemas/shitsurae-config.schema.json
+app:
+  launchAtLogin: true
+
 executionPolicy:
   spaceMoveMethod: drag
   spaceMoveMethodInApps:
