@@ -37,6 +37,16 @@ else
 fi
 # }}}
 
+# mise {{{
+if [[ -r ${MISE_ACTIVATE_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/mise.zsh} ]]; then
+  if (( $+functions[zsh-defer] )); then
+    zsh-defer source "${MISE_ACTIVATE_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/mise.zsh}"
+  else
+    source "${MISE_ACTIVATE_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/mise.zsh}"
+  fi
+fi
+# }}}
+
 # zsh-autosuggestions {{{
 ZSH_AUTOSUGGEST_USE_ASYNC=1
 ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(accept-line zeno-auto-snippet-and-accept-line)

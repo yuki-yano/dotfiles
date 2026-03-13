@@ -52,14 +52,23 @@ export XDG_CONFIG_HOME=$HOME/.config
 # mise
 # eval "$(/opt/homebrew/bin/mise activate zsh)"
 if type mise &>/dev/null; then
+  export MISE_SHIMS_CACHE=${CACHE_PROFILE}/mise-shims.zsh
+  export MISE_ACTIVATE_CACHE=${CACHE_PROFILE}/mise.zsh
+  export MISE_SHIMS_DIR=${XDG_DATA_HOME:-$HOME/.local/share}/mise/shims
+
   cache::mise() {
-    mise activate zsh > ${CACHE_PROFILE}/mise.zsh
-    zcompile ${CACHE_PROFILE}/mise.zsh
+    mise activate zsh --shims > ${MISE_SHIMS_CACHE}
+    zcompile ${MISE_SHIMS_CACHE}
+
+    PATH="${MISE_SHIMS_DIR}:$PATH" mise activate zsh > ${MISE_ACTIVATE_CACHE}
+    zcompile ${MISE_ACTIVATE_CACHE}
   }
-  if [[ ! -f ${CACHE_PROFILE}/mise.zsh ]]; then
+
+  if [[ ! -f ${MISE_SHIMS_CACHE} || ! -f ${MISE_ACTIVATE_CACHE} ]]; then
     cache::mise
   fi
-  source ${CACHE_PROFILE}/mise.zsh
+
+  source ${MISE_SHIMS_CACHE}
 fi
 
 # pnpm
