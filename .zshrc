@@ -2,11 +2,29 @@
 SHELDON_CACHE_DIR=${XDG_CACHE_HOME:-$HOME/.cache}/sheldon
 SHELDON_PRE_CACHE=${SHELDON_CACHE_DIR}/pre.zsh
 SHELDON_POST_CACHE=${SHELDON_CACHE_DIR}/post.zsh
-NI_ZSH_PLUGIN=${XDG_DATA_HOME:-$HOME/.local/share}/sheldon/repos/github.com/azu/ni.zsh/ni.zsh
+NI_ZSH_PLUGIN=${NI_ZSH_PLUGIN_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/ni.zsh}
+
+dot_zsh_zcompile_if_stale() {
+  local script_path=$1
+
+  if [[ -r $script_path ]] && [[ ! -r ${script_path}.zwc || $script_path -nt ${script_path}.zwc ]]; then
+    zcompile "$script_path"
+  fi
+}
+
+dot_zsh_zcompile_if_stale "$SHELDON_PRE_CACHE"
+dot_zsh_zcompile_if_stale "$SHELDON_POST_CACHE"
 
 [[ -r $SHELDON_PRE_CACHE ]] && source "$SHELDON_PRE_CACHE"
 
 [[ -r $SHELDON_POST_CACHE ]] && source "$SHELDON_POST_CACHE"
+
+dot_zsh_load_completion_scripts() {
+  [[ -r $NI_ZSH_PLUGIN ]] && source "$NI_ZSH_PLUGIN"
+  [[ -r ${PNPM_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/pnpm-completion.zsh} ]] && source "${PNPM_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/pnpm-completion.zsh}"
+  [[ -r ${NPM_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/npm-completion.zsh} ]] && source "${NPM_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/npm-completion.zsh}"
+  [[ -r ${BUN_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/bun-completion.zsh} ]] && source "${BUN_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/bun-completion.zsh}"
+}
 
 if (( $+functions[zsh-defer] )); then
   zsh-defer -c '
@@ -18,9 +36,7 @@ if (( $+functions[zsh-defer] )); then
     else
       compinit -d "$ZSH_COMPDUMP"
     fi
-    if [[ -r $NI_ZSH_PLUGIN ]]; then
-      source "$NI_ZSH_PLUGIN"
-    fi
+    dot_zsh_load_completion_scripts
   '
 else
   autoload -Uz compinit
@@ -31,9 +47,7 @@ else
   else
     compinit -d "$ZSH_COMPDUMP"
   fi
-  if [[ -r $NI_ZSH_PLUGIN ]]; then
-    source "$NI_ZSH_PLUGIN"
-  fi
+  dot_zsh_load_completion_scripts
 fi
 # }}}
 

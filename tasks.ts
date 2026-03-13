@@ -110,6 +110,23 @@ async function runSheldon(args: string[], profile?: string): Promise<string> {
   return new TextDecoder().decode(stdout);
 }
 
+async function zcompileIfExists(path: string): Promise<void> {
+  if (!(await fileExists(path))) {
+    return;
+  }
+
+  const process = new Deno.Command("zsh", {
+    args: ["-dfc", `zcompile ${JSON.stringify(path)}`],
+    stdout: "null",
+    stderr: "piped",
+  });
+  const { code, stderr } = await process.output();
+  if (code !== 0) {
+    const message = new TextDecoder().decode(stderr).trim();
+    throw new Error(message || `zcompile failed for ${path}`);
+  }
+}
+
 function promptYesNo(message: string): boolean {
   const answer = prompt(`${message} (y/N)`);
   return answer?.toLowerCase() === "y";
@@ -248,7 +265,9 @@ const tasks: Record<string, () => Promise<void> | void> = {
       await runSheldon(["lock"], phase.profile);
       console.log(`Generating sheldon source: ${phase.profile}`);
       const content = await runSheldon(["source"], phase.profile);
-      await Deno.writeTextFile(`${SHELDON_CACHE_DIR}/${phase.filename}`, content);
+      const outputPath = `${SHELDON_CACHE_DIR}/${phase.filename}`;
+      await Deno.writeTextFile(outputPath, content);
+      await zcompileIfExists(outputPath);
     }
   },
 
@@ -278,7 +297,9 @@ const tasks: Record<string, () => Promise<void> | void> = {
       await runSheldon(["lock", "--update"], phase.profile);
       console.log(`Generating sheldon source: ${phase.profile}`);
       const content = await runSheldon(["source"], phase.profile);
-      await Deno.writeTextFile(`${SHELDON_CACHE_DIR}/${phase.filename}`, content);
+      const outputPath = `${SHELDON_CACHE_DIR}/${phase.filename}`;
+      await Deno.writeTextFile(outputPath, content);
+      await zcompileIfExists(outputPath);
     }
   },
 

@@ -11,10 +11,31 @@ export LANG=ja_JP.UTF-8
 
 # cache profile
 export CACHE_PROFILE="${XDG_CACHE_HOME}/zsh/profile"
+export NI_ZSH_PLUGIN_SOURCE="${XDG_DATA_HOME:-$HOME/.local/share}/sheldon/repos/github.com/azu/ni.zsh/ni.zsh"
+export NI_ZSH_PLUGIN_CACHE="${CACHE_PROFILE}/ni.zsh"
+export PNPM_ZSH_COMPLETION_SOURCE="${XDG_CONFIG_HOME:-$HOME/.config}/tabtab/zsh/pnpm.zsh"
+export PNPM_ZSH_COMPLETION_CACHE="${CACHE_PROFILE}/pnpm-completion.zsh"
+export NPM_ZSH_COMPLETION_SOURCE=/opt/homebrew/share/zsh/site-functions/_npm
+export NPM_ZSH_COMPLETION_CACHE="${CACHE_PROFILE}/npm-completion.zsh"
+export BUN_ZSH_COMPLETION_CACHE="${CACHE_PROFILE}/bun-completion.zsh"
 mkdir -p ${CACHE_PROFILE}
 cache::clear() {
   rm -rf ${CACHE_PROFILE}
   mkdir -p ${CACHE_PROFILE}
+}
+
+cache::refresh_script_cache() {
+  local source_file=$1
+  local cache_file=$2
+
+  if [[ ! -r $source_file ]]; then
+    return 1
+  fi
+
+  if [[ ! -f $cache_file || $source_file -nt $cache_file ]]; then
+    command cp "$source_file" "$cache_file"
+    zcompile "$cache_file"
+  fi
 }
 
 # editor
@@ -71,6 +92,10 @@ if type mise &>/dev/null; then
   source ${MISE_SHIMS_CACHE}
 fi
 
+cache::refresh_script_cache "${NI_ZSH_PLUGIN_SOURCE}" "${NI_ZSH_PLUGIN_CACHE}"
+cache::refresh_script_cache "${PNPM_ZSH_COMPLETION_SOURCE}" "${PNPM_ZSH_COMPLETION_CACHE}"
+cache::refresh_script_cache "${NPM_ZSH_COMPLETION_SOURCE}" "${NPM_ZSH_COMPLETION_CACHE}"
+
 # pnpm
 export PNPM_HOME=$HOME/Library/pnpm
 path=($PNPM_HOME(N-/) $path)
@@ -81,6 +106,17 @@ path=(~/.deno/bin(N-/) $path)
 # bun
 path=(~/.bun/bin(N-/) $path)
 path=(~/.cache/.bun/bin(N-/) $path)
+
+if type bun &>/dev/null; then
+  cache::bun_completion() {
+    bun completions zsh > ${BUN_ZSH_COMPLETION_CACHE}
+    zcompile ${BUN_ZSH_COMPLETION_CACHE}
+  }
+
+  if [[ ! -f ${BUN_ZSH_COMPLETION_CACHE} ]]; then
+    cache::bun_completion
+  fi
+fi
 
 # Ruby
 path=(/opt/homebrew/opt/ruby/bin(N-/) $path)
