@@ -3,7 +3,7 @@ shell = "zsh"
 [templates]
 defer_source = """{% for file in files %}zsh-defer source "{{ file }}"
 {% endfor %}"""
-defer_ni = """{% for file in files %}zsh-defer -c 'source "{{ file }}"; compdef _ni ni'
+keep_repo = """{% for file in files %}# keep {{ file }}
 {% endfor %}"""
 defer_fast_syntax_highlighting = """{% for file in files %}zsh-defer -c 'source "{{ file }}"; set_fast_theme'
 {% endfor %}"""
@@ -32,7 +32,7 @@ apply = ["defer_fast_syntax_highlighting"]
 github = "azu/ni.zsh"
 use = ["ni.zsh"]
 profiles = ["post"]
-apply = ["defer_ni"]
+apply = ["keep_repo"]
 
 [plugins.zeno-env]
 inline = """

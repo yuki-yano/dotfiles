@@ -2,6 +2,7 @@
 SHELDON_CACHE_DIR=${XDG_CACHE_HOME:-$HOME/.cache}/sheldon
 SHELDON_PRE_CACHE=${SHELDON_CACHE_DIR}/pre.zsh
 SHELDON_POST_CACHE=${SHELDON_CACHE_DIR}/post.zsh
+NI_ZSH_PLUGIN=${XDG_DATA_HOME:-$HOME/.local/share}/sheldon/repos/github.com/azu/ni.zsh/ni.zsh
 
 [[ -r $SHELDON_PRE_CACHE ]] && source "$SHELDON_PRE_CACHE"
 
@@ -17,6 +18,9 @@ if (( $+functions[zsh-defer] )); then
     else
       compinit -d "$ZSH_COMPDUMP"
     fi
+    if [[ -r $NI_ZSH_PLUGIN ]]; then
+      source "$NI_ZSH_PLUGIN"
+    fi
   '
 else
   autoload -Uz compinit
@@ -26,6 +30,9 @@ else
     compinit -C -d "$ZSH_COMPDUMP"
   else
     compinit -d "$ZSH_COMPDUMP"
+  fi
+  if [[ -r $NI_ZSH_PLUGIN ]]; then
+    source "$NI_ZSH_PLUGIN"
   fi
 fi
 # }}}
