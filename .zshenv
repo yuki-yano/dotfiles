@@ -76,17 +76,21 @@ if type mise &>/dev/null; then
   export MISE_SHIMS_CACHE=${CACHE_PROFILE}/mise-shims.zsh
   export MISE_ACTIVATE_CACHE=${CACHE_PROFILE}/mise.zsh
   export MISE_SHIMS_DIR=${XDG_DATA_HOME:-$HOME/.local/share}/mise/shims
+  export MISE_CONFIG_FILE=${XDG_CONFIG_HOME:-$HOME/.config}/mise/config.toml
+  export MISE_SOURCE_FILE=${ZDOTDIR:-$HOME}/.zshenv
 
-  cache::mise() {
+  cache::mise_shims() {
     mise activate zsh --shims > ${MISE_SHIMS_CACHE}
     zcompile ${MISE_SHIMS_CACHE}
+  }
 
+  cache::mise_activate() {
     PATH="${MISE_SHIMS_DIR}:$PATH" mise activate zsh > ${MISE_ACTIVATE_CACHE}
     zcompile ${MISE_ACTIVATE_CACHE}
   }
 
-  if [[ ! -f ${MISE_SHIMS_CACHE} || ! -f ${MISE_ACTIVATE_CACHE} ]]; then
-    cache::mise
+  if [[ ! -f ${MISE_SHIMS_CACHE} || ${MISE_SOURCE_FILE} -nt ${MISE_SHIMS_CACHE} || ( -f ${MISE_CONFIG_FILE} && ${MISE_CONFIG_FILE} -nt ${MISE_SHIMS_CACHE} ) ]]; then
+    cache::mise_shims
   fi
 
   source ${MISE_SHIMS_CACHE}
@@ -120,12 +124,6 @@ fi
 
 # Ruby
 path=(/opt/homebrew/opt/ruby/bin(N-/) $path)
-
-# Rust
-if [[ -d "$HOME/.cargo" ]]; then
-  path=(~/.cargo/bin(N-/) $path)
-  source "$HOME/.cargo/env"
-fi
 
 # go
 export GOPATH=$HOME/.go
@@ -161,5 +159,11 @@ path=(~/.antigravity/antigravity/bin(N-/) $path)
 
 # Added by Obsidian
 export PATH="$PATH:/Applications/Obsidian.app/Contents/MacOS"
+
+if type mise &>/dev/null; then
+  if [[ ! -f ${MISE_ACTIVATE_CACHE} || ${MISE_SOURCE_FILE} -nt ${MISE_ACTIVATE_CACHE} || ( -f ${MISE_CONFIG_FILE} && ${MISE_CONFIG_FILE} -nt ${MISE_ACTIVATE_CACHE} ) ]]; then
+    cache::mise_activate
+  fi
+fi
 
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:

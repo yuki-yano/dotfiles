@@ -9,6 +9,7 @@ uvx = true
 [tools]
 bun = "latest"
 "cargo:octorus" = "latest"
+"cargo:pez" = "latest"
 "cargo:similarity-ts" = "latest"
 node = "latest"
 "npm:@aikidosec/safe-chain" = "latest"
@@ -30,4 +31,5 @@ node = "latest"
 "npm:yarn" = "latest"
 "pipx:mcp-proxy-for-aws" = "latest"
 python = "3.14"
+rust = "nightly"
 uv = "latest"
