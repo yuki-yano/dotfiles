@@ -2,6 +2,9 @@
 app:
   launchAtLogin: true
 
+mode:
+  space: virtual
+
 executionPolicy:
   spaceMoveMethod: drag
   spaceMoveMethodInApps:
