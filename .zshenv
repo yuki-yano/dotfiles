@@ -154,11 +154,14 @@ path=(~/.local/bin(N-/) $path)
 # Added by Alacritty
 path=(/Applications/Alacritty.app/Contents/MacOS/(N-/) $path)
 
-# Added by Antigravity
-path=(~/.antigravity/antigravity/bin(N-/) $path)
+# Flutter SDK
+path=(~/develop/flutter/bin(N-/) $path)
 
-# Added by Obsidian
-export PATH="$PATH:/Applications/Obsidian.app/Contents/MacOS"
+# LM Studio
+path=(~/.lmstudio/bin(N-/) $path)
+
+# Obsidian
+path=(/Applications/Obsidian.app/Contents/MacOS(N-/) $path)
 
 if type mise &>/dev/null; then
   if [[ ! -f ${MISE_ACTIVATE_CACHE} || ${MISE_SOURCE_FILE} -nt ${MISE_ACTIVATE_CACHE} || ( -f ${MISE_CONFIG_FILE} && ${MISE_CONFIG_FILE} -nt ${MISE_ACTIVATE_CACHE} ) ]]; then
