@@ -130,6 +130,7 @@ vim.opt.lazyredraw = false
 
 -- Mouse
 vim.opt.mouse = 'a'
+vim.opt.mousescroll = 'ver:1,hor:3'
 -- Should it be run? Change &mousemodel 'popup_setpos' to 'extend'.
 -- Need to use statuscolumn
 -- vim.cmd([[behave xterm]])

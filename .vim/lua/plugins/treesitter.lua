@@ -4,13 +4,14 @@ local color = require('rc.modules.color')
 return {
   {
     'nvim-treesitter/nvim-treesitter',
+    branch = 'master',
     -- build = ':TSUpdate',
     dependencies = {
       { 'nvim-treesitter/playground' },
       { 'JoosepAlviste/nvim-ts-context-commentstring' },
       { 'm-demare/hlargs.nvim' },
       { 'nvim-treesitter/nvim-treesitter-context' },
-      { 'nvim-treesitter/nvim-treesitter-textobjects' },
+      { 'nvim-treesitter/nvim-treesitter-textobjects', branch = 'master' },
       -- { 'hiphish/rainbow-delimiters.nvim' },
       { 'yioneko/nvim-yati' },
     },

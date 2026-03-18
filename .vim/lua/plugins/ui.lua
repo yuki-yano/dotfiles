@@ -30,7 +30,7 @@ return {
       local theme_table = function(theme, is_inactive)
         local table = {
           ['gruvbox-material'] = function()
-            local custom_gruvbox = require('lualine.themes.gruvbox-material')
+            local custom_gruvbox = vim.deepcopy(require('lualine.themes.gruvbox-material'))
             custom_gruvbox.normal.a.fg = color.base().black
             custom_gruvbox.normal.a.bg = color.base().blue
             custom_gruvbox.insert.a.fg = color.base().black
@@ -43,7 +43,7 @@ return {
           end,
           ['catppuccin'] = function()
             if is_inactive then
-              local custom_catppuccin = require('lualine.themes.catppuccin')
+              local custom_catppuccin = vim.deepcopy(require('lualine.themes.catppuccin-nvim'))
               local inactive_colors = color.misc().lualine_inactive
               for _, mode in ipairs({ 'normal', 'insert', 'visual', 'replace', 'command', 'inactive' }) do
                 if custom_catppuccin[mode] then
@@ -62,7 +62,7 @@ return {
               end
               return custom_catppuccin
             else
-              return 'catppuccin'
+              return 'catppuccin-nvim'
             end
           end,
         }
