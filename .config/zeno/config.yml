@@ -118,7 +118,7 @@ snippets:
 
   - name: tmux session selector
     keyword: t
-    snippet: vtm session-manager
+    snippet: bunx --bun vtm session-manager
 
   - name: "null"
     keyword: "null"

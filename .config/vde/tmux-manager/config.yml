@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yuki-yano/vde-tmux-manager/refs/heads/main/schemas/config.schema.json
+ghqRoot: "~/repos"
+
+statuslineCategory:
+  format: " {category} "
+  prefix: ""
+  suffix: ""
+  bold: true
+  colors:
+    fg: "#1C1C1C"
+    bg: "#FAB387"
+    outerBg: "#352F63"
+
+statuslineSessions:
+  showIndex: false
+  current:
+    format: " {session} "
+    prefix: ""
+    suffix: ""
+    bold: false
+    colors:
+      fg: "#1E1E2E"
+      bg: "#B4BEFE"
+      outerBg: "#352F63"
+  other:
+    format: " {session} "
+    prefix: ""
+    suffix: ""
+    bold: false
+    colors:
+      fg: "#C6D0F5"
+      bg: "#3A3A3A"
+      outerBg: "#3A3A3A"
+
+categories:
+  order:
+    private: 10
+    public: 20
+    work: 30
+  defaultCategory: public
+  rules:
+    - category: private
+      ghqPatterns:
+        - github.com/yuki-yano/agent-private-workflow
+        - github.com/yuki-yano/mf-dashboard
+        - github.com/yuki-yano/obsidian-sync
+    - category: work
+      ghqPatterns:
+        - github.com/${WORK_GHQ_OWNER}/*
+        - github.com/${WORK_GHQ_OWNER}/**
+  sessionNameRules:
+    - category: private
+      patterns:
+        - dotfiles

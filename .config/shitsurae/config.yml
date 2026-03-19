@@ -128,22 +128,6 @@ shortcuts:
         y: "0%"
         width: "67%"
         height: "100%"
-    - key: h
-      modifiers: [cmd, ctrl]
-      action:
-        type: moveResize
-        x: "0%"
-        y: "0%"
-        width: "50%"
-        height: "100%"
-    - key: l
-      modifiers: [cmd, ctrl]
-      action:
-        type: moveResize
-        x: "50%"
-        y: "0%"
-        width: "50%"
-        height: "100%"
     - key: f
       modifiers: [cmd, ctrl]
       action:

@@ -71,6 +71,11 @@ function ghq-project-selector() {
   esac
 
   if [[ -n "$TMUX" ]] && [[ "$tmux_available" -eq 1 ]]; then
+    if command -v bunx >/dev/null 2>&1; then
+      bunx --bun vtm project switch "$project_dir"
+      return $?
+    fi
+
     local repository=${project_dir##*/}
     local session=$(printf '%s' "$repository" | tr '.' '-')
     local current_session=$(tmux list-sessions 2>/dev/null | grep 'attached' | cut -d":" -f1)

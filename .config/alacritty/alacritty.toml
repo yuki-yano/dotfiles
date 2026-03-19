@@ -162,14 +162,29 @@ key = "Key1"
 mods = "Command"
 
 [[keyboard.bindings]]
+chars = "\u001B!"
+key = "Key1"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
 chars = "\u001B2"
 key = "Key2"
 mods = "Command"
 
 [[keyboard.bindings]]
+chars = "\u001B@"
+key = "Key2"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
 chars = "\u001B3"
 key = "Key3"
 mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u001B#"
+key = "Key3"
+mods = "Alt|Control"
 
 [[keyboard.bindings]]
 chars = "\u001B4"
@@ -405,6 +420,16 @@ mods = "Command|Shift"
 chars = "\u001BL"
 key = "L"
 mods = "Command|Shift"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30012~"
+key = "H"
+mods = "Command|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30013~"
+key = "L"
+mods = "Command|Control"
 
 [[keyboard.bindings]]
 chars = "\u001BM"
