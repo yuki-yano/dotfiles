@@ -42,9 +42,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/wshobson/agents.git",
       "skillPath": "plugins/javascript-typescript/skills/typescript-advanced-types/SKILL.md",
-      "skillFolderHash": "782e78a277e639718b0f9fec905ca51bb16a5a95",
+      "skillFolderHash": "a2fe3beb2f08b66b467981df7e09a2ccc5c9c7d2",
       "installedAt": "2026-01-27T06:33:16.488Z",
-      "updatedAt": "2026-01-27T06:33:16.488Z"
+      "updatedAt": "2026-03-20T12:14:40.984Z"
     },
     "agent-browser": {
       "source": "vercel-labs/agent-browser",
@@ -95,6 +95,7 @@
     "gemini-cli",
     "github-copilot",
     "kimi-cli",
-    "opencode"
+    "opencode",
+    "warp"
   ]
 }
