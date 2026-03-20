@@ -51,10 +51,10 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/vercel-labs/agent-browser.git",
       "skillPath": "skills/agent-browser/SKILL.md",
-      "skillFolderHash": "368263b629b1c1af2abd68ff2e45fa40ead82601",
+      "skillFolderHash": "d22b7962fb118a40f0e2e27af2fdeab12f2651a8",
       "pluginName": "agent-browser",
       "installedAt": "2026-01-27T08:49:59.216Z",
-      "updatedAt": "2026-03-04T08:18:00.349Z"
+      "updatedAt": "2026-03-19T05:42:03.192Z"
     },
     "react-doctor": {
       "source": "millionco/react-doctor",
