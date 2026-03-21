@@ -2,6 +2,64 @@
 
 import { readAll } from "jsr:@std/io@0.224/read-all";
 
+type UsageMetric = {
+  used_percentage?: number;
+  resets_at?: number;
+};
+
+type ContextWindowUsage = {
+  input_tokens?: number;
+  output_tokens?: number;
+  cache_creation_input_tokens?: number;
+  cache_read_input_tokens?: number;
+};
+
+type RateLimitHealth = {
+  budgetLeftPct: number;
+  timeLeftPct: number;
+  remainingDuration: string;
+  statusLabel: string;
+  statusIcon: string;
+  statusColor: Rgb;
+};
+
+type StatusLineInput = {
+  model?: {
+    display_name?: string;
+  };
+  workspace?: {
+    current_dir?: string;
+  };
+  context_window?: UsageMetric & {
+    context_window_size?: number;
+    current_usage?: ContextWindowUsage | null;
+  };
+  rate_limits?: {
+    five_hour?: UsageMetric;
+    seven_day?: UsageMetric;
+  };
+};
+
+const RESET = "\x1b[0m";
+const BAR_BLOCKS = " ▏▎▍▌▋▊▉█";
+const FIVE_HOUR_WINDOW_MS = 5 * 60 * 60 * 1000;
+const SEVEN_DAY_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+
+type Rgb = readonly [number, number, number];
+
+const PALETTE = {
+  green: [166, 227, 161] as Rgb,
+  yellow: [249, 226, 175] as Rgb,
+  red: [243, 139, 168] as Rgb,
+  blue: [137, 180, 250] as Rgb,
+  lavender: [180, 190, 254] as Rgb,
+  peach: [250, 179, 135] as Rgb,
+  sapphire: [116, 199, 236] as Rgb,
+  subtext1: [186, 194, 222] as Rgb,
+  subtext0: [166, 173, 200] as Rgb,
+  overlay0: [108, 112, 134] as Rgb,
+};
+
 async function getGitBranch(): Promise<string> {
   try {
     const isGitRepo = new Deno.Command("git", {
@@ -11,7 +69,9 @@ async function getGitBranch(): Promise<string> {
     });
     const { success } = await isGitRepo.output();
 
-    if (!success) return "";
+    if (!success) {
+      return "";
+    }
 
     const branchCmd = new Deno.Command("git", {
       args: ["branch", "--show-current"],
@@ -30,11 +90,11 @@ async function getGitBranch(): Promise<string> {
       stdout: "piped",
       stderr: "null",
     });
-    const hashResult = await hashCmd.output();
-    const commitHash = new TextDecoder().decode(hashResult.stdout).trim();
+    const { stdout: hashStdout } = await hashCmd.output();
+    const commitHash = new TextDecoder().decode(hashStdout).trim();
 
     if (commitHash) {
-      return ` |  HEAD (${commitHash})`;
+      return `HEAD (${commitHash})`;
     }
   } catch {
   }
@@ -42,80 +102,228 @@ async function getGitBranch(): Promise<string> {
   return "";
 }
 
-function getTokenCount(transcriptPath: string | null): string {
-  if (!transcriptPath) {
-    return "_ tokens. (%)";
+function clampPercentage(value: number): number {
+  return Math.min(Math.max(value, 0), 100);
+}
+
+function rgb(color: Rgb): string {
+  return `\x1b[38;2;${color[0]};${color[1]};${color[2]}m`;
+}
+
+function mixColor(from: Rgb, to: Rgb, ratio: number): Rgb {
+  const safeRatio = Math.min(Math.max(ratio, 0), 1);
+  return [
+    Math.round(from[0] + (to[0] - from[0]) * safeRatio),
+    Math.round(from[1] + (to[1] - from[1]) * safeRatio),
+    Math.round(from[2] + (to[2] - from[2]) * safeRatio),
+  ];
+}
+
+function gradient(pct: number): string {
+  const safePct = clampPercentage(pct);
+
+  if (safePct <= 60) {
+    return rgb(mixColor(PALETTE.green, PALETTE.yellow, safePct / 60));
   }
 
-  try {
-    const content = Deno.readTextFileSync(transcriptPath);
-    const lines = content.split("\n").slice(-100);
+  return rgb(mixColor(PALETTE.yellow, PALETTE.red, (safePct - 60) / 40));
+}
 
-    let totalTokens = 0;
-    let foundUsage = false;
+function fineBar(pct: number, width = 10, color = gradient(pct)): string {
+  const safePct = clampPercentage(pct);
+  const filled = (safePct * width) / 100;
+  const fullBlocks = Math.floor(filled);
+  const partialBlock = Math.floor((filled - fullBlocks) * 8);
 
-    for (let i = lines.length - 1; i >= 0; i--) {
-      const line = lines[i];
-      if (!line.trim()) continue;
+  const filledBar = "█".repeat(fullBlocks);
+  const partialBar = fullBlocks < width && partialBlock > 0 ? BAR_BLOCKS[partialBlock] : "";
+  const emptyCount = width - fullBlocks - (partialBar ? 1 : 0);
+  const emptyBar = "░".repeat(Math.max(emptyCount, 0));
 
-      try {
-        const data = JSON.parse(line);
-        if (data.type === "assistant" && data.message?.usage) {
-          const usage = data.message.usage;
-          totalTokens = (usage.input_tokens || 0) +
-            (usage.output_tokens || 0) +
-            (usage.cache_creation_input_tokens || 0) +
-            (usage.cache_read_input_tokens || 0);
-          foundUsage = true;
-          break;
-        }
-      } catch {
-      }
-    }
+  return `${color}${filledBar}${partialBar}${RESET}${rgb(PALETTE.overlay0)}${emptyBar}${RESET}`;
+}
 
-    if (!foundUsage) {
-      return "_ tkns. (%)";
-    }
-
-    const COMPACTION_THRESHOLD = 160000;
-    const percentage = Math.floor((totalTokens * 100) / COMPACTION_THRESHOLD);
-
-    let tokenDisplay: string;
-    if (totalTokens >= 1000) {
-      tokenDisplay = `${(totalTokens / 1000).toFixed(1)}K`;
-    } else {
-      tokenDisplay = totalTokens.toString();
-    }
-
-    let color: string;
-    if (percentage >= 90) {
-      color = "\x1b[31m";
-    } else if (percentage >= 70) {
-      color = "\x1b[33m";
-    } else {
-      color = "\x1b[32m";
-    }
-
-    return `${tokenDisplay} tkns. (${color}${percentage}%\x1b[0m)`;
-  } catch {
-    return "_ tkns. (%)";
+function formatApproxTokens(totalTokens: number): string {
+  if (totalTokens >= 1000000) {
+    return `${(totalTokens / 1000000).toFixed(1).replace(/\.0$/, "")}M`;
   }
+  if (totalTokens >= 1000) {
+    return `${(totalTokens / 1000).toFixed(1).replace(/\.0$/, "")}K`;
+  }
+
+  return `${totalTokens}`;
+}
+
+function formatTokenRatio(tokenCount: number, totalTokens: number): string {
+  return `${formatApproxTokens(tokenCount)} / ${formatApproxTokens(totalTokens)}`;
+}
+
+function formatDuration(remainingMs: number): string {
+  const safeMs = Math.max(remainingMs, 0);
+  const totalMinutes = Math.ceil(safeMs / 60000);
+  const days = Math.floor(totalMinutes / (24 * 60));
+  const hours = Math.floor((totalMinutes % (24 * 60)) / 60);
+  const minutes = totalMinutes % 60;
+
+  if (days > 0) {
+    return hours > 0 ? `${days}d${hours}h` : `${days}d`;
+  }
+  if (hours > 0) {
+    return minutes > 0 ? `${hours}h${minutes}m` : `${hours}h`;
+  }
+
+  return `${minutes}m`;
+}
+
+function getContextInputTokens(currentUsage?: ContextWindowUsage | null): number | null {
+  if (!currentUsage) {
+    return null;
+  }
+
+  return (currentUsage.input_tokens || 0) +
+    (currentUsage.cache_creation_input_tokens || 0) +
+    (currentUsage.cache_read_input_tokens || 0);
+}
+
+function getRateLimitHealth(usedPct?: number, resetsAt?: number, windowMs?: number): RateLimitHealth | null {
+  if (
+    usedPct === undefined ||
+    resetsAt === undefined ||
+    windowMs === undefined ||
+    Number.isNaN(usedPct) ||
+    Number.isNaN(resetsAt)
+  ) {
+    return null;
+  }
+
+  const budgetLeftPct = clampPercentage(100 - usedPct);
+  const resetAtMs = resetsAt * 1000;
+  const remainingMs = Math.max(resetAtMs - Date.now(), 0);
+  const timeLeftPct = clampPercentage((Math.min(remainingMs, windowMs) / windowMs) * 100);
+  const slack = budgetLeftPct - timeLeftPct;
+
+  if (slack >= 15) {
+    return {
+      budgetLeftPct,
+      timeLeftPct,
+      remainingDuration: formatDuration(remainingMs),
+      statusLabel: "safe",
+      statusIcon: "✓",
+      statusColor: PALETTE.green,
+    };
+  }
+  if (slack >= 0) {
+    return {
+      budgetLeftPct,
+      timeLeftPct,
+      remainingDuration: formatDuration(remainingMs),
+      statusLabel: "on pace",
+      statusIcon: "◐",
+      statusColor: PALETTE.yellow,
+    };
+  }
+  if (slack >= -15) {
+    return {
+      budgetLeftPct,
+      timeLeftPct,
+      remainingDuration: formatDuration(remainingMs),
+      statusLabel: "tight",
+      statusIcon: "⚠",
+      statusColor: PALETTE.peach,
+    };
+  }
+
+  return {
+    budgetLeftPct,
+    timeLeftPct,
+    remainingDuration: formatDuration(remainingMs),
+    statusLabel: "critical",
+    statusIcon: "✕",
+    statusColor: PALETTE.red,
+  };
+}
+
+function formatRateLimitMetric(label: string, health: RateLimitHealth | null): string | null {
+  if (!health) {
+    return null;
+  }
+
+  const budgetField = `${Math.round(health.budgetLeftPct)}%`;
+  const timeField = `⏳ ${Math.round(health.timeLeftPct)}%`;
+  const statusField = `${health.statusIcon} ${budgetField}`.padEnd(6);
+  const resetField = `↺ ${health.remainingDuration}`.padEnd(8);
+
+  return `${rgb(PALETTE.subtext1)}${label}${RESET} ${fineBar(health.budgetLeftPct, 10, rgb(health.statusColor))} ${
+    rgb(health.statusColor)
+  }${statusField}${RESET} ${rgb(PALETTE.overlay0)}|${RESET} ${rgb(PALETTE.subtext0)}${timeField}${RESET} ${
+    rgb(PALETTE.overlay0)
+  }|${RESET} ${rgb(PALETTE.sapphire)}${resetField}${RESET}`;
+}
+
+function formatContextSummary(pct?: number, meta?: string | null): string | null {
+  if (pct === undefined || Number.isNaN(pct) || !meta) {
+    return null;
+  }
+
+  const rounded = Math.round(clampPercentage(pct));
+  return `${rgb(PALETTE.overlay0)}${RESET}  ${rgb(PALETTE.subtext0)}${meta}${RESET} ${
+    gradient(pct)
+  }${rounded}%${RESET}`;
+}
+
+function formatFirstLineItem(icon: string, text: string, color: Rgb): string {
+  return `${rgb(PALETTE.overlay0)}${icon}${RESET}  ${rgb(color)}${text}${RESET}`;
 }
 
 async function main() {
   const stdin = await readAll(Deno.stdin);
-  const input = JSON.parse(new TextDecoder().decode(stdin));
+  const input = JSON.parse(new TextDecoder().decode(stdin)) as StatusLineInput;
 
   const modelDisplay = input.model?.display_name || "Unknown";
   const currentDir = input.workspace?.current_dir || ".";
-  const transcriptPath = input.transcript_path || null;
-
   const dirName = currentDir.split("/").pop() || currentDir;
 
   const gitBranch = await getGitBranch();
-  const tokenCount = getTokenCount(transcriptPath);
+  const contextInputTokens = getContextInputTokens(input.context_window?.current_usage);
+  const contextWindowSize = input.context_window?.context_window_size;
+  const ctxMeta = contextInputTokens != null && contextWindowSize != null
+    ? formatTokenRatio(contextInputTokens, contextWindowSize)
+    : null;
+  const ctxSummary = formatContextSummary(input.context_window?.used_percentage, ctxMeta);
+  const fiveHourHealth = getRateLimitHealth(
+    input.rate_limits?.five_hour?.used_percentage,
+    input.rate_limits?.five_hour?.resets_at,
+    FIVE_HOUR_WINDOW_MS,
+  );
+  const sevenDayHealth = getRateLimitHealth(
+    input.rate_limits?.seven_day?.used_percentage,
+    input.rate_limits?.seven_day?.resets_at,
+    SEVEN_DAY_WINDOW_MS,
+  );
 
-  console.log(`󰚩  ${modelDisplay} |   ${dirName} | 󰘬  ${gitBranch} |   ${tokenCount}`);
+  const firstLineParts = [
+    formatFirstLineItem("󰚩", modelDisplay, PALETTE.lavender),
+    formatFirstLineItem("", dirName, PALETTE.blue),
+    ...(gitBranch ? [formatFirstLineItem("󰘬", gitBranch, PALETTE.green)] : []),
+    ...(ctxSummary ? [ctxSummary] : []),
+  ];
+
+  const usageParts = [
+    formatRateLimitMetric("5h", fiveHourHealth),
+    formatRateLimitMetric("7d", sevenDayHealth),
+  ].filter((value): value is string => value !== null);
+
+  if (usageParts.length === 0) {
+    console.log(firstLineParts.join(` ${rgb(PALETTE.overlay0)}|${RESET} `));
+    return;
+  }
+
+  const rateLimitLines = usageParts.map((line, index) => {
+    const guide = index === usageParts.length - 1 ? "└" : "├";
+    return `${rgb(PALETTE.overlay0)}${guide}${RESET} ${line}`;
+  });
+
+  console.log(`${firstLineParts.join(` ${rgb(PALETTE.overlay0)}|${RESET} `)}\n${rateLimitLines.join("\n")}`);
 }
 
 if (import.meta.main) {
