@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "^startup$|^resume$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$HOME/dotfiles/bin/codex-session-start-agent-note.js\"",
+            "timeoutSec": 3,
+            "statusMessage": "AGENT_NOTE_DIR を読み込み中"
+          }
+        ]
+      }
+    ]
+  }
+}
