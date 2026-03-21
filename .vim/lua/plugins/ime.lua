@@ -178,6 +178,25 @@ return {
     end,
     config = function()
       local editprompt = require('editprompt')
+      local function should_save_editprompt_clipboard(content)
+        if type(content) ~= 'string' or content == '' then
+          return false
+        end
+
+        local lines = vim.split(content, '\n', { plain = true })
+        local first_line = lines[1] or ''
+        if not first_line:find('^/') then
+          return true
+        end
+
+        local first_line_args = first_line:match('^/%S*%s*(.*)$') or ''
+        if first_line_args:find('%S') ~= nil then
+          return true
+        end
+
+        local trailing_text = table.concat(vim.list_slice(lines, 2), '\n')
+        return trailing_text:find('%S') ~= nil
+      end
 
       editprompt.setup({
         cmd = 'editprompt',
@@ -189,30 +208,10 @@ return {
           end
           return normalized
         end,
-        should_copy = function(content)
-          if type(content) ~= 'string' or content == '' then
-            return false
+        on_success = function(content, _, ctx)
+          if should_save_editprompt_clipboard(content) then
+            vim.fn.system('pbcopy', content)
           end
-
-          if content:match('^%d+\n?$') then
-            return false
-          end
-
-          local lines = vim.split(content, '\n', { plain = true })
-          local first_line = lines[1] or ''
-          if not first_line:find('^/') then
-            return true
-          end
-
-          local first_line_args = first_line:match('^/%S*%s*(.*)$') or ''
-          if first_line_args:find('%S') ~= nil then
-            return true
-          end
-
-          local trailing_text = table.concat(vim.list_slice(lines, 2), '\n')
-          return trailing_text:find('%S') ~= nil
-        end,
-        on_success = function(_, _, ctx)
           if ctx.auto_send then
             editprompt.stash_pop_latest()
           end
