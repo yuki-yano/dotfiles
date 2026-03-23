@@ -185,7 +185,7 @@ snippets:
     snippet: codex --yolo
   - name: claude
     keyword: cc
-    snippet: claude --dangerously-skip-permissions  --add-dir "${SUBDIR}"
+    snippet: claude --dangerously-skip-permissions --add-dir "${AGENT_NOTE_DIR}"
   - name: copilot
     keyword: co
     snippet: copilot --yolo
