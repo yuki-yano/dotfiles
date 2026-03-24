@@ -28,7 +28,7 @@ desktop automation, and AI-first tooling for day-to-day development.
   keychain tools (`op`, `mas`) are isolated under `.config`, and destructive operations prompt for confirmation.
 - 🖥️ **Modern terminal stack** – zsh with sheldon, Atuin, Zeno, direnv, mise, and an Alacritty-first setup tuned to
   Catppuccin aesthetics and Japanese/English IME-friendly shortcuts, with WezTerm reserved for the quick-ime flow.
-- 📝 **Neovim power setup** – `.vim/` contains a lazy.nvim-based Lua config, dual native LSP + CoC support,
+- 📝 **Neovim power setup** – `.config/nvim/` contains a lazy.nvim-based Lua config, dual native LSP + CoC support,
   LuaSnip/tsnip snippets, transparency/theme toggles, and efm-langserver integration.
 - 🧭 **tmux-first workflow** – prefix on `Ctrl-y`, smart pane routing for Neovim/Claude panes, tmux status extensions
   (battery, wifi, session context), and helper binaries under `bin/`.
@@ -113,8 +113,7 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 - `.config/` – app-level configs for Alacritty, WezTerm (`quick-ime` 用), Atuin, Bat themes, cage presets, Claude
   tasks, efm-langserver, Karabiner, mise, Neovim, ripgrep, shitsurae, tabtab, VDE layouts, vivid color themes, and
   zeno snippets.
-- `.vim/`, `.vimrc` – Neovim/Lua configuration (lazy.nvim, rc modules, LuaSnip + tsnip, sessions, docs) synced with
-  `.config/nvim` runtime files.
+- `.config/nvim/` – Neovim/Lua configuration (lazy.nvim, rc modules, LuaSnip + tsnip, sessions, docs).
 - `.tmux.conf`, `.tmux/` – tmux settings and related local assets.
 - `.finicky.js`, `.config/shitsurae/config.yml`, `.config/karabiner/karabiner.json` – macOS automation suite (window
   layout/shortcuts, IME helpers, URL routing). `karabiner.json` is generated from
@@ -153,7 +152,8 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 
 ## Editor & LSP
 
-- `.vim/init.lua` flips on `vim.loader`, sets `vim.env.LSP` (`nvim` or `coc`), toggles transparency/colours via env
+- `.config/nvim/init.lua` flips on `vim.loader`, sets `vim.env.LSP` (`nvim` or `coc`), toggles transparency/colours
+  via env
   vars, and calls the Lua module loader under `rc/`.
 - `rc/modules/plugin_manager` wires lazy.nvim; plugin configs live in `lua/plugins`, `lua/rc/setup`, `lua/rc/modules`,
   etc.
@@ -224,7 +224,8 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 
 - **Dry runs first** – append `-- --dry-run` when testing `dotfiles:install`, `brew:*`, or other tasks to confirm the
   plan before touching the real system.
-- **Formatters** – run `deno fmt tasks.ts`, `stylua --config-path stylua.toml .vim` (or target specific Lua files), and
+- **Formatters** – run `deno fmt tasks.ts`, `stylua --config-path stylua.toml .config/nvim` (or target specific Lua
+  files), and
   `cspell lint README.md` to keep tooling happy.
 - **Runtime sync** – `mise doctor` reveals missing runtimes defined in `.config/mise/config.toml`; re-run `mise install`
   after manifest changes.

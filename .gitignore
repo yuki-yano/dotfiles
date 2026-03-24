@@ -4,11 +4,6 @@ tmp/
 /.zsh/cache/
 *.zwc
 
-# Vim
-/.vim/bundle
-/.vim/sessions
-/.vim/spell
-
 # Config
 /.config/*
 /.config/karabiner/automatic_backups

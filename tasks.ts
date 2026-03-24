@@ -18,8 +18,6 @@ const DOTFILES_SRCS = [
   ".gitignore_global",
   ".tigrc",
   ".tmux.conf",
-  ".vim",
-  ".vimrc",
   ".zsh",
   ".zshenv",
   ".zshrc",
