@@ -13,7 +13,9 @@ executionPolicy:
     org.mozilla.firefox: displayRelay
     com.hnc.Discord: displayRelay
     com.tinyspeck.slackmacgap: displayRelay
+    com.eatbiscult.biscult: displayRelay
     org.alacritty: displayRelay
+    md.obsidian: displayRelay
 
 overlay:
   showThumbnails: true
@@ -83,12 +85,21 @@ layouts:
               y: "0%"
               width: "100%"
               height: "100%"
+          - slot: 2
+            launch: true
+            match:
+              bundleID: md.obsidian
+            frame:
+              x: "25%"
+              y: "15%"
+              width: "50%"
+              height: "70%"
       - spaceID: 4
         windows:
           - slot: 1
             launch: true
             match:
-              bundleID: com.pushplaylabs.sidekick
+              bundleID: com.eatbiscult.biscult
             frame:
               x: "16.5%"
               y: "0%"
