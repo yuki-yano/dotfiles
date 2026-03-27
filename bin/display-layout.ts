@@ -23,11 +23,11 @@ const [mode] = Deno.args as [string];
 
 const layouts = {
   main: [
-    "id:F46D20D8-7AA5-4FFE-B88A-1820DF9875E6 res:5120x2160 hz:60 color_depth:8 enabled:true scaling:off origin:(0,0) degree:0",
+    "id:040232A0-65C5-4350-B338-FD9C807986E7 res:5120x2160 hz:60 color_depth:8 enabled:true scaling:off origin:(0,0) degree:0",
     "id:37D8832A-2D66-02CA-B9F7-8F30A301B230 res:2624x1696 hz:120 color_depth:8 enabled:true scaling:off origin:(-2624,0) degree:0",
   ],
   pbp: [
-    "id:F46D20D8-7AA5-4FFE-B88A-1820DF9875E6 res:2560x2160 hz:60 color_depth:8 enabled:true scaling:off origin:(0,0) degree:0",
+    "id:040232A0-65C5-4350-B338-FD9C807986E7 res:2560x2160 hz:60 color_depth:8 enabled:true scaling:off origin:(0,0) degree:0",
     "id:37D8832A-2D66-02CA-B9F7-8F30A301B230 res:2624x1696 hz:120 color_depth:8 enabled:true scaling:off origin:(-2624,0) degree:0",
   ],
 } as const;

@@ -138,7 +138,7 @@ path=(/opt/homebrew/opt/ruby/bin(N-/) $path)
 
 # go
 export GOPATH=$HOME/.go
-path=(~/.go/bin(N-/) ~/.ghg/bin(N-/) $path)
+path=($GOPATH/bin(N-/) ~/.ghg/bin(N-/) $path)
 
 # luarocks
 path=(~/.luarocks/bin(N-/) $path)
