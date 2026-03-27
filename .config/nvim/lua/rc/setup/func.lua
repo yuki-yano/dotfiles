@@ -314,6 +314,17 @@ local function get_relative_filepath()
   return filepath
 end
 
+local function get_home_relative_full_filepath()
+  local filepath = vim.fn.expand('%:p')
+  local home = vim.fn.expand('$HOME')
+
+  if home ~= '' and filepath:sub(1, #home) == home then
+    filepath = '~' .. filepath:sub(#home + 1)
+  end
+
+  return filepath
+end
+
 local function format_diagnostics(diagnostics)
   local lines = {}
   for _, diag in ipairs(diagnostics) do
@@ -350,48 +361,82 @@ local function yank_content(content, has_diagnostics)
   })
 end
 
--- Normal mode: yank file path as @path/to/file
-vim.keymap.set('n', 'ga', function()
-  local content = get_relative_filepath()
-  yank_content(content, false)
+local function sync_system_clipboard()
   vim.fn.setreg('+', vim.fn.getreg('"'))
-end, { desc = 'Yank file path for Claude Code' })
+end
 
--- Visual mode: yank with line range as @path/to/file#Lxx-yy
-vim.keymap.set('x', 'ga', function()
-  local filepath = get_relative_filepath()
-
-  -- Get current visual selection range
+local function get_visual_selection_range()
   -- Use vim.fn.getpos() to get the current visual selection
   local vstart = vim.fn.getpos('v')
   local vend = vim.fn.getpos('.')
 
   local start_line = math.min(vstart[2], vend[2])
   local end_line = math.max(vstart[2], vend[2])
+  return start_line, end_line
+end
 
-  -- Build the base content
-  local content = filepath .. '#L' .. start_line
-  if start_line ~= end_line then
-    content = content .. '-' .. end_line
+local function build_yank_content(filepath, start_line, end_line)
+  local content = filepath
+  local has_diagnostics = false
+
+  if start_line ~= nil and end_line ~= nil then
+    content = filepath .. '#L' .. start_line
+    if start_line ~= end_line then
+      content = content .. '-' .. end_line
+    end
+
+    -- Check for diagnostics in the selected range
+    local diagnostics = vim.diagnostic.get(0, {
+      lnum_start = start_line - 1, -- 0-indexed
+      lnum_end = end_line - 1, -- 0-indexed
+    })
+
+    -- Add diagnostics info if present (only ERROR and WARN)
+    local diag_lines = format_diagnostics(diagnostics)
+    has_diagnostics = #diag_lines > 0
+    if has_diagnostics then
+      content = content .. '\n' .. table.concat(diag_lines, '\n')
+    end
   end
 
-  -- Check for diagnostics in the selected range
-  local diagnostics = vim.diagnostic.get(0, {
-    lnum_start = start_line - 1, -- 0-indexed
-    lnum_end = end_line - 1, -- 0-indexed
-  })
+  return content, has_diagnostics
+end
 
-  -- Add diagnostics info if present (only ERROR and WARN)
-  local diag_lines = format_diagnostics(diagnostics)
-  local has_diagnostics = #diag_lines > 0
-  if has_diagnostics then
-    content = content .. '\n' .. table.concat(diag_lines, '\n')
-  end
+local function yank_filepath(filepath_getter)
+  local content = filepath_getter()
+  yank_content(content, false)
+  sync_system_clipboard()
+end
+
+local function yank_filepath_with_line_range(filepath_getter)
+  local filepath = filepath_getter()
+  local start_line, end_line = get_visual_selection_range()
+  local content, has_diagnostics = build_yank_content(filepath, start_line, end_line)
 
   yank_content(content, has_diagnostics)
-  vim.fn.setreg('+', vim.fn.getreg('"'))
+  sync_system_clipboard()
 
   -- Exit visual mode safely
   local esc = vim.api.nvim_replace_termcodes('<Esc>', true, false, true)
   vim.api.nvim_feedkeys(esc, 'n', false)
+end
+
+-- Normal mode: yank file path as @path/to/file
+vim.keymap.set('n', 'ga', function()
+  yank_filepath(get_relative_filepath)
+end, { desc = 'Yank file path for Claude Code' })
+
+-- Normal mode: yank full file path as @~/path/to/file
+vim.keymap.set('n', 'gA', function()
+  yank_filepath(get_home_relative_full_filepath)
+end, { desc = 'Yank full file path for Claude Code' })
+
+-- Visual mode: yank with line range as @path/to/file#Lxx-yy
+vim.keymap.set('x', 'ga', function()
+  yank_filepath_with_line_range(get_relative_filepath)
 end, { desc = 'Yank file path with line range for Claude Code' })
+
+-- Visual mode: yank with line range as @~/path/to/file#Lxx-yy
+vim.keymap.set('x', 'gA', function()
+  yank_filepath_with_line_range(get_home_relative_full_filepath)
+end, { desc = 'Yank full file path with line range for Claude Code' })
