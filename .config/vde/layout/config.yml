@@ -57,14 +57,7 @@ presets:
       type: horizontal
       ratio: [25, 37.5, 37.5]
       panes:
-        - type: vertical
-          ratio: [1, "22c"]
-          panes:
-            - name: zsh
-            - name: editprompt
-              command: "editprompt open --target-pane {{pane_id:codex}} --target-pane {{pane_id:claude}}"
-              focus: true
-              ephemeral: true
+        - name: zsh
         - type: vertical
           ratio: [1, "22c"]
           panes:
