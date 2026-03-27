@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+set -eu
+
+if ! command -v codex >/dev/null 2>&1; then
+  echo "Codex CLI not found" >&2
+  exit 1
+fi
+
+exec codex exec \
+  --model "gpt-5.3-codex-spark" \
+  --sandbox "danger-full-access" \
+  --ephemeral \
+  --progress-cursor \
+  "$@"
