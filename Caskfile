@@ -9,6 +9,7 @@ install --cask 1password
 install --cask 1password/tap/1password-cli
 install --cask claude-code
 install --cask cleanshot
+install --cask cursor
 install --cask default-folder-x
 install --cask discord
 install --cask drawio
@@ -19,7 +20,10 @@ install --cask karabiner-elements
 install --cask keyboard-cleaner
 install --cask keycastr
 install --cask obsidian
+install --cask raycast
+install --cask stats
 install --cask tableplus
+install --cask tailscale-app
 install --cask visual-studio-code
 install --cask vlc
 install --cask zoom

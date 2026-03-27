@@ -47,7 +47,7 @@ install git tig gh ghq git-delta git-filter-repo gitleaks
 install pandoc
 
 ## Monitoring
-install fastfetch
+install fastfetch hyperfine
 
 ## File Watching
 install watch watchman
@@ -55,6 +55,7 @@ install watch watchman
 ## Cloud & Container
 install orbstack
 install awscli session-manager-plugin
+install tailscale
 
 ## Local Data
 install sqlite
