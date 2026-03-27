@@ -101,10 +101,18 @@ snippets:
   - name: git push force-with-lease
     keyword: gpf
     snippet: git push --force-with-lease
+  - name: git push set-upstream
+    keyword: gpu
+    snippet: git push --set-upstream
 
   - name: git push safe force
     keyword: -f
     snippet: --force-with-lease
+    context:
+      lbuffer: '^git push(\s+\S+)*\s+'
+  - name: git push set upstream
+    keyword: -u
+    snippet: --set-upstream
     context:
       lbuffer: '^git push(\s+\S+)*\s+'
 

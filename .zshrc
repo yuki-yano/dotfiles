@@ -37,6 +37,7 @@ if (( $+functions[zsh-defer] )); then
     else
       compinit -d "$ZSH_COMPDUMP"
     fi
+    (( $+functions[compdef] )) && [[ -n ${ZENO_ROOT-} ]] && compdef _zeno zeno zeno-history-client zeno-server
     dot_zsh_load_completion_scripts
   '
 else
@@ -48,6 +49,7 @@ else
   else
     compinit -d "$ZSH_COMPDUMP"
   fi
+  (( $+functions[compdef] )) && [[ -n ${ZENO_ROOT-} ]] && compdef _zeno zeno zeno-history-client zeno-server
   dot_zsh_load_completion_scripts
 fi
 # }}}
