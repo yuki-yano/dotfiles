@@ -18,6 +18,7 @@ export PNPM_ZSH_COMPLETION_CACHE="${CACHE_PROFILE}/pnpm-completion.zsh"
 export NPM_ZSH_COMPLETION_SOURCE=/opt/homebrew/share/zsh/site-functions/_npm
 export NPM_ZSH_COMPLETION_CACHE="${CACHE_PROFILE}/npm-completion.zsh"
 export BUN_ZSH_COMPLETION_CACHE="${CACHE_PROFILE}/bun-completion.zsh"
+export MISE_ZSH_COMPLETION_CACHE="${CACHE_PROFILE}/mise-completion.zsh"
 mkdir -p ${CACHE_PROFILE}
 cache::clear() {
   rm -rf ${CACHE_PROFILE}
@@ -73,6 +74,7 @@ export XDG_CONFIG_HOME=$HOME/.config
 # mise
 # eval "$(/opt/homebrew/bin/mise activate zsh)"
 if type mise &>/dev/null; then
+  export MISE_BIN=${commands[mise]}
   export MISE_SHIMS_CACHE=${CACHE_PROFILE}/mise-shims.zsh
   export MISE_ACTIVATE_CACHE=${CACHE_PROFILE}/mise.zsh
   export MISE_SHIMS_DIR=${XDG_DATA_HOME:-$HOME/.local/share}/mise/shims
@@ -89,8 +91,17 @@ if type mise &>/dev/null; then
     zcompile ${MISE_ACTIVATE_CACHE}
   }
 
+  cache::mise_completion() {
+    mise completion zsh > ${MISE_ZSH_COMPLETION_CACHE}
+    zcompile ${MISE_ZSH_COMPLETION_CACHE}
+  }
+
   if [[ ! -f ${MISE_SHIMS_CACHE} || ${MISE_SOURCE_FILE} -nt ${MISE_SHIMS_CACHE} || ( -f ${MISE_CONFIG_FILE} && ${MISE_CONFIG_FILE} -nt ${MISE_SHIMS_CACHE} ) ]]; then
     cache::mise_shims
+  fi
+
+  if [[ ! -f ${MISE_ZSH_COMPLETION_CACHE} || ${MISE_SOURCE_FILE} -nt ${MISE_ZSH_COMPLETION_CACHE} || ${MISE_BIN} -nt ${MISE_ZSH_COMPLETION_CACHE} ]]; then
+    cache::mise_completion
   fi
 
   source ${MISE_SHIMS_CACHE}

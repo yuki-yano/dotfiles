@@ -24,6 +24,7 @@ dot_zsh_load_completion_scripts() {
   [[ -r ${PNPM_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/pnpm-completion.zsh} ]] && source "${PNPM_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/pnpm-completion.zsh}"
   [[ -r ${NPM_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/npm-completion.zsh} ]] && source "${NPM_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/npm-completion.zsh}"
   [[ -r ${BUN_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/bun-completion.zsh} ]] && source "${BUN_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/bun-completion.zsh}"
+  [[ -r ${MISE_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/mise-completion.zsh} ]] && source "${MISE_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/mise-completion.zsh}"
 }
 
 if (( $+functions[zsh-defer] )); then
