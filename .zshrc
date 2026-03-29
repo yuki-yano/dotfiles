@@ -12,6 +12,9 @@ dot_zsh_zcompile_if_stale() {
   fi
 }
 
+typeset -U fpath
+fpath=(~/.zsh/completions(N-/) /Applications/OrbStack.app/Contents/Resources/completions/zsh(N-/) $fpath)
+
 dot_zsh_zcompile_if_stale "$SHELDON_PRE_CACHE"
 dot_zsh_zcompile_if_stale "$SHELDON_POST_CACHE"
 
@@ -64,6 +67,12 @@ if [[ -r ${MISE_ACTIVATE_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/mise
 fi
 # }}}
 
+# direnv {{{
+if whence direnv >/dev/null; then
+  eval "$(direnv hook zsh)"
+fi
+# }}}
+
 # zsh-autosuggestions {{{
 ZSH_AUTOSUGGEST_USE_ASYNC=1
 ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(accept-line zeno-auto-snippet-and-accept-line)
@@ -86,6 +95,10 @@ function set_fast_theme() {
 # }}}
 
 # alias {{{
+
+alias vi=nvim
+alias brew="PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin brew"
+alias p=popd
 
 # eza {{{
 if whence eza > /dev/null; then
