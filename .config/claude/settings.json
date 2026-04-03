@@ -7,6 +7,17 @@
     "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1"
   },
   "includeCoAuthoredBy": false,
+  "statusLine": {
+    "type": "command",
+    "command": "cc-statusline"
+  },
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
+  "showThinkingSummaries": true,
+  "skipDangerousModePermissionPrompt": true,
+  "cleanupPeriodDays": 9999,
+  "autoMemoryEnabled": false,
+  "showClearContextOnPlanAccept": true,
   "permissions": {
     "defaultMode": "acceptEdits"
   },
@@ -71,13 +82,5 @@
         ]
       }
     ]
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "cc-statusline"
-  },
-  "alwaysThinkingEnabled": true,
-  "effortLevel": "high",
-  "showThinkingSummaries": true,
-  "skipDangerousModePermissionPrompt": true
+  }
 }

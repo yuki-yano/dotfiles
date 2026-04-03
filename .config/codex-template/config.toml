@@ -48,3 +48,4 @@ codex_hooks = true
 [tui]
 status_line = ["model-with-reasoning", "current-dir", "git-branch", "context-remaining", "fast-mode", "context-window-size", "five-hour-limit", "weekly-limit"]
 theme = "catppuccin-mocha"
+terminal_title = []
