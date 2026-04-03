@@ -14,9 +14,6 @@ return {
   {
     'nvim-lualine/lualine.nvim',
     cond = not is_ime() and not vim.g.is_edit_command_line,
-    dependencies = {
-      { 'yuki-yano/vinsert.vim' },
-    },
     event = { 'FocusLost', 'BufRead', 'BufNewFile' },
     init = function()
       vim.api.nvim_create_user_command('LL', function()
@@ -124,21 +121,33 @@ return {
         end
       end
 
+      local function get_vinsert_status()
+        if vim.fn.exists('*vinsert#status') == 0 then
+          return nil
+        end
+
+        local ok, status = pcall(vim.fn['vinsert#status'])
+        if not ok or type(status) ~= 'table' then
+          return nil
+        end
+        return status
+      end
+
       local function vinsert_component()
-        local status = vim.fn['vinsert#status']()
-        if status.label == '' then
+        local status = get_vinsert_status()
+        if not status or status.label == '' then
           return ''
         end
         return status.label
       end
 
       local function vinsert_cond()
-        local status = vim.fn['vinsert#status']()
-        return status.active or status.error
+        local status = get_vinsert_status()
+        return status ~= nil and (status.active or status.error)
       end
 
       local function vinsert_color()
-        local status = vim.fn['vinsert#status']()
+        local status = get_vinsert_status()
         local base = color.base()
         local palette = {
           idle = { fg = base.fg, bg = base.bg_dim },
@@ -147,6 +156,10 @@ return {
           gen = { fg = base.black, bg = base.blue },
           error = { fg = base.white, bg = base.red_dark },
         }
+        if not status then
+          return palette.idle
+        end
+
         return palette[status.indicatorPhase] or palette.idle
       end
 

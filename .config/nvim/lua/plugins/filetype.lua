@@ -48,7 +48,9 @@ return {
         preview = {
           icon_provider = 'devicons',
         },
+        ---@diagnostic disable-next-line: missing-fields
         markdown = {
+          ---@diagnostic disable-next-line: missing-fields
           list_items = {
             shift_width = 2,
           },
