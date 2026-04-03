@@ -12,6 +12,7 @@ const profileName = "Default profile";
 
 const alacritty = ifApp("^org\\.alacritty$");
 const cursorEditor = ifApp("^com\\.todesktop\\.230313mzl4w4u92$");
+const discord = ifApp("^com\\.hnc\\.Discord$");
 const englishInput = ifInputSource({ language: "en" });
 const nonEnglishInput = englishInput.unless();
 
@@ -108,6 +109,19 @@ const cursorEditorRules = [
   ]),
 ];
 
+const discordRules = [
+  rule("Command+[ to Command+Shift+[ in Discord").manipulators([
+    map("open_bracket", "command")
+      .condition(discord)
+      .to("open_bracket", ["right_command", "shift"]),
+  ]),
+  rule("Command+] to Command+Shift+] in Discord").manipulators([
+    map("close_bracket", "command")
+      .condition(discord)
+      .to("close_bracket", ["right_command", "shift"]),
+  ]),
+];
+
 const imeControlRules = [
   rule("Control IME with Command key alone and Command+Space").manipulators([
     map({
@@ -175,6 +189,7 @@ const candsRules = [
 const rules = [
   ...alacrittyRules,
   ...cursorEditorRules,
+  ...discordRules,
   ...imeControlRules,
   ...imeRules,
 ];

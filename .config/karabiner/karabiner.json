@@ -530,6 +530,72 @@
             ]
           },
           {
+            "description": "Command+[ to Command+Shift+[ in Discord",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "open_bracket",
+                  "modifiers": {
+                    "mandatory": [
+                      "command"
+                    ]
+                  }
+                },
+                "conditions": [
+                  {
+                    "type": "frontmost_application_if",
+                    "bundle_identifiers": [
+                      "^com\\.hnc\\.Discord$"
+                    ]
+                  }
+                ],
+                "to": [
+                  {
+                    "key_code": "open_bracket",
+                    "modifiers": [
+                      "right_command",
+                      "shift"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "Command+] to Command+Shift+] in Discord",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "close_bracket",
+                  "modifiers": {
+                    "mandatory": [
+                      "command"
+                    ]
+                  }
+                },
+                "conditions": [
+                  {
+                    "type": "frontmost_application_if",
+                    "bundle_identifiers": [
+                      "^com\\.hnc\\.Discord$"
+                    ]
+                  }
+                ],
+                "to": [
+                  {
+                    "key_code": "close_bracket",
+                    "modifiers": [
+                      "right_command",
+                      "shift"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
             "description": "Control IME with Command key alone and Command+Space",
             "manipulators": [
               {
