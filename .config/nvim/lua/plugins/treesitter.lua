@@ -1,90 +1,115 @@
-local has = require('rc.modules.plugin_utils').has_plugin
 local color = require('rc.modules.color')
+
+local install_dir = vim.fs.joinpath(vim.fn.stdpath('data'), 'site')
+local managed_parsers = {
+  'bash',
+  'comment',
+  'css',
+  'diff',
+  'graphql',
+  'html',
+  'javascript',
+  'jsdoc',
+  'json',
+  'json5',
+  'lua',
+  'markdown',
+  'markdown_inline',
+  'python',
+  'query',
+  'regex',
+  'ruby',
+  'toml',
+  'tsx',
+  'typescript',
+  'vim',
+  'vimdoc',
+  'yaml',
+}
+
+local managed_parser_set = {}
+
+for _, parser in ipairs(managed_parsers) do
+  managed_parser_set[parser] = true
+end
 
 return {
   {
     'nvim-treesitter/nvim-treesitter',
-    branch = 'master',
-    -- build = ':TSUpdate',
-    dependencies = {
-      { 'nvim-treesitter/playground' },
-      { 'JoosepAlviste/nvim-ts-context-commentstring' },
-      { 'm-demare/hlargs.nvim' },
-      { 'nvim-treesitter/nvim-treesitter-context' },
-      { 'nvim-treesitter/nvim-treesitter-textobjects', branch = 'master' },
-      -- { 'hiphish/rainbow-delimiters.nvim' },
-      { 'yioneko/nvim-yati' },
-    },
-    event = { 'BufRead', 'BufNewFile', 'InsertEnter' },
-    cmd = { 'TSHighlightCapturesUnderCursor' },
+    branch = 'main',
+    lazy = false,
+    build = ':TSUpdate',
     config = function()
-      ---@diagnostic disable-next-line: missing-fields
-      require('nvim-treesitter.configs').setup({
-        ensure_installed = {
-          'typescript',
-          'tsx',
-          'javascript',
-          'graphql',
-          'jsdoc',
-          'ruby',
-          'python',
-          'lua',
-          'vim',
-          'vimdoc',
-          'json',
-          'jsonc',
-          'json5',
-          'yaml',
-          'toml',
-          'markdown',
-          'markdown_inline',
-          'bash',
-          'html',
-          'css',
-          'diff',
-          'comment',
-          'regex',
-        },
-        highlight = {
-          enable = true,
-          additional_vim_regex_highlighting = false,
-        },
-        indent = {
-          enable = false,
-        },
-        playground = {
-          enable = true,
-        },
-        textobjects = {
-          select = {
-            enable = true,
-            keymaps = {
-              ['aF'] = '@function.outer',
-              ['iF'] = '@function.inner',
-              ['ib'] = '@block.inner',
-              ['ab'] = '@block.outer',
-              ['ix'] = '@attribute.inner',
-              ['ax'] = '@attribute.outer',
-            },
-          },
-        },
-        yati = {
-          enable = true,
-          default_lazy = true,
-        },
-        matchup = {
-          enable = true,
-          disable_virtual_text = true,
+      require('nvim-treesitter').setup({
+        install_dir = install_dir,
+      })
+
+      vim.treesitter.language.register('bash', { 'zsh' })
+
+      if vim.fn.executable('tree-sitter') == 1 then
+        require('nvim-treesitter').install(managed_parsers, {
+          summary = false,
+        })
+      end
+
+      local group = vim.api.nvim_create_augroup('rc_treesitter_main', { clear = true })
+      vim.api.nvim_create_autocmd('FileType', {
+        group = group,
+        pattern = '*',
+        callback = function(args)
+          if not vim.api.nvim_buf_is_valid(args.buf) then
+            return
+          end
+
+          local filetype = vim.bo[args.buf].filetype
+          local lang = vim.treesitter.language.get_lang(filetype)
+          if not lang or not managed_parser_set[lang] then
+            return
+          end
+
+          if not pcall(vim.treesitter.start, args.buf, lang) then
+            return
+          end
+
+          if pcall(vim.treesitter.query.get, lang, 'indents') then
+            vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
+        end,
+      })
+    end,
+  },
+  {
+    'nvim-treesitter/nvim-treesitter-textobjects',
+    branch = 'main',
+    lazy = false,
+    dependencies = {
+      { 'nvim-treesitter/nvim-treesitter' },
+    },
+    config = function()
+      require('nvim-treesitter-textobjects').setup({
+        select = {
+          include_surrounding_whitespace = false,
         },
       })
 
-      require('treesitter-context').setup()
-      if has('rainbow-delimiters.nvim') then
-        require('rainbow-delimiters').setup()
-      end
-
-      -- NOTE: Workaround for tsx not working with markdown_inline
-      vim.treesitter.query.add_directive('directivename', function() end, true)
+      vim.keymap.set({ 'x', 'o' }, 'aF', function()
+        require('nvim-treesitter-textobjects.select').select_textobject('@function.outer', 'textobjects')
+      end, { silent = true })
+      vim.keymap.set({ 'x', 'o' }, 'iF', function()
+        require('nvim-treesitter-textobjects.select').select_textobject('@function.inner', 'textobjects')
+      end, { silent = true })
+      vim.keymap.set({ 'x', 'o' }, 'ab', function()
+        require('nvim-treesitter-textobjects.select').select_textobject('@block.outer', 'textobjects')
+      end, { silent = true })
+      vim.keymap.set({ 'x', 'o' }, 'ib', function()
+        require('nvim-treesitter-textobjects.select').select_textobject('@block.inner', 'textobjects')
+      end, { silent = true })
+      vim.keymap.set({ 'x', 'o' }, 'ax', function()
+        require('nvim-treesitter-textobjects.select').select_textobject('@attribute.outer', 'textobjects')
+      end, { silent = true })
+      vim.keymap.set({ 'x', 'o' }, 'ix', function()
+        require('nvim-treesitter-textobjects.select').select_textobject('@attribute.inner', 'textobjects')
+      end, { silent = true })
     end,
   },
   {
