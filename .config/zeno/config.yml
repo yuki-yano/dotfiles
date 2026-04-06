@@ -198,9 +198,9 @@ snippets:
     keyword: co
     snippet: copilot --yolo
 
-  - name: codex oneline
+  - name: codex fast
     keyword: '?'
-    snippet: codex --config model_reasoning_effort="low" exec "{{prompt}}" 2>/dev/null; printf $'\e[<u'; printf $'\e[?2004h'
+    snippet: codex-fast "{{prompt}}"
   - name: CC oneline
     keyword: '??'
     snippet: claude --print --model haiku "{{prompt}}"
