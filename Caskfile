@@ -19,8 +19,10 @@ install --cask google-chrome
 install --cask karabiner-elements
 install --cask keyboard-cleaner
 install --cask keycastr
+install --cask obs
 install --cask obsidian
 install --cask raycast
+install --cask sharemouse
 install --cask stats
 install --cask tableplus
 install --cask tailscale-app
