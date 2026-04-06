@@ -556,7 +556,8 @@ return {
   },
   {
     'yuki-yano/resonator.vim',
-    cond = not is_ime() and not vim.g.is_edit_command_line,
+    enabled = false,
+    -- cond = not is_ime() and not vim.g.is_edit_command_line,
     lazy = true,
     dev = true,
     event = { 'BufRead' },

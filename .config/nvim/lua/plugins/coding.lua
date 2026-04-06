@@ -1156,7 +1156,8 @@ return {
   },
   {
     'hrsh7th/nvim-linkedit',
-    enabled = true,
+    -- Disabled because it has been integrated into the core application.
+    enabled = false,
     event = { 'ModeChanged' },
     config = function()
       require('linkedit').setup()
@@ -1725,31 +1726,6 @@ return {
     end,
     config = function()
       require('gomove').setup({ map_defaults = true, reindent_mode = 'none' })
-    end,
-  },
-  {
-    'danymat/neogen',
-    dependencies = {
-      { 'nvim-treesitter/nvim-treesitter' },
-    },
-    cmd = { 'Neogen' },
-    config = function()
-      require('neogen').setup()
-    end,
-  },
-  {
-    'Wansmer/treesj',
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
-    keys = {
-      { '<Leader>m', mode = { 'n' } },
-    },
-    config = function()
-      require('treesj').setup({
-        use_default_keymaps = false,
-      })
-      vim.keymap.set({ 'n' }, '<Leader>m', function()
-        return require('treesj').toggle()
-      end)
     end,
   },
 }
