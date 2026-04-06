@@ -171,12 +171,12 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
   bindings, uses mouse mode, and keeps clipboard actions wired through `pbcopy` / `pbpaste`.
 - Smart pane navigation uses helper scripts (`bin/tmux-smart-switch-pane`) and process detection to seamlessly move
   between Neovim, Claude panes, zsh shells, or fzf prompts.
-- Key bindings trigger scripts: `M-r` launches `bunx --bun vtm session-manager`, `M-t` runs `ghq-project-selector.zsh`,
+- Key bindings trigger scripts: `M-r` launches `vtm session-manager`, `M-t` runs `ghq-project-selector.zsh`,
   `M-u` toggles transparent panes, `M-i` opens `editprompt`, `M-h` / `M-l` cycle sessions inside the current `vtm`
   category, `Option+Control+1` / `2` / `3` switch `private` / `public` / `work`, and `M-1` through `M-9` switch to the
   corresponding tmux session entry inside the current category.
 - Status line widgets call binaries in `bin/` and external tools: `tmux-list-sessions`, `tmux-pwd`, `wifi`,
-  `battery`, plus `bunx --bun vtm statusline-category` / `bunx --bun vtm statusline-sessions` render the current category and session list.
+  `battery`, plus `vtm statusline-category` / `vtm statusline-sessions` render the current category and session list.
 
 ## Window & Input Automation
 
