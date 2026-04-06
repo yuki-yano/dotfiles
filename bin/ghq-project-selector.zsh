@@ -71,27 +71,13 @@ function ghq-project-selector() {
   esac
 
   if [[ -n "$TMUX" ]] && [[ "$tmux_available" -eq 1 ]]; then
-    if command -v bunx >/dev/null 2>&1; then
-      bunx --bun vtm project switch "$project_dir"
-      return $?
+    if ! command -v vtm >/dev/null 2>&1; then
+      printf '%s\n' "ghq-project-selector: vtm not found" >&2
+      return 1
     fi
 
-    local repository=${project_dir##*/}
-    local session=$(printf '%s' "$repository" | tr '.' '-')
-    local current_session=$(tmux list-sessions 2>/dev/null | grep 'attached' | cut -d":" -f1)
-
-    case "$current_session" in
-      ''|*[!0-9]*)
-        if ! tmux list-sessions 2>/dev/null | cut -d":" -f1 | grep -F -x -q "$session"; then
-          tmux new-session -d -c "$project_dir" -s "$session"
-        fi
-        tmux switch-client -t "$session"
-        ;;
-      *)
-        cd "$project_dir" || return 1
-        tmux rename-session "$session"
-        ;;
-    esac
+    vtm project switch "$project_dir"
+    return $?
   else
     # Outside tmux: cd to the selected directory
     cd "$project_dir" || return 1
