@@ -34,9 +34,9 @@ presets:
     allow:
       - "$HOME/.npm"
       - "$HOME/.bun"
-      - "$HOME/Library/pnpm/store/v10"
+      - "$HOME/.local/share/pnpm/store/v10"
       - "$HOME/.local/share/mise/shims"
-      - "$HOME/Library/pnpm/.tools"
+      - "$HOME/.local/share/pnpm/.tools"
       - path: "$HOME/.config/.wrangler/logs"
         eval-symlinks: true
 

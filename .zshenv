@@ -6,6 +6,7 @@
 export XDG_CONFIG_DIR=$HOME/.config
 export XDG_CONFIG_HOME=$HOME/.config
 export XDG_CACHE_HOME=$HOME/.cache
+export XDG_DATA_HOME=$HOME/.local/share
 
 # language
 export LANG=ja_JP.UTF-8
@@ -19,9 +20,9 @@ export MANPAGER="nvim +Man!"
 export RIPGREP_CONFIG_PATH=$HOME/.config/ripgrep/rc
 
 # runtime paths
-export PNPM_HOME=$HOME/Library/pnpm
+export PNPM_HOME=$XDG_DATA_HOME/pnpm
 export GOPATH=$HOME/.go
-export MISE_SHIMS_DIR=$HOME/.local/share/mise/shims
+export MISE_SHIMS_DIR=$XDG_DATA_HOME/mise/shims
 
 # Disable path_helper
 # show: http://qiita.com/t-takaai/items/8574ff312f2caa5177c2
