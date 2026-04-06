@@ -4,7 +4,7 @@ local M = {}
 
 M.enabled_inlay_hint = {}
 M.enabled_inlay_hint_default_value = false
-M.enable_noice = false
+M.enable_noice = true
 
 function M.has_plugin(name)
   local specs = require('lazy').plugins()

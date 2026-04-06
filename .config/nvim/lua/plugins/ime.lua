@@ -53,6 +53,7 @@ return {
             vim.keymap.set('n', 'ZZ', function()
               editprompt.input_auto_send()
             end, map_opts)
+            vim.keymap.set({ 'n', 'i' }, '<C-o>', '<Nop>', map_opts)
 
             for digit = 1, 9 do
               local text = tostring(digit)

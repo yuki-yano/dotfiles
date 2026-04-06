@@ -4,8 +4,6 @@ local color = require('rc.modules.color')
 local diagnostic_icons = require('rc.modules.font').diagnostic_icons
 local todo_icons = require('rc.modules.font').todo_icons
 local enable_noice = plugin_utils.enable_noice
-local enable_lsp_lines = plugin_utils.enable_lsp_lines
-local get_lsp_lines_status = plugin_utils.get_lsp_lines_status
 local add_focus_gain = plugin_utils.add_focus_gain
 local add_focus_lost = plugin_utils.add_focus_lost
 local is_ime = require('rc.modules.ime').is_ime
@@ -1053,10 +1051,25 @@ return {
     event = { 'VeryLazy' },
     config = function()
       require('noice').setup({
-        lsp = {
-          signature = {
-            enabled = false,
+        cmdline = {
+          format = {
+            cmdline = {
+              icon = '>',
+              title = '',
+            },
+            search_down = { icon = '/', title = '' },
+            search_up = { icon = '?', title = '' },
+            filter = { icon = '!', title = '' },
+            lua = { icon = 'lua', title = '' },
+            help = { icon = '?', title = '' },
+            calculator = { icon = '=', title = '' },
+            input = { icon = '>', title = '' },
           },
+        },
+        popupmenu = {
+          backend = 'cmp',
+        },
+        lsp = {
           override = {
             ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
             ['vim.lsp.util.stylize_markdown'] = true,

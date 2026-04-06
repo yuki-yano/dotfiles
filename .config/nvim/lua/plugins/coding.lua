@@ -2,10 +2,9 @@ local get_disable_cmp_filetypes = require('rc.modules.plugin_utils').get_disable
 local color = require('rc.modules.color')
 local codicons = require('rc.modules.font').codicons
 local misc_icons = require('rc.modules.font').misc_icons
-local todo_icons = require('rc.modules.font').todo_icons
 local list_concat = require('rc.modules.utils').list_concat
 local is_editprompt = require('rc.modules.ime').is_editprompt
--- local enable_noice = require('rc.modules.plugin_utils').enable_noice
+local enable_noice = require('rc.modules.plugin_utils').enable_noice
 
 return {
   {
@@ -655,28 +654,51 @@ return {
       vim.cmd([[autocmd ModeChanged [vV\x16]*:* call operator#sandwich#set('add', 'char', 'skip_space', 1)]])
       vim.cmd([[autocmd ModeChanged *:[vV\x16]* call operator#sandwich#set('add', 'char', 'skip_space', 0)]])
 
-      -- NOTE: integrate with noice
-      --       The rendering breaks when toggled
-      -- vim.api.nvim_create_autocmd({ 'User' }, {
-      --   pattern = { 'OperatorSandwichAddPre', 'OperatorSandwichDeletePre', 'OperatorSandwichDeletePre' },
-      --   callback = function()
-      --     if enable_noice then
-      --       require('noice').setup({
-      --         cmdline = { enabled = false },
-      --       })
-      --     end
-      --   end,
-      -- })
-      -- vim.api.nvim_create_autocmd({ 'User' }, {
-      --   pattern = { 'OperatorSandwichAddPost', 'OperatorSandwichDeletePost', 'OperatorSandwichDeletePost' },
-      --   callback = function()
-      --     if enable_noice then
-      --       require('noice').setup({
-      --         cmdline = { enabled = true },
-      --       })
-      --     end
-      --   end,
-      -- })
+      if enable_noice then
+        local noice_suspend_depth = 0
+
+        local function with_noice(callback)
+          local ok, noice = pcall(require, 'noice')
+          if not ok then
+            return
+          end
+          callback(noice)
+        end
+
+        vim.api.nvim_create_autocmd({ 'User' }, {
+          pattern = {
+            'OperatorSandwichAddPre',
+            'OperatorSandwichDeletePre',
+            'OperatorSandwichReplacePre',
+          },
+          callback = function()
+            with_noice(function(noice)
+              if noice_suspend_depth == 0 then
+                noice.disable()
+              end
+              noice_suspend_depth = noice_suspend_depth + 1
+            end)
+          end,
+        })
+
+        vim.api.nvim_create_autocmd({ 'User' }, {
+          pattern = {
+            'OperatorSandwichAddPost',
+            'OperatorSandwichDeletePost',
+            'OperatorSandwichReplacePost',
+          },
+          callback = function()
+            with_noice(function(noice)
+              noice_suspend_depth = math.max(0, noice_suspend_depth - 1)
+              if noice_suspend_depth == 0 then
+                vim.schedule(function()
+                  noice.enable()
+                end)
+              end
+            end)
+          end,
+        })
+      end
     end,
   },
   {
