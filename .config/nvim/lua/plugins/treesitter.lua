@@ -19,6 +19,7 @@ local managed_parsers = {
   'query',
   'regex',
   'ruby',
+  'rust',
   'toml',
   'tsx',
   'typescript',
