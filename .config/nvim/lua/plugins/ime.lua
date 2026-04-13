@@ -26,6 +26,10 @@ return {
             local editprompt = require('editprompt')
             local smart_tmux_nav = require('smart-tmux-nav')
             local map_opts = { silent = true, nowait = true, buffer = bufnr }
+            local function is_buffer_blank()
+              local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+              return table.concat(lines, '\n'):find('%S') == nil
+            end
 
             ime_helpers.apply_mode_opts()
             vim.bo[bufnr].filetype = 'markdown.editprompt'
@@ -36,6 +40,10 @@ return {
               editprompt.input_auto_send()
             end, map_opts)
             vim.keymap.set('n', '<CR>', function()
+              if is_buffer_blank() then
+                editprompt.press('<CR>')
+                return
+              end
               editprompt.input_auto_send()
             end, map_opts)
             vim.keymap.set({ 'n', 'i' }, '<C-c>', function()
@@ -120,8 +128,7 @@ return {
             end, map_opts)
 
             vim.keymap.set('n', '<C-d>', function()
-              local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-              if table.concat(lines, '\n'):find('%S') == nil then
+              if is_buffer_blank() then
                 vim.cmd('quit!')
                 return
               end
@@ -129,8 +136,7 @@ return {
             end, map_opts)
 
             vim.keymap.set('i', '<C-d>', function()
-              local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-              if table.concat(lines, '\n'):find('%S') == nil then
+              if is_buffer_blank() then
                 vim.schedule(function()
                   vim.cmd('quit!')
                 end)
