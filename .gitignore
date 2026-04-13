@@ -42,6 +42,9 @@ tmp/
 CLAUDE.md
 /.config/claude/*
 !/.config/claude/CLAUDE.md
+!/.config/claude/RTK.md
 !/.config/claude/commands/
+!/.config/claude/hooks/
+!/.config/claude/hooks/rtk-rewrite.sh
 !/.config/claude/settings.json
 .claude/settings.local.json

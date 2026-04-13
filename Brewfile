@@ -32,6 +32,9 @@ install vivid
 ## Runtime Tooling
 install mise
 
+## AI Tooling
+install rtk
+
 ## Languages & Runtimes
 install deno node oven-sh/bun/bun
 install go python ruby perl
@@ -44,7 +47,7 @@ install openssl pkg-config cmake shellcheck
 install git tig gh ghq git-delta git-filter-repo gitleaks
 
 ## Docs & Metadata
-install pandoc
+install pandoc k1LoW/tap/mo
 
 ## Monitoring
 install fastfetch hyperfine

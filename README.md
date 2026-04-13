@@ -93,7 +93,7 @@ and `tasks.ts` validates input before it shells out.
 | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `deno task dotfiles:install [-- --dry-run]`         | Symlinks the files listed in `DOTFILES_SRCS` to `$HOME`, warning if a non-symlink already exists.                                                                                                                                                                   |
 | `deno task agent:link [-- --dry-run]`               | Preflights both targets, then links Claude (`~/.config/claude/skills` via the dotfiles-managed `.config`) and Copilot (`~/.copilot/skills`) to `~/.agents/skills`.                                                                                                  |
-| `deno task codex:template [-- --apply]`             | Dry-run by default. Applies `.config/codex-template/config.toml` (managed section merge) and copy targets (`AGENTS.md`, `agents/**`, `hooks.json`) to `~/.codex` only with `--apply` (`template` has no markers; `~/.codex/config.toml` must contain marker block). |
+| `deno task codex:template [-- --apply]`             | Dry-run by default. Applies `.config/codex-template/config.toml` (managed section merge) and copy targets (`AGENTS.md`, `RTK.md`, `agents/**`, `hooks.json`) to `~/.codex` only with `--apply` (`template` has no markers; `~/.codex/config.toml` must contain marker block). |
 | `deno task zsh:sheldon:sync` / `zsh:sheldon:update` | Generate the `sheldon` lock/cache for the `pre` and `post` shell phases under `~/.cache/sheldon`.                                                                                                                                                                   |
 | `deno task brew:bundle`                             | Executes curated commands in `Brewfile`, allowing only `install`, `tap`, `cask`, `update`, `upgrade`, and `cleanup`.                                                                                                                                                |
 | `deno task brew:cask`                               | Installs GUI apps from `Caskfile`.                                                                                                                                                                                                                                  |
@@ -198,6 +198,10 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 - `.config/claude/` stores Claude settings in-repo (`CLAUDE.md`, `settings.json`), while Claude runtime state
   (history/snapshots/cache) is managed locally on each machine. Repository-scoped agent artifacts are managed under
   `z-ai/` (`z-ai/plans/`, `z-ai/tmp/`, `z-ai/references/`).
+- `.config/claude/RTK.md` and `.config/claude/hooks/rtk-rewrite.sh` enable RTK command rewriting for Claude Code Bash
+  hooks.
+- `.config/codex-template/RTK.md` is copied to `~/.codex/RTK.md` by `deno task codex:template -- --apply`, and
+  `AGENTS.md` references it for Codex CLI shell command guidance.
 - `.config/cage/presets.yml` captures Warashi cage (multi-agent) layout presets that pair with tmux automation.
 - `.config/claude/settings.json` hooks (`vde-monitor-hook`, `vde-monitor-summary`, `vde-notifier`) provide monitoring and
   notifications around Claude sessions.
