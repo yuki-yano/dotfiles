@@ -305,6 +305,161 @@ vim.api.nvim_create_user_command('Arto', function()
   vim.cmd('!open -a /Applications/Arto.app ' .. path)
 end, {})
 
+-- mo Markdown viewer
+local function expand_mo_arg(arg)
+  local replacements = {
+    { '%:p:h', vim.fn.expand('%:p:h') },
+    { '%:h', vim.fn.expand('%:p:h') },
+    { '%:p', vim.fn.expand('%:p') },
+    { '%', vim.fn.expand('%:p') },
+  }
+
+  for _, replacement in ipairs(replacements) do
+    local key = replacement[1]
+    local value = replacement[2]
+    if arg == key or arg:sub(1, #key) == key then
+      return value .. arg:sub(#key + 1)
+    end
+  end
+
+  return arg
+end
+
+local function current_mo_file()
+  local path = vim.fn.expand('%:p')
+  if path == '' then
+    vim.notify('Current buffer has no file path', vim.log.levels.ERROR, { title = 'mo' })
+    return nil
+  end
+
+  return path
+end
+
+local function run_mo(args, title)
+  if vim.fn.executable('mo') == 0 then
+    vim.notify('mo not found', vim.log.levels.ERROR, { title = 'mo' })
+    return
+  end
+
+  local cmd = { 'mo' }
+  vim.list_extend(cmd, args)
+
+  vim.system(cmd, { text = true }, function(result)
+    vim.schedule(function()
+      local output = vim.trim(table.concat({ result.stdout or '', result.stderr or '' }, '\n'))
+      if result.code == 0 then
+        vim.notify(output ~= '' and output or 'Done', vim.log.levels.INFO, { title = title or 'mo' })
+        return
+      end
+
+      vim.notify(output ~= '' and output or 'mo failed', vim.log.levels.ERROR, { title = title or 'mo' })
+    end)
+  end)
+end
+
+local function mo_args(args)
+  return vim.tbl_map(expand_mo_arg, args)
+end
+
+local function mo_pattern_args(flag, args)
+  local cmd = {}
+  local pass_through = {}
+  local i = 1
+
+  while i <= #args do
+    local arg = args[i]
+    if arg == '-t' or arg == '--target' or arg == '-p' or arg == '--port' or arg == '-b' or arg == '--bind' then
+      table.insert(pass_through, arg)
+      if args[i + 1] ~= nil then
+        table.insert(pass_through, args[i + 1])
+        i = i + 1
+      end
+    elseif arg:sub(1, 1) == '-' then
+      table.insert(pass_through, arg)
+    else
+      table.insert(cmd, flag)
+      table.insert(cmd, expand_mo_arg(arg))
+    end
+
+    i = i + 1
+  end
+
+  vim.list_extend(cmd, pass_through)
+  return cmd
+end
+
+vim.api.nvim_create_user_command('Mo', function(opts)
+  local args = mo_args(opts.fargs)
+  if #args == 0 then
+    local path = current_mo_file()
+    if path == nil then
+      return
+    end
+    args = { path }
+  end
+
+  run_mo(args, 'mo')
+end, { nargs = '*', complete = 'file' })
+
+vim.api.nvim_create_user_command('MoTarget', function(opts)
+  local path = current_mo_file()
+  if path == nil then
+    return
+  end
+
+  run_mo({ path, '--target', opts.args }, 'mo target')
+end, { nargs = 1 })
+
+vim.api.nvim_create_user_command('MoWatch', function(opts)
+  local args = mo_pattern_args('--watch', opts.fargs)
+  if #args == 0 then
+    vim.notify('Usage: MoWatch {pattern}', vim.log.levels.ERROR, { title = 'mo watch' })
+    return
+  end
+
+  run_mo(args, 'mo watch')
+end, { nargs = '*', complete = 'file' })
+
+vim.api.nvim_create_user_command('MoUnwatch', function(opts)
+  local args = mo_pattern_args('--unwatch', opts.fargs)
+  if #args == 0 then
+    vim.notify('Usage: MoUnwatch {pattern}', vim.log.levels.ERROR, { title = 'mo unwatch' })
+    return
+  end
+
+  run_mo(args, 'mo unwatch')
+end, { nargs = '*', complete = 'file' })
+
+vim.api.nvim_create_user_command('MoClose', function(opts)
+  local args = mo_args(opts.fargs)
+  if #args == 0 then
+    local path = current_mo_file()
+    if path == nil then
+      return
+    end
+    args = { path }
+  end
+
+  table.insert(args, 1, '--close')
+  run_mo(args, 'mo close')
+end, { nargs = '*', complete = 'file' })
+
+vim.api.nvim_create_user_command('MoStatus', function()
+  run_mo({ '--status' }, 'mo status')
+end, {})
+
+vim.api.nvim_create_user_command('MoRestart', function(opts)
+  local args = mo_args(opts.fargs)
+  table.insert(args, 1, '--restart')
+  run_mo(args, 'mo restart')
+end, { nargs = '*', complete = 'file' })
+
+vim.api.nvim_create_user_command('MoShutdown', function(opts)
+  local args = mo_args(opts.fargs)
+  table.insert(args, 1, '--shutdown')
+  run_mo(args, 'mo shutdown')
+end, { nargs = '*', complete = 'file' })
+
 -- Claude Code yank commands
 local function get_relative_filepath()
   local filepath = vim.fn.expand('%:.')

@@ -754,6 +754,7 @@ return {
         LeximaAlterCommand ss          SaveProjectLayout
         LeximaAlterCommand sl          LoadProjectLayout
         LeximaAlterCommand a\%[rto]    Arto
+        LeximaAlterCommand m\%[o]      Mo
         LeximaAlterCommand cur\%[sor]  Cursor
       ]])
     end,
