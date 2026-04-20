@@ -30,6 +30,26 @@ return {
               local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
               return table.concat(lines, '\n'):find('%S') == nil
             end
+            local function handle_cr()
+              local mode = vim.api.nvim_get_mode().mode
+              if is_buffer_blank() then
+                if mode:sub(1, 1) == 'i' then
+                  vim.schedule(function()
+                    editprompt.press('<CR>')
+                  end)
+                else
+                  editprompt.press('<CR>')
+                end
+                return ''
+              end
+
+              if mode:sub(1, 1) == 'i' then
+                return '<CR>'
+              end
+
+              editprompt.input_auto_send()
+              return ''
+            end
 
             ime_helpers.apply_mode_opts()
             vim.bo[bufnr].filetype = 'markdown.editprompt'
@@ -39,13 +59,7 @@ return {
             vim.keymap.set('n', 'q', function()
               editprompt.input_auto_send()
             end, map_opts)
-            vim.keymap.set('n', '<CR>', function()
-              if is_buffer_blank() then
-                editprompt.press('<CR>')
-                return
-              end
-              editprompt.input_auto_send()
-            end, map_opts)
+            vim.keymap.set({ 'n', 'i' }, '<CR>', handle_cr, vim.tbl_extend('force', map_opts, { expr = true }))
             vim.keymap.set({ 'n', 'i' }, '<C-c>', function()
               editprompt.input_auto_send()
             end, map_opts)
