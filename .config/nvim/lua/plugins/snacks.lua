@@ -36,6 +36,27 @@ return {
     end,
     config = function()
       local snacks = require('snacks')
+      local function md_render_snacks_preview()
+        local preview
+        local failed = false
+
+        return function(...)
+          if failed then
+            return nil
+          end
+
+          if preview == nil then
+            local ok, mod = pcall(require, 'md-render.snacks')
+            if not ok then
+              failed = true
+              return nil
+            end
+            preview = mod.preview()
+          end
+
+          return preview(...)
+        end
+      end
 
       local git_config = require('plugins.config.snacks.git').setup(snacks)
       local action_layer_overrides
@@ -152,6 +173,21 @@ return {
       if action_layer_overrides and action_layer_overrides.picker then
         picker_opts = merge(picker_opts, action_layer_overrides.picker)
       end
+
+      local md_preview = md_render_snacks_preview()
+      picker_opts = merge(picker_opts, {
+        sources = {
+          files = {
+            preview = md_preview,
+          },
+          grep = {
+            preview = md_preview,
+          },
+          smart_open_files = {
+            preview = md_preview,
+          },
+        },
+      })
 
       ---@type snacks.Config
       local opts = {

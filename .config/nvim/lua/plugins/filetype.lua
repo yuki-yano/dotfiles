@@ -41,7 +41,46 @@ return {
     end,
   },
   {
+    'delphinus/md-render.nvim',
+    ft = { 'markdown' },
+    dependencies = {
+      { 'delphinus/budoux.lua' },
+    },
+    cmd = { 'MdRender', 'MdRenderTab', 'MdRenderPager' },
+    config = function()
+      local group = vim.api.nvim_create_augroup('rc_md_render_keymaps', { clear = true })
+
+      local function set_md_render_keymaps(bufnr)
+        if type(bufnr) ~= 'number' or not vim.api.nvim_buf_is_valid(bufnr) then
+          return
+        elseif vim.bo[bufnr].filetype ~= 'markdown' then
+          return
+        end
+
+        vim.keymap.set('n', 'mp', '<Plug>(md-render-preview)', {
+          buffer = bufnr,
+          desc = 'Markdown preview (toggle)',
+        })
+        vim.keymap.set('n', 'mt', '<Plug>(md-render-preview-tab)', {
+          buffer = bufnr,
+          desc = 'Markdown preview in tab (toggle)',
+        })
+      end
+
+      set_md_render_keymaps(vim.api.nvim_get_current_buf())
+
+      vim.api.nvim_create_autocmd('FileType', {
+        group = group,
+        pattern = 'markdown',
+        callback = function(args)
+          set_md_render_keymaps(args.buf)
+        end,
+      })
+    end,
+  },
+  {
     'OXY2DEV/markview.nvim',
+    enabled = false,
     lazy = false,
     config = function()
       require('markview').setup({
