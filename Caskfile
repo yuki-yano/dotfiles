@@ -19,6 +19,7 @@ install --cask google-chrome
 install --cask karabiner-elements
 install --cask keyboard-cleaner
 install --cask keycastr
+install --cask notion
 install --cask obs
 install --cask obsidian
 install --cask raycast
