@@ -49,3 +49,31 @@ codex_hooks = true
 status_line = ["model-with-reasoning", "git-branch", "context-usage", "fast-mode", "context-window-size", "five-hour-limit", "weekly-limit"]
 theme = "catppuccin-mocha"
 terminal_title = []
+
+[plugins."github@openai-curated"]
+enabled = true
+
+[plugins."browser-use@openai-bundled"]
+enabled = true
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[marketplaces.openai-bundled]
+last_updated = "2026-04-24T03:46:51Z"
+source_type = "local"
+source = "~/.codex/.tmp/bundled-marketplaces/openai-bundled"
+
+[marketplaces.openai-primary-runtime]
+last_updated = "2026-04-24T03:45:21Z"
+source_type = "local"
+source = "~/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
