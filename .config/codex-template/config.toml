@@ -1,5 +1,5 @@
 # @nvim.on_save deno task codex:template -- --apply
-model = "gpt-5.4"
+model = "gpt-5.5"
 model_context_window = 1000000
 model_auto_compact_token_limit = 950000
 model_reasoning_effort = "high"
