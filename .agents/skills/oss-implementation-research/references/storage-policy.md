@@ -5,31 +5,37 @@
 ## 目的
 
 - 参照コードを作業リポジトリの構造から分離する。
-- `--cwd` 指定で `opensrc/` の置き場を制御し、調査手順を再現可能にする。
+- `opensrc path` で取得された絶対パスと `sources.json` の metadata を対応づけ、調査手順を再現可能にする。
+- cache 置き場はデフォルトの `~/.opensrc/` を使う。必要な場合のみ `OPENSRC_HOME` で明示的に変更する。
 - 履歴調査が必要なケースだけ clone を追加し、通常調査のオーバーヘッドを下げる。
 
-## opensrc 置き場（`--cwd`）の探索方針
+## opensrc cache 置き場（`OPENSRC_HOME`）の方針
 
-置き場の探索と判断は agent が行う。opensrc モードでは `npx opensrc ... --cwd <base-dir>` の `<base-dir>` を決める。
-`<base-dir>` は repo ルート相対パスで扱い、repo 外へ解決されるパスは使わない。
-コマンド実行時は `cd "$(git rev-parse --show-toplevel)"` で repo ルートへ移動してから `--cwd <base-dir>` を指定する。
+現行 `opensrc` は `~/.opensrc/` にグローバルキャッシュする。作業 repo 配下に取得物を置かないため、通常は置き場探索を行わない。
+cache 置き場を変更する必要がある場合だけ `OPENSRC_HOME` を指定する。
+
+`--cwd` は cache 置き場ではない。npm package のバージョンを `node_modules` / lockfile / `package.json` から検出するための作業ディレクトリ指定としてだけ使う。
 
 判断時の着眼点:
 
-- 候補の命名意図: `reference` / `research` / `external` / `tmp` / `scratch`
-- 実装本体との分離: `apps` / `packages` / `src` / `lib` 直下を避ける
-- 追跡方針との整合: `<base-dir>/opensrc/` が `.gitignore` または `.git/info/exclude` で除外されているか
-- 既存運用との整合: 既に参照用に使われているディレクトリがあるか
+- デフォルトの `~/.opensrc/` で問題ないか
+- repo 配下へ置く必要がある場合、`z-ai/references/opensrc-home` など実装本体から分離された ignored path か
+- `OPENSRC_HOME` と clone fallback 置き場の対応が調査ログ上で追いやすいか
 
 推奨の確認コマンド例:
 
 ```bash
 repo_root="$(git rev-parse --show-toplevel)"
-candidate_base_dir="z-ai/references"
-find . -maxdepth 4 -type d
-git check-ignore -v "$candidate_base_dir/opensrc/.codex-ignore-probe"
-real_base="$(cd "$repo_root/$candidate_base_dir" && pwd -P)"
-case "$real_base" in "$repo_root"|"$repo_root"/*) : ;; *) echo "outside-repo";; esac
+opensrc_home="${OPENSRC_HOME:-$HOME/.opensrc}"
+printf "OPENSRC_HOME=%s\n" "$opensrc_home"
+npx -y opensrc@latest list --json
+
+# repo-local OPENSRC_HOME が必要な場合のみ:
+candidate_home="z-ai/references/opensrc-home"
+git check-ignore -v "$candidate_home/.codex-ignore-probe"
+mkdir -p "$repo_root/$candidate_home"
+real_home="$(cd "$repo_root/$candidate_home" && pwd -P)"
+case "$real_home" in "$repo_root"|"$repo_root"/*) : ;; *) echo "outside-repo";; esac
 ```
 
 ## clone fallback 置き場（`--target-dir`）の探索方針
@@ -38,24 +44,25 @@ case "$real_base" in "$repo_root"|"$repo_root"/*) : ;; *) echo "outside-repo";; 
 
 推奨:
 
-- opensrc の base dir が決まっている場合は `<base-dir>/git-clones` を優先する。
-- opensrc と clone fallback を近い場所に置き、調査ログとの対応を取りやすくする。
+- repo-local `OPENSRC_HOME` を使っている場合は、その近くの `z-ai/references/git-clones` を優先する。
+- デフォルトの `~/.opensrc/` を使っている場合でも、clone fallback は repo ルート相対の ignored path に置き、調査ログとの対応を取りやすくする。
 - 例: `target_dir="z-ai/references/git-clones"; git check-ignore -v "$target_dir/.codex-ignore-probe"` で追跡対象外を確認する。
 
 ## 曖昧時の扱い
 
-- 候補を1つに絞れない場合は、取得実行前にユーザーへ確認する。
+- `OPENSRC_HOME` をデフォルトから変更する必要性や候補を1つに絞れない場合は、取得実行前にユーザーへ確認する。
 - ユーザー確認時は候補パスと各候補の理由を短く提示する。
 - ユーザー指定がある場合はそれを最優先する。
-- `--cwd` は repo ルート相対パスのみ許可する（絶対パス禁止）。
+- `--cwd` は npm バージョン解決用であり、通常は repo root または対象 package の project root を指定する。
 - `--target-dir` は repo ルート相対パスのみ許可する（絶対パス禁止）。
 
 ## 運用ルール
 
-- opensrc 実行は原則 `--modify=false` を付与し、`.gitignore` / `tsconfig.json` / `AGENTS.md` の暗黙更新を避ける。
-- `--cwd` は repo ルート配下であることを実行前に検証し、検証後に repo ルートでコマンドを実行する。
-- opensrc 取得後は `opensrc/sources.json` から `name`、`version/ref`、`path`、`fetchedAt` を記録する。
+- opensrc 実行は `opensrc path <spec>` を優先する。cache miss 時は自動取得され、stdout に絶対パスが出る。
+- `--verbose` は ref/tag fallback の警告確認が必要なときに使う。
+- opensrc 取得後は `opensrc list --json` または `${OPENSRC_HOME:-$HOME/.opensrc}/sources.json` から `name`、`version/ref`、`path`、`fetchedAt` を記録する。
+- `sources.json` の `path` は `OPENSRC_HOME` からの相対パスなので、根拠ファイルには `opensrc path` が返した絶対パスを使う。
 - opensrc は取得後に `.git` を除去するため、commit 履歴が必要な調査は clone fallback に昇格する。
 - clone fallback 実行時は `CLONE_DIR`、`REPO_URL`、`HEAD_COMMIT`、`IGNORE_STATUS` を記録する。
 - `IGNORE_STATUS=not_ignored` の場合、ワークツリー汚染リスクを説明してから続行する。
-- `opensrc/` と clone fallback 用ディレクトリは `git add` しない。
+- `~/.opensrc/`、`OPENSRC_HOME`、clone fallback 用ディレクトリは `git add` しない。
