@@ -338,6 +338,24 @@ return {
       local dropbar = require('dropbar')
 
       dropbar.setup({
+        bar = {
+          update_events = {
+            win = {
+              'CursorMoved',
+              'WinResized',
+            },
+            buf = {
+              'FileChangedShellPost',
+              'TextChanged',
+              'ModeChanged',
+              'BufWritePost',
+            },
+            global = {
+              'DirChanged',
+              'VimResized',
+            },
+          },
+        },
         icons = {
           kinds = {
             symbols = {
