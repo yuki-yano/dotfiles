@@ -53,7 +53,6 @@ local plugins = {
       { 'hrsh7th/cmp-nvim-lsp' },
       { 'b0o/SchemaStore.nvim' },
       { 'SmiteshP/nvim-navic' },
-      { 'jose-elias-alvarez/typescript.nvim' },
       { 'yioneko/nvim-vtsls' },
       { 'folke/neodev.nvim' },
       { 'lewis6991/hover.nvim' },
