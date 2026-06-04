@@ -38,7 +38,7 @@ install rtk
 ## Languages & Runtimes
 install deno node oven-sh/bun/bun
 install go python ruby perl
-install lua luarocks busted
+install lua luarocks busted stylua
 
 ## Build & Validation
 install openssl pkg-config cmake shellcheck
