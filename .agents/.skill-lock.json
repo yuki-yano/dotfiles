@@ -42,9 +42,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/wshobson/agents.git",
       "skillPath": "plugins/javascript-typescript/skills/typescript-advanced-types/SKILL.md",
-      "skillFolderHash": "a2fe3beb2f08b66b467981df7e09a2ccc5c9c7d2",
+      "skillFolderHash": "7e9663cb1d15ca0aff369d35a31348b7e8cf5e95",
       "installedAt": "2026-01-27T06:33:16.488Z",
-      "updatedAt": "2026-03-20T12:14:40.984Z"
+      "updatedAt": "2026-06-04T00:39:51.771Z"
     },
     "agent-browser": {
       "source": "vercel-labs/agent-browser",
