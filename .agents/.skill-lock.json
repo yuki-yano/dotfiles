@@ -15,9 +15,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/vercel-labs/agent-skills.git",
       "skillPath": "skills/react-best-practices/SKILL.md",
-      "skillFolderHash": "a203aee7243640ceb56ce2c6c4ab286573df5e69",
+      "skillFolderHash": "343db72180d05814949fef7d46be96b5c6ee86b3",
       "installedAt": "2026-01-27T04:52:28.041Z",
-      "updatedAt": "2026-04-13T05:48:27.108Z"
+      "updatedAt": "2026-06-04T00:39:49.587Z"
     },
     "hono-routing": {
       "source": "jezweb/claude-skills",
