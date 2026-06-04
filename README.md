@@ -200,8 +200,9 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
   `z-ai/` (`z-ai/plans/`, `z-ai/tmp/`, `z-ai/references/`).
 - `.config/claude/RTK.md` and `.config/claude/hooks/rtk-rewrite.sh` enable RTK command rewriting for Claude Code Bash
   hooks.
-- `.config/codex-template/RTK.md` is copied to `~/.codex/RTK.md` by `deno task codex:template -- --apply`, and
-  `AGENTS.md` references it for Codex CLI shell command guidance.
+- `.config/codex-template/AGENTS.md` embeds the current Codex RTK awareness text directly so Codex CLI reads the RTK
+  shell command guidance reliably. `.config/codex-template/RTK.md` is kept in sync with upstream RTK and copied to
+  `~/.codex/RTK.md` for reference.
 - `.config/cage/presets.yml` captures Warashi cage (multi-agent) layout presets that pair with tmux automation.
 - `.config/claude/settings.json` hooks (`vde-monitor-hook`, `vde-monitor-summary`, `vde-notifier`) provide monitoring and
   notifications around Claude sessions.
