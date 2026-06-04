@@ -16,6 +16,7 @@ install bash zsh sheldon tmux
 install coreutils findutils
 install gawk gnu-sed gnu-time
 install curl wget
+install duti
 
 ## Editor
 install readline vim

@@ -12,6 +12,7 @@ const DOTFILES_SRCS = [
   ".bashrc",
   ".config",
   ".ctags.d",
+  ".duti",
   ".finicky.js",
   ".gitattributes_global",
   ".gitconfig",
@@ -47,6 +48,7 @@ const AGENT_LINK_TARGETS = [
   { dir: CLAUDE_DIR, link: CLAUDE_SKILLS_DIR },
   { dir: COPILOT_DIR, link: COPILOT_SKILLS_DIR },
 ];
+const DUTI_CONFIG_FILE = `${HOME}/.duti`;
 
 let DRY_RUN = false;
 let APPLY = false;
@@ -83,6 +85,25 @@ async function ensureCommandAvailable(command: string): Promise<void> {
   try {
     const process = new Deno.Command(command, {
       args: ["--version"],
+      stdout: "null",
+      stderr: "null",
+    });
+    const { code } = await process.output();
+    if (code === 0) {
+      return;
+    }
+  } catch {
+    // handled below
+  }
+
+  console.error(`ERROR: ${command} command not found`);
+  Deno.exit(1);
+}
+
+async function ensureCommandOnPath(command: string): Promise<void> {
+  try {
+    const process = new Deno.Command("which", {
+      args: [command],
       stdout: "null",
       stderr: "null",
     });
@@ -477,6 +498,24 @@ const tasks: Record<string, () => Promise<void> | void> = {
     }
   },
 
+  async "duti:apply"() {
+    if (DRY_RUN) {
+      console.log(`[DRY RUN] Would run: duti ${DUTI_CONFIG_FILE}`);
+      return;
+    }
+
+    if (!(await fileExists(DUTI_CONFIG_FILE))) {
+      console.error(`ERROR: ${DUTI_CONFIG_FILE} not found`);
+      console.error("Run 'deno task dotfiles:install' before applying duti settings");
+      Deno.exit(1);
+    }
+
+    await ensureCommandOnPath("duti");
+
+    await $`duti ${DUTI_CONFIG_FILE}`;
+    console.log(`Applied duti settings from ${DUTI_CONFIG_FILE}`);
+  },
+
   async "mas:install"() {
     if (!(await fileExists("Masfile"))) {
       console.error("ERROR: Masfile not found");
@@ -536,6 +575,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
     console.log("  Homebrew:");
     console.log("    deno task brew:bundle         - Install Homebrew packages");
     console.log("    deno task brew:cask           - Install Homebrew Cask apps");
+    console.log("    deno task duti:apply          - Apply default app handlers from ~/.duti");
     console.log("");
     console.log("  Mac App Store:");
     console.log("    deno task mas:install         - Install App Store apps");

@@ -1,0 +1,17 @@
+dev.zed.Zed .txt all
+dev.zed.Zed .md all
+dev.zed.Zed .markdown all
+dev.zed.Zed .json all
+dev.zed.Zed .yaml all
+dev.zed.Zed .yml all
+dev.zed.Zed .toml all
+dev.zed.Zed .log all
+dev.zed.Zed .sh all
+dev.zed.Zed .zsh all
+dev.zed.Zed .js all
+dev.zed.Zed .ts all
+dev.zed.Zed .tsx all
+dev.zed.Zed .rs all
+dev.zed.Zed .go all
+dev.zed.Zed .py all
+dev.zed.Zed .css all

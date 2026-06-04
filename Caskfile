@@ -29,6 +29,7 @@ install --cask tableplus
 install --cask tailscale-app
 install --cask visual-studio-code
 install --cask vlc
+install --cask zed
 install --cask zoom
 
 install --cask Warashi/tap/cage
