@@ -19,15 +19,6 @@
       "installedAt": "2026-01-27T04:52:28.041Z",
       "updatedAt": "2026-06-04T00:39:49.587Z"
     },
-    "hono-routing": {
-      "source": "jezweb/claude-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/jezweb/claude-skills.git",
-      "skillPath": "skills/hono-routing/SKILL.md",
-      "skillFolderHash": "bcbd5665291da91fa8322b6dcc2f8f9fb34ae818",
-      "installedAt": "2026-01-27T05:00:23.961Z",
-      "updatedAt": "2026-01-27T05:00:23.961Z"
-    },
     "frontend-design": {
       "source": "anthropics/skills",
       "sourceType": "github",
