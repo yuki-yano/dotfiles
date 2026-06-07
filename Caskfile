@@ -7,7 +7,7 @@ upgrade
 ## Casks
 install --cask 1password
 install --cask 1password/tap/1password-cli
-install --cask claude-code
+install --cask claude-code@latest
 install --cask cleanshot
 install --cask cursor
 install --cask default-folder-x
