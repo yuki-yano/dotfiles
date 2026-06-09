@@ -1,0 +1,9 @@
+#!/bin/sh
+
+top=${1:-}
+[ -n "$top" ] || exit 1
+
+prompt_git=${DOT_PROMPT_GIT_ZSH:-$HOME/dotfiles/.zsh/prompt/git.zsh}
+[ -r "$prompt_git" ] || exit 1
+
+exec zsh -f -c 'source "$1"; dot_prompt_git_update_cache "$2" watch >/dev/null 2>&1' -- "$prompt_git" "$top"

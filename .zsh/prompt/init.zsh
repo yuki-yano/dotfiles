@@ -25,10 +25,17 @@ dot_prompt_precmd() {
   dot_prompt_build_git_prompt
   dot_prompt_build_left "$exit_code"
   dot_prompt_apply_render
-  dot_prompt_async_tasks
+  if (( DOT_PROMPT_GIT_FORCE_NEXT_REFRESH )); then
+    typeset -g DOT_PROMPT_GIT_FORCE_NEXT_REFRESH=0
+    dot_prompt_async_tasks force
+  else
+    dot_prompt_async_tasks cached
+  fi
 }
 
 dot_prompt_preexec() {
+  typeset -g DOT_PROMPT_GIT_FORCE_NEXT_REFRESH=1
+
   case $2 in
     clear|clear\ *|command\ clear|command\ clear\ *|builtin\ clear|builtin\ clear\ *)
       typeset -g DOT_PROMPT_SUPPRESS_PRECMD_NEWLINE=1

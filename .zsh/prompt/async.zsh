@@ -1,6 +1,12 @@
 typeset -g DOT_PROMPT_ASYNC_INITED=0
 typeset -g DOT_PROMPT_ASYNC_RENDER_REQUESTED=0
+typeset -g DOT_PROMPT_ASYNC_AUTO_REFRESH_SCHEDULED=0
+typeset -g DOT_PROMPT_GIT_FORCE_NEXT_REFRESH=0
+typeset -g DOT_PROMPT_GIT_CACHE_PATH=""
+typeset -g DOT_PROMPT_GIT_CACHE_MTIME=0
 typeset -g DOT_PROMPT_GIT_PWD=""
+
+: ${DOT_PROMPT_GIT_AUTO_REFRESH_INTERVAL:=2}
 
 dot_prompt_async_renice() {
   setopt localoptions noshwordsplit
@@ -39,6 +45,8 @@ dot_prompt_async_reset_repo_state() {
   typeset -g DOT_PROMPT_GIT_UNTRACKED=0
   typeset -g DOT_PROMPT_GIT_STASH=0
   typeset -g DOT_PROMPT_GIT_TOP=""
+  typeset -g DOT_PROMPT_GIT_CACHE_PATH=""
+  typeset -g DOT_PROMPT_GIT_CACHE_MTIME=0
   typeset -g DOT_PROMPT_GIT_PWD=""
 }
 
@@ -52,13 +60,74 @@ dot_prompt_async_maybe_reset_for_pwd() {
 }
 
 dot_prompt_async_refresh() {
-  async_job dot_prompt_git dot_prompt_git_status
+  local mode=${1:-cached}
+  local cache_path=${2:-}
+
+  if [[ $mode == cache-only ]]; then
+    async_job dot_prompt_git dot_prompt_git_status "$mode" "$cache_path"
+  else
+    async_job dot_prompt_git dot_prompt_git_status "$mode"
+  fi
 }
 
 dot_prompt_async_tasks() {
-  dot_prompt_async_init
-  async_worker_eval dot_prompt_git builtin cd -q "$PWD"
-  dot_prompt_async_refresh
+  local mode=${1:-cached}
+  local cache_path=${2:-}
+
+  if [[ $mode != cache-only ]]; then
+    dot_prompt_async_init
+    async_worker_eval dot_prompt_git builtin cd -q "$PWD"
+  else
+    dot_prompt_async_init
+  fi
+  dot_prompt_async_refresh "$mode" "$cache_path"
+}
+
+dot_prompt_async_cache_mtime() {
+  setopt localoptions noshwordsplit
+
+  local cache_path=$1
+  local -a stat
+
+  [[ -n $cache_path && -s $cache_path ]] || return 1
+  zmodload zsh/stat 2>/dev/null || return 1
+  zstat -A stat +mtime -- "$cache_path" 2>/dev/null || return 1
+
+  REPLY=$stat[1]
+}
+
+dot_prompt_async_cache_changed() {
+  setopt localoptions noshwordsplit
+
+  dot_prompt_async_cache_mtime "$DOT_PROMPT_GIT_CACHE_PATH" || return 1
+  [[ $REPLY != $DOT_PROMPT_GIT_CACHE_MTIME ]]
+}
+
+dot_prompt_async_schedule_auto_refresh() {
+  setopt localoptions noshwordsplit
+
+  (( DOT_PROMPT_GIT_AUTO_REFRESH_INTERVAL > 0 )) || return
+  [[ -n $DOT_PROMPT_GIT_TOP ]] || return
+  (( DOT_PROMPT_ASYNC_AUTO_REFRESH_SCHEDULED )) && return
+  zmodload -F zsh/sched b:sched 2>/dev/null || return
+
+  typeset -g DOT_PROMPT_ASYNC_AUTO_REFRESH_SCHEDULED=1
+  sched +${DOT_PROMPT_GIT_AUTO_REFRESH_INTERVAL} dot_prompt_async_auto_refresh
+}
+
+dot_prompt_async_auto_refresh() {
+  setopt localoptions noshwordsplit
+
+  typeset -g DOT_PROMPT_ASYNC_AUTO_REFRESH_SCHEDULED=0
+
+  if [[ -n $DOT_PROMPT_GIT_TOP ]] && [[ -o zle ]] && zle >/dev/null 2>&1; then
+    dot_prompt_async_maybe_reset_for_pwd
+    if [[ -n $DOT_PROMPT_GIT_TOP ]] && dot_prompt_async_cache_changed; then
+      dot_prompt_async_tasks cache-only "$DOT_PROMPT_GIT_CACHE_PATH"
+    fi
+  fi
+
+  dot_prompt_async_schedule_auto_refresh
 }
 
 dot_prompt_async_render() {
@@ -117,6 +186,7 @@ dot_prompt_async_callback() {
           [[ $DOT_PROMPT_GIT_ACTION != $info[action] ]] && state_changed=1
           [[ $DOT_PROMPT_GIT_CONFLICT != $info[conflict] ]] && state_changed=1
           [[ $DOT_PROMPT_GIT_TOP != $info[top] ]] && state_changed=1
+          [[ $DOT_PROMPT_GIT_CACHE_PATH != $info[cache] ]] && state_changed=1
           [[ $DOT_PROMPT_GIT_AHEAD != ${info[ahead]:-0} ]] && state_changed=1
           [[ $DOT_PROMPT_GIT_BEHIND != ${info[behind]:-0} ]] && state_changed=1
           [[ $DOT_PROMPT_GIT_UNMERGED != ${info[unmerged]:-0} ]] && state_changed=1
@@ -131,6 +201,7 @@ dot_prompt_async_callback() {
           typeset -g DOT_PROMPT_GIT_ACTION=$info[action]
           typeset -g DOT_PROMPT_GIT_CONFLICT=$info[conflict]
           typeset -g DOT_PROMPT_GIT_TOP=$info[top]
+          typeset -g DOT_PROMPT_GIT_CACHE_PATH=$info[cache]
           typeset -g DOT_PROMPT_GIT_AHEAD=${info[ahead]:-0}
           typeset -g DOT_PROMPT_GIT_BEHIND=${info[behind]:-0}
           typeset -g DOT_PROMPT_GIT_UNMERGED=${info[unmerged]:-0}
@@ -142,6 +213,11 @@ dot_prompt_async_callback() {
             typeset -g DOT_PROMPT_GIT_PWD=$info[top]
           else
             typeset -g DOT_PROMPT_GIT_PWD=""
+          fi
+          if dot_prompt_async_cache_mtime "$DOT_PROMPT_GIT_CACHE_PATH"; then
+            typeset -g DOT_PROMPT_GIT_CACHE_MTIME=$REPLY
+          else
+            typeset -g DOT_PROMPT_GIT_CACHE_MTIME=0
           fi
 
           if [[ -z $info[top] ]]; then
@@ -163,6 +239,8 @@ dot_prompt_async_callback() {
     dot_prompt_async_render
   fi
   typeset -g DOT_PROMPT_ASYNC_RENDER_REQUESTED=0
+
+  dot_prompt_async_schedule_auto_refresh
 }
 
 dot_prompt_async_shutdown() {
