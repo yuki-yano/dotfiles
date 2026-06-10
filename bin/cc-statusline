@@ -27,6 +27,9 @@ type StatusLineInput = {
   model?: {
     display_name?: string;
   };
+  effort?: {
+    level?: string;
+  };
   workspace?: {
     current_dir?: string;
   };
@@ -275,11 +278,34 @@ function formatFirstLineItem(icon: string, text: string, color: Rgb): string {
   return `${rgb(PALETTE.overlay0)}${icon}${RESET}  ${rgb(color)}${text}${RESET}`;
 }
 
+function formatEffortLevel(level?: string): string | null {
+  const normalized = level?.trim();
+
+  if (!normalized) {
+    return null;
+  }
+
+  return normalized === "xhigh" ? "x-high" : normalized;
+}
+
+function formatModelItem(modelDisplay: string, effortLevel?: string): string {
+  const model = `${rgb(PALETTE.lavender)}${modelDisplay}${RESET}`;
+  const effortLevelDisplay = formatEffortLevel(effortLevel);
+
+  if (!effortLevelDisplay) {
+    return `${rgb(PALETTE.overlay0)}󰚩${RESET}  ${model}`;
+  }
+
+  const effort = `${rgb(PALETTE.overlay0)}·${RESET} ${rgb(PALETTE.peach)}󰢚 ${effortLevelDisplay}${RESET}`;
+  return `${rgb(PALETTE.overlay0)}󰚩${RESET}  ${model} ${effort}`;
+}
+
 async function main() {
   const stdin = await readAll(Deno.stdin);
   const input = JSON.parse(new TextDecoder().decode(stdin)) as StatusLineInput;
 
   const modelDisplay = input.model?.display_name || "Unknown";
+  const effortLevel = input.effort?.level;
   const currentDir = input.workspace?.current_dir || ".";
   const dirName = currentDir.split("/").pop() || currentDir;
 
@@ -302,7 +328,7 @@ async function main() {
   );
 
   const firstLineParts = [
-    formatFirstLineItem("󰚩", modelDisplay, PALETTE.lavender),
+    formatModelItem(modelDisplay, effortLevel),
     formatFirstLineItem("", dirName, PALETTE.blue),
     ...(gitBranch ? [formatFirstLineItem("󰘬", gitBranch, PALETTE.green)] : []),
     ...(ctxSummary ? [ctxSummary] : []),
