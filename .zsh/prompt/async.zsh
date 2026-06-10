@@ -162,16 +162,17 @@ dot_prompt_async_callback() {
       local -a info_items
       local state_changed=0
       if (( code != 0 )) || [[ -z $output ]]; then
+        # Transient failure (lock contention, killed job, etc). Leaving a repo
+        # is reported via the sentinel (empty top), so keep the current state
+        # and let the next refresh self-heal.
         if [[ -n $DOT_PROMPT_GIT_TOP ]]; then
-          dot_prompt_async_reset_repo_state
-          do_render=1
+          typeset -g DOT_PROMPT_GIT_FORCE_NEXT_REFRESH=1
         fi
       else
         info_items=("${(Q@)${(z)output}}")
         if (( ${#info_items} == 0 )) || (( ${#info_items} % 2 != 0 )); then
           if [[ -n $DOT_PROMPT_GIT_TOP ]]; then
-            dot_prompt_async_reset_repo_state
-            do_render=1
+            typeset -g DOT_PROMPT_GIT_FORCE_NEXT_REFRESH=1
           fi
         else
           info=("${info_items[@]}")
@@ -214,7 +215,11 @@ dot_prompt_async_callback() {
           else
             typeset -g DOT_PROMPT_GIT_PWD=""
           fi
-          if dot_prompt_async_cache_mtime "$DOT_PROMPT_GIT_CACHE_PATH"; then
+          if [[ -n ${info[mtime]:-} ]]; then
+            # Use the mtime captured at read time; re-statting could tie a
+            # newer write's mtime to the older content we just parsed.
+            typeset -g DOT_PROMPT_GIT_CACHE_MTIME=$info[mtime]
+          elif dot_prompt_async_cache_mtime "$DOT_PROMPT_GIT_CACHE_PATH"; then
             typeset -g DOT_PROMPT_GIT_CACHE_MTIME=$REPLY
           else
             typeset -g DOT_PROMPT_GIT_CACHE_MTIME=0

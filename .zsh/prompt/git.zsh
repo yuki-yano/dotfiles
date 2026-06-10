@@ -13,9 +13,9 @@ typeset -g DOT_PROMPT_GIT_UNTRACKED=0
 typeset -g DOT_PROMPT_GIT_STASH=0
 typeset -g DOT_PROMPT_GIT_TOP=""
 
-: ${DOT_PROMPT_GIT_LOCK_TTL:=120}
 : ${DOT_PROMPT_GIT_WATCH_TTL:=60}
 : ${DOT_PROMPT_GIT_UPDATE_DEBOUNCE:=1}
+: ${DOT_PROMPT_GIT_WATCH_LOCK_WAIT:=10}
 
 dot_prompt_json_quote() {
   local value=$1
@@ -35,6 +35,28 @@ dot_prompt_git_cache_path_for_top() {
   local cache_key=${top//\//%}
 
   REPLY="${cache_root}/${cache_key}.status"
+}
+
+# Uses flock so the kernel releases the lock even when the holder is killed
+# (a mkdir-based lock dir is left behind when e.g. async_flush_jobs sends SIGHUP).
+# On success REPLY holds the fd. Without zsh/system, proceed unlocked (REPLY empty).
+dot_prompt_git_lock_acquire() {
+  setopt localoptions noshwordsplit
+
+  local lock_path=$1 timeout=${2:-0}
+  local fd
+
+  REPLY=""
+  zmodload zsh/system 2>/dev/null || return 0
+  : >>| "$lock_path" 2>/dev/null || return 0
+  zsystem flock -t "$timeout" -f fd "$lock_path" 2>/dev/null || return 1
+  REPLY=$fd
+}
+
+dot_prompt_git_lock_release() {
+  local fd=$1
+  [[ -n $fd ]] || return 0
+  exec {fd}>&-
 }
 
 dot_prompt_git_cache_is_fresh() {
@@ -80,47 +102,35 @@ dot_prompt_git_watch_ensure() {
   local git_dir=$2
   local cache_path=$3
   local watch_state="${cache_path}.watch"
-  local watch_lock="${cache_path}.watch.lock"
+  local watch_lock="${cache_path}.watch.flock"
+  local lock_fd
 
   command -v watchman >/dev/null || return 1
   dot_prompt_git_cache_is_fresh "$watch_state" "$DOT_PROMPT_GIT_WATCH_TTL" && return 0
-  dot_prompt_git_cache_remove_if_stale_lock "$watch_lock"
 
   command mkdir -p "${cache_path:h}" 2>/dev/null || return 1
-  command mkdir "$watch_lock" 2>/dev/null || return 0
+  dot_prompt_git_lock_acquire "$watch_lock" 0 || return 0
+  lock_fd=$REPLY
   if dot_prompt_git_watch_register_trigger "$top" dot-prompt-git-worktree "$top" &&
      dot_prompt_git_watch_register_trigger "$git_dir" dot-prompt-git-gitdir "$top"; then
     print -r -- "$top" >| "$watch_state"
   fi
-  command rmdir "$watch_lock" 2>/dev/null || true
-}
-
-dot_prompt_git_cache_remove_if_stale_lock() {
-  setopt localoptions noshwordsplit
-
-  local lock_path=$1
-  local ttl=${2:-$DOT_PROMPT_GIT_LOCK_TTL}
-  local -a stat
-
-  [[ -d $lock_path ]] || return 0
-  zmodload zsh/datetime 2>/dev/null || return 0
-  zmodload zsh/stat 2>/dev/null || return 0
-  zstat -A stat +mtime -- "$lock_path" 2>/dev/null || return 0
-
-  if (( EPOCHSECONDS - stat[1] >= ttl )); then
-    command rmdir "$lock_path" 2>/dev/null || true
-  fi
+  dot_prompt_git_lock_release "$lock_fd"
 }
 
 dot_prompt_git_status_from_cache() {
   setopt localoptions noshwordsplit
 
   local cache_path=$1
-  local line
-  local -a items
+  local line mtime=0
+  local -a items stat
   local -A info
 
   [[ -r $cache_path ]] || return 1
+  # Stat before reading so a newer write's mtime never gets tied to older content
+  if zmodload zsh/stat 2>/dev/null && zstat -A stat +mtime -- "$cache_path" 2>/dev/null; then
+    mtime=$stat[1]
+  fi
   IFS= read -r line < "$cache_path" || return 1
   [[ -n $line ]] || return 1
 
@@ -129,6 +139,7 @@ dot_prompt_git_status_from_cache() {
 
   info=("${items[@]}")
   info[pwd]=$PWD
+  info[mtime]=$mtime
   print -r -- ${(@kvq)info}
 }
 
@@ -194,9 +205,9 @@ dot_prompt_git_status_uncached() {
     info[branch]=${oid[1,7]}
   else
     info[detached]=
-    info[branch]=${branch//\%/%%}
+    info[branch]=$branch
   fi
-  info[upstream]=${upstream//\%/%%}
+  info[upstream]=$upstream
   info[action]=$action
   info[conflict]=$conflict
   info[ahead]=$ahead
@@ -216,7 +227,7 @@ dot_prompt_git_update_cache() {
   local top=${1:-}
   local source=${2:-direct}
   local cache_path lock_path tmp_path output code=0
-  local canonical_top debounce_path
+  local canonical_top debounce_path lock_fd=""
 
   if [[ -n $top ]]; then
     builtin cd -q "$top" 2>/dev/null || return 1
@@ -225,30 +236,35 @@ dot_prompt_git_update_cache() {
   canonical_top=$(command git rev-parse --show-toplevel 2>/dev/null) || return 1
   dot_prompt_git_cache_path_for_top "$canonical_top"
   cache_path=$REPLY
-  lock_path="${cache_path}.lock"
+  lock_path="${cache_path}.flock"
   debounce_path="${cache_path}.updated"
 
-  if [[ $source == watch ]] && dot_prompt_git_cache_is_fresh "$debounce_path" "$DOT_PROMPT_GIT_UPDATE_DEBOUNCE"; then
-    dot_prompt_git_status_from_cache "$cache_path" >/dev/null 2>&1
-    return 0
-  fi
-
   command mkdir -p "${cache_path:h}" 2>/dev/null || return 1
-  dot_prompt_git_cache_remove_if_stale_lock "$lock_path"
-  if ! command mkdir "$lock_path" 2>/dev/null; then
-    dot_prompt_git_status_from_cache "$cache_path" >/dev/null 2>&1
-    return $?
-  fi
 
-  if [[ $source == watch ]] && dot_prompt_git_cache_is_fresh "$debounce_path" "$DOT_PROMPT_GIT_UPDATE_DEBOUNCE"; then
-    command rmdir "$lock_path" 2>/dev/null || true
-    dot_prompt_git_status_from_cache "$cache_path" >/dev/null 2>&1
-    return 0
+  if [[ $source == watch ]]; then
+    # Watchman-driven updates must capture the state after the triggering
+    # change, so wait for any in-flight update instead of skipping.
+    dot_prompt_git_lock_acquire "$lock_path" "$DOT_PROMPT_GIT_WATCH_LOCK_WAIT" || return 1
+    lock_fd=$REPLY
+    # Treat the debounce as a throttle: wait it out and always recompute.
+    # Skipping would drop the final state of a rapid change sequence.
+    while dot_prompt_git_cache_is_fresh "$debounce_path" "$DOT_PROMPT_GIT_UPDATE_DEBOUNCE"; do
+      command sleep 0.2
+    done
+  else
+    if ! dot_prompt_git_lock_acquire "$lock_path" 0; then
+      # Another updater is running. Returning empty output would make the
+      # caller discard the repo state and blank the prompt, so serve the
+      # current cache content instead.
+      dot_prompt_git_status_from_cache "$cache_path"
+      return $?
+    fi
+    lock_fd=$REPLY
   fi
 
   output=$(dot_prompt_git_status_uncached) || code=$?
   if (( code != 0 )); then
-    command rmdir "$lock_path" 2>/dev/null || true
+    dot_prompt_git_lock_release "$lock_fd"
     return $code
   fi
 
@@ -258,15 +274,23 @@ dot_prompt_git_update_cache() {
   info=("${items[@]}")
   cache_path=$info[cache]
   if [[ -z $cache_path ]]; then
-    command rmdir "$lock_path" 2>/dev/null || true
+    dot_prompt_git_lock_release "$lock_fd"
     return 1
   fi
 
-  tmp_path="${cache_path}.$$"
-  print -r -- "$output" >| "$tmp_path" && command mv -f "$tmp_path" "$cache_path"
+  # The lock guarantees a single writer, so a fixed tmp name is safe and any
+  # leftover from a killed writer gets overwritten next time.
+  tmp_path="${cache_path}.tmp"
+  if ! { print -r -- "$output" >| "$tmp_path" && command mv -f "$tmp_path" "$cache_path" }; then
+    dot_prompt_git_lock_release "$lock_fd"
+    return 1
+  fi
   print -r -- "$canonical_top" >| "$debounce_path"
-  command rmdir "$lock_path" 2>/dev/null || true
-  print -r -- "$output"
+  # Re-read through the cache so the reported mtime matches the content
+  dot_prompt_git_status_from_cache "$cache_path"
+  code=$?
+  dot_prompt_git_lock_release "$lock_fd"
+  return $code
 }
 
 dot_prompt_git_status() {
@@ -282,7 +306,14 @@ dot_prompt_git_status() {
     return $?
   fi
 
-  top=$(command git rev-parse --show-toplevel 2>/dev/null) || return 1
+  if ! top=$(command git rev-parse --show-toplevel 2>/dev/null); then
+    # Outside a repo, return a sentinel with an empty top. Empty output and
+    # non-zero codes are treated as transient failures, so be explicit here.
+    local -A info
+    info=(pwd "$PWD" top "")
+    print -r -- ${(@kvq)info}
+    return 0
+  fi
   git_dir=$(command git rev-parse --absolute-git-dir 2>/dev/null) || return 1
   dot_prompt_git_cache_path_for_top "$top"
   cache_path=$REPLY
