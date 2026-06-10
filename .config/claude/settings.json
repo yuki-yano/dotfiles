@@ -1,4 +1,5 @@
 {
+  "cleanupPeriodDays": 9999,
   "env": {
     "DISABLE_AUTOUPDATER": "1",
     "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1",
@@ -9,21 +10,10 @@
     "CLAUDE_CODE_NO_FLICKER": "1"
   },
   "includeCoAuthoredBy": false,
-  "statusLine": {
-    "type": "command",
-    "command": "cc-statusline"
-  },
-  "theme": "dark",
-  "alwaysThinkingEnabled": true,
-  "effortLevel": "xhigh",
-  "showThinkingSummaries": true,
-  "skipDangerousModePermissionPrompt": true,
-  "cleanupPeriodDays": 9999,
-  "autoMemoryEnabled": false,
-  "showClearContextOnPlanAccept": true,
   "permissions": {
     "defaultMode": "acceptEdits"
   },
+  "model": "claude-fable-5[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -94,5 +84,17 @@
         ]
       }
     ]
-  }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "cc-statusline"
+  },
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
+  "showClearContextOnPlanAccept": true,
+  "autoMemoryEnabled": false,
+  "showThinkingSummaries": true,
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "dark",
+  "agentPushNotifEnabled": true
 }
