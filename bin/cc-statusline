@@ -18,6 +18,7 @@ type RateLimitHealth = {
   budgetLeftPct: number;
   timeLeftPct: number;
   remainingDuration: string;
+  resetAtLabel: string;
   statusLabel: string;
   statusIcon: string;
   statusColor: Rgb;
@@ -132,18 +133,24 @@ function gradient(pct: number): string {
   return rgb(mixColor(PALETTE.yellow, PALETTE.red, (safePct - 60) / 40));
 }
 
-function fineBar(pct: number, width = 10, color = gradient(pct)): string {
-  const safePct = clampPercentage(pct);
-  const filled = (safePct * width) / 100;
+function remainingBar(remainingPct: number, color: Rgb, width = 10): string {
+  const safeRemaining = clampPercentage(remainingPct);
+  const filled = (safeRemaining * width) / 100;
   const fullBlocks = Math.floor(filled);
   const partialBlock = Math.floor((filled - fullBlocks) * 8);
 
-  const filledBar = "█".repeat(fullBlocks);
-  const partialBar = fullBlocks < width && partialBlock > 0 ? BAR_BLOCKS[partialBlock] : "";
-  const emptyCount = width - fullBlocks - (partialBar ? 1 : 0);
-  const emptyBar = "░".repeat(Math.max(emptyCount, 0));
+  let bar = "";
+  for (let i = 0; i < width; i++) {
+    if (i < fullBlocks) {
+      bar += `${rgb(color)}█${RESET}`;
+    } else if (i === fullBlocks && partialBlock > 0) {
+      bar += `${rgb(color)}${BAR_BLOCKS[partialBlock]}${RESET}`;
+    } else {
+      bar += `${rgb(PALETTE.overlay0)}░${RESET}`;
+    }
+  }
 
-  return `${color}${filledBar}${partialBar}${RESET}${rgb(PALETTE.overlay0)}${emptyBar}${RESET}`;
+  return bar;
 }
 
 function formatApproxTokens(totalTokens: number): string {
@@ -178,6 +185,35 @@ function formatDuration(remainingMs: number): string {
   return `${minutes}m`;
 }
 
+const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+function formatResetAt(resetAtMs: number): string {
+  const reset = new Date(resetAtMs);
+  const now = new Date();
+  const time = `${String(reset.getHours()).padStart(2, "0")}:${String(reset.getMinutes()).padStart(2, "0")}`;
+  const sameDay = reset.getFullYear() === now.getFullYear() &&
+    reset.getMonth() === now.getMonth() &&
+    reset.getDate() === now.getDate();
+
+  if (sameDay) {
+    return time;
+  }
+
+  return `${reset.getMonth() + 1}/${reset.getDate()} ${WEEKDAY_LABELS[reset.getDay()]} ${time}`;
+}
+
+function formatBudgetVsTimeDelta(budgetLeftPct: number, timeLeftPct: number): string {
+  const delta = Math.round(budgetLeftPct - timeLeftPct);
+  const prefix = delta > 0 ? "+" : "";
+  const value = `${prefix}${delta}pt`.padStart(5);
+
+  return value;
+}
+
+function formatPercent(value: number): string {
+  return `${Math.round(value).toString().padStart(3)}%`;
+}
+
 function getContextInputTokens(currentUsage?: ContextWindowUsage | null): number | null {
   if (!currentUsage) {
     return null;
@@ -204,46 +240,24 @@ function getRateLimitHealth(usedPct?: number, resetsAt?: number, windowMs?: numb
   const remainingMs = Math.max(resetAtMs - Date.now(), 0);
   const timeLeftPct = clampPercentage((Math.min(remainingMs, windowMs) / windowMs) * 100);
   const slack = budgetLeftPct - timeLeftPct;
-
-  if (slack >= 15) {
-    return {
-      budgetLeftPct,
-      timeLeftPct,
-      remainingDuration: formatDuration(remainingMs),
-      statusLabel: "safe",
-      statusIcon: "✓",
-      statusColor: PALETTE.green,
-    };
-  }
-  if (slack >= 0) {
-    return {
-      budgetLeftPct,
-      timeLeftPct,
-      remainingDuration: formatDuration(remainingMs),
-      statusLabel: "on pace",
-      statusIcon: "◐",
-      statusColor: PALETTE.yellow,
-    };
-  }
-  if (slack >= -15) {
-    return {
-      budgetLeftPct,
-      timeLeftPct,
-      remainingDuration: formatDuration(remainingMs),
-      statusLabel: "tight",
-      statusIcon: "⚠",
-      statusColor: PALETTE.peach,
-    };
-  }
-
-  return {
+  const base = {
     budgetLeftPct,
     timeLeftPct,
     remainingDuration: formatDuration(remainingMs),
-    statusLabel: "critical",
-    statusIcon: "✕",
-    statusColor: PALETTE.red,
+    resetAtLabel: formatResetAt(resetAtMs),
   };
+
+  if (slack >= 15) {
+    return { ...base, statusLabel: "safe", statusIcon: "✓", statusColor: PALETTE.green };
+  }
+  if (slack >= 0) {
+    return { ...base, statusLabel: "on pace", statusIcon: "◐", statusColor: PALETTE.yellow };
+  }
+  if (slack >= -15) {
+    return { ...base, statusLabel: "tight", statusIcon: "⚠", statusColor: PALETTE.peach };
+  }
+
+  return { ...base, statusLabel: "critical", statusIcon: "✕", statusColor: PALETTE.red };
 }
 
 function formatRateLimitMetric(label: string, health: RateLimitHealth | null): string | null {
@@ -251,16 +265,20 @@ function formatRateLimitMetric(label: string, health: RateLimitHealth | null): s
     return null;
   }
 
-  const budgetField = `${Math.round(health.budgetLeftPct)}%`;
-  const timeField = `⏳ ${Math.round(health.timeLeftPct)}%`;
-  const statusField = `${health.statusIcon} ${budgetField}`.padEnd(6);
+  const budgetField = `●${formatPercent(health.budgetLeftPct)}`;
+  const timeField = `⌛${formatPercent(health.timeLeftPct)}`;
+  const delta = Math.round(health.budgetLeftPct - health.timeLeftPct);
+  const deltaField = formatBudgetVsTimeDelta(health.budgetLeftPct, health.timeLeftPct);
+  const deltaColor = delta < 0 ? health.statusColor : PALETTE.green;
   const resetField = `↺ ${health.remainingDuration}`.padEnd(8);
 
-  return `${rgb(PALETTE.subtext1)}${label}${RESET} ${fineBar(health.budgetLeftPct, 10, rgb(health.statusColor))} ${
+  return `${rgb(PALETTE.subtext1)}${label}${RESET} ${remainingBar(health.budgetLeftPct, health.statusColor)} ${
     rgb(health.statusColor)
-  }${statusField}${RESET} ${rgb(PALETTE.overlay0)}|${RESET} ${rgb(PALETTE.subtext0)}${timeField}${RESET} ${
+  }${budgetField}${RESET} ${rgb(PALETTE.overlay0)}|${RESET} ${rgb(PALETTE.subtext0)}${timeField}${RESET} ${
     rgb(PALETTE.overlay0)
-  }|${RESET} ${rgb(PALETTE.sapphire)}${resetField}${RESET}`;
+  }|${RESET} ${rgb(deltaColor)}${deltaField}${RESET} ${rgb(PALETTE.overlay0)}|${RESET} ${
+    rgb(PALETTE.sapphire)
+  }${resetField}${RESET} ${rgb(PALETTE.overlay0)}→${RESET} ${rgb(PALETTE.subtext0)}${health.resetAtLabel}${RESET}`;
 }
 
 function formatContextSummary(pct?: number, meta?: string | null): string | null {
