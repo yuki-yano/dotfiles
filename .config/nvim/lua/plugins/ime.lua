@@ -2,6 +2,73 @@ local ime = require('rc.modules.ime')
 local ime_helpers = require('plugins.config.ime_helpers')
 
 local editprompt_group = vim.api.nvim_create_augroup('Editprompt', { clear = true })
+local editprompt_chunk_bytes = 8000
+
+local function normalize_editprompt_content(content)
+  local normalized = content:gsub('\t', '  ')
+  if not normalized:find('\n$') then
+    normalized = normalized .. '\n'
+  end
+  return normalized
+end
+
+local function should_save_editprompt_clipboard(content)
+  if type(content) ~= 'string' or content == '' then
+    return false
+  end
+
+  local lines = vim.split(content, '\n', { plain = true })
+  local first_line = lines[1] or ''
+  if not first_line:find('^/') then
+    return true
+  end
+
+  local first_line_args = first_line:match('^/%S*%s*(.*)$') or ''
+  if first_line_args:find('%S') ~= nil then
+    return true
+  end
+
+  local trailing_text = table.concat(vim.list_slice(lines, 2), '\n')
+  return trailing_text:find('%S') ~= nil
+end
+
+local function utf8_char_byte_length(first_byte)
+  if first_byte < 0x80 then
+    return 1
+  elseif first_byte < 0xE0 then
+    return 2
+  elseif first_byte < 0xF0 then
+    return 3
+  elseif first_byte < 0xF8 then
+    return 4
+  end
+  return 1
+end
+
+local function split_by_utf8_bytes(content, max_bytes)
+  local chunks = {}
+  local len = #content
+  local chunk_start = 1
+  local chunk_bytes = 0
+  local pos = 1
+
+  while pos <= len do
+    local char_bytes = utf8_char_byte_length(content:byte(pos))
+    if chunk_bytes > 0 and chunk_bytes + char_bytes > max_bytes then
+      table.insert(chunks, content:sub(chunk_start, pos - 1))
+      chunk_start = pos
+      chunk_bytes = 0
+    end
+    pos = pos + char_bytes
+    chunk_bytes = chunk_bytes + char_bytes
+  end
+
+  if chunk_start <= len then
+    table.insert(chunks, content:sub(chunk_start))
+  end
+
+  return chunks
+end
 
 return {
   {
@@ -24,11 +91,75 @@ return {
           callback = function(ev)
             local bufnr = ev.buf
             local editprompt = require('editprompt')
+            local editprompt_history = require('editprompt.history')
+            local editprompt_utils = require('editprompt.utils')
             local smart_tmux_nav = require('smart-tmux-nav')
             local map_opts = { silent = true, nowait = true, buffer = bufnr }
             local function is_buffer_blank()
               local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
               return table.concat(lines, '\n'):find('%S') == nil
+            end
+            local function restore_editor_focus()
+              local pane = vim.env.TMUX_PANE
+              if pane == nil or pane == '' or vim.fn.executable('tmux') ~= 1 then
+                return
+              end
+              vim.system({ 'tmux', 'select-pane', '-t', pane }, { text = true })
+            end
+            local function send_buffer_auto_send()
+              editprompt_utils.save_buffer()
+
+              local original = editprompt_utils.get_buffer_content()
+              local content = normalize_editprompt_content(original)
+              if content:match('^%s*$') then
+                return
+              end
+
+              if #content <= editprompt_chunk_bytes then
+                editprompt.input_auto_send()
+                return
+              end
+
+              -- FIXME: editprompt currently sends tmux content through one
+              -- send-keys command, which fails around 16KB. Chunk long prompts
+              -- and only submit the final chunk.
+              local chunks = split_by_utf8_bytes(content, editprompt_chunk_bytes)
+              local index = 1
+
+              local function send_next_chunk()
+                local is_last = index == #chunks
+                local args = { 'editprompt', 'input' }
+                if is_last then
+                  table.insert(args, '--auto-send')
+                end
+                vim.list_extend(args, { '--', chunks[index] })
+
+                vim.system(args, { text = true }, function(result)
+                  vim.schedule(function()
+                    if result.code ~= 0 then
+                      restore_editor_focus()
+                      vim.notify('editprompt failed: ' .. (result.stderr or 'unknown error'), vim.log.levels.ERROR)
+                      return
+                    end
+
+                    if is_last then
+                      editprompt_utils.clear_buffer()
+                      editprompt_history.push(original)
+                      if should_save_editprompt_clipboard(original) then
+                        vim.fn.system('pbcopy', original)
+                      end
+                      editprompt.stash_pop_latest()
+                      restore_editor_focus()
+                      return
+                    end
+
+                    index = index + 1
+                    send_next_chunk()
+                  end)
+                end)
+              end
+
+              send_next_chunk()
             end
             local function handle_cr()
               local mode = vim.api.nvim_get_mode().mode
@@ -47,7 +178,7 @@ return {
                 return '<CR>'
               end
 
-              editprompt.input_auto_send()
+              send_buffer_auto_send()
               return ''
             end
 
@@ -57,11 +188,11 @@ return {
 
             vim.keymap.set({ 'n', 'i' }, '<C-g>', '<Cmd>quit!<CR>', map_opts)
             vim.keymap.set('n', 'q', function()
-              editprompt.input_auto_send()
+              send_buffer_auto_send()
             end, map_opts)
             vim.keymap.set({ 'n', 'i' }, '<CR>', handle_cr, vim.tbl_extend('force', map_opts, { expr = true }))
             vim.keymap.set({ 'n', 'i' }, '<C-c>', function()
-              editprompt.input_auto_send()
+              send_buffer_auto_send()
             end, map_opts)
             vim.keymap.set({ 'n', 'i' }, 'g<C-c>', function()
               editprompt.input()
@@ -73,7 +204,7 @@ return {
               editprompt.input_visual()
             end, map_opts)
             vim.keymap.set('n', 'ZZ', function()
-              editprompt.input_auto_send()
+              send_buffer_auto_send()
             end, map_opts)
             vim.keymap.set({ 'n', 'i' }, '<C-o>', '<Nop>', map_opts)
 
@@ -199,35 +330,12 @@ return {
     end,
     config = function()
       local editprompt = require('editprompt')
-      local function should_save_editprompt_clipboard(content)
-        if type(content) ~= 'string' or content == '' then
-          return false
-        end
-
-        local lines = vim.split(content, '\n', { plain = true })
-        local first_line = lines[1] or ''
-        if not first_line:find('^/') then
-          return true
-        end
-
-        local first_line_args = first_line:match('^/%S*%s*(.*)$') or ''
-        if first_line_args:find('%S') ~= nil then
-          return true
-        end
-
-        local trailing_text = table.concat(vim.list_slice(lines, 2), '\n')
-        return trailing_text:find('%S') ~= nil
-      end
 
       editprompt.setup({
         cmd = 'editprompt',
         picker = 'snacks',
         before_input = function(content)
-          local normalized = content:gsub('\t', '  ')
-          if not normalized:find('\n$') then
-            normalized = normalized .. '\n'
-          end
-          return normalized
+          return normalize_editprompt_content(content)
         end,
         on_success = function(content, _, ctx)
           if should_save_editprompt_clipboard(content) then
