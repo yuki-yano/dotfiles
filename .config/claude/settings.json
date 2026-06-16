@@ -20,7 +20,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_CONFIG_DIR:-$HOME/.config/claude}/hooks/rtk-rewrite.sh"
+            "command": "rtk hook claude"
           }
         ]
       },

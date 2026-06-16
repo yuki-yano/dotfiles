@@ -10,7 +10,8 @@
 
 ## 設計・計画
 
-- 設計書・計画書を作成する際は、必ず DoD（Definition of Done）を明記する。DoD は測定可能な完了条件として、少なくとも「機能完了条件」「テスト完了条件」「運用反映条件」をチェックリストで記載し、DoD未記載の文書は未完了扱いとする。
+- 設計書・計画書を作成する際は、必ず DoD（Definition of Done）を明記する。DoD
+  は測定可能な完了条件として、少なくとも「機能完了条件」「テスト完了条件」「運用反映条件」をチェックリストで記載し、DoD未記載の文書は未完了扱いとする。
 
 ## Git のルール
 
@@ -30,35 +31,4 @@
 - 基本的には1行目にはやったことをシンプルに書いて、3行目程度で作業内容を箇条書きで書く
   - 内容がシンプルすぎる場合は無理に箇条書きを増やす必要はない
 
-# RTK - Rust Token Killer (Codex CLI)
-
-**Usage**: Token-optimized CLI proxy for shell commands.
-
-## Rule
-
-Always prefix shell commands with `rtk`.
-
-Examples:
-
-```bash
-rtk git status
-rtk cargo test
-rtk npm run build
-rtk pytest -q
-```
-
-## Meta Commands
-
-```bash
-rtk gain            # Token savings analytics
-rtk gain --history  # Recent command savings history
-rtk proxy <cmd>     # Run raw command without filtering
-```
-
-## Verification
-
-```bash
-rtk --version
-rtk gain
-which rtk
-```
+@~/.codex/RTK.md
