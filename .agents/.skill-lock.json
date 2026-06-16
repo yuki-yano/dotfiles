@@ -24,9 +24,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/anthropics/skills.git",
       "skillPath": "skills/frontend-design/SKILL.md",
-      "skillFolderHash": "928950704df8a8b885c03de5da626331e6f29cf8",
+      "skillFolderHash": "0d5b74a14bdf3ebcd64f352d06376a2ef05ed296",
       "installedAt": "2026-01-27T05:05:30.797Z",
-      "updatedAt": "2026-01-27T05:05:30.797Z"
+      "updatedAt": "2026-06-16T03:36:30.421Z"
     },
     "typescript-advanced-types": {
       "source": "wshobson/agents",
