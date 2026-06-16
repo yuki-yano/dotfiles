@@ -37,6 +37,10 @@ const AGENTS_SKILLS_DIR = `${HOME}/.agents/skills`;
 const CLAUDE_SKILLS_DIR = `${CLAUDE_DIR}/skills`;
 const COPILOT_SKILLS_DIR = `${COPILOT_DIR}/skills`;
 const CODEX_TEMPLATE_COPY_TARGETS = ["AGENTS.md", "RTK.md", "agents", "hooks.json"];
+const CODEX_SUPERPOWERS_PLUGIN = "superpowers@openai-curated";
+const CLAUDE_SUPERPOWERS_MARKETPLACE_SOURCE = "obra/superpowers-marketplace";
+const CLAUDE_SUPERPOWERS_MARKETPLACE_NAME = "superpowers-marketplace";
+const CLAUDE_SUPERPOWERS_PLUGIN = `superpowers@${CLAUDE_SUPERPOWERS_MARKETPLACE_NAME}`;
 const SHELDON_CONFIG_FILE = `${SRC_DIR}/.config/sheldon/plugins.toml`;
 const SHELDON_DATA_DIR = `${HOME}/.local/share/sheldon`;
 const SHELDON_CACHE_DIR = `${HOME}/.cache/sheldon`;
@@ -168,6 +172,92 @@ type InstallCommand = {
   packages: string[];
   trailingOptions: string[];
 };
+
+type CommandResult = {
+  code: number;
+  stdout: string;
+  stderr: string;
+};
+
+async function runCommand(command: string, args: string[]): Promise<CommandResult> {
+  const process = new Deno.Command(command, {
+    args,
+    stdout: "piped",
+    stderr: "piped",
+  });
+  const { code, stdout, stderr } = await process.output();
+  const decoder = new TextDecoder();
+  return {
+    code,
+    stdout: decoder.decode(stdout),
+    stderr: decoder.decode(stderr),
+  };
+}
+
+function commandDisplay(command: string, args: string[]): string {
+  return [command, ...args].join(" ");
+}
+
+async function readCommandOutput(command: string, args: string[]): Promise<string> {
+  const result = await runCommand(command, args);
+  if (result.code !== 0) {
+    throw new Error(result.stderr.trim() || `${commandDisplay(command, args)} failed`);
+  }
+  return result.stdout;
+}
+
+async function runRequiredCommand(command: string, args: string[]): Promise<void> {
+  const result = await runCommand(command, args);
+  if (result.code !== 0) {
+    throw new Error(result.stderr.trim() || `${commandDisplay(command, args)} failed`);
+  }
+  const output = result.stdout.trim();
+  if (output.length > 0) {
+    console.log(output);
+  }
+}
+
+type CodexPluginStatus = {
+  known: boolean;
+  installed: boolean;
+  enabled: boolean;
+};
+
+function getCodexPluginStatus(pluginList: string, selector: string): CodexPluginStatus {
+  const line = pluginList.split("\n").find((line) => line.trimStart().startsWith(selector));
+  if (!line) {
+    return { known: false, installed: false, enabled: false };
+  }
+
+  const status = line.trimStart().slice(selector.length).trim();
+  return {
+    known: true,
+    installed: status.startsWith("installed"),
+    enabled: /^installed,\s*enabled\b/.test(status),
+  };
+}
+
+function isClaudeMarketplaceConfigured(marketplaceList: string): boolean {
+  return marketplaceList
+    .split("\n")
+    .some((line) =>
+      line.includes(CLAUDE_SUPERPOWERS_MARKETPLACE_NAME) ||
+      line.includes(CLAUDE_SUPERPOWERS_MARKETPLACE_SOURCE)
+    );
+}
+
+type ClaudePluginStatus = {
+  installed: boolean;
+  disabled: boolean;
+};
+
+function getClaudePluginStatus(pluginList: string): ClaudePluginStatus {
+  const line = pluginList.split("\n").find((line) => line.includes(CLAUDE_SUPERPOWERS_PLUGIN));
+  return {
+    installed: Boolean(line),
+    disabled: Boolean(line?.toLowerCase().includes("disabled")),
+  };
+}
 
 function parseInstallCommand(command: string): InstallCommand | null {
   const parts = command.trim().split(/\s+/);
@@ -306,6 +396,89 @@ async function validateAgentLinkTargets(): Promise<void> {
   }
 }
 
+async function ensureCodexSuperpowersPlugin(): Promise<void> {
+  await ensureCommandOnPath("codex");
+
+  const pluginList = await readCommandOutput("codex", ["plugin", "list"]);
+  const status = getCodexPluginStatus(pluginList, CODEX_SUPERPOWERS_PLUGIN);
+  if (status.installed && status.enabled) {
+    console.log(`Codex: ${CODEX_SUPERPOWERS_PLUGIN} is already installed and enabled`);
+    return;
+  }
+
+  const args = ["plugin", "add", CODEX_SUPERPOWERS_PLUGIN];
+  if (DRY_RUN) {
+    const reason = status.installed
+      ? "installed but not enabled"
+      : status.known
+      ? "available but not installed"
+      : "not found";
+    console.log(`[DRY RUN] Codex: ${reason}; would run: ${commandDisplay("codex", args)}`);
+    return;
+  }
+
+  console.log(`Codex: installing ${CODEX_SUPERPOWERS_PLUGIN}`);
+  await runRequiredCommand("codex", args);
+}
+
+async function ensureClaudeSuperpowersMarketplace(): Promise<void> {
+  await ensureCommandOnPath("claude");
+
+  const marketplaceList = await readCommandOutput("claude", ["plugin", "marketplace", "list"]);
+  if (isClaudeMarketplaceConfigured(marketplaceList)) {
+    console.log(`Claude: ${CLAUDE_SUPERPOWERS_MARKETPLACE_NAME} marketplace is already configured`);
+    return;
+  }
+
+  const args = [
+    "plugin",
+    "marketplace",
+    "add",
+    "--scope",
+    "user",
+    CLAUDE_SUPERPOWERS_MARKETPLACE_SOURCE,
+  ];
+  if (DRY_RUN) {
+    console.log(`[DRY RUN] Claude: would run: ${commandDisplay("claude", args)}`);
+    return;
+  }
+
+  console.log(`Claude: adding ${CLAUDE_SUPERPOWERS_MARKETPLACE_NAME} marketplace`);
+  await runRequiredCommand("claude", args);
+}
+
+async function ensureClaudeSuperpowersPlugin(): Promise<void> {
+  await ensureCommandOnPath("claude");
+
+  const pluginList = await readCommandOutput("claude", ["plugin", "list"]);
+  const status = getClaudePluginStatus(pluginList);
+  if (status.installed && !status.disabled) {
+    console.log(`Claude: ${CLAUDE_SUPERPOWERS_PLUGIN} is already installed and enabled`);
+    return;
+  }
+
+  if (status.installed && status.disabled) {
+    const args = ["plugin", "enable", CLAUDE_SUPERPOWERS_PLUGIN];
+    if (DRY_RUN) {
+      console.log(`[DRY RUN] Claude: would run: ${commandDisplay("claude", args)}`);
+      return;
+    }
+
+    console.log(`Claude: enabling ${CLAUDE_SUPERPOWERS_PLUGIN}`);
+    await runRequiredCommand("claude", args);
+    return;
+  }
+
+  const args = ["plugin", "install", "--scope", "user", CLAUDE_SUPERPOWERS_PLUGIN];
+  if (DRY_RUN) {
+    console.log(`[DRY RUN] Claude: would run: ${commandDisplay("claude", args)}`);
+    return;
+  }
+
+  console.log(`Claude: installing ${CLAUDE_SUPERPOWERS_PLUGIN}`);
+  await runRequiredCommand("claude", args);
+}
+
 // タスク定義
 const tasks: Record<string, () => Promise<void> | void> = {
   async "dotfiles:install"() {
@@ -379,6 +552,12 @@ const tasks: Record<string, () => Promise<void> | void> = {
         console.log(`Linked ${target.link} -> ${AGENTS_SKILLS_DIR}`);
       }
     }
+  },
+
+  async "agent:superpowers"() {
+    await ensureCodexSuperpowersPlugin();
+    await ensureClaudeSuperpowersMarketplace();
+    await ensureClaudeSuperpowersPlugin();
   },
 
   async "codex:template"() {
@@ -563,6 +742,9 @@ const tasks: Record<string, () => Promise<void> | void> = {
     console.log("    deno task dotfiles:install    - Install dotfiles symlinks");
     console.log(
       "    deno task agent:link          - Link Claude/Copilot skills to ~/.agents/skills",
+    );
+    console.log(
+      "    deno task agent:superpowers   - Install Superpowers plugins for Codex and Claude Code",
     );
     console.log(
       "    deno task codex:template      - Dry-run apply codex template (use -- --apply to write)",

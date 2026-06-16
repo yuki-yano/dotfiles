@@ -70,6 +70,8 @@ deno task mas:install         # requires `mas signin`
 # Link dotfiles (prompts before replacing non-symlinks)
 deno task dotfiles:install
 deno task agent:link
+deno task agent:superpowers -- --dry-run
+deno task agent:superpowers
 deno task zsh:sheldon:sync
 
 deno task codex:template      # dry-run
@@ -93,6 +95,7 @@ and `tasks.ts` validates input before it shells out.
 | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `deno task dotfiles:install [-- --dry-run]`         | Symlinks the files listed in `DOTFILES_SRCS` to `$HOME`, warning if a non-symlink already exists.                                                                                                                                                                   |
 | `deno task agent:link [-- --dry-run]`               | Preflights both targets, then links Claude (`~/.config/claude/skills` via the dotfiles-managed `.config`) and Copilot (`~/.copilot/skills`) to `~/.agents/skills`.                                                                                                  |
+| `deno task agent:superpowers [-- --dry-run]`        | Ensures Superpowers is installed for both Codex and Claude Code. Codex uses `superpowers@openai-curated`; Claude Code uses `obra/superpowers-marketplace` and `superpowers@superpowers-marketplace`.                                                                 |
 | `deno task codex:template [-- --apply]`             | Dry-run by default. Applies `.config/codex-template/config.toml` (managed section merge) and copy targets (`AGENTS.md`, `RTK.md`, `agents/**`, `hooks.json`) to `~/.codex` only with `--apply` (`template` has no markers; `~/.codex/config.toml` must contain marker block). |
 | `deno task zsh:sheldon:sync` / `zsh:sheldon:update` | Generate the `sheldon` lock/cache for the `pre` and `post` shell phases under `~/.cache/sheldon`.                                                                                                                                                                   |
 | `deno task brew:bundle`                             | Executes curated commands in `Brewfile`, allowing only `install`, `tap`, `cask`, `update`, `upgrade`, and `cleanup`.                                                                                                                                                |
@@ -203,6 +206,9 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
   rewriting for Claude Code Bash hooks.
 - `.config/codex-template/AGENTS.md` references `~/.codex/RTK.md` as `@~/.codex/RTK.md`.
   `.config/codex-template/RTK.md` is kept in sync with upstream RTK and copied to `~/.codex/RTK.md`.
+- `deno task agent:superpowers` manages Superpowers as installed plugins rather than vendoring its skill files into this
+  repository. Codex is installed from the OpenAI curated marketplace; Claude Code is installed from the Superpowers
+  marketplace because the plugin relies on its own SessionStart integration.
 - `.config/cage/presets.yml` captures Warashi cage (multi-agent) layout presets that pair with tmux automation.
 - `.config/claude/settings.json` hooks (`vde-monitor-hook`, `vde-monitor-summary`, `vde-notifier`) provide monitoring and
   notifications around Claude sessions.

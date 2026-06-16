@@ -53,6 +53,9 @@ terminal_title = []
 [plugins."github@openai-curated"]
 enabled = true
 
+[plugins."superpowers@openai-curated"]
+enabled = true
+
 [plugins."browser-use@openai-bundled"]
 enabled = true
 
