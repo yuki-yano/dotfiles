@@ -50,6 +50,19 @@ status_line = ["model-with-reasoning", "git-branch", "context-remaining", "conte
 theme = "catppuccin-mocha"
 terminal_title = []
 
+[mcp_servers.chrome-devtools]
+command = "npx"
+args = [
+  "-y",
+  "chrome-devtools-mcp@latest",
+  "--auto-connect",
+  "--no-usage-statistics"
+]
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+enabled = true
+
+
 [plugins."github@openai-curated"]
 enabled = true
 
