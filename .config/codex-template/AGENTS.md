@@ -1,4 +1,5 @@
 # @nvim.on_save deno task codex:template -- --apply
+
 ## 前提
 
 日本語で思考して日本語で回答する
@@ -30,5 +31,12 @@
 - commit messageは過去のcommit logを見てある程度フォーマットを合わせる
 - 基本的には1行目にはやったことをシンプルに書いて、3行目程度で作業内容を箇条書きで書く
   - 内容がシンプルすぎる場合は無理に箇条書きを増やす必要はない
+
+## context-mode / RTK の使い分け
+
+- 大量出力の分析・集計・検索は context-mode の `ctx_execute` / `ctx_batch_execute` / `ctx_execute_file` を使う。
+- 直接 shell command を実行する場合は `rtk` を prefix する。
+- `ctx_execute` 内で JSON など機械可読出力を parse する場合は `rtk` を挟まない。
+- `ctx_execute` 内で人間向けの noisy な command output だけが欲しい場合は `rtk` を使ってよい。
 
 @~/.codex/RTK.md

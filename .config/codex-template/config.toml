@@ -44,6 +44,7 @@ fast_mode = true
 code_mode = true
 js_repl = true
 hooks = true
+plugin_hooks = true
 
 [tui]
 status_line = ["model-with-reasoning", "git-branch", "context-remaining", "context-window-size", "fast-mode", "weekly-limit", "five-hour-limit"]
@@ -84,6 +85,9 @@ enabled = true
 [plugins."computer-use@openai-bundled"]
 enabled = true
 
+[plugins."context-mode@context-mode"]
+enabled = true
+
 [marketplaces.openai-bundled]
 last_updated = "2026-04-24T03:46:51Z"
 source_type = "local"
@@ -93,3 +97,7 @@ source = "~/.codex/.tmp/bundled-marketplaces/openai-bundled"
 last_updated = "2026-04-24T03:45:21Z"
 source_type = "local"
 source = "~/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
+
+[marketplaces.context-mode]
+source_type = "git"
+source = "https://github.com/mksglu/context-mode.git"

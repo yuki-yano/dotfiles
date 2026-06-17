@@ -72,6 +72,8 @@ deno task dotfiles:install
 deno task agent:link
 deno task agent:superpowers -- --dry-run
 deno task agent:superpowers
+deno task agent:context-mode -- --dry-run
+deno task agent:context-mode
 deno task zsh:sheldon:sync
 
 deno task codex:template      # dry-run
@@ -91,18 +93,19 @@ run `deno task codex:template -- --apply` so `~/.codex/hooks.json` is refreshed.
 `deno task help` prints all commands. Every task respects `--dry-run` (pass it after `--` so Deno forwards the flag),
 and `tasks.ts` validates input before it shells out.
 
-| Task                                                | Purpose                                                                                                                                                                                                                                                             |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `deno task dotfiles:install [-- --dry-run]`         | Symlinks the files listed in `DOTFILES_SRCS` to `$HOME`, warning if a non-symlink already exists.                                                                                                                                                                   |
-| `deno task agent:link [-- --dry-run]`               | Preflights both targets, then links Claude (`~/.config/claude/skills` via the dotfiles-managed `.config`) and Copilot (`~/.copilot/skills`) to `~/.agents/skills`.                                                                                                  |
-| `deno task agent:superpowers [-- --dry-run]`        | Ensures Superpowers is installed for both Codex and Claude Code. Codex uses `superpowers@openai-curated`; Claude Code uses `obra/superpowers-marketplace` and `superpowers@superpowers-marketplace`.                                                                 |
+| Task                                                | Purpose                                                                                                                                                                                                                                                                       |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `deno task dotfiles:install [-- --dry-run]`         | Symlinks the files listed in `DOTFILES_SRCS` to `$HOME`, warning if a non-symlink already exists.                                                                                                                                                                             |
+| `deno task agent:link [-- --dry-run]`               | Preflights both targets, then links Claude (`~/.config/claude/skills` via the dotfiles-managed `.config`) and Copilot (`~/.copilot/skills`) to `~/.agents/skills`.                                                                                                            |
+| `deno task agent:superpowers [-- --dry-run]`        | Ensures Superpowers is installed for both Codex and Claude Code. Codex uses `superpowers@openai-curated`; Claude Code uses `obra/superpowers-marketplace` and `superpowers@superpowers-marketplace`.                                                                          |
+| `deno task agent:context-mode [-- --dry-run]`       | Ensures context-mode is installed for both Codex and Claude Code. Codex uses `https://github.com/mksglu/context-mode.git` as a plugin marketplace; Claude Code uses `mksglu/context-mode` with `context-mode@context-mode`.                                                   |
 | `deno task codex:template [-- --apply]`             | Dry-run by default. Applies `.config/codex-template/config.toml` (managed section merge) and copy targets (`AGENTS.md`, `RTK.md`, `agents/**`, `hooks.json`) to `~/.codex` only with `--apply` (`template` has no markers; `~/.codex/config.toml` must contain marker block). |
-| `deno task zsh:sheldon:sync` / `zsh:sheldon:update` | Generate the `sheldon` lock/cache for the `pre` and `post` shell phases under `~/.cache/sheldon`.                                                                                                                                                                   |
-| `deno task brew:bundle`                             | Executes curated commands in `Brewfile`, allowing only `install`, `tap`, `cask`, `update`, `upgrade`, and `cleanup`.                                                                                                                                                |
-| `deno task brew:cask`                               | Installs GUI apps from `Caskfile`.                                                                                                                                                                                                                                  |
+| `deno task zsh:sheldon:sync` / `zsh:sheldon:update` | Generate the `sheldon` lock/cache for the `pre` and `post` shell phases under `~/.cache/sheldon`.                                                                                                                                                                             |
+| `deno task brew:bundle`                             | Executes curated commands in `Brewfile`, allowing only `install`, `tap`, `cask`, `update`, `upgrade`, and `cleanup`.                                                                                                                                                          |
+| `deno task brew:cask`                               | Installs GUI apps from `Caskfile`.                                                                                                                                                                                                                                            |
 | `deno task duti:apply [-- --dry-run]`               | Applies default macOS file handlers from the dotfiles-managed `~/.duti` file.                                                                                                                                                                                                 |
-| `deno task mas:install`                             | Installs missing Mac App Store apps using IDs from `Masfile`.                                                                                                                                                                                                       |
-| `deno task help`                                    | Prints grouped help text with descriptions of every task.                                                                                                                                                                                                           |
+| `deno task mas:install`                             | Installs missing Mac App Store apps using IDs from `Masfile`.                                                                                                                                                                                                                 |
+| `deno task help`                                    | Prints grouped help text with descriptions of every task.                                                                                                                                                                                                                     |
 
 This repository uses Deno tasks as the single automation entrypoint (`deno task ...`).
 
@@ -114,20 +117,20 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 - `.envrc` – placeholder for direnv; add secrets or environment-specific exports locally.
 - `.bashrc`, `.zshenv`, `.zprofile`, `.zshrc`, `.zsh/` – shell bootstrap; zsh is the primary shell, bash is still
   configured for sandboxed Homebrew calls.
-- `.config/` – app-level configs for Alacritty, WezTerm (`quick-ime` 用), Atuin, Bat themes, cage presets, Claude
-  tasks, efm-langserver, Karabiner, mise, Neovim, ripgrep, shitsurae, tabtab, VDE layouts, vivid color themes, and
-  zeno snippets.
+- `.config/` – app-level configs for Alacritty, WezTerm (`quick-ime` 用), Atuin, Bat themes, cage presets, Claude tasks,
+  efm-langserver, Karabiner, mise, Neovim, ripgrep, shitsurae, tabtab, VDE layouts, vivid color themes, and zeno
+  snippets.
 - `.config/nvim/` – Neovim/Lua configuration (lazy.nvim, rc modules, LuaSnip + tsnip, sessions, docs).
 - `.tmux.conf`, `.tmux/` – tmux settings and related local assets.
 - `.finicky.js`, `.config/shitsurae/config.yml`, `.config/karabiner/karabiner.json` – macOS automation suite (window
-  layout/shortcuts, IME helpers, URL routing). `karabiner.json` is generated from
-  `.config/karabiner/karabiner.ts` via Deno (`deno task karabiner:build` / `karabiner:watch`).
+  layout/shortcuts, IME helpers, URL routing). `karabiner.json` is generated from `.config/karabiner/karabiner.ts` via
+  Deno (`deno task karabiner:build` / `karabiner:watch`).
 - `.ctags.d/config.ctags`, `.tigrc`, `.config/ripgrep/rc`, `.config/vivid/themes/catppuccin.yml` – CLI defaults for
   tags, tig, search, and colors.
 - `.config/claude/{CLAUDE.md,settings.json}` and `.config/cage/presets.yml` – Claude Code settings and Warashi cage
   layouts that integrate AI tooling with tmux.
-- `z-ai/` – repository-scoped AI working directory. Agent outputs are centralized here (for example:
-  `z-ai/plans/`, `z-ai/tmp/`, and `z-ai/references/`), and the Neovim AI picker (`<Plug>(ff)i`) is scoped to `z-ai/`.
+- `z-ai/` – repository-scoped AI working directory. Agent outputs are centralized here (for example: `z-ai/plans/`,
+  `z-ai/tmp/`, and `z-ai/references/`), and the Neovim AI picker (`<Plug>(ff)i`) is scoped to `z-ai/`.
 - `bin/` – helper scripts (tmux status widgets, git utilities like `git-quick-save`, tmux session manager, ghq selector,
   wifi/battery monitors, Claude hooks, Shitsurae resize helpers, quick IME toggles). Every script is intended to run
   from PATH.
@@ -149,16 +152,14 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 - **Color & search defaults** – `ripgrep`, `vivid`, and `bat` configs standardize palette and output.
 - **Terminals** – `.config/alacritty/*.toml` is the primary terminal setup and carries the day-to-day key bindings,
   colors, and IME-friendly behavior. `.config/wezterm/wezterm.lua` is currently maintained for the narrow `quick-ime`
-  workflow: spawning a centered temporary window that attaches to an isolated tmux-backed Neovim session. Alacritty
-  maps `Command+1` through `Command+9` to tmux-friendly escape sequences for direct session switching. The
-  `quick-ime.sh` script plus `quick-ime.toml` defines instant Japanese/English toggles that interact with Karabiner
-  rules.
+  workflow: spawning a centered temporary window that attaches to an isolated tmux-backed Neovim session. Alacritty maps
+  `Command+1` through `Command+9` to tmux-friendly escape sequences for direct session switching. The `quick-ime.sh`
+  script plus `quick-ime.toml` defines instant Japanese/English toggles that interact with Karabiner rules.
 
 ## Editor & LSP
 
-- `.config/nvim/init.lua` flips on `vim.loader`, sets `vim.env.LSP` (`nvim` or `coc`), toggles transparency/colours
-  via env
-  vars, and calls the Lua module loader under `rc/`.
+- `.config/nvim/init.lua` flips on `vim.loader`, sets `vim.env.LSP` (`nvim` or `coc`), toggles transparency/colours via
+  env vars, and calls the Lua module loader under `rc/`.
 - `rc/modules/plugin_manager` wires lazy.nvim; plugin configs live in `lua/plugins`, `lua/rc/setup`, `lua/rc/modules`,
   etc.
 - `lua/` hosts UI, options, keymaps, highlight, ext UI, glancing statusline, session helpers, etc.
@@ -175,12 +176,12 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
   bindings, uses mouse mode, and keeps clipboard actions wired through `pbcopy` / `pbpaste`.
 - Smart pane navigation uses helper scripts (`bin/tmux-smart-switch-pane`) and process detection to seamlessly move
   between Neovim, Claude panes, zsh shells, or fzf prompts.
-- Key bindings trigger scripts: `M-r` launches `vtm session-manager`, `M-t` runs `ghq-project-selector.zsh`,
-  `M-u` toggles transparent panes, `M-i` opens `editprompt`, `M-h` / `M-l` cycle sessions inside the current `vtm`
-  category, `Option+Control+1` / `2` / `3` switch `private` / `public` / `work`, and `M-1` through `M-9` switch to the
+- Key bindings trigger scripts: `M-r` launches `vtm session-manager`, `M-t` runs `ghq-project-selector.zsh`, `M-u`
+  toggles transparent panes, `M-i` opens `editprompt`, `M-h` / `M-l` cycle sessions inside the current `vtm` category,
+  `Option+Control+1` / `2` / `3` switch `private` / `public` / `work`, and `M-1` through `M-9` switch to the
   corresponding tmux session entry inside the current category.
-- Status line widgets call binaries in `bin/` and external tools: `tmux-list-sessions`, `tmux-pwd`, `wifi`,
-  `battery`, plus `vtm statusline-category` / `vtm statusline-sessions` render the current category and session list.
+- Status line widgets call binaries in `bin/` and external tools: `tmux-list-sessions`, `tmux-pwd`, `wifi`, `battery`,
+  plus `vtm statusline-category` / `vtm statusline-sessions` render the current category and session list.
 
 ## Window & Input Automation
 
@@ -194,24 +195,33 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 - **Finicky** – `.finicky.js` routes specific sites (TypeScript docs, Google Docs) to Chrome while Firefox stays
   default.
 - **Quick IME helpers** – `bin/quick-ime.sh` uses a dedicated WezTerm window as a temporary IME editor, captures the
-  previously focused window via `shitsurae window current --json`, and restores focus by window ID or bundle ID when
-  the isolated tmux-backed editor detaches. Karabiner rules keep text entry stable.
+  previously focused window via `shitsurae window current --json`, and restores focus by window ID or bundle ID when the
+  isolated tmux-backed editor detaches. Karabiner rules keep text entry stable.
 
 ## AI & Workflow Tooling
 
 - `.config/claude/` stores Claude settings in-repo (`CLAUDE.md`, `settings.json`), while Claude runtime state
   (history/snapshots/cache) is managed locally on each machine. Repository-scoped agent artifacts are managed under
   `z-ai/` (`z-ai/plans/`, `z-ai/tmp/`, `z-ai/references/`).
-- `.config/claude/RTK.md` and the `rtk hook claude` entry in `.config/claude/settings.json` enable RTK command
-  rewriting for Claude Code Bash hooks.
-- `.config/codex-template/AGENTS.md` references `~/.codex/RTK.md` as `@~/.codex/RTK.md`.
-  `.config/codex-template/RTK.md` is kept in sync with upstream RTK and copied to `~/.codex/RTK.md`.
+- `.config/claude/RTK.md` and the `rtk hook claude` entry in `.config/claude/settings.json` enable RTK command rewriting
+  for Claude Code Bash hooks.
+- `.config/codex-template/AGENTS.md` references `~/.codex/RTK.md` as `@~/.codex/RTK.md`. `.config/codex-template/RTK.md`
+  is kept in sync with upstream RTK and copied to `~/.codex/RTK.md`.
 - `deno task agent:superpowers` manages Superpowers as installed plugins rather than vendoring its skill files into this
   repository. Codex is installed from the OpenAI curated marketplace; Claude Code is installed from the Superpowers
   marketplace because the plugin relies on its own SessionStart integration.
+- `deno task agent:context-mode` manages context-mode as installed plugins rather than vendoring the MCP server or hook
+  files. Codex keeps `hooks = true`, `plugin_hooks = true`, the enabled plugin entry, and the marketplace source in
+  `.config/codex-template/config.toml` while the task fetches or repairs the marketplace root; Claude Code keeps the
+  marketplace and enabled plugin in `.config/claude/settings.json`.
+- `.config/claude/hooks/context-mode-cache-heal.mjs` is the exception to the no-vendored-hooks rule: Claude Code
+  `settings.json` references this SessionStart cache repair hook, so it is tracked for reproducibility while the
+  context-mode plugin continues to own and refresh its generated content.
+- RTK remains the default for direct shell commands. context-mode is reserved for large-output analysis, batching,
+  indexing, and session continuity; its local SQLite/session data is intentionally not tracked in this repository.
 - `.config/cage/presets.yml` captures Warashi cage (multi-agent) layout presets that pair with tmux automation.
-- `.config/claude/settings.json` hooks (`vde-monitor-hook`, `vde-monitor-summary`, `vde-notifier`) provide monitoring and
-  notifications around Claude sessions.
+- `.config/claude/settings.json` hooks (`vde-monitor-hook`, `vde-monitor-summary`, `vde-notifier`) provide monitoring
+  and notifications around Claude sessions.
 - `mise` installs AI CLIs (`@anthropic-ai/claude-code`, `@google/gemini-cli`, `@openai/codex`, `editprompt`,
   `@aikidosec/safe-chain`, `sdd-mcp`, `vde-layout`, `vde-notifier`) so they can be invoked anywhere.
 - The package manifests install desktop-side agent tooling such as Claude Code, Warashi `cage`, `shitsurae`, and
@@ -236,8 +246,7 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 - **Dry runs first** – append `-- --dry-run` when testing `dotfiles:install`, `brew:*`, or other tasks to confirm the
   plan before touching the real system.
 - **Formatters** – run `deno fmt tasks.ts`, `stylua --config-path stylua.toml .config/nvim` (or target specific Lua
-  files), and
-  `cspell lint README.md` to keep tooling happy.
+  files), and `cspell lint README.md` to keep tooling happy.
 - **Runtime sync** – `mise doctor` reveals missing runtimes defined in `.config/mise/config.toml`; re-run `mise install`
   after manifest changes.
 - **Package refresh** – periodically run `deno task brew:bundle`, `deno task brew:cask`, and review `Masfile` when new

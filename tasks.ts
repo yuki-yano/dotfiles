@@ -38,9 +38,15 @@ const CLAUDE_SKILLS_DIR = `${CLAUDE_DIR}/skills`;
 const COPILOT_SKILLS_DIR = `${COPILOT_DIR}/skills`;
 const CODEX_TEMPLATE_COPY_TARGETS = ["AGENTS.md", "RTK.md", "agents", "hooks.json"];
 const CODEX_SUPERPOWERS_PLUGIN = "superpowers@openai-curated";
+const CODEX_CONTEXT_MODE_MARKETPLACE_SOURCE = "https://github.com/mksglu/context-mode.git";
+const CODEX_CONTEXT_MODE_MARKETPLACE_NAME = "context-mode";
+const CODEX_CONTEXT_MODE_PLUGIN = `context-mode@${CODEX_CONTEXT_MODE_MARKETPLACE_NAME}`;
 const CLAUDE_SUPERPOWERS_MARKETPLACE_SOURCE = "obra/superpowers-marketplace";
 const CLAUDE_SUPERPOWERS_MARKETPLACE_NAME = "superpowers-marketplace";
 const CLAUDE_SUPERPOWERS_PLUGIN = `superpowers@${CLAUDE_SUPERPOWERS_MARKETPLACE_NAME}`;
+const CLAUDE_CONTEXT_MODE_MARKETPLACE_SOURCE = "mksglu/context-mode";
+const CLAUDE_CONTEXT_MODE_MARKETPLACE_NAME = "context-mode";
+const CLAUDE_CONTEXT_MODE_PLUGIN = `context-mode@${CLAUDE_CONTEXT_MODE_MARKETPLACE_NAME}`;
 const SHELDON_CONFIG_FILE = `${SRC_DIR}/.config/sheldon/plugins.toml`;
 const SHELDON_DATA_DIR = `${HOME}/.local/share/sheldon`;
 const SHELDON_CACHE_DIR = `${HOME}/.cache/sheldon`;
@@ -237,12 +243,33 @@ function getCodexPluginStatus(pluginList: string, selector: string): CodexPlugin
   };
 }
 
-function isClaudeMarketplaceConfigured(marketplaceList: string): boolean {
+function isCodexMarketplaceConfigured(marketplaceList: string, marketplaceName: string): boolean {
+  return marketplaceList
+    .split("\n")
+    .some((line) => line.trimStart().startsWith(`${marketplaceName} `));
+}
+
+function isCodexMarketplaceSourceConflict(error: unknown, marketplaceName: string): boolean {
+  return error instanceof Error &&
+    error.message.includes(`marketplace '${marketplaceName}' is already added from a different source`);
+}
+
+function isCodexMarketplaceLoadFailure(error: unknown, marketplaceName: string): boolean {
+  return error instanceof Error &&
+    error.message.includes(`\`${marketplaceName}\``) &&
+    error.message.includes("marketplace root does not contain a supported manifest");
+}
+
+function isClaudeMarketplaceConfigured(
+  marketplaceList: string,
+  marketplaceName: string,
+  marketplaceSource: string,
+): boolean {
   return marketplaceList
     .split("\n")
     .some((line) =>
-      line.includes(CLAUDE_SUPERPOWERS_MARKETPLACE_NAME) ||
-      line.includes(CLAUDE_SUPERPOWERS_MARKETPLACE_SOURCE)
+      line.includes(marketplaceName) ||
+      line.includes(marketplaceSource)
     );
 }
 
@@ -251,8 +278,8 @@ type ClaudePluginStatus = {
   disabled: boolean;
 };
 
-function getClaudePluginStatus(pluginList: string): ClaudePluginStatus {
-  const line = pluginList.split("\n").find((line) => line.includes(CLAUDE_SUPERPOWERS_PLUGIN));
+function getClaudePluginStatus(pluginList: string, pluginSelector: string): ClaudePluginStatus {
+  const line = pluginList.split("\n").find((line) => line.includes(pluginSelector));
   return {
     installed: Boolean(line),
     disabled: Boolean(line?.toLowerCase().includes("disabled")),
@@ -421,11 +448,82 @@ async function ensureCodexSuperpowersPlugin(): Promise<void> {
   await runRequiredCommand("codex", args);
 }
 
+async function ensureCodexContextModeMarketplace(): Promise<void> {
+  await ensureCommandOnPath("codex");
+
+  try {
+    const marketplaceList = await readCommandOutput("codex", ["plugin", "marketplace", "list"]);
+    if (isCodexMarketplaceConfigured(marketplaceList, CODEX_CONTEXT_MODE_MARKETPLACE_NAME)) {
+      console.log(`Codex: ${CODEX_CONTEXT_MODE_MARKETPLACE_NAME} marketplace is already configured`);
+      return;
+    }
+  } catch (error) {
+    if (!isCodexMarketplaceLoadFailure(error, CODEX_CONTEXT_MODE_MARKETPLACE_NAME)) {
+      throw error;
+    }
+  }
+
+  const args = ["plugin", "marketplace", "add", CODEX_CONTEXT_MODE_MARKETPLACE_SOURCE];
+  if (DRY_RUN) {
+    console.log(`[DRY RUN] Codex: would run: ${commandDisplay("codex", args)}`);
+    return;
+  }
+
+  console.log(`Codex: adding ${CODEX_CONTEXT_MODE_MARKETPLACE_NAME} marketplace`);
+  try {
+    await runRequiredCommand("codex", args);
+  } catch (error) {
+    if (!isCodexMarketplaceSourceConflict(error, CODEX_CONTEXT_MODE_MARKETPLACE_NAME)) {
+      throw error;
+    }
+
+    console.log(`Codex: repairing ${CODEX_CONTEXT_MODE_MARKETPLACE_NAME} marketplace source`);
+    await runRequiredCommand("codex", [
+      "plugin",
+      "marketplace",
+      "remove",
+      CODEX_CONTEXT_MODE_MARKETPLACE_NAME,
+    ]);
+    await runRequiredCommand("codex", args);
+  }
+}
+
+async function ensureCodexContextModePlugin(): Promise<void> {
+  await ensureCommandOnPath("codex");
+
+  const pluginList = await readCommandOutput("codex", ["plugin", "list"]);
+  const status = getCodexPluginStatus(pluginList, CODEX_CONTEXT_MODE_PLUGIN);
+  if (status.installed && status.enabled) {
+    console.log(`Codex: ${CODEX_CONTEXT_MODE_PLUGIN} is already installed and enabled`);
+    return;
+  }
+
+  const args = ["plugin", "add", CODEX_CONTEXT_MODE_PLUGIN];
+  if (DRY_RUN) {
+    const reason = status.installed
+      ? "installed but not enabled"
+      : status.known
+      ? "available but not installed"
+      : "not found";
+    console.log(`[DRY RUN] Codex: ${reason}; would run: ${commandDisplay("codex", args)}`);
+    return;
+  }
+
+  console.log(`Codex: installing ${CODEX_CONTEXT_MODE_PLUGIN}`);
+  await runRequiredCommand("codex", args);
+}
+
 async function ensureClaudeSuperpowersMarketplace(): Promise<void> {
   await ensureCommandOnPath("claude");
 
   const marketplaceList = await readCommandOutput("claude", ["plugin", "marketplace", "list"]);
-  if (isClaudeMarketplaceConfigured(marketplaceList)) {
+  if (
+    isClaudeMarketplaceConfigured(
+      marketplaceList,
+      CLAUDE_SUPERPOWERS_MARKETPLACE_NAME,
+      CLAUDE_SUPERPOWERS_MARKETPLACE_SOURCE,
+    )
+  ) {
     console.log(`Claude: ${CLAUDE_SUPERPOWERS_MARKETPLACE_NAME} marketplace is already configured`);
     return;
   }
@@ -451,7 +549,7 @@ async function ensureClaudeSuperpowersPlugin(): Promise<void> {
   await ensureCommandOnPath("claude");
 
   const pluginList = await readCommandOutput("claude", ["plugin", "list"]);
-  const status = getClaudePluginStatus(pluginList);
+  const status = getClaudePluginStatus(pluginList, CLAUDE_SUPERPOWERS_PLUGIN);
   if (status.installed && !status.disabled) {
     console.log(`Claude: ${CLAUDE_SUPERPOWERS_PLUGIN} is already installed and enabled`);
     return;
@@ -476,6 +574,70 @@ async function ensureClaudeSuperpowersPlugin(): Promise<void> {
   }
 
   console.log(`Claude: installing ${CLAUDE_SUPERPOWERS_PLUGIN}`);
+  await runRequiredCommand("claude", args);
+}
+
+async function ensureClaudeContextModeMarketplace(): Promise<void> {
+  await ensureCommandOnPath("claude");
+
+  const marketplaceList = await readCommandOutput("claude", ["plugin", "marketplace", "list"]);
+  if (
+    isClaudeMarketplaceConfigured(
+      marketplaceList,
+      CLAUDE_CONTEXT_MODE_MARKETPLACE_NAME,
+      CLAUDE_CONTEXT_MODE_MARKETPLACE_SOURCE,
+    )
+  ) {
+    console.log(`Claude: ${CLAUDE_CONTEXT_MODE_MARKETPLACE_NAME} marketplace is already configured`);
+    return;
+  }
+
+  const args = [
+    "plugin",
+    "marketplace",
+    "add",
+    "--scope",
+    "user",
+    CLAUDE_CONTEXT_MODE_MARKETPLACE_SOURCE,
+  ];
+  if (DRY_RUN) {
+    console.log(`[DRY RUN] Claude: would run: ${commandDisplay("claude", args)}`);
+    return;
+  }
+
+  console.log(`Claude: adding ${CLAUDE_CONTEXT_MODE_MARKETPLACE_NAME} marketplace`);
+  await runRequiredCommand("claude", args);
+}
+
+async function ensureClaudeContextModePlugin(): Promise<void> {
+  await ensureCommandOnPath("claude");
+
+  const pluginList = await readCommandOutput("claude", ["plugin", "list"]);
+  const status = getClaudePluginStatus(pluginList, CLAUDE_CONTEXT_MODE_PLUGIN);
+  if (status.installed && !status.disabled) {
+    console.log(`Claude: ${CLAUDE_CONTEXT_MODE_PLUGIN} is already installed and enabled`);
+    return;
+  }
+
+  if (status.installed && status.disabled) {
+    const args = ["plugin", "enable", CLAUDE_CONTEXT_MODE_PLUGIN];
+    if (DRY_RUN) {
+      console.log(`[DRY RUN] Claude: would run: ${commandDisplay("claude", args)}`);
+      return;
+    }
+
+    console.log(`Claude: enabling ${CLAUDE_CONTEXT_MODE_PLUGIN}`);
+    await runRequiredCommand("claude", args);
+    return;
+  }
+
+  const args = ["plugin", "install", "--scope", "user", CLAUDE_CONTEXT_MODE_PLUGIN];
+  if (DRY_RUN) {
+    console.log(`[DRY RUN] Claude: would run: ${commandDisplay("claude", args)}`);
+    return;
+  }
+
+  console.log(`Claude: installing ${CLAUDE_CONTEXT_MODE_PLUGIN}`);
   await runRequiredCommand("claude", args);
 }
 
@@ -558,6 +720,13 @@ const tasks: Record<string, () => Promise<void> | void> = {
     await ensureCodexSuperpowersPlugin();
     await ensureClaudeSuperpowersMarketplace();
     await ensureClaudeSuperpowersPlugin();
+  },
+
+  async "agent:context-mode"() {
+    await ensureCodexContextModeMarketplace();
+    await ensureCodexContextModePlugin();
+    await ensureClaudeContextModeMarketplace();
+    await ensureClaudeContextModePlugin();
   },
 
   async "codex:template"() {
@@ -745,6 +914,9 @@ const tasks: Record<string, () => Promise<void> | void> = {
     );
     console.log(
       "    deno task agent:superpowers   - Install Superpowers plugins for Codex and Claude Code",
+    );
+    console.log(
+      "    deno task agent:context-mode  - Install context-mode plugins for Codex and Claude Code",
     );
     console.log(
       "    deno task codex:template      - Dry-run apply codex template (use -- --apply to write)",

@@ -10,6 +10,7 @@
     "dotfiles:install": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts dotfiles:install",
     "agent:link": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts agent:link",
     "agent:superpowers": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts agent:superpowers",
+    "agent:context-mode": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts agent:context-mode",
     "codex:template": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts codex:template",
     "zsh:sheldon:sync": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts zsh:sheldon:sync",
     "zsh:sheldon:update": "deno run --allow-read --allow-write --allow-env --allow-run --allow-sys tasks.ts zsh:sheldon:update",
