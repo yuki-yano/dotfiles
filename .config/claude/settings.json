@@ -6,8 +6,7 @@
     "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
     "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
     "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
-    "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "1",
-    "CLAUDE_CODE_NO_FLICKER": "1"
+    "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "1"
   },
   "includeCoAuthoredBy": false,
   "permissions": {
@@ -88,6 +87,9 @@
     "type": "command",
     "command": "cc-statusline"
   },
+  "enabledPlugins": {
+    "superpowers@superpowers-marketplace": true
+  },
   "extraKnownMarketplaces": {
     "superpowers-marketplace": {
       "source": {
@@ -99,12 +101,10 @@
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
   "showClearContextOnPlanAccept": true,
+  "tui": "default",
   "autoMemoryEnabled": false,
   "showThinkingSummaries": true,
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark",
-  "agentPushNotifEnabled": true,
-  "enabledPlugins": {
-    "superpowers@superpowers-marketplace": true
-  }
+  "agentPushNotifEnabled": true
 }
