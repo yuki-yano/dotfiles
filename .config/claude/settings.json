@@ -116,7 +116,7 @@
     }
   },
   "alwaysThinkingEnabled": true,
-  "effortLevel": "xhigh",
+  "effortLevel": "high",
   "showClearContextOnPlanAccept": true,
   "tui": "default",
   "autoMemoryEnabled": false,
