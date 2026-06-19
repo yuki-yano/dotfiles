@@ -40,7 +40,7 @@ presets:
             - name: "work-center-top"
             - name: "work-center-bottom"
         - type: vertical
-          ratio: [1, "22c"]
+          ratio: [1, "12c"]
           panes:
             - name: "codex"
               command: "codex --yolo"
@@ -59,7 +59,7 @@ presets:
       panes:
         - name: zsh
         - type: vertical
-          ratio: [1, "22c"]
+          ratio: [1, "12c"]
           panes:
             - name: codex
               command: "codex --yolo"
@@ -67,7 +67,7 @@ presets:
               command: "editprompt open --target-pane {{pane_id:codex}}"
               ephemeral: true
         - type: vertical
-          ratio: [1, "22c"]
+          ratio: [1, "12c"]
           panes:
             - name: claude
               command: "claude --dangerously-skip-permissions"

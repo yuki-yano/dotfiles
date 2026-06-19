@@ -160,6 +160,42 @@ return {
         end
       end
 
+      -- NOTE: Keep cmp visible in short editprompt windows.
+      do
+        local cmp_config = require('cmp.config')
+        local cmp_api = require('cmp.utils.api')
+        local cmp_window = require('cmp.utils.window')
+        local cmp_view = cmp.core.view
+
+        if not cmp_view._editprompt_dynamic_max_height then
+          cmp_view._editprompt_dynamic_max_height = true
+          local original_open = cmp_view.open
+
+          local function get_editprompt_completion_max_height()
+            local completion = cmp_config.get().window.completion or {}
+            local border_info = cmp_window.get_border_info({ style = completion })
+            local row = cmp_api.get_screen_cursor()[1]
+            local bottom = vim.o.lines - row - border_info.vert
+
+            if bottom > 1 then
+              return math.max(1, bottom - 1)
+            end
+
+            local top = row - border_info.vert - 1
+            return math.max(1, top)
+          end
+
+          cmp_view.open = function(self, ...)
+            local completion = cmp_config.get().window.completion
+            if completion then
+              completion.max_height = is_editprompt() and get_editprompt_completion_max_height() or nil
+            end
+
+            return original_open(self, ...)
+          end
+        end
+      end
+
       -- NOTE: force_keyword_length is used from manual complete
       local sources = {
         { name = 'luasnip', keyword_length = 2, force_keyword_length = true },
