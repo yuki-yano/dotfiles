@@ -221,6 +221,7 @@ return {
           paths = {
             preserve_at_prefix = false,
             deep_search = true,
+            root = 'cwd',
           },
         })
         require('cmp_prompt_abbr').setup({
