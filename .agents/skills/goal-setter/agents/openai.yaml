@@ -1,0 +1,4 @@
+interface:
+  display_name: "Goal Setter"
+  short_description: "Shape rough work into Codex-ready goals"
+  default_prompt: "Use $goal-setter to clarify, lightly explore, and draft a compact /goal that defines the expected result, evidence, constraints, stop rules, artifact reuse, and how heavy the run should be."

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "goal-setter": {
+      "source": "gotalab/goal-setter-skill",
+      "sourceType": "github",
+      "skillPath": "skills/goal-setter/SKILL.md",
+      "computedHash": "a022e4ca222fe8fda959a8bcb9ad661007af2d37adef634c28bff86e6437f94e"
+    }
+  }
+}
