@@ -6,6 +6,12 @@
       "sourceType": "github",
       "skillPath": "skills/goal-setter/SKILL.md",
       "computedHash": "a022e4ca222fe8fda959a8bcb9ad661007af2d37adef634c28bff86e6437f94e"
+    },
+    "oracle": {
+      "source": "steipete/oracle",
+      "sourceType": "github",
+      "skillPath": "skills/oracle/SKILL.md",
+      "computedHash": "932223096596ce0af2ff0601fcca2bcc7c857e85d30df8993e6d8d4f87ed87bf"
     }
   }
 }
