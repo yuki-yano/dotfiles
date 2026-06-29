@@ -99,7 +99,8 @@
   },
   "enabledPlugins": {
     "superpowers@superpowers-marketplace": true,
-    "context-mode@context-mode": true
+    "context-mode@context-mode": true,
+    "toolcall-recover@nam-tech-studio": true
   },
   "extraKnownMarketplaces": {
     "superpowers-marketplace": {
@@ -112,6 +113,12 @@
       "source": {
         "source": "github",
         "repo": "mksglu/context-mode"
+      }
+    },
+    "nam-tech-studio": {
+      "source": {
+        "source": "github",
+        "repo": "nam-tech-studio/toolcall-recover"
       }
     }
   },
