@@ -187,6 +187,8 @@ return {
             vim.opt_local.virtualedit = 'block'
 
             vim.keymap.set({ 'n', 'i' }, '<C-g>', '<Cmd>quit!<CR>', map_opts)
+            vim.keymap.set('i', '<C-a>', '<C-g>U<Home>', map_opts)
+            vim.keymap.set('i', '<C-e>', '<C-g>U<End>', map_opts)
             vim.keymap.set('n', 'q', function()
               send_buffer_auto_send()
             end, map_opts)

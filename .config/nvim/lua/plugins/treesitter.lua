@@ -1,4 +1,5 @@
 local color = require('rc.modules.color')
+local is_ime = require('rc.modules.ime').is_ime
 
 local install_dir = vim.fs.joinpath(vim.fn.stdpath('data'), 'site')
 local managed_parsers = {
@@ -115,6 +116,7 @@ return {
   },
   {
     'David-Kunz/treesitter-unit',
+    cond = not is_ime(),
     dependencies = {
       { 'nvim-treesitter/nvim-treesitter' },
     },
@@ -128,6 +130,7 @@ return {
   },
   {
     'm-demare/hlargs.nvim',
+    cond = not is_ime(),
     dependencies = {
       { 'nvim-treesitter/nvim-treesitter' },
     },
@@ -166,6 +169,7 @@ return {
   },
   {
     'bennypowers/nvim-regexplainer',
+    cond = not is_ime(),
     dependencies = {
       { 'nvim-treesitter/nvim-treesitter' },
       { 'MunifTanjim/nui.nvim' },

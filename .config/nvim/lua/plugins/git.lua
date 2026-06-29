@@ -1,3 +1,5 @@
+local is_ime = require('rc.modules.ime').is_ime
+
 return {
   -- TODO: migrate from gina
   {
@@ -23,6 +25,7 @@ return {
   },
   {
     'echasnovski/mini.diff',
+    cond = not is_ime(),
     version = false,
     event = { 'BufRead' },
     init = function()

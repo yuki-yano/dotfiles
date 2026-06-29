@@ -457,6 +457,7 @@ return {
   },
   {
     'mvllow/modes.nvim',
+    cond = not is_ime(),
     event = { 'ModeChanged' },
     config = function()
       local opts = {}
@@ -516,6 +517,7 @@ return {
   },
   {
     'petertriho/nvim-scrollbar',
+    cond = not is_ime(),
     dependencies = {
       -- { 'lewis6991/gitsigns.nvim' },
     },
@@ -573,6 +575,7 @@ return {
   },
   {
     'gen740/SmoothCursor.nvim',
+    cond = not is_ime(),
     event = { 'BufRead' },
     init = function()
       vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
@@ -614,6 +617,7 @@ return {
   },
   {
     'folke/todo-comments.nvim',
+    cond = not is_ime(),
     event = { 'BufReadPost' },
     config = function()
       require('todo-comments').setup({
@@ -872,6 +876,7 @@ return {
   {
     -- TODO: Setting key mappings
     'uga-rosa/ccc.nvim',
+    cond = not is_ime(),
     event = { 'BufRead' },
     cmd = { 'CccPick', 'CccHighlighterToggle', 'CccHighlighterEnable' },
     config = function()

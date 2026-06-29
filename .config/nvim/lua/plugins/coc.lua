@@ -1,8 +1,10 @@
 -- local escesc = require('rc.setup.func').escesc
+local is_ime = require('rc.modules.ime').is_ime
 
 local plugins = {
   {
     'neoclide/coc.nvim',
+    cond = not is_ime(),
     build = 'npm ci',
     event = { 'BufReadPre' },
     dependencies = {

@@ -4,6 +4,7 @@ local color = require('rc.modules.color')
 local lsp_icons = require('rc.modules.font').lsp_icons
 local codicons = require('rc.modules.font').codicons
 local diagnostic_icons = require('rc.modules.font').diagnostic_icons
+local is_ime = require('rc.modules.ime').is_ime
 
 local server_specs = {
   { name = 'astro', module = 'plugins.lsp.servers.astro' },
@@ -21,10 +22,7 @@ local function setup_servers()
   for _, spec in ipairs(server_specs) do
     local ok, config_or_err = pcall(require, spec.module)
     if not ok then
-      vim.notify(
-        string.format('Failed to load LSP config: %s (%s)', spec.name, config_or_err),
-        vim.log.levels.ERROR
-      )
+      vim.notify(string.format('Failed to load LSP config: %s (%s)', spec.name, config_or_err), vim.log.levels.ERROR)
     else
       local enable = true
       if config_or_err.enable ~= nil then
@@ -45,6 +43,7 @@ end
 local plugins = {
   {
     'neovim/nvim-lspconfig',
+    cond = not is_ime(),
     event = { 'BufReadPre', 'BufWrite' },
     ft = { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
     dependencies = {
@@ -137,6 +136,7 @@ local plugins = {
   },
   {
     'williamboman/mason.nvim',
+    cond = not is_ime(),
     dependencies = {
       { 'williamboman/mason-lspconfig' },
       { 'jayp0521/mason-null-ls.nvim' },
@@ -171,6 +171,7 @@ local plugins = {
   },
   {
     'nvimdev/lspsaga.nvim',
+    cond = not is_ime(),
     event = { 'LspAttach' },
     init = function()
       add_disable_cmp_filetypes({ 'sagarename' })
@@ -288,6 +289,7 @@ local plugins = {
   },
   {
     'zbirenbaum/neodim',
+    cond = not is_ime(),
     dependencies = {
       { 'nvim-treesitter/nvim-treesitter' },
     },
@@ -319,6 +321,7 @@ local plugins = {
   {
     'j-hui/fidget.nvim',
     enabled = false,
+    cond = not is_ime(),
     event = { 'LspAttach' },
     config = function()
       require('fidget').setup({})
@@ -326,6 +329,7 @@ local plugins = {
   },
   {
     'ray-x/lsp_signature.nvim',
+    cond = not is_ime(),
     event = { 'LspAttach' },
     config = function()
       require('lsp_signature').setup({
@@ -336,6 +340,7 @@ local plugins = {
   },
   {
     'aznhe21/actions-preview.nvim',
+    cond = not is_ime(),
     dependencies = {
       { 'MunifTanjim/nui.nvim' },
       { 'nvim-telescope/telescope.nvim' },
@@ -352,6 +357,7 @@ local plugins = {
   },
   {
     'SmiteshP/nvim-navic',
+    cond = not is_ime(),
     config = function()
       require('nvim-navic').setup({
         icons = codicons,
@@ -361,6 +367,7 @@ local plugins = {
   {
     'pmizio/typescript-tools.nvim',
     enabled = false,
+    cond = not is_ime(),
     dependencies = {
       'nvim-lua/plenary.nvim',
       'neovim/nvim-lspconfig',
@@ -371,6 +378,7 @@ local plugins = {
   },
   {
     'yioneko/nvim-vtsls',
+    cond = not is_ime(),
     config = function()
       local group = vim.api.nvim_create_augroup('UserVtslsExtras', { clear = true })
       vim.api.nvim_create_autocmd('LspAttach', {
@@ -393,6 +401,7 @@ local plugins = {
   },
   {
     'rachartier/tiny-inline-diagnostic.nvim',
+    cond = not is_ime(),
     config = function()
       require('tiny-inline-diagnostic').setup({
         options = {
@@ -417,6 +426,7 @@ local plugins = {
   },
   {
     'kyoh86/climbdir.nvim',
+    cond = not is_ime(),
   },
 }
 
