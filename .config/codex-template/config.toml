@@ -41,7 +41,6 @@ multi_agent = true
 default_mode_request_user_input = true
 responses_websockets_v2 = true
 fast_mode = true
-code_mode = true
 js_repl = true
 hooks = true
 plugin_hooks = true
