@@ -4,7 +4,7 @@ local is_ime = require('rc.modules.ime').is_ime
 local plugins = {
   {
     'neoclide/coc.nvim',
-    cond = not is_ime(),
+    cond = vim.env.LSP == 'coc' and not is_ime(),
     build = 'npm ci',
     event = { 'BufReadPre' },
     dependencies = {
