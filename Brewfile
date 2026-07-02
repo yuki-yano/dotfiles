@@ -60,6 +60,7 @@ install watch watchman
 install orbstack
 install awscli session-manager-plugin
 install tailscale
+install lego
 
 ## Local Data
 install sqlite
