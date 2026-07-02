@@ -70,6 +70,8 @@ deno task mas:install         # requires `mas signin`
 # Link dotfiles (prompts before replacing non-symlinks)
 deno task dotfiles:install
 deno task agent:link
+# agent:link replaces existing Claude/Copilot skill directories with symlinks to ~/.agents/skills.
+# Run `deno task agent:link -- --dry-run` first when checking a new machine.
 deno task agent:superpowers -- --dry-run
 deno task agent:superpowers
 deno task agent:context-mode -- --dry-run
@@ -96,7 +98,7 @@ and `tasks.ts` validates input before it shells out.
 | Task                                                | Purpose                                                                                                                                                                                                                                                                       |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `deno task dotfiles:install [-- --dry-run]`         | Symlinks the files listed in `DOTFILES_SRCS` to `$HOME`, warning if a non-symlink already exists.                                                                                                                                                                             |
-| `deno task agent:link [-- --dry-run]`               | Preflights both targets, then links Claude (`~/.config/claude/skills` via the dotfiles-managed `.config`) and Copilot (`~/.copilot/skills`) to `~/.agents/skills`.                                                                                                            |
+| `deno task agent:link [-- --dry-run]`               | Replaces Claude (`~/.config/claude/skills` via the dotfiles-managed `.config`) and Copilot (`~/.copilot/skills`) skill targets with symlinks to `~/.agents/skills`. Dry-run reports existing entries that will stop being visible.                                            |
 | `deno task agent:superpowers [-- --dry-run]`        | Ensures Superpowers is installed for both Codex and Claude Code. Codex uses `superpowers@openai-curated`; Claude Code uses `obra/superpowers-marketplace` and `superpowers@superpowers-marketplace`.                                                                          |
 | `deno task agent:context-mode [-- --dry-run]`       | Ensures context-mode is installed for both Codex and Claude Code. Codex uses `https://github.com/mksglu/context-mode.git` as a plugin marketplace; Claude Code uses `mksglu/context-mode` with `context-mode@context-mode`.                                                   |
 | `deno task codex:template [-- --apply]`             | Dry-run by default. Applies `.config/codex-template/config.toml` (managed section merge) and copy targets (`AGENTS.md`, `RTK.md`, `agents/**`, `hooks.json`) to `~/.codex` only with `--apply` (`template` has no markers; `~/.codex/config.toml` must contain marker block). |

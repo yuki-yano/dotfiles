@@ -415,12 +415,36 @@ async function runBrewCommand(command: string): Promise<void> {
   }
 }
 
-async function validateAgentLinkTargets(): Promise<void> {
-  for (const target of AGENT_LINK_TARGETS) {
-    if (await fileExists(target.link) && !(await isSymlink(target.link))) {
-      throw new Error(`${target.link} already exists and is not a symlink\nMove or back up it before linking`);
+async function listDirectoryEntries(path: string): Promise<string[]> {
+  try {
+    const entries: string[] = [];
+    for await (const entry of Deno.readDir(path)) {
+      entries.push(entry.name);
     }
+    return entries.sort();
+  } catch {
+    return [];
   }
+}
+
+async function describeAgentLinkTarget(link: string): Promise<string[]> {
+  if (!(await fileExists(link))) {
+    return [];
+  }
+
+  if (await isSymlink(link)) {
+    return [`${link} is already a symlink`];
+  }
+
+  const entries = await listDirectoryEntries(link);
+  if (entries.length === 0) {
+    return [`${link} is an empty directory and will be replaced`];
+  }
+
+  return [
+    `${link} is a directory and will be replaced; current entries:`,
+    ...entries.map((entry) => `  - ${entry}`),
+  ];
 }
 
 async function ensureCodexSuperpowersPlugin(): Promise<void> {
@@ -689,13 +713,6 @@ const tasks: Record<string, () => Promise<void> | void> = {
       Deno.exit(1);
     }
 
-    try {
-      await validateAgentLinkTargets();
-    } catch (error) {
-      console.error(`ERROR: ${(error as Error).message}`);
-      Deno.exit(1);
-    }
-
     for (const target of AGENT_LINK_TARGETS) {
       if (!(await fileExists(target.dir))) {
         if (DRY_RUN) {
@@ -707,9 +724,17 @@ const tasks: Record<string, () => Promise<void> | void> = {
     }
 
     for (const target of AGENT_LINK_TARGETS) {
+      const descriptions = await describeAgentLinkTarget(target.link);
+      for (const description of descriptions) {
+        console.log(DRY_RUN ? `[DRY RUN] ${description}` : description);
+      }
+
       if (DRY_RUN) {
-        console.log(`[DRY RUN] Would link ${AGENTS_SKILLS_DIR} to ${target.link}`);
+        console.log(`[DRY RUN] Would remove ${target.link} and link ${AGENTS_SKILLS_DIR} to it`);
       } else {
+        if (await fileExists(target.link)) {
+          await $`rm -rf ${target.link}`;
+        }
         await $`ln -sfn ${AGENTS_SKILLS_DIR} ${target.link}`;
         console.log(`Linked ${target.link} -> ${AGENTS_SKILLS_DIR}`);
       }
