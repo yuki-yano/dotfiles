@@ -161,6 +161,16 @@ return {
 
               send_next_chunk()
             end
+            local function stash_buffer_to_history()
+              editprompt_utils.save_buffer()
+              local original = editprompt_utils.get_buffer_content()
+
+              if original:find('%S') ~= nil then
+                editprompt_history.push(original)
+              end
+
+              editprompt.stash_push()
+            end
             local function handle_cr()
               local mode = vim.api.nvim_get_mode().mode
               if is_buffer_blank() then
@@ -262,14 +272,14 @@ return {
             end, vim.tbl_extend('force', map_opts, { expr = true }))
 
             vim.keymap.set('n', '<C-q>', function()
-              editprompt.stash_push()
+              stash_buffer_to_history()
               vim.schedule(function()
                 ime_helpers.move_cursor_to_start(bufnr)
               end)
             end, map_opts)
             vim.keymap.set('i', '<C-q>', function()
               vim.schedule(function()
-                editprompt.stash_push()
+                stash_buffer_to_history()
                 ime_helpers.move_cursor_to_start(bufnr)
               end)
             end, map_opts)
