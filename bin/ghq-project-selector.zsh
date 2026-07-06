@@ -17,11 +17,10 @@ function ghq-project-selector() {
     fi
 
     local rerun_args=${(j: :)${(@q)@}}
-    if tmux display-popup -E "GHQ_PROJECT_SELECTOR_DISABLE_FZF_TMUX=1 zsh -ic 'ghq-project-selector ${rerun_args}'" 2>/dev/null; then
+    if tmux display-popup -E -d "#{pane_current_path}" "GHQ_PROJECT_SELECTOR_DISABLE_FZF_TMUX=1 ghq-project-selector.zsh ${rerun_args}" 2>/dev/null; then
       return 0
     fi
 
-    tmux new-window -c "${PWD}" "GHQ_PROJECT_SELECTOR_DISABLE_FZF_TMUX=1 zsh -ic 'ghq-project-selector ${rerun_args}; exec zsh'" && return 0
     return 1
   fi
 
@@ -71,12 +70,12 @@ function ghq-project-selector() {
   esac
 
   if [[ -n "$TMUX" ]] && [[ "$tmux_available" -eq 1 ]]; then
-    if ! command -v vtm >/dev/null 2>&1; then
-      printf '%s\n' "ghq-project-selector: vtm not found" >&2
+    if ! command -v vt >/dev/null 2>&1; then
+      printf '%s\n' "ghq-project-selector: vt not found" >&2
       return 1
     fi
 
-    vtm project switch "$project_dir"
+    vt project switch "$project_dir"
     return $?
   else
     # Outside tmux: cd to the selected directory
