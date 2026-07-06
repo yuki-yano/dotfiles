@@ -3,12 +3,34 @@ SHELDON_CACHE_DIR=${XDG_CACHE_HOME:-$HOME/.cache}/sheldon
 SHELDON_PRE_CACHE=${SHELDON_CACHE_DIR}/pre.zsh
 SHELDON_POST_CACHE=${SHELDON_CACHE_DIR}/post.zsh
 NI_ZSH_PLUGIN=${NI_ZSH_PLUGIN_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/ni.zsh}
+VP_ZSH_COMPLETION_CACHE=${VP_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/vp-completion.zsh}
 
 dot_zsh_zcompile_if_stale() {
   local script_path=$1
 
   if [[ -r $script_path ]] && [[ ! -r ${script_path}.zwc || $script_path -nt ${script_path}.zwc ]]; then
     zcompile "$script_path"
+  fi
+}
+
+dot_zsh_generate_vp_completion_cache_if_stale() {
+  local vp_bin
+  vp_bin=$(whence -p vp 2>/dev/null) || return 0
+
+  if [[ ! -s $VP_ZSH_COMPLETION_CACHE || $VP_ZSH_COMPLETION_CACHE -ot $vp_bin ]]; then
+    mkdir -p ${VP_ZSH_COMPLETION_CACHE:h}
+    {
+      VP_COMPLETE=zsh command vp
+      cat <<'EOF'
+_vpr_complete() {
+  local -a orig=("${words[@]}")
+  words=("vp" "run" "${orig[@]:1}")
+  CURRENT=$((CURRENT + 1))
+  ${=_comps[vp]}
+}
+compdef _vpr_complete vpr
+EOF
+    } >| "$VP_ZSH_COMPLETION_CACHE"
   fi
 }
 
@@ -28,6 +50,8 @@ dot_zsh_load_completion_scripts() {
   [[ -r ${NPM_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/npm-completion.zsh} ]] && source "${NPM_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/npm-completion.zsh}"
   [[ -r ${BUN_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/bun-completion.zsh} ]] && source "${BUN_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/bun-completion.zsh}"
   [[ -r ${MISE_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/mise-completion.zsh} ]] && source "${MISE_ZSH_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/mise-completion.zsh}"
+  dot_zsh_generate_vp_completion_cache_if_stale
+  [[ -r $VP_ZSH_COMPLETION_CACHE ]] && source "$VP_ZSH_COMPLETION_CACHE"
 }
 
 if (( $+functions[zsh-defer] )); then
@@ -54,6 +78,24 @@ else
   fi
   (( $+functions[compdef] )) && [[ -n ${ZENO_ROOT-} ]] && compdef _zeno zeno zeno-history-client zeno-server
   dot_zsh_load_completion_scripts
+fi
+# }}}
+
+# vite-plus {{{
+if whence -p vp >/dev/null; then
+  function vp() {
+    if [[ $1 == env && $2 == use ]]; then
+      case " $* " in
+        *" -h "*|*" --help "*) command vp "$@"; return ;;
+      esac
+
+      local __vp_out
+      __vp_out=$(VP_ENV_USE_EVAL_ENABLE=1 VP_SHELL=zsh command vp "$@") || return $?
+      eval "$__vp_out"
+    else
+      command vp "$@"
+    fi
+  }
 fi
 # }}}
 

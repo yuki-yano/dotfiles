@@ -23,6 +23,7 @@ export RIPGREP_CONFIG_PATH=$HOME/.config/ripgrep/rc
 export PNPM_HOME=$XDG_DATA_HOME/pnpm
 export GOPATH=$HOME/.go
 export MISE_SHIMS_DIR=$XDG_DATA_HOME/mise/shims
+export VITE_PLUS_HOME=$HOME/.vite-plus
 
 # Disable path_helper
 # show: http://qiita.com/t-takaai/items/8574ff312f2caa5177c2
@@ -45,6 +46,9 @@ path=(~/.deno/bin(N-/) $path)
 # bun
 path=(~/.bun/bin(N-/) $path)
 path=(~/.cache/.bun/bin(N-/) $path)
+
+# vite-plus
+path=(${VITE_PLUS_HOME}/bin(N-/) $path)
 
 # Ruby
 path=(/opt/homebrew/opt/ruby/bin(N-/) $path)
