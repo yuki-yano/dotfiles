@@ -1,0 +1,96 @@
+statusline:
+  sessions:
+    show_index: true
+    badge_style: outer
+    separator: "#[fg=#8f8ba8] #[default]"
+    current:
+      format: " {session} "
+      bold: true
+      colors:
+        fg: "#232332"
+        bg: "#98b2f6"
+      prefix: "#[fg=#98b2f6]\uE0B6#[default]"
+      suffix: "#[fg=#98b2f6]\uE0B4#[default]"
+    other:
+      format: " {session} "
+      colors:
+        fg: "#9591ad"
+  category:
+    mode: list
+    format: " {category}  "
+    inactive_format: " {category}  "
+    colors:
+      fg: "#ecebff"
+      bg: "#7a52d0"
+    inactive_colors:
+      fg: "#9591ad"
+    prefix: " #[fg=#7a52d0]\uE0B6#[default]"
+    suffix: "#[fg=#7a52d0]\uE0B4#[default] "
+    inactive_prefix: "  "
+    inactive_suffix: "  "
+  summary:
+    hide_idle: false
+  attention:
+    format: "{attention}"
+    colors:
+      fg: "#ff6b6b"
+
+badge:
+  colors:
+    blocked: "#ff7a7a"
+    working: "#57d98a"
+    done: "#5aa6ff"
+    idle: "#8b86a3"
+
+categories:
+  display_names:
+    private: "󰠦"
+    public: "󰖟"
+    work: "󰳰"
+  order:
+    private: 10
+    public: 20
+    work: 30
+  default_category: public
+  rules:
+    - category: private
+      path_patterns:
+        - github.com/yuki-yano/agent-private-workflow
+        - github.com/yuki-yano/mf-dashboard
+        - github.com/yuki-yano/obsidian-sync
+    - category: work
+      path_patterns:
+        - github.com/${WORK_GHQ_OWNER}/*
+        - github.com/${WORK_GHQ_OWNER}/**
+  session_name_rules:
+    - category: private
+      patterns:
+        - dotfiles
+
+sidebar:
+  width: "10%"
+  header:
+    format: " {label} "
+    prefix: ""
+    suffix: ""
+    bold: true
+    chip_prefix: ""
+    chip_suffix: ""
+    colors:
+      fg: "#232332"
+      bg: "#98b2f6"
+      outer_bg: "#272e42"
+  live:
+    lines: 20
+  colors:
+    header_mode: "#e4e4e4"
+    header_chip_fg: "#232332"
+    header_total_bg: "#4d5a8a"
+    header_total_fg: "#dfe4ff"
+    active_bg: "#272e42"
+    active_bar: "#98b2f6"
+    toggle: "#98b2f6"
+    category: "#ffaf5f"
+    branch: "#7aa9b8"
+    detail: "#918da3"
+    marker: "#5a5670"
