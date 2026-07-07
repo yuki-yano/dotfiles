@@ -112,6 +112,15 @@
             "command": "\"$HOME/.config/claude/hooks/context-mode-cache-heal.mjs\""
           }
         ]
+      },
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "vt hook claude SessionStart"
+          }
+        ]
       }
     ]
   },

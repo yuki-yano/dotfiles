@@ -11,6 +11,15 @@
             "statusMessage": "AGENT_NOTE_DIR を読み込み中"
           }
         ]
+      },
+      {
+        "matcher": "^startup$|^resume$|^clear$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "vt hook codex SessionStart"
+          }
+        ]
       }
     ],
     "PreToolUse": [
