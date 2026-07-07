@@ -73,7 +73,7 @@ sidebar:
     format: " {label} "
     prefix: ""
     suffix: ""
-    bold: true
+    bold: false
     chip_prefix: ""
     chip_suffix: ""
     colors:
