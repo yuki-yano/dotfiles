@@ -58,10 +58,11 @@ normalize_direction() {
 # Initialize pane information
 init_pane_info() {
     # Get all panes information including active pane cursor and command in one call
-    PANES_INFO=$(tmux list-panes -F "#{pane_id} #{pane_active} #{cursor_x} #{cursor_y} #{pane_left} #{pane_top} #{pane_width} #{pane_height} #{pane_current_command}")
+    # (trailing @vde_sidebar field marks vde-tmux-sidebar panes, excluded as move targets below)
+    PANES_INFO=$(tmux list-panes -F "#{pane_id} #{pane_active} #{cursor_x} #{cursor_y} #{pane_left} #{pane_top} #{pane_width} #{pane_height} #{pane_current_command} #{@vde_sidebar}")
 
     # Extract active pane state from list output
-    while IFS=' ' read -r pane_id pane_active cursor_x cursor_y pane_left pane_top pane_width pane_height pane_cmd; do
+    while IFS=' ' read -r pane_id pane_active cursor_x cursor_y pane_left pane_top pane_width pane_height pane_cmd pane_sidebar; do
         if [ "$pane_active" = "1" ]; then
             CURRENT_PANE=$pane_id
             CURSOR_X=$cursor_x
@@ -138,7 +139,7 @@ is_neovim_command() {
 get_pane_geometry_and_command() {
     local target_pane=$1
 
-    while IFS=' ' read -r pane_id pane_active pane_cursor_x pane_cursor_y pane_left pane_top pane_width pane_height pane_cmd; do
+    while IFS=' ' read -r pane_id pane_active pane_cursor_x pane_cursor_y pane_left pane_top pane_width pane_height pane_cmd pane_sidebar; do
         if [ "$pane_id" = "$target_pane" ]; then
             echo "$pane_left $pane_top $pane_width $pane_height $pane_cmd"
             return 0
@@ -164,9 +165,12 @@ find_best_and_edge_pane() {
         D) best_position=$INFINITE_DISTANCE ;;  # Find topmost
     esac
 
-    while IFS=' ' read -r pane_id pane_active pane_cursor_x pane_cursor_y pane_left pane_top pane_width pane_height pane_cmd; do
+    while IFS=' ' read -r pane_id pane_active pane_cursor_x pane_cursor_y pane_left pane_top pane_width pane_height pane_cmd pane_sidebar; do
         # Skip current pane
         [ "$pane_id" = "$CURRENT_PANE" ] && continue
+
+        # Skip vde-tmux-sidebar panes (never a smart-switch destination)
+        [ "$pane_sidebar" = "1" ] && continue
 
         # Check if cursor aligns with this pane
         if cursor_aligns_with_pane "$direction" "$pane_left" "$pane_top" "$pane_width" "$pane_height"; then

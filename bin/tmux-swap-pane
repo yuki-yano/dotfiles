@@ -1,10 +1,22 @@
 #!/bin/bash
 # Toggle mark/swap functionality for tmux panes
 
+# vde-tmux-sidebar panes (@vde_sidebar=1) assume a fixed left/full-height
+# position, so they must never be marked as the swap source nor used as the
+# swap destination.
+if [ "$(tmux display-message -p '#{@vde_sidebar}')" = "1" ]; then
+    exit 0
+fi
+
 # Get the number of marked panes
 marked_count=$(tmux list-panes -a -F '#{pane_marked}' | grep -c '^1$')
 
 if [ "$marked_count" -gt 0 ]; then
+    marked_sidebar=$(tmux list-panes -a -F '#{pane_marked} #{@vde_sidebar}' | grep '^1 ')
+    if [ "$marked_sidebar" = "1 1" ]; then
+        # Marked pane is the sidebar (e.g. marked via the right-click menu); bail out.
+        exit 0
+    fi
     # Swap with marked pane and unmark
     tmux swap-pane
     tmux select-pane -M
