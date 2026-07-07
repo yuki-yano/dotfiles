@@ -11,6 +11,7 @@
 - 「まとめて」: 同タイプを統合（`GROUPING=merge`）
 - 「分けて」「ファイルごと」: 分割（`GROUPING=split`）
 - 「計画だけ」「実行しない」: Phase 1 の計画提示で終了（`PLAN_ONLY=true`）
+- 「commitして」「コミットして」「commit まで」「コミットまで」「この内容で commit」: 計画提示後の確認を省略して Phase 2 まで実行（`AUTO_COMMIT=true`）
 
 ## フラグ
 
@@ -20,7 +21,10 @@
 ## 実行意図の定義
 
 - `PLAN_ONLY=true`: 計画を提示して終了する。`y` / `e` / `n` の実行確認は出さない。
-- `PLAN_ONLY=false`: 計画提示後に `y` / `e` / `n` で確認し、`y` なら計画した全コミットを順次実行する。
+- `AUTO_COMMIT=true`: 計画提示後に `y` / `e` / `n` の実行確認を出さず、停止条件がなければ計画した全コミットを順次実行する。
+- `PLAN_ONLY=false` かつ `AUTO_COMMIT=false`: 計画提示後に `y` / `e` / `n` で確認し、`y` なら計画した全コミットを順次実行する。
+
+`PLAN_ONLY=true` と `AUTO_COMMIT=true` が同時に読める矛盾した依頼では、処理を止めてユーザーに確認する。
 
 ## 意図分類の定義
 
