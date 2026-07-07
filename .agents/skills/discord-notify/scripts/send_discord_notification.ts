@@ -98,7 +98,12 @@ const parseEmbeds = (rawValue: string): readonly DiscordEmbed[] => {
       throw new Error(`embeds[${index}] must be an object`);
     }
     const source = entry as Record<string, unknown>;
-    const embed: DiscordEmbed = {};
+    const embed: {
+      title?: string;
+      description?: string;
+      url?: string;
+      color?: number;
+    } = {};
     if (typeof source.title !== "undefined") {
       if (typeof source.title !== "string") {
         throw new Error(`embeds[${index}].title must be a string`);
@@ -133,6 +138,7 @@ const parseArgs = (args: readonly string[]): CliOptions => {
     body?: string;
     webhookUrl?: string;
     userId?: string;
+    agent?: AgentKind;
     username?: string;
     avatarUrl?: string;
     chunkSize?: number;
@@ -244,6 +250,7 @@ const parseAgentKind = (value: string): AgentKind => {
   throw new Error("agent must be either codex or claude");
 };
 
+// 同じ判定ロジックが ntfy-mobile-notify/scripts/send_mobile_notification.sh にもある。変更時は両方を同期すること。
 const detectAgentKind = (): AgentKind => {
   if (
     readOptionalEnv("CLAUDECODE")

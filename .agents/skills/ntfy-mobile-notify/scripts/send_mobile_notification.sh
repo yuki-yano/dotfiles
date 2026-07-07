@@ -23,7 +23,7 @@ die() {
 }
 
 char_count() {
-  printf '%s' "$1" | wc -m | tr -d '[:space:]'
+  printf '%s' "$1" | LC_ALL=C.UTF-8 wc -m | tr -d '[:space:]'
 }
 
 normalize_agent() {
@@ -39,6 +39,7 @@ normalize_agent() {
   esac
 }
 
+# 同じ判定ロジックが discord-notify/scripts/send_discord_notification.ts にもある。変更時は両方を同期すること。
 detect_agent() {
   if [[ -n "${CLAUDECODE:-}" || -n "${CLAUDE_CODE:-}" || -n "${ANTHROPIC_API_KEY:-}" || -n "${ANTHROPIC_MODEL:-}" ]]; then
     printf 'claude'
