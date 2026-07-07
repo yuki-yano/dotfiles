@@ -17,15 +17,6 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "rtk hook claude"
-          }
-        ]
-      },
-      {
         "matcher": "*",
         "hooks": [
           {
@@ -106,14 +97,6 @@
     ],
     "SessionStart": [
       {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"$HOME/.config/claude/hooks/context-mode-cache-heal.mjs\""
-          }
-        ]
-      },
-      {
         "matcher": "startup|resume|clear",
         "hooks": [
           {
@@ -130,7 +113,7 @@
   },
   "enabledPlugins": {
     "superpowers@superpowers-marketplace": true,
-    "context-mode@context-mode": true,
+    "context-mode@context-mode": false,
     "toolcall-recover@nam-tech-studio": true,
     "compact-plus@compact-plus-local": true
   },

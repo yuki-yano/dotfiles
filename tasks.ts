@@ -36,8 +36,8 @@ const COPILOT_DIR = `${HOME}/.copilot`;
 const AGENTS_SKILLS_DIR = `${HOME}/.agents/skills`;
 const CLAUDE_SKILLS_DIR = `${CLAUDE_DIR}/skills`;
 const COPILOT_SKILLS_DIR = `${COPILOT_DIR}/skills`;
-const CODEX_TEMPLATE_COPY_TARGETS = ["AGENTS.md", "RTK.md", "agents", "hooks.json"];
-type CodexPluginId = "superpowers" | "context-mode";
+const CODEX_TEMPLATE_COPY_TARGETS = ["AGENTS.md", "agents", "hooks.json"];
+type CodexPluginId = "superpowers";
 
 type CodexPluginDefinition = {
   id: CodexPluginId;
@@ -53,17 +53,9 @@ const CODEX_PLUGIN_DEFINITIONS: readonly CodexPluginDefinition[] = [
     id: "superpowers",
     plugin: "superpowers@openai-curated",
   },
-  {
-    id: "context-mode",
-    plugin: "context-mode@context-mode",
-    marketplace: {
-      name: "context-mode",
-      source: "https://github.com/mksglu/context-mode.git",
-    },
-  },
 ];
 
-export type ClaudePluginId = "superpowers" | "context-mode" | "compact-plus";
+export type ClaudePluginId = "superpowers" | "compact-plus";
 
 export type ClaudePluginDefinition = {
   id: ClaudePluginId;
@@ -78,12 +70,6 @@ export const CLAUDE_PLUGIN_DEFINITIONS: readonly ClaudePluginDefinition[] = [
     marketplaceName: "superpowers-marketplace",
     marketplaceSource: "obra/superpowers-marketplace",
     plugin: "superpowers@superpowers-marketplace",
-  },
-  {
-    id: "context-mode",
-    marketplaceName: "context-mode",
-    marketplaceSource: "mksglu/context-mode",
-    plugin: "context-mode@context-mode",
   },
   {
     id: "compact-plus",

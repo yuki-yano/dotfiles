@@ -101,7 +101,7 @@ and `tasks.ts` validates input before it shells out.
 | `deno task agent:link [-- --dry-run]`               | Replaces Claude (`~/.config/claude/skills` via the dotfiles-managed `.config`) and Copilot (`~/.copilot/skills`) skill targets with symlinks to `~/.agents/skills`. Dry-run reports existing entries that will stop being visible.                                            |
 | `deno task agent:codex-plugins [-- --dry-run]`      | Ensures every Codex plugin declared in `CODEX_PLUGIN_DEFINITIONS` in `tasks.ts` is installed and enabled.                                                                                                                                                                     |
 | `deno task agent:claude-plugins [-- --dry-run]`     | Ensures every Claude Code plugin declared in `CLAUDE_PLUGIN_DEFINITIONS` in `tasks.ts` is installed and enabled.                                                                                                                                                              |
-| `deno task codex:template [-- --apply]`             | Dry-run by default. Applies `.config/codex-template/config.toml` (managed section merge) and copy targets (`AGENTS.md`, `RTK.md`, `agents/**`, `hooks.json`) to `~/.codex` only with `--apply` (`template` has no markers; `~/.codex/config.toml` must contain marker block). |
+| `deno task codex:template [-- --apply]`             | Dry-run by default. Applies `.config/codex-template/config.toml` (managed section merge) and copy targets (`AGENTS.md`, `agents/**`, `hooks.json`) to `~/.codex` only with `--apply` (`template` has no markers; `~/.codex/config.toml` must contain marker block). |
 | `deno task zsh:sheldon:sync` / `zsh:sheldon:update` | Generate the `sheldon` lock/cache for the `pre` and `post` shell phases under `~/.cache/sheldon`.                                                                                                                                                                             |
 | `deno task brew:bundle`                             | Executes curated commands in `Brewfile`, allowing only `install`, `tap`, `cask`, `update`, `upgrade`, and `cleanup`.                                                                                                                                                          |
 | `deno task brew:cask`                               | Installs GUI apps from `Caskfile`.                                                                                                                                                                                                                                            |
@@ -205,21 +205,14 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 - `.config/claude/` stores Claude settings in-repo (`CLAUDE.md`, `settings.json`), while Claude runtime state
   (history/snapshots/cache) is managed locally on each machine. Repository-scoped agent artifacts are managed under
   `z-ai/` (`z-ai/plans/`, `z-ai/tmp/`, `z-ai/references/`).
-- `.config/claude/RTK.md` and the `rtk hook claude` entry in `.config/claude/settings.json` enable RTK command rewriting
-  for Claude Code Bash hooks.
-- `.config/codex-template/AGENTS.md` references `~/.codex/RTK.md` as `@~/.codex/RTK.md`. `.config/codex-template/RTK.md`
-  is kept in sync with upstream RTK and copied to `~/.codex/RTK.md`.
 - Codex plugins are declared once in `CODEX_PLUGIN_DEFINITIONS` in `tasks.ts`. `deno task agent:codex-plugins` installs
-  every declared Codex marketplace/plugin pair in one command; individual Codex plugin tasks are not kept. Codex
-  context-mode keeps `hooks = true`, `plugin_hooks = true`, the enabled plugin entry, and the marketplace source in
-  `.config/codex-template/config.toml` while the task fetches or repairs the marketplace root.
+  every declared Codex marketplace/plugin pair in one command; individual Codex plugin tasks are not kept.
 - Claude Code plugins are declared once in `CLAUDE_PLUGIN_DEFINITIONS` in `tasks.ts`. `deno task agent:claude-plugins`
   installs every declared Claude marketplace/plugin pair in one command; individual Claude plugin tasks are not kept.
-- `.config/claude/hooks/context-mode-cache-heal.mjs` is the exception to the no-vendored-hooks rule: Claude Code
-  `settings.json` references this SessionStart cache repair hook, so it is tracked for reproducibility while the
-  context-mode plugin continues to own and refresh its generated content.
-- RTK remains the default for direct shell commands. context-mode is reserved for large-output analysis, batching,
-  indexing, and session continuity; its local SQLite/session data is intentionally not tracked in this repository.
+- RTK and context-mode are no longer wired in: the `rtk hook claude` Bash hook, `RTK.md` instruction files, the
+  context-mode plugin entries, and the context-mode SessionStart cache-heal hook were removed after a log-based
+  cost/benefit review. The installed plugin/marketplace state is kept disabled (`context-mode@context-mode: false`)
+  so the setup can be re-enabled if the experiment is reverted.
 - `.config/cage/presets.yml` captures Warashi cage (multi-agent) layout presets that pair with tmux automation.
 - `.config/claude/settings.json` hooks (`vde-monitor-hook`, `vde-monitor-summary`, `vde-notifier`) provide monitoring
   and notifications around Claude sessions.
