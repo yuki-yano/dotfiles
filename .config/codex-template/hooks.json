@@ -12,6 +12,46 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          { "type": "command", "command": "vde-monitor-hook codex PreToolUse" },
+          { "type": "command", "command": "vt hook codex PreToolUse" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          { "type": "command", "command": "vde-monitor-hook codex PostToolUse" },
+          { "type": "command", "command": "vt hook codex PostToolUse" }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          { "type": "command", "command": "vde-monitor-hook codex PermissionRequest" },
+          { "type": "command", "command": "vt hook codex PermissionRequest" }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "vde-monitor-hook codex Stop" },
+          { "type": "command", "command": "vt hook codex Stop" }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "vde-monitor-hook codex UserPromptSubmit" },
+          { "type": "command", "command": "vt hook codex UserPromptSubmit" }
+        ]
+      }
     ]
   }
 }

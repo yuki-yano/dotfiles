@@ -24,3 +24,13 @@ notifications:
   enabledEventTypes:
     - pane.waiting_permission
     - pane.task_completed
+
+usage:
+  session:
+    providers:
+      claude:
+        enabled: true
+  pricing:
+    providers:
+      claude:
+        enabled: true

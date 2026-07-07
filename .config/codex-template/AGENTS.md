@@ -9,6 +9,12 @@
 - 後方互換性の検討や fallback の用意は、原則として行わない。
 - 後方互換性対応や fallback がどうしても必要な場合のみ、必要性と影響を整理したうえでユーザーに確認する。
 
+## 作業分担
+
+- タスクに着手する前に、サブエージェントへ分担すべき独立作業があるかを判断する。
+- 調査・レビュー・検証・複数候補の比較など、並列化によって品質や速度が上がる作業は積極的にサブエージェントへ委譲する。
+- サブエージェントを使う場合も、最終判断・統合・ユーザーへの報告はメインエージェントが責任を持つ。
+
 ## 設計・計画
 
 - 設計書・計画書を作成する際は、必ず DoD（Definition of Done）を明記する。DoD
@@ -36,14 +42,9 @@
 
 - 大量出力の分析・集計・検索は context-mode の `ctx_execute` / `ctx_batch_execute` / `ctx_execute_file` を使う。
 - 直接 shell command を実行する場合は `rtk` を prefix する。
+- 正確なパス、件数、JSON、機械可読出力、存在判定が必要な場合は `rtk proxy <cmd>` を使い、`rtk` の要約・整形結果を根拠にしない。
+- skill / plugin / file discovery では `rtk find` の compact 出力を根拠にせず、`rtk proxy /usr/bin/find ... -print` か `rg --files` を使う。
 - `ctx_execute` 内で JSON など機械可読出力を parse する場合は `rtk` を挟まない。
 - `ctx_execute` 内で人間向けの noisy な command output だけが欲しい場合は `rtk` を使ってよい。
-
-## Oracle の使い方
-
-- Oracle は `oracle` skill に従って使う。
-- 大きめのレビュー、詰まったバグ、設計判断、広いファイル文脈が必要なセカンドオピニオンで利用を検討する。
-- 相談時は目的・前提・試したこと・判断してほしい論点を明記し、必要なファイルをまとめて渡す。
-- API コストや外部送信の影響が大きい相談は、実行前にユーザーへ確認する。
 
 @~/.codex/RTK.md

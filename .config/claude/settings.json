@@ -6,7 +6,8 @@
     "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
     "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
     "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
-    "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "1"
+    "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "1",
+    "CLAUDE_AFK_TIMEOUT_MS": "3600000"
   },
   "includeCoAuthoredBy": false,
   "permissions": {
@@ -30,6 +31,10 @@
           {
             "type": "command",
             "command": "vde-monitor-hook PreToolUse"
+          },
+          {
+            "type": "command",
+            "command": "vt hook claude PreToolUse"
           }
         ]
       }
@@ -41,6 +46,10 @@
           {
             "type": "command",
             "command": "vde-monitor-hook PostToolUse"
+          },
+          {
+            "type": "command",
+            "command": "vt hook claude PostToolUse"
           }
         ]
       }
@@ -51,6 +60,10 @@
           {
             "type": "command",
             "command": "vde-monitor-hook Notification"
+          },
+          {
+            "type": "command",
+            "command": "vt hook claude Notification"
           }
         ]
       }
@@ -69,6 +82,10 @@
           {
             "type": "command",
             "command": "vde-monitor-hook Stop"
+          },
+          {
+            "type": "command",
+            "command": "vt hook claude Stop"
           }
         ]
       }
@@ -79,6 +96,10 @@
           {
             "type": "command",
             "command": "vde-monitor-hook UserPromptSubmit"
+          },
+          {
+            "type": "command",
+            "command": "vt hook claude UserPromptSubmit"
           }
         ]
       }
@@ -101,7 +122,8 @@
   "enabledPlugins": {
     "superpowers@superpowers-marketplace": true,
     "context-mode@context-mode": true,
-    "toolcall-recover@nam-tech-studio": true
+    "toolcall-recover@nam-tech-studio": true,
+    "compact-plus@compact-plus-local": true
   },
   "extraKnownMarketplaces": {
     "superpowers-marketplace": {
@@ -120,6 +142,12 @@
       "source": {
         "source": "github",
         "repo": "nam-tech-studio/toolcall-recover"
+      }
+    },
+    "compact-plus-local": {
+      "source": {
+        "source": "github",
+        "repo": "u-ichi/compact-plus"
       }
     }
   },
