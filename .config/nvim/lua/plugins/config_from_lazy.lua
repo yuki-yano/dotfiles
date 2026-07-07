@@ -5,6 +5,7 @@ require('rc.setup.func')
 require('rc.setup.highlight')
 require('rc.setup.extui')
 require('rc.setup.tmux_yank')
+require('rc.setup.ime_reorder_fix')
 
 vim.api.nvim_create_autocmd({ 'User' }, {
   pattern = { 'VeryLazy' },
