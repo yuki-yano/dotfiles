@@ -1,6 +1,6 @@
 ---
 name: release-flow
-description: commit 完了後のリリース後工程（push・deploy・バージョン bump・publish）を、プロジェクトのリリース方式を判別して一貫実行する。ユーザーが「commit して deploy と push」「commit して patch バージョンを上げて publish」「デプロイしておいて」「publish まで進めて」「リリースして」のように、コミットに続けてデプロイや公開までワンセットで依頼したときに使う。コミットの分割整理だけが目的の場合（commit-plan の領域）や、CI の修正・デプロイ基盤の構築そのものが目的の場合では使わない。
+description: commit 後に push、deploy、version bump、publish まで続けて依頼されたときに使う。commit 整理だけ、CI 修正、デプロイ基盤構築では使わない。
 ---
 
 # Release Flow
