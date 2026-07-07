@@ -73,17 +73,6 @@ description: similarity-ts を使って TypeScript/JavaScript の重複コード
   - `PLAN_PATH`
   - 実施前の注意点（テスト影響、API互換性など）
 
-## Priority Rules
-
-優先度の標準判定は次を使う。
-
-- 高: 類似度 `>= 0.80` かつ 3 箇所以上に波及、またはクリティカル経路に存在
-- 中: 類似度 `0.70 - 0.79` で 2 箇所以上に波及
-- 低: 類似度 `0.60 - 0.69` の重複
-
-より広く候補を拾う必要がある場合のみ `SIMILARITY_THRESHOLD=0.40` を使う。
-その場合はノイズ増加を明記する。
-
 ## Resources
 
 - `scripts/run_scan.sh`: スキャン実行、出力先作成、パス通知を行う。

@@ -14,7 +14,7 @@
 現行 `opensrc` は `~/.opensrc/` にグローバルキャッシュする。作業 repo 配下に取得物を置かないため、通常は置き場探索を行わない。
 cache 置き場を変更する必要がある場合だけ `OPENSRC_HOME` を指定する。
 
-`--cwd` は cache 置き場ではない。npm package のバージョンを `node_modules` / lockfile / `package.json` から検出するための作業ディレクトリ指定としてだけ使う。
+`--cwd` は cache 置き場ではない。npm package のバージョンを `node_modules` / lockfile / `package.json` から検出するための作業ディレクトリ指定としてだけ使う。通常は repo root または対象 package の project root を指定する。
 
 判断時の着眼点:
 
@@ -53,7 +53,6 @@ case "$real_home" in "$repo_root"|"$repo_root"/*) : ;; *) echo "outside-repo";; 
 - `OPENSRC_HOME` をデフォルトから変更する必要性や候補を1つに絞れない場合は、取得実行前にユーザーへ確認する。
 - ユーザー確認時は候補パスと各候補の理由を短く提示する。
 - ユーザー指定がある場合はそれを最優先する。
-- `--cwd` は npm バージョン解決用であり、通常は repo root または対象 package の project root を指定する。
 - `--target-dir` は repo ルート相対パスのみ許可する（絶対パス禁止）。
 
 ## 運用ルール

@@ -92,6 +92,7 @@ If the skill exists in other global agent locations, remove those copies explici
 npx --yes skills remove --global -a cursor -y <skill-name>
 npx --yes skills remove --global -a gemini-cli -y <skill-name>
 npx --yes skills remove --global -a opencode -y <skill-name>
+npx --yes skills remove --global -a claude-code -y <skill-name>
 ```
 
 For a hand-written local skill that is not in `skills-lock.json`, remove the directory directly:
@@ -105,14 +106,15 @@ rm -r ~/dotfiles/.agents/skills/<skill-name>
 Check the known places where duplicate skills tend to appear:
 
 ```bash
-find ~/.agents/skills ~/.codex/skills ~/.cursor/skills ~/.gemini/skills ~/.config/opencode/skills ~/dotfiles/.agents/skills \
+find ~/.agents/skills ~/.codex/skills ~/.cursor/skills ~/.gemini/skills ~/.config/opencode/skills ~/.claude/skills ~/dotfiles/.agents/skills \
   -maxdepth 1 -name '<skill-name>' -print 2>/dev/null | sort -u
 ```
 
 Interpretation:
 
 - `~/.agents/skills/<skill-name>` and `~/dotfiles/.agents/skills/<skill-name>` are the same location because `~/.agents` is a symlink.
-- Any matching path under `~/.codex/skills`, `~/.cursor/skills`, `~/.gemini/skills`, or `~/.config/opencode/skills` is a duplicate unless there is an explicit reason to keep it.
+- Any matching path under `~/.codex/skills`, `~/.cursor/skills`, `~/.gemini/skills`, `~/.config/opencode/skills`, or `~/.claude/skills` is a duplicate unless there is an explicit reason to keep it.
+- `~/.config/claude/skills` is a symlink to `~/.agents/skills`, so it is out of audit scope. `~/.claude/skills` is a real directory, so it is in audit scope.
 
 Check lock file drift separately:
 
@@ -144,7 +146,7 @@ The desired state is:
 - The only lock file is `~/dotfiles/skills-lock.json`.
 - Dotfiles-managed skills appear under `~/dotfiles/.agents/skills`.
 - External skills installed through `npx skills` are represented in `skills-lock.json`.
-- Deleted or de-duplicated skills do not remain under `~/.codex/skills`, `~/.cursor/skills`, `~/.gemini/skills`, or `~/.config/opencode/skills`.
+- Deleted or de-duplicated skills do not remain under `~/.codex/skills`, `~/.cursor/skills`, `~/.gemini/skills`, `~/.config/opencode/skills`, or `~/.claude/skills`.
 
 ## Current Known External Sources
 
@@ -184,4 +186,13 @@ npx --yes skills add gotalab/goal-setter-skill --skill goal-setter -a codex -y
 - Keeping `.agents/.skill-lock.json` or other alternate lock files: use root `skills-lock.json` only.
 - Installing the same skill for Cursor or Gemini just to make Codex see it: Codex should read the `.agents` copy through the dotfiles-managed path.
 - Hand-editing external skill files without recording that they now diverge from the upstream `skills-lock.json` entry.
-- Removing only `~/dotfiles/.agents/skills/<name>` while leaving copies under `~/.cursor/skills`, `~/.gemini/skills`, or `~/.config/opencode/skills`.
+- Removing only `~/dotfiles/.agents/skills/<name>` while leaving copies under `~/.cursor/skills`, `~/.gemini/skills`, `~/.config/opencode/skills`, or `~/.claude/skills`.
+
+## Local Skill Authoring Rules
+
+手作りのローカル運用 skill（`~/dotfiles/.agents/skills/<name>/SKILL.md`）を書く・改訂するときは、次に従う。
+
+- frontmatter の `description` には発動条件（いつ使うか・使わないか）だけを書く。手順・ワークフロー・規約値の要約を混入させない。description だけを読んで本文を読まずに動く事故を防ぐため。
+- 同じルール・テンプレート・閾値を複数ファイルに重複して書かない。正式な定義は1箇所に置き、他の箇所はそこへの参照にする。
+- コマンドリファレンスの列挙が長くなる場合は `references/` に分離し、`SKILL.md` 本体は判断フロー・手順・チェックリストに絞る。
+- 文体は淡々とした実務トーンとし、誇張語・鼓舞表現を使わない（詳細は japanese-tech-writing skill を参照）。

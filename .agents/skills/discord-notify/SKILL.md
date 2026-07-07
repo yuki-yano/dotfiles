@@ -1,6 +1,6 @@
 ---
 name: discord-notify
-description: Discord 通知運用を統一する。ユーザーが明示要求した場合にのみ通知し、タイトル規約 `[$REPO_NAME] Codex ...` と詳細本文ルール（数百文字・改行）を守って Deno スクリプトで Webhook 送信する。実行主体が Claude か Codex かを判定し、username を切り替える運用に対応する。
+description: Discord への通知を送信する。ユーザーが「Discord通知も」「Discordにも通知」など明示的に要求したときに使う。
 ---
 
 # Discord Notify
@@ -36,6 +36,8 @@ REPO_NAME=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null 
 - Codex と判定した場合は `Codex notification`。
 - Claude と判定した場合は `Claude Code notification`。
 - 手動で固定したい場合は `--agent codex|claude` または `DISCORD_NOTIFY_AGENT` を使う。
+- 既定と異なる名前にしたい場合は `--username` または `DISCORD_NOTIFY_USER_NAME` を使う。Claude 判定時は文字列中の `Codex` を `Claude Code` に置換する。
+- アバターは既定で `https://avatars.githubusercontent.com/u/14957082` を使う。変更する場合は `--avatar-url` または `DISCORD_NOTIFY_AVATAR_URL` を使う。
 
 ## 実行手順
 
@@ -49,22 +51,8 @@ REPO_NAME=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null 
 - `DISCORD_WEBHOOK_URL`: 必須。`--webhook-url` 指定時は不要。
 - `DISCORD_USER_ID`: 任意。`--user-id` 指定時は不要。
 - `DISCORD_NOTIFY_AGENT`: 任意。`codex` または `claude` を指定して自動判定を上書きする。
-- `DISCORD_NOTIFY_USER_NAME`: 任意。既定値は `Codex notification`。Claude 判定時は `Codex` を `Claude Code` に置換して使う。
-- `DISCORD_NOTIFY_AVATAR_URL`: 任意。未指定時は `https://avatars.githubusercontent.com/u/14957082` を使う。
-
-推奨設定 (Codex):
-
-```bash
-export DISCORD_NOTIFY_USER_NAME="Codex notification"
-export DISCORD_NOTIFY_AVATAR_URL="https://avatars.githubusercontent.com/u/14957082"
-```
-
-推奨設定 (Claude):
-
-```bash
-export DISCORD_NOTIFY_USER_NAME="Claude Code notification"
-export DISCORD_NOTIFY_AVATAR_URL="https://avatars.githubusercontent.com/u/14957082"
-```
+- `DISCORD_NOTIFY_USER_NAME`: 任意。送信者名を指定する（詳細は「送信者名の切替」を参照）。
+- `DISCORD_NOTIFY_AVATAR_URL`: 任意。アバター URL を指定する（詳細は「送信者名の切替」を参照）。
 
 ## 実行例
 

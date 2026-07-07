@@ -1,6 +1,6 @@
 ---
 name: empirical-prompt-tuning
-description: agent 向けの skill、slash command、AGENTS.md/CLAUDE.md 節、タスクプロンプト、コード生成プロンプトを実証的に改善する。新規作成または大幅改訂した指示の明瞭性、trigger と本文の整合、実行時の不明瞭点、裁量補完、成功率を検証したいときに使う。Codex では、ユーザーが subagent 評価、並列評価、empirical evaluation、バイアス排除読みを明示した場合のみ新規 agent を dispatch し、それ以外は構造審査と評価設計に留める。
+description: agent 向けの skill、slash command、AGENTS.md/CLAUDE.md 節、タスクプロンプト、コード生成プロンプトを実証的に改善する。新規作成または大幅改訂した指示の明瞭性、trigger と本文の整合、実行時の不明瞭点、裁量補完、成功率を検証したいときに使う。
 metadata:
   short-description: agent 向け指示を実証評価して改善する
 ---
@@ -61,7 +61,7 @@ dispatch は不要。対象文書を読み、次を確認する。
 
 ### 2. Empirical Dispatch
 
-この手順は、ユーザーが subagent 評価を明示した場合だけ行う。
+この手順は、モード選択で empirical 評価モードと判定した場合だけ行う。
 
 - シナリオごとに新規 agent を起動する。
 - 同じ agent を次 iteration に使い回さない。前回の文脈を学習してしまうため。
@@ -183,8 +183,7 @@ empirical 評価モードでは、次を目安に停止する。
 
 ## Codex Notes
 
-- subagent を使う前に、ユーザーの依頼が明示的に subagent / delegation / parallel agent work を許可しているか確認する。
-- 明示がない場合は `spawn_agent` を使わない。
+- `spawn_agent` を使うかどうかは、モード選択の条件を満たす場合のみとする。
 - 評価 agent に編集させる場合は、書き込み範囲を分ける。読み取りだけで足りる評価では no-edit を維持する。
 - ローカルファイルを参照させる場合は絶対パスを渡す。
 - 既存の未コミット差分はユーザー作業の可能性があるため、評価や修正で巻き戻さない。
