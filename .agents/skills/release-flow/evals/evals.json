@@ -1,0 +1,17 @@
+{
+  "skill_name": "release-flow",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "opener-rate の今の差分を commit して、deploy と push もしておいて。リポジトリは ~/repos/github.com/yuki-yano/opener-rate",
+      "expected_output": "Web deploy 型と判別し、意図しない差分の確認 → commit → build preflight → push → pnpm run deploy → deploy 出力（URL/version ID）の検証と報告、という順序で進める。preflight 失敗時はリリースを止める",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "vde-monitor を commit して patch バージョンを上げて publish まで進めて。リポジトリは ~/repos/github.com/yuki-yano/vde-monitor",
+      "expected_output": "タグ publish 型と判別し、npm 公開済みバージョンの確認 → ci/build preflight → npm version patch → Bump commit → v タグ → push → gh run watch で publish.yml 監視 → npm view で公開検証、という一連の流れを実行または計画する",
+      "files": []
+    }
+  ]
+}

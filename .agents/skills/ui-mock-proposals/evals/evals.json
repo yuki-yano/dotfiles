@@ -1,0 +1,53 @@
+{
+  "skill_name": "ui-mock-proposals",
+  "evals": [
+    {
+      "id": 0,
+      "name": "statusline-colors",
+      "prompt": "vde-tmux の statusline の配色がちょっと地味で、アクティブな window がぱっと見で分かりにくい。何色か配色案を出して HTML で比較できるように書いてみてほしい。リポジトリは /Users/yuki-yano/repos/github.com/yuki-yano/vde-tmux にある。",
+      "expected_output": "実装の色トークンを調査した上で、現状 + 方向性の異なる複数の配色案を 1 つの自己完結 HTML にまとめ、TUI で再現できない装飾を含まない比較モックを提示する",
+      "files": [],
+      "assertions": [
+        "single-html-file: 全案が 1 つの HTML ファイルにまとまっている（案ごとの分割ファイルになっていない）",
+        "self-contained: 外部リソース参照がない（CDN の script/link、外部フォント、外部画像を含まない）",
+        "proposal-count: 「現状」セクションに加えて 3〜5 の配色案があり、各案に案 ID の見出しが付いている",
+        "pros-cons: 各案に方向性の説明と Pros/Cons が付いている",
+        "real-color-tokens: モックで使われている主要色がリポジトリ内の実際の色定義と一致する",
+        "tui-renderable: 案のプレビュー部分に box-shadow・グラデーション・角丸など端末で再現できない装飾を使っていない",
+        "naming-convention: ファイル名が <対象>-proposals.html または <対象>-compare.html 形式"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "duel-selection-button",
+      "prompt": "duel-logger の対戦記録フォームにある勝敗とか先攻後攻の選択ボタン、今どれが選択されてるのかが分かりにくい気がするんだよね。選択状態がはっきり分かる UI の案をいくつか HTML で出して比較させてほしい。リポジトリは /Users/yuki-yano/repos/github.com/yuki-yano/duel-logger。",
+      "expected_output": "実アプリのカラートークン・コンポーネント実装を調査した上で、現状 + 3〜5 案を 1 つの自己完結 HTML にまとめ、案ごとに ID と Pros/Cons を付けて提示する",
+      "files": [],
+      "assertions": [
+        "single-html-file: 全案が 1 つの HTML ファイルにまとまっている",
+        "self-contained: 外部リソース参照がない（CDN の script/link、外部フォント、外部画像を含まない）",
+        "proposal-count: 「現状」セクションに加えて 3〜5 案があり、各案に案 ID の見出しが付いている",
+        "pros-cons: 各案に方向性の説明と Pros/Cons が付いている",
+        "real-color-tokens: モックの主要色が duel-logger の実際のカラートークン定義と一致する",
+        "selection-states: 各案で「選択中」と「未選択」の両状態が並べて確認できる",
+        "naming-convention: ファイル名が <対象>-proposals.html または <対象>-compare.html 形式"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "sidebar-header-zero-base",
+      "prompt": "vde-tmux のサイドバーの header がリッチ感薄いんだよね。現状の形に囚われずゼロベースでいい感じの UI 案を複数 HTML で提案して。リポジトリは /Users/yuki-yano/repos/github.com/yuki-yano/vde-tmux。",
+      "expected_output": "現状の局所修正に留まらない方向性の異なる複数案を、TUI の技術的制約の範囲で 1 つの HTML にまとめ、推奨を押し付けずに提示する",
+      "files": [],
+      "assertions": [
+        "single-html-file: 全案が 1 つの HTML ファイルにまとまっている",
+        "self-contained: 外部リソース参照がない（CDN の script/link、外部フォント、外部画像を含まない）",
+        "proposal-count: 「現状」セクションに加えて 3〜5 案があり、各案に案 ID の見出しが付いている",
+        "distinct-directions: 各案の方向性が明確に異なり、現状への微修正の羅列になっていない",
+        "tui-renderable: 案のプレビュー部分に box-shadow・グラデーション・角丸など端末で再現できない装飾を使っていない",
+        "single-recommendation: 推奨は最大 1 案のみで、他の案も対等に提示されている",
+        "naming-convention: ファイル名が <対象>-proposals.html または <対象>-compare.html 形式"
+      ]
+    }
+  ]
+}
