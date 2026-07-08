@@ -9,8 +9,8 @@ statusline:
       colors:
         fg: "#232332"
         bg: "#98b2f6"
-      prefix: "#[fg=#98b2f6]\uE0B6#[default]"
-      suffix: "#[fg=#98b2f6]\uE0B4#[default]"
+      prefix: "#[fg=#98b2f6]#[default]"
+      suffix: "#[fg=#98b2f6]#[default]"
     other:
       format: " {session} "
       colors:
@@ -24,10 +24,30 @@ statusline:
       bg: "#7a52d0"
     inactive_colors:
       fg: "#9591ad"
-    prefix: " #[fg=#7a52d0]\uE0B6#[default]"
-    suffix: "#[fg=#7a52d0]\uE0B4#[default] "
+    prefix: " #[fg=#7a52d0]#[default]"
+    suffix: "#[fg=#7a52d0]#[default] "
     inactive_prefix: "  "
     inactive_suffix: "  "
+  windows:
+    separator: ""
+    current:
+      format: " {index}:{window} "
+      bold: false
+      colors:
+        fg: "#20233a"
+        bg: "#9d8cf5"
+      prefix: "#[fg=#9d8cf5]"
+      suffix: "#[fg=#9d8cf5,bg=default]#[default]"
+    other:
+      format: " {index}:{window} "
+      colors:
+        fg: "#9591ad"
+      prefix: "#[fg=#1a1926]"
+      suffix: "#[fg=#1a1926,bg=default]#[default]"
+    bell:
+      fg: "#ff6b6b"
+    activity:
+      fg: "#ff6b6b"
   summary:
     hide_idle: false
   attention:
