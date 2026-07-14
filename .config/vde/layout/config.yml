@@ -74,3 +74,31 @@ presets:
             - name: editprompt-claude
               command: "editprompt open --target-pane {{pane_id:claude}}"
               ephemeral: true
+
+  cc-grid:
+    name: cc-grid
+    description: "Three Codex panes above three Claude panes"
+    windowMode: current-window
+    layout:
+      type: vertical
+      ratio: [1, 1]
+      panes:
+        - type: horizontal
+          ratio: [1, 1, 1]
+          panes:
+            - name: codex-1
+              command: "codex --yolo"
+              focus: true
+            - name: codex-2
+              command: "codex --yolo"
+            - name: codex-3
+              command: "codex --yolo"
+        - type: horizontal
+          ratio: [1, 1, 1]
+          panes:
+            - name: claude-1
+              command: "claude --dangerously-skip-permissions"
+            - name: claude-2
+              command: "claude --dangerously-skip-permissions"
+            - name: claude-3
+              command: "claude --dangerously-skip-permissions"
