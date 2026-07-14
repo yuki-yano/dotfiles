@@ -37,10 +37,12 @@ git diff --cached
 
 ## 完了後クリーンアップ（成功時のみ）
 
+全コミットと検証が成功した場合は、作成したバックアップブランチも削除してよい。
+失敗時や停止時は、復旧確認用にバックアップブランチを残す。
+
 ```bash
 rm -rf .git/commit-plan
-# バックアップブランチ削除はユーザー確認後
-# git branch -d "$BACKUP_BRANCH"
+git branch -d "$BACKUP_BRANCH"
 ```
 
 ## 失敗時の報告項目
