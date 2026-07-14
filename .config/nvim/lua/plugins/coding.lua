@@ -262,6 +262,10 @@ return {
           name = 'coding_agent_slash',
           priority = 900,
         })
+        table.insert(sources, 1, {
+          name = 'panepilot',
+          priority = 800,
+        })
       end
 
       -- local tabnine = require('cmp_tabnine.config')
@@ -388,6 +392,7 @@ return {
                 coding_agent_dollar = '[Agent $]',
                 coding_agent_slash = '[Agent /]',
                 prompt_abbr = '[Prompt Abbr]',
+                panepilot = '[Panepilot]',
               }
 
               vim_item = require('tailwindcss-colorizer-cmp').formatter(entry, vim_item)

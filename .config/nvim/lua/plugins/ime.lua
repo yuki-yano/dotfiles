@@ -196,7 +196,32 @@ return {
             vim.bo[bufnr].filetype = 'markdown.editprompt'
             vim.opt_local.virtualedit = 'block'
 
+            local panepilot = require('panepilot')
+            local cmp = require('cmp')
+            local fallback = require('fallback_map')
+            fallback.register('i', '<Tab>', {
+              priority = 300,
+              enabled = panepilot.visible,
+              run = function()
+                return '<Cmd>lua require("panepilot").accept()<CR>'
+              end,
+            }, { buffer = bufnr })
+            fallback.register('i', '<Tab>', {
+              priority = 250,
+              enabled = cmp.visible,
+              run = function()
+                return '<Cmd>lua require("cmp").confirm({ select = true })<CR>'
+              end,
+            }, { buffer = bufnr })
+            fallback.register('i', '<Tab>', {
+              priority = 150,
+              run = function()
+                return '<Cmd>lua require("panepilot").trigger()<CR>'
+              end,
+            }, { buffer = bufnr })
+
             vim.keymap.set({ 'n', 'i' }, '<C-g>', '<Cmd>quit!<CR>', map_opts)
+            vim.keymap.set('i', '<C-]>', panepilot.dismiss, map_opts)
             vim.keymap.set('i', '<C-a>', '<C-g>U<Home>', map_opts)
             vim.keymap.set('i', '<C-e>', '<C-g>U<End>', map_opts)
             vim.keymap.set('n', 'q', function()
@@ -360,6 +385,25 @@ return {
         on_error = function(_, _, result)
           vim.notify('editprompt failed: ' .. (result.stderr or 'unknown error'), vim.log.levels.ERROR)
         end,
+      })
+    end,
+  },
+  {
+    'yuki-yano/panepilot.nvim',
+    dev = true,
+    cond = function()
+      return ime.is_editprompt()
+    end,
+    lazy = false,
+    dependencies = {
+      'hrsh7th/nvim-cmp',
+      { 'yuki-yano/fallback-map.nvim', dev = true },
+    },
+    config = function()
+      require('panepilot').setup({
+        cmp = {
+          dismiss_ghost_on_menu_open = false,
+        },
       })
     end,
   },
