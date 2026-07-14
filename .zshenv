@@ -37,6 +37,9 @@ path=(/opt/homebrew/bin(N-/) /usr/local/bin(N-/) /usr/bin(N-/) /bin(N-/) /sbin(N
 # mise
 path=(${MISE_SHIMS_DIR}(N-/) $path)
 
+# cargo
+path=(~/.cargo/bin(N-/) $path)
+
 # pnpm
 path=($PNPM_HOME(N-/) $path)
 
