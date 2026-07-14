@@ -61,6 +61,22 @@
           { "type": "command", "command": "vt hook codex UserPromptSubmit" }
         ]
       }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "vde-monitor-hook codex SubagentStart" },
+          { "type": "command", "command": "vt hook codex SubagentStart" }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "vde-monitor-hook codex SubagentStop" },
+          { "type": "command", "command": "vt hook codex SubagentStop" }
+        ]
+      }
     ]
   }
 }

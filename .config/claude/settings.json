@@ -95,6 +95,34 @@
         ]
       }
     ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "vde-monitor-hook SubagentStart"
+          },
+          {
+            "type": "command",
+            "command": "vt hook claude SubagentStart"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "vde-monitor-hook SubagentStop"
+          },
+          {
+            "type": "command",
+            "command": "vt hook claude SubagentStop"
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "matcher": "startup|resume|clear",
