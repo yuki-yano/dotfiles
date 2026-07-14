@@ -2,6 +2,7 @@
 experimental = true
 disable_backends = ["asdf", "vfox"]
 idiomatic_version_file_enable_tools = ["node"]
+minimum_release_age_excludes = ["npm:@openai/codex", "cargo:vde-tmux"]
 
 [settings.pipx]
 uvx = true
