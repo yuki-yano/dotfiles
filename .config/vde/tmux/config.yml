@@ -1,66 +1,107 @@
+# Catppuccin Mocha / チップ一体化 × 低明度アクティブ(案i)
+# statusline active: lavender tint #4b4e6c + lavender fg / inactive: surface0 #313244
+# sidebar/filter active: lavender tint #434662
+
+daemon:
+  poll_ms: 2000
+  done_clear_on: pane
+
 statusline:
+  session_badge:
+    mode: counts
+    chip:
+      bg: "#313244"
+      cap_left: ""
+      cap_right: ""
   sessions:
-    show_index: true
-    badge_style: outer
-    separator: "#[fg=#8f8ba8] #[default]"
+    show_index: false
+    badge_style: chip
+    separator: "#[fg=#585b70] #[default]"
     current:
-      format: " {session} "
-      bold: true
-      colors:
-        fg: "#232332"
-        bg: "#98b2f6"
-      prefix: "#[fg=#98b2f6]#[default]"
-      suffix: "#[fg=#98b2f6]#[default]"
-    other:
-      format: " {session} "
-      colors:
-        fg: "#9591ad"
-  category:
-    mode: list
-    format: " {category}  "
-    inactive_format: " {category}  "
-    colors:
-      fg: "#ecebff"
-      bg: "#7a52d0"
-    inactive_colors:
-      fg: "#9591ad"
-    prefix: " #[fg=#7a52d0]#[default]"
-    suffix: "#[fg=#7a52d0]#[default] "
-    inactive_prefix: "  "
-    inactive_suffix: "  "
-  windows:
-    separator: ""
-    current:
-      format: " {index}:{window} "
+      format: " #[fg=#f5e0dc]{index}#[fg=#cdd6f4]: {session} "
       bold: false
       colors:
-        fg: "#20233a"
-        bg: "#9d8cf5"
-      prefix: "#[fg=#9d8cf5]"
-      suffix: "#[fg=#9d8cf5,bg=default]#[default]"
+        fg: "#cdd6f4"
+        bg: "#4b4e6c"
+      prefix: "#[fg=#4b4e6c]#[default]"
+      suffix: "#[fg=#4b4e6c]#[default]"
+    other:
+      format: " {index}: {session} "
+      colors:
+        fg: "#a6adc8"
+        bg: "#313244"
+      prefix: "#[fg=#313244]#[default]"
+      suffix: "#[fg=#313244]#[default]"
+  category:
+    mode: list
+    format: " {badge}{category}  "
+    inactive_format: " {badge}{category}  "
+    badge_style: chip
+    bold: false
+    agent_badge:
+      enabled: true
+      mode: counts
+    colors:
+      fg: "#b4befe"
+      bg: "#4b4e6c"
+    inactive_colors:
+      fg: "#a6adc8"
+      bg: "#313244"
+    prefix: " #[fg=#4b4e6c]#[default]"
+    suffix: "#[fg=#4b4e6c]#[default] "
+    inactive_prefix: " #[fg=#313244]#[default]"
+    inactive_suffix: "#[fg=#313244,bg=default]#[default] "
+  windows:
+    separator: ""
+    agent_badge:
+      enabled: false
+    current:
+      format: " {index}:{window} "
+      bold: true
+      colors:
+        fg: "#cdd6f4"
+      prefix: "#[fg=#b4befe]▍"
+      suffix: "#[fg=#1e1e2e,bg=default]#[default]"
     other:
       format: " {index}:{window} "
       colors:
-        fg: "#9591ad"
-      prefix: "#[fg=#1a1926]"
-      suffix: "#[fg=#1a1926,bg=default]#[default]"
+        fg: "#7f849c"
+      prefix: "#[fg=#1e1e2e]"
+      suffix: "#[fg=#1e1e2e,bg=default]#[default]"
     bell:
-      fg: "#ff6b6b"
+      fg: "#f38ba8"
     activity:
-      fg: "#ff6b6b"
+      fg: "#f38ba8"
+  panes:
+    current:
+      format: " {pane}  {detail} "
+      colors:
+        fg: "#cdd6f4"
+        bg: "#45475a"
+        outer_bg: "#1e1e2e"
+      prefix: "#[fg=#45475a,bg=#1e1e2e]"
+      suffix: "#[fg=#45475a,bg=#1e1e2e]#[default]"
+    other:
+      format: " {pane} #[fg=#6c7086]#[fg=#a6adc8] {detail} "
+      colors:
+        fg: "#a6adc8"
+        bg: "#313244"
+        outer_bg: "#1e1e2e"
+      prefix: "#[fg=#313244,bg=#1e1e2e]"
+      suffix: "#[fg=#313244,bg=#1e1e2e]#[default]"
   summary:
     hide_idle: false
   attention:
     format: "{attention}"
     colors:
-      fg: "#ff6b6b"
+      fg: "#f38ba8"
 
 badge:
   colors:
-    blocked: "#ff7a7a"
-    working: "#57d98a"
-    done: "#5aa6ff"
-    idle: "#8b86a3"
+    blocked: "#f38ba8"
+    working: "#a6e3a1"
+    done: "#89b4fa"
+    idle: "#7f849c"
 
 categories:
   display_names:
@@ -90,27 +131,42 @@ categories:
 sidebar:
   width: "10%"
   header:
-    format: " {label} "
+    format: " {label} ▾ "
     prefix: ""
-    suffix: ""
-    bold: false
+    suffix: ""
+    bold: true
     chip_prefix: ""
     chip_suffix: ""
     colors:
-      fg: "#232332"
-      bg: "#98b2f6"
-      outer_bg: "#272e42"
+      fg: "#b4befe"
+      bg: "reset"
   live:
     lines: 20
   colors:
-    header_mode: "#e4e4e4"
-    header_chip_fg: "#232332"
-    header_total_bg: "#4d5a8a"
-    header_total_fg: "#dfe4ff"
-    active_bg: "#272e42"
-    active_bar: "#98b2f6"
-    toggle: "#98b2f6"
-    category: "#ffaf5f"
-    branch: "#7aa9b8"
-    detail: "#918da3"
-    marker: "#5a5670"
+    action_icon: "#74c7ec"
+    badge_blocked: "#f38ba8"
+    badge_working: "#a6e3a1"
+    badge_done: "#89b4fa"
+    badge_idle: "#6c7086"
+    header_chip_fg: "#cdd6f4"
+    header_filter_bg: "#434662"
+    header_total_bg: "reset"
+    header_total_fg: "reset"
+    header_mode: "#434662"
+    active_bg: "#313244"
+    active_bar: "#b4befe"
+    toggle: "#b4befe"
+    selection_bg: "#2c2e40"
+    category: "#cba6f7"
+    branch: "#fab387"
+    detail: "#7f849c"
+    marker: "#585b70"
+    repo: "#a8c3f7"
+    task_working: "#f9e2af"
+    task_done: "#89b4fa"
+    task_pending: "#585b70"
+    task_label: "#9399b2"
+    subagent_label: "#74c7ec"
+    subagent_id: "#74c7ec"
+    worktree: "#94e2d5"
+    worktree_activity: "#94e2d5"
