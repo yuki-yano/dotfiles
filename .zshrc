@@ -201,7 +201,7 @@ fi
 # }}}
 
 # safe-chain {{{
-[[ -f ~/.safe-chain/scripts/init-posix.sh ]] && source ~/.safe-chain/scripts/init-posix.sh
+# [[ -f ~/.safe-chain/scripts/init-posix.sh ]] && source ~/.safe-chain/scripts/init-posix.sh
 # }}}
 
 # }}}
