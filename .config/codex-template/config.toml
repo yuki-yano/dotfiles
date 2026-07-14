@@ -1,12 +1,13 @@
 # @nvim.on_save deno task codex:template -- --apply
-model = "gpt-5.5"
-model_context_window = 1000000
-# model_auto_compact_token_limit = 950000
-model_reasoning_effort = "xhigh"
-plan_mode_reasoning_effort = "xhigh"
+model = "gpt-5.6-sol"
+# model_context_window = 272000
+# model_auto_compact_token_limit = 240000
+model_reasoning_effort = "high"
+plan_mode_reasoning_effort = "high"
 network_access = true
 disable_response_storage = true
 web_search = "live"
+
 notify = [
   "vde-notifier",
   "--codex",
@@ -44,6 +45,10 @@ fast_mode = true
 js_repl = true
 hooks = true
 plugin_hooks = true
+
+[features.multi_agent_v2]
+hide_spawn_agent_metadata = false
+tool_namespace = "agents"
 
 [tui]
 status_line = ["model-with-reasoning", "git-branch", "context-remaining", "context-window-size", "fast-mode", "weekly-limit", "five-hour-limit"]
