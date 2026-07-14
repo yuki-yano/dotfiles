@@ -1,4 +1,5 @@
 local color = require('rc.modules.color')
+local is_editprompt = require('rc.modules.ime').is_editprompt
 
 return {
   {
@@ -152,8 +153,10 @@ return {
       vim.g.backandforward_config = {
         define_commands = false,
       }
-      vim.keymap.set({ 'n' }, '<C-b>', '<Plug>(backandforward-back)')
-      vim.keymap.set({ 'n' }, '<C-f>', '<Plug>(backandforward-forward)')
+      if not is_editprompt() then
+        vim.keymap.set({ 'n' }, '<C-b>', '<Plug>(backandforward-back)')
+        vim.keymap.set({ 'n' }, '<C-f>', '<Plug>(backandforward-forward)')
+      end
     end,
   },
   {

@@ -1,6 +1,14 @@
 import { assert, assertEquals } from "jsr:@std/assert@1";
 
 const source = await Deno.readTextFile(".config/nvim/lua/plugins/ime.lua");
+const moveSource = await Deno.readTextFile(".config/nvim/lua/plugins/move.lua");
+
+Deno.test("editprompt does not override normal C-b and C-f with back/forward mappings", () => {
+  assert(
+    /if not is_editprompt\(\) then\s+vim\.keymap\.set\(\{ 'n' \}, '<C-b>', '<Plug>\(backandforward-back\)'\)\s+vim\.keymap\.set\(\{ 'n' \}, '<C-f>', '<Plug>\(backandforward-forward\)'\)\s+end/
+      .test(moveSource),
+  );
+});
 
 Deno.test("editprompt stash records the current buffer in history before pushing stash", () => {
   assert(
