@@ -210,7 +210,7 @@ return {
               priority = 250,
               enabled = cmp.visible,
               run = function()
-                return '<Cmd>lua require("cmp").confirm({ select = true })<CR>'
+                return '<Cmd>lua vim.go.undolevels = vim.go.undolevels; require("cmp").confirm({ select = true })<CR>'
               end,
             }, { buffer = bufnr })
             fallback.register('i', '<Tab>', {
@@ -401,6 +401,15 @@ return {
     },
     config = function()
       require('panepilot').setup({
+        backend = 'openai',
+        openai = {
+          model = 'gpt-5.6-luna',
+          reasoning_effort = 'low',
+        },
+        codex = {
+          model = 'gpt-5.3-codex-spark',
+          reasoning_effort = 'low',
+        },
         cmp = {
           dismiss_ghost_on_menu_open = false,
         },
