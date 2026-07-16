@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="generator" content="build-technical-explainer">
+  <meta http-equiv="Content-Security-Policy" content="<%= @csp %>">
+  <title><%= @title %></title>
+  <style>
+<%= @css %>
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#content">本文へ移動</a>
+  <div class="document-shell">
+    <header class="document-header">
+      <div class="document-meta" aria-label="資料情報"><%= @meta_html %></div>
+      <h1><%= @title %></h1>
+      <p class="document-summary"><%= @summary %></p>
+      <%= @tags_html %>
+    </header>
+
+    <%= @metrics_html %>
+    <%= @related_artifacts_html %>
+
+    <div class="reading-layout">
+      <nav class="toc" aria-label="目次">
+        <p class="toc-title">目次</p>
+        <ol><%= @toc_html %></ol>
+      </nav>
+
+      <main id="content" tabindex="-1">
+        <%= @sections_html %>
+        <%= @sources_html %>
+      </main>
+    </div>
+
+    <footer class="document-footer">
+      <span>YAMLから生成</span>
+      <span><%= @footer_capability %></span>
+    </footer>
+  </div>
+  <%= @script_html %>
+</body>
+</html>

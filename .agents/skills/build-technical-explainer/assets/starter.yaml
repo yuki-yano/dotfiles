@@ -1,0 +1,35 @@
+version: 1
+
+document:
+  title: "技術説明資料"
+  summary: "結論を1〜3文で先に記述する。"
+  kind: research
+  status: draft
+  visibility: private
+  updated: "__DATE__"
+  audience: "意思決定者と実装者"
+  tags: []
+
+metrics: []
+
+related_artifacts: []
+
+sections:
+  - id: conclusion
+    title: "結論"
+    lead: "判断と、その根拠を短く示す。"
+    blocks:
+      - type: prose
+        text: |-
+          ここに本文を書く。
+
+  - id: evidence
+    title: "根拠"
+    blocks:
+      - type: table
+        caption: "主要な観測値"
+        columns: ["指標", "結果", "解釈"]
+        rows:
+          - ["例", "0", "実データへ置き換える"]
+
+sources: []

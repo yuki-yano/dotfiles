@@ -1,0 +1,6 @@
+interface:
+  display_name: "Technical Explainer"
+  short_description: "調査・監査結果を限定的な図表付き静的HTML資料へ変換"
+  default_prompt: "$build-technical-explainer を使って、この調査結果を出典と判断根拠が追えるコンパクトなHTML説明資料にしてください。"
+policy:
+  allow_implicit_invocation: true

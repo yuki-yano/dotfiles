@@ -1,0 +1,6 @@
+interface:
+  display_name: "UI Mock Proposals"
+  short_description: "実装可能な複数UI案を単一の静的HTMLで比較・選択する"
+  default_prompt: "$ui-mock-proposals を使って、このUIの現状と方向性の異なる改善案を単一HTMLで比較できるようにしてください。"
+policy:
+  allow_implicit_invocation: true
