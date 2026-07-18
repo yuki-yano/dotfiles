@@ -45,6 +45,16 @@
         ]
       }
     ],
+    "PostToolBatch": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$HOME/.config/claude/hooks/compact-guard.sh\""
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "hooks": [
@@ -93,6 +103,24 @@
             "command": "vt hook claude UserPromptSubmit"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$HOME/.config/claude/hooks/compact-guard.sh\""
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$HOME/.config/claude/hooks/compact-precompact.sh\""
+          }
+        ]
       }
     ],
     "SubagentStart": [
@@ -130,6 +158,15 @@
           {
             "type": "command",
             "command": "vt hook claude SessionStart"
+          }
+        ]
+      },
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$HOME/.config/claude/hooks/compact-recovery.sh\""
           }
         ]
       }

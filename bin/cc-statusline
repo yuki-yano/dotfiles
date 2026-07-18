@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-read --allow-run --allow-env
+#!/usr/bin/env -S deno run --allow-read --allow-run --allow-env --allow-write=/var/folders,/tmp
 
 import { readAll } from "jsr:@std/io@0.224/read-all";
 
@@ -25,6 +25,7 @@ type RateLimitHealth = {
 };
 
 type StatusLineInput = {
+  session_id?: string;
   model?: {
     display_name?: string;
   };
@@ -318,9 +319,46 @@ function formatModelItem(modelDisplay: string, effortLevel?: string): string {
   return `${rgb(PALETTE.overlay0)}󰚩${RESET}  ${model} ${effort}`;
 }
 
+// Compact checkpoint: write a warn marker when context usage crosses a band.
+// compact-guard.sh (UserPromptSubmit/PostToolBatch hook) consumes the marker and
+// nudges the agent to checkpoint state; it records the band as the cooldown.
+const COMPACT_WARN_BANDS = [90, 75, 60];
+
+function maybeWriteCompactWarnMarker(input: StatusLineInput): void {
+  const sessionId = input.session_id;
+  const usedPct = input.context_window?.used_percentage;
+  if (!sessionId || !/^[0-9a-zA-Z-]+$/.test(sessionId)) return;
+  if (typeof usedPct !== "number") return;
+  const band = COMPACT_WARN_BANDS.find((threshold) => usedPct >= threshold) ?? 0;
+  if (band === 0) return;
+  const tmpDir = Deno.env.get("TMPDIR") ?? "/tmp";
+  let warned = 0;
+  try {
+    warned = Number.parseInt(
+      Deno.readTextFileSync(`${tmpDir}/claude-compact-warned/${sessionId}`).trim(),
+      10,
+    ) || 0;
+  } catch {
+    // no cooldown yet
+  }
+  if (band <= warned) return;
+  const warnDir = `${tmpDir}/claude-compact-warn`;
+  Deno.mkdirSync(warnDir, { recursive: true, mode: 0o700 });
+  Deno.chmodSync(warnDir, 0o700);
+  const markerPath = `${warnDir}/${sessionId}`;
+  Deno.writeTextFileSync(markerPath, `${usedPct} ${band}\n`, { mode: 0o600 });
+  Deno.chmodSync(markerPath, 0o600);
+}
+
 async function main() {
   const stdin = await readAll(Deno.stdin);
   const input = JSON.parse(new TextDecoder().decode(stdin)) as StatusLineInput;
+
+  try {
+    maybeWriteCompactWarnMarker(input);
+  } catch {
+    // never break statusline rendering
+  }
 
   const modelDisplay = input.model?.display_name || "Unknown";
   const effortLevel = input.effort?.level;
