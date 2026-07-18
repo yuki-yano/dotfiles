@@ -22,12 +22,28 @@ max_threads = 32
 max_depth = 2
 
 [agents.explorer]
-description = "Codebase research agent. Use for all code investigation, no edits."
+description = "Static codebase explorer. Use to locate files, trace code paths, and map architecture before decisions. No edits, runtime diagnosis, review verdicts, or acceptance testing."
 config_file = "~/.codex/agents/explorer.toml"
 
 [agents.worker]
-description = "Coding and bug fix agent. Use for implementation, refactoring, and running tests."
+description = "Implementation agent. Use after the scope is understood to edit code, refactor, and run change-local tests. It must not independently approve its own work."
 config_file = "~/.codex/agents/worker.toml"
+
+[agents.reviewer]
+description = "Independent static reviewer. Use after implementation or before merge to find correctness, security, regression, and maintainability issues. No edits or acceptance execution."
+config_file = "~/.codex/agents/reviewer.toml"
+
+[agents.verifier]
+description = "Independent acceptance verifier. Use to run existing checks and evaluate DoD or behavior claims with evidence. No implementation or fixes."
+config_file = "~/.codex/agents/verifier.toml"
+
+[agents.spec_critic]
+description = "Pre-implementation specification critic. Use to audit plans and designs for contradictions, missing states, failure handling, and measurable DoD. No edits or implementation."
+config_file = "~/.codex/agents/spec_critic.toml"
+
+[agents.diagnostician]
+description = "Runtime diagnosis agent. Use for observed bugs involving logs, processes, browsers, tmux, OS state, or reproduction. No source edits or final review verdicts."
+config_file = "~/.codex/agents/diagnostician.toml"
 
 [features]
 unified_exec = true
