@@ -177,10 +177,9 @@
     "command": "cc-statusline"
   },
   "enabledPlugins": {
-    "superpowers@superpowers-marketplace": true,
+    "superpowers@superpowers-marketplace": false,
     "context-mode@context-mode": false,
-    "toolcall-recover@nam-tech-studio": true,
-    "compact-plus@compact-plus-local": true
+    "toolcall-recover@nam-tech-studio": true
   },
   "extraKnownMarketplaces": {
     "superpowers-marketplace": {
@@ -199,12 +198,6 @@
       "source": {
         "source": "github",
         "repo": "nam-tech-studio/toolcall-recover"
-      }
-    },
-    "compact-plus-local": {
-      "source": {
-        "source": "github",
-        "repo": "u-ichi/compact-plus"
       }
     }
   },

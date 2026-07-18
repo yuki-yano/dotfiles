@@ -55,13 +55,14 @@ const CODEX_PLUGIN_DEFINITIONS: readonly CodexPluginDefinition[] = [
   },
 ];
 
-export type ClaudePluginId = "superpowers" | "compact-plus";
+export type ClaudePluginId = "superpowers";
 
 export type ClaudePluginDefinition = {
   id: ClaudePluginId;
   marketplaceName: string;
   marketplaceSource: string;
   plugin: string;
+  enabled: boolean;
 };
 
 export const CLAUDE_PLUGIN_DEFINITIONS: readonly ClaudePluginDefinition[] = [
@@ -70,12 +71,7 @@ export const CLAUDE_PLUGIN_DEFINITIONS: readonly ClaudePluginDefinition[] = [
     marketplaceName: "superpowers-marketplace",
     marketplaceSource: "obra/superpowers-marketplace",
     plugin: "superpowers@superpowers-marketplace",
-  },
-  {
-    id: "compact-plus",
-    marketplaceName: "compact-plus-local",
-    marketplaceSource: "u-ichi/compact-plus",
-    plugin: "compact-plus@compact-plus-local",
+    enabled: false,
   },
 ];
 const SHELDON_CONFIG_FILE = `${SRC_DIR}/.config/sheldon/plugins.toml`;
@@ -306,14 +302,28 @@ function isClaudeMarketplaceConfigured(
 
 type ClaudePluginStatus = {
   installed: boolean;
-  disabled: boolean;
+  enabled: boolean;
 };
 
 function getClaudePluginStatus(pluginList: string, pluginSelector: string): ClaudePluginStatus {
-  const line = pluginList.split("\n").find((line) => line.includes(pluginSelector));
+  const plugins: unknown = JSON.parse(pluginList);
+  if (!Array.isArray(plugins)) {
+    throw new Error("Claude plugin list JSON must be an array");
+  }
+
+  const plugin = plugins.find((entry) =>
+    typeof entry === "object" && entry !== null && "id" in entry && entry.id === pluginSelector
+  );
+  if (!plugin) {
+    return { installed: false, enabled: false };
+  }
+  if (!("enabled" in plugin) || typeof plugin.enabled !== "boolean") {
+    throw new Error(`Claude plugin '${pluginSelector}' has no boolean enabled state`);
+  }
+
   return {
-    installed: Boolean(line),
-    disabled: Boolean(line?.toLowerCase().includes("disabled")),
+    installed: true,
+    enabled: plugin.enabled,
   };
 }
 
@@ -589,32 +599,38 @@ async function ensureClaudeMarketplace(definition: ClaudePluginDefinition): Prom
 async function ensureClaudePlugin(definition: ClaudePluginDefinition): Promise<void> {
   await ensureCommandOnPath("claude");
 
-  const pluginList = await readCommandOutput("claude", ["plugin", "list"]);
+  const pluginList = await readCommandOutput("claude", ["plugin", "list", "--json"]);
   const status = getClaudePluginStatus(pluginList, definition.plugin);
-  if (status.installed && !status.disabled) {
-    console.log(`Claude: ${definition.plugin} is already installed and enabled`);
+  const desiredState = definition.enabled ? "enabled" : "disabled";
+  if (status.installed && status.enabled === definition.enabled) {
+    console.log(`Claude: ${definition.plugin} is already installed and ${desiredState}`);
     return;
   }
 
-  if (status.installed && status.disabled) {
-    const args = ["plugin", "enable", definition.plugin];
+  if (!status.installed) {
+    const installArgs = ["plugin", "install", "--scope", "user", definition.plugin];
     if (DRY_RUN) {
-      console.log(`[DRY RUN] Claude: would run: ${commandDisplay("claude", args)}`);
+      console.log(`[DRY RUN] Claude: would run: ${commandDisplay("claude", installArgs)}`);
+      if (!definition.enabled) {
+        const disableArgs = ["plugin", "disable", "--scope", "user", definition.plugin];
+        console.log(`[DRY RUN] Claude: would run: ${commandDisplay("claude", disableArgs)}`);
+      }
       return;
     }
 
-    console.log(`Claude: enabling ${definition.plugin}`);
-    await runRequiredCommand("claude", args);
-    return;
+    console.log(`Claude: installing ${definition.plugin}`);
+    await runRequiredCommand("claude", installArgs);
+    if (definition.enabled) return;
   }
 
-  const args = ["plugin", "install", "--scope", "user", definition.plugin];
+  const action = definition.enabled ? "enable" : "disable";
+  const args = ["plugin", action, "--scope", "user", definition.plugin];
   if (DRY_RUN) {
     console.log(`[DRY RUN] Claude: would run: ${commandDisplay("claude", args)}`);
     return;
   }
 
-  console.log(`Claude: installing ${definition.plugin}`);
+  console.log(`Claude: ${action === "enable" ? "enabling" : "disabling"} ${definition.plugin}`);
   await runRequiredCommand("claude", args);
 }
 
