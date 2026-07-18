@@ -1,0 +1,4 @@
+interface:
+  display_name: "Improve"
+  short_description: "コードベースを監査し、根拠付きの改善バックログを作成する"
+  default_prompt: "$improve を使って、このコードベースを監査し、優先順位付きの改善候補を日本語で整理してください。"
