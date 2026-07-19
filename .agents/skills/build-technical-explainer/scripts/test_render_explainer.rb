@@ -48,6 +48,7 @@ class RenderExplainerTest < Minitest::Test
     assert_includes html, "機能完了条件"
     assert_includes html, "class=\"checkmark\""
     assert_includes html, "@media (max-width: 760px)"
+    assert_match(/@media \(max-width: 760px\).*?table,\s+caption,\s+tbody,/m, html)
     assert_includes html, "td::before"
     refute_match(/<script\b/i, html)
   end
