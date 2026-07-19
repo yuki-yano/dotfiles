@@ -1,5 +1,6 @@
-# Catppuccin Mocha / チップ一体化 × 低明度アクティブ(案i)
-# statusline active: lavender tint #4b4e6c + lavender fg / inactive: surface0 #313244
+# Catppuccin Mocha / 色相ゾーニング × 低明度アクティブ (pane25 案A hue-zones)
+# category: mauve系chip active #4c3d6e + #cba6f7 / inactive #332c46 + #a495c2
+# statusline session active: #4d5080 + bold + fg #e8ecfb / inactive: surface0 #313244
 # sidebar/filter active: lavender tint #434662
 
 daemon:
@@ -15,16 +16,17 @@ statusline:
       cap_right: ""
   sessions:
     show_index: false
+    fixed_width: true
     badge_style: chip
     separator: "#[fg=#585b70] #[default]"
     current:
-      format: " #[fg=#f5e0dc]{index}#[fg=#cdd6f4]: {session} "
-      bold: false
+      format: " #[fg=#f5e0dc]{index}#[fg=#e8ecfb]: {session} "
+      bold: true
       colors:
-        fg: "#cdd6f4"
-        bg: "#4b4e6c"
-      prefix: "#[fg=#4b4e6c]#[default]"
-      suffix: "#[fg=#4b4e6c]#[default]"
+        fg: "#e8ecfb"
+        bg: "#4d5080"
+      prefix: "#[fg=#4d5080]#[default]"
+      suffix: "#[fg=#4d5080]#[default]"
     other:
       format: " {index}: {session} "
       colors:
@@ -42,15 +44,15 @@ statusline:
       enabled: true
       mode: counts
     colors:
-      fg: "#b4befe"
-      bg: "#4b4e6c"
+      fg: "#cba6f7"
+      bg: "#4c3d6e"
     inactive_colors:
-      fg: "#a6adc8"
-      bg: "#313244"
-    prefix: " #[fg=#4b4e6c]#[default]"
-    suffix: "#[fg=#4b4e6c]#[default] "
-    inactive_prefix: " #[fg=#313244]#[default]"
-    inactive_suffix: "#[fg=#313244,bg=default]#[default] "
+      fg: "#a495c2"
+      bg: "#332c46"
+    prefix: " #[fg=#4c3d6e]#[default]"
+    suffix: "#[fg=#4c3d6e]#[default] "
+    inactive_prefix: " #[fg=#332c46]#[default]"
+    inactive_suffix: "#[fg=#332c46,bg=default]#[default] "
   windows:
     separator: ""
     agent_badge:
@@ -101,7 +103,7 @@ badge:
     blocked: "#f38ba8"
     working: "#a6e3a1"
     done: "#89b4fa"
-    idle: "#7f849c"
+    idle: "#a6adc8"
 
 categories:
   display_names:
