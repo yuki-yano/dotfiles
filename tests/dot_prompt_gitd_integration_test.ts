@@ -50,6 +50,16 @@ async function register(socketPath: string, top: string, cachePath: string): Pro
   connection.close();
 }
 
+async function deleteWatchRoots(...roots: string[]): Promise<void> {
+  for (const root of roots) {
+    await new Deno.Command("watchman", {
+      args: ["watch-del", root],
+      stdout: "null",
+      stderr: "null",
+    }).output().catch(() => undefined);
+  }
+}
+
 async function cacheSignature(repoPath: string, cachePath: string): Promise<string> {
   const script = [
     'source "$1"',
@@ -187,11 +197,76 @@ Deno.test({
         }
         await daemon.status;
       }
-      await new Deno.Command("watchman", {
-        args: ["watch-del", repoPath],
+      await deleteWatchRoots(repoPath, join(repoPath, ".git"));
+      await Deno.remove(integrationRoot, { recursive: true });
+    }
+  },
+});
+
+Deno.test({
+  name: "Git refs の変更を検知し、push 後に ahead をゼロへ戻す",
+  ignore: !watchmanAvailable,
+  async fn() {
+    const integrationRoot = await Deno.makeTempDir({ dir: "/tmp", prefix: "dp-gitd-refs-" });
+    const repoPath = join(integrationRoot, "repo");
+    const remotePath = join(integrationRoot, "remote.git");
+    const runtimePath = join(integrationRoot, "runtime");
+    const socketPath = join(runtimePath, "daemon.sock");
+    const logPath = join(runtimePath, "daemon.log");
+    const cachePath = join(integrationRoot, "cache", "status");
+    let daemon: Deno.ChildProcess | null = null;
+
+    try {
+      await run("git", ["init", "-q", "--bare", remotePath]);
+      await run("git", ["init", "-q", repoPath]);
+      await run("git", ["config", "user.email", "prompt-test@example.invalid"], repoPath);
+      await run("git", ["config", "user.name", "prompt-test"], repoPath);
+      await Deno.writeTextFile(join(repoPath, "tracked.txt"), "initial\n");
+      await run("git", ["add", "tracked.txt"], repoPath);
+      await run("git", ["commit", "-qm", "initial"], repoPath);
+      await run("git", ["remote", "add", "origin", remotePath], repoPath);
+      await run("git", ["push", "-qu", "origin", "HEAD:main"], repoPath);
+
+      daemon = new Deno.Command("deno", {
+        args: ["run", "--quiet", "-A", daemonScript],
+        cwd: repositoryRoot,
+        env: {
+          DOT_PROMPT_GITD_RUNTIME_BASE: runtimePath,
+          DOT_PROMPT_GITD_SOCKET_PATH: socketPath,
+        },
         stdout: "null",
         stderr: "null",
-      }).output().catch(() => undefined);
+      }).spawn();
+
+      await waitFor(() => {
+        try {
+          return Deno.statSync(socketPath).isSocket === true;
+        } catch {
+          return false;
+        }
+      });
+      await register(socketPath, repoPath, cachePath);
+      await waitFor(() => readText(cachePath).includes("ahead '0'"));
+
+      await run("git", ["commit", "--allow-empty", "-qm", "ahead"], repoPath);
+      await waitFor(() => readText(cachePath).includes("ahead '1'"));
+
+      await run("git", ["push", "-q"], repoPath);
+      try {
+        await waitFor(() => readText(cachePath).includes("ahead '0'"));
+      } catch (error) {
+        throw new Error(`${error}\ndaemon log:\n${readText(logPath)}\ncache:\n${readText(cachePath)}`);
+      }
+    } finally {
+      if (daemon) {
+        try {
+          daemon.kill("SIGTERM");
+        } catch {
+          // The daemon may already have exited after a startup failure.
+        }
+        await daemon.status;
+      }
+      await deleteWatchRoots(repoPath, join(repoPath, ".git"));
       await Deno.remove(integrationRoot, { recursive: true });
     }
   },

@@ -326,14 +326,23 @@ class GitPromptDaemon {
     if (!client) return;
     repo.subscriptions.clear();
 
-    const watchPaths = minimizeWatchPaths([repo.top, repo.gitDir, repo.commonDir]);
+    const watchTargets = [
+      { path: repo.top, metadataOnly: false, exact: false },
+      ...minimizeWatchPaths([repo.gitDir, repo.commonDir]).map((path) => ({
+        path,
+        metadataOnly: true,
+        exact: true,
+      })),
+    ];
     const targets = new Set<string>();
-    for (const path of watchPaths) {
-      const metadataOnly = !pathContains(repo.top, path);
-      const watched = await command(client, ["watch-project", path]);
+    for (const target of watchTargets) {
+      // Watchman applies shallow ignore_vcs handling to .git below a project
+      // root, so refs are only reliable when the metadata directory itself is
+      // an exact watch root. This adds subscriptions, not daemon processes.
+      const watched = await command(client, [target.exact ? "watch" : "watch-project", target.path]);
       const watchRoot = typeof watched.watch === "string" ? watched.watch : "";
       const relativeRoot = typeof watched.relative_path === "string" ? watched.relative_path : undefined;
-      if (!watchRoot) throw new Error(`Watchman returned no watch root for ${path}`);
+      if (!watchRoot) throw new Error(`Watchman returned no watch root for ${target.path}`);
       const targetKey = `${watchRoot}\0${relativeRoot ?? ""}`;
       if (targets.has(targetKey)) continue;
       targets.add(targetKey);
@@ -344,7 +353,7 @@ class GitPromptDaemon {
         // create/remove cycle changes the parent directory mtime; directories
         // themselves cannot affect Git status, so do not feed those events
         // back into another status refresh.
-        expression: createWatchExpression(metadataOnly),
+        expression: createWatchExpression(target.metadataOnly),
         fields: ["name"],
         defer_vcs: true,
         empty_on_fresh_instance: true,
