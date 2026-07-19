@@ -60,17 +60,26 @@ Expected result:
 
 ## Update External Skills
 
-Run from `~/dotfiles`:
+`skills` 1.5.19 の `update` は更新時の内部 `add` に対象 agent を引き継がない。
+このリポジトリにはローカル設定用の `.claude` があるため、`npx skills update -p`
+を実行すると Claude Code も自動検出され、不要な `.claude/skills/<name>` が作られる。
+`update` に `--agent` が追加されるまでは、このリポジトリで `npx skills update` を使わない。
+
+代わりに、下記の `Current Known External Sources` にある対象 source の `add` を
+`~/dotfiles` から再実行する。各コマンドは `-a codex` を明示するため、
+`.agents/skills` と `skills-lock.json` だけを更新する。
+
+単一 skill の更新例:
 
 ```bash
-npx --yes skills update <skill-name> -p -y
+npx --yes skills add <owner/repo> --skill <skill-name> -a codex -y
 ```
 
-For all project-managed skills:
+全 external skill の更新では、`Current Known External Sources` のコマンドをすべて再実行する。
 
-```bash
-npx --yes skills update -p -y
-```
+誤って `update` を実行した場合は、`.claude/skills` の各 entry が
+`../../.agents/skills/<name>` への symlink であることを確認し、その project alias だけを削除する。
+`.agents/skills` の実体や `.config/claude/skills` の global alias は削除しない。
 
 After updating, inspect:
 
@@ -164,6 +173,7 @@ External project skills:
 
 ```bash
 npx --yes skills add vercel-labs/agent-browser --skill agent-browser -a codex -y
+npx --yes skills add emilkowalski/skills --skill apple-design -a codex -y
 npx --yes skills add intellectronica/agent-skills --skill context7 -a codex -y
 npx --yes skills add vercel-labs/skills --skill find-skills -a codex -y
 npx --yes skills add anthropics/claude-code --skill frontend-design --full-depth -a codex -y

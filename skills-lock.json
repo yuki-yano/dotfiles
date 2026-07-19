@@ -7,6 +7,12 @@
       "skillPath": "skills/agent-browser/SKILL.md",
       "computedHash": "ecc7641aea05f85ca3b11e7759d32aaf52fe05946ab4b63739c7bf78a41237a2"
     },
+    "apple-design": {
+      "source": "emilkowalski/skills",
+      "sourceType": "github",
+      "skillPath": "skills/apple-design/SKILL.md",
+      "computedHash": "8b94db67cb9edaad5f1501010804caa610131f1d2dfda0a27664b2e858deade3"
+    },
     "cloudflare": {
       "source": "cloudflare/skills",
       "sourceType": "github",
@@ -35,19 +41,19 @@
       "source": "gotalab/goal-setter-skill",
       "sourceType": "github",
       "skillPath": "skills/goal-setter/SKILL.md",
-      "computedHash": "a022e4ca222fe8fda959a8bcb9ad661007af2d37adef634c28bff86e6437f94e"
+      "computedHash": "efe5aaafaf4803a5722ad5575159afe9f21e627c80eeba4871d01fcc7d5af59b"
     },
     "portless": {
       "source": "vercel-labs/portless",
       "sourceType": "github",
       "skillPath": "skills/portless/SKILL.md",
-      "computedHash": "0524d327402c4c29565791cb13dd959d0d03e4927c861dd22ab27d8fe8283460"
+      "computedHash": "bd43ba525a6cb1e6724b5a081c3c43c9b65843492e5e13fdb9d9a8f40ef70bd0"
     },
     "react-doctor": {
       "source": "millionco/react-doctor",
       "sourceType": "github",
       "skillPath": "skills/react-doctor/SKILL.md",
-      "computedHash": "fa180e84006740f0ad139f3d11bc9b1ba43de91b376e73d4e40b5e09e37fa9ed"
+      "computedHash": "209f6f7e46be4fa22317ab317c682989414630e707b3b1deace40e3cafc31879"
     },
     "typescript-advanced-types": {
       "source": "wshobson/agents",
