@@ -1,0 +1,7 @@
+interface:
+  display_name: "Chrome Profile Browser"
+  short_description: "Headed Chrome automation with your local profile"
+  default_prompt: "Use $chrome-profile-browser to open the requested page and complete the browser task."
+
+policy:
+  allow_implicit_invocation: true

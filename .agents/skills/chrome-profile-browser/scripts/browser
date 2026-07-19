@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -eq 0 ]]; then
+  echo "usage: browser <agent-browser command> [args...]" >&2
+  exit 64
+fi
+
+if ! command -v agent-browser >/dev/null 2>&1; then
+  echo "agent-browser is not available on PATH" >&2
+  exit 127
+fi
+
+readonly chrome_profile_name="Default"
+browser_session_id="$(agent-browser session id --scope worktree --prefix chrome-profile-browser)"
+
+exec agent-browser \
+  --session "$browser_session_id" \
+  --profile "$chrome_profile_name" \
+  --headed \
+  "$@"
