@@ -13,9 +13,11 @@ typeset -g DOT_PROMPT_GIT_UNTRACKED=0
 typeset -g DOT_PROMPT_GIT_STASH=0
 typeset -g DOT_PROMPT_GIT_TOP=""
 
-: ${DOT_PROMPT_GIT_WATCH_TTL:=60}
-: ${DOT_PROMPT_GIT_UPDATE_DEBOUNCE:=1}
-: ${DOT_PROMPT_GIT_WATCH_LOCK_WAIT:=10}
+: ${DOT_PROMPT_GIT_DAEMON_CONNECT_RETRIES:=10}
+: ${DOT_PROMPT_GIT_DAEMON_CONNECT_WAIT:=5}
+: ${DOT_PROMPT_GIT_EVENT_SETTLE_WAIT:=35}
+
+typeset -g DOT_PROMPT_GIT_DAEMON_STARTED=0
 
 dot_prompt_json_quote() {
   local value=$1
@@ -59,77 +61,89 @@ dot_prompt_git_lock_release() {
   exec {fd}>&-
 }
 
-dot_prompt_git_cache_is_fresh() {
+dot_prompt_git_daemon_paths() {
   setopt localoptions noshwordsplit
 
-  local cache_path=$1
-  local ttl=${2:-$DOT_PROMPT_GIT_WATCH_TTL}
-  local -a stat
-
-  [[ -s $cache_path ]] || return 1
-  zmodload zsh/datetime 2>/dev/null || return 1
-  zmodload zsh/stat 2>/dev/null || return 1
-  zstat -A stat +mtime -- "$cache_path" 2>/dev/null || return 1
-
-  (( EPOCHSECONDS - stat[1] < ttl ))
+  local tmp_root=${TMPDIR:-/tmp}
+  tmp_root=${tmp_root%/}
+  local runtime_base=${DOT_PROMPT_GITD_RUNTIME_BASE:-${tmp_root}/dot-prompt-gitd-${EUID}}
+  typeset -g DOT_PROMPT_GITD_RUNTIME_DIR=$runtime_base
+  typeset -g DOT_PROMPT_GITD_SOCKET_PATH=${DOT_PROMPT_GITD_SOCKET_PATH:-${runtime_base}/daemon.sock}
+  typeset -g DOT_PROMPT_GITD_SCRIPT=${DOT_PROMPT_GITD_SCRIPT:-$HOME/dotfiles/bin/dot-prompt-gitd.ts}
 }
 
-dot_prompt_git_watch_register_trigger() {
-  setopt localoptions noshwordsplit
-
-  local root=$1
-  local name=$2
-  local top=$3
-  local updater=${DOT_PROMPT_GIT_WATCH_UPDATE_COMMAND:-$HOME/dotfiles/bin/dot-prompt-git-watch-update}
-  local root_json name_json updater_json top_json
-
-  [[ -x $updater ]] || return 1
-  command watchman watch "$root" >/dev/null 2>&1 || return 1
-
-  dot_prompt_json_quote "$root"; root_json=$REPLY
-  dot_prompt_json_quote "$name"; name_json=$REPLY
-  dot_prompt_json_quote "$updater"; updater_json=$REPLY
-  dot_prompt_json_quote "$top"; top_json=$REPLY
-
-  print -r -- "[\"trigger\", ${root_json}, {\"name\": ${name_json}, \"expression\": [\"true\"], \"command\": [${updater_json}, ${top_json}]}]" |
-    command watchman -j >/dev/null 2>&1
+dot_prompt_git_daemon_available() {
+  command -v deno >/dev/null 2>&1 || return 1
+  command -v watchman >/dev/null 2>&1 || return 1
+  dot_prompt_git_daemon_paths
+  [[ -r $DOT_PROMPT_GITD_SCRIPT ]]
 }
 
-dot_prompt_git_watch_ensure() {
+dot_prompt_git_daemon_connect() {
+  zmodload zsh/net/socket 2>/dev/null || return 1
+  zsocket "$DOT_PROMPT_GITD_SOCKET_PATH" 2>/dev/null
+}
+
+dot_prompt_git_daemon_start() {
+  (( DOT_PROMPT_GIT_DAEMON_STARTED )) && return 0
+  typeset -g DOT_PROMPT_GIT_DAEMON_STARTED=1
+
+  command deno run --quiet -A "$DOT_PROMPT_GITD_SCRIPT" >/dev/null 2>&1 &!
+}
+
+dot_prompt_git_daemon_register() {
   setopt localoptions noshwordsplit
 
   local top=$1
-  local git_dir=$2
-  local cache_path=$3
-  local watch_state="${cache_path}.watch"
-  local watch_lock="${cache_path}.watch.flock"
-  local lock_fd
+  local cache_path=$2
+  local top_json cache_json request fd attempt
+  local connected=0
 
-  command -v watchman >/dev/null || return 1
-  dot_prompt_git_cache_is_fresh "$watch_state" "$DOT_PROMPT_GIT_WATCH_TTL" && return 0
+  dot_prompt_git_daemon_available || return 1
 
-  command mkdir -p "${cache_path:h}" 2>/dev/null || return 1
-  dot_prompt_git_lock_acquire "$watch_lock" 0 || return 0
-  lock_fd=$REPLY
-  if dot_prompt_git_watch_register_trigger "$top" dot-prompt-git-worktree "$top" &&
-     dot_prompt_git_watch_register_trigger "$git_dir" dot-prompt-git-gitdir "$top"; then
-    print -r -- "$top" >| "$watch_state"
+  if dot_prompt_git_daemon_connect; then
+    connected=1
+  else
+    # A daemon that was started by this shell may have exited since the last
+    # registration. The singleton lock keeps a restart attempt safe.
+    typeset -g DOT_PROMPT_GIT_DAEMON_STARTED=0
+    dot_prompt_git_daemon_start
+    zmodload zsh/zselect 2>/dev/null || return 1
+    for (( attempt = 0; attempt < DOT_PROMPT_GIT_DAEMON_CONNECT_RETRIES; attempt++ )); do
+      zselect -t "$DOT_PROMPT_GIT_DAEMON_CONNECT_WAIT" 2>/dev/null || true
+      if dot_prompt_git_daemon_connect; then
+        connected=1
+        break
+      fi
+    done
   fi
-  dot_prompt_git_lock_release "$lock_fd"
+
+  (( connected )) || return 1
+  fd=$REPLY
+  [[ -n $fd ]] || return 1
+
+  dot_prompt_json_quote "$top"; top_json=$REPLY
+  dot_prompt_json_quote "$cache_path"; cache_json=$REPLY
+  request="{\"top\":${top_json},\"cachePath\":${cache_json}}"
+  print -r -u "$fd" -- "$request" 2>/dev/null
+  local code=$?
+  exec {fd}>&-
+  return $code
 }
 
 dot_prompt_git_status_from_cache() {
   setopt localoptions noshwordsplit
 
   local cache_path=$1
-  local line mtime=0
-  local -a items stat
-  local -A info
+  local line signature=""
+  local -a items
+  local -A info stat
 
   [[ -r $cache_path ]] || return 1
-  # Stat before reading so a newer write's mtime never gets tied to older content
-  if zmodload zsh/stat 2>/dev/null && zstat -A stat +mtime -- "$cache_path" 2>/dev/null; then
-    mtime=$stat[1]
+  # Stat before reading so a newer atomic rename never gets tied to older content.
+  # Inode distinguishes multiple cache replacements within the same second.
+  if zmodload zsh/stat 2>/dev/null && zstat -H stat -- "$cache_path" 2>/dev/null; then
+    signature="${stat[mtime]}:${stat[inode]}:${stat[size]}"
   fi
   IFS= read -r line < "$cache_path" || return 1
   [[ -n $line ]] || return 1
@@ -139,7 +153,13 @@ dot_prompt_git_status_from_cache() {
 
   info=("${items[@]}")
   info[pwd]=$PWD
-  info[mtime]=$mtime
+  info[signature]=$signature
+  print -r -- ${(@kvq)info}
+}
+
+dot_prompt_git_empty_status() {
+  local -A info
+  info=(pwd "$PWD" top "")
   print -r -- ${(@kvq)info}
 }
 
@@ -225,9 +245,8 @@ dot_prompt_git_update_cache() {
   setopt localoptions noshwordsplit
 
   local top=${1:-}
-  local source=${2:-direct}
   local cache_path lock_path tmp_path output code=0
-  local canonical_top debounce_path lock_fd=""
+  local canonical_top lock_fd=""
 
   if [[ -n $top ]]; then
     builtin cd -q "$top" 2>/dev/null || return 1
@@ -237,30 +256,17 @@ dot_prompt_git_update_cache() {
   dot_prompt_git_cache_path_for_top "$canonical_top"
   cache_path=$REPLY
   lock_path="${cache_path}.flock"
-  debounce_path="${cache_path}.updated"
 
   command mkdir -p "${cache_path:h}" 2>/dev/null || return 1
 
-  if [[ $source == watch ]]; then
-    # Watchman-driven updates must capture the state after the triggering
-    # change, so wait for any in-flight update instead of skipping.
-    dot_prompt_git_lock_acquire "$lock_path" "$DOT_PROMPT_GIT_WATCH_LOCK_WAIT" || return 1
-    lock_fd=$REPLY
-    # Treat the debounce as a throttle: wait it out and always recompute.
-    # Skipping would drop the final state of a rapid change sequence.
-    while dot_prompt_git_cache_is_fresh "$debounce_path" "$DOT_PROMPT_GIT_UPDATE_DEBOUNCE"; do
-      command sleep 0.2
-    done
-  else
-    if ! dot_prompt_git_lock_acquire "$lock_path" 0; then
-      # Another updater is running. Returning empty output would make the
-      # caller discard the repo state and blank the prompt, so serve the
-      # current cache content instead.
-      dot_prompt_git_status_from_cache "$cache_path"
-      return $?
-    fi
-    lock_fd=$REPLY
+  if ! dot_prompt_git_lock_acquire "$lock_path" 0; then
+    # Another updater is running. Returning empty output would make the
+    # caller discard the repo state and blank the prompt, so serve the
+    # current cache content instead.
+    dot_prompt_git_status_from_cache "$cache_path"
+    return $?
   fi
+  lock_fd=$REPLY
 
   output=$(dot_prompt_git_status_uncached) || code=$?
   if (( code != 0 )); then
@@ -285,8 +291,7 @@ dot_prompt_git_update_cache() {
     dot_prompt_git_lock_release "$lock_fd"
     return 1
   fi
-  print -r -- "$canonical_top" >| "$debounce_path"
-  # Re-read through the cache so the reported mtime matches the content
+  # Re-read through the cache so the reported signature matches the content.
   dot_prompt_git_status_from_cache "$cache_path"
   code=$?
   dot_prompt_git_lock_release "$lock_fd"
@@ -297,7 +302,8 @@ dot_prompt_git_status() {
   setopt localoptions noshwordsplit
 
   local mode=${1:-cached}
-  local cache_path top git_dir output
+  local cache_path top
+  local daemon_registered=0
 
   if [[ $mode == cache-only ]]; then
     cache_path=$2
@@ -306,20 +312,52 @@ dot_prompt_git_status() {
     return $?
   fi
 
+  if ! dot_prompt_git_daemon_available; then
+    # Event-driven updates require the daemon. Keep the prompt quiet on
+    # machines without Deno or Watchman instead of falling back to polling.
+    dot_prompt_git_empty_status
+    return 0
+  fi
+
+  if [[ $mode == known || $mode == known-after-event ]]; then
+    top=$2
+    cache_path=$3
+    if [[ -z $top || -z $cache_path ]]; then
+      dot_prompt_git_empty_status
+      return 0
+    fi
+
+    if ! dot_prompt_git_daemon_register "$top" "$cache_path"; then
+      dot_prompt_git_empty_status
+      return 0
+    fi
+    if [[ $mode == known-after-event ]] && zmodload zsh/zselect 2>/dev/null; then
+      # Give Watchman and the daemon time to settle after the preceding shell
+      # command. This is a zsh builtin wait in the async worker, not a process.
+      zselect -t "$DOT_PROMPT_GIT_EVENT_SETTLE_WAIT" 2>/dev/null || true
+    fi
+    dot_prompt_git_status_from_cache "$cache_path" || dot_prompt_git_empty_status
+    return 0
+  fi
+
   if ! top=$(command git rev-parse --show-toplevel 2>/dev/null); then
     # Outside a repo, return a sentinel with an empty top. Empty output and
     # non-zero codes are treated as transient failures, so be explicit here.
-    local -A info
-    info=(pwd "$PWD" top "")
-    print -r -- ${(@kvq)info}
+    dot_prompt_git_empty_status
     return 0
   fi
-  git_dir=$(command git rev-parse --absolute-git-dir 2>/dev/null) || return 1
   dot_prompt_git_cache_path_for_top "$top"
   cache_path=$REPLY
-  dot_prompt_git_watch_ensure "$top" "$git_dir" "$cache_path" || true
+  if dot_prompt_git_daemon_register "$top" "$cache_path"; then
+    daemon_registered=1
+  fi
 
-  if [[ $mode != force ]] && [[ -s $cache_path ]]; then
+  if (( ! daemon_registered )); then
+    dot_prompt_git_empty_status
+    return 0
+  fi
+
+  if (( daemon_registered )) && [[ -s $cache_path ]]; then
     dot_prompt_git_status_from_cache "$cache_path" && return 0
   fi
 

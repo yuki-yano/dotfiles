@@ -3,7 +3,7 @@ typeset -g DOT_PROMPT_ASYNC_RENDER_REQUESTED=0
 typeset -g DOT_PROMPT_ASYNC_AUTO_REFRESH_SCHEDULED=0
 typeset -g DOT_PROMPT_GIT_FORCE_NEXT_REFRESH=0
 typeset -g DOT_PROMPT_GIT_CACHE_PATH=""
-typeset -g DOT_PROMPT_GIT_CACHE_MTIME=0
+typeset -g DOT_PROMPT_GIT_CACHE_SIGNATURE=""
 typeset -g DOT_PROMPT_GIT_PWD=""
 
 : ${DOT_PROMPT_GIT_AUTO_REFRESH_INTERVAL:=2}
@@ -46,7 +46,7 @@ dot_prompt_async_reset_repo_state() {
   typeset -g DOT_PROMPT_GIT_STASH=0
   typeset -g DOT_PROMPT_GIT_TOP=""
   typeset -g DOT_PROMPT_GIT_CACHE_PATH=""
-  typeset -g DOT_PROMPT_GIT_CACHE_MTIME=0
+  typeset -g DOT_PROMPT_GIT_CACHE_SIGNATURE=""
   typeset -g DOT_PROMPT_GIT_PWD=""
 }
 
@@ -62,9 +62,12 @@ dot_prompt_async_maybe_reset_for_pwd() {
 dot_prompt_async_refresh() {
   local mode=${1:-cached}
   local cache_path=${2:-}
+  local top=${3:-}
 
   if [[ $mode == cache-only ]]; then
     async_job dot_prompt_git dot_prompt_git_status "$mode" "$cache_path"
+  elif [[ $mode == known || $mode == known-after-event ]]; then
+    async_job dot_prompt_git dot_prompt_git_status "$mode" "$top" "$cache_path"
   else
     async_job dot_prompt_git dot_prompt_git_status "$mode"
   fi
@@ -73,6 +76,18 @@ dot_prompt_async_refresh() {
 dot_prompt_async_tasks() {
   local mode=${1:-cached}
   local cache_path=${2:-}
+  local top=""
+
+  if [[ $mode != cache-only ]] && [[ -n $DOT_PROMPT_GIT_TOP && -n $DOT_PROMPT_GIT_CACHE_PATH ]] &&
+     [[ $PWD == $DOT_PROMPT_GIT_TOP || $PWD == $DOT_PROMPT_GIT_TOP/* ]]; then
+    top=$DOT_PROMPT_GIT_TOP
+    cache_path=$DOT_PROMPT_GIT_CACHE_PATH
+    if [[ $mode == force ]]; then
+      mode=known-after-event
+    else
+      mode=known
+    fi
+  fi
 
   if [[ $mode != cache-only ]]; then
     dot_prompt_async_init
@@ -80,27 +95,27 @@ dot_prompt_async_tasks() {
   else
     dot_prompt_async_init
   fi
-  dot_prompt_async_refresh "$mode" "$cache_path"
+  dot_prompt_async_refresh "$mode" "$cache_path" "$top"
 }
 
-dot_prompt_async_cache_mtime() {
+dot_prompt_async_cache_signature() {
   setopt localoptions noshwordsplit
 
   local cache_path=$1
-  local -a stat
+  local -A stat
 
   [[ -n $cache_path && -s $cache_path ]] || return 1
   zmodload zsh/stat 2>/dev/null || return 1
-  zstat -A stat +mtime -- "$cache_path" 2>/dev/null || return 1
+  zstat -H stat -- "$cache_path" 2>/dev/null || return 1
 
-  REPLY=$stat[1]
+  REPLY="${stat[mtime]}:${stat[inode]}:${stat[size]}"
 }
 
 dot_prompt_async_cache_changed() {
   setopt localoptions noshwordsplit
 
-  dot_prompt_async_cache_mtime "$DOT_PROMPT_GIT_CACHE_PATH" || return 1
-  [[ $REPLY != $DOT_PROMPT_GIT_CACHE_MTIME ]]
+  dot_prompt_async_cache_signature "$DOT_PROMPT_GIT_CACHE_PATH" || return 1
+  [[ $REPLY != $DOT_PROMPT_GIT_CACHE_SIGNATURE ]]
 }
 
 dot_prompt_async_schedule_auto_refresh() {
@@ -215,14 +230,14 @@ dot_prompt_async_callback() {
           else
             typeset -g DOT_PROMPT_GIT_PWD=""
           fi
-          if [[ -n ${info[mtime]:-} ]]; then
-            # Use the mtime captured at read time; re-statting could tie a
-            # newer write's mtime to the older content we just parsed.
-            typeset -g DOT_PROMPT_GIT_CACHE_MTIME=$info[mtime]
-          elif dot_prompt_async_cache_mtime "$DOT_PROMPT_GIT_CACHE_PATH"; then
-            typeset -g DOT_PROMPT_GIT_CACHE_MTIME=$REPLY
+          if [[ -n ${info[signature]:-} ]]; then
+            # Use the signature captured at read time; re-statting could tie a
+            # newer atomic replacement to the older content we just parsed.
+            typeset -g DOT_PROMPT_GIT_CACHE_SIGNATURE=$info[signature]
+          elif dot_prompt_async_cache_signature "$DOT_PROMPT_GIT_CACHE_PATH"; then
+            typeset -g DOT_PROMPT_GIT_CACHE_SIGNATURE=$REPLY
           else
-            typeset -g DOT_PROMPT_GIT_CACHE_MTIME=0
+            typeset -g DOT_PROMPT_GIT_CACHE_SIGNATURE=""
           fi
 
           if [[ -z $info[top] ]]; then
