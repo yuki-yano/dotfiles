@@ -1,88 +1,167 @@
 ---
 name: goal-setter
-description: Draft, audit, or activate a compact /goal when the user asks for a persistent objective or wants Codex to work until a verifiable outcome is true. Defines Done, evidence, constraints, stop conditions, optional one-question-at-a-time clarification, and only necessary worker use. Not for ordinary implementation, Q&A, one-off edits, loose brainstorming, or subjective work with no rubric.
+description: ユーザーが、長く反復して進める一つの目的を `/goal` として草案化・監査・設定したいと明示したときに使う。通常の実装、単発修正、自由な壁打ち、設計インタビュー、計画書作成、評価基準のない主観的な作業、明示のない subagent 運用には使わない。
 ---
 
-# Goal Setter
+# ゴール設定
 
-Turn a rough request into a compact `/goal` that says what result is expected, what Done means, how to check it, what must not be broken, when to stop, and how Codex should run it. Treat this as Goal intake: decide whether to ask, briefly explore, draft, activate, or say a normal prompt is a better fit.
+粗い依頼を、達成状態と検証方法が明確な簡潔な `/goal` に整える。
+Goal は実装手順ではなく、実行中に守る成果契約として扱う。
 
-A Goal states the user's requested outcome and how to know it worked; it is not an implementation recipe. Favor verification targets and feedback loops over detailed procedure rules: long rule sets can fit sample tasks while failing real work, but outcome, evidence, and stop constraints travel across projects. Never shrink or reinterpret the outcome; minimize only the surrounding prompt. Start from the smallest prompt that preserves the requested product/task outcome, then add only clauses that change execution, verification, safety, or output. Default to an inline condition. Set the goal through the runtime's native mechanism, or emit the exact `/goal …` line; never claim it was set unless it was.
+## 責務の境界
 
-## When to use
+- 一つの持続的な目的に対して、達成状態、証拠、制約、停止条件を定義する。
+- 実装順序、ファイル単位の手順、内部設計、タスク分解は実行者に委ねる。
+- 設計判断を対話で詰める依頼は `grill-me` に任せる。
+  Goal の受付では、完了条件を決めるために不可欠な質問だけを行う。
+- 設計書や計画書の作成は通常の計画作成に任せ、別エージェントへの引き継ぎが目的なら `agent-handoff-plan` に任せる。
+- 独立レビューは `agent-review-request`、subagent や並列実行はユーザーが明示した場合に限り `ultracode-codex` などの該当スキルに任せる。
+- Goal に `spawn_agent`、`create_thread`、作業エージェント数、並列構成を自動追加しない。
 
-A Goal fits when the task has one durable objective, may take many iterations, and Done can be verified by commands, artifacts, diffs, screenshots, benchmarks, sourced evidence, or a written rubric. Bad fits: one small edit, "make it better" with no rubric, subjective output with no evidence, high-risk changes with no approval boundary — say so and suggest a normal prompt or a planning pass. If the only blocker is a missing way to verify it, offer a preliminary Goal that builds it first (rubric, eval + baseline, checklist, or reproduction), with the main Goal to follow.
+## モードを決める
 
-## Before drafting
+依頼文から次のモードを選ぶ。
+判別できない場合は草案モードにする。
 
-If this intake will need tools, first send a one- or two-sentence visible preamble naming the first evidence you will check. Keep it concrete; do not write a plan that substitutes for doing the work.
+- **草案**: `/goal` の内容を提示するだけで、ランタイムには設定しない。
+- **監査**: 既存の Goal を点検し、問題と修正版を提示する。
+  設定状態は変更しない。
+- **設定**: ユーザーが「設定して」「開始して」「goal にして」などと明示した場合だけランタイムに設定する。
+- **不適合**: Goal より通常の依頼や設計セッションが適切なら、その理由と適切な進め方を短く返す。
 
-Reconstruct what the user is trying to create and why, in 2-4 sentences. This is the highest-leverage step — a wrong starting image is amplified across the whole autonomous run. The image fixes what and why; objective, evidence, constraints, and Done all follow from it. When the prompt is rough, mirror the image back compactly, bundling any critical questions, for one-pass correction before the long run begins.
+「草案だけ」「レビューだけ」「監査して」と言われた場合は、設定しない。
+設定済みか不明な状態で、設定したと表現しない。
 
-Before drafting, answer three plain questions: what must be achieved, what would prove it, and what must be understood first. Proof may be commands, screenshots, runtime state, primary sources, citations, reproduced failures, generated files, reviewer verdicts, or a user checklist. Starting context may be repo behavior, existing docs, source landscape, materials, constraints, risks, or prior hypotheses. If any answer is missing and materially changes Done, ask or make the first Goal define it.
+## 適合性を判定する
 
-For any request whose result is a working system, workflow, or user-facing artifact, recover the path from the user's request to the expected result before drafting. Do not substitute a representation of the thing — a mock UI, screenshot, scaffold, static dashboard, isolated component, or demo data loop — for the thing the user expected unless they explicitly asked for a mock/prototype. Ask what must actually run, connect, persist, produce, or be inspectable for the user to say the outcome worked. If that path is unclear and could change the build, use the clarification rule below or write a preliminary Goal that defines the pass/fail checks before implementation.
+次をすべて満たす依頼は Goal に向く。
 
-If the user asks to be grilled, stress-tested, or have ambiguity fully clarified — or the request is too ambiguous to define an honest pass/fail Goal — switch to clarification mode before drafting. Ask one material question at a time when its answer determines the next useful question; otherwise bundle independent blocking questions into one round. Give the recommended answer, wait for feedback when questions are dependent, and continue only while another answer could change the outcome, evidence, scope, risk, or stop condition. If the answer is discoverable from code, docs, or sources, explore instead of asking. Do not prolong the interview once the Goal is safe to define.
+- 一つの持続的な目的がある。
+- 複数回の調査、実装、検証、修正が想定される。
+- コマンド、差分、実動作、成果物、スクリーンショット、ベンチマーク、一次情報、評価基準のいずれかで完了を判定できる。
 
-Resolve ambiguity by risk:
+次の場合は Goal にしない。
 
-- Ask first only when missing information could change the objective, where evidence comes from, Done, validation, scope, or a high-risk boundary (auth, security, billing, data handling, public behavior, external side effects). Ask dependent questions one at a time; bundle independent blockers when their answers do not affect each other.
-- Encode low-risk, reversible ambiguity as a stated assumption and continue.
-- Explore briefly — read anchors, search — when the proof source, validation, baseline, or blockers are discoverable rather than guessable. Use the smallest evidence pass that can settle the goal: read one or two anchors first, repeat only when a required fact, command, boundary, or source is still missing. Do not start implementation during exploration.
-- For broad or novel product/system requests, do not collapse uncertainty into an implementation plan. Ask or set a preliminary Goal that defines Done and pass/fail checks when mock vs working system, first user path, required runtime/backend/tool/data integration, deployment surface, or verification evidence would change what Done means.
-- For broad research, strategy, or unfamiliar-domain work, do not treat the first hypothesis as the conclusion. If the task is hypothesis-driven, require a question-and-hypothesis loop: state the central question, decision it informs, out-of-scope questions, initial and competing hypotheses, what evidence would weaken or reject each one, and how evidence gathering will update, reject, merge, split, or generate hypotheses before synthesis.
+- 一回で終わる小さな編集や質問。
+- 評価基準のない「いい感じにする」「もっと良くする」。
+- 実装前に複数の設計判断をユーザーと解く必要がある。
+- 認証、課金、個人情報、本番環境、破壊的操作などの承認境界が未確定である。
 
-## What the goal should contain
+検証方法だけが不足している場合は、先に再現手順、評価基準、基準値、チェックリストのいずれかを作る予備 Goal を提案できる。
 
-Write it in the task's own terms as plain prose, no labeled fields. Open with the final state and who it serves. Prefer decision rules over step sequences. Pin only the outcome, evidence, safety boundaries, and true constraints; leave implementation order, internal design, decomposition details, and replace-vs-adapt choices to the executor after it reads the repo or source material. Use hard words like "must", "never", and "only" only for true invariants. Drop any clause that would not change this run.
+## Goal を受け付ける
 
-Do not let the Goal become a task list pretending to define success. "Build UI, add API, write tests" is a plan; it is not Done. The Goal should first define the user-visible outcome and the evidence that the expected thing works. Implementation phases are allowed only after Done is clear.
+必要なら、最初に1〜2個の関連ファイル、既存テスト、一次情報を読み、検証面と制約を確認する。
+調べれば分かることをユーザーへ質問しない。
+受付中に実装やファイル編集を始めない。
 
-Before emitting, run a compression pass around six elements: outcome, verification surface, constraints, boundaries, iteration policy, and blocked stop condition. Cut explanations, examples, broad file lists, ordinary command-parallelism, and tool-mechanics text that does not change one of those elements. When subagent use meets the trigger below, put a concrete imperative in the Goal rather than soft language such as "get an independent review": tell Codex to spawn subagents for the named independent work or verification, wait for their evidence, and synthesize it before acting or declaring Done. Leave worker count and wave shape to the parent unless the user fixed them.
+草案前に次を確定する。
 
-- **Objective** — one sentence naming the final, verifiable state. Not "improve X"; "X does Y, verified by Z."
-- **Evidence / verification** — where Done is checked (running app, test output, benchmark, screenshot, sourced comparison, reviewable artifact). When possible, make the check concrete: counts, named files, named screens, exact cases, timings, error messages, before/after states, or a short list of items. Do not force fake numbers onto subjective work, but avoid vague goals like "better", "good", or "works" when a concrete check can be named. If none exists, require building the smallest practical one, or stop if that needs unavailable credentials or services.
-- **Core flow / pass-fail checks** — for working systems, experiences, and ambiguous product builds, require the smallest complete path first: user intent/input through the real layers to the expected output, decision, artifact, or state change. Named items require checks for those exact items; substitutes are supporting evidence only unless the user accepts them. If real runtimes, services, storage, generated files, or deployment define the outcome, check those channels or mark them out of scope. If a requested spreadsheet, report, checklist, doc, dashboard, or tracking file already has a clear existing primary file, update that file instead of creating a duplicate. Itemized checks must not hide a broken whole; include one holistic check when first-use coherence matters.
-- **Read first** — one or two mandatory anchors plus "discover adjacent docs/tests as needed." A path earns a place only if it is the scope boundary or where evidence comes from, or is genuinely not discoverable; the executor can find files, and enumerated paths go stale. This is a grounding budget, not a traversal script.
-- **Constraints** — a scope rule (the simplest thing that meets the objective; no refactors, features, or abstractions beyond it), the 1-3 hard boundaries this task could actually break (named concretely), and compatibility only when the user asks for it, external/public behavior depends on it, safety requires it, or validation requires it. If the user explicitly allows breaking compatibility, prefer a simpler replace-over-adapt design and require cleanup or migration evidence instead of speculative adapters, fallback paths, or format preservation. Do not alter other externally visible behavior or cross destructive boundaries unless the objective requires it. When metrics, tests, or coverage are involved, checks must not pass by deleting, weakening, bypassing, or narrowing required behavior, tests, or data.
-  - For user-facing work: no visible dead ends. Every visible primary control, generated artifact, command, route, or advertised capability either works through the real path, is honestly disabled/marked out of scope with a clear reason, or is omitted. Do not present placeholders, fake traces, stubbed interactions, "coming soon" features, or local-only state as the completed outcome.
-- **Validation** — the real commands or artifact checks, with concrete targets by domain. Require the most relevant validation available, not every possible check:
-  - bugs: reproduce first; Done is the failing case passing with no related regressions
-  - performance: metric, threshold, method, and runs (e.g. p95 < 250 ms over 3 runs)
-  - tests/CI: the exact command and its pass condition
-  - working systems and user-facing experiences: test the user goal, not only implementation tasks or component existence. Require evidence for each relevant success/failure/blocked path, with functional checks before UX polish. If the request includes several named items, check each item separately and report whether it passed, failed, was not checked, or was blocked. For UI-backed systems, require a real browser or equivalent end-to-end run through the core path and inspect the resulting runtime/API/storage/artifact state when those channels define the outcome.
-  - migration/batch: counts verified by query or grep, with the coverage bound stated
-  - research/investigation: define the decision, understanding, or next action the work must enable. For uncertain work, track the central question, competing hypotheses, what would weaken each one, evidence updates, and a stop rule. At least one pass must try to disprove the leading conclusion. Report missing evidence as "unconfirmed," not as a factual "no," unless the search scope justifies it.
-  - quality: an observable bar — lint/types/tests green, N reviewed examples, readable/local/low-branching changes for code, or a clear, non-duplicative, easy-to-revise artifact for non-code work
-  - if full validation is too expensive or unavailable, require the next honest check and a final report explaining the gap
-  - Where outcomes have distinct classes (success / failure / timeout), require evidence that each relevant class fired; a check that could not have failed proves nothing.
-- **Done** — pass/fail and bounded by evidence; requires the whole requested outcome, not every related improvement. Before calling Done, require the executor to check its own diff, output, and test evidence; independent review supplements this, it does not replace ordinary checking. Evidence from a substitute, demo, fixture, fake service, or nearby example is supporting evidence only; it cannot complete a named requirement unless that substitution was allowed. Low-risk work with strong automated evidence usually needs no subagent. When evidence is incomplete, the change is broad or high-risk, the result is subjective, or a fresh context could expose a material miss, require Codex to spawn a read-only subagent to verify the actual output, runtime, and evidence before Done; do not allow an in-context self-review to satisfy that requirement. Add adversarial or perspective-diverse subagents only when those lenses could still change Done. Do not derive a fixed reviewer count, role, or sequence from a risk label alone. State who decides findings: those touching correctness, safety, or Done block until fixed; the rest are the executor's call (fix, or keep with the reason recorded).
-- **Run rules** (long or high-risk runs only) — report progress only against tool results, never claim unverified work as done; act on sufficient information and never end a turn on a plan or a promise; pivot within constraints when approaches stall; do not silently change the objective, Done, evidence, or scope (that is an amendment — stop and ask). On long autonomous runs, keep a concise `execution-notes.md`: maintain the current open items, evidence checked, pass/fail/blocked state, and material decisions. After each evidence pass, update that state; if Done is not met and no block condition applies, choose the next highest-risk or least-certain open item and continue. Do not stop with only "next steps" while unblocked required evidence remains. Keep notes as resume/audit state, not a verbose log. `GOAL.md` is not needed — the active `/goal` is the source of truth.
-- **Block** — stop instead of thrashing when required behavior cannot be safely inferred, validation fails the same way after ~3 distinct approaches, a needed capability/credential/approval is blocked with no honest substitute, or a decision would touch schema/auth/billing/production without permission. For blocked external assets, accounts, services, or permissions, do not use a substitute as completion. Leave the smallest next user action and, when practical, the exact command or check to rerun after that action. Report state, evidence, attempts, the exact blocker, and the smallest decision needed.
-- **Final report** — outcome first, plain words, the user's language, written for a reader who watched none of the run; name any decision the Goal left undefined that you settled by judgment.
+1. 誰にとって、どの状態を実現するのか。
+2. 何を見れば達成したと判断できるのか。
+3. 最初に読むべき既存の仕様、実装、テスト、成果物はあるか。
+4. 変更してはいけない境界と、停止して確認すべき境界は何か。
 
-**Length.** Optimize for the shortest contract that is still sufficient, not the lowest character count. Start with one sentence or one short paragraph: final state, evidence, and the most important constraint. Add a clause only when removing it could change the outcome, evidence, true constraint, boundary, iteration behavior, or blocked-stop decision. Treat 800-1,800 characters as normal only for genuinely complex goals; 2,500 means re-check necessity, and 4,000 is a hard runtime cap, not a quality target. Validate length once with `python3 -B scripts/validate_goal_length.py <file>` (bundled; stdin also works); pass means it fits the runtime, not that it is a good Goal. If `python3` is unavailable, estimate once and move on.
+不足情報が目的、完了条件、証拠、範囲、承認境界を変える場合だけ質問する。
+依存する質問は一問ずつ行い、推奨回答と理由を添える。
+複数の設計分岐を検討する必要が生じたら、Goal を無理に作らず `grill-me` を案内する。
 
-## Parallel (decomposable work)
+低リスクで可逆な曖昧さは、Goal 内に前提として明記して進める。
 
-Use separate workers only when they could change Done enough to justify their cost.
+## Goal を書く
 
-Write an execution rule into the Goal that tells the running Codex task to use `spawn_agent`; do not merely describe subagents as available. During Goal execution, spawn subagents when there are independent investigation or review questions that can run in parallel, when noisy exploration should be isolated from the parent context, when another focused pass can test new evidence, or when fresh-context verification could materially change Done. Choose the smallest useful first wave, wait for and synthesize its evidence, then launch another wave only if it could still change Done. Do not fix the count unless the user requested one. Review subagents stay read-only and return evidence, counterevidence, uncertainty, and gaps; the parent keeps integration, write decisions, and final judgment. Goal intake itself stays in the parent context unless understanding the request requires substantial independent investigation.
+ユーザーの言語で、ラベル付きの仕様書ではなく、一つの短い段落を基本として書く。
+最初に最終状態と対象者を置き、必要な句だけを次の順で足す。
 
-Use write fan-out only when the outcome splits into independent, separately verifiable units. Judge independence by behavior, shared state, and integration risk before file layout. If used, the Goal must name the unit discovery rule, each unit's owned area and evidence, item-by-item progress, a parent integration check, and the instruction to send units to parallel workers and synthesize.
+1. **成果**: ユーザーが得る最終状態。
+2. **証拠**: 完了を判定する実動作、コマンド、成果物、数値、確認箇所。
+3. **制約**: 最小範囲と、壊してはいけない具体的な境界。
+4. **検証**: 成功、失敗、時間切れなど、目的に関係する経路の確認方法。
+5. **停止条件**: 安全に推測できない、承認が必要、必要な外部能力がない場合の止まり方。
+6. **報告**: 結果、証拠、未確認事項、判断で補った点。
 
-- **Claude Code** can realize the structure as a dynamic workflow. Describe the units, evidence, and synthesis; do not micromanage the mechanism.
-- **Codex** — the running Goal executes the rule above with `spawn_agent`. When the Goal requires subagent work, spawn it; do not replace the required delegation with an in-context pass, and do not make the user resend `/goal` solely to authorize it.
+実装項目の列挙を完了条件の代わりにしない。
+「UIを作る、APIを追加する、テストを書く」ではなく、それらを通じて利用者が何を完了でき、どう確認できるかを書く。
 
-Treat `create_thread` as a user-owned separate Codex task, not as subagent fan-out. Use or mention it only when the user explicitly asks for separate durable tasks, threads, or worktrees; do not infer it merely because work is decomposable. When the explicit request is parallel write fan-out across multiple tasks, require at least two behaviorally independent units, stable ownership and validation for each, understood shared interfaces, time savings that exceed setup/review cost, and a usable git/worktree base. Each parallel child thread gets exactly one unit, owned area, evidence, integration rule, and an instruction to set its own unit-scoped goal before editing. Never initialize git, scaffold architecture, or create shared interfaces solely to parallelize; if the workspace is not suitable, stop and explain the smallest missing condition instead of silently creating threads or changing repository structure. A user-requested single handoff or new thread follows that explicit request without applying the multi-task fan-out gates.
+### 検証規則
 
-When conditions do not hold — an interlocking refactor, a single-cause bug, or a serially tuned metric — keep one write goal. A read-only investigation can still use subagents.
+- バグは先に再現し、再現ケースの解消と関連する回帰がないことを完了条件にする。
+- 稼働システムや UI は、入力から実際のランタイム、API、保存先、生成物まで、依頼された利用経路を通して確認する。
+- 指定された機能や項目が複数ある場合は、項目ごとの結果に加えて全体経路を一度確認する。
+- 性能は指標、閾値、測定方法、実行回数を定める。
+- 移行や一括処理は、対象範囲と件数をクエリや検索で確認する。
+- 調査は中心的な問い、判断先、競合仮説、反証条件、探索範囲、停止条件を定め、主要結論を反証する確認を一度含める。
+- 完全な検証が使えない場合は、代用品を完了扱いにせず、実行できた最も近い確認と残る未検証部分を報告させる。
+- テスト、網羅率、指標は、対象の削除、弱体化、スキップ、範囲縮小で通してはならない。
 
-## Activate
+### 制約規則
 
-Use the runtime's native goal tool when visible (Codex `create_goal`; check `get_goal` first and reuse a matching active goal instead of duplicating) unless the user asked only for a draft. If no native goal tool is available, emit the exact `/goal …` line. Possible subagent use does not change the activation path. Never claim the goal was set unless it was.
+- 目的を満たす最小の変更に限定し、目的外のリファクタリング、機能、抽象化を追加しない。
+- 後方互換性やフォールバックは自動追加しない。
+  必要性が判明した場合は、理由と影響を整理してユーザーへ確認する。
+- 利用者向けの主要操作は、実経路で動作する、理由付きで明確に無効化する、または表示しない、のいずれかにする。
+- モック、フィクスチャ、偽サービス、プレースホルダー、近似例は補助証拠に留め、ユーザーが代替を認めていない限り完了の証拠に使わない。
+- 設計書・計画書そのものが成果物の場合は、成果物の DoD に「機能完了条件」「テスト完了条件」「運用反映条件」のチェックリストを含める。
 
-## Readiness check (before activating)
+## 長期実行の契約
 
-Confirm, dropping n/a items: the intended outcome is clear; Done is pass/fail and evidence-bounded; evidence source and validation are explicit or discoverable; dependent clarification continued until the Goal became safe to define; required subagent use is proportionate and names the work it must check; a continuing need for delegation appears in the Goal as a concrete spawn, wait, and synthesize instruction; `create_thread` is absent unless the user explicitly requested separate durable tasks; long runs have progress and stop rules; decomposable work carries only the necessary worker directive; length checked once. If anything essential is missing or a critical decision is unresolved, fix it or ask before activating.
+長期または高リスクの Goal に限り、次を必要な範囲で含める。
+
+- ツール結果や確認済みの証拠だけを進捗として報告する。
+- 未達かつ停止条件に該当しなければ、最も不確実または高リスクな未確認事項から続行する。
+- 同じ失敗に対して異なる方法を三回程度試しても進まない場合は、試行を止めて阻害要因を報告する。
+- 目的、完了条件、証拠、範囲を暗黙に変更しない。
+  変更が必要なら Goal の変更としてユーザーへ確認する。
+- 認証情報、権限、外部サービス、本番操作が必要で代替確認がない場合は、完了扱いにせず最小のユーザー操作を示して止める。
+
+進行管理にはランタイムの Goal 状態を使う。
+ユーザーが指定した既存の管理ファイルがある場合を除き、`execution-notes.md` や `GOAL.md` などを新規作成しない。
+
+## 監査する
+
+既存 Goal の監査では次を返す。
+
+1. Goal を使うべき依頼か。
+2. 成果、証拠、制約、検証、停止条件の不足や矛盾。
+3. 実装計画に寄りすぎた箇所、過剰な制約、確認不能な完了条件。
+4. 勝手な subagent、thread、文書作成、互換性対応が混入していないか。
+5. 修正版の正確な `/goal` 文面。
+   監査だけの依頼では設定しない。
+
+## 長さを確認する
+
+Goal は、削除すると成果、証拠、制約、停止判断のいずれかが変わる句だけを残す。
+単純な Goal は一文か一段落、複雑な Goal でも 800〜1,800 文字程度を目安にする。
+2,500 文字を超えたら責務の混在を見直し、ランタイム上限の 4,000 文字を超えてはならない。
+
+出力前に一度だけ、同梱スクリプトで長さを確認する。
+
+```bash
+python3 -B scripts/validate_goal_length.py <file>
+```
+
+合格後に文字数を減らすためだけの反復は行わない。
+
+## 設定する
+
+設定モードでは、利用可能なら標準の Goal 機構を使う。
+
+1. `get_goal` で現在の Goal を確認する。
+2. 同じ目的の実行中 Goal があれば重複して設定しない。
+3. ユーザーが設定を明示しており、草案が提示前チェックを満たす場合だけ `create_goal` を使う。
+4. 標準機構がなければ、送信可能な正確な `/goal …` を提示する。
+
+## 提示前チェック
+
+草案の提示または設定前に確認する。
+
+- 一つの意図した成果が明確である。
+- 完了条件が証拠に基づいて合否判定できる。
+- 実際の利用経路と、必要な成功・失敗経路が検証対象に入っている。
+- 制約は目的に関係する境界だけを固定している。
+- 後方互換性、フォールバック、subagent、thread、文書作成を勝手に追加していない。
+- 長期実行に必要な継続条件と停止条件がある。
+- 設定はユーザーが明示した場合に限られている。
+- 長さを一度確認している。
+
+重要な項目が欠けている場合は、修正または質問してから提示・設定する。

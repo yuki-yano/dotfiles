@@ -37,12 +37,6 @@
       "skillPath": "plugins/frontend-design/skills/frontend-design/SKILL.md",
       "computedHash": "3e0be122a3db8206b6d0d6b07cca898b5c75fb9b7b2101abe143fb2851734d2e"
     },
-    "goal-setter": {
-      "source": "gotalab/goal-setter-skill",
-      "sourceType": "github",
-      "skillPath": "skills/goal-setter/SKILL.md",
-      "computedHash": "efe5aaafaf4803a5722ad5575159afe9f21e627c80eeba4871d01fcc7d5af59b"
-    },
     "portless": {
       "source": "vercel-labs/portless",
       "sourceType": "github",

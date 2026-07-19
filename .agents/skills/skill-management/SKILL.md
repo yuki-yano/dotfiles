@@ -183,12 +183,6 @@ npx --yes skills add wshobson/agents --skill typescript-advanced-types --full-de
 npx --yes skills add vercel-labs/agent-skills --skill vercel-react-best-practices -a codex -y
 ```
 
-Goal setter:
-
-```bash
-npx --yes skills add gotalab/goal-setter-skill --skill goal-setter -a codex -y
-```
-
 ## Common Mistakes
 
 - Running `npx skills add -g -a codex`: this installs into Codex global storage instead of the dotfiles `.agents` tree.

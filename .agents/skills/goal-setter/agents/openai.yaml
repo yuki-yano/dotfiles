@@ -1,4 +1,4 @@
 interface:
-  display_name: "Goal Setter"
-  short_description: "Shape rough work into Codex-ready goals"
-  default_prompt: "Use $goal-setter to clarify, lightly explore, and draft a compact /goal with evidence, constraints, and stop rules. Make the running Goal spawn subagents for independent exploration or verification when they can change Done; create separate tasks only when I explicitly request them."
+  display_name: "ゴール設定"
+  short_description: "長期タスク向けの検証可能な /goal を草案・監査・設定する"
+  default_prompt: "$goal-setter を使い、依頼を検証可能で簡潔な /goal に整えてください。ランタイムへの設定は、私が明示した場合だけ行ってください。"

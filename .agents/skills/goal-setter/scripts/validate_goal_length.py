@@ -1,29 +1,22 @@
 #!/usr/bin/env python3
-"""Validate a /goal condition against the real runtime length limits.
+"""ランタイムの上限に照らして /goal の文字数を検証する。
 
-Both runtimes accept at most 4,000 "characters" but count differently
-(verified against Codex source and Claude Code 2.1.173):
+Codex と Claude Code は最大 4,000 文字を受け付けるが、数え方が異なる。
 
-  * Codex counts Unicode codepoints of the trimmed objective
-    (``validate_thread_goal_objective``: ``value.chars().count() > 4_000``).
-  * Claude Code counts UTF-16 code units (JavaScript ``String.length``),
-    so astral characters — emoji, rare CJK ideographs — count as 2.
+  * Codex は前後の空白を除いた目的の Unicode code point 数を数える。
+  * Claude Code は JavaScript の ``String.length`` と同じ UTF-16 code unit 数を
+    数えるため、絵文字や一部の CJK 文字は 2 と数える。
 
-Exactly 4,000 passes in both; 4,001 fails. Japanese and other BMP text
-counts 1 per character in both runtimes.
+両ランタイムとも 4,000 は合格し、4,001 は失敗する。このスクリプトは両方の
+件数を表示し、既定では厳しい方が上限を超えた場合に失敗する。
+Codex の code point 数だけを検証する場合は ``--runtime codex`` を指定する。
 
-This script reports both counts and fails when the stricter one (UTF-16
-code units) exceeds the cap, so a passing goal is safe to activate on
-either runtime. Pass ``--runtime codex`` to enforce only the codepoint
-count.
+検証は一度だけ行う。
+合格後に文字数を減らすためだけの反復はしない。
+失敗した場合は細かな字句削減を繰り返さず、句の削除や責務の分離で構成を直す。
 
-Validate once: if the goal passes, activate it. Do not loop on small
-trims to chase a lower number. If it fails, restructure (cut clauses or
-move durable detail to sidecars) instead of shaving characters.
-
-Input may be a file path or stdin, and may include a surrounding code
-fence and/or the leading ``/goal `` prefix; both are stripped before
-counting, matching what the runtimes validate.
+入力にはファイルまたは標準入力を使える。コードフェンスと先頭の ``/goal`` は、
+ランタイムの検証対象に合わせて文字数を数える前に除去する。
 """
 
 from __future__ import annotations
@@ -54,19 +47,19 @@ def utf16_units(text: str) -> int:
 
 
 def main(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(description="Validate /goal condition length.")
-    parser.add_argument("file", nargs="?", help="File containing the goal condition. Reads stdin when omitted.")
+    parser = argparse.ArgumentParser(description="/goal の文字数を検証する。")
+    parser.add_argument("file", nargs="?", help="Goal を含むファイル。省略時は標準入力から読む。")
     parser.add_argument(
         "--runtime",
         choices=["both", "codex", "claude-code"],
         default="both",
-        help="Which runtime's counting rule to enforce (default: both, i.e. the stricter count).",
+        help="適用するランタイムの数え方。既定値は both（厳しい方）を使う。",
     )
     parser.add_argument(
         "--max-chars",
         type=int,
         default=HARD_CAP,
-        help=f"Hard cap (default {HARD_CAP}, the runtime limit; both runtimes allow exactly this count).",
+        help=f"上限値。既定値はランタイム上限の {HARD_CAP}。",
     )
     args = parser.parse_args(argv)
 
@@ -80,7 +73,7 @@ def main(argv: list[str]) -> int:
     print(f"max={args.max_chars}")
 
     if not objective:
-        print("FAIL: goal condition is empty after stripping fences and the /goal prefix.")
+        print("FAIL: コードフェンスと /goal 接頭辞を除くと Goal が空です。")
         return 1
 
     if args.runtime == "codex":
@@ -91,10 +84,10 @@ def main(argv: list[str]) -> int:
         enforced = max(codepoints, units)
 
     if enforced > args.max_chars:
-        print(f"FAIL: {enforced} > {args.max_chars}. Restructure the goal (cut clauses or move durable detail to sidecars); do not loop on small trims.")
+        print(f"FAIL: {enforced} > {args.max_chars}。細かな字句削減を繰り返さず、不要な句の削除や責務の分離で Goal を組み直してください。")
         return 1
 
-    print("PASS: activate it; do not keep shortening.")
+    print("PASS: 上限内です。文字数を減らすためだけの修正は不要です。")
     return 0
 
 
