@@ -18,8 +18,8 @@ suppress_unstable_features_warning = true
 personality = "pragmatic"
 
 [agents]
-max_threads = 32
-max_depth = 2
+max_threads = 6
+max_depth = 1
 
 [agents.explorer]
 description = "Static codebase explorer. Use to locate files, trace code paths, and map architecture before decisions. No edits, runtime diagnosis, review verdicts, or acceptance testing."
