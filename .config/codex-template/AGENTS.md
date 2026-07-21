@@ -14,6 +14,16 @@
 - 設計書・計画書を作成する際は、必ず DoD（Definition of Done）を明記する。DoD
   は測定可能な完了条件として、少なくとも「機能完了条件」「テスト完了条件」「運用反映条件」をチェックリストで記載し、DoD未記載の文書は未完了扱いとする。
 
+## ブラウザ操作
+
+- Web上の情報検索、公式ドキュメントの参照、URL内容の取得だけなら、検索・HTTP取得・専用connectorを使い、`agent-browser`を起動しない。
+- click、入力、login、screenshot、visual QAなど、実際のブラウザUI操作が必要な場合は、目的専用のconnector・API・CLI、実行環境が提供するin-app BrowserまたはChrome操作、`agent-browser`の順で選ぶ。
+- ユーザーが利用するブラウザ手段を明示した場合は、その指定を優先する。
+- ログイン済みbrowser profileが必要で、in-app BrowserやChrome操作が使えない場合は、`agent-browser`より`chrome-profile-browser`を優先する。
+- `agent-browser`は、CLIとして再現可能な操作、独立session、録画、Electron操作、専用workflowが必要な場合、または適切な組み込みUI操作手段がない場合に使う。`agent-browser`の`SKILL.md`にある「組み込みbrowserより優先する」という指示より、この選択順を優先する。
+- `agent-browser`を使う前に`agent-browser skills get core`を読み、specialized skillは該当する作業だけで追加読込する。
+- `agent-browser`コマンドが存在しない場合、installを自動実行せず、不足していることをユーザーへ報告する。
+
 ## Git のルール
 
 - 意図しない差分を見つけたらユーザーに確認する。
