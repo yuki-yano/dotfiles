@@ -39,7 +39,6 @@ normalize_agent() {
   esac
 }
 
-# 同じ判定ロジックが discord-notify/scripts/send_discord_notification.ts にもある。変更時は両方を同期すること。
 detect_agent() {
   if [[ -n "${CLAUDECODE:-}" || -n "${CLAUDE_CODE:-}" || -n "${ANTHROPIC_API_KEY:-}" || -n "${ANTHROPIC_MODEL:-}" ]]; then
     printf 'claude'

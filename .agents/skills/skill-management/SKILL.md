@@ -46,7 +46,6 @@ Multiple skills from one repo:
 
 ```bash
 npx --yes skills add cloudflare/skills \
-  --skill cloudflare \
   --skill workers-best-practices \
   --skill wrangler \
   -a codex -y
@@ -64,6 +63,10 @@ Expected result:
 このリポジトリにはローカル設定用の `.claude` があるため、`npx skills update -p`
 を実行すると Claude Code も自動検出され、不要な `.claude/skills/<name>` が作られる。
 `update` に `--agent` が追加されるまでは、このリポジトリで `npx skills update` を使わない。
+
+`npx skills check` もread-onlyの更新確認ではなく、lockにあるskillを再取得して実体とhashを更新する。
+変更有無の確認だけを目的に実行しない。上流との差分確認が必要な場合はsourceを個別に調査し、
+実体を更新する場合だけ下記の`add -a codex`を使う。
 
 代わりに、下記の `Current Known External Sources` にある対象 source の `add` を
 `~/dotfiles` から再実行する。各コマンドは `-a codex` を明示するため、
@@ -89,11 +92,18 @@ git diff -- skills-lock.json .agents/skills/<skill-name>
 
 ## Remove Skills
 
-For a dotfiles-managed project skill:
+`skills` 1.5.19 の project scope `remove` は、`-a codex` を付けると
+`.agents/skills/<name>` の canonical path を共有利用中と判定して残す。
+また、agent指定なしで実体を削除しても、project scope の `skills-lock.json` entry は削除しない。
+
+外部由来の dotfiles-managed skill は、agent指定なしで実体とproject aliasを削除する。
 
 ```bash
-npx --yes skills remove <skill-name> -a codex -y
+npx --yes skills remove <skill-name> -y
 ```
+
+その後、`~/dotfiles/skills-lock.json` の `skills.<skill-name>` entry を削除する。
+CLIが `Successfully removed` と表示しても、実体とlockを個別に確認する。
 
 If the skill exists in other global agent locations, remove those copies explicitly:
 
@@ -163,7 +173,6 @@ Cloudflare skills:
 
 ```bash
 npx --yes skills add cloudflare/skills \
-  --skill cloudflare \
   --skill workers-best-practices \
   --skill wrangler \
   -a codex -y
@@ -174,12 +183,9 @@ External project skills:
 ```bash
 npx --yes skills add vercel-labs/agent-browser --skill agent-browser -a codex -y
 npx --yes skills add emilkowalski/skills --skill apple-design -a codex -y
-npx --yes skills add intellectronica/agent-skills --skill context7 -a codex -y
-npx --yes skills add vercel-labs/skills --skill find-skills -a codex -y
 npx --yes skills add anthropics/claude-code --skill frontend-design --full-depth -a codex -y
 npx --yes skills add vercel-labs/portless --skill portless -a codex -y
 npx --yes skills add millionco/react-doctor --skill react-doctor -a codex -y
-npx --yes skills add wshobson/agents --skill typescript-advanced-types --full-depth -a codex -y
 npx --yes skills add vercel-labs/agent-skills --skill vercel-react-best-practices -a codex -y
 ```
 

@@ -15,7 +15,7 @@ Goal は実装手順ではなく、実行中に守る成果契約として扱う
 - 設計判断を対話で詰める依頼は `grill-me` に任せる。
   Goal の受付では、完了条件を決めるために不可欠な質問だけを行う。
 - 設計書や計画書の作成は通常の計画作成に任せ、別エージェントへの引き継ぎが目的なら `agent-handoff-plan` に任せる。
-- 独立レビューは `agent-review-request`、subagent や並列実行はユーザーが明示した場合に限り `ultracode-codex` などの該当スキルに任せる。
+- 独立レビューは `agent-review-request` に任せる。subagentや並列実行はGoalへ組み込まず、ユーザーが明示した場合だけ実行環境のagent機構で扱う。
 - Goal に `spawn_agent`、`create_thread`、作業エージェント数、並列構成を自動追加しない。
 
 ## モードを決める
