@@ -9,7 +9,8 @@ metadata:
 
 agent 向け指示は、書いた本人が明瞭だと思っていても、別の実行者が読むと詰まることがある。この skill は、指示を静的に点検し、必要に応じて新規 agent に実行させ、実行者の自己申告と固定チェックリストの両面から改善点を出すための手順である。
 
-元の考え方は Claude Code 向けの empirical prompt tuning だが、この版では Codex の制約に合わせる。特に、Codex では subagent の利用はユーザーが明示した場合だけに限る。
+元の考え方は Claude Code 向けの empirical prompt tuning だが、この版は Codex と Claude Code の共有運用に合わせる。
+empirical評価は複数のfresh agentを使う高コストな検証なので、実行環境にかかわらずユーザーが明示した場合だけ行う。実行環境の自動委譲機能を、empirical評価の許可と解釈しない。
 
 ## モード選択
 
@@ -68,7 +69,8 @@ dispatch は不要。対象文書を読み、次を確認する。
 - 評価 agent には原則としてファイル編集をさせない。成果物や判断をレポートで返させる。
 - 編集を伴う検証が必要な場合は、作業範囲と保存先を明示し、既存差分を壊さないように指示する。
 
-Codex では `spawn_agent` を使う。並列実行する場合でも、各 agent のタスクは独立したシナリオに分ける。
+Codexでは`spawn_agent`、Claude CodeではAgent toolを使う。
+並列実行する場合でも、各agentのタスクは独立したシナリオに分ける。
 
 ### 3. Runner Prompt Contract
 
@@ -181,10 +183,10 @@ empirical 評価モードでは、次を目安に停止する。
 - 同じ subagent を再利用する。
 - `description` の trigger を強くしすぎて、body が対応していない用途まで発火させる。
 
-## Codex Notes
+## Runtime Notes
 
-- `spawn_agent` を使うかどうかは、モード選択の条件を満たす場合のみとする。
+- Codexの`spawn_agent`とClaude CodeのAgent toolは、モード選択の条件を満たす場合のみ使う。
+- 実行環境を確定できない場合やfresh agentを起動できない場合は、empirical評価を実行したと表現せず、構造審査までで止める。
 - 評価 agent に編集させる場合は、書き込み範囲を分ける。読み取りだけで足りる評価では no-edit を維持する。
 - ローカルファイルを参照させる場合は絶対パスを渡す。
 - 既存の未コミット差分はユーザー作業の可能性があるため、評価や修正で巻き戻さない。
-
