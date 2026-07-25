@@ -100,16 +100,21 @@ fi
 # }}}
 
 # mise {{{
-dot_zsh_prioritize_cargo_path() {
-  [[ -d $HOME/.cargo/bin ]] && path=($HOME/.cargo/bin $path)
+dot_zsh_prioritize_local_tool_paths() {
+  path=(
+    $HOME/.cache/.bun/bin(N-/)
+    $HOME/.bun/bin(N-/)
+    $HOME/.cargo/bin(N-/)
+    $path
+  )
 }
 
 dot_zsh_activate_mise() {
   source "$1"
   autoload -Uz add-zsh-hook
-  add-zsh-hook precmd dot_zsh_prioritize_cargo_path
-  add-zsh-hook chpwd dot_zsh_prioritize_cargo_path
-  dot_zsh_prioritize_cargo_path
+  add-zsh-hook precmd dot_zsh_prioritize_local_tool_paths
+  add-zsh-hook chpwd dot_zsh_prioritize_local_tool_paths
+  dot_zsh_prioritize_local_tool_paths
 }
 
 if [[ -r ${MISE_ACTIVATE_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/mise.zsh} ]]; then
