@@ -4,7 +4,9 @@ import { fileURLToPath } from "node:url";
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const daemonScript = join(repositoryRoot, "bin/dot-prompt-gitd.ts");
+const promptBaseScript = join(repositoryRoot, ".zsh/prompt/base.zsh");
 const gitPromptScript = join(repositoryRoot, ".zsh/prompt/git.zsh");
+const promptAsyncScript = join(repositoryRoot, ".zsh/prompt/async.zsh");
 
 async function commandSucceeds(command: string, args: string[]): Promise<boolean> {
   try {
@@ -89,6 +91,33 @@ Deno.test("Deno が PATH にない場合は Git 表示を無音で空にする",
   assertStringIncludes(new TextDecoder().decode(output.stdout), "top ''");
 });
 
+Deno.test("初回キャッシュ待ちを保持し、キャッシュ読込後に Git 表示へ切り替える", async () => {
+  const script = [
+    'source "$1"',
+    'source "$2"',
+    'source "$3"',
+    'pending_output=$(dot_prompt_git_pending_status "/tmp/repo" "/tmp/cache")',
+    'dot_prompt_async_callback dot_prompt_git_status 0 "$pending_output" 0 0 0',
+    'print -r -- "pending=${DOT_PROMPT_GIT_PENDING} top=${DOT_PROMPT_GIT_TOP} cache=${DOT_PROMPT_GIT_CACHE_PATH} prompt=${DOT_PROMPT_GIT_PROMPT}"',
+    "typeset -A ready_info",
+    'ready_info=(pwd "$PWD" top "/tmp/repo" cache "/tmp/cache" branch main)',
+    "ready_output=$(print -r -- ${(@kvq)ready_info})",
+    'dot_prompt_async_callback dot_prompt_git_status 0 "$ready_output" 0 0 0',
+    'print -r -- "ready=${DOT_PROMPT_GIT_PENDING} prompt=${DOT_PROMPT_GIT_PROMPT}"',
+  ].join("; ");
+  const output = await new Deno.Command("/bin/zsh", {
+    args: ["-f", "-c", script, "--", promptBaseScript, gitPromptScript, promptAsyncScript],
+    stdout: "piped",
+    stderr: "piped",
+  }).output();
+
+  assert(output.success);
+  assertEquals(new TextDecoder().decode(output.stderr), "");
+  const stdout = new TextDecoder().decode(output.stdout);
+  assertStringIncludes(stdout, "pending=1 top=/tmp/repo cache=/tmp/cache prompt=");
+  assertStringIncludes(stdout, "ready=0 prompt=%B%F{7} main");
+});
+
 const watchmanAvailable = await commandSucceeds("watchman", ["--version"]);
 
 Deno.test({
@@ -101,7 +130,9 @@ Deno.test({
     const runtimePath = join(integrationRoot, "runtime");
     const socketPath = join(runtimePath, "daemon.sock");
     const logPath = join(runtimePath, "daemon.log");
-    const cachePath = join(integrationRoot, "cache", "status");
+    const xdgCachePath = join(integrationRoot, "xdg-cache");
+    let canonicalRepoPath = repoPath;
+    let cachePath = "";
     let daemon: Deno.ChildProcess | null = null;
 
     try {
@@ -111,6 +142,14 @@ Deno.test({
       await Deno.writeTextFile(join(repoPath, "tracked.txt"), "initial\n");
       await run("git", ["add", "tracked.txt"], repoPath);
       await run("git", ["commit", "-qm", "initial"], repoPath);
+      canonicalRepoPath = await Deno.realPath(repoPath);
+      cachePath = join(
+        xdgCachePath,
+        "zsh",
+        "prompt",
+        "git-status",
+        `${canonicalRepoPath.replaceAll("/", "%")}.status`,
+      );
 
       daemon = new Deno.Command("deno", {
         args: ["run", "--quiet", "-A", daemonScript],
@@ -130,14 +169,32 @@ Deno.test({
           return false;
         }
       });
-      await register(socketPath, repoPath, cachePath);
-      await waitFor(() => refreshCount(logPath, repoPath) >= 1 && readText(cachePath).includes("unstaged '0'"));
+      const initialStatus = await new Deno.Command("/bin/zsh", {
+        args: ["-f", "-c", 'source "$1"; cd "$2"; dot_prompt_git_status cached', "--", gitPromptScript, repoPath],
+        env: {
+          DOT_PROMPT_GITD_RUNTIME_BASE: runtimePath,
+          DOT_PROMPT_GITD_SOCKET_PATH: socketPath,
+          DOT_PROMPT_GITD_SCRIPT: daemonScript,
+          XDG_CACHE_HOME: xdgCachePath,
+        },
+        stdout: "piped",
+        stderr: "piped",
+      }).output();
+      assert(initialStatus.success);
+      assertEquals(new TextDecoder().decode(initialStatus.stderr), "");
+      const initialOutput = new TextDecoder().decode(initialStatus.stdout);
+      assertStringIncludes(initialOutput, "pending 1");
+      assertStringIncludes(initialOutput, `top ${canonicalRepoPath}`);
+      assertStringIncludes(initialOutput, `cache ${cachePath}`);
+      await waitFor(() =>
+        refreshCount(logPath, canonicalRepoPath) >= 1 && readText(cachePath).includes("unstaged '0'")
+      );
       await new Promise((resolvePromise) => setTimeout(resolvePromise, 400));
 
-      const refreshesBeforeCookie = refreshCount(logPath, repoPath);
+      const refreshesBeforeCookie = refreshCount(logPath, canonicalRepoPath);
       await run("watchman", ["clock", repoPath]);
       await new Promise((resolvePromise) => setTimeout(resolvePromise, 500));
-      assertEquals(refreshCount(logPath, repoPath), refreshesBeforeCookie);
+      assertEquals(refreshCount(logPath, canonicalRepoPath), refreshesBeforeCookie);
 
       const initialRefreshes = refreshesBeforeCookie;
       const signatureBefore = await cacheSignature(repoPath, cachePath);
@@ -155,7 +212,7 @@ Deno.test({
           'source "$1"; cd "$2"; dot_prompt_git_status known "$2" "$3"',
           "--",
           gitPromptScript,
-          repoPath,
+          canonicalRepoPath,
           cachePath,
         ],
         env: {
@@ -169,7 +226,7 @@ Deno.test({
       }).output();
       assert(knownStatus.success);
       assertEquals(new TextDecoder().decode(knownStatus.stderr), "");
-      assertStringIncludes(new TextDecoder().decode(knownStatus.stdout), `top ${repoPath}`);
+      assertStringIncludes(new TextDecoder().decode(knownStatus.stdout), `top ${canonicalRepoPath}`);
 
       for (let index = 0; index < 100; index++) {
         Deno.writeTextFileSync(join(repoPath, "tracked.txt"), `change-${index}\n`);
@@ -177,7 +234,8 @@ Deno.test({
 
       try {
         await waitFor(() =>
-          refreshCount(logPath, repoPath) >= initialRefreshes + 1 && readText(cachePath).includes("unstaged '1'")
+          refreshCount(logPath, canonicalRepoPath) >= initialRefreshes + 1 &&
+          readText(cachePath).includes("unstaged '1'")
         );
       } catch (error) {
         throw new Error(`${error}\ndaemon log:\n${readText(logPath)}\ncache:\n${readText(cachePath)}`);
@@ -185,7 +243,7 @@ Deno.test({
       await new Promise((resolvePromise) => setTimeout(resolvePromise, 700));
 
       const signatureAfter = await cacheSignature(repoPath, cachePath);
-      assertEquals(refreshCount(logPath, repoPath) - initialRefreshes, 1);
+      assertEquals(refreshCount(logPath, canonicalRepoPath) - initialRefreshes, 1);
       assert(signatureBefore !== signatureAfter);
       assertStringIncludes(readText(cachePath), "unstaged '1'");
     } finally {
