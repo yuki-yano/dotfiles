@@ -12,8 +12,9 @@ vw switch feature/foo --json
 ```
 
 期待値:
-- 既存 worktree があれば `status: "existing"`。
-- 新規作成なら `status: "created"`。
+- 成功 envelope は `schemaVersion: 2`、`status: "ok"`。
+- 既存 worktree があれば `data.disposition: "existing"`。
+- 新規作成なら `data.disposition: "created"`。
 
 ## 新しい WIP ブランチを作る
 
@@ -119,12 +120,11 @@ vw copy .env .env.local
 
 ```bash
 vw link .env
-vw link .env --no-fallback
 ```
 
 補足:
 - 対象 worktree からリポジトリルートのファイルへ symlink を作る。
-- Windows では `--no-fallback` を指定しない限りコピーへフォールバックする。
+- symlink 作成に失敗したら typed error で停止し、copy へはフォールバックしない。
 
 ## 指定 worktree でコマンドを実行する
 

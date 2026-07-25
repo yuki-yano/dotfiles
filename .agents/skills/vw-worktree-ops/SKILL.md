@@ -15,6 +15,8 @@ description: vw エイリアス経由で vde-worktree を安全かつ一貫し�
 - worktree を作成するときは、可能な限り作業意図に即した名前（例: `feature/<機能名>`, `fix/<不具合名>`, `chore/<作業名>`）を明示指定する。
 - 自動化やエージェント連携では `--json` を優先する。
 - 人間向けログは stderr、判定に使うデータは stdout の JSON を正とする。
+- JSON consumer は最初に `schemaVersion === 2` を検証し、未知versionは処理せず停止する。
+- 成功は `status === "ok"` かつ `error === null`、失敗は `status === "error"` かつ `error.code` で判定する。command固有値は `data` から読む。
 - 明示要求がない限り unsafe 系フラグは使わない。
 
 ## 安全な実行順序
@@ -26,7 +28,7 @@ description: vw エイリアス経由で vde-worktree を安全かつ一貫し�
 
 ## merge 判定ポリシー
 
-JSON の merge 状態を読む:
+schema version 2 envelope の `data` に含まれる merge 状態を読む:
 - `merged.byAncestry`: ローカル Git の祖先関係判定
 - `merged.byPR`: `gh` による PR merged 判定（nullable）
 - `merged.overall`: 安全ロジックで使う最終判定
@@ -47,7 +49,7 @@ JSON の merge 状態を読む:
 
 ## エラーハンドリング
 
-JSON エラー応答の `code` ごとに処理する:
+JSON エラー応答の `error.code` ごとに処理する:
 
 - `NOT_INITIALIZED`: `vw init` を実行する。
 - `UNSAFE_FLAG_REQUIRED`: 意図した操作なら unsafe 同意フラグを明示する。
