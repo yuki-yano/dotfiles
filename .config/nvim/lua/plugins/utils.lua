@@ -374,11 +374,11 @@ return {
     end,
   },
   {
-    'yuki-yano/smart-tmux-nav.nvim',
+    'yuki-yano/vde-tmux',
     dev = true,
     lazy = false,
     config = function()
-      require('smart-tmux-nav').setup()
+      require('vde-tmux').setup()
     end,
   },
   {

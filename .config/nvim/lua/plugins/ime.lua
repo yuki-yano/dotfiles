@@ -80,7 +80,7 @@ return {
     lazy = false,
     dependencies = {
       { 'folke/snacks.nvim' },
-      { 'yuki-yano/smart-tmux-nav.nvim' },
+      { 'yuki-yano/vde-tmux' },
     },
     init = function()
       if ime.is_editprompt() then
@@ -93,7 +93,7 @@ return {
             local editprompt = require('editprompt')
             local editprompt_history = require('editprompt.history')
             local editprompt_utils = require('editprompt.utils')
-            local smart_tmux_nav = require('smart-tmux-nav')
+            local vde_tmux = require('vde-tmux')
             local map_opts = { silent = true, nowait = true, buffer = bufnr }
             local function is_buffer_blank()
               local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
@@ -339,7 +339,7 @@ return {
                 if #lines == 0 or (#lines == 1 and lines[1] == '') then
                   vim.cmd('startinsert')
                 end
-                smart_tmux_nav.navigate(dir)
+                vde_tmux.navigate(dir)
               end, map_opts)
             end
 
@@ -355,7 +355,7 @@ return {
                 if #lines ~= 0 and (#lines ~= 1 or lines[1] ~= '') then
                   return fallback
                 end
-                smart_tmux_nav.navigate(dir)
+                vde_tmux.navigate(dir)
                 return ''
               end, vim.tbl_extend('force', map_opts, { expr = true }))
             end
