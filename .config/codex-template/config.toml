@@ -93,6 +93,9 @@ enabled = true
 [plugins."browser-use@openai-bundled"]
 enabled = true
 
+[plugins."chrome@openai-bundled"]
+enabled = true
+
 [plugins."documents@openai-primary-runtime"]
 enabled = true
 
