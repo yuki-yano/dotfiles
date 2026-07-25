@@ -9,10 +9,10 @@ layouts:
   default:
     initialFocus:
       slot: 1
+    display:
+      monitor: primary
     spaces:
       - spaceID: 1
-        display:
-          monitor: primary
         windows:
           - slot: 1
             launch: true
@@ -26,7 +26,7 @@ layouts:
           - slot: 2
             launch: true
             match:
-              bundleID: com.openai.atlas
+              bundleID: com.microsoft.edgemac
             frame:
               x: "16.5%"
               y: "0%"
@@ -42,8 +42,6 @@ layouts:
               width: "67%"
               height: "100%"
       - spaceID: 2
-        display:
-          monitor: primary
         windows:
           - slot: 1
             launch: true
@@ -64,8 +62,6 @@ layouts:
               width: "67%"
               height: "100%"
       - spaceID: 3
-        display:
-          monitor: primary
         windows:
           - slot: 1
             launch: true
@@ -85,18 +81,24 @@ layouts:
               y: "15%"
               width: "50%"
               height: "70%"
-      - spaceID: 4
-        display:
-          monitor: primary
+          - slot: 3
+            launch: true
+            match:
+              bundleID: com.openai.codex
+  calendar:
+    display:
+      monitor: secondary
+    spaces:
+      - spaceID: 1
         windows:
           - slot: 1
             launch: true
             match:
-              bundleID: com.eatbiscult.biscult
+              bundleID: com.microsoft.edgemac.app.kjbdgfilnfhdoflbpgamdcdgpehopbep
             frame:
-              x: "16.5%"
+              x: "0%"
               y: "0%"
-              width: "67%"
+              width: "100%"
               height: "100%"
 
 shortcuts:

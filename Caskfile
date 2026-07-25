@@ -12,13 +12,13 @@ install --cask cleanshot
 install --cask cursor
 install --cask default-folder-x
 install --cask discord
-install --cask drawio
 install --cask finicky
 install --cask firefox
 install --cask google-chrome
 install --cask karabiner-elements
 install --cask keyboard-cleaner
 install --cask keycastr
+install --cask microsoft-edge
 install --cask neohtop
 install --cask notion
 install --cask obs
