@@ -6,39 +6,49 @@ send.md手順8の受理確認の時点で既に完了マーカーが見えてい
 
 方式の選択:
 
-- Claude Code環境でMonitorツール（バックグラウンド監視）が使える場合はそれを優先してよい。監視条件は「連結済みマーカーの出現」または「作業中表示（`Working` / `esc to interrupt` 等）の消失」。上限時間を必ず設定する。
-- それ以外（Codex等）は下記のポーリングスクリプトを既定とする。固定sleepの反復では待たない。マーカー検出+停滞判定を1回のシェル呼び出しで行う。
+- Claude Code環境でMonitorツール（バックグラウンド監視）が使える場合はそれを優先してよい。完了条件は「連結済みマーカーの出現」とし、作業中表示の消失だけでは完了扱いしない。ツール上の実行上限に達したら、同じ条件で監視を再開する。
+- それ以外（Codex等）は下記のポーリングスクリプトを既定とする。長時間の無変化を異常扱いせず、マーカー検出またはpane消失まで1つのシェルセッションで監視する。シェル実行ツールが途中でyieldした場合は、同じセッションの待機を継続する。
 
 ```bash
 pane='%N'
 marker='===BRIDGE-DONE-R1==='   # 連結済みマーカー。依頼文には分割形式でしか書かれていないこと（SKILL.mdの規約）
-deadline=$((SECONDS + 1800))     # 上限。レビューは30分、実装依頼は依頼内容に応じて延長
-stall_limit=300                  # 画面が変化しないまま何秒で停滞とみなすか
-last_hash='' ; stall=0
-while [ $SECONDS -lt $deadline ]; do
+started=$SECONDS
+next_heartbeat=$((SECONDS + 300))
+next_hang_check=$((SECONDS + 3600))
+last_hash=''
+unchanged_since=$SECONDS
+while :; do
   snap=$(tmux capture-pane -p -t "$pane" -S -200 2>&1) || { echo "PANE-GONE: $snap"; exit 2; }
   if printf '%s' "$snap" | grep -qF "$marker"; then echo "DONE"; exit 0; fi
   h=$(printf '%s' "$snap" | shasum -a 256 | cut -d' ' -f1)
-  if [ "$h" = "$last_hash" ]; then
-    stall=$((stall + 20))
-    [ $stall -ge $stall_limit ] && { echo "STALLED"; printf '%s\n' "$snap" | tail -25; exit 3; }
-  else
-    stall=0
+  if [ "$h" != "$last_hash" ]; then
+    unchanged_since=$SECONDS
   fi
   last_hash=$h
+  if [ $SECONDS -ge $next_heartbeat ]; then
+    echo "WAITING elapsed=$((SECONDS - started))s unchanged=$((SECONDS - unchanged_since))s"
+    next_heartbeat=$((SECONDS + 300))
+  fi
+  if [ $SECONDS -ge $next_hang_check ] && [ $((SECONDS - unchanged_since)) -ge 3600 ]; then
+    echo "HANG-CHECK elapsed=$((SECONDS - started))s unchanged=$((SECONDS - unchanged_since))s"
+    next_hang_check=$((SECONDS + 1800))
+  fi
   sleep 20
 done
-echo "TIMEOUT"; exit 1
 ```
 
-終了コードごとの対応:
+状態ごとの対応:
 
 - `DONE`: collectへ進む。
 - `PANE-GONE`: 中断してユーザーに報告する。
-- `STALLED`: 末尾出力を確認する。permission promptや確認待ちで止まっている場合はユーザーに報告して判断を仰ぐ（勝手に承認キーを送らない）。入力受付表示へ戻っているのに マーカーがない場合は「マーカー指示が無視された」とみなし、collectをfallback完了として実行し、その旨を報告に明記する。
-- `TIMEOUT`: 途中経過をcaptureして報告し、待機を延長するか打ち切るかユーザーに確認する。
+- `WAITING`: 正常なheartbeat。画面が長時間変化していなくても待機を継続する。催促や追加のEnterを送らない。
+- `HANG-CHECK`: 完了やハング確定ではない。SKILL.mdの「ハング判定と切り替え」に従って診断する。根拠が揃わなければ監視へ戻る。
+- シェル実行ツールのyield・一時的な実行上限: 同じセッションを再度待機する。セッションが失われた場合は新しい監視を開始する。いずれも完了や打ち切りとはみなさない。
+- permission promptや確認待ちが明示的に表示された場合: 監視を中断してユーザーに判断を仰ぐ。勝手に承認キーや回答を送らない。
+- 入力受付表示へ戻り、最終回答らしい出力があるのにマーカーがない場合: マーカー欠落を報告して停止する。collectや後続処理をfallback実行しない。
+- ハング判定の根拠が揃った場合: 診断結果をユーザーへ報告して監視を終了する。相手の応答なしでも安全な後続処理だけを続け、レビュー済み・合意済み・収束済みとは扱わない。
 
-長時間の待機で自分の別作業と並行したい場合は、上記スクリプトをバックグラウンド実行にする。待機中に相手paneへ追加送信をしない。
+待機中は相手paneへ追加送信しない。応答を前提とする検証・修正・次ラウンドなどの後続処理も開始しない。ユーザーが明示した独立作業だけは、監視を維持したまま並行してよい。
 
 ## collect: 回収
 
