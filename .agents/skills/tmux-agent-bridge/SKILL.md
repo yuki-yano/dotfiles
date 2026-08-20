@@ -8,7 +8,7 @@ description: tmux paneのAIエージェント（Claude Code / Codex / opencode�
 ## 概要
 
 tmux paneを介したエージェント間連携の輸送層。
-対象解決、prompt入力、logical key入力、state待ち、利用上限判定、terminal read、明示的な起動をvde-tmux Agent API v4で行う。
+対象解決、prompt入力、logical key入力、state待ち、利用上限判定、terminal read、明示的な起動をvde-tmux Agent APIで行う。
 raw tmux入力やtopology pollingをtransportとして使わない。
 
 ## 責務分担
@@ -20,7 +20,7 @@ raw tmux入力やtopology pollingをtransportとして使わない。
 
 ## 共通契約
 
-1. 最初に [references/api-state.md](references/api-state.md) を読み、API v4、daemon protocol 16、PaneState 9、private state format 1を検証する。不一致時は停止し、旧raw監視へfallbackしない。
+1. 最初に [references/api-state.md](references/api-state.md) を読み、公開schemaを取得する。取得失敗時は停止し、旧raw監視へfallbackしない。
 2. `%N`は最初の対象解決だけに使う。取得後は`agent_ref`、`pane_ref`、`run_ref`、`operation_ref`を用途どおり固定し、occupant replacement後に読み替えない。
 3. prompt、steer、logical key、split、startを必ず公開APIで実行する。`tmux send-keys`、`paste-buffer`、`split-window`をbridgeから直接実行しない。
 4. API errorは`code`、`stage`、`side_effect`、`retry_action`で扱う。`delivery_unknown`、`inspect_manually`、side effectが`possible`の結果からpromptを再送しない。

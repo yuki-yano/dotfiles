@@ -1,12 +1,12 @@
 # guarded terminal send / best-effort steer / logical keys
 
-durable provider adapterを持たないが、API v4で`guarded_terminal`と`lifecycle_cursor`を公開するproviderへ使う。prompt入力、copy-mode解除、pane/process/input-owner fenceは`vt agent send`が担当する。raw tmuxへfallbackしない。
+durable provider adapterを持たないが、公開APIで`guarded_terminal`と`lifecycle_cursor`を提供するproviderへ使う。prompt入力、copy-mode解除、pane/process/input-owner fenceは`vt agent send`が担当する。raw tmuxへfallbackしない。
 
 ## prompt send
 
 ### 1. preflight
 
-[api-state.md](api-state.md)でversion gateとexact target resolveを行い、次を保存する。
+[api-state.md](api-state.md)でschema取得とexact target resolveを行い、次を保存する。
 
 ```bash
 vt agent get %N --json \
@@ -73,7 +73,7 @@ vt agent wait "$agent_ref" \
 
 ### 1. preflight
 
-[api-state.md](api-state.md)でversion gateとexact target resolveを行い、`identity=exact`、`status=working`、非`usage_limit`を要求する。対象kindのschema capabilityは`steer=guarded_terminal_best_effort`でなければならない。
+[api-state.md](api-state.md)でschema取得とexact target resolveを行い、`identity=exact`、`status=working`、非`usage_limit`を要求する。対象kindのschema capabilityは`steer=guarded_terminal_best_effort`でなければならない。
 
 `idle|done`なら通常sendへ自動的に切り替えず停止する。state確認とdispatchの競合で`invalid_target`になった場合も同様に、targetを再解決して送らない。
 

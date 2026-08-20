@@ -1,10 +1,10 @@
 # Codex durable API transport
 
-API v4でprompt dispatch、Run state待ち、Response Artifact回収を一つのstable-reference chainとして扱う。
+公開APIでprompt dispatch、Run state待ち、Response Artifact回収を一つのstable-reference chainとして扱う。
 
 ## 選択条件
 
-[api-state.md](api-state.md)のversion gateを通し、次をすべて満たす場合だけ選ぶ。
+[api-state.md](api-state.md)でschema取得とexact target resolveを行い、次をすべて満たす場合だけ選ぶ。
 
 - targetの`identity == exact`、`agent_ref`あり。
 - 対象kindの`.capabilities.prompt_dispatch == "durable"`、`.prompt_confirmation == "provider_digest"`、`.response == "artifact"`。

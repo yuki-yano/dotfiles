@@ -1,4 +1,4 @@
-# API v4 state contract
+# API state
 
 対象解決、transport選択、state分類、limit判定、typed error処理の共通手順。
 
@@ -6,22 +6,15 @@
 
 最初に`mktemp -d "${TMPDIR:-/tmp}/tmux-agent-bridge.XXXXXX"`を実行し、出力された絶対パスを記録する。以降はtool call間の環境変数へ依存せず、`<作業ディレクトリ>`をその絶対パスへ置換する。
 
-## version gate
+## schema取得
 
 ```bash
 vt api schema --json \
   > "<作業ディレクトリ>/schema.json" \
   2> "<作業ディレクトリ>/schema-error.json"
-jq -e '
-  .meta.api_version == 4 and
-  .result.contract.versions.public_agent_api == 4 and
-  .result.contract.versions.daemon_protocol == 16 and
-  .result.contract.versions.pane_state_schema == 9 and
-  .result.contract.versions.private_state_format == 1
-' "<作業ディレクトリ>/schema.json"
 ```
 
-gate不成立、daemon not Ready、`state_uninitialized`では停止する。raw tmux state監視へfallbackしない。
+schema取得失敗、daemon not Ready、`state_uninitialized`では停止する。raw tmux state監視へfallbackしない。
 
 ## canonical inventory
 
