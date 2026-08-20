@@ -18,6 +18,7 @@ bun = "latest"
 "cargo:vde-tmux-manager" = "latest"
 go = "latest"
 "go:github.com/rhysd/vim-startuptime" = "latest"
+"github:kimushun1101/mikke" = { version = "latest", matching = "full" }
 node = "latest"
 "npm:@aikidosec/safe-chain" = "latest"
 "npm:@github/copilot" = "latest"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "mikke Note Search"
+  short_description: "mikke で現在の repo の Markdown 文脈を検索"
+  default_prompt: "Use $mikke to search this repository's Markdown documentation for relevant context."

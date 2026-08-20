@@ -1,0 +1,27 @@
+[scan]
+exclude_dirs = [
+  ".obsidian",
+  ".claude",
+  ".codex",
+  ".cursor",
+  ".gemini",
+  ".git",
+  ".venv",
+  "__pycache__",
+  "node_modules",
+  "templates",
+  "dist",
+  "build",
+  "plugins",
+  "extensions",
+  "vercel-react-best-practices", # scalar tags are incompatible with mikke 0.2.0
+  "git-clones",
+  "git-clones-current",
+  "opensrc",
+  "sites",
+  "agent-note-hook-test",
+]
+exclude_files = ["CLAUDE.md", "AGENTS.md", "GEMINI.md"]
+
+[semantic]
+enabled = true
