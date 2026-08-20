@@ -110,6 +110,9 @@ enabled = true
 [plugins."context-mode@context-mode"]
 enabled = false
 
+[plugins."drawio@drawio"]
+enabled = true
+
 [marketplaces.openai-bundled]
 last_updated = "2026-04-24T03:46:51Z"
 source_type = "local"
@@ -120,6 +123,7 @@ last_updated = "2026-04-24T03:45:21Z"
 source_type = "local"
 source = "~/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
 
-[marketplaces.context-mode]
+[marketplaces.drawio]
+last_updated = "2026-08-10T08:51:22Z"
 source_type = "git"
-source = "https://github.com/mksglu/context-mode.git"
+source = "https://github.com/jgraph/drawio-mcp.git"
