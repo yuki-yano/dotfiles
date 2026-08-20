@@ -538,11 +538,14 @@ function tmux_auto_rename_hook() {
         # Extract repository name from path
         local repository=$(basename "$git_root")
 
-        # Convert dots to hyphens
-        local new_session_name=${repository//./-}
+        # Match vt's session_name_for_path sanitization.
+        local new_session_name=${repository//[^A-Za-z0-9_.-]/_}
 
-        # Rename the session
-        tmux rename-session "$new_session_name" 2>/dev/null || true
+        # Rename the session and register the repository metadata
+        if tmux rename-session "$new_session_name" 2>/dev/null; then
+          vt project switch "$git_root" 2>/dev/null ||
+            tmux display-message "vt project metadata update failed"
+        fi
       fi
     fi
   fi

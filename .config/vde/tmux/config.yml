@@ -5,7 +5,6 @@
 
 daemon:
   poll_ms: 2000
-  done_clear_on: pane
 
 statusline:
   session_badge:
@@ -118,6 +117,7 @@ categories:
   rules:
     - category: private
       path_patterns:
+        - dotfiles
         - github.com/yuki-yano/agent-private-workflow
         - github.com/yuki-yano/mf-dashboard
         - github.com/yuki-yano/obsidian-sync
@@ -125,13 +125,12 @@ categories:
       path_patterns:
         - github.com/${WORK_GHQ_OWNER}/*
         - github.com/${WORK_GHQ_OWNER}/**
-  session_name_rules:
-    - category: private
-      patterns:
-        - dotfiles
-
 sidebar:
   width: "10%"
+  task_summary:
+    enabled: true
+    debounce_ms: 750
+    timeout_ms: 90000
   header:
     format: " {label} ▾ "
     prefix: ""
@@ -142,14 +141,11 @@ sidebar:
     colors:
       fg: "#b4befe"
       bg: "reset"
-  live:
-    lines: 20
   colors:
-    action_icon: "#74c7ec"
     badge_blocked: "#f38ba8"
     badge_working: "#a6e3a1"
     badge_done: "#89b4fa"
-    badge_idle: "#6c7086"
+    badge_idle: "#7f849c"
     header_chip_fg: "#cdd6f4"
     header_filter_bg: "#434662"
     header_total_bg: "reset"

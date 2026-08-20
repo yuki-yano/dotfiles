@@ -1,20 +1,22 @@
 #!/usr/bin/env bash
 
-# Check dependencies
-if ! command -v system_profiler >/dev/null 2>&1; then
-  echo "#[fg=red]system_profiler not found" >&2
+set -euo pipefail
+
+wifi_interface="$(
+  /usr/sbin/networksetup -listallhardwareports |
+    awk '/^Hardware Port: (Wi-Fi|AirPort)$/ { getline; sub(/^Device: /, ""); print; exit }'
+)"
+
+if [[ -z "$wifi_interface" ]]; then
+  echo "#[fg=red]offline"
   exit 1
 fi
 
-if ! command -v jq >/dev/null 2>&1; then
-  echo "#[fg=red]jq not found; brew install jq" >&2
-  exit 1
-fi
-
-# Decode SSID from scutil's cached scan record to avoid "<redacted>".
-get_ssid_from_scutil() {
-  local iface="$1"
-  /usr/bin/python3 - "$iface" <<'PY'
+# `system_profiler SPAirPortDataType` takes about ten seconds on current macOS and
+# reports a transmit rate that oscillates between samples. tmux reruns this widget
+# from status-right, so those late, width-changing results make the status line flash.
+# The cached association record contains the stable SSID and is available immediately.
+/usr/bin/python3 - "$wifi_interface" <<'PY'
 import plistlib
 import re
 import subprocess
@@ -25,29 +27,34 @@ key = f"State:/Network/Interface/{iface}/AirPort"
 
 try:
     state = subprocess.check_output(
-        ["scutil"],
+        ["/usr/sbin/scutil"],
         input=f"show {key}\n",
         text=True,
         stderr=subprocess.DEVNULL,
     )
 except Exception:
-    raise SystemExit(0)
+    print("#[fg=red]offline")
+    raise SystemExit(1)
 
 match = re.search(r"CachedScanRecord\s*:\s*<data>\s*0x([0-9A-Fa-f]+)", state)
 if not match:
-    raise SystemExit(0)
+    print("#[fg=red]offline")
+    raise SystemExit(1)
 
 try:
     plist = plistlib.loads(bytes.fromhex(match.group(1)))
 except Exception:
-    raise SystemExit(0)
+    print("#[fg=red]offline")
+    raise SystemExit(1)
 
 objects = plist.get("$objects")
 root = plist.get("$top", {}).get("root")
 if objects is None or root is None:
-    raise SystemExit(0)
+    print("#[fg=red]offline")
+    raise SystemExit(1)
 
 UID = plistlib.UID
+
 
 def decode(value):
     if isinstance(value, UID):
@@ -67,79 +74,10 @@ def decode(value):
     return value
 
 decoded = decode(root)
-if isinstance(decoded, dict):
-    ssid = decoded.get("SSID_STR")
-    if isinstance(ssid, str) and ssid:
-        print(ssid)
+ssid = decoded.get("SSID_STR") if isinstance(decoded, dict) else None
+if not isinstance(ssid, str) or not ssid:
+    print("#[fg=red]offline")
+    raise SystemExit(1)
+
+print(f"#[fg=white]{ssid}")
 PY
-}
-
-# Retrieve JSON data
-json=$(system_profiler -json SPAirPortDataType -detailLevel basic 2>/dev/null)
-if [[ -z "$json" ]]; then
-  echo "#[fg=red]offline"
-  exit 1
-fi
-
-# Detect active interface
-iface=$(jq -r '
-  .SPAirPortDataType[0]
-  .spairport_airport_interfaces[]
-  | select(.spairport_current_network_information._name != null)
-  | ._name
-' <<<"$json" | head -n1)
-
-if [[ -z "$iface" ]]; then
-  echo "#[fg=red]offline"
-  exit 1
-fi
-
-# Extract SSID, RSSI, and transmit rate
-ssid=$(jq -r --arg IF "$iface" '
-  .SPAirPortDataType[0]
-  .spairport_airport_interfaces[]
-  | select(._name == $IF)
-  | .spairport_current_network_information._name
-' <<<"$json")
-
-if [[ "$ssid" == "<redacted>" || "$ssid" == "null" || -z "$ssid" ]]; then
-  ssid=$(get_ssid_from_scutil "$iface")
-fi
-
-if [[ -z "$ssid" ]]; then
-  echo "#[fg=red]offline"
-  exit 1
-fi
-
-rssi=$(jq -r --arg IF "$iface" '
-  .SPAirPortDataType[0]
-  .spairport_airport_interfaces[]
-  | select(._name == $IF)
-  | .spairport_current_network_information.spairport_signal_noise
-' <<<"$json" | awk '{print $1}')
-
-rate=$(jq -r --arg IF "$iface" '
-  .SPAirPortDataType[0]
-  .spairport_airport_interfaces[]
-  | select(._name == $IF)
-  | .spairport_current_network_information.spairport_network_rate
-' <<<"$json")
-
-# Build signal strength blocks
-signals=(▂▅▇)
-signal=""
-for idx in "${!signals[@]}"; do
-  threshold=$(( idx==0 ? -100 : idx==1 ? -80 : -50 ))
-  if (( rssi > threshold )); then
-    signal+="${signals[idx]}"
-  fi
-done
-
-# Handle no connection
-if (( rate == 0 )); then
-  echo "#[fg=red]no_wifi"
-  exit 1
-fi
-
-# Output formatted for tmux status-right
-echo "#[fg=white]${ssid} #[fg=green]${rate}Mbps ${signal}"
