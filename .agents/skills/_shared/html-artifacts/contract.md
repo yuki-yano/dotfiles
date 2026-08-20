@@ -11,13 +11,14 @@
 
 ## Authoring Ownership
 
-- ExplainerではAgentがYAMLを編集し、固定rendererがHTML・CSS・許可済みscriptを生成する。生成HTMLをAgentが自由記述しない。
+- ExplainerではAgentがv2 YAMLを編集し、固定rendererがHTML・CSS・検証済みdata image・許可済みscript・manifestを生成する。生成HTMLをAgentが自由記述しない。
 - UI mockではAgentが対象UI固有のHTML・CSSを案ごとに設計する。ExplainerのYAML schema、renderer、CSSを流用しない。
 - 共有するのは出力契約、基礎validator、成果物間のlink規約だけとする。
 
 ## Common Output Rules
 
-- 単体で開ける自己完結HTMLとし、外部asset、CDN、iframe、inline event handler、ネットワーク通信、storage、cookieを使わない。
+- 単体で開ける自己完結HTMLとし、remote asset、CDN、iframe、inline event handler、ネットワーク通信、storage、cookieを使わない。
+- Explainerの画像はrendererが検証したPNG/JPEG/WebPのdata URIだけを許可する。UI mockでは画像要素を許可しない。
 - 大きなheroを置かず、成果物の主内容を最初の画面から確認できる構成にする。
 - `lang`、viewport、keyboard focus、十分なcontrastを用意し、動きを使う場合は`prefers-reduced-motion`へ対応する。
 - 公開を明示されていない成果物は外部送信しない。
@@ -32,7 +33,7 @@ ruby <shared-dir>/scripts/validate_html.rb --profile explainer <index.html>
 ruby <shared-dir>/scripts/validate_html.rb --profile ui-mock <proposals.html>
 ```
 
-- `explainer`はscriptなし、またはCSP hashで許可されたrenderer所有scriptだけを受け入れる。
+- `explainer`はscriptなし、またはCSP hashで許可されたrenderer所有scriptだけを受け入れる。画像はdata URI、MIME、magic bytes、容量、alt、寸法を検査する。
 - `ui-mock`は必要最小限のinline scriptを許可するが、外部通信、状態保存、product logicは許可しない。
 - 各skillは共通検証に加えて、schemaやproposal IDなど固有の検証を行う。
 
@@ -49,7 +50,7 @@ ruby <shared-dir>/scripts/validate_html.rb --profile ui-mock <proposals.html>
 ### 機能完了条件
 
 - [ ] 内容に応じてExplainer、UI mock、または分離した両成果物へroutingされている。
-- [ ] ExplainerはYAMLから再生成でき、UI mockは`current`と2〜5件の安定proposal IDを持つ。
+- [ ] Explainerはv2 YAMLからHTMLとmanifestを再生成でき、UI mockは`current`と2〜5件の安定proposal IDを持つ。
 - [ ] 両成果物がある場合は相対linkで接続され、選択後のExplainerに案IDと理由が記録されている。
 
 ### テスト完了条件
@@ -61,5 +62,5 @@ ruby <shared-dir>/scripts/validate_html.rb --profile ui-mock <proposals.html>
 ### 運用反映条件
 
 - [ ] 両skillの`description`が自然言語の発火条件を区別し、Codex用`agents/openai.yaml`でimplicit invocationが許可されている。
-- [ ] 最終報告に成果物の絶対path、validation結果、選択済みならproposal IDが含まれている。
+- [ ] 最終報告にYAML・HTML・manifestの絶対path、validation結果、選択済みならproposal IDが含まれている。
 - [ ] 公開を依頼されていない成果物が外部送信されていない。

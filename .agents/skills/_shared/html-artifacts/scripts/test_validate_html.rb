@@ -109,6 +109,29 @@ class HtmlArtifactValidatorTest < Minitest::Test
     assert_includes error.errors, "iframe element is forbidden"
   end
 
+  def test_accepts_embedded_renderer_image_for_explainer
+    png = Base64.strict_encode64("\x89PNG\r\n\x1a\nfixture".b)
+    body = %(<img src="data:image/png;base64,#{png}" alt="fixture" width="1" height="1">)
+    html = minimal_html(body: body, img_src: "data:")
+
+    assert HtmlArtifacts::Validator.new(html, profile: "explainer").validate!
+  end
+
+  def test_rejects_external_mismatched_and_unbounded_image_sources
+    minimal_png = Base64.strict_encode64("\x89PNG\r\n\x1a\n".b)
+    bodies = [
+      ['<img src="https://example.com/x.png" alt="x" width="1" height="1">', "must use an embedded"],
+      ["<img src=\"data:image/png;base64,#{Base64.strict_encode64('not png')}\" alt=\"x\" width=\"1\" height=\"1\">", "media type does not match"],
+      ["<img src=\"data:image/png;base64,#{minimal_png}\" alt=\"x\">", "dimensions are missing"]
+    ]
+    bodies.each do |body, message|
+      error = assert_raises(HtmlArtifacts::ValidationError) do
+        HtmlArtifacts::Validator.new(minimal_html(body: body, img_src: "data:"), profile: "explainer").validate!
+      end
+      assert error.errors.any? { |item| item.include?(message) }, error.errors.inspect
+    end
+  end
+
   def test_cli_reports_success_and_validation_failure
     Dir.mktmpdir("html-artifact-validator-test") do |dir|
       valid_path = File.join(dir, "valid.html")
@@ -132,7 +155,7 @@ class HtmlArtifactValidatorTest < Minitest::Test
 
   private
 
-  def minimal_html(body: '<main id="content"></main>', script: nil, script_src: "'none'")
+  def minimal_html(body: '<main id="content"></main>', script: nil, script_src: "'none'", img_src: "'none'")
     script_html = script ? "<script>#{script}</script>" : ""
     <<~HTML
       <!doctype html>
@@ -140,7 +163,7 @@ class HtmlArtifactValidatorTest < Minitest::Test
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta content="default-src 'none'; style-src 'unsafe-inline'; script-src #{script_src}; connect-src 'none'; img-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" http-equiv="Content-Security-Policy">
+        <meta content="default-src 'none'; style-src 'unsafe-inline'; script-src #{script_src}; connect-src 'none'; img-src #{img_src}; object-src 'none'; base-uri 'none'; form-action 'none'" http-equiv="Content-Security-Policy">
         <title>Test</title>
         <style>:focus-visible { outline: 2px solid currentColor; }</style>
       </head>

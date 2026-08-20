@@ -7,6 +7,8 @@ require "digest"
 require "base64"
 require "erb"
 require "fileutils"
+require "json"
+require "pathname"
 require "tempfile"
 require "yaml"
 require_relative "../../_shared/html-artifacts/scripts/validate_html"
@@ -18,18 +20,28 @@ module BuildTechnicalExplainer
   TEMPLATE_PATH = File.join(ASSETS, "report.html.erb")
   CSS_PATH = File.join(ASSETS, "report.css")
   JS_PATH = File.join(ASSETS, "report.js")
+  SCHEMA_VERSION = 2
+  RENDERER_VERSION = 2
+  MAX_IMAGE_BYTES = 5 * 1024 * 1024
+  MAX_IMAGE_PIXELS = 16_000_000
 
   ID_PATTERN = /\A[a-z][a-z0-9]*(?:-[a-z0-9]+)*\z/
+  SHA256_PATTERN = /\A[0-9a-f]{64}\z/
   DATE_PATTERN = /\A\d{4}-\d{2}-\d{2}\z/
   KINDS = %w[research audit comparison decision implementation-report].freeze
   STATUSES = %w[draft final].freeze
   VISIBILITIES = %w[private shareable].freeze
-  BLOCK_TYPES = %w[prose list table code callout checklist details chart diagram findings].freeze
+  BLOCK_TYPES = %w[prose list table code callout checklist details chart diagram image findings].freeze
   LIST_STYLES = %w[bullet number].freeze
+  INLINE_STYLES = %w[plain strong code].freeze
   CALLOUT_TONES = %w[neutral info success warning critical].freeze
+  EMPHASES = %w[normal strong].freeze
   CHART_KINDS = %w[line bar].freeze
-  DIAGRAM_KINDS = %w[flow dependency sequence].freeze
+  DIAGRAM_KINDS = %w[flow dependency sequence composite].freeze
   DIAGRAM_DIRECTIONS = %w[horizontal vertical].freeze
+  VISUAL_FORMS = %w[none table chart diagram image].freeze
+  IMAGE_MEDIA_TYPES = %w[image/png image/jpeg image/webp].freeze
+  IMAGE_PROVENANCE_KINDS = %w[provided generated captured].freeze
   ARTIFACT_RELATIONS = %w[visual-spec context implementation-plan related].freeze
   SHAREABLE_LOCAL_PATTERNS = [
     /file:\/\//i,
@@ -79,15 +91,16 @@ module BuildTechnicalExplainer
   class Validator
     Result = Data.define(:warnings)
 
-    ROOT_KEYS = %w[version document metrics sections sources related_artifacts].freeze
+    ROOT_KEYS = %w[version document visual_plan metrics sections sources related_artifacts].freeze
     DOCUMENT_KEYS = %w[title summary kind status visibility updated audience tags].freeze
+    VISUAL_PLAN_KEYS = %w[section goal form reason].freeze
     METRIC_KEYS = %w[label value note].freeze
     SECTION_KEYS = %w[id title lead blocks].freeze
     SOURCE_KEYS = %w[id title href accessed note].freeze
     ARTIFACT_KEYS = %w[id title href relation note].freeze
-    COMMON_BLOCK_KEYS = %w[type refs].freeze
+    COMMON_BLOCK_KEYS = %w[id type refs].freeze
     BLOCK_KEYS = {
-      "prose" => %w[text],
+      "prose" => %w[text runs],
       "list" => %w[style items],
       "table" => %w[caption columns rows],
       "code" => %w[language caption content],
@@ -95,7 +108,8 @@ module BuildTechnicalExplainer
       "checklist" => %w[title items],
       "details" => %w[summary open blocks],
       "chart" => %w[kind title x_label y_label unit labels series],
-      "diagram" => %w[kind title direction nodes edges],
+      "diagram" => %w[kind title summary description direction layout groups nodes edges],
+      "image" => %w[title alt caption description asset provenance],
       "findings" => %w[id title facets items]
     }.freeze
 
@@ -106,8 +120,10 @@ module BuildTechnicalExplainer
       @section_ids = []
       @source_ids = []
       @artifact_ids = []
+      @block_ids = []
       @finding_ids = []
       @refs = []
+      @visual_plan_sections = []
     end
 
     def validate!
@@ -121,7 +137,7 @@ module BuildTechnicalExplainer
 
     def validate_root
       check_keys(@data, ROOT_KEYS, "root")
-      add_error("version", "must be 1") unless @data["version"] == 1
+      add_error("version", "must be #{SCHEMA_VERSION}") unless @data["version"] == SCHEMA_VERSION
 
       document = expect_hash(@data["document"], "document")
       validate_document(document) if document
@@ -137,7 +153,9 @@ module BuildTechnicalExplainer
       add_error("sections", "must contain at least one section") if sections.empty?
       sections.each_with_index { |section, index| validate_section(section, "sections[#{index}]") }
       validate_unique_ids(@section_ids, "sections")
+      validate_unique_ids(@block_ids, "blocks")
       validate_unique_values(@finding_ids, "findings", "findings ID")
+      validate_visual_plan
 
       sources = expect_array(@data.fetch("sources", []), "sources")
       sources.each_with_index { |source, index| validate_source(source, "sources[#{index}]") }
@@ -159,6 +177,30 @@ module BuildTechnicalExplainer
       tags = expect_array(document.fetch("tags", []), "document.tags")
       tags.each_with_index { |tag, index| string(tag, "document.tags[#{index}]", max: 60) }
       add_error("document.tags", "must contain no more than 12 items") if tags.length > 12
+    end
+
+    def validate_visual_plan
+      unless @data.key?("visual_plan")
+        add_error("visual_plan", "is required")
+        return
+      end
+
+      decisions = expect_array(@data["visual_plan"], "visual_plan")
+      add_error("visual_plan", "must contain 1 to 12 decisions") unless decisions.length.between?(1, 12)
+      decisions.each_with_index do |decision, index|
+        path = "visual_plan[#{index}]"
+        decision = expect_hash(decision, path)
+        next unless decision
+
+        check_keys(decision, VISUAL_PLAN_KEYS, path)
+        section = required_id(decision, "section", path)
+        @visual_plan_sections << section if section
+        required_string(decision, "goal", path, max: 240)
+        enum(decision["form"], VISUAL_FORMS, "#{path}.form")
+        required_string(decision, "reason", path, max: 500)
+        add_error("#{path}.section", "references unknown section '#{section}'") if section && !@section_ids.include?(section)
+      end
+      validate_unique_values(@visual_plan_sections, "visual_plan", "section decision")
     end
 
     def validate_metric(metric, path)
@@ -194,18 +236,20 @@ module BuildTechnicalExplainer
       enum(type, BLOCK_TYPES, "#{path}.type")
       allowed_keys = COMMON_BLOCK_KEYS + BLOCK_KEYS.fetch(type, [])
       check_keys(block, allowed_keys, path)
+      id = required_id(block, "id", path)
+      @block_ids << id if id
       validate_refs(block.fetch("refs", []), "#{path}.refs")
       add_error("#{path}.type", "details cannot be nested") if nested && type == "details"
       add_error("#{path}.type", "findings cannot be nested") if nested && type == "findings"
 
       case type
       when "prose"
-        required_string(block, "text", path, max: 20_000)
+        validate_text_or_runs(block, path)
       when "list"
         enum(block.fetch("style", "bullet"), LIST_STYLES, "#{path}.style")
         items = expect_array(block["items"], "#{path}.items")
         add_error("#{path}.items", "must contain at least one item") if items.empty?
-        items.each_with_index { |item, index| string(item, "#{path}.items[#{index}]", max: 2_000) }
+        items.each_with_index { |item, index| validate_text_value(item, "#{path}.items[#{index}]", max: 2_000) }
       when "table"
         optional_string(block, "caption", path, max: 240)
         columns = expect_array(block["columns"], "#{path}.columns")
@@ -238,6 +282,8 @@ module BuildTechnicalExplainer
         validate_chart(block, path)
       when "diagram"
         validate_diagram(block, path)
+      when "image"
+        validate_image(block, path)
       when "findings"
         validate_findings(block, path)
       end
@@ -293,6 +339,10 @@ module BuildTechnicalExplainer
     def validate_diagram(block, path)
       enum(block["kind"], DIAGRAM_KINDS, "#{path}.kind")
       required_string(block, "title", path, max: 240)
+      if block["kind"] == "composite"
+        validate_composite_diagram(block, path)
+        return
+      end
       if block["kind"] == "sequence"
         add_error("#{path}.direction", "is not used by sequence diagrams") if block.key?("direction")
       else
@@ -329,6 +379,124 @@ module BuildTechnicalExplainer
         add_error("#{edge_path}.from", "references unknown node '#{from}'") if from && !node_ids.include?(from)
         add_error("#{edge_path}.to", "references unknown node '#{to}'") if to && !node_ids.include?(to)
         add_error(edge_path, "self-referencing edges are not supported") if from && from == to
+      end
+    end
+
+    def validate_composite_diagram(block, path)
+      required_string(block, "summary", path, max: 500)
+      optional_string(block, "description", path, max: 4_000)
+      add_error("#{path}.direction", "is not used by composite diagrams") if block.key?("direction")
+      add_error("#{path}.edges", "is not used by composite diagrams") if block.key?("edges")
+
+      nodes = expect_array(block["nodes"], "#{path}.nodes")
+      add_error("#{path}.nodes", "must contain 2 to 16 nodes") unless nodes.length.between?(2, 16)
+      node_ids = []
+      nodes.each_with_index do |node, index|
+        node_path = "#{path}.nodes[#{index}]"
+        node = expect_hash(node, node_path)
+        next unless node
+
+        check_keys(node, %w[id label notes metric tone emphasis], node_path)
+        id = required_id(node, "id", node_path)
+        node_ids << id if id
+        required_string(node, "label", node_path, max: 80)
+        notes = expect_array(node.fetch("notes", []), "#{node_path}.notes")
+        add_error("#{node_path}.notes", "must contain no more than 4 items") if notes.length > 4
+        notes.each_with_index { |note, note_index| string(note, "#{node_path}.notes[#{note_index}]", max: 160) }
+        optional_string(node, "metric", node_path, max: 160)
+        enum(node.fetch("tone", "neutral"), CALLOUT_TONES, "#{node_path}.tone")
+        enum(node.fetch("emphasis", "normal"), EMPHASES, "#{node_path}.emphasis")
+      end
+      validate_unique_values(node_ids, "#{path}.nodes", "node ID")
+
+      groups = expect_array(block.fetch("groups", []), "#{path}.groups")
+      add_error("#{path}.groups", "must contain no more than 4 groups") if groups.length > 4
+      group_ids = []
+      group_layout_ids = []
+      groups.each_with_index do |group, index|
+        group_path = "#{path}.groups[#{index}]"
+        group = expect_hash(group, group_path)
+        next unless group
+
+        check_keys(group, %w[id label tone emphasis layout], group_path)
+        id = required_id(group, "id", group_path)
+        group_ids << id if id
+        required_string(group, "label", group_path, max: 100)
+        enum(group.fetch("tone", "neutral"), CALLOUT_TONES, "#{group_path}.tone")
+        enum(group.fetch("emphasis", "normal"), EMPHASES, "#{group_path}.emphasis")
+        group_layout_ids.concat(validate_composite_layout(group["layout"], "#{group_path}.layout", allowed_ids: node_ids))
+      end
+      validate_unique_values(group_ids, "#{path}.groups", "group ID")
+      collisions = node_ids & group_ids
+      collisions.each { |id| add_error(path, "node and group IDs collide at '#{id}'") }
+
+      top_ids = validate_composite_layout(block["layout"], "#{path}.layout", allowed_ids: node_ids + group_ids)
+      group_ids.each do |id|
+        add_error("#{path}.layout", "group '#{id}' must appear exactly once") unless top_ids.count(id) == 1
+      end
+      node_ids.each do |id|
+        count = top_ids.count(id) + group_layout_ids.count(id)
+        add_error(path, "node '#{id}' must appear exactly once in layouts") unless count == 1
+      end
+    end
+
+    def validate_composite_layout(layout, path, allowed_ids:)
+      layout = expect_hash(layout, path)
+      return [] unless layout
+
+      check_keys(layout, %w[rows], path)
+      rows = expect_array(layout["rows"], "#{path}.rows")
+      add_error("#{path}.rows", "must contain 1 to 4 rows") unless rows.length.between?(1, 4)
+      ids = []
+      rows.each_with_index do |row, row_index|
+        row_path = "#{path}.rows[#{row_index}]"
+        row = expect_array(row, row_path)
+        add_error(row_path, "must contain 1 to 4 cells") unless row.length.between?(1, 4)
+        row.each_with_index do |id, cell_index|
+          unless id?(id)
+            add_error("#{row_path}[#{cell_index}]", "must be a lowercase node or group ID")
+            next
+          end
+          ids << id
+          add_error("#{row_path}[#{cell_index}]", "references unknown ID '#{id}'") unless allowed_ids.include?(id)
+        end
+      end
+      validate_unique_values(ids, path, "layout ID")
+      ids
+    end
+
+    def validate_image(block, path)
+      required_string(block, "title", path, max: 240)
+      required_string(block, "alt", path, max: 500)
+      optional_string(block, "caption", path, max: 1_000)
+      optional_string(block, "description", path, max: 4_000)
+
+      asset = expect_hash(block["asset"], "#{path}.asset")
+      if asset
+        check_keys(asset, %w[path media_type sha256 width height byte_size], "#{path}.asset")
+        required_string(asset, "path", "#{path}.asset", max: 500)
+        enum(asset["media_type"], IMAGE_MEDIA_TYPES, "#{path}.asset.media_type")
+        required_string(asset, "sha256", "#{path}.asset", max: 64)
+        add_error("#{path}.asset.sha256", "must be a lowercase SHA-256 digest") unless asset["sha256"].is_a?(String) && asset["sha256"].match?(SHA256_PATTERN)
+        %w[width height byte_size].each do |key|
+          value = asset[key]
+          add_error("#{path}.asset.#{key}", "must be a positive integer") unless value.is_a?(Integer) && value.positive?
+        end
+      end
+
+      provenance = expect_hash(block["provenance"], "#{path}.provenance")
+      return unless provenance
+
+      check_keys(provenance, %w[kind tool version created rights sharing_reviewed source_refs], "#{path}.provenance")
+      enum(provenance["kind"], IMAGE_PROVENANCE_KINDS, "#{path}.provenance.kind")
+      optional_string(provenance, "tool", "#{path}.provenance", max: 160)
+      optional_string(provenance, "version", "#{path}.provenance", max: 80)
+      date(provenance["created"], "#{path}.provenance.created") if provenance.key?("created")
+      required_string(provenance, "rights", "#{path}.provenance", max: 240)
+      boolean(provenance["sharing_reviewed"], "#{path}.provenance.sharing_reviewed") if provenance.key?("sharing_reviewed")
+      validate_refs(provenance.fetch("source_refs", []), "#{path}.provenance.source_refs")
+      if @data.dig("document", "visibility") == "shareable" && provenance["sharing_reviewed"] != true
+        add_error("#{path}.provenance.sharing_reviewed", "must be true for shareable image blocks")
       end
     end
 
@@ -409,10 +577,57 @@ module BuildTechnicalExplainer
       row = expect_array(row, path)
       add_error(path, "must have #{column_count} cells") unless row.length == column_count
       row.each_with_index do |cell, index|
-        next if scalar?(cell) || cell.nil?
-
-        add_error("#{path}[#{index}]", "must be a scalar or null")
+        validate_table_cell(cell, "#{path}[#{index}]")
       end
+    end
+
+    def validate_table_cell(cell, path)
+      return if scalar?(cell) || cell.nil?
+
+      cell = expect_hash(cell, path)
+      return unless cell
+
+      check_keys(cell, %w[text tone emphasis], path)
+      required_scalar(cell, "text", path)
+      enum(cell.fetch("tone", "neutral"), CALLOUT_TONES, "#{path}.tone")
+      enum(cell.fetch("emphasis", "normal"), EMPHASES, "#{path}.emphasis")
+    end
+
+    def validate_text_or_runs(block, path)
+      has_text = block.key?("text")
+      has_runs = block.key?("runs")
+      add_error(path, "must contain exactly one of text or runs") unless has_text ^ has_runs
+      required_string(block, "text", path, max: 20_000) if has_text
+      validate_runs(block["runs"], "#{path}.runs", max: 20_000) if has_runs
+    end
+
+    def validate_text_value(value, path, max:)
+      if value.is_a?(String)
+        string(value, path, max: max)
+        return
+      end
+      item = expect_hash(value, path)
+      return unless item
+
+      check_keys(item, %w[runs], path)
+      validate_runs(item["runs"], "#{path}.runs", max: max)
+    end
+
+    def validate_runs(value, path, max:)
+      runs = expect_array(value, path)
+      add_error(path, "must contain 1 to 40 runs") unless runs.length.between?(1, 40)
+      total = 0
+      runs.each_with_index do |run, index|
+        run_path = "#{path}[#{index}]"
+        run = expect_hash(run, run_path)
+        next unless run
+
+        check_keys(run, %w[text style], run_path)
+        required_string(run, "text", run_path, max: max)
+        total += run["text"].length if run["text"].is_a?(String)
+        enum(run.fetch("style", "plain"), INLINE_STYLES, "#{run_path}.style")
+      end
+      add_error(path, "combined text must be at most #{max} characters") if total > max
     end
 
     def validate_checklist_item(item, path)
@@ -606,14 +821,233 @@ module BuildTechnicalExplainer
     end
   end
 
+  class AssetRegistry
+    Record = Data.define(:block_id, :path, :media_type, :sha256, :width, :height, :byte_size, :data_uri, :provenance)
+
+    def self.prepare(data, input_path)
+      base = File.realpath(File.dirname(File.expand_path(input_path)))
+      records = {}
+      each_block(data.fetch("sections")) do |block|
+        next unless block["type"] == "image"
+
+        record = prepare_image(block, base)
+        records[record.block_id] = record
+      end
+      records.freeze
+    rescue Errno::ENOENT, Errno::EACCES, ArgumentError => e
+      raise ValidationError, ["asset: #{e.message}"]
+    end
+
+    def self.inspect_file(path)
+      real = File.realpath(File.expand_path(path))
+      bytes = File.binread(real)
+      raise ValidationError, ["image asset: exceeds #{MAX_IMAGE_BYTES} bytes"] if bytes.bytesize > MAX_IMAGE_BYTES
+
+      media_type, width, height = inspect_image(bytes)
+      raise ValidationError, ["image asset: exceeds #{MAX_IMAGE_PIXELS} pixels"] if width * height > MAX_IMAGE_PIXELS
+
+      {
+        "media_type" => media_type,
+        "sha256" => Digest::SHA256.hexdigest(bytes),
+        "width" => width,
+        "height" => height,
+        "byte_size" => bytes.bytesize
+      }
+    rescue Errno::ENOENT, Errno::EACCES, ArgumentError => e
+      raise ValidationError, ["image asset: #{e.message}"]
+    end
+
+    def self.each_block(sections, &block)
+      sections.each do |section|
+        section.fetch("blocks").each do |entry|
+          yield entry
+          each_block([{ "blocks" => entry.fetch("blocks") }], &block) if entry["type"] == "details"
+        end
+      end
+    end
+
+    def self.prepare_image(block, base)
+      asset = block.fetch("asset")
+      relative = asset.fetch("path")
+      unsafe_relative = Pathname.new(relative).absolute? || relative.start_with?("~") || relative.include?("\0")
+      if unsafe_relative
+        raise ValidationError, ["image #{block.fetch('id')}: asset path must be a plain relative path"]
+      end
+
+      expanded = File.expand_path(relative, base)
+      real = File.realpath(expanded)
+      prefix = "#{base}#{File::SEPARATOR}"
+      unless real.start_with?(prefix)
+        raise ValidationError, ["image #{block.fetch('id')}: asset path escapes the YAML directory"]
+      end
+      bytes = File.binread(real)
+      raise ValidationError, ["image #{block.fetch('id')}: asset exceeds #{MAX_IMAGE_BYTES} bytes"] if bytes.bytesize > MAX_IMAGE_BYTES
+
+      media_type, width, height = inspect_image(bytes)
+      sha256 = Digest::SHA256.hexdigest(bytes)
+      expected = {
+        "media_type" => media_type,
+        "sha256" => sha256,
+        "width" => width,
+        "height" => height,
+        "byte_size" => bytes.bytesize
+      }
+      expected.each do |key, value|
+        next if asset[key] == value
+
+        raise ValidationError, ["image #{block.fetch('id')}: declared #{key} does not match the asset"]
+      end
+      raise ValidationError, ["image #{block.fetch('id')}: asset exceeds #{MAX_IMAGE_PIXELS} pixels"] if width * height > MAX_IMAGE_PIXELS
+
+      Record.new(
+        block_id: block.fetch("id"),
+        path: relative,
+        media_type: media_type,
+        sha256: sha256,
+        width: width,
+        height: height,
+        byte_size: bytes.bytesize,
+        data_uri: "data:#{media_type};base64,#{Base64.strict_encode64(bytes)}",
+        provenance: block.fetch("provenance")
+      )
+    end
+
+    def self.inspect_image(bytes)
+      if bytes.start_with?("\x89PNG\r\n\x1a\n".b)
+        return inspect_png(bytes)
+      end
+      return inspect_jpeg(bytes) if bytes.start_with?("\xff\xd8".b)
+      return inspect_webp(bytes) if bytes.start_with?("RIFF".b) && bytes.byteslice(8, 4) == "WEBP"
+
+      raise ValidationError, ["image asset: unsupported or invalid image format"]
+    end
+
+    def self.inspect_png(bytes)
+      offset = 8
+      chunks = []
+      while offset + 12 <= bytes.bytesize
+        length = bytes.byteslice(offset, 4).unpack1("N")
+        type = bytes.byteslice(offset + 4, 4)
+        chunk_end = offset + 12 + length
+        raise ValidationError, ["image asset: truncated PNG chunk"] if chunk_end > bytes.bytesize
+
+        chunks << [type, offset + 8, length]
+        offset = chunk_end
+        break if type == "IEND"
+      end
+      raise ValidationError, ["image asset: invalid PNG chunk structure"] unless offset == bytes.bytesize
+
+      ihdr = chunks.first
+      unless ihdr && ihdr[0] == "IHDR" && ihdr[2] == 13
+        raise ValidationError, ["image asset: invalid PNG header"]
+      end
+      raise ValidationError, ["image asset: animated PNG is not supported"] if chunks.any? { |type,| type == "acTL" }
+
+      metadata = chunks.map(&:first) & %w[tEXt zTXt iTXt eXIf]
+      unless metadata.empty?
+        raise ValidationError, ["image asset: PNG metadata chunk #{metadata.first} is not supported"]
+      end
+
+      width = bytes.byteslice(ihdr[1], 4).unpack1("N")
+      height = bytes.byteslice(ihdr[1] + 4, 4).unpack1("N")
+      raise ValidationError, ["image asset: invalid PNG dimensions"] unless width.positive? && height.positive?
+
+      ["image/png", width, height]
+    end
+
+    def self.inspect_jpeg(bytes)
+      offset = 2
+      while offset + 9 < bytes.bytesize
+        offset += 1 while offset < bytes.bytesize && bytes.getbyte(offset) != 0xff
+        offset += 1 while offset < bytes.bytesize && bytes.getbyte(offset) == 0xff
+        marker = bytes.getbyte(offset)
+        offset += 1
+        next if marker.nil? || marker == 0xd8 || marker == 0xd9
+
+        length = bytes.byteslice(offset, 2)&.unpack1("n")
+        break unless length && length >= 2 && offset + length <= bytes.bytesize
+        raise ValidationError, ["image asset: JPEG metadata/comments are not supported"] if marker == 0xe1 || marker == 0xfe
+        if (0xc0..0xcf).include?(marker) && ![0xc4, 0xc8, 0xcc].include?(marker)
+          height = bytes.byteslice(offset + 3, 2).unpack1("n")
+          width = bytes.byteslice(offset + 5, 2).unpack1("n")
+          return ["image/jpeg", width, height]
+        end
+        offset += length
+      end
+      raise ValidationError, ["image asset: invalid JPEG dimensions"]
+    end
+
+    def self.inspect_webp(bytes)
+      declared_size = bytes.byteslice(4, 4)&.unpack1("V")
+      unless declared_size && declared_size + 8 == bytes.bytesize
+        raise ValidationError, ["image asset: invalid WebP RIFF size"]
+      end
+
+      chunks = []
+      offset = 12
+      while offset + 8 <= bytes.bytesize
+        type = bytes.byteslice(offset, 4)
+        length = bytes.byteslice(offset + 4, 4).unpack1("V")
+        data_offset = offset + 8
+        chunk_end = data_offset + length
+        padded_end = chunk_end + (length.odd? ? 1 : 0)
+        raise ValidationError, ["image asset: truncated WebP chunk"] if padded_end > bytes.bytesize
+
+        chunks << [type, data_offset, length]
+        offset = padded_end
+      end
+      raise ValidationError, ["image asset: invalid WebP chunk structure"] unless offset == bytes.bytesize
+      if chunks.any? { |type,| type == "EXIF" || type == "XMP " }
+        raise ValidationError, ["image asset: WebP EXIF/XMP metadata is not supported"]
+      end
+      if chunks.any? { |type,| type == "ANIM" || type == "ANMF" }
+        raise ValidationError, ["image asset: animated WebP is not supported"]
+      end
+
+      dimensions = nil
+      chunks.each do |type, data_offset, length|
+        case type
+        when "VP8X"
+          raise ValidationError, ["image asset: truncated WebP VP8X chunk"] if length < 10
+          raise ValidationError, ["image asset: animated WebP is not supported"] if (bytes.getbyte(data_offset).to_i & 0x02).positive?
+          dimensions ||= [1 + little_u24(bytes, data_offset + 4), 1 + little_u24(bytes, data_offset + 7)]
+        when "VP8 "
+          raise ValidationError, ["image asset: invalid WebP dimensions"] if length < 10 ||
+            bytes.byteslice(data_offset + 3, 3) != "\x9d\x01\x2a".b
+          dimensions ||= [
+            bytes.byteslice(data_offset + 6, 2).unpack1("v") & 0x3fff,
+            bytes.byteslice(data_offset + 8, 2).unpack1("v") & 0x3fff
+          ]
+        when "VP8L"
+          raise ValidationError, ["image asset: invalid WebP dimensions"] if length < 5 ||
+            bytes.getbyte(data_offset) != 0x2f
+          bits = bytes.byteslice(data_offset + 1, 4).unpack1("V")
+          dimensions ||= [1 + (bits & 0x3fff), 1 + ((bits >> 14) & 0x3fff)]
+        end
+      end
+      raise ValidationError, ["image asset: invalid WebP header"] unless dimensions
+
+      width, height = dimensions
+      raise ValidationError, ["image asset: invalid WebP dimensions"] unless width.positive? && height.positive?
+
+      ["image/webp", width, height]
+    end
+
+    def self.little_u24(bytes, offset)
+      bytes.getbyte(offset).to_i | (bytes.getbyte(offset + 1).to_i << 8) | (bytes.getbyte(offset + 2).to_i << 16)
+    end
+
+    private_class_method :each_block, :prepare_image, :inspect_image, :inspect_png, :inspect_jpeg, :inspect_webp, :little_u24
+  end
+
   class Renderer
-    def initialize(data)
+    def initialize(data, assets: {})
       @data = data
       @document = data.fetch("document")
       @sources = data.fetch("sources", [])
       @artifacts = data.fetch("related_artifacts", [])
       @source_by_id = @sources.to_h { |source| [source.fetch("id"), source] }
-      @block_counter = 0
+      @assets = assets
     end
 
     def render
@@ -630,7 +1064,8 @@ module BuildTechnicalExplainer
       @sections_html = render_sections
       @sources_html = render_sources
       @script_html = @script.empty? ? "" : %(<script>#{@script}</script>)
-      @footer_capability = @script.empty? ? "外部asset・JavaScriptなし" : "外部assetなし・固定filterのみ"
+      asset_text = @assets.empty? ? "外部assetなし" : "画像asset埋め込み済み"
+      @footer_capability = @script.empty? ? "#{asset_text}・JavaScriptなし" : "#{asset_text}・固定filterのみ"
 
       ERB.new(File.read(TEMPLATE_PATH, encoding: "UTF-8"), trim_mode: "-").result(binding)
     end
@@ -654,7 +1089,8 @@ module BuildTechnicalExplainer
                         encoded = Base64.strict_encode64(Digest::SHA256.digest(@script))
                         "'sha256-#{encoded}'"
                       end
-      "default-src 'none'; style-src 'unsafe-inline'; img-src 'none'; font-src 'none'; " \
+      image_policy = @assets.empty? ? "'none'" : "data:"
+      "default-src 'none'; style-src 'unsafe-inline'; img-src #{image_policy}; font-src 'none'; " \
         "script-src #{script_policy}; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
     end
 
@@ -753,8 +1189,7 @@ module BuildTechnicalExplainer
     end
 
     def render_block(block)
-      @block_counter += 1
-      block_id = "block-#{@block_counter}"
+      block_id = block.fetch("id")
       body = case block.fetch("type")
              when "prose" then render_prose(block)
              when "list" then render_list(block)
@@ -765,12 +1200,15 @@ module BuildTechnicalExplainer
              when "details" then render_details(block)
              when "chart" then render_chart(block, block_id)
              when "diagram" then render_diagram(block, block_id)
+             when "image" then render_image(block)
              when "findings" then render_findings(block)
              end
-      %(<div class="content-block #{h(block.fetch('type'))}">#{body}#{render_refs(block.fetch('refs', []))}</div>)
+      %(<div id="block-#{h(block_id)}" class="content-block #{h(block.fetch('type'))}">#{body}#{render_refs(block.fetch('refs', []))}</div>)
     end
 
     def render_prose(block)
+      return %(<p>#{render_runs(block.fetch("runs"))}</p>) if block.key?("runs")
+
       render_paragraphs(block.fetch("text"))
     end
 
@@ -782,8 +1220,22 @@ module BuildTechnicalExplainer
 
     def render_list(block)
       tag = block.fetch("style", "bullet") == "number" ? "ol" : "ul"
-      items = block.fetch("items").map { |item| %(<li>#{h(item)}</li>) }.join
+      items = block.fetch("items").map do |item|
+        content = item.is_a?(Hash) ? render_runs(item.fetch("runs")) : h(item)
+        %(<li>#{content}</li>)
+      end.join
       %(<#{tag} class="content-list">#{items}</#{tag}>)
+    end
+
+    def render_runs(runs)
+      runs.map do |run|
+        text = h(run.fetch("text"))
+        case run.fetch("style", "plain")
+        when "strong" then %(<strong>#{text}</strong>)
+        when "code" then %(<code class="inline-code">#{text}</code>)
+        else text
+        end
+      end.join
     end
 
     def render_table(block)
@@ -792,7 +1244,9 @@ module BuildTechnicalExplainer
       head = columns.map { |column| %(<th scope="col">#{h(column)}</th>) }.join
       rows = block.fetch("rows").map do |row|
         cells = row.each_with_index.map do |cell, index|
-          %(<td data-label="#{h(columns[index])}">#{h(cell)}</td>)
+          content, classes = render_table_cell(cell)
+          class_attr = classes.empty? ? "" : %( class="#{classes.join(' ')}")
+          %(<td#{class_attr} data-label="#{h(columns[index])}">#{content}</td>)
         end.join
         %(<tr>#{cells}</tr>)
       end.join
@@ -805,6 +1259,14 @@ module BuildTechnicalExplainer
           </table>
         </div>
       HTML
+    end
+
+    def render_table_cell(cell)
+      return [h(cell), []] unless cell.is_a?(Hash)
+
+      tone = cell.fetch("tone", "neutral")
+      emphasis = cell.fetch("emphasis", "normal")
+      [h(cell.fetch("text")), ["tone-#{h(tone)}", "emphasis-#{h(emphasis)}"]]
     end
 
     def render_code(block)
@@ -1023,7 +1485,110 @@ module BuildTechnicalExplainer
     end
 
     def render_diagram(block, block_id)
+      return render_composite_diagram(block, block_id) if block.fetch("kind") == "composite"
+
       block.fetch("kind") == "sequence" ? render_sequence_diagram(block, block_id) : render_flow_diagram(block, block_id)
+    end
+
+    def render_composite_diagram(block, block_id)
+      node_lookup = block.fetch("nodes").to_h { |node| [node.fetch("id"), node] }
+      group_lookup = block.fetch("groups", []).to_h { |group| [group.fetch("id"), group] }
+      layout = render_composite_layout(block.fetch("layout"), block_id, node_lookup, group_lookup)
+      description = block["description"] ? %(<p class="composite-description">#{h(block['description'])}</p>) : ""
+      structure = render_composite_structure(block)
+      <<~HTML
+        <figure class="composite-figure" role="group" aria-labelledby="#{h(block_id)}-title">
+          <figcaption id="#{h(block_id)}-title">#{h(block.fetch('title'))}</figcaption>
+          <p class="composite-summary">#{h(block.fetch('summary'))}</p>
+          #{description}
+          <div class="composite-diagram">#{layout}</div>
+          <details class="visual-data">
+            <summary>図の構造をテキストで確認</summary>
+            <div class="composite-structure">#{structure}</div>
+          </details>
+        </figure>
+      HTML
+    end
+
+    def render_composite_layout(layout, block_id, node_lookup, group_lookup)
+      layout.fetch("rows").map do |row|
+        cells = row.map do |id|
+          is_group = group_lookup.key?(id)
+          content = if is_group
+                      render_composite_group(group_lookup.fetch(id), block_id, node_lookup)
+                    else
+                      render_composite_node(node_lookup.fetch(id), block_id)
+                    end
+          group_class = is_group ? " composite-cell-group" : ""
+          %(<div class="composite-cell#{group_class}">#{content}</div>)
+        end
+        joined = cells.each_with_index.map do |cell, index|
+          arrow = index < cells.length - 1 ? %(<span class="composite-arrow" aria-hidden="true">→</span>) : ""
+          "#{cell}#{arrow}"
+        end.join
+        %(<div class="composite-row">#{joined}</div>)
+      end.join
+    end
+
+    def render_composite_group(group, block_id, node_lookup)
+      tone = group.fetch("tone", "neutral")
+      emphasis = group.fetch("emphasis", "normal")
+      body = render_composite_layout(group.fetch("layout"), block_id, node_lookup, {})
+      <<~HTML
+        <section id="#{h(block_id)}-group-#{h(group.fetch('id'))}" class="composite-group tone-#{h(tone)} emphasis-#{h(emphasis)}">
+          <h3>#{h(group.fetch('label'))}</h3>
+          #{body}
+        </section>
+      HTML
+    end
+
+    def render_composite_node(node, block_id)
+      tone = node.fetch("tone", "neutral")
+      emphasis = node.fetch("emphasis", "normal")
+      notes = node.fetch("notes", []).map { |note| %(<li>#{h(note)}</li>) }.join
+      notes_html = notes.empty? ? "" : %(<ul>#{notes}</ul>)
+      metric = node["metric"] ? %(<p class="composite-metric">#{h(node['metric'])}</p>) : ""
+      <<~HTML
+        <article id="#{h(block_id)}-node-#{h(node.fetch('id'))}" class="composite-node tone-#{h(tone)} emphasis-#{h(emphasis)}">
+          <h4>#{h(node.fetch('label'))}</h4>
+          #{notes_html}
+          #{metric}
+        </article>
+      HTML
+    end
+
+    def render_composite_structure(block)
+      groups = block.fetch("groups", []).to_h { |group| [group.fetch("id"), group] }
+      nodes = block.fetch("nodes").to_h { |node| [node.fetch("id"), node] }
+      rows = block.fetch("layout").fetch("rows").map do |row|
+        labels = row.map { |id| groups[id]&.fetch("label") || nodes.fetch(id).fetch("label") }
+        %(<li>#{labels.map { |label| h(label) }.join(' → ')}</li>)
+      end.join
+      group_details = groups.values.map do |group|
+        inner = group.fetch("layout").fetch("rows").map do |row|
+          %(<li>#{row.map { |id| h(nodes.fetch(id).fetch('label')) }.join(' → ')}</li>)
+        end.join
+        %(<section><h4>#{h(group.fetch('label'))}</h4><ul>#{inner}</ul></section>)
+      end.join
+      node_details = nodes.values.map do |node|
+        parts = [node.fetch("label"), *node.fetch("notes", []), node["metric"]].compact
+        %(<li>#{parts.map { |part| h(part) }.join(' — ')}</li>)
+      end.join
+      %(<ol>#{rows}</ol>#{group_details}<h4>ノード詳細</h4><ul>#{node_details}</ul>)
+    end
+
+    def render_image(block)
+      asset = @assets.fetch(block.fetch("id"))
+      caption = block["caption"] ? %(<figcaption>#{h(block['caption'])}</figcaption>) : ""
+      description = block["description"] ? %(<details class="visual-data"><summary>画像の詳細説明</summary><p>#{h(block['description'])}</p></details>) : ""
+      <<~HTML
+        <figure class="image-figure">
+          <p class="figure-title">#{h(block.fetch('title'))}</p>
+          <img src="#{asset.data_uri}" alt="#{h(block.fetch('alt'))}" width="#{asset.width}" height="#{asset.height}" loading="lazy">
+          #{caption}
+          #{description}
+        </figure>
+      HTML
     end
 
     def render_flow_diagram(block, block_id)
@@ -1232,6 +1797,9 @@ module BuildTechnicalExplainer
       when "render"
         require_arity!(argv, 2, "render <explainer.yaml> <index.html>")
         render_file(argv.fetch(0), argv.fetch(1), out: out)
+      when "image-info"
+        require_arity!(argv, 1, "image-info <image>")
+        out.puts JSON.pretty_generate(AssetRegistry.inspect_file(argv.fetch(0)))
       when "help", "--help", "-h", nil
         out.puts usage
       else
@@ -1258,9 +1826,11 @@ module BuildTechnicalExplainer
     end
 
     def self.validate_file(path, out: $stdout)
-      data = Loader.load(path)
+      input = File.expand_path(path)
+      data = Loader.load(input)
       result = Validator.new(data).validate!
-      print_validation(data, path, result, out)
+      AssetRegistry.prepare(data, input)
+      print_validation(data, input, result, out)
       data
     end
 
@@ -1271,13 +1841,51 @@ module BuildTechnicalExplainer
 
       data = Loader.load(input)
       result = Validator.new(data).validate!
-      html = Renderer.new(data).render
+      assets = AssetRegistry.prepare(data, input)
+      html = Renderer.new(data, assets: assets).render
       StaticVerifier.verify!(html)
+      manifest = build_manifest(input, html, assets)
+      verify_manifest!(html, manifest, assets)
       atomic_write(output, html)
+      manifest_path = output.end_with?(".html") ? output.sub(/\.html\z/, ".manifest.json") : "#{output}.manifest.json"
+      atomic_write(manifest_path, "#{JSON.pretty_generate(manifest)}\n")
       print_validation(data, input, result, out)
       out.puts "Rendered: #{output}"
+      out.puts "Manifest: #{manifest_path}"
       out.puts "SHA256: #{Digest::SHA256.hexdigest(html)}"
       output
+    end
+
+    def self.build_manifest(input, html, assets)
+      {
+        "schema_version" => SCHEMA_VERSION,
+        "renderer_version" => RENDERER_VERSION,
+        "input_sha256" => Digest::SHA256.file(input).hexdigest,
+        "output_sha256" => Digest::SHA256.hexdigest(html),
+        "assets" => assets.values.sort_by(&:block_id).map do |asset|
+          {
+            "block_id" => asset.block_id,
+            "path" => asset.path,
+            "media_type" => asset.media_type,
+            "sha256" => asset.sha256,
+            "width" => asset.width,
+            "height" => asset.height,
+            "byte_size" => asset.byte_size,
+            "provenance" => asset.provenance
+          }
+        end
+      }
+    end
+
+    def self.verify_manifest!(html, manifest, assets)
+      raise ValidationError, ["manifest: output SHA-256 mismatch"] unless manifest["output_sha256"] == Digest::SHA256.hexdigest(html)
+
+      assets.each_value do |asset|
+        raise ValidationError, ["manifest: embedded asset missing for '#{asset.block_id}'"] unless html.include?(asset.data_uri)
+        entry = manifest.fetch("assets").find { |item| item["block_id"] == asset.block_id }
+        raise ValidationError, ["manifest: asset entry missing for '#{asset.block_id}'"] unless entry
+        raise ValidationError, ["manifest: asset SHA-256 mismatch for '#{asset.block_id}'"] unless entry["sha256"] == asset.sha256
+      end
     end
 
     def self.atomic_write(path, content)
@@ -1308,10 +1916,11 @@ module BuildTechnicalExplainer
           render_explainer.rb init <explainer.yaml>
           render_explainer.rb validate <explainer.yaml>
           render_explainer.rb render <explainer.yaml> <index.html>
+          render_explainer.rb image-info <image>
       TEXT
     end
 
-    private_class_method :atomic_write, :print_validation, :require_arity!
+    private_class_method :atomic_write, :build_manifest, :verify_manifest!, :print_validation, :require_arity!
   end
 end
 

@@ -1,4 +1,4 @@
-version: 1
+version: 2
 
 document:
   title: "技術説明資料"
@@ -14,19 +14,31 @@ metrics: []
 
 related_artifacts: []
 
+visual_plan:
+  - section: conclusion
+    goal: "結論を最短で理解できるようにする"
+    form: none
+    reason: "短い判断文だけで足りる"
+  - section: evidence
+    goal: "主要な観測値を比較する"
+    form: table
+    reason: "同じ軸で複数の値を比較する"
+
 sections:
   - id: conclusion
     title: "結論"
     lead: "判断と、その根拠を短く示す。"
     blocks:
-      - type: prose
+      - id: conclusion-summary
+        type: prose
         text: |-
           ここに本文を書く。
 
   - id: evidence
     title: "根拠"
     blocks:
-      - type: table
+      - id: primary-evidence
+        type: table
         caption: "主要な観測値"
         columns: ["指標", "結果", "解釈"]
         rows:

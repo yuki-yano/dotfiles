@@ -20,7 +20,6 @@ module HtmlArtifacts
     FORBIDDEN_PATTERNS = {
       "external script" => /<script\b[^>]*\bsrc\s*=/i,
       "external stylesheet" => /<link\b[^>]*\brel\s*=\s*["']?stylesheet/i,
-      "image element" => /<img\b/i,
       "iframe element" => /<iframe\b/i,
       "object element" => /<object\b/i,
       "embed element" => /<embed\b/i,
@@ -48,6 +47,7 @@ module HtmlArtifacts
       @errors << "unknown profile '#{@profile}'" unless PROFILES.include?(@profile)
       validate_structure
       validate_self_containment
+      validate_images
       validate_ids_and_anchors
       validate_scripts if PROFILES.include?(@profile)
 
@@ -91,6 +91,48 @@ module HtmlArtifacts
       end
       missing = targets.uniq - ids.uniq
       @errors << "missing internal anchor targets: #{missing.join(', ')}" unless missing.empty?
+    end
+
+    def validate_images
+      images = @html.scan(/<img\b[^>]*>/im)
+      return if images.empty?
+
+      if @profile != "explainer"
+        @errors << "image element is forbidden"
+        return
+      end
+      directive = csp_content[/img-src\s+([^;]+)/, 1].to_s.split
+      @errors << "img-src must allow data images" unless directive.include?("data:")
+      @errors << "img-src contains a forbidden source" unless (directive - ["data:"]).empty?
+
+      images.each_with_index do |tag, index|
+        label = "image #{index + 1}"
+        src = attribute_value(tag, "src")
+        alt = attribute_value(tag, "alt")
+        width = attribute_value(tag, "width")
+        height = attribute_value(tag, "height")
+        @errors << "#{label} alt is missing" if alt.nil?
+        @errors << "#{label} srcset is forbidden" if attribute_value(tag, "srcset")
+        @errors << "#{label} dimensions are missing" unless width&.match?(/\A[1-9]\d*\z/) && height&.match?(/\A[1-9]\d*\z/)
+        match = src&.match(/\Adata:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+\/=]+)\z/)
+        unless match
+          @errors << "#{label} must use an embedded PNG, JPEG, or WebP data URI"
+          next
+        end
+        begin
+          bytes = Base64.strict_decode64(match[2])
+        rescue ArgumentError
+          @errors << "#{label} contains invalid base64"
+          next
+        end
+        @errors << "#{label} exceeds 5 MiB" if bytes.bytesize > 5 * 1024 * 1024
+        valid_magic = case match[1]
+                      when "image/png" then bytes.start_with?("\x89PNG\r\n\x1a\n".b)
+                      when "image/jpeg" then bytes.start_with?("\xff\xd8".b)
+                      when "image/webp" then bytes.start_with?("RIFF".b) && bytes.byteslice(8, 4) == "WEBP"
+                      end
+        @errors << "#{label} media type does not match its bytes" unless valid_magic
+      end
     end
 
     def validate_scripts
