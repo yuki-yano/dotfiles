@@ -1,76 +1,123 @@
-# send: 送信手順
+# guarded terminal send / best-effort steer / logical keys
 
-8段階を順に実行する。途中で失敗したら該当の失敗分岐に従う。
-`tmux` は対象paneと同じサーバーを指す（`-L`/`-S` 環境では毎回同じ指定を付ける）。
+durable provider adapterを持たないが、API v4で`guarded_terminal`と`lifecycle_cursor`を公開するproviderへ使う。prompt入力、copy-mode解除、pane/process/input-owner fenceは`vt agent send`が担当する。raw tmuxへfallbackしない。
 
-## 1. pane特定と生存確認
+## prompt send
 
-```bash
-tmux list-panes -a -F '#{pane_id} #{session_name}:#{window_index}.#{pane_index} #{pane_current_command} #{pane_title}' | grep -F '%N '
-```
+### 1. preflight
 
-- 対象pane IDが出力されることを確認する。出力が空（pane不在）なら中断し、現存paneの一覧を添えてユーザーに報告する。代替paneへの送信を勝手に行わない。
-- `pane_current_command` がエージェントプロセス（`claude` / `codex` / `opencode` / `node` 等）であることを確認する。判定の優先順位:
-  - ユーザーがpane IDを明示指定している場合、`pane_current_command` が一致しなくても（ラッパー起動で `bash` 等になる環境がある）、手順2の画面内容で対話エージェントと確認できれば続行してよい。その判断は報告に含める。
-  - pane IDの指定がなく自分で探索している場合は、既知のエージェントプロセスのpaneだけを対象にする。
-  - 画面内容でもエージェントと確認できない（シェルプロンプト等）場合は中断して報告する。
-
-## 2. 受付状態の確認
+[api-state.md](api-state.md)でversion gateとexact target resolveを行い、次を保存する。
 
 ```bash
-tmux capture-pane -p -t %N | grep -v '^$' | tail -15
+vt agent get %N --json \
+  > "<作業ディレクトリ>/agent-before.json" \
+  2> "<作業ディレクトリ>/agent-before-error.json"
+agent_ref="$(jq -er '.result.agent.summary.agent_ref' "<作業ディレクトリ>/agent-before.json")"
 ```
 
-- 入力受付表示（プロンプト欄）が見えることを確認する。
-- 起動バナーのみ・作業中表示（`Working` / `esc to interrupt` 等）の場合は送らず、10〜20秒後に再確認する。3回確認しても受付状態にならなければ中断して報告する。
+- `identity=exact`、`status=idle|done`、非`usage_limit`を要求する。
+- 対象kindのschema capabilityが`prompt_dispatch=guarded_terminal`かつ`prompt_confirmation=lifecycle_cursor`であることを要求する。
+- `working`、`blocked`、confirmation `none`では送信しない。
 
-## 3. 文面のファイル化
+### 2. prompt body
 
-- `mktemp -d "${TMPDIR:-/tmp}/tmux-agent-bridge.XXXXXX"` で作業ディレクトリを作り、出力された絶対パスを記録する。以降のツール呼び出しでは環境変数の永続化に依存せず、その絶対パスを使う。
-- 文面を作業ディレクトリ配下の一時ファイルへ書き出す（例: `<作業ディレクトリ>/bridge-review-r1.txt`）。
-- 応答を回収する送信では、末尾に完了マーカー指示（SKILL.mdの規約）を追記する。
-- `wc -c` でサイズを控える（受理確認の参考にする）。
+promptをprivate temporary fileへ保存する。応答回収が必要ならSKILL.mdの分割マーカー指示を末尾へ付ける。本文をargvへ含めない。
 
-## 4. bufferへロード
+### 3. guarded dispatch
 
 ```bash
-tmux load-buffer -b bridge-<用途> "<作業ディレクトリ>/<file>"
+agent_ref="$(jq -er '.result.agent.summary.agent_ref' "<作業ディレクトリ>/agent-before.json")"
+vt agent send "$agent_ref" \
+  --prompt-file "<作業ディレクトリ>/prompt.txt" \
+  --json \
+  > "<作業ディレクトリ>/send.json" \
+  2> "<作業ディレクトリ>/send-error.json"
 ```
 
-buffer名は `bridge-` プレフィックス+用途（例: `bridge-review-r1`）。
+`agent send`は次を一つのguarded tmux commandで行う。
 
-## 5. 貼り付け
+- exact server、pane ID/PID、foreground commandを再検証する。
+- exact agent processがforeground input ownerであることを確認する。
+- copy-modeを解除し、解除後にpane identityを再検証する。
+- private bufferからbracketed pasteし、Enterを送る。
+- bufferを削除し、side-effect markerを確認する。
+
+成功receiptの`target.agent_ref`、`target.pane_ref`、`baseline_state_revision`、`baseline_run_seq`、`baseline_completed_seq`を保存する。API成功はtmux input適用であり、provider受理ではない。
+
+### 4. acceptance
 
 ```bash
-tmux paste-buffer -p -t %N -b bridge-<用途> -d
+agent_ref="$(jq -er '.result.send.target.agent_ref' "<作業ディレクトリ>/send.json")"
+baseline_completed_seq="$(jq -er '.result.send.baseline_completed_seq' "<作業ディレクトリ>/send.json")"
+vt agent wait "$agent_ref" \
+  --until working \
+  --until blocked \
+  --until done \
+  --after-completed-seq "$baseline_completed_seq" \
+  --timeout-ms 10000 \
+  --json \
+  > "<作業ディレクトリ>/acceptance.json" \
+  2> "<作業ディレクトリ>/acceptance-error.json"
 ```
 
-- `-p`: bracketed paste。エージェント側で複数行が1入力として扱われ、`/` や `!` で始まる行のコマンド解釈も防ぐ。
-- `-d`: 貼り付け後にbufferを削除する。
+- `working`: `ACCEPTED`。応答が必要なら[wait-collect.md](wait-collect.md)へ進む。
+- cursorより新しい`done`: 高速完了した`ACCEPTED`。collectへ進む。
+- `blocked`: lifecycleを再取得する。`usage_limit`なら`LIMIT-REACHED`、permission/user-input/errorなら停止する。
+- timeout、`event_history_lost`、`stale_reference`、`delivery_unknown`: promptを再送しない。receiptとtyped errorを報告する。
 
-## 6. 貼り付け内容の確認（Enterより先）
+ハンドオフは`ACCEPTED`確認で終了する。`agent send`のexit 0だけで送信完了と報告しない。
+
+## best-effort steer
+
+ユーザーが実行中agentへの追加指示を明示した場合だけ使う。通常send、催促、進捗確認の代わりには使わない。
+
+### 1. preflight
+
+[api-state.md](api-state.md)でversion gateとexact target resolveを行い、`identity=exact`、`status=working`、非`usage_limit`を要求する。対象kindのschema capabilityは`steer=guarded_terminal_best_effort`でなければならない。
+
+`idle|done`なら通常sendへ自動的に切り替えず停止する。state確認とdispatchの競合で`invalid_target`になった場合も同様に、targetを再解決して送らない。
+
+### 2. guarded steer
+
+本文をprivate temporary fileへ保存し、argvへ含めない。steerは応答帰属を証明できないため、完了マーカー指示を追加しない。
 
 ```bash
-tmux capture-pane -p -t %N | grep -v '^$' | tail -20
+agent_ref="$(jq -er '.result.agent.summary.agent_ref' "<作業ディレクトリ>/agent-before.json")"
+vt agent steer "$agent_ref" \
+  --prompt-file "<作業ディレクトリ>/steer.txt" \
+  --json \
+  > "<作業ディレクトリ>/steer.json" \
+  2> "<作業ディレクトリ>/steer-error.json"
+jq -e '
+  .result.type == "agent_steer" and
+  .result.steer.dispatch == "guarded_terminal_best_effort" and
+  .result.steer.race_policy == "may_start_next_turn"
+' "<作業ディレクトリ>/steer.json"
 ```
 
-- 文面の末尾部分が入力欄に見えていることを確認する。
-- **貼り付けだけで処理開始表示（受信ログ・Working等）が出ている場合**、相手はbracketed paste非対応で貼り付けを即入力として受理している。Enterを送ると空入力の再実行になるため**手順7をスキップして手順8へ進む**。
-- 見えていない・別の内容が見える場合はEnterを送らず中断し、画面の状態を添えてユーザーに報告する。入力欄のクリア操作（C-c / C-u / Escape）はエージェントの状態を壊し得るため勝手に行わない。
+APIがcopy-mode解除、exact pane/process/input-owner fence、private buffer入力を行う。成功はtmux input適用だけを示す。`DISPATCHED-BEST-EFFORT`として報告し、current turnへの受理や割り込みを主張しない。完了との競合では次turnになり得ることを併記する。
 
-## 7. Enterの別送
+receiptの`baseline_completed_seq`を通常sendのacceptanceや応答回収へ接続しない。current turnとnext turnのどちらへ入ったかをAPIが確定しないため、最初の`done`はsteerへの応答完了を意味しない。応答が必要な依頼はagentが`idle|done`になってから、別の通常sendとしてユーザーに依頼し直してもらう。
+
+non-zero、`delivery_unknown`、`side_effect=possible|confirmed`から再送しない。通常send、durable prompt、raw tmuxへのfallbackも行わない。
+
+## logical keys
+
+ユーザーが対象blocked promptと送るlogical keysを明示した場合だけ使う。通常のprompt送信や催促へ使わない。
 
 ```bash
-tmux send-keys -t %N Enter
+vt agent get %N --json > "<作業ディレクトリ>/blocked-agent.json"
+agent_ref="$(jq -er '.result.agent.summary.agent_ref' "<作業ディレクトリ>/blocked-agent.json")"
+vt agent send-keys "$agent_ref" \
+  --key y \
+  --key Enter \
+  --json \
+  > "<作業ディレクトリ>/keys.json" \
+  2> "<作業ディレクトリ>/keys-error.json"
 ```
 
-## 8. 受理確認
-
-```bash
-sleep 2 && tmux capture-pane -p -t %N | grep -v '^$' | tail -10
-```
-
-- 入力欄から文面が消え、作業中表示に変わったことを確認する。
-- 変化がない場合はEnterを1回だけ再送する。それでも変化がなければ中断して報告する。再送は「未受理を確認できた場合」に限る。受理済みかどうか不明な状態での再送は、空入力による再実行を誘発する。
-
-受理確認後、応答が必要なら wait-collect.md へ進む。ハンドオフ（渡して終わり）はここで完了とし、送信済みの旨を報告する。
+- exact identity、`status=blocked`、`capabilities.interactive_keys=true`を要求する。
+- APIのallowlistにあるlogical keyまたは一文字だけを送る。prompt本文をkey列へ分解しない。
+- APIがcopy-mode解除、input-owner確認、pane/process再検証を行う。
+- `side_effect=possible|confirmed`のerrorからkeyを再送しない。
+- 送信後は同じexact refのstate更新を観測し、別occupantへ続きを送らない。

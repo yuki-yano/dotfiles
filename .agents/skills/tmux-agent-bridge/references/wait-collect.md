@@ -1,79 +1,78 @@
-# wait / collect: 完了待ちと回収
+# API wait / collect
 
-## wait: 完了待ち
+guarded terminal transportで送った依頼のstate待ちとterminal response回収、およびcollect-onlyを扱う。Codex durable transportは`durable-api.md`を使う。
+`agent steer` receiptはcurrent/next turnの帰属を確定しないため、このwait/collect手順へ接続しない。
 
-send.md手順8の受理確認の時点で既に完了マーカーが見えている（高速応答）場合は、waitを省略してcollectへ進んでよい。
+## wait
 
-方式の選択:
-
-- Claude Code環境でMonitorツール（バックグラウンド監視）が使える場合はそれを優先してよい。完了条件は「連結済みマーカーの出現」とし、作業中表示の消失だけでは完了扱いしない。ツール上の実行上限に達したら、同じ条件で監視を再開する。
-- それ以外（Codex等）は下記のポーリングスクリプトを既定とする。長時間の無変化を異常扱いせず、マーカー検出またはpane消失まで1つのシェルセッションで監視する。シェル実行ツールが途中でyieldした場合は、同じセッションの待機を継続する。
+guarded sendの続きでは`agent send` receiptのexact `agent_ref`と`baseline_completed_seq`を使い、一つのAPI subscriptionで新しいcompletionまたはblockedを待つ。
 
 ```bash
-pane='%N'
-marker='===BRIDGE-DONE-R1==='   # 連結済みマーカー。依頼文には分割形式でしか書かれていないこと（SKILL.mdの規約）
-started=$SECONDS
-next_heartbeat=$((SECONDS + 300))
-next_hang_check=$((SECONDS + 3600))
-last_hash=''
-unchanged_since=$SECONDS
-while :; do
-  snap=$(tmux capture-pane -p -t "$pane" -S -200 2>&1) || { echo "PANE-GONE: $snap"; exit 2; }
-  if printf '%s' "$snap" | grep -qF "$marker"; then echo "DONE"; exit 0; fi
-  h=$(printf '%s' "$snap" | shasum -a 256 | cut -d' ' -f1)
-  if [ "$h" != "$last_hash" ]; then
-    unchanged_since=$SECONDS
-  fi
-  last_hash=$h
-  if [ $SECONDS -ge $next_heartbeat ]; then
-    echo "WAITING elapsed=$((SECONDS - started))s unchanged=$((SECONDS - unchanged_since))s"
-    next_heartbeat=$((SECONDS + 300))
-  fi
-  if [ $SECONDS -ge $next_hang_check ] && [ $((SECONDS - unchanged_since)) -ge 3600 ]; then
-    echo "HANG-CHECK elapsed=$((SECONDS - started))s unchanged=$((SECONDS - unchanged_since))s"
-    next_hang_check=$((SECONDS + 1800))
-  fi
-  sleep 20
-done
+agent_ref="$(jq -er '.result.send.target.agent_ref' "<作業ディレクトリ>/send.json")"
+baseline_completed_seq="$(jq -er '.result.send.baseline_completed_seq' "<作業ディレクトリ>/send.json")"
+vt agent wait "$agent_ref" \
+  --until done \
+  --until blocked \
+  --after-completed-seq "$baseline_completed_seq" \
+  --timeout-ms 86400000 \
+  --json \
+  > "<作業ディレクトリ>/wait.json" \
+  2> "<作業ディレクトリ>/wait-error.json"
+```
+
+送信せずに既存agentの次の完了を待つ依頼では、preflightの`agent get`から同じ二値を固定する。すでにworkingなら`--after-completed-seq`なしでもcurrent run completionを待てるが、idle/doneから次の依頼を外部入力に任せる場合はcursorを明示する。
+
+```bash
+agent_ref="$(jq -er '.result.agent.summary.agent_ref' "<作業ディレクトリ>/agent-before.json")"
+baseline_completed_seq="$(jq -er '.result.agent.completed_seq' "<作業ディレクトリ>/agent-before.json")"
 ```
 
 状態ごとの対応:
 
-- `DONE`: collectへ進む。
-- `PANE-GONE`: 中断してユーザーに報告する。
-- `WAITING`: 正常なheartbeat。画面が長時間変化していなくても待機を継続する。催促や追加のEnterを送らない。
-- `HANG-CHECK`: 完了やハング確定ではない。SKILL.mdの「ハング判定と切り替え」に従って診断する。根拠が揃わなければ監視へ戻る。
-- シェル実行ツールのyield・一時的な実行上限: 同じセッションを再度待機する。セッションが失われた場合は新しい監視を開始する。いずれも完了や打ち切りとはみなさない。
-- permission promptや確認待ちが明示的に表示された場合: 監視を中断してユーザーに判断を仰ぐ。勝手に承認キーや回答を送らない。
-- 入力受付表示へ戻り、最終回答らしい出力があるのにマーカーがない場合: マーカー欠落を報告して停止する。collectや後続処理をfallback実行しない。
-- ハング判定の根拠が揃った場合: 診断結果をユーザーへ報告して監視を終了する。相手の応答なしでも安全な後続処理だけを続け、レビュー済み・合意済み・収束済みとは扱わない。
+- `matched_status == done`: collectへ進む。`matched_completed_seq`を次のcursorとして保存する。
+- `matched_status == blocked`: [api-state.md](api-state.md)で同じ`state_id`のlifecycleを確認する。`usage_limit`なら`LIMIT-REACHED`、permission/user-input/errorなら表示して停止する。
+- API timeout: promptを再送せず、同じ`agent_ref`とcursorでwaitを再開する。
+- `stale_reference` / `target_replaced`: 別occupantへ読み替えず停止する。
+- `event_history_lost` / `stale_daemon`: `retry_action`に従い同じidentityのcurrent stateを再観測する。cursorより新しいcompletionまたはpersistent blockedを確認できなければ、応答済みと推測しない。
 
-待機中は相手paneへ追加送信しない。応答を前提とする検証・修正・次ラウンドなどの後続処理も開始しない。ユーザーが明示した独立作業だけは、監視を維持したまま並行してよい。
+shell toolがyieldした場合は同じprocessを待つ。wait中にEnter、催促、progress確認を送らない。
 
-## collect: 回収
+## collect
 
-1. スクロールバックをファイルへダンプする。直接読まない。sendから続ける場合はsend.md手順3で記録した作業ディレクトリを使う。collect単独の場合は、先に`mktemp -d "${TMPDIR:-/tmp}/tmux-agent-bridge.XXXXXX"`を実行し、出力された絶対パスを記録する。以降のツール呼び出しでは、その絶対パスを`<作業ディレクトリ>`へ文字どおり埋め込む。
+exact occupantが残っている場合は`agent read`を使う。
 
 ```bash
-tmux capture-pane -p -t %N -S -3000 > "<作業ディレクトリ>/bridge-collect.txt"
-wc -l "<作業ディレクトリ>/bridge-collect.txt"
+agent_ref="$(jq -er '.result.target.agent_ref' "<作業ディレクトリ>/wait.json")"
+vt agent read "$agent_ref" --source latest --lines 2000 --json \
+  > "<作業ディレクトリ>/collect.json" \
+  2> "<作業ディレクトリ>/collect-error.json"
+jq -er '.result.read.text' "<作業ディレクトリ>/collect.json" \
+  > "<作業ディレクトリ>/collect.txt"
 ```
 
-2. マーカーと依頼文送信位置をgrepで特定し、その間の範囲だけをReadで読む。
+wait後にexact agent processが終了して`agent read`が使えない場合だけ、wait resultの`target.pane_ref`を使う。pane IDを再解決しない。
 
 ```bash
-grep -n '===BRIDGE-DONE-R1===' "<作業ディレクトリ>/bridge-collect.txt" | head -1
-grep -n '<依頼文の特徴的な行>' "<作業ディレクトリ>/bridge-collect.txt" | tail -1
+wait_pane_ref="$(jq -er '.result.target.pane_ref' "<作業ディレクトリ>/wait.json")"
+vt pane read "$wait_pane_ref" --source latest --lines 2000 --json \
+  > "<作業ディレクトリ>/collect.json" \
+  2> "<作業ディレクトリ>/collect-error.json"
+jq -er '.result.read.text' "<作業ディレクトリ>/collect.json" \
+  > "<作業ディレクトリ>/collect.txt"
 ```
 
-- マーカーが複数回出現する場合（Enter誤送などによる再実行）は**最初の出現を採用**する。2回目以降の出現を見つけたら、再実行が起きた旨を報告に含める。
+- `.result.read.truncated == true`なら完全回収とみなさない。
+- `grep -nF '===BRIDGE-DONE-R1===' "<作業ディレクトリ>/collect.txt"`で連結済みマーカーを探す。
+- 依頼文の特徴的な行と最初のマーカーの間だけを読む。2回目以降のマーカーは重複実行として報告する。
+- 2000行/API上限でマーカーが見つからなければraw `capture-pane -S`へfallbackせず、未回収として停止する。
 
-3. `-S -3000` で依頼文の開始位置が見つからない場合のみ `-S -6000` へ拡大して再ダンプする。無条件に `-S -10000` 級から始めない。
+## collect-only
 
-## collectのみのモード（他paneの作業ログ読取）
+送信を伴わない読取では、まず`vt pane get %N --json`で`pane_ref`とoptional `agent_ref`を取得する。
 
-送信を伴わない読取（「%Nの作業内容をまとめて」）では:
+- exact `agent_ref`があれば`vt agent read AGENT_REF --source latest --lines 2000`を使う。
+- exact agent identityがなければ、固定した`pane_ref`へ`vt pane read PANE_REF --source latest --lines 2000`を使う。
+- `.result.read.text`をfileへ保存し、キーワードで範囲を絞ってから読む。
+- `.result.read.truncated`を報告する。相手paneへ何も送信しない。
 
-1. send.md の手順1でpaneを特定する（`pane_current_command` でエージェントpaneを見分ける）。
-2. 上記と同じくファイルへダンプし、キーワードで当たりを付けてから範囲Readする。キーワードは部分文字列の誤爆に注意して選ぶ（例: 「解約」を探すのに「約」を含む語で拾わない）。
-3. 相手paneには何も送信しない。
+current stateが`usage_limit`の場合、応答本文を回収済みとは扱わない。reset原文だけを30行のpinned `pane read`で確認して報告する。

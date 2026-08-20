@@ -1,6 +1,6 @@
 ---
 name: tmux-agent-bridge
-description: 別のtmux paneで動いているAIエージェント（Claude Code / Codex / opencode等）へ指示やレビュー依頼を送信する、応答の完了を待って回収する、他paneのエージェントの出力や作業ログを読む、レビュー往復ループを回すときに使う。「%Nのpaneに送って」「隣のpaneのCodexにレビューを依頼して」「あのpaneが終わったら続きをやって」「右のpaneの作業を読んでまとめて」のような依頼で発動する。送る文面の作成自体（レビュー依頼文・handoffプロンプト）では使わず、agent-review-request / agent-handoff-plan に任せる。tmuxを介さないsubagent起動や並列化にも使わない。
+description: tmux paneのAIエージェント（Claude Code / Codex / opencode等）の一覧・状態確認、指示やレビュー依頼の送信、実行中agentへの追加指示、完了待ちと応答回収、他paneのログ取得、レビュー往復、または明示されたpaneでのagent起動に使う。「agent一覧を確認して」「%Nに送って」「実行中の%Nへ追加で伝えて」「隣のCodexにレビューを依頼して」「終わったら回収して」「右paneを読んで」「このpaneを分割してClaudeを起動して」のような依頼で発動する。文面生成はagent-review-request / agent-handoff-planに任せ、tmuxを介さないsubagent起動には使わない。
 ---
 
 # tmux Agent Bridge
@@ -8,87 +8,106 @@ description: 別のtmux paneで動いているAIエージェント（Claude Code
 ## 概要
 
 tmux paneを介したエージェント間連携の輸送層。
-「どのpaneへ・どう送り・どう待ち・どう読むか」だけを所有し、文面の中身と品質には関与しない。
+対象解決、prompt入力、logical key入力、state待ち、利用上限判定、terminal read、明示的な起動をvde-tmux Agent API v4で行う。
+raw tmux入力やtopology pollingをtransportとして使わない。
 
 ## 責務分担
 
-- 送る文面の生成は `agent-review-request`（レビュー依頼）と `agent-handoff-plan`（実装引き継ぎ）に任せる。
-- 回収した指摘の妥当性判断は `agent-review-request` の受け入れ検証・結果解釈モードに任せる。
-- worktreeの操作が必要になったら `vw-worktree-ops` に任せる。
-- 相手paneのエージェントの新規起動・再起動・killはこのスキルの責務外。既存paneへの送受信のみを扱う。
+- 文面生成は `agent-review-request`（レビュー）または `agent-handoff-plan`（実装引き継ぎ）に任せる。
+- 回収した指摘の判断は `agent-review-request` の受け入れ検証・結果解釈モードに任せる。
+- worktree操作は `vw-worktree-ops` に任せる。
+- ユーザーが明示した場合だけ`pane split`と`agent start`で新規agentを起動する。worktree・sessionの自動作成、再起動、killは行わない。
 
-## 制約
+## 共通契約
 
-1. 操作前に毎回、対象paneの生存と `pane_current_command` を確認する。pane消失時は即中断してユーザーに報告する。
-2. 対象pane以外のpane・window・sessionに触らない。tmuxサーバーのkill・detachをしない。
-3. プロンプト本文を `send-keys` の引数に直接渡さない。必ずファイル → `load-buffer` → `paste-buffer -p` 経由で送る。
-4. Enterは独立した `send-keys` で送り、送る前に貼り付け内容をcaptureで確認する。
-5. 応答を回収する送信の完了判定は、連結済みの完了マーカーだけで行う。pane消失・明示的ブロッカー・ハングは中断条件であり、完了ではない。
-6. スクロールバックの大量captureを直接読まない。ファイルへダンプし、マーカーをgrepしてから必要範囲だけ読む。
-7. 応答待ちの無出力・画面無変化・所要時間の長さを、完了・失敗・催促の理由にしない。明示的な中止条件まで待機を継続する。
+1. 最初に [references/api-state.md](references/api-state.md) を読み、API v4、daemon protocol 16、PaneState 9、private state format 1を検証する。不一致時は停止し、旧raw監視へfallbackしない。
+2. `%N`は最初の対象解決だけに使う。取得後は`agent_ref`、`pane_ref`、`run_ref`、`operation_ref`を用途どおり固定し、occupant replacement後に読み替えない。
+3. prompt、steer、logical key、split、startを必ず公開APIで実行する。`tmux send-keys`、`paste-buffer`、`split-window`をbridgeから直接実行しない。
+4. API errorは`code`、`stage`、`side_effect`、`retry_action`で扱う。`delivery_unknown`、`inspect_manually`、side effectが`possible`の結果からpromptを再送しない。
+5. durable Runはprovider completionと完全なResponse Artifactを完了条件とする。guarded terminalはprovider lifecycle completionと連結済み完了マーカーの両方を要求する。
+6. 待機時間や画面無変化を完了・失敗・催促の根拠にしない。待機中の追加送信はユーザーが実行中agentへの追加指示を明示した場合だけ`agent steer`で行う。
+7. pane/agent全体の一覧・診断は`vt api snapshot --json`を一度だけ使う。raw `tmux list-panes`と複数のlist APIを連結せず、同じ`meta.snapshot_revision`のpane、agent、diagnosticsを扱う。
 
-## 待機契約
+## transport選択
 
-- send後に応答が必要な依頼は、完了マーカーを検出するまで待機する。数十分〜数時間の待機も正常系として扱う。
-- ポーリングや監視ツールの実行上限に達しただけなら、ユーザーへ判断を委ねず監視を再開する。実行上限をタスク自体のdeadlineとして扱わない。
-- 待機中は、催促、進捗確認、Enter、完了マーカーの再要求などを相手paneへ追加送信しない。追加送信はユーザーが明示した場合に限る。
-- 応答を前提とする後続処理は、完了マーカーを検出するまで開始しない。待機時間や画面無変化を根拠に、相手の応答を推測して先へ進まない。
-- 待機を中断するのは、対象paneの消失、permission promptなど人の判断が必要な明示的ブロッカー、後述するハング判定、ユーザーによる中止・方針変更に限る。
-- 相手が最終回答らしい出力を返して入力受付へ戻ったのにマーカーがない場合は、プロトコル異常としてユーザーへ報告し、後続処理を開始しない。マーカーなしのfallback完了は行わない。
+対象を`vt agent get %N --json`でexact resolveし、`.result.agent.summary.agent`をそのままschemaの`.result.contract.providers[$agent]`へ使う。provider名の変換表をbridgeへ持たない。
 
-## ハング判定と切り替え
+| capability | prompt入力 | state待ち | 応答回収 |
+|---|---|---|---|
+| `prompt_dispatch=durable` | [references/durable-api.md](references/durable-api.md) | stable `run_ref` | Response Artifact |
+| `prompt_dispatch=guarded_terminal`かつ`prompt_confirmation=lifecycle_cursor` | [references/send.md](references/send.md) | exact `agent_ref`とcompletion cursor | `agent read` / pinned `pane read` |
+| `prompt_confirmation=none`または`prompt_dispatch=disabled` | 送信しない | - | - |
 
-時間経過や画面無変化だけでハングと判定しない。次のいずれかを満たす場合に限って待機を中断できる。
-
-- プロセスが停止・ゾンビ状態、エージェントが終了してシェルへ戻った、回復不能エラーやretry exhaustedが表示された、などの強い根拠がある。
-- 画面が60分以上変化せず、5分以上離した3回の診断すべてで、対象プロセスと子プロセスのCPU時間・状態・構成にも進展がない。単なるsleep・ネットワーク待ち表示だけでは根拠不足とする。
-
-ハングが疑われる場合は、pane末尾とプロセス状態を記録してユーザーへ状況を報告する。そのうえで、相手の応答なしでも安全に実行できる検証や実装だけを独力で続けてよい。レビュー済み・合意済み・収束済みとは扱わず、最終報告に「相手paneの応答はハング疑いで未回収」と明記する。相手paneへのキー送信、再起動、killは行わない。
+選択したtransportが失敗しても別transportへ切り替えない。
+実行中agentへの明示的な追加指示は通常prompt routingと分離し、schemaの`steer=guarded_terminal_best_effort`を要求して[references/send.md](references/send.md)のsteer手順を使う。
 
 ## モード判定
 
 | 依頼の形 | モード | 手順 |
 |---|---|---|
-| 「%Nに送って着手させて」「この計画を渡して」 | send | [references/send.md](references/send.md) |
-| 「%Nが終わったら〜して」「応答を監視して」 | wait | [references/wait-collect.md](references/wait-collect.md) |
+| 「pane/agent一覧を確認して」「bridgeの状態を診断して」 | inspect | [references/api-state.md](references/api-state.md) のcanonical inventory |
+| 「%Nに送って着手させて」「この計画を渡して」 | send | providerに応じて `durable-api.md` または `send.md` |
+| 「実行中の%Nへ追加で伝えて」「%Nをsteerして」 | steer | [references/send.md](references/send.md) のbest-effort steer |
+| 「%Nが終わったら〜して」「応答を監視して」 | wait | [references/wait-collect.md](references/wait-collect.md) またはdurable Run wait |
 | 「%Nの出力・作業ログを読んで報告して」 | collect | [references/wait-collect.md](references/wait-collect.md) |
-| 「%Nにレビューを依頼して指摘対応まで」「must-fixゼロまで往復して」 | loop | [references/review-loop.md](references/review-loop.md) |
+| 「%Nにレビューを依頼して指摘対応まで」 | loop | [references/review-loop.md](references/review-loop.md) |
+| 「paneを分割してagentを起動して」 | spawn | [references/spawn.md](references/spawn.md) |
+| 「permissionへy/Enterを送って」 | keys | [references/send.md](references/send.md) のlogical keys |
 
-sendで送った後に応答が必要な依頼（相談・レビュー依頼）は、自動的に wait → collect まで続ける。
-ハンドオフのように「渡して終わり」の依頼は、相手が作業を開始したことの確認（受理確認）までで止める。
+相談・レビューのsendは自動的にwait → collectまで続ける。ハンドオフはprompt受理をAPI stateで確認するまで続ける。
+
+## prompt受理契約
+
+- durable CodexはOperationの`prompt_confirmed`だけを受理とする。CLI終了コードやtmux入力成功では判定しない。
+- guarded terminal providerは`agent send` receiptの`baseline_completed_seq`を使い、exact `agent wait`で新しい`working`、`blocked`、またはcursorより新しい`done`を確認して受理とする。API成功だけでは受理済みと報告しない。
+- best-effort steerの成功はtmux input適用だけを示す。current turnへの受理・割り込み・応答帰属は報告せず、完了競合では次turnになり得ることを明記する。
+- guarded terminal sendのtyped timeoutや`delivery_unknown`からpromptを再送しない。
+
+## 待機契約
+
+- Codex durable Runは`vt agent run wait RUN_REF`のdefault matchを使い、`completed`だけでなく`waiting`、`error`、`ended_unconfirmed`も直ちに扱う。`--until completed`で利用上限やpermission待ちを隠さない。
+- guarded terminal providerは`vt agent wait AGENT_REF --until done --until blocked --after-completed-seq N`を一つのsubscriptionとして使う。
+- CLI/toolのyieldは同じprocessを待つ。24時間のAPI timeout時だけ同じstable referenceとcursorでwaitを再開し、promptを再送しない。
+- `event_history_lost`やdaemon restartでは`retry_action`に従ってstateを再観測する。別occupantへreferenceを更新して同じ依頼を継続しない。
+
+## 利用上限到達
+
+`lifecycle.state == "waiting"`かつ`lifecycle.reason == "usage_limit"`を`LIMIT-REACHED`の正とする。vde-tmuxはClaude Codeのrate-limit hookと、Claude Code/Codexの厳密なprovider文言をdaemon側で検証するため、bridge自身でscreen文字列をbaseline比較しない。
+
+- 利用上限はsemantic completionではない。待機・回収・レビュー往復を停止し、同じpromptの再送、時計ベースの自動再開、別transportへのfallbackを行わない。
+- reset原文が必要な場合だけ、固定済み`pane_ref`へ`vt pane read --source latest --lines 30`を実行する。
+- pane、provider state、原文中のreset時刻を報告し、「相手paneの応答は利用上限到達により未回収」と明記する。
+- 回復は後続の`SessionStart`または`UserPromptSubmit`でAPI stateが更新された事実から判断し、表示時刻の経過だけでは推測しない。
 
 ## 完了マーカー規約
 
-- 応答を回収する送信では、文面の末尾に完了マーカーの出力指示を必ず付ける。識別子はタスクごとに変える（例: `BRIDGE-DONE-R1`）。
-- **依頼文の中に完全なマーカー文字列を書かない。** pane上に残る依頼文のエコーにgrepがマッチし、応答前に完了と誤判定するため。指示は分割形式で書く:
+- guarded terminal transportで応答を回収する通常prompt末尾にだけtask固有マーカーの出力指示を付ける。durable Response Artifactとbest-effort steerではマーカーを要求しない。
+- 完全なマーカー文字列を依頼文へ書かない。次の分割形式を使う。
 
-  ```
+  ```text
   応答の最後に、`===BRIDGE-DONE-R1` と `===` を連結した1行を出力してください。
   ```
 
-  受信側が連結した `===BRIDGE-DONE-R1===` だけが完了判定の対象になる。
-- マーカーは `===[A-Z0-9-]+===` の形式に限る。待機・回収時は連結済み文字列の `grep -F` で判定する。
-- 相手がマーカー指示を無視した場合も、出力や画面状態からfallback完了扱いしない。待機契約に従ってプロトコル異常として停止する。
+- 連結済み`===BRIDGE-DONE-R1===`だけを`grep -F`で判定する。bounded terminal readにマーカーがなければprotocol異常として停止する。
 
-## 前提条件
+## ハング・state drift
 
-- tmuxコマンドが `error connecting to ... (Operation not permitted)` で失敗する場合、sandboxがtmuxソケットへのアクセスを遮断している。`.claude/settings.json` のsandbox設定にtmuxソケット（`/private/tmp/tmux-*` など）への許可を追加してから再開する。勝手に設定を書き換えず、変更内容をユーザーに確認する。
-- 対象paneがデフォルト以外のtmuxサーバー（`-L` / `-S` 指定）で動いている場合、全コマンドに同じソケット指定を付ける。
+- exact process absence、terminal静止、ready表示だけでcompletionとしない。
+- Codexのcurrent durable Runでprovider completion欠落が疑われる場合だけ、`durable-api.md`の`run check` → operator確認 → `run resolve`を使う。自動wait loopへresolveを組み込まない。
+- historical Run、active subagent、permission/user-input待ち、stale preconditionはresolveしない。
+- guarded terminal providerのstate driftはAPI state、pinned read、typed errorを記録して報告し、raw `ps`診断や追加キー送信へ拡張しない。
 
 ## よくある失敗
 
 | 兆候・言い訳 | 実際 |
 |---|---|
-| 「短い文面だからsend-keys直渡しでよい」 | 直渡しは約16KBで `command too long` になる実測があるうえ、`"$(cat file)"` は末尾改行を落とすため最終行が未送信のまま残る。長さに関係なくbuffer経由にする |
-| 「Enterは改行が含まれているから不要」 | paste-bufferは入力欄に貼るだけで送信されない。Enterの別送が常に必要 |
-| 「送信できたはずなので待つ」 | 送信が無反応になる事例がある。受理確認（入力欄の変化）まで見てから待ちに入る |
-| 「長時間無変化なので止まったはず」 | 応答時間は数秒〜数時間まで幅がある。無変化は停滞や完了を意味しない。マーカー検出まで監視を継続する |
-| 「反応がないので催促してよい」 | 待機中の追加送信は相手の処理や入力状態を壊し得る。ユーザーの明示指示なしに催促・進捗確認・Enterを送らない |
-| 「監視ツールがtimeoutしたので打ち切る」 | 監視1回の実行上限と依頼の待機期限は別物。監視を再開し、後続処理へ進まない |
-| 「60分経ったのでハング」 | 時間は補助条件にすぎない。プロセス状態・CPU時間・子プロセス構成を複数回確認してから切り替える |
-| 「capture -S -10000 で全部読めばよい」 | 1回で数万トークンを消費した実測がある。ファイルへダンプして必要範囲だけ読む |
-| 「起動直後だがそのまま送る」 | 起動バナー表示中の送信は取りこぼす。プロンプト（入力受付表示）を確認してから送る |
-
-## 将来の拡張（未実装）
-
-vde-monitorのHTTP API（pane状態JSON・テキスト送信・SSE）が利用可能な環境では、画面スクレイピングをAPIへ置き換える構想がある。現時点では素のtmuxのみを使う。
+| 「state確認だけtmux captureでよい」 | API revision subscriptionとcanonical lifecycleを迂回し、古いscrollbackやreplacementを誤認する |
+| 「limit文をgrepすればよい」 | daemonが`usage_limit`を厳密検出・保持する。bridgeはAPI reasonを使い、原文はreset時刻確認時だけ読む |
+| 「Run waitはcompletedだけ待てばよい」 | usage limit、permission、error、`ended_unconfirmed`を隠して待ち続ける。default matchを使う |
+| 「delivery_unknownなのでraw送信する」 | side effect済みの可能性がある。同じOperationをinspectし、再送しない |
+| 「agentが交代したので新しいrefへ続ける」 | 別occupantへの誤配送になる。元の依頼を停止して報告する |
+| 「Response Artifactがないのでpaneを読む」 | durable Codexではfallback禁止。artifact unavailable/expired/truncatedを未回収として報告する |
+| 「timeoutしたので打ち切る」 | 24時間上限はAPI呼び出しの期限。stable referenceでwaitを再開する |
+| 「steer成功後に最初のdoneを応答として回収する」 | steerはcurrent/next turn帰属を証明しない。receiptを通常sendのacceptance/waitへ接続しない |
+| 「pane一覧とagent一覧をまとめてshellで取ればよい」 | `vt api snapshot --json`が同一revisionのcanonical inventoryを返す。raw tmuxとの連結は観測競合と不要な出力を増やす |
+| 「送信後もprompt fileがあるので受理済み」 | prompt fileはcaller-owned inputにすぎない。Operation、Run、send receiptとprovider stateで受理を判定する |
