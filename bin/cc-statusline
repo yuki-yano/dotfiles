@@ -1,10 +1,37 @@
-#!/usr/bin/env -S deno run --allow-read --allow-run --allow-env --allow-write=/var/folders,/tmp
+#!/usr/bin/env -S deno run --allow-read --allow-run --allow-env --allow-net=127.0.0.1 --allow-write=/var/folders,/tmp
 
 import { readAll } from "jsr:@std/io@0.224/read-all";
 
 type UsageMetric = {
   used_percentage?: number;
   resets_at?: number;
+};
+
+type VdeMonitorUsageWindow = {
+  id?: string;
+  title?: string;
+  utilizationPercent?: number | null;
+  resetsAt?: string | null;
+};
+
+type VdeMonitorUsageResponse = {
+  provider?: {
+    status?: string;
+    windows?: VdeMonitorUsageWindow[];
+  };
+};
+
+type VdeMonitorRuntimeMarker = {
+  version?: number;
+  endpoint?: {
+    port?: number;
+  } | null;
+};
+
+type VdeMonitorRateLimits = {
+  fiveHour: UsageMetric;
+  sevenDay: UsageMetric;
+  fable: UsageMetric | null;
 };
 
 type ContextWindowUsage = {
@@ -49,6 +76,8 @@ const RESET = "\x1b[0m";
 const BAR_BLOCKS = " ▏▎▍▌▋▊▉█";
 const FIVE_HOUR_WINDOW_MS = 5 * 60 * 60 * 1000;
 const SEVEN_DAY_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+const VDE_MONITOR_REQUEST_TIMEOUT_MS = 1000;
+const VDE_MONITOR_RUNTIME_FILE_PATTERN = /^server-runtime\.\d+\.[0-9a-f-]+\.json$/i;
 
 type Rgb = readonly [number, number, number];
 
@@ -225,6 +254,120 @@ function getContextInputTokens(currentUsage?: ContextWindowUsage | null): number
     (currentUsage.cache_read_input_tokens || 0);
 }
 
+function getVdeMonitorAccess(homeDir: string): { ports: number[]; token: string } | null {
+  try {
+    const tokenFile = JSON.parse(Deno.readTextFileSync(`${homeDir}/.vde-monitor/token.json`)) as {
+      token?: unknown;
+    };
+    const token = typeof tokenFile.token === "string" ? tokenFile.token.trim() : "";
+    if (!token) {
+      return null;
+    }
+
+    const ports = [...Deno.readDirSync(`${homeDir}/.vde-monitor/server-runtimes`)]
+      .filter((entry) => entry.isFile && VDE_MONITOR_RUNTIME_FILE_PATTERN.test(entry.name))
+      .flatMap((entry) => {
+        try {
+          const marker = JSON.parse(
+            Deno.readTextFileSync(`${homeDir}/.vde-monitor/server-runtimes/${entry.name}`),
+          ) as VdeMonitorRuntimeMarker;
+          const port = marker.endpoint?.port;
+          if (
+            marker.version !== 1 ||
+            typeof port !== "number" ||
+            !Number.isSafeInteger(port) ||
+            port < 1 ||
+            port > 65535
+          ) {
+            return [];
+          }
+          return [port];
+        } catch {
+          return [];
+        }
+      });
+
+    const uniquePorts = [...new Set(ports)];
+    return uniquePorts.length > 0 ? { ports: uniquePorts, token } : null;
+  } catch {
+    return null;
+  }
+}
+
+function parseVdeMonitorUsageWindow(window?: VdeMonitorUsageWindow): UsageMetric | null {
+  const utilizationPercent = window?.utilizationPercent;
+  const resetsAtMs = window?.resetsAt ? Date.parse(window.resetsAt) : Number.NaN;
+
+  if (
+    typeof utilizationPercent !== "number" ||
+    !Number.isFinite(utilizationPercent) ||
+    Number.isNaN(resetsAtMs)
+  ) {
+    return null;
+  }
+
+  return {
+    used_percentage: utilizationPercent,
+    resets_at: resetsAtMs / 1000,
+  };
+}
+
+async function fetchVdeMonitorRateLimits(port: number, token: string): Promise<VdeMonitorRateLimits | null> {
+  try {
+    const response = await fetch(`http://127.0.0.1:${port}/api/claude/usage`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      signal: AbortSignal.timeout(VDE_MONITOR_REQUEST_TIMEOUT_MS),
+    });
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json() as VdeMonitorUsageResponse;
+    if (data.provider?.status !== "ok") {
+      return null;
+    }
+
+    const windows = data.provider.windows;
+    const fiveHour = parseVdeMonitorUsageWindow(windows?.find((window) => window.id === "session"));
+    const sevenDay = parseVdeMonitorUsageWindow(windows?.find((window) => window.id === "weekly"));
+    if (!fiveHour || !sevenDay) {
+      return null;
+    }
+
+    const fable = parseVdeMonitorUsageWindow(
+      windows?.find((window) => window.id === "model" && window.title === "Fable Weekly"),
+    );
+
+    return {
+      fiveHour,
+      sevenDay,
+      fable,
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function getVdeMonitorRateLimits(): Promise<VdeMonitorRateLimits | null> {
+  const homeDir = Deno.env.get("HOME");
+  if (!homeDir) {
+    return null;
+  }
+
+  const access = getVdeMonitorAccess(homeDir);
+  if (!access) {
+    return null;
+  }
+
+  const limits = await Promise.all(
+    access.ports.map((port) => fetchVdeMonitorRateLimits(port, access.token)),
+  );
+  return limits.find((limit) => limit !== null) ?? null;
+}
+
 function getRateLimitHealth(usedPct?: number, resetsAt?: number, windowMs?: number): RateLimitHealth | null {
   if (
     usedPct === undefined ||
@@ -266,6 +409,7 @@ function formatRateLimitMetric(label: string, health: RateLimitHealth | null): s
     return null;
   }
 
+  const labelField = label.padEnd(5);
   const budgetField = `●${formatPercent(health.budgetLeftPct)}`;
   const timeField = `⌛${formatPercent(health.timeLeftPct)}`;
   const delta = Math.round(health.budgetLeftPct - health.timeLeftPct);
@@ -273,7 +417,7 @@ function formatRateLimitMetric(label: string, health: RateLimitHealth | null): s
   const deltaColor = delta < 0 ? health.statusColor : PALETTE.green;
   const resetField = `↺ ${health.remainingDuration}`.padEnd(8);
 
-  return `${rgb(PALETTE.subtext1)}${label}${RESET} ${remainingBar(health.budgetLeftPct, health.statusColor)} ${
+  return `${rgb(PALETTE.subtext1)}${labelField}${RESET} ${remainingBar(health.budgetLeftPct, health.statusColor)} ${
     rgb(health.statusColor)
   }${budgetField}${RESET} ${rgb(PALETTE.overlay0)}|${RESET} ${rgb(PALETTE.subtext0)}${timeField}${RESET} ${
     rgb(PALETTE.overlay0)
@@ -372,14 +516,22 @@ async function main() {
     ? formatTokenRatio(contextInputTokens, contextWindowSize)
     : null;
   const ctxSummary = formatContextSummary(input.context_window?.used_percentage, ctxMeta);
+  const vdeMonitorRateLimits = await getVdeMonitorRateLimits();
+  const fiveHourRateLimit = vdeMonitorRateLimits?.fiveHour ?? input.rate_limits?.five_hour;
+  const sevenDayRateLimit = vdeMonitorRateLimits?.sevenDay ?? input.rate_limits?.seven_day;
   const fiveHourHealth = getRateLimitHealth(
-    input.rate_limits?.five_hour?.used_percentage,
-    input.rate_limits?.five_hour?.resets_at,
+    fiveHourRateLimit?.used_percentage,
+    fiveHourRateLimit?.resets_at,
     FIVE_HOUR_WINDOW_MS,
   );
   const sevenDayHealth = getRateLimitHealth(
-    input.rate_limits?.seven_day?.used_percentage,
-    input.rate_limits?.seven_day?.resets_at,
+    sevenDayRateLimit?.used_percentage,
+    sevenDayRateLimit?.resets_at,
+    SEVEN_DAY_WINDOW_MS,
+  );
+  const fableHealth = getRateLimitHealth(
+    vdeMonitorRateLimits?.fable?.used_percentage,
+    vdeMonitorRateLimits?.fable?.resets_at,
     SEVEN_DAY_WINDOW_MS,
   );
 
@@ -393,6 +545,7 @@ async function main() {
   const usageParts = [
     formatRateLimitMetric("5h", fiveHourHealth),
     formatRateLimitMetric("7d", sevenDayHealth),
+    formatRateLimitMetric("Fable", fableHealth),
   ].filter((value): value is string => value !== null);
 
   if (usageParts.length === 0) {
