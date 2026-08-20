@@ -187,6 +187,7 @@ npx --yes skills add anthropics/claude-code --skill frontend-design --full-depth
 npx --yes skills add vercel-labs/portless --skill portless -a codex -y
 npx --yes skills add millionco/react-doctor --skill react-doctor -a codex -y
 npx --yes skills add vercel-labs/agent-skills --skill vercel-react-best-practices -a codex -y
+npx --yes skills add github/gh-stack --skill gh-stack -a codex -y
 ```
 
 ## Common Mistakes
