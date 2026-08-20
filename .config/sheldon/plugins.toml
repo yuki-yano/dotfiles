@@ -45,5 +45,5 @@ profiles = ["post"]
 
 [plugins.zeno-bootstrap]
 local = "~/repos/github.com/yuki-yano/zeno.zsh"
-use = ["zeno-bootstrap.zsh"]
+use = ["/zeno-bootstrap.zsh"]
 profiles = ["post"]
