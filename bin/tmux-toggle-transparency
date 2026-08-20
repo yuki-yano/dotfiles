@@ -5,17 +5,19 @@ set -euo pipefail
 apply_mode() {
   local mode="$1"
   if [[ "$mode" == "transparent" ]]; then
+    alacritty msg config -w -1 'window.opacity=0.8'
     tmux set -g window-style 'bg=default'
     tmux set -g window-active-style 'bg=default'
-    tmux set -g pane-border-style '#{?#{@vde_status_pane_border_color},fg=#{@vde_status_pane_border_color},fg=#4A4A4A},bg=default'
-    tmux set -g pane-active-border-style '#{?#{@vde_status_pane_border_color},fg=#{@vde_status_pane_border_color},fg=#8295D1},bg=default'
+    tmux set -g pane-border-style '#{?#{@vde_status_pane_border_color},fg=#{@vde_status_pane_border_color},fg=#4A4A4A}'
+    tmux set -g pane-active-border-style '#{?#{@vde_status_pane_border_color},fg=#{@vde_status_pane_border_color},fg=#FFFFFF}'
     tmux set -g popup-style 'fg=default,bg=default'
     tmux set -g popup-border-style 'fg=#4A4A4A,bg=default'
   else
-    tmux set -g window-style 'bg=#232333'
-    tmux set -g window-active-style 'bg=#181825'
-    tmux set -g pane-border-style '#{?#{@vde_status_pane_border_color},fg=#{@vde_status_pane_border_color},fg=#4A4A4A},bg=#222333'
-    tmux set -g pane-active-border-style '#{?#{@vde_status_pane_border_color},fg=#{@vde_status_pane_border_color},fg=#8295D1},bg=#222333'
+    alacritty msg config -w -1 'window.opacity=1.0'
+    tmux set -g window-style 'bg=#1E1E2E'
+    tmux set -g window-active-style 'bg=#1E1E2E'
+    tmux set -g pane-border-style '#{?#{@vde_status_pane_border_color},fg=#{@vde_status_pane_border_color},fg=#4A4A4A},bg=#1E1E2E'
+    tmux set -g pane-active-border-style '#{?#{@vde_status_pane_border_color},fg=#{@vde_status_pane_border_color},fg=#FFFFFF},bg=#1E1E2E'
     tmux set -g popup-style 'fg=default,bg=#181825'
     tmux set -g popup-border-style 'fg=#4A4A4A,bg=#181825'
   fi
