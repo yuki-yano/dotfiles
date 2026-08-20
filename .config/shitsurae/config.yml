@@ -5,12 +5,20 @@ app:
 overlay:
   showThumbnails: true
 
+monitors:
+  main:
+    primary: true
+  calendar:
+    id: 37D8832A-2D66-02CA-B9F7-8F30A301B230
+  research:
+    id: E536B010-A5D8-4F69-8516-D4A3552C0E13
+
 layouts:
   default:
     initialFocus:
       slot: 1
     display:
-      monitor: primary
+      monitor: main
     spaces:
       - spaceID: 1
         windows:
@@ -26,7 +34,7 @@ layouts:
           - slot: 2
             launch: true
             match:
-              bundleID: com.microsoft.edgemac
+              bundleID: com.openai.codex
             frame:
               x: "16.5%"
               y: "0%"
@@ -72,22 +80,9 @@ layouts:
               y: "0%"
               width: "100%"
               height: "100%"
-          - slot: 2
-            launch: true
-            match:
-              bundleID: md.obsidian
-            frame:
-              x: "25%"
-              y: "15%"
-              width: "50%"
-              height: "70%"
-          - slot: 3
-            launch: true
-            match:
-              bundleID: com.openai.codex
   calendar:
     display:
-      monitor: secondary
+      monitor: calendar
     spaces:
       - spaceID: 1
         windows:
@@ -100,8 +95,45 @@ layouts:
               y: "0%"
               width: "100%"
               height: "100%"
+  research:
+    display:
+      monitor: research
+    spaces:
+      - spaceID: 1
+        windows:
+          - slot: 1
+            launch: true
+            match:
+              bundleID: com.microsoft.edgemac
+            frame:
+              x: "0%"
+              y: "0%"
+              width: "100%"
+              height: "100%"
+      - spaceID: 2
+        windows:
+          - slot: 1
+            launch: true
+            match:
+              bundleID: md.obsidian
+            frame:
+              x: "0%"
+              y: "0%"
+              width: "100%"
+              height: "100%"
 
 shortcuts:
+  switchVirtualSpace:
+    - key: "4"
+      modifiers: [ctrl]
+      spaceID: 1
+      monitor: research
+      focus: preserve
+    - key: "5"
+      modifiers: [ctrl]
+      spaceID: 2
+      monitor: research
+      focus: preserve
   cycle:
     mode: overlay
     cancelKeys: [esc, "["]

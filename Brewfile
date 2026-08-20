@@ -66,7 +66,7 @@ install lego
 install sqlite
 
 ## Desktop & Capture
-install displayplacer
+install displayplacer waydabber/betterdisplay/betterdisplaycli
 install pngpaste silicon
 install ffmpeg imagemagick yt-dlp
 
