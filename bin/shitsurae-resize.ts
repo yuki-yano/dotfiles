@@ -56,4 +56,4 @@ const centeredY = display.frame.y + (display.frame.height - height) / 2;
 const relativeX = centeredX - display.visibleFrame.x;
 const relativeY = centeredY - display.visibleFrame.y;
 
-await $`${SHITSURAE_BIN} window set --x ${relativeX} --y ${relativeY} --w ${width} --h ${height}`;
+await $`${SHITSURAE_BIN} window set -x ${relativeX} -y ${relativeY} -w ${width} -h ${height}`;
