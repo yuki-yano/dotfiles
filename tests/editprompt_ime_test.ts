@@ -22,3 +22,10 @@ Deno.test("editprompt stash records the current buffer in history before pushing
 Deno.test("editprompt stash mappings use the history-aware stash helper", () => {
   assertEquals((source.match(/stash_buffer_to_history\(\)/g) ?? []).length, 3);
 });
+
+Deno.test("editprompt insert C-c closes completion before sending", () => {
+  assert(
+    /vim\.keymap\.set\('i', '<C-c>', function\(\)\s+cmp\.close\(\)\s+send_buffer_auto_send\(\)\s+end, map_opts\)/
+      .test(source),
+  );
+});
