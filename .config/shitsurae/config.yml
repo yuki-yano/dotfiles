@@ -123,6 +123,12 @@ layouts:
               height: "100%"
 
 shortcuts:
+  nextWindow:
+    key: j
+    modifiers: [alt]
+  prevWindow:
+    key: k
+    modifiers: [alt]
   switchVirtualSpace:
     - key: "4"
       modifiers: [ctrl]
