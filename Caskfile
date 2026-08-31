@@ -6,8 +6,6 @@ upgrade
 
 ## Casks
 install --cask 1password
-install --cask 1password/tap/1password-cli
-install --cask betterdisplay
 install --cask claude-code@latest
 install --cask cleanshot
 install --cask cursor
@@ -35,7 +33,9 @@ install --cask vlc
 install --cask zed
 install --cask zoom
 
+install --cask 1password/tap/1password-cli
 install --cask Warashi/tap/cage
+install --cask didriksg/tap/crisp
 install --cask lambdalisue/arto/arto
 install --cask yuki-yano/shitsurae/shitsurae
 install --cask yuki-yano/vde-notifier/vde-notifier-app
