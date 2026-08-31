@@ -432,6 +432,136 @@ key = "L"
 mods = "Command|Control"
 
 [[keyboard.bindings]]
+chars = "\u001B[5;30014~"
+key = "A"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30015~"
+key = "B"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30016~"
+key = "C"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30017~"
+key = "D"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30018~"
+key = "E"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30019~"
+key = "F"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30020~"
+key = "G"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30021~"
+key = "H"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30022~"
+key = "I"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30023~"
+key = "J"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30024~"
+key = "K"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30025~"
+key = "L"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30026~"
+key = "M"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30027~"
+key = "N"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30028~"
+key = "O"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30029~"
+key = "P"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30030~"
+key = "Q"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30031~"
+key = "R"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30032~"
+key = "S"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30033~"
+key = "T"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30034~"
+key = "U"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30035~"
+key = "V"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30036~"
+key = "W"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30037~"
+key = "X"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30038~"
+key = "Y"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[5;30039~"
+key = "Z"
+mods = "Alt|Control"
+
+[[keyboard.bindings]]
 chars = "\u001BM"
 key = "M"
 mods = "Command|Shift"
