@@ -27,6 +27,7 @@ raw tmux入力やtopology pollingをtransportとして使わない。
 5. durable Runはprovider completionと完全なResponse Artifactを完了条件とする。guarded terminalはprovider lifecycle completionと連結済み完了マーカーの両方を要求する。
 6. 待機時間や画面無変化を完了・失敗・催促の根拠にしない。待機中の追加送信はユーザーが実行中agentへの追加指示を明示した場合だけ`agent steer`で行う。
 7. pane/agent全体の一覧・診断は`vt api snapshot --json`を一度だけ使う。raw `tmux list-panes`と複数のlist APIを連結せず、同じ`meta.snapshot_revision`のpane、agent、diagnosticsを扱う。
+8. durable Codexのintent identityはbridgeが選ぶprivateなrequest-state pathで固定する。初回bodyはstdinで渡し、prompt fileをretry stateとして作成・保持しない。state内容、Operation ID、retry bodyはvtに任せ、bridgeから読取・編集しない。
 
 ## transport選択
 
@@ -59,14 +60,14 @@ raw tmux入力やtopology pollingをtransportとして使わない。
 ## prompt受理契約
 
 - durable CodexはOperationの`prompt_confirmed`だけを受理とする。CLI終了コードやtmux入力成功では判定しない。
-- guarded terminal providerは`agent send` receiptの`baseline_completed_seq`を使い、exact `agent wait`で新しい`working`、`blocked`、またはcursorより新しい`done`を確認して受理とする。API成功だけでは受理済みと報告しない。
+- guarded terminal providerは`agent send` receiptの`baseline_completed_seq`を使い、exact `agent wait`で新しい`working`、`blocked`、`limited`、またはcursorより新しい`done`を確認して受理とする。API成功だけでは受理済みと報告しない。
 - best-effort steerの成功はtmux input適用だけを示す。current turnへの受理・割り込み・応答帰属は報告せず、完了競合では次turnになり得ることを明記する。
 - guarded terminal sendのtyped timeoutや`delivery_unknown`からpromptを再送しない。
 
 ## 待機契約
 
 - Codex durable Runは`vt agent run wait RUN_REF`のdefault matchを使い、`completed`だけでなく`waiting`、`error`、`ended_unconfirmed`も直ちに扱う。`--until completed`で利用上限やpermission待ちを隠さない。
-- guarded terminal providerは`vt agent wait AGENT_REF --until done --until blocked --after-completed-seq N`を一つのsubscriptionとして使う。
+- guarded terminal providerは`vt agent wait AGENT_REF --until done --until blocked --until limited --after-completed-seq N`を一つのsubscriptionとして使う。
 - CLI/toolのyieldは同じprocessを待つ。24時間のAPI timeout時だけ同じstable referenceとcursorでwaitを再開し、promptを再送しない。
 - `event_history_lost`やdaemon restartでは`retry_action`に従ってstateを再観測する。別occupantへreferenceを更新して同じ依頼を継続しない。
 
@@ -104,7 +105,7 @@ raw tmux入力やtopology pollingをtransportとして使わない。
 | 「state確認だけtmux captureでよい」 | API revision subscriptionとcanonical lifecycleを迂回し、古いscrollbackやreplacementを誤認する |
 | 「limit文をgrepすればよい」 | daemonが`usage_limit`を厳密検出・保持する。bridgeはAPI reasonを使い、原文はreset時刻確認時だけ読む |
 | 「Run waitはcompletedだけ待てばよい」 | usage limit、permission、error、`ended_unconfirmed`を隠して待ち続ける。default matchを使う |
-| 「delivery_unknownなのでraw送信する」 | side effect済みの可能性がある。同じOperationをinspectし、再送しない |
+| 「delivery_unknownなのでraw送信する」 | side effect済みの可能性がある。durable request-stateまたは同じOperationをinspectし、新しいpath・Operation・transportで再送しない |
 | 「agentが交代したので新しいrefへ続ける」 | 別occupantへの誤配送になる。元の依頼を停止して報告する |
 | 「Response Artifactがないのでpaneを読む」 | durable Codexではfallback禁止。artifact unavailable/expired/truncatedを未回収として報告する |
 | 「timeoutしたので打ち切る」 | 24時間上限はAPI呼び出しの期限。stable referenceでwaitを再開する |

@@ -5,7 +5,7 @@ guarded terminal transportで送った依頼のstate待ちとterminal response�
 
 ## wait
 
-guarded sendの続きでは`agent send` receiptのexact `agent_ref`と`baseline_completed_seq`を使い、一つのAPI subscriptionで新しいcompletionまたはblockedを待つ。
+guarded sendの続きでは`agent send` receiptのexact `agent_ref`と`baseline_completed_seq`を使い、一つのAPI subscriptionで新しいcompletion、blocked、またはlimitedを待つ。
 
 ```bash
 agent_ref="$(jq -er '.result.send.target.agent_ref' "<作業ディレクトリ>/send.json")"
@@ -13,6 +13,7 @@ baseline_completed_seq="$(jq -er '.result.send.baseline_completed_seq' "<作業�
 vt agent wait "$agent_ref" \
   --until done \
   --until blocked \
+  --until limited \
   --after-completed-seq "$baseline_completed_seq" \
   --timeout-ms 86400000 \
   --json \
@@ -30,10 +31,11 @@ baseline_completed_seq="$(jq -er '.result.agent.completed_seq' "<作業ディレ
 状態ごとの対応:
 
 - `matched_status == done`: collectへ進む。`matched_completed_seq`を次のcursorとして保存する。
-- `matched_status == blocked`: [api-state.md](api-state.md)で同じ`state_id`のlifecycleを確認する。`usage_limit`なら`LIMIT-REACHED`、permission/user-input/errorなら表示して停止する。
+- `matched_status == limited`: [api-state.md](api-state.md)でwait targetと同じ`state_id` / `agent_epoch`のlifecycleが`waiting/usage_limit`であることを確認し、`LIMIT-REACHED`として停止する。
+- `matched_status == blocked`: permission/user-input/errorを表示して停止する。
 - API timeout: promptを再送せず、同じ`agent_ref`とcursorでwaitを再開する。
 - `stale_reference` / `target_replaced`: 別occupantへ読み替えず停止する。
-- `event_history_lost` / `stale_daemon`: `retry_action`に従い同じidentityのcurrent stateを再観測する。cursorより新しいcompletionまたはpersistent blockedを確認できなければ、応答済みと推測しない。
+- `event_history_lost` / `stale_daemon`: `retry_action`に従い同じidentityのcurrent stateを再観測する。cursorより新しいcompletion、persistent blocked、またはpersistent limitedを確認できなければ、応答済みと推測しない。
 
 shell toolがyieldした場合は同じprocessを待つ。wait中にEnter、催促、progress確認を送らない。
 

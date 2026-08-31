@@ -52,6 +52,7 @@ baseline_completed_seq="$(jq -er '.result.send.baseline_completed_seq' "<作業�
 vt agent wait "$agent_ref" \
   --until working \
   --until blocked \
+  --until limited \
   --until done \
   --after-completed-seq "$baseline_completed_seq" \
   --timeout-ms 10000 \
@@ -62,7 +63,8 @@ vt agent wait "$agent_ref" \
 
 - `working`: `ACCEPTED`。応答が必要なら[wait-collect.md](wait-collect.md)へ進む。
 - cursorより新しい`done`: 高速完了した`ACCEPTED`。collectへ進む。
-- `blocked`: lifecycleを再取得する。`usage_limit`なら`LIMIT-REACHED`、permission/user-input/errorなら停止する。
+- `limited`: `LIMIT-REACHED`。同じstate identityのlifecycleが`waiting/usage_limit`であることを確認して停止する。
+- `blocked`: permission/user-input/errorとして停止する。
 - timeout、`event_history_lost`、`stale_reference`、`delivery_unknown`: promptを再送しない。receiptとtyped errorを報告する。
 
 ハンドオフは`ACCEPTED`確認で終了する。`agent send`のexit 0だけで送信完了と報告しない。

@@ -10,37 +10,53 @@
 - 対象kindの`.capabilities.prompt_dispatch == "durable"`、`.prompt_confirmation == "provider_digest"`、`.response == "artifact"`。
 - targetが`idle`または`done`で、`usage_limit`、permission、active runではない。
 
-`agent_session_id`が未登録でも、exactなCodex processが同一なら`vt agent prompt`が最初の`UserPromptSubmit`でprovider sessionを確定する。bridge側でraw送信、sleep、SessionStartの捏造を行わない。
+`agent_session_id`が未登録でも、exactなCodex processが同一なら`vt agent request`が最初の`UserPromptSubmit`でprovider sessionを確定する。bridge側でraw送信、sleep、SessionStartの捏造を行わない。
 
 durable provider contractが無効なら停止する。guarded terminalへfallbackしない。
 
 ## dispatch
 
-target JSONから`agent_ref`、`pane_ref`、`pane_id`、`state_id`を保存する。task固有のoperation IDを一度だけ作り、prompt bodyをprivate fileまたはstdinで渡す。
+target JSONから`agent_ref`、`pane_ref`、`pane_id`、`state_id`を保存する。新しいprompt intentごとに、privateな作業ディレクトリ内の未使用`request.json` pathを一つ選ぶ。prompt bodyは初回だけstdinで渡し、bridgeがretry用`prompt.txt`を作成・保持しない。ユーザーが既存fileを入力sourceとして明示した場合だけ`--prompt-file`を使う。
 
 ```bash
 agent_ref="$(jq -er '.result.agent.summary.agent_ref' "<作業ディレクトリ>/agent.json")"
-operation_id="$(uuidgen)"
-printf '%s\n' "$operation_id" > "<作業ディレクトリ>/operation-id.txt"
-vt agent prompt "$agent_ref" \
-  --operation-id "$operation_id" \
-  --prompt-file "<作業ディレクトリ>/prompt.txt" \
+vt agent request "$agent_ref" \
+  --state-file "<作業ディレクトリ>/request.json" \
+  --stdin \
   --json \
   > "<作業ディレクトリ>/prompt-result.json" \
-  2> "<作業ディレクトリ>/prompt-error.json"
+  2> "<作業ディレクトリ>/prompt-error.json" <<'VDE_PROMPT'
+<送信するprompt本文>
+VDE_PROMPT
 
 operation_ref="$(jq -er '.result.operation_ref' "<作業ディレクトリ>/prompt-result.json")"
 run_ref="$(jq -er '.result.run_ref' "<作業ディレクトリ>/prompt-result.json")"
 ```
 
-APIはprompt file末尾のLFまたはCRLFを一つtext-record terminatorとして除去する。retry時もoperation ID、target bytes、prompt bytesを変えない。
-`retry_same_request`では`operation-id.txt`から同じIDを再読込し、`uuidgen`を再実行しない。
+prompt本文に`VDE_PROMPT`だけの行が含まれる場合は、本文と衝突しないheredoc delimiterへ変更する。
 
-`agent prompt`はOperationがterminalになるまで待つ。成功時の`.result.operation.dispatch_state == "prompt_confirmed"`とnon-null `.result.run_ref`を`ACCEPTED`とする。成功後に`operation wait/get`を重ねない。
+APIはstdin末尾のLFまたはCRLFを一つtext-record terminatorとして除去する。vtはdaemon mutation前にOperation ID、exact target、normalized digest、retry bodyをrequest-stateへ保存する。bridgeはstateをopaqueとして扱い、内容を読取・編集・複製しない。
 
-- typed `retry_same_request`: 同じoperation IDとprompt bytesだけを再要求できる。
-- `delivery_unknown` / `inspect_manually`: 再送しない。late confirmationを観測する明示判断時だけerror receiptの同じ`operation_ref`へ`operation wait --follow-unknown`を使う。
+CLI response loss後のresumeは、同じexact targetとrequest-state pathだけを渡す。prompt bodyやOperation IDを再構成しない。
+
+```bash
+agent_ref="$(jq -er '.result.agent.summary.agent_ref' "<作業ディレクトリ>/agent.json")"
+vt agent request "$agent_ref" \
+  --state-file "<作業ディレクトリ>/request.json" \
+  --json \
+  > "<作業ディレクトリ>/prompt-result.json" \
+  2> "<作業ディレクトリ>/prompt-error.json"
+```
+
+同じpathは同じlogical requestを表す。新しい依頼や別targetへ流用しない。task終了時は作業ディレクトリごとcleanupする。
+
+`agent request`はOperationがterminalになるまで待つ。成功時の`.result.operation.dispatch_state == "prompt_confirmed"`とnon-null `.result.run_ref`を`ACCEPTED`とする。成功後に`operation wait/get`を重ねない。
+
+- typed `retry_same_request`: 同じexact targetとrequest-state pathだけでresumeする。
+- receiptなし`delivery_unknown` / `inspect_manually`: stateは同じID/bodyを保持する。新path、body再指定、別transportへ進まない。同じpathの再呼出しは元Operationの明示的なidempotent replayなので、曖昧結果を確認した上で同じ依頼を継続すると判断した場合だけ使う。
+- Operation receipt付き`delivery_unknown` / `inspect_manually`: vtはstateへ`operation_ref`を保存してbodyを削除する。request-state resumeはOperation queryだけを行う。late confirmationを継続待機する明示判断時はerror receiptの同じ`operation_ref`へ`operation wait --follow-unknown`を使う。
 - `rejected`: receiptを保存して停止する。新targetや別transportへ自動切替しない。
+- `request_state_busy`: 先行processを待ち、同じpathで再実行する。`request_state_mismatch` / `request_state_invalid`: 停止し、stateを手修正しない。
 
 ## Run wait
 

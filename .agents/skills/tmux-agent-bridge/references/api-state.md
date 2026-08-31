@@ -100,9 +100,10 @@ jq -er --arg provider "$agent_kind" '
 `agent get`のcanonical summaryを次の順で判定する。
 
 1. `lifecycle.state == waiting && lifecycle.reason == usage_limit`: `LIMIT-REACHED`。
-2. `status == blocked`: permission/user-input/errorとして停止し、reasonを報告する。
-3. `status == working`: 通常promptを送らない。ユーザーが実行中追加指示を明示し、provider capabilityが許可する場合だけbest-effort steerへ進む。
-4. `status == idle || status == done`: 送信preflightを続けられる。
+2. `status == limited`: 1と同じ`LIMIT-REACHED`として停止する。`usage_limit` lifecycleを伴わなければAPI契約違反として停止する。
+3. `status == blocked`: permission/user-input/errorとして停止し、reasonを報告する。
+4. `status == working`: 通常promptを送らない。ユーザーが実行中追加指示を明示し、provider capabilityが許可する場合だけbest-effort steerへ進む。
+5. `status == idle || status == done`: 送信preflightを続けられる。
 
 absent usage-limited agentは`present=false`かつ`agent_ref`なしでもpane IDからqueryできる。同じtaskの判定では`state_id`と`agent_epoch`が送信前と一致することを確認し、replacementを誤認しない。
 
@@ -125,7 +126,7 @@ API commandのnon-zero時もJSON error envelopeを保存し、`error.retry_actio
 
 | retry_action | bridgeの扱い |
 |---|---|
-| `retry_same_request` | side effectなしを確認し、同じoperation ID / target / bodyだけを再要求できる |
+| `retry_same_request` | durable requestなら同じrequest-state path、その他は同じstable requestだけを再実行できる |
 | `wait_then_retry` | capacity/state変化後に同じqueryまたはwaitを再実行する。promptは勝手に再送しない |
 | `restart_observation` | current stateを再取得し、元のstable identityと一致する場合だけwait/readを再開する |
 | `refresh_target` | 現依頼を停止する。新targetへの同じprompt再送はユーザー指示が必要 |
@@ -133,3 +134,9 @@ API commandのnon-zero時もJSON error envelopeを保存し、`error.retry_actio
 | `never` | request/configurationを直すまで停止する |
 
 `delivery_unknown`は常にmanual inspectionとし、別operation ID、raw tmux、空Enterで補完しない。
+
+request-state固有errorは次のように扱う。
+
+- `request_state_busy`: 同じpathを並行利用せず、先行processの終了後に同じcommandを再実行する。
+- `request_state_mismatch`: target、再指定body、またはpath lifecycleが別intentである。停止し、既存pathを編集・流用しない。
+- `request_state_invalid`: private parent、owner/mode、symlink、size、JSON/format invariantの違反である。停止し、state内容を手修正しない。

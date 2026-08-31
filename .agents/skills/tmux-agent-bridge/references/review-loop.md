@@ -13,7 +13,7 @@ send → wait → collect → 検証 → 差し戻し を収束まで繰り返�
 ## 1往復の手順
 
 1. **文面生成**: `agent-review-request` のレビュー依頼プロンプト生成に従う。往復ごとにマーカー識別子を変える（`R1`, `R2`, ...）。2往復目以降は「前回指摘への対応内容」と「再レビューしてほしい点」を明記し、全文再レビューを求めない。
-2. **送信**: provider capabilityでtransportを選ぶ。Codexはdurable API、Claude Codeはguarded terminalを使う。`prompt_confirmation=none`のproviderへは送信しない。ラウンドごとにdurable operation IDまたはguarded send receiptを新しくする。
+2. **送信**: provider capabilityでtransportを選ぶ。Codexはdurable API、Claude Codeはguarded terminalを使う。`prompt_confirmation=none`のproviderへは送信しない。ラウンドごとに新しいdurable request-state pathまたはguarded send receiptを使う。
 3. **完了待ち**: Codexはstable Run wait、その他はexact Agent waitとcompletion cursorを使う。deadlineは設けず、API呼び出し上限時は同じreferenceで再開する。待機中は催促せず、レビュー結果を推測して検証・修正・次ラウンドへ進まない。
 4. **回収**: CodexはResponse Artifact、その他はpinned API readを使う。完了マーカーを確認してから指摘一覧（重要度 / 対象 / 内容）を抽出する。
 5. **検証**: 指摘を鵜呑みにせず、`agent-review-request` の受け入れ検証・結果解釈モードで実コードと突き合わせる。誤検知は対応せず、次の依頼文で根拠を添えて反論する。

@@ -45,7 +45,7 @@ vt agent start "$new_pane_ref" \
 
 ## 4. promptを送る
 
-起動直後でもexact `agent_ref`が返っていれば通常のprovider routingへ進む。Codexのprovider session未確定はdurable `agent prompt`が最初の`UserPromptSubmit`で確定する。Claude Codeは`agent start`がprovider sessionを観測してから返る。`input_owner_only`かつ`prompt_confirmation=none`では送信しない。raw EnterやSessionStartの捏造を行わない。
+起動直後でもexact `agent_ref`が返っていれば通常のprovider routingへ進む。Codexのprovider session未確定はdurable `agent request`が最初の`UserPromptSubmit`で確定する。Claude Codeは`agent start`がprovider sessionを観測してから返る。`input_owner_only`かつ`prompt_confirmation=none`では送信しない。raw EnterやSessionStartの捏造を行わない。
 
 ## 既定の非対応範囲
 
