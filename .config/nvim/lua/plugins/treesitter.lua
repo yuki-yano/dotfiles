@@ -16,6 +16,7 @@ local managed_parsers = {
   'lua',
   'markdown',
   'markdown_inline',
+  'mdx',
   'python',
   'query',
   'regex',
@@ -46,6 +47,27 @@ return {
         install_dir = install_dir,
       })
 
+      vim.filetype.add({
+        extension = {
+          mdx = 'mdx',
+        },
+      })
+
+      local group = vim.api.nvim_create_augroup('rc_treesitter_main', { clear = true })
+      vim.api.nvim_create_autocmd('User', {
+        group = group,
+        pattern = 'TSUpdate',
+        callback = function()
+          require('nvim-treesitter.parsers').mdx = {
+            install_info = {
+              url = 'https://github.com/srazzak/tree-sitter-mdx',
+              branch = 'main',
+              queries = 'queries',
+            },
+          }
+        end,
+      })
+
       vim.treesitter.language.register('bash', { 'zsh' })
 
       if vim.fn.executable('tree-sitter') == 1 then
@@ -54,7 +76,6 @@ return {
         })
       end
 
-      local group = vim.api.nvim_create_augroup('rc_treesitter_main', { clear = true })
       vim.api.nvim_create_autocmd('FileType', {
         group = group,
         pattern = '*',
