@@ -1,16 +1,10 @@
-# Make sure using latest Homebrew
-update
-
-# Update already-installed formula
-upgrade
-
 # Packages
 
 ## Mac App Store
 install mas
 
 ## Shell & Session
-install bash zsh sheldon tmux
+install bash zsh sheldon tmux herdr
 
 ## Core CLI
 install coreutils findutils
@@ -20,7 +14,8 @@ install duti
 
 ## Editor
 install readline vim
-install utf8proc tree-sitter neovim --HEAD
+install utf8proc tree-sitter
+install neovim --HEAD
 
 ## Modern CLI
 install bat fd fzf ripgrep
@@ -33,12 +28,8 @@ install vivid
 ## Runtime Tooling
 install mise
 
-## AI Tooling
-install rtk
-
 ## Languages & Runtimes
-install deno node oven-sh/bun/bun
-install go python ruby perl
+install deno ruby perl
 install lua luarocks busted stylua
 
 ## Build & Validation
@@ -66,7 +57,7 @@ install lego
 install sqlite
 
 ## Desktop & Capture
-install displayplacer waydabber/betterdisplay/betterdisplaycli
+install displayplacer
 install pngpaste silicon
 install ffmpeg imagemagick yt-dlp
 

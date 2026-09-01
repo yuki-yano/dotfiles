@@ -396,7 +396,7 @@ function formatInstallCommand(command: InstallCommand): string {
   ].join(" ");
 }
 
-async function loadBrewCommands(filename: string): Promise<string[]> {
+export async function loadBrewCommands(filename: string): Promise<string[]> {
   const lines = await readRawLines(filename);
   const commands: string[] = [];
   let pendingInstall: InstallCommand | null = null;
@@ -443,16 +443,34 @@ async function loadBrewCommands(filename: string): Promise<string[]> {
   return commands;
 }
 
-async function runBrewCommand(command: string): Promise<void> {
+export function buildBrewCommandOptions(command: string): Deno.CommandOptions {
   const args = command.trim().split(/\s+/);
-  const process = new Deno.Command("brew", {
+  return {
     args,
+    env: {
+      HOMEBREW_NO_ASK: "1",
+    },
     stdout: "inherit",
     stderr: "inherit",
-  });
+  };
+}
+
+async function runBrewCommand(command: string): Promise<void> {
+  const process = new Deno.Command("brew", buildBrewCommandOptions(command));
   const { code } = await process.output();
   if (code !== 0) {
     throw new Error(`brew ${command} failed with exit code ${code}`);
+  }
+}
+
+async function runBrewCommands(commands: string[]): Promise<void> {
+  for (const command of commands) {
+    if (DRY_RUN) {
+      console.log(`[DRY RUN] Would run: brew ${command}`);
+    } else {
+      console.log(`Running: brew ${command}`);
+      await runBrewCommand(command);
+    }
   }
 }
 
@@ -814,15 +832,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
       Deno.exit(1);
     }
 
-    const commands = await loadBrewCommands("Brewfile");
-    for (const cmd of commands) {
-      if (DRY_RUN) {
-        console.log(`[DRY RUN] Would run: brew ${cmd}`);
-      } else {
-        console.log(`Running: brew ${cmd}`);
-        await runBrewCommand(cmd);
-      }
-    }
+    await runBrewCommands(await loadBrewCommands("Brewfile"));
   },
 
   async "brew:cask"() {
@@ -831,15 +841,19 @@ const tasks: Record<string, () => Promise<void> | void> = {
       Deno.exit(1);
     }
 
-    const commands = await loadBrewCommands("Caskfile");
-    for (const cmd of commands) {
-      if (DRY_RUN) {
-        console.log(`[DRY RUN] Would run: brew ${cmd}`);
-      } else {
-        console.log(`Running: brew ${cmd}`);
-        await runBrewCommand(cmd);
-      }
-    }
+    await runBrewCommands(await loadBrewCommands("Caskfile"));
+  },
+
+  async "brew:update"() {
+    await runBrewCommands(["update"]);
+  },
+
+  async "brew:upgrade"() {
+    await runBrewCommands(["upgrade --formula", "upgrade --cask"]);
+  },
+
+  async "brew:cleanup"() {
+    await runBrewCommands(["cleanup"]);
   },
 
   async "duti:apply"() {
@@ -925,6 +939,9 @@ const tasks: Record<string, () => Promise<void> | void> = {
     console.log("  Homebrew:");
     console.log("    deno task brew:bundle         - Install Homebrew packages");
     console.log("    deno task brew:cask           - Install Homebrew Cask apps");
+    console.log("    deno task brew:update         - Update Homebrew package metadata");
+    console.log("    deno task brew:upgrade        - Upgrade installed formulae and casks");
+    console.log("    deno task brew:cleanup        - Remove stale Homebrew versions and caches");
     console.log("    deno task duti:apply          - Apply default app handlers from ~/.duti");
     console.log("");
     console.log("  Mac App Store:");

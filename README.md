@@ -103,8 +103,11 @@ and `tasks.ts` validates input before it shells out.
 | `deno task agent:claude-plugins [-- --dry-run]`     | Ensures every Claude Code plugin declared in `CLAUDE_PLUGIN_DEFINITIONS` in `tasks.ts` is installed and matches its declared enabled state.                                                                                                                                   |
 | `deno task codex:template [-- --apply]`             | Dry-run by default. Applies `.config/codex-template/config.toml` (managed section merge) and copy targets (`AGENTS.md`, `agents/**`, `hooks.json`) to `~/.codex` only with `--apply` (`template` has no markers; `~/.codex/config.toml` must contain marker block). |
 | `deno task zsh:sheldon:sync` / `zsh:sheldon:update` | Generate the `sheldon` lock/cache for the `pre` and `post` shell phases under `~/.cache/sheldon`.                                                                                                                                                                             |
-| `deno task brew:bundle`                             | Executes curated commands in `Brewfile`, allowing only `install`, `tap`, `cask`, `update`, `upgrade`, and `cleanup`.                                                                                                                                                          |
-| `deno task brew:cask`                               | Installs GUI apps from `Caskfile`.                                                                                                                                                                                                                                            |
+| `deno task brew:bundle`                             | Installs formulae and command-line tools declared in `Brewfile` without performing a global upgrade or cleanup.                                                                                                                                                              |
+| `deno task brew:cask`                               | Installs GUI apps declared in `Caskfile` without performing a global upgrade or cleanup.                                                                                                                                                                                      |
+| `deno task brew:update`                             | Updates Homebrew package metadata.                                                                                                                                                                                                                                            |
+| `deno task brew:upgrade`                            | Upgrades installed formulae and casks.                                                                                                                                                                                                                                        |
+| `deno task brew:cleanup`                            | Removes stale Homebrew versions and caches.                                                                                                                                                                                                                                   |
 | `deno task duti:apply [-- --dry-run]`               | Applies default macOS file handlers from the dotfiles-managed `~/.duti` file.                                                                                                                                                                                                 |
 | `deno task mas:install`                             | Installs missing Mac App Store apps using IDs from `Masfile`.                                                                                                                                                                                                                 |
 | `deno task help`                                    | Prints grouped help text with descriptions of every task.                                                                                                                                                                                                                     |
@@ -226,7 +229,8 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 
 - **`Brewfile`** – grouped formulae for shell/session tooling, modern CLI utilities, language runtimes, build helpers,
   Git/review tools, cloud/container commands, local data tools, desktop capture helpers, notifications, and fonts.
-  Commands are constrained to `install/tap/cask/update/upgrade/cleanup` for safety.
+  Commands are constrained to `install/tap/cask/update/upgrade/cleanup` for safety, while global maintenance is kept in
+  explicit Deno tasks.
 - **`Caskfile`** – GUI and desktop casks including 1Password, 1Password CLI, Claude Code, CleanShot, Draw.io, Finicky,
   Firefox, Google Chrome, Karabiner-Elements, Obsidian, TablePlus, Visual Studio Code, VLC, Zoom, and local workflow
   apps such as Warashi `cage`, `arto`, `shitsurae`, and `vde-notifier-app`.
@@ -240,12 +244,16 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 
 - **Dry runs first** – append `-- --dry-run` when testing `dotfiles:install`, `brew:*`, or other tasks to confirm the
   plan before touching the real system.
+- **Non-interactive Homebrew** – Homebrew tasks pass `HOMEBREW_NO_ASK=1` directly so they also work before
+  `dotfiles:install`; `.config/homebrew/brew.env` applies the same behavior to manual `brew` commands. macOS
+  administrator-password and app-permission prompts remain interactive.
 - **Formatters** – run `deno fmt tasks.ts`, `stylua --config-path stylua.toml .config/nvim` (or target specific Lua
   files), and `cspell lint README.md` to keep tooling happy.
 - **Runtime sync** – `mise doctor` reveals missing runtimes defined in `.config/mise/config.toml`; re-run `mise install`
   after manifest changes.
-- **Package refresh** – periodically run `deno task brew:bundle`, `deno task brew:cask`, and review `Masfile` when new
-  apps are added or removed.
+- **Package refresh** – periodically run `deno task brew:update`, `deno task brew:upgrade`, and
+  `deno task brew:cleanup`. Use `brew:bundle` and `brew:cask` to install newly declared packages, and review `Masfile`
+  when App Store apps are added or removed.
 - **Local overrides** – place host-specific adjustments in `.gitconfig.local`, `.tmux.conf.local`, or `~/.zshrc.local`
   (sourced from the main configs) to keep git history clean.
 - **App permissions** – `shitsurae` and Karabiner depend on macOS Accessibility permissions; re-authorize them after OS

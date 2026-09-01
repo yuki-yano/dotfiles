@@ -16,6 +16,9 @@ tmp/
 !/.config/codex-template/
 !/.config/efm-langserver
 !/.config/karabiner
+!/.config/homebrew/
+/.config/homebrew/*
+!/.config/homebrew/brew.env
 !/.config/mise
 !/.config/nvim
 !/.config/octorus
