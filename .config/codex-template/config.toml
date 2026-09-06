@@ -61,9 +61,9 @@ fast_mode = true
 hooks = true
 plugin_hooks = true
 
-[features.multi_agent_v2]
-hide_spawn_agent_metadata = false
-tool_namespace = "agents"
+context_management = { experimental_mode = true }
+# token_budget.enabled = true
+# token_budget.use_history_notes_extension = true
 
 [tui]
 status_line = ["model-with-reasoning", "git-branch", "context-remaining", "context-window-size", "fast-mode", "weekly-limit", "five-hour-limit"]
