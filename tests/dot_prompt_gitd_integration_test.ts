@@ -262,6 +262,103 @@ Deno.test({
 });
 
 Deno.test({
+  name: "index.lock が残っていても変更ファイル数を更新し、zsh のプロンプトへ反映する",
+  ignore: !watchmanAvailable,
+  async fn() {
+    const integrationRoot = await Deno.makeTempDir({ dir: "/tmp", prefix: "dp-gitd-lock-" });
+    const repoPath = join(integrationRoot, "repo");
+    const runtimePath = join(integrationRoot, "runtime");
+    const socketPath = join(runtimePath, "daemon.sock");
+    const logPath = join(runtimePath, "daemon.log");
+    const cachePath = join(integrationRoot, "cache", "status");
+    let daemon: Deno.ChildProcess | null = null;
+
+    try {
+      await run("git", ["init", "-q", repoPath]);
+      await run("git", ["config", "user.email", "prompt-test@example.invalid"], repoPath);
+      await run("git", ["config", "user.name", "prompt-test"], repoPath);
+      await Deno.writeTextFile(join(repoPath, "tracked.txt"), "initial\n");
+      await run("git", ["add", "tracked.txt"], repoPath);
+      await run("git", ["commit", "-qm", "initial"], repoPath);
+      const indexLockPath = join(repoPath, ".git", "index.lock");
+      await Deno.writeTextFile(indexLockPath, "");
+
+      daemon = new Deno.Command("deno", {
+        args: ["run", "--quiet", "-A", daemonScript],
+        cwd: repositoryRoot,
+        env: {
+          DOT_PROMPT_GITD_RUNTIME_BASE: runtimePath,
+          DOT_PROMPT_GITD_SOCKET_PATH: socketPath,
+        },
+        stdout: "null",
+        stderr: "null",
+      }).spawn();
+
+      await waitFor(() => {
+        try {
+          return Deno.statSync(socketPath).isSocket === true;
+        } catch {
+          return false;
+        }
+      });
+      await register(socketPath, repoPath, cachePath);
+      await waitFor(() => readText(cachePath).includes("unstaged '0'"));
+
+      await Deno.writeTextFile(join(repoPath, "tracked.txt"), "changed\n");
+      await Deno.writeTextFile(join(repoPath, "untracked.txt"), "new\n");
+      try {
+        await waitFor(() =>
+          readText(cachePath).includes("unstaged '1'") && readText(cachePath).includes("untracked '1'")
+        );
+      } catch (error) {
+        throw new Error(`${error}\ndaemon log:\n${readText(logPath)}\ncache:\n${readText(cachePath)}`);
+      }
+
+      const script = [
+        'source "$1"',
+        'source "$2"',
+        'source "$3"',
+        'output=$(dot_prompt_git_status_from_cache "$4")',
+        'dot_prompt_async_callback dot_prompt_git_status 0 "$output" 0 0 0',
+        'print -r -- "$PROMPT"',
+      ].join("; ");
+      const output = await run("/bin/zsh", [
+        "-f",
+        "-c",
+        script,
+        "--",
+        promptBaseScript,
+        gitPromptScript,
+        promptAsyncScript,
+        cachePath,
+      ], repoPath);
+      const prompt = new TextDecoder().decode(output.stdout);
+      assertEquals(new TextDecoder().decode(output.stderr), "");
+      assertStringIncludes(prompt, "M:1");
+      assertStringIncludes(prompt, "?:1");
+      assert(Deno.statSync(indexLockPath).isFile);
+
+      await Deno.writeTextFile(join(repoPath, "tracked.txt"), "initial\n");
+      await Deno.remove(join(repoPath, "untracked.txt"));
+      await waitFor(() =>
+        readText(cachePath).includes("unstaged '0'") && readText(cachePath).includes("untracked '0'")
+      );
+    } finally {
+      if (daemon) {
+        try {
+          daemon.kill("SIGTERM");
+        } catch {
+          // The daemon may already have exited after a startup failure.
+        }
+        await daemon.status;
+      }
+      await deleteWatchRoots(repoPath, join(repoPath, ".git"));
+      await Deno.remove(integrationRoot, { recursive: true });
+    }
+  },
+});
+
+Deno.test({
   name: "Git refs の変更を検知し、push 後に ahead をゼロへ戻す",
   ignore: !watchmanAvailable,
   async fn() {

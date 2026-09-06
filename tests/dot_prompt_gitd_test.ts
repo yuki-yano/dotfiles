@@ -1,9 +1,11 @@
 import { assertEquals } from "@std/assert";
+import { join } from "node:path";
 import {
   createWatchExpression,
   formatCache,
   minimizeWatchPaths,
   parsePorcelainV2,
+  removePreBootIndexLock,
   zshQuote,
 } from "../bin/dot-prompt-gitd.ts";
 
@@ -83,4 +85,73 @@ Deno.test("createWatchExpression ignores directory and index lock noise", () => 
     ["not", ["type", "d"]],
     ["not", ["name", "index.lock"]],
   ]);
+});
+
+Deno.test("前回起動時の index.lock だけを除去し、index の内容を保持する", async () => {
+  const gitDir = await Deno.makeTempDir({ prefix: "dp-gitd-recovery-" });
+  try {
+    const indexPath = join(gitDir, "index");
+    const lockPath = join(gitDir, "index.lock");
+    await Deno.writeTextFile(indexPath, "existing index\n");
+    await Deno.writeTextFile(lockPath, "interrupted index write\n");
+    // Simulate rebooting after these fixture files were created.
+    const bootTimeMs = Date.now() + 10_000;
+    assertEquals(removePreBootIndexLock(gitDir, bootTimeMs), true);
+    assertEquals(await Deno.readTextFile(indexPath), "existing index\n");
+    assertEquals(removePreBootIndexLock(gitDir, bootTimeMs), false);
+  } finally {
+    await Deno.remove(gitDir, { recursive: true });
+  }
+});
+
+Deno.test("今回起動後のロックは mtime が古くても除去しない", async () => {
+  const gitDir = await Deno.makeTempDir({ prefix: "dp-gitd-live-lock-" });
+  try {
+    const bootTimeMs = Date.now() - (Deno.osUptime() + 1) * 1_000;
+    const lockPath = join(gitDir, "index.lock");
+    await Deno.writeTextFile(lockPath, "active index write\n");
+    assertEquals(removePreBootIndexLock(gitDir, bootTimeMs), false);
+    const oldTime = new Date(bootTimeMs - 60_000);
+    await Deno.utime(lockPath, oldTime, oldTime);
+    assertEquals(removePreBootIndexLock(gitDir, bootTimeMs), false);
+    assertEquals(await Deno.readTextFile(lockPath), "active index write\n");
+  } finally {
+    await Deno.remove(gitDir, { recursive: true });
+  }
+});
+
+Deno.test("起動時刻の境界にあるロックと不正な起動時刻では除去しない", async () => {
+  const gitDir = await Deno.makeTempDir({ prefix: "dp-gitd-lock-boundary-" });
+  try {
+    const lockPath = join(gitDir, "index.lock");
+    await Deno.writeTextFile(lockPath, "lock\n");
+    const stat = await Deno.lstat(lockPath);
+    assertEquals(removePreBootIndexLock(gitDir, stat.mtime!.getTime()), false);
+    assertEquals(removePreBootIndexLock(gitDir, stat.ctime!.getTime()), false);
+    for (const bootTimeMs of [0, -1, NaN, Infinity]) {
+      assertEquals(removePreBootIndexLock(gitDir, bootTimeMs), false);
+    }
+    assertEquals(await Deno.readTextFile(lockPath), "lock\n");
+  } finally {
+    await Deno.remove(gitDir, { recursive: true });
+  }
+});
+
+Deno.test("index.lock が symlink や directory なら除去しない", async () => {
+  const gitDir = await Deno.makeTempDir({ prefix: "dp-gitd-lock-type-" });
+  try {
+    const indexPath = join(gitDir, "index");
+    const lockPath = join(gitDir, "index.lock");
+    await Deno.writeTextFile(indexPath, "existing index\n");
+    await Deno.symlink(indexPath, lockPath);
+    assertEquals(removePreBootIndexLock(gitDir, Date.now() + 10_000), false);
+    assertEquals((await Deno.lstat(lockPath)).isSymlink, true);
+    assertEquals(await Deno.readTextFile(indexPath), "existing index\n");
+    await Deno.remove(lockPath);
+    await Deno.mkdir(lockPath);
+    assertEquals(removePreBootIndexLock(gitDir, Date.now() + 10_000), false);
+    assertEquals((await Deno.lstat(lockPath)).isDirectory, true);
+  } finally {
+    await Deno.remove(gitDir, { recursive: true });
+  }
 });

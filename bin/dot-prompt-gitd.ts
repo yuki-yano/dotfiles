@@ -205,6 +205,27 @@ async function exists(path: string): Promise<boolean> {
   }
 }
 
+export function removePreBootIndexLock(gitDir: string, bootTimeMs: number): boolean {
+  if (!Number.isFinite(bootTimeMs) || bootTimeMs <= 0) return false;
+  const lockPath = join(gitDir, "index.lock");
+  try {
+    const stat = Deno.lstatSync(lockPath);
+    // Git creates index.lock exclusively. A regular file whose contents and
+    // metadata both predate this boot cannot belong to a surviving Git process.
+    // ctime also protects newly copied files whose mtime was preserved.
+    if (
+      !stat.isFile || !stat.mtime || !stat.ctime ||
+      stat.mtime.getTime() >= bootTimeMs || stat.ctime.getTime() >= bootTimeMs ||
+      (stat.birthtime && stat.birthtime.getTime() >= bootTimeMs)
+    ) return false;
+    Deno.removeSync(lockPath);
+    return true;
+  } catch (error) {
+    if (error instanceof Deno.errors.NotFound) return false;
+    throw error;
+  }
+}
+
 class GitPromptDaemon {
   #client: WatchmanClient | null = null;
   #repos = new Map<string, RepoState>();
@@ -217,6 +238,9 @@ class GitPromptDaemon {
   #shuttingDown = false;
   #cacheWriteSequence = 0;
   #logPath: string;
+  // osUptime has second precision. Exclude that boundary second so a lock
+  // created during this boot is never classified as belonging to an older boot.
+  #bootTimeMs = Date.now() - (Deno.osUptime() + 1) * 1_000;
 
   constructor(logPath: string) {
     this.#logPath = logPath;
@@ -288,6 +312,13 @@ class GitPromptDaemon {
 
   async #registerNew(top: string, cachePath: string): Promise<void> {
     const metadata = await this.#resolveGitMetadata(top);
+    try {
+      if (removePreBootIndexLock(metadata.gitDir, this.#bootTimeMs)) {
+        this.log(`removed pre-boot index lock ${join(metadata.gitDir, "index.lock")}`);
+      }
+    } catch (error) {
+      this.log(`index lock recovery failed for ${top}: ${error}`);
+    }
     const repo: RepoState = {
       id: top,
       top,
@@ -355,7 +386,10 @@ class GitPromptDaemon {
         // back into another status refresh.
         expression: createWatchExpression(target.metadataOnly),
         fields: ["name"],
-        defer_vcs: true,
+        // Status uses GIT_OPTIONAL_LOCKS=0 and can be read while index.lock
+        // exists. Keep events flowing even if a Git process left its lock behind;
+        // our debounce and index.lock exclusion already suppress update noise.
+        defer_vcs: false,
         empty_on_fresh_instance: true,
       };
       if (relativeRoot) options.relative_root = relativeRoot;
