@@ -47,6 +47,8 @@ ruby <skill-dir>/scripts/render_explainer.rb init <output-dir>/explainer.yaml
 - 観測事実、推論、採用判断、未確定事項を混同しない。
 - 根拠を持つblockには`refs`を付け、`sources`のIDと一致させる。
 - 出典がない内容へ参照IDを捏造しない。
+- `sources.href`と`related_artifacts.href`には、HTTP(S)、同一文書内anchor、または成果物と一緒に配置・公開する対象への相対pathだけを使う。
+- ローカルファイルを成果物へ含めない場合は`href`を省略し、`title`、`accessed`、`note`で出典を識別する。`/`から始まるroot絶対path、`file://`、`~`、Windows絶対path、成果物外の隣接repoへの参照は、`private`でも記録しない。
 - 大きなhero、宣伝文句、重複した結論、装飾目的の節を作らない。
 - 計画書・設計書を含む場合は、機能・テスト・運用反映の3分類を`checklist` blockで明記する。
 - 関連するUI mockや実装計画がある場合は`related_artifacts`に登録し、本文を複製しない。
@@ -80,7 +82,7 @@ ruby <skill-dir>/scripts/render_explainer.rb validate <output-dir>/explainer.yam
 ruby <skill-dir>/scripts/render_explainer.rb render <output-dir>/explainer.yaml <output-dir>/index.html
 ```
 
-`render`はschema、参照ID、公開時のローカル情報、危険なURLを再検証する。
+`render`はschema、参照ID、公開時のローカル情報、危険なURL、ホスティング不能なroot絶対pathとローカル参照を再検証する。
 画像があればpath containment、magic、MIME、hash、寸法、容量、animation、metadata、共有確認も検証する。
 生成後は共通validatorでCSP、許可外script、外部通信、状態保存、data image、内部anchor、ID重複を静的検査する。
 renderは`index.manifest.json`も生成し、YAML hash、HTML hash、renderer version、asset hashを記録する。
@@ -110,7 +112,7 @@ renderer、starter、template、CSS、固定scriptを変更した場合は次を
 ```bash
 ruby <skill-dir>/scripts/test_render_explainer.rb
 ruby <shared-dir>/scripts/test_validate_html.rb
-uv run --with pyyaml python <skill-creator-dir>/scripts/quick_validate.py <skill-dir>
+uv run --isolated --no-project --with pyyaml python <skill-creator-dir>/scripts/quick_validate.py <skill-dir>
 ```
 
 `composite` rendererまたはlayout CSSを変えた場合は、代表fixtureをbrowser-controlで開き、viewportを320px、768px、1440pxへ順に設定する。
@@ -139,10 +141,12 @@ uv run --with pyyaml python <skill-creator-dir>/scripts/quick_validate.py <skill
 
 - [ ] v2 YAMLで`visual_plan`、typed content、対象visual blockがvalidate・renderできる。
 - [ ] 不正なlayout、画像path、画像宣言値、共有確認不足がhard failする。
+- [ ] source・関連成果物のroot絶対path、`file://`、home相対path、Windows絶対pathがvisibilityにかかわらずhard failする。
 
 テスト完了条件:
 
 - [ ] renderer test、shared validator test、`quick_validate.py`がすべて成功する。
+- [ ] renderer入力と生成HTMLの両方で、ホスティング不能なローカル参照の異常系が回帰テストされている。
 - [ ] 同じ入力を2回renderし、HTMLとmanifestのSHA-256がそれぞれ一致する。
 - [ ] `composite`変更時は320px、768px、1440pxのgeometry検査がすべて合格する。
 

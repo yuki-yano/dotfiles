@@ -47,6 +47,7 @@ module HtmlArtifacts
       @errors << "unknown profile '#{@profile}'" unless PROFILES.include?(@profile)
       validate_structure
       validate_self_containment
+      validate_portable_references
       validate_images
       validate_ids_and_anchors
       validate_scripts if PROFILES.include?(@profile)
@@ -91,6 +92,23 @@ module HtmlArtifacts
       end
       missing = targets.uniq - ids.uniq
       @errors << "missing internal anchor targets: #{missing.join(', ')}" unless missing.empty?
+    end
+
+    def validate_portable_references
+      references = @html.scan(
+        /\b(?:src|href|poster|action|data)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'`=<>]+))/im
+      ).map { |double_quoted, single_quoted, unquoted| double_quoted || single_quoted || unquoted }
+      references.concat(@html.scan(/url\(\s*(["']?)(.*?)\1\s*\)/im).map { |_quote, value| value })
+      forbidden = references.select { |reference| non_portable_reference?(reference.strip) }.uniq
+      return if forbidden.empty?
+
+      @errors << "non-portable references are forbidden: #{forbidden.join(', ')}"
+    end
+
+    def non_portable_reference?(reference)
+      reference.match?(/\Afile:/i) ||
+        reference.start_with?("/", "~", "\\") ||
+        reference.match?(/\A[a-z]:[\\\/]/i)
     end
 
     def validate_images

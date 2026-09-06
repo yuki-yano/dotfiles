@@ -75,6 +75,19 @@ class HtmlArtifactValidatorTest < Minitest::Test
     assert_includes error.errors, "missing internal anchor targets: missing"
   end
 
+  def test_rejects_non_portable_references
+    body = <<~HTML
+      <a href="/Users/private-user/report.md">absolute</a>
+      <a href="file:///tmp/report.md">file</a>
+      <form action="C:\\Users\\user\\submit"></form>
+    HTML
+    error = assert_raises(HtmlArtifacts::ValidationError) do
+      HtmlArtifacts::Validator.new(minimal_html(body: body), profile: "explainer").validate!
+    end
+
+    assert error.errors.any? { |item| item.include?("non-portable references are forbidden") }
+  end
+
   def test_rejects_parent_browsing_context_access
     ["window.parent.location", "self.top.location", "globalThis['parent'].location", "top.location"].each do |script|
       hash = Base64.strict_encode64(Digest::SHA256.digest(script))

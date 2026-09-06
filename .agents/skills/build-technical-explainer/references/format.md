@@ -52,7 +52,7 @@ document:
 - `kind`: `research`、`audit`、`comparison`、`decision`、`implementation-report`
 - `status`: `draft`、`final`
 - `visibility`: `private`、`shareable`
-- `shareable`では、ホームディレクトリの絶対path、`file://`、localhost参照を拒否する。
+- `shareable`では、本文を含む全fieldについてホームディレクトリの絶対path、`file://`、localhost参照を拒否する。URL fieldの非portable参照はvisibilityにかかわらず拒否する。
 
 ## metrics
 
@@ -78,6 +78,7 @@ related_artifacts:
 
 - `relation`: `visual-spec`、`context`、`implementation-plan`、`related`
 - UI案の選択後は`href`を`#proposal-<id>`まで指定する。
+- `href`はHTTP(S)、同一文書内anchor、または一緒に配置・公開する成果物への相対pathに限る。
 - 本文を複製せず、成果物間の役割を`note`で短く示す。
 
 ## sections
@@ -405,13 +406,14 @@ PNG/JPEG/WebPをYAMLと同じディレクトリ配下から読み、data URIと�
 sources:
   - id: history
     title: "Claude Code / Codex history"
-    href: "/path/to/local/evidence"
     accessed: "2026-07-15"
-    note: "812 sessions"
+    note: "ローカル調査で確認した812 sessions。証跡ファイルは成果物へ含めない"
 ```
 
 - `id`はsectionと同じ形式で一意にする。
-- `href`は`https://`、`http://`、`file://`、絶対path、相対path、`#anchor`を使える。
+- `href`は任意。`https://`、`http://`、`#anchor`、または成果物と一緒に配置・公開する対象への相対pathだけを使える。
+- ローカル証跡を成果物へ含めない場合は`href`を省略し、`title`、`accessed`、`note`で識別する。
+- `/`から始まるroot絶対path、`file://`、`~`、Windows絶対path、成果物外の隣接repoへの参照はvisibilityにかかわらず使えない。
 - `href`の前後に空白を入れない。
 - `javascript:`や`data:`などのschemeは使えない。
 - `refs`から参照されるsourceを必ず定義する。

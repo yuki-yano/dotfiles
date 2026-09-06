@@ -21,7 +21,7 @@ module BuildTechnicalExplainer
   CSS_PATH = File.join(ASSETS, "report.css")
   JS_PATH = File.join(ASSETS, "report.js")
   SCHEMA_VERSION = 2
-  RENDERER_VERSION = 2
+  RENDERER_VERSION = 3
   MAX_IMAGE_BYTES = 5 * 1024 * 1024
   MAX_IMAGE_PIXELS = 16_000_000
 
@@ -301,7 +301,9 @@ module BuildTechnicalExplainer
       enum(artifact["relation"], ARTIFACT_RELATIONS, "#{path}.relation")
       optional_string(artifact, "note", path, max: 1_000)
       href = artifact["href"]
-      add_error("#{path}.href", "uses an unsupported URL scheme") if href.is_a?(String) && !valid_href?(href)
+      if href.is_a?(String) && !valid_href?(href)
+        add_error("#{path}.href", "uses an unsupported URL scheme or non-portable path")
+      end
     end
 
     def validate_chart(block, path)
@@ -654,7 +656,9 @@ module BuildTechnicalExplainer
 
       href = source["href"]
       string(href, "#{path}.href", max: 2_000)
-      add_error("#{path}.href", "uses an unsupported URL scheme") if href.is_a?(String) && !valid_href?(href)
+      if href.is_a?(String) && !valid_href?(href)
+        add_error("#{path}.href", "uses an unsupported URL scheme or non-portable path")
+      end
     end
 
     def validate_refs(refs, path)
@@ -706,7 +710,8 @@ module BuildTechnicalExplainer
 
     def valid_href?(href)
       return false if href.empty? || href != href.strip || href.match?(/[\u0000-\u001f]/)
-      return true if href.start_with?("https://", "http://", "file://", "/", "./", "../", "#")
+      return false if href.start_with?("/", "~", "\\")
+      return true if href.start_with?("https://", "http://", "./", "../", "#")
 
       !href.match?(/\A[a-z][a-z0-9+.-]*:/i)
     end

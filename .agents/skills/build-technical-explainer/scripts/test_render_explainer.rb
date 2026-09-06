@@ -297,6 +297,20 @@ class RenderExplainerTest < Minitest::Test
     assert_includes stderr.string, "shareable content contains local information"
   end
 
+  def test_private_document_rejects_non_portable_source_paths
+    ["/Users/private-user/report.md", "file:///tmp/report.md", "~/report.md", "C:\\Users\\user\\report.md"].each_with_index do |href, index|
+      data = parse_yaml(research_yaml)
+      data.fetch("sources").first["href"] = href
+      input = write_yaml("non-portable-source-#{index}.yaml", YAML.dump(data))
+      stderr = StringIO.new
+
+      status = BuildTechnicalExplainer::CLI.run(["validate", input], out: StringIO.new, err: stderr)
+
+      assert_equal 2, status, href.inspect
+      assert_includes stderr.string, "non-portable path", href.inspect
+    end
+  end
+
   def test_unsafe_url_scheme_is_rejected
     yaml = decision_yaml.sub("https://example.com/decision", "javascript:alert(1)")
     input = write_yaml("unsafe-url.yaml", yaml)
@@ -882,7 +896,6 @@ class RenderExplainerTest < Minitest::Test
       sources:
         - id: history
           title: "Agent session history"
-          href: "/tmp/history.jsonl"
           accessed: "2026-07-15"
           note: "812 sessions"
     YAML

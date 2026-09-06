@@ -18,6 +18,7 @@
 ## Common Output Rules
 
 - 単体で開ける自己完結HTMLとし、remote asset、CDN、iframe、inline event handler、ネットワーク通信、storage、cookieを使わない。
+- URL属性とCSS参照にはHTTP(S) link、同一文書内anchor、または一緒に配置・公開する対象への相対pathだけを使う。root絶対path、`file://`、home相対path、Windows絶対pathを含めない。
 - Explainerの画像はrendererが検証したPNG/JPEG/WebPのdata URIだけを許可する。UI mockでは画像要素を許可しない。
 - 大きなheroを置かず、成果物の主内容を最初の画面から確認できる構成にする。
 - `lang`、viewport、keyboard focus、十分なcontrastを用意し、動きを使う場合は`prefers-reduced-motion`へ対応する。
@@ -56,6 +57,7 @@ ruby <shared-dir>/scripts/validate_html.rb --profile ui-mock <proposals.html>
 ### テスト完了条件
 
 - [ ] 各HTMLが共通validatorの該当profileを通過している。
+- [ ] URL属性とCSS参照にホスティング不能なローカル参照がない。
 - [ ] Explainerはrenderer test、UI mockはproposal validator testが成功している。
 - [ ] skill metadataを含む`quick_validate.py`が両skillで成功している。
 
