@@ -1,5 +1,5 @@
 # @nvim.on_save deno task codex:template -- --apply
-model = "gpt-5.6-sol"
+model = "gpt-6-astra"
 model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"
 
