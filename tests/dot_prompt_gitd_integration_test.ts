@@ -120,6 +120,46 @@ Deno.test("初回キャッシュ待ちを保持し、キャッシュ読込後に
 
 const watchmanAvailable = await commandSucceeds("watchman", ["--version"]);
 
+Deno.test("行数だけの更新を色付きで描画し、差分ゼロとリポジトリ移動で表示を消す", async () => {
+  const script = [
+    'source "$1"',
+    'source "$2"',
+    'source "$3"',
+    "DOT_PROMPT_GIT_AUTO_REFRESH_INTERVAL=0",
+    "typeset -A info",
+    'info=(pwd "$PWD" top "$PWD" branch main unstaged 1 added 3 deleted 2)',
+    'dot_prompt_async_callback dot_prompt_git_status 0 "$(print -r -- ${(@kvq)info})" 0 0 0',
+    'print -r -- "$DOT_PROMPT_GIT_PROMPT"',
+    "info[added]=8",
+    'dot_prompt_async_callback dot_prompt_git_status 0 "$(print -r -- ${(@kvq)info})" 0 0 0',
+    'print -r -- "$DOT_PROMPT_GIT_PROMPT"',
+    "info[added]=0",
+    "info[deleted]=0",
+    'dot_prompt_async_callback dot_prompt_git_status 0 "$(print -r -- ${(@kvq)info})" 0 0 0',
+    'print -r -- "$DOT_PROMPT_GIT_PROMPT"',
+    "DOT_PROMPT_GIT_ADDED=8",
+    "DOT_PROMPT_GIT_DELETED=2",
+    'dot_prompt_async_callback dot_prompt_git_status 0 "$(dot_prompt_git_empty_status)" 0 0 0',
+    'print -r -- "reset=$DOT_PROMPT_GIT_ADDED,$DOT_PROMPT_GIT_DELETED,$DOT_PROMPT_GIT_PROMPT"',
+  ].join("; ");
+  const output = await run("/bin/zsh", [
+    "-f",
+    "-c",
+    script,
+    "--",
+    promptBaseScript,
+    gitPromptScript,
+    promptAsyncScript,
+  ]);
+  assertEquals(new TextDecoder().decode(output.stderr), "");
+  const lines = new TextDecoder().decode(output.stdout).trimEnd().split("\n");
+  assertStringIncludes(lines[0], "M:1%f %F{244}│%f %F{2}+3%f %F{1}-2%f");
+  assertStringIncludes(lines[1], "M:1%f %F{244}│%f %F{2}+8%f %F{1}-2%f");
+  assert(!lines[2].includes("+0"));
+  assert(!lines[2].includes("-0"));
+  assertEquals(lines[3], "reset=0,0,");
+});
+
 Deno.test({
   name: "100回の連続変更を1回の Git 更新にまとめ、同一秒内のキャッシュ置換も検知する",
   ignore: !watchmanAvailable,
@@ -246,6 +286,11 @@ Deno.test({
       assertEquals(refreshCount(logPath, canonicalRepoPath) - initialRefreshes, 1);
       assert(signatureBefore !== signatureAfter);
       assertStringIncludes(readText(cachePath), "unstaged '1'");
+      assertStringIncludes(readText(cachePath), "added '1' deleted '1'");
+
+      // The file counter stays at one, but the line count must still update.
+      await Deno.writeTextFile(join(repoPath, "tracked.txt"), "one\ntwo\nthree\n");
+      await waitFor(() => readText(cachePath).includes("added '3' deleted '1'"));
     } finally {
       if (daemon) {
         try {
@@ -336,12 +381,17 @@ Deno.test({
       assertEquals(new TextDecoder().decode(output.stderr), "");
       assertStringIncludes(prompt, "M:1");
       assertStringIncludes(prompt, "?:1");
+      assertStringIncludes(prompt, "%F{2}+2%f %F{1}-1%f");
       assert(Deno.statSync(indexLockPath).isFile);
+
+      await Deno.writeTextFile(join(repoPath, "untracked.txt"), "new\nmore\nlast");
+      await waitFor(() => readText(cachePath).includes("added '4' deleted '1'"));
 
       await Deno.writeTextFile(join(repoPath, "tracked.txt"), "initial\n");
       await Deno.remove(join(repoPath, "untracked.txt"));
       await waitFor(() =>
-        readText(cachePath).includes("unstaged '0'") && readText(cachePath).includes("untracked '0'")
+        readText(cachePath).includes("unstaged '0'") && readText(cachePath).includes("untracked '0'") &&
+        readText(cachePath).includes("added '0' deleted '0'")
       );
     } finally {
       if (daemon) {

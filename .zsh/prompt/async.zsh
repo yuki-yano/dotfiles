@@ -44,6 +44,8 @@ dot_prompt_async_reset_repo_state() {
   typeset -g DOT_PROMPT_GIT_UNSTAGED=0
   typeset -g DOT_PROMPT_GIT_UNTRACKED=0
   typeset -g DOT_PROMPT_GIT_STASH=0
+  typeset -g DOT_PROMPT_GIT_ADDED=0
+  typeset -g DOT_PROMPT_GIT_DELETED=0
   typeset -g DOT_PROMPT_GIT_TOP=""
   typeset -g DOT_PROMPT_GIT_PENDING=0
   typeset -g DOT_PROMPT_GIT_CACHE_PATH=""
@@ -212,6 +214,8 @@ dot_prompt_async_callback() {
           [[ $DOT_PROMPT_GIT_UNSTAGED != ${info[unstaged]:-0} ]] && state_changed=1
           [[ $DOT_PROMPT_GIT_UNTRACKED != ${info[untracked]:-0} ]] && state_changed=1
           [[ $DOT_PROMPT_GIT_STASH != ${info[stash]:-0} ]] && state_changed=1
+          [[ $DOT_PROMPT_GIT_ADDED != ${info[added]:-0} ]] && state_changed=1
+          [[ $DOT_PROMPT_GIT_DELETED != ${info[deleted]:-0} ]] && state_changed=1
 
           typeset -g DOT_PROMPT_GIT_BRANCH=$info[branch]
           typeset -g DOT_PROMPT_GIT_DETACHED=$info[detached]
@@ -228,6 +232,8 @@ dot_prompt_async_callback() {
           typeset -g DOT_PROMPT_GIT_UNSTAGED=${info[unstaged]:-0}
           typeset -g DOT_PROMPT_GIT_UNTRACKED=${info[untracked]:-0}
           typeset -g DOT_PROMPT_GIT_STASH=${info[stash]:-0}
+          typeset -g DOT_PROMPT_GIT_ADDED=${info[added]:-0}
+          typeset -g DOT_PROMPT_GIT_DELETED=${info[deleted]:-0}
           if [[ -n $info[top] ]]; then
             typeset -g DOT_PROMPT_GIT_PWD=$info[top]
           else

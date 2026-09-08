@@ -29,7 +29,12 @@ interface WatchmanConstructor {
 
 const watchman = watchmanModule as unknown as WatchmanConstructor;
 
-export interface GitStatus {
+export interface GitLineStats {
+  added: number;
+  deleted: number;
+}
+
+export interface GitStatus extends GitLineStats {
   oid: string;
   branch: string;
   detached: boolean;
@@ -90,6 +95,8 @@ export function parsePorcelainV2(output: string): GitStatus {
     untracked: 0,
     unmerged: 0,
     stash: 0,
+    added: 0,
+    deleted: 0,
   };
 
   for (const line of output.split("\n")) {
@@ -136,6 +143,89 @@ export function parsePorcelainV2(output: string): GitStatus {
   return status;
 }
 
+export function parseNumstat(output: string): GitLineStats {
+  const stats = { added: 0, deleted: 0 };
+  const records = output.split("\0");
+  for (let index = 0; index < records.length; index++) {
+    const match = /^(\d+|-)\t(\d+|-)\t/.exec(records[index]);
+    if (!match) continue;
+    stats.added += parseCount(match[1]);
+    stats.deleted += parseCount(match[2]);
+    // A rename/copy has an empty path followed by two NUL-delimited paths.
+    if (records[index].length === match[0].length) index += 2;
+  }
+  return stats;
+}
+
+async function gitOutput(top: string, args: string[]): Promise<string> {
+  const result = await new Deno.Command("git", {
+    args: ["-C", top, ...args],
+    env: { GIT_OPTIONAL_LOCKS: "0" },
+    stdin: "null",
+    stdout: "piped",
+    stderr: "null",
+  }).output();
+  if (!result.success) throw new Error(`git ${args[0]} exited with ${result.code}`);
+  return new TextDecoder().decode(result.stdout);
+}
+
+async function countNewFileLines(path: string): Promise<number> {
+  try {
+    const stat = await Deno.lstat(path);
+    // Git stores the link target itself as one line, never its contents.
+    if (stat.isSymlink) return 1;
+    // Do not descend into nested repositories or read special files.
+    if (!stat.isFile) return 0;
+
+    using file = await Deno.open(path, { read: true });
+    const buffer = new Uint8Array(64 * 1_024);
+    let bytesRead = 0;
+    let lines = 0;
+    let lastByte = -1;
+    while (true) {
+      const count = await file.read(buffer);
+      if (count === null) break;
+      // Match Git's usual binary-content heuristic without starting Git for
+      // every untracked file. Stream text files to keep memory use bounded.
+      const probeLength = Math.min(count, Math.max(0, 8_000 - bytesRead));
+      if (buffer.subarray(0, probeLength).includes(0)) return 0;
+      for (let index = 0; index < count; index++) {
+        if (buffer[index] === 10) lines++;
+      }
+      bytesRead += count;
+      if (count > 0) lastByte = buffer[count - 1];
+    }
+    return lines + (lastByte !== -1 && lastByte !== 10 ? 1 : 0);
+  } catch (error) {
+    // A file can disappear between ls-files and opening it during an edit.
+    if (error instanceof Deno.errors.NotFound) return 0;
+    throw error;
+  }
+}
+
+export async function readGitLineStats(top: string, oid: string): Promise<GitLineStats> {
+  // An unborn branch compares against the empty tree, using the repository's
+  // object format. hash-object without -w does not write any objects.
+  const base = oid === "(initial)" ? (await gitOutput(top, ["hash-object", "-t", "tree", "--stdin"])).trim() : oid;
+  const [numstat, untracked] = await Promise.all([
+    gitOutput(top, ["diff", "--numstat", "-z", "--no-ext-diff", "--no-textconv", base, "--"]),
+    gitOutput(top, ["ls-files", "--others", "--exclude-standard", "-z"]),
+  ]);
+  // Compare HEAD directly to the working tree so partially staged edits are
+  // not counted twice. Untracked text contributes additions only.
+  const stats = parseNumstat(numstat);
+  const paths = untracked.split("\0").filter(Boolean);
+  let next = 0;
+  await Promise.all(Array.from({ length: Math.min(4, paths.length) }, async () => {
+    while (next < paths.length) {
+      const path = paths[next++];
+      const lines = await countNewFileLines(join(top, path));
+      stats.added += lines;
+    }
+  }));
+  return stats;
+}
+
 export function zshQuote(value: string): string {
   return `'${value.replaceAll("'", "'\\''")}'`;
 }
@@ -163,6 +253,8 @@ export function formatCache(
     ["untracked", status.untracked],
     ["unmerged", status.unmerged],
     ["stash", status.stash],
+    ["added", status.added],
+    ["deleted", status.deleted],
   ];
   return `${pairs.flatMap(([key, value]) => [key, zshQuote(String(value))]).join(" ")}\n`;
 }
@@ -500,7 +592,7 @@ class GitPromptDaemon {
   async #refresh(repo: RepoState): Promise<void> {
     try {
       const result = await new Deno.Command("git", {
-        args: ["-C", repo.top, "status", "--show-stash", "--branch", "--porcelain=v2"],
+        args: ["-C", repo.top, "status", "--show-stash", "--branch", "--porcelain=v2", "--untracked-files=normal"],
         env: { GIT_OPTIONAL_LOCKS: "0" },
         stdout: "piped",
         stderr: "null",
@@ -508,6 +600,9 @@ class GitPromptDaemon {
       if (!result.success) throw new Error(`git status exited with ${result.code}`);
 
       const status = parsePorcelainV2(new TextDecoder().decode(result.stdout));
+      if (status.staged || status.unstaged || status.untracked || status.unmerged) {
+        Object.assign(status, await readGitLineStats(repo.top, status.oid));
+      }
       const rebasing = await exists(join(repo.gitDir, "rebase-merge")) ||
         await exists(join(repo.gitDir, "rebase-apply"));
       const conflict = await exists(join(repo.gitDir, "MERGE_HEAD"));

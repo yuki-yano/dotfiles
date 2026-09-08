@@ -11,6 +11,8 @@ typeset -g DOT_PROMPT_GIT_STAGED=0
 typeset -g DOT_PROMPT_GIT_UNSTAGED=0
 typeset -g DOT_PROMPT_GIT_UNTRACKED=0
 typeset -g DOT_PROMPT_GIT_STASH=0
+typeset -g DOT_PROMPT_GIT_ADDED=0
+typeset -g DOT_PROMPT_GIT_DELETED=0
 typeset -g DOT_PROMPT_GIT_TOP=""
 typeset -g DOT_PROMPT_GIT_PENDING=0
 
@@ -248,6 +250,10 @@ dot_prompt_build_git_prompt() {
 
   if [[ -n $DOT_PROMPT_GIT_TOP ]] && (( ! has_local_changes )); then
     prompt+=" %B%F{2}✔%f%b "
+  fi
+
+  if (( DOT_PROMPT_GIT_ADDED > 0 || DOT_PROMPT_GIT_DELETED > 0 )); then
+    prompt+=" %F{244}│%f %F{2}+${DOT_PROMPT_GIT_ADDED}%f %F{1}-${DOT_PROMPT_GIT_DELETED}%f"
   fi
 
   if [[ -n $prompt ]]; then
