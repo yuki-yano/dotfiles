@@ -177,6 +177,14 @@ local plugins = {
       add_disable_cmp_filetypes({ 'sagarename' })
     end,
     config = function()
+      -- Neovim removed this private API, but lspsaga still uses it for LSP positions.
+      -- Remove when https://github.com/nvimdev/lspsaga.nvim/issues/1565 is fixed upstream.
+      ---@diagnostic disable-next-line: inject-field
+      vim.lsp.util._get_line_byte_from_position = function(bufnr, position, offset_encoding)
+        local line = vim.api.nvim_buf_get_lines(bufnr, position.line, position.line + 1, false)[1] or ''
+        return vim.str_byteindex(line, offset_encoding, position.character, false)
+      end
+
       require('lspsaga').setup({
         ui = {
           title = true,
