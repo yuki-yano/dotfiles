@@ -1,4 +1,4 @@
 interface:
   display_name: "VW Worktree Ops"
-  short_description: "Safe vw workflows for Git worktree operations."
-  default_prompt: "Use $vw-worktree-ops to inspect, create, and safely clean up Git worktrees with `vw --json`."
+  short_description: "vwによる作業場所の準備・状態確認・実行・整理を支援する"
+  default_prompt: "$vw-worktree-ops を使い、対象 worktree と現在の状態を確認して、依頼に必要な操作を進めてください。"

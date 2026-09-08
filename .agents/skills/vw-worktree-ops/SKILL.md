@@ -1,70 +1,62 @@
 ---
 name: vw-worktree-ops
-description: vw エイリアス経由で vde-worktree を安全かつ一貫した手順で運用するためのスキル。worktree の作成・切替・確認・ロック・掃除・コマンド実行を行うときに使う。
+description: Git worktree の作成・再利用・状態確認・診断・作業場所の解決・コマンド実行・保護・整理・変更移送を依頼されたときに使う。vw 自体の実装や公開、tmux pane の操作には使わない。
 ---
 
 # VW Worktree 運用
 
-このスキルは `vw`（`vde-worktree`）を安全に、かつ再現性高く実行するために使う。
+`vw`（`vde-worktree` と同じ CLI）で依頼された worktree 操作を行う。
+引数と応答の詳細は、必要なコマンドの `vw describe <command> --json` または `vw <command> --help` で確認する。
+全コマンドの定義を毎回読み込む必要はない。
 
-## Overview
+## 実行起点と対象
 
-- 例示・実行ともに `vde-worktree` より `vw` を優先する。
-- 最初にリポジトリルートを解決する: `git rev-parse --show-toplevel`。
-- 書き込み系操作の前に、リポジトリごとに一度 `vw init` を実行する。
-- worktree を作成するときは、可能な限り作業意図に即した名前（例: `feature/<機能名>`, `fix/<不具合名>`, `chore/<作業名>`）を明示指定する。
-- 自動化やエージェント連携では `--json` を優先する。
-- 人間向けログは stderr、判定に使うデータは stdout の JSON を正とする。
-- JSON consumer は最初に `schemaVersion === 2` を検証し、未知versionは処理せず停止する。
-- 成功は `status === "ok"` かつ `error === null`、失敗は `status === "error"` かつ `error.code` で判定する。command固有値は `data` から読む。
-- 明示要求がない限り unsafe 系フラグは使わない。
+- 別ディレクトリの操作は `vw -C "$repo" ...` で起点を明示する。`-C` は設定・hook・相対パスの解決にも使われるため、無条件に primary のルートへ置き換えない。
+- 起点や初期化状態が不明なら `vw -C "$repo" context --json` を読む。`data.repository` の `repoRoot` と `currentWorktreeRoot` を区別し、設定値と由来は `data.config`、初期化状態は `data.initialized` で確認する。
+- worktree のパスは応答の `path` を使う。ブランチ名から `.worktree/...` などを組み立てない。プロセスから親 shell の cwd は変えられないため、以降のツールの作業ディレクトリをそのパスに設定する。
+- ブランチが複数の worktree に存在する場合は、エラーの `details.candidates` を読み、意図したパスを選ぶ。`--worktree "$path"` を使えるのは `status`・`path`・`exec`・`copy`・`link` のみ。ブランチ引数と併用しない。未対応の変更コマンドでは曖昧さを解消するまで実行しない。
 
-## 安全な実行順序
+## 目的に応じて選ぶ
 
-1. 現在状態を確認する: `vw status --json` または `vw list --json`。
-2. JSON 出力から対象ブランチ/パスを解決する。
-3. 意図した操作を実行する。
-4. `vw status --json` または `vw list --json` で再確認する。
+| 目的 | コマンドと判断 |
+|---|---|
+| 設定・起点を調べる | `context --json`。初期化や自動 recovery は行わない |
+| 設定不正・依存不足を調べる | `doctor --json --no-gh`。非ゼロ終了でも `data.checks` と `data.pendingRecoveries` を読む |
+| 変更を伴わず一覧を取得・監視する | `list --json --no-gh --monitor`。GitHub 情報と upstream の ahead/behind 探索を省くため、未 push 判定には使わない |
+| PR・merge を含む状態を見る | `list --json` / `status <branch> --json`。通常モードは lifecycle 観測を保存しうる。`--no-gh` だけでは非変更にならない |
+| 既存の作業場所を解決する | `path <branch> --json` または `--worktree "$path" path --json` |
+| 作業場所を作成または再利用する | `switch <branch> --json`。新規作成だけを求める場合は `new <branch> --json`。名前は依頼の意図に合わせて指定する |
+| 変更前に結果・拒否理由を調べる | `check --json -- <command> ...` または `<command> ... --dry-run --json` |
 
-## merge 判定ポリシー
+読み取りや `exec` のために `init` は行わない。
+`describe` の `requiresInitialization` が true の操作で、未初期化と分かったときだけ `vw -C "$repo" init --json` を実行する。
+確認だけの依頼では初期化せず、その必要性を結果として伝える。
 
-schema version 2 envelope の `data` に含まれる merge 状態を読む:
-- `merged.byAncestry`: ローカル Git の祖先関係判定
-- `merged.byPR`: `gh` による PR merged 判定（nullable）
-- `merged.overall`: 安全ロジックで使う最終判定
-- `pr.status`: PR 状態（`none` / `open` / `merged` / `closed_unmerged` / `unknown`）
-- `pr.url`: branch の最新 PR URL（取得不可時は `null`）
+## 変更の事前検査
 
-解釈:
-- `byPR === true` の場合は `overall = true`（squash / rebase merge を含む）。
-- `byAncestry === false` の場合は `overall = false`。
-- `byAncestry === true` でも、分岐証跡（lifecycle / reflog）がない限り merged 扱いにしない。
-- `byPR === false` または lifecycle が未取り込みを示す場合は `overall = false`。
-- 分岐証跡が `baseBranch` に取り込まれている場合は `overall = true`。
-- 上記で判断できない場合は `overall = null`。
+対象・安全性・副作用が未確定の変更は `check` で具体化する。
+対応可否は `describe` の `supportsInspection` を見る。`exec`・`copy`・`link`・`invoke` などには使えない。
 
-注意:
-- 自動化での削除判定は `merged.overall` を正とし、`merged.byPR` 単独では判定しない。
-- `gh` 判定が使えない場合（`--no-gh`, `gh` 未導入/未認証, API エラー, `vde-worktree.enableGh=false`）は `pr.status = "unknown"` かつ `merged.byPR = null` になりうる。
+- `data.allowed`、`target`、`plannedResult`、`rejections`、`pendingRecoveries` を読む。拒否時も `data` を捨てない。
+- 検査は hook・stash・ロック取得・metadata 書き込み・自動 recovery を実行しない。GitHub 照会や `get` のリモート調査はネットワークを使い得る。`--no-gh` は GitHub 照会だけを無効にする。
+- `allowed: true` は観測時点の判定であり、許可や予約ではない。本実行は状態を再検証する。`pendingRecoveries` があれば内容を調べ、復旧を含む変更が依頼範囲か確認する。journal を削除して検査を通さない。
+- 安全チェックの拒否を、force・unlock・hook 無効化で自動解消しない。既存のユーザー指示が具体的な override を許可している場合だけ、必要なフラグを選ぶ。`--allow-unsafe` は許可を得た操作について CLI が要求する付随フラグであり、付けたことを同意の根拠にしない。
 
-## エラーハンドリング
+作成・整理・保護・実行・変更移送の例は、必要な節だけ [references/commands.md](references/commands.md) を読む。
 
-JSON エラー応答の `error.code` ごとに処理する:
+## JSON と失敗後の判断
 
-- `NOT_INITIALIZED`: `vw init` を実行する。
-- `UNSAFE_FLAG_REQUIRED`: 意図した操作なら unsafe 同意フラグを明示する。
-- `DEPENDENCY_MISSING`: 依存（`fzf`/`gh`）を導入するか、コマンド利用を避ける。
-- `WORKTREE_NOT_FOUND`: `vw list --json` で再取得し、有効なブランチで再試行する。
-- `LOCK_CONFLICT` または lock 状態: 正しい owner の `vw unlock` か `--force` を使う。
+機械処理は `--json` を使い、stdout の単一 JSON とプロセス終了コードを保存する。
+`--help`・`--version` はテキスト表示なので JSON として解析しない。
+完全な応答仕様は `describe` の `envelopeSchema`・`dataSchema` を参照する。本スキルの契約は `schemaVersion: 3`。異なる版や欠損した応答を推測で補わず、`vw --version` と `describe` で相違を確認して報告する。
 
-## 最小チェックリスト
+- 成功は終了コード 0、`status: "ok"`、`error: null`。成功時も `warnings` を読む。
+- 失敗は `error.code`・`details` に加え、`error.execution` の `phase`・`state`・`completed`・`recovery` と、残っている `data` を読む。stderr の文言だけで判定しない。
+- vw 本体の変更が `state: applied` なら適用済み。`partial`・`recoveryRequired`・`unknown` は完了済み範囲と現在状態を確認するまで再実行しない。`exec` の子失敗は別に、[実行例の判断規則](references/commands.md#worktree-でコマンドを実行する)で扱う。
+- `notStarted`・`rolledBack` は本体が未適用、または内部処理を戻した状態。拒否原因を解消し、hook が走った場合は `details.logPath` と実際の結果から副作用を確認したうえで再実行できる。状態名だけを再試行の根拠にしない。
+- `phase: lock`・`state: notStarted` の `REPO_LOCK_TIMEOUT` はリポジトリ変更ロックの取得待ち。競合処理の終了後に再試行でき、必要なら `--lock-timeout-ms` で待機時間を延ばす。他の phase で返った同コードは、その実行状態に従う。
+- post-hook 失敗は通常 `warnings`、`--strict-post-hooks` 指定時はエラーになり得る。本体の作成・削除・移送をやり直さず、保持された結果と hook の `details.logPath` を確認する。
+- `NOT_INITIALIZED` は必要な初期化、対象不在・曖昧さは対象の再確認、設定不正や `LOCK_CONFLICT` は `details` と `doctor` で原因を調べる。依存の自動導入や別実装への切り替えで回避しない。
 
-1. 書き込み系コマンドの前に `vw init` を実行する。
-2. 読み取り・判定は `--json` を使う。
-3. 安全チェック拒否はデフォルトで尊重する。
-4. override フラグは明示意図があるときのみ使う。
-5. 状態変更後は必ず再確認する。
-
-## コマンド用例
-
-コマンドごとの用例は `references/commands.md` を参照。
+変更後は応答の結果を確認し、必要な対象だけを `path`・`status`・monitor で再観測する。
+報告には対象パス、完了した操作、警告や未完了部分を含める。
