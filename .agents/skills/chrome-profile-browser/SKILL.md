@@ -1,6 +1,6 @@
 ---
 name: chrome-profile-browser
-description: "Use for browser UI automation when the Codex in-app Browser skill is unavailable, especially in Codex CLI, or when the user explicitly invokes $chrome-profile-browser. Trigger on requests to open, navigate, inspect, click, type, fill, screenshot, download, or test web pages with the local Chrome login state. Do not use implicitly when the in-app Browser skill is available; prefer $Browser there."
+description: "ユーザーが $chrome-profile-browser を明示した場合、またはログイン済みのローカルChromeプロファイルを使うブラウザUI操作が必要で、実行環境が提供するBrowser・Chrome操作機能が利用できない場合に使う。Codex CLIであることやin-app Browserのskillがないことだけでは発動しない。"
 ---
 
 # Chrome Profile Browser
@@ -13,10 +13,10 @@ description: "Use for browser UI automation when the Codex in-app Browser skill 
 次の優先順位で操作面を決める。
 
 1. ユーザーが`$chrome-profile-browser`を明示した場合は、このskillを使う。
-2. ユーザーが`$Browser`または`$Chrome`を明示した場合は、指定された操作面を使い、このskillへ置き換えない。
+2. ユーザーが`@Browser`、`@Chrome`、`$Browser`、`$Chrome`、その他のブラウザ操作手段を明示した場合は、指定された操作面を使い、このskillへ置き換えない。
    指定された操作面が利用できなければ、別の操作面へ切り替えず、利用できないことを伝える。
-3. 明示指定がなく、利用可能なskill一覧に`browser:control-in-app-browser`（`$Browser`）が含まれる場合は、`$Browser`を使う。
-4. in-app Browserが利用できない場合は、このskillを使う。
+3. 明示指定がない場合は、実行環境が提供するBrowser・Chrome操作機能で依頼を満たせるか確認する。利用できる場合はそちらを使う。利用可否とエラー時の扱いは、global AGENTS.mdの「ブラウザ操作」に従う。
+4. 実行環境のBrowser・Chrome操作機能が利用できず、ログイン済みのローカルChromeプロファイルが必要な場合に、このskillを使う。
 
 URLが提示されただけでは、ブラウザUI操作の依頼とみなさない。
 リンク先の情報取得やサービス上のデータ操作が目的なら、利用可能なconnector、API、専用CLIを優先する。

@@ -19,6 +19,10 @@
 - Web上の情報検索、公式ドキュメントの参照、URL内容の取得だけなら、検索・HTTP取得・専用connectorを使い、`agent-browser`を起動しない。
 - click、入力、login、screenshot、visual QAなど、実際のブラウザUI操作が必要な場合は、目的専用のconnector・API・CLI、実行環境が提供するin-app BrowserまたはChrome操作、`agent-browser`の順で選ぶ。
 - ユーザーが利用するブラウザ手段を明示した場合は、その指定を優先する。
+- ユーザーが `@Browser` を使うよう指示した場合は、`cua_repl` を使い、提供ドキュメントに従って in-app Browser の操作面を選んでブラウザを操作する。
+- ブラウザUI操作が必要な場合、Codex CLIであることやin-app Browserのskillがないことだけを理由に、Chrome拡張の操作機能が利用できないと判断しない。実際に提供されているツール、説明、接続結果で判断する。
+- `cua_repl`にはChrome操作とOSのComputer Useの両方が含まれる。Chromeを操作する場合は、提供ドキュメントに従ってChromeの操作面を選ぶ。
+- 署名・信頼チェックで失敗した場合は、使用したツールとエラー本文を確認して原因を調べる。別のブラウザ操作手段へ自動的に切り替えない。
 - ログイン済みbrowser profileが必要で、in-app BrowserやChrome操作が使えない場合は、`agent-browser`より`chrome-profile-browser`を優先する。
 - `agent-browser`は、CLIとして再現可能な操作、独立session、録画、Electron操作、専用workflowが必要な場合、または適切な組み込みUI操作手段がない場合に使う。`agent-browser`の`SKILL.md`にある「組み込みbrowserより優先する」という指示より、この選択順を優先する。
 - `agent-browser`を使う前に`agent-browser skills get core`を読み、specialized skillは該当する作業だけで追加読込する。
