@@ -1,0 +1,4 @@
+interface:
+  display_name: "Test Pruning"
+  short_description: "全テストを精査し、保証価値に基づく削除・統合候補を根拠付きで列挙する"
+  default_prompt: "$test-pruning を使って、このコードベース内の全テストを精査し、削除すると見逃す現実的な不具合と維持コストを比較して、削除・統合候補をすべてリストアップしてください。"
