@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-read --allow-write --allow-env
 
-import { dirname, join } from "jsr:@std/path@1";
+import { dirname, join } from "@std/path";
 
 export const START_MARKER = "# dotfiles-managed:start";
 export const END_MARKER = "# dotfiles-managed:end";
@@ -47,6 +47,13 @@ export function stripNvimDirectiveLines(templateBody: string): string {
     .split("\n")
     .filter((line) => !/^\s*#\s*@nvim\b/.test(line))
     .join("\n");
+}
+
+function renderTemplateText(templateBody: string): string {
+  return stripNvimDirectiveLines(templateBody).replace(
+    /(^|[\s"'`])~(?=\/|["'`]|$)/gm,
+    (_match, prefix: string) => `${prefix}${resolveHome()}`,
+  );
 }
 
 async function collectRelativeFilePaths(rootDirectory: string, prefix = ""): Promise<string[]> {
@@ -179,12 +186,12 @@ async function writeTextFileAtomically(path: string, content: string): Promise<v
   await Deno.rename(temporaryPath, path);
 }
 
-function resolveCodexHome(): string {
+function resolveHome(): string {
   const home = Deno.env.get("HOME");
   if (!home) {
     throw new Error("HOME environment variable is not set");
   }
-  return `${home}/.codex`;
+  return home;
 }
 
 async function updateFileIfNeeded(
@@ -214,7 +221,7 @@ async function updateTemplateTextFileIfNeeded(
   dryRun = false,
 ): Promise<boolean> {
   const templateBody = await Deno.readTextFile(templatePath);
-  const normalized = normalizeTrailingNewline(stripNvimDirectiveLines(templateBody));
+  const normalized = normalizeTrailingNewline(renderTemplateText(templateBody));
   return await updateFileIfNeeded(outputPath, normalized, dryRun);
 }
 
@@ -269,13 +276,13 @@ export async function applyCodexTemplate(options: ApplyCodexTemplateOptions = {}
   const startMarker = options.startMarker ?? START_MARKER;
   const endMarker = options.endMarker ?? END_MARKER;
   const templateDir = options.templateDir ?? `${Deno.cwd()}/.config/codex-template`;
-  const outputDir = options.outputDir ?? resolveCodexHome();
+  const outputDir = options.outputDir ?? join(resolveHome(), ".codex");
   const copyTargets = [...new Set(options.copyTargets ?? ["AGENTS.md"])];
 
   const configTemplatePath = join(templateDir, "config.toml");
   const configOutputPath = join(outputDir, "config.toml");
 
-  const configTemplateBody = stripNvimDirectiveLines(await Deno.readTextFile(configTemplatePath));
+  const configTemplateBody = renderTemplateText(await Deno.readTextFile(configTemplatePath));
   const currentConfig = await Deno.readTextFile(configOutputPath).catch((error: unknown) => {
     if (error instanceof Deno.errors.NotFound) {
       throw new CodexTemplateApplyError(
