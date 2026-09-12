@@ -1,76 +1,53 @@
 # 実行と部分適用
 
-## 実行前の安全対策
+## 実行前
 
-バックアップブランチは現在の `HEAD` を保存するためのものであり、未コミット差分そのものは保存しない。未コミット差分の保護は、Phase 1 の計画、staged diff の確認、必要に応じた patch 作成で担保する。
+開始時のHEADとstaged / unstaged diffを確認する。
+通常の追加コミットのためにバックアップブランチを一律作成しない。
+HEADへの参照だけでは未コミット差分のバックアップにならない。
 
-```bash
-BACKUP_BRANCH="backup/commit-plan-$(date +%Y%m%d-%H%M%S)"
-git branch "$BACKUP_BRANCH"
-echo "バックアップブランチを作成しました: $BACKUP_BRANCH"
+## コミット
 
-git status --short
-```
-
-## 実行方針
-
-- 実行前に `git diff --cached` を確認し、既存 staged diff が計画対象と混ざっていないことを確認する
-- Phase 1 の `y` 承認後、または明示的なコミット実行依頼がある場合は、計画した全コミットを順次実行する
-- 各コミット前の追加確認は行わない
-- 通常は `git add -- <file...>` でステージング
-- `--file <path>` 指定時は、すべての `git add` と diff 確認に同じ pathspec を使う
-- 同一ファイル内の混在差分はパッチで部分適用
-- `git commit` では `-m` を複数回使わない。複数の `-m` は Git が段落として扱って余分な空行を入れるため、1 つの `-m` に改行を含むメッセージ全文を渡す
-- 失敗時は停止し、状態を報告
-- ignore されているファイルは `git add -f` しない
-
-## コミットコマンド
-
-コミットメッセージに本文を含める場合も、`-m` は 1 回だけ使う。
+- 実行指示または承認済みの計画に含まれる差分だけをstageする。
+- ファイル単位なら`git add -- <file...>`、混在するファイルは下記の部分適用を使う。
+- `--file <path>`指定時は、addとdiff確認に同じpathspecを使う。
+- 各コミット直前に`git diff --cached`で対象を確認する。対象外のstaged差分はそのままcommitしない。
+- 複数行のメッセージは1つの`-m`に渡す。
 
 ```bash
 git commit -m "$(cat <<'EOF'
 <type>: <サマリ>
 
-- 箇条書き1
-- 箇条書き2
+- 作業内容
 EOF
 )"
 ```
 
-次のように `-m` を分けてはいけない。
+## 部分適用
+
+worktreeでは`.git`がディレクトリとは限らないため、`git rev-parse --git-path`で保存先を解決する。
+今回作成したpatchだけを扱い、他の実行が作ったファイルを削除しない。
 
 ```bash
-git commit -m "<type>: <サマリ>" -m "- 箇条書き1"
+commit_plan_root="$(git rev-parse --git-path commit-plan)"
+mkdir -p "$commit_plan_root"
+commit_plan_dir="$(mktemp -d "$commit_plan_root/run.XXXXXX")"
 ```
 
-## 部分適用コマンド
-
-部分適用では、入れたい差分だけを含む patch ファイルを作ってから index に適用する。
-patch ファイルは `.git/commit-plan/` 配下に置き、作業ツリーの通常ファイルとして残さない。
+入れたい差分だけのpatchを`$commit_plan_dir/<name>.patch`に保存し、適用する。
 
 ```bash
-mkdir -p .git/commit-plan
-
-# 入れたい差分のみ適用
-git apply --check --cached .git/commit-plan/<name>.patch
-git apply --cached .git/commit-plan/<name>.patch
-
-# 除外したい差分を逆適用
-git apply -R --cached .git/commit-plan/<name>.patch
-
-# 状態確認
+git apply --check --cached "$commit_plan_dir/<name>.patch"
+git apply --cached "$commit_plan_dir/<name>.patch"
 git diff --cached
 ```
 
-`git apply --check --cached` が失敗した場合は、その場で停止して `git status --short` と失敗した patch 名を報告する。
+自分がstageした差分を除外する場合は、同じpatchの`git apply -R --check --cached`後に`git apply -R --cached`を使う。
+check失敗や計画との差分不一致ではindexをさらに変更せず、現在状態を確認する。
 
-## コミット後の確認
+## コミット後
 
-```bash
-git log -1 --stat
-git status --short
-```
-
-各コミット後に、次のコミットへ進む前に `git diff --cached` が空であることを確認する。空でなければ停止して報告する。
-計画との差分不一致、patch 適用失敗、コミット失敗、検証失敗があれば停止する。
+`git log -1 --stat`と`git status --short`で内容・残差分を確認する。
+予期しないstaged差分が残る場合は次のcommitへ進めない。
+部分適用でpatchを作った場合は、全コミットの成功後に[クリーンアップ](recovery-and-cleanup.md#クリーンアップ)を読み、今回作成したファイルだけを片付ける。
+失敗時は[復旧手順](recovery-and-cleanup.md)へ進む。

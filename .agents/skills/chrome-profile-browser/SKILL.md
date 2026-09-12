@@ -1,6 +1,6 @@
 ---
 name: chrome-profile-browser
-description: "ユーザーが $chrome-profile-browser を明示した場合、またはログイン済みのローカルChromeプロファイルを使うブラウザUI操作が必要で、実行環境が提供するBrowser・Chrome操作機能が利用できない場合に使う。Codex CLIであることやin-app Browserのskillがないことだけでは発動しない。"
+description: $chrome-profile-browserの明示時、または提供されたBrowser・Chrome操作が使えず、ログイン済みローカルChromeでのUI操作が必要なときに使う。URL参照だけでは使わない。
 ---
 
 # Chrome Profile Browser

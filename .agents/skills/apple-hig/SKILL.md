@@ -1,6 +1,6 @@
 ---
 name: apple-hig
-description: Apple Human Interface Guidelinesに基づいて、新規UIの視覚方向性をImageGenで探索するとき、承認された視覚案を実装するとき、または既存UIを証拠付きで監査して改善するときに使う。Apple風の外観だけを求める作業、一般的なUI実装、モーション単体の調整には使わない。
+description: Apple HIGに基づく新規UIの視覚探索、承認案の実装、既存UIの監査・改善に使う。Apple風の外観指定だけやモーション単体の調整には使わない。
 ---
 
 # Apple HIG

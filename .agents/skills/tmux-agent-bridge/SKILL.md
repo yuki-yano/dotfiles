@@ -1,6 +1,6 @@
 ---
 name: tmux-agent-bridge
-description: tmux paneのAIエージェント（Claude Code / Codex / opencode等）の一覧・状態確認、指示やレビュー依頼の送信、実行中agentへの追加指示、完了待ちと応答回収、他paneのログ取得、レビュー往復、または明示されたpaneでのagent起動に使う。「agent一覧を確認して」「%Nに送って」「実行中の%Nへ追加で伝えて」「隣のCodexにレビューを依頼して」「終わったら回収して」「右paneを読んで」「このpaneを分割してClaudeを起動して」のような依頼で発動する。文面生成はagent-review-request / agent-handoff-planに任せ、tmuxを介さないsubagent起動には使わない。
+description: tmux paneのAIエージェントの状態・ログ確認、指示送信、完了待ち・応答回収、明示されたpaneでの起動に使う。tmuxを介さないsubagent操作には使わない。
 ---
 
 # tmux Agent Bridge

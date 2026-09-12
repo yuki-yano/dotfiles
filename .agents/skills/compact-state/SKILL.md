@@ -1,6 +1,6 @@
 ---
 name: compact-state
-description: Claude Code の /compact 前に、セッション状態の checkpoint を手動で保存するときに使う。「/compact-state」「compact 前に状態を保存して」「checkpoint を保存して」と依頼されたときに発動する。圧縮後の復旧作業、通常の進捗報告、plan 作成では使わない。
+description: Claude Codeで/compact直前の状態・checkpoint保存を明示されたときに使う。圧縮後の復旧や通常の進捗報告には使わない。
 ---
 
 # compact-state

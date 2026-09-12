@@ -1,209 +1,43 @@
 ---
 name: skill-management
-description: dotfiles の .agents/skills と npx skills/skills-lock.json による skill 導入・更新・削除・重複整理を行うときに使う。~/.codex/skills などへ分散させない。
+description: dotfilesで共有するローカルskillの作成・改訂、外部skillの導入・更新・削除、重複整理を行うときに使う。
 ---
 
 # Skill Management
 
-## Overview
+## 配置と管理元
 
-この dotfiles では、通常のローカル skill の実体を `~/dotfiles/.agents/skills` に集約する。
-`~/.agents` は `~/dotfiles/.agents` への symlink なので、ここに置いた skill は global skill としても見える。
+- 手作りskillの正本は`~/dotfiles/.agents/skills/<name>/`。直接編集する。
+- `~/.agents`は`~/dotfiles/.agents`へのsymlink、`~/.config/claude/skills`も同じ実体を参照する。
+- 外部skillは`~/dotfiles/skills-lock.json`の`skills` entryで識別し、`npx skills`で管理する。
+- `~/.codex/skills/.system`とplugin cacheはこのリポジトリの管理対象外。
 
-外部由来の skill は `npx skills` と `skills-lock.json` で管理する。
-手作りのローカル運用 skill は `~/dotfiles/.agents/skills/<name>/SKILL.md` を直接編集して管理する。
+## 作業の選択
 
-## Lock File Location
+ローカルskillの本文やdescriptionを直すだけなら、対象ファイルと必要な参照・呼び出し元を読む。
+外部skillの更新確認や全agentの重複監査を毎回実行しない。
 
-`npx skills` で管理する lock file は `~/dotfiles/skills-lock.json` に置く。
-`.agents`, `.agents/skills`, `~/.agents`, `~/.agents/skills` には lock file を置かない。
+外部skillの追加・更新・削除、重複整理では[管理手順](references/package-operations.md)の該当節を読む。
 
-Important details:
+- `npx skills`は`~/dotfiles`から実行し、追加・更新は`-a codex`を明示する。global installで別の場所へ分散させない。
+- lock fileは`~/dotfiles/skills-lock.json`だけに置き、実体とsource/hashをそろえる。
+- `skills` 1.5.19では`check`も実体を更新し、`update`は不要なClaude用aliasを作る。read-only監査では実行せず、更新時は対象sourceへの`add -a codex`を使う。
+- 外部skillをローカル改訂する必要がある場合は、上流追従かローカル派生への移行かを明確にし、lockと実体を不一致のままにしない。
 
-- File name is `skills-lock.json`, not `skill-lock.json` or `.skill-lock.json`.
-- Run `npx skills ...` from `~/dotfiles` so the lock file and `.agents/skills` install target stay paired.
-- `~/.agents` is a symlink to `~/dotfiles/.agents`; paths under both names can point to the same real skill directory.
-- If a lock file appears outside `~/dotfiles/skills-lock.json`, treat it as drift and inspect it before removing it.
+## ローカル指示の書き方
 
-## Core Rules
+- `description`は用途と発動条件を短く書く。似たskillとの誤発動を防ぐ除外条件だけを残し、手順・機能一覧・大量の言い換えを入れない。
+- 本文には目的、成果物、判断に必要な固有情報、実際の制約を置く。一般的な助言や、モデルの能力不足を前提にした一律の手順を重ねない。
+- 複数モードの詳細は必要時に読む`references/`へ分け、読込条件を本文に書く。短い単一用途のskillは無理に分割しない。
+- コマンド契約、誤配送防止、データ保護などの壊れやすい操作条件は保持する。同じ定義・閾値・テンプレートを複数箇所に持たせない。
+- 「必ず確認」「失敗時は停止」は対象操作と理由を特定する。依頼内の修正・検証を止めず、既存の承認や明示指示を尊重する。
+- 履歴を使う改訂では、ユーザーの訂正とagentの解釈を分け、一度限りの例を全作業のルールにしない。
+- AGENTS.mdには横断的な好みと制約、skillには用途固有の手順、CLI仕様には現在のhelp/schemaを使う。
 
-- `npx skills add` は `~/dotfiles` で実行し、project scope の `.agents/skills` に入れる。
-- `-g` / `--global` は使わない。Codex 向け global install は `~/.codex/skills` に分散しやすい。
-- 対象 agent は原則 `-a codex` に絞る。
-- 外部 skill を追加・更新したら `skills-lock.json` の source / hash も確認する。
-- `~/.codex/skills`, `~/.cursor/skills`, `~/.gemini/skills`, `~/.config/opencode/skills` などに同じ skill のコピーを残さない。
-- `~/.codex/skills/.system` と plugin cache 配下は管理対象外として触らない。
+## 検証と反映
 
-## Install External Skills
-
-Use this form from the dotfiles root:
-
-```bash
-npx --yes skills add <owner/repo> --skill <skill-name> -a codex -y
-```
-
-Multiple skills from one repo:
-
-```bash
-npx --yes skills add cloudflare/skills \
-  --skill workers-best-practices \
-  --skill wrangler \
-  -a codex -y
-```
-
-Expected result:
-
-- Files are copied under `~/dotfiles/.agents/skills/<skill-name>`.
-- `skills-lock.json` gains or updates entries for each external skill.
-- `npx --yes skills list --json -a codex` shows the skill with path under `~/dotfiles/.agents/skills`.
-
-## Update External Skills
-
-`skills` 1.5.19 の `update` は更新時の内部 `add` に対象 agent を引き継がない。
-このリポジトリにはローカル設定用の `.claude` があるため、`npx skills update -p`
-を実行すると Claude Code も自動検出され、不要な `.claude/skills/<name>` が作られる。
-`update` に `--agent` が追加されるまでは、このリポジトリで `npx skills update` を使わない。
-
-`npx skills check` もread-onlyの更新確認ではなく、lockにあるskillを再取得して実体とhashを更新する。
-変更有無の確認だけを目的に実行しない。上流との差分確認が必要な場合はsourceを個別に調査し、
-実体を更新する場合だけ下記の`add -a codex`を使う。
-
-代わりに、下記の `Current Known External Sources` にある対象 source の `add` を
-`~/dotfiles` から再実行する。各コマンドは `-a codex` を明示するため、
-`.agents/skills` と `skills-lock.json` だけを更新する。
-
-単一 skill の更新例:
-
-```bash
-npx --yes skills add <owner/repo> --skill <skill-name> -a codex -y
-```
-
-全 external skill の更新では、`Current Known External Sources` のコマンドをすべて再実行する。
-
-誤って `update` を実行した場合は、`.claude/skills` の各 entry が
-`../../.agents/skills/<name>` への symlink であることを確認し、その project alias だけを削除する。
-`.agents/skills` の実体や `.config/claude/skills` の global alias は削除しない。
-
-After updating, inspect:
-
-```bash
-git diff -- skills-lock.json .agents/skills/<skill-name>
-```
-
-## Remove Skills
-
-`skills` 1.5.19 の project scope `remove` は、`-a codex` を付けると
-`.agents/skills/<name>` の canonical path を共有利用中と判定して残す。
-また、agent指定なしで実体を削除しても、project scope の `skills-lock.json` entry は削除しない。
-
-外部由来の dotfiles-managed skill は、agent指定なしで実体とproject aliasを削除する。
-
-```bash
-npx --yes skills remove <skill-name> -y
-```
-
-その後、`~/dotfiles/skills-lock.json` の `skills.<skill-name>` entry を削除する。
-CLIが `Successfully removed` と表示しても、実体とlockを個別に確認する。
-
-If the skill exists in other global agent locations, remove those copies explicitly:
-
-```bash
-npx --yes skills remove --global -a cursor -y <skill-name>
-npx --yes skills remove --global -a gemini-cli -y <skill-name>
-npx --yes skills remove --global -a opencode -y <skill-name>
-npx --yes skills remove --global -a claude-code -y <skill-name>
-```
-
-For a hand-written local skill that is not in `skills-lock.json`, remove the directory directly:
-
-```bash
-rm -r ~/dotfiles/.agents/skills/<skill-name>
-```
-
-## Audit For Duplicate Installs
-
-Check the known places where duplicate skills tend to appear:
-
-```bash
-find ~/.agents/skills ~/.codex/skills ~/.cursor/skills ~/.gemini/skills ~/.config/opencode/skills ~/.claude/skills ~/dotfiles/.agents/skills \
-  -maxdepth 1 -name '<skill-name>' -print 2>/dev/null | sort -u
-```
-
-Interpretation:
-
-- `~/.agents/skills/<skill-name>` and `~/dotfiles/.agents/skills/<skill-name>` are the same location because `~/.agents` is a symlink.
-- Any matching path under `~/.codex/skills`, `~/.cursor/skills`, `~/.gemini/skills`, `~/.config/opencode/skills`, or `~/.claude/skills` is a duplicate unless there is an explicit reason to keep it.
-- `~/.config/claude/skills` is a symlink to `~/.agents/skills`, so it is out of audit scope. `~/.claude/skills` is a real directory, so it is in audit scope.
-
-Check lock file drift separately:
-
-```bash
-find ~/dotfiles ~/.agents \( \
-  -name skills-lock.json -o \
-  -name skill-lock.json -o \
-  -name .skills-lock.json -o \
-  -name .skill-lock.json \
-\) -print
-```
-
-The only desired real path is `~/dotfiles/skills-lock.json`.
-
-## Verify Current Management State
-
-Use these checks before reporting completion:
-
-```bash
-ls -ld ~/.agents ~/dotfiles/.agents
-npx --yes skills list --json -a codex
-npx --yes skills list --json -g -a codex
-git status --short --untracked-files=all
-```
-
-The desired state is:
-
-- `~/.agents -> ~/dotfiles/.agents`.
-- The only lock file is `~/dotfiles/skills-lock.json`.
-- Dotfiles-managed skills appear under `~/dotfiles/.agents/skills`.
-- External skills installed through `npx skills` are represented in `skills-lock.json`.
-- Deleted or de-duplicated skills do not remain under `~/.codex/skills`, `~/.cursor/skills`, `~/.gemini/skills`, `~/.config/opencode/skills`, or `~/.claude/skills`.
-
-## Current Known External Sources
-
-Cloudflare skills:
-
-```bash
-npx --yes skills add cloudflare/skills \
-  --skill workers-best-practices \
-  --skill wrangler \
-  -a codex -y
-```
-
-External project skills:
-
-```bash
-npx --yes skills add vercel-labs/agent-browser --skill agent-browser -a codex -y
-npx --yes skills add emilkowalski/skills --skill apple-design -a codex -y
-npx --yes skills add anthropics/claude-code --skill frontend-design --full-depth -a codex -y
-npx --yes skills add vercel-labs/portless --skill portless -a codex -y
-npx --yes skills add millionco/react-doctor --skill react-doctor -a codex -y
-npx --yes skills add vercel-labs/agent-skills --skill vercel-react-best-practices -a codex -y
-npx --yes skills add github/gh-stack --skill gh-stack -a codex -y
-```
-
-## Common Mistakes
-
-- Running `npx skills add -g -a codex`: this installs into Codex global storage instead of the dotfiles `.agents` tree.
-- Running `npx skills add` from `~/.agents` or `.agents/skills`: this can create a lock file at the wrong root.
-- Keeping `.agents/.skill-lock.json` or other alternate lock files: use root `skills-lock.json` only.
-- Installing the same skill for Cursor or Gemini just to make Codex see it: Codex should read the `.agents` copy through the dotfiles-managed path.
-- Hand-editing external skill files without recording that they now diverge from the upstream `skills-lock.json` entry.
-- Removing only `~/dotfiles/.agents/skills/<name>` while leaving copies under `~/.cursor/skills`, `~/.gemini/skills`, `~/.config/opencode/skills`, or `~/.claude/skills`.
-
-## Local Skill Authoring Rules
-
-手作りのローカル運用 skill（`~/dotfiles/.agents/skills/<name>/SKILL.md`）を書く・改訂するときは、次に従う。
-
-- frontmatter の `description` には発動条件（いつ使うか・使わないか）だけを書く。手順・ワークフロー・規約値の要約を混入させない。description だけを読んで本文を読まずに動く事故を防ぐため。
-- 同じルール・テンプレート・閾値を複数ファイルに重複して書かない。正式な定義は1箇所に置き、他の箇所はそこへの参照にする。
-- コマンドリファレンスの列挙が長くなる場合は `references/` に分離し、`SKILL.md` 本体は判断フロー・手順・チェックリストに絞る。
-- 文体は淡々とした実務トーンとし、誇張語・鼓舞表現を使わない（詳細は japanese-tech-writing skill を参照）。
+- 本文の改訂ではdescription/body、参照リンク、`agents/openai.yaml`があればその既定プロンプトの整合を確認する。
+- 利用可能な`skill-creator`のvalidatorで形式を確認し、スクリプト変更時は影響する既存検証を行う。
+- 独立agentによる実証評価を依頼された場合は`empirical-prompt-tuning`を使う。静的点検だけを実証評価と呼ばない。
+- 導入・削除・配置変更では、管理手順にある実体・lock・symlinkの確認を行う。
+- 完了時に差分と必要な検証結果を示す。共有symlink経由の反映と、次セッションでの読込を区別する。
