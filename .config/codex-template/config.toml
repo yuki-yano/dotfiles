@@ -1,5 +1,7 @@
 # @nvim.on_save deno task codex:template -- --apply
 model = "gpt-6-astra"
+model_context_window = 400000
+model_auto_compact_token_limit = 360000
 # model_context_window = 272000
 # model_auto_compact_token_limit = 240000
 model_reasoning_effort = "xhigh"
@@ -107,10 +109,16 @@ enabled = true
 [plugins."computer-use@openai-bundled"]
 enabled = true
 
-[plugins."context-mode@context-mode"]
-enabled = false
+[plugins."unified-computer-use@openai-bundled"]
+enabled = true
 
 [plugins."drawio@drawio"]
+enabled = true
+
+[plugins."visualize@openai-bundled"]
+enabled = true
+
+[plugins."computer-history@openai-bundled"]
 enabled = true
 
 [marketplaces.openai-bundled]
