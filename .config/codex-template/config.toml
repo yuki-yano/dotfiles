@@ -1,9 +1,7 @@
 # @nvim.on_save deno task codex:template -- --apply
 model = "gpt-6-astra"
-model_context_window = 400000
-model_auto_compact_token_limit = 360000
-# model_context_window = 272000
-# model_auto_compact_token_limit = 240000
+# model_context_window = 400000
+# model_auto_compact_token_limit = 360000
 model_reasoning_effort = "xhigh"
 plan_mode_reasoning_effort = "xhigh"
 network_access = true
@@ -62,8 +60,10 @@ responses_websockets_v2 = true
 fast_mode = true
 hooks = true
 plugin_hooks = true
+memories = true
+chronicle = true
 
-context_management = { experimental_mode = true }
+# context_management = { experimental_mode = true }
 # token_budget.enabled = true
 # token_budget.use_history_notes_extension = true
 
@@ -71,6 +71,7 @@ context_management = { experimental_mode = true }
 status_line = ["model-with-reasoning", "git-branch", "context-remaining", "context-window-size", "fast-mode", "weekly-limit", "five-hour-limit"]
 theme = "catppuccin-mocha"
 terminal_title = []
+whimsy = false
 
 [mcp_servers.chrome-devtools]
 command = "npx"
