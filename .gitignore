@@ -49,4 +49,5 @@ CLAUDE.md
 !/.config/claude/hooks/
 !/.config/claude/scripts/
 !/.config/claude/settings.json
-.claude/settings.local.json
+/.claude/settings.local.json
+/.agents/skills/synced/
