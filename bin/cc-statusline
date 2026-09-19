@@ -29,10 +29,12 @@ type VdeMonitorRuntimeMarker = {
 };
 
 type VdeMonitorRateLimits = {
-  fiveHour: UsageMetric;
-  sevenDay: UsageMetric;
-  fable: UsageMetric | null;
+  fiveHour: RateLimitMetric | null;
+  sevenDay: RateLimitMetric | null;
+  fable: RateLimitMetric | null;
 };
+
+type RateLimitMetric = UsageMetric & { stale?: boolean };
 
 type ContextWindowUsage = {
   input_tokens?: number;
@@ -294,21 +296,21 @@ function getVdeMonitorAccess(homeDir: string): { ports: number[]; token: string 
   }
 }
 
-function parseVdeMonitorUsageWindow(window?: VdeMonitorUsageWindow): UsageMetric | null {
+function parseVdeMonitorUsageWindow(window: VdeMonitorUsageWindow | undefined, stale: boolean): RateLimitMetric | null {
   const utilizationPercent = window?.utilizationPercent;
   const resetsAtMs = window?.resetsAt ? Date.parse(window.resetsAt) : Number.NaN;
 
   if (
     typeof utilizationPercent !== "number" ||
-    !Number.isFinite(utilizationPercent) ||
-    Number.isNaN(resetsAtMs)
+    !Number.isFinite(utilizationPercent)
   ) {
     return null;
   }
 
   return {
     used_percentage: utilizationPercent,
-    resets_at: resetsAtMs / 1000,
+    resets_at: Number.isNaN(resetsAtMs) ? undefined : resetsAtMs / 1000,
+    stale,
   };
 }
 
@@ -326,20 +328,25 @@ async function fetchVdeMonitorRateLimits(port: number, token: string): Promise<V
     }
 
     const data = await response.json() as VdeMonitorUsageResponse;
-    if (data.provider?.status !== "ok") {
+    if (data.provider?.status !== "ok" && data.provider?.status !== "degraded") {
       return null;
     }
 
     const windows = data.provider.windows;
-    const fiveHour = parseVdeMonitorUsageWindow(windows?.find((window) => window.id === "session"));
-    const sevenDay = parseVdeMonitorUsageWindow(windows?.find((window) => window.id === "weekly"));
-    if (!fiveHour || !sevenDay) {
+    if (!Array.isArray(windows)) {
       return null;
     }
-
+    const stale = data.provider.status === "degraded";
+    const fiveHour = parseVdeMonitorUsageWindow(windows.find((window) => window?.id === "session"), stale);
+    const sevenDay = parseVdeMonitorUsageWindow(windows.find((window) => window?.id === "weekly"), stale);
     const fable = parseVdeMonitorUsageWindow(
-      windows?.find((window) => window.id === "model" && window.title === "Fable Weekly"),
+      windows.find((window) => window?.id === "model" && window.title === "Fable Weekly"),
+      stale,
     );
+
+    if (!fiveHour && !sevenDay && !fable) {
+      return null;
+    }
 
     return {
       fiveHour,
@@ -365,16 +372,27 @@ async function getVdeMonitorRateLimits(): Promise<VdeMonitorRateLimits | null> {
   const limits = await Promise.all(
     access.ports.map((port) => fetchVdeMonitorRateLimits(port, access.token)),
   );
-  return limits.find((limit) => limit !== null) ?? null;
+  // Multiple running monitors may have different cache states. Prefer a current
+  // value for each window, without letting a partial response hide other windows.
+  const selectWindow = (key: keyof VdeMonitorRateLimits): RateLimitMetric | null => {
+    const metrics = limits.map((limit) => limit?.[key]);
+    return metrics.find((metric) => metric && !metric.stale) ?? metrics.find((metric) => metric) ?? null;
+  };
+  return {
+    fiveHour: selectWindow("fiveHour"),
+    sevenDay: selectWindow("sevenDay"),
+    fable: selectWindow("fable"),
+  };
 }
 
 function getRateLimitHealth(usedPct?: number, resetsAt?: number, windowMs?: number): RateLimitHealth | null {
   if (
-    usedPct === undefined ||
-    resetsAt === undefined ||
+    typeof usedPct !== "number" ||
+    typeof resetsAt !== "number" ||
     windowMs === undefined ||
-    Number.isNaN(usedPct) ||
-    Number.isNaN(resetsAt)
+    !Number.isFinite(usedPct) ||
+    !Number.isFinite(resetsAt) ||
+    Number.isNaN(new Date(resetsAt * 1000).getTime())
   ) {
     return null;
   }
@@ -404,12 +422,28 @@ function getRateLimitHealth(usedPct?: number, resetsAt?: number, windowMs?: numb
   return { ...base, statusLabel: "critical", statusIcon: "✕", statusColor: PALETTE.red };
 }
 
-function formatRateLimitMetric(label: string, health: RateLimitHealth | null): string | null {
-  if (!health) {
-    return null;
+function formatRateLimitMetric(label: string, metric: RateLimitMetric | null | undefined, windowMs: number): string {
+  const labelField = label.padEnd(5);
+  const prefix = `${rgb(PALETTE.subtext1)}${labelField}${RESET}`;
+  const usedPct = metric?.used_percentage;
+  const resetsAt = metric?.resets_at;
+  const health = getRateLimitHealth(usedPct, resetsAt, windowMs);
+  const expired = health !== null && typeof resetsAt === "number" && resetsAt * 1000 <= Date.now();
+
+  if (typeof usedPct !== "number" || !Number.isFinite(usedPct) || expired) {
+    const reason = expired ? "reset pending" : "unavailable";
+    return `${prefix} ${rgb(PALETTE.overlay0)}${"─".repeat(10)} ● --% | ${reason}${RESET}`;
   }
 
-  const labelField = label.padEnd(5);
+  // A known percentage is useful even without a reset time. Stale values do not
+  // get pace colors or scores, which would suggest a current measurement.
+  if (!health || metric?.stale) {
+    const reset = health ? `↺ ${health.remainingDuration} → ${health.resetAtLabel}` : "reset unknown";
+    return `${prefix} ${remainingBar(100 - usedPct, PALETTE.subtext0)} ${rgb(PALETTE.subtext0)}●${
+      formatPercent(clampPercentage(100 - usedPct))
+    } | ${reset}${metric?.stale ? " | stale" : ""}${RESET}`;
+  }
+
   const budgetField = `●${formatPercent(health.budgetLeftPct)}`;
   const timeField = `⌛${formatPercent(health.timeLeftPct)}`;
   const delta = Math.round(health.budgetLeftPct - health.timeLeftPct);
@@ -519,21 +553,6 @@ async function main() {
   const vdeMonitorRateLimits = await getVdeMonitorRateLimits();
   const fiveHourRateLimit = vdeMonitorRateLimits?.fiveHour ?? input.rate_limits?.five_hour;
   const sevenDayRateLimit = vdeMonitorRateLimits?.sevenDay ?? input.rate_limits?.seven_day;
-  const fiveHourHealth = getRateLimitHealth(
-    fiveHourRateLimit?.used_percentage,
-    fiveHourRateLimit?.resets_at,
-    FIVE_HOUR_WINDOW_MS,
-  );
-  const sevenDayHealth = getRateLimitHealth(
-    sevenDayRateLimit?.used_percentage,
-    sevenDayRateLimit?.resets_at,
-    SEVEN_DAY_WINDOW_MS,
-  );
-  const fableHealth = getRateLimitHealth(
-    vdeMonitorRateLimits?.fable?.used_percentage,
-    vdeMonitorRateLimits?.fable?.resets_at,
-    SEVEN_DAY_WINDOW_MS,
-  );
 
   const firstLineParts = [
     formatModelItem(modelDisplay, effortLevel),
@@ -543,15 +562,10 @@ async function main() {
   ];
 
   const usageParts = [
-    formatRateLimitMetric("5h", fiveHourHealth),
-    formatRateLimitMetric("7d", sevenDayHealth),
-    formatRateLimitMetric("Fable", fableHealth),
-  ].filter((value): value is string => value !== null);
-
-  if (usageParts.length === 0) {
-    console.log(firstLineParts.join(` ${rgb(PALETTE.overlay0)}|${RESET} `));
-    return;
-  }
+    formatRateLimitMetric("5h", fiveHourRateLimit, FIVE_HOUR_WINDOW_MS),
+    formatRateLimitMetric("1w", sevenDayRateLimit, SEVEN_DAY_WINDOW_MS),
+    formatRateLimitMetric("Fable", vdeMonitorRateLimits?.fable, SEVEN_DAY_WINDOW_MS),
+  ];
 
   const rateLimitLines = usageParts.map((line, index) => {
     const guide = index === usageParts.length - 1 ? "└" : "├";
