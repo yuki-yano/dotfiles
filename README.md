@@ -90,6 +90,11 @@ Put `~/dotfiles/bin` on your `PATH` (zsh does this automatically) so helper scri
 To inject startup context from your personal notes into Codex, set `AGENT_NOTE_DIR` to an existing directory and then
 run `deno task codex:template -- --apply` so `~/.codex/hooks.json` is refreshed.
 
+The Codex config template expands `{{CHATGPT_APP_VERSION}}` using `CFBundleShortVersionString` from
+`/Applications/ChatGPT.app/Contents/Info.plist`. Both dry-run and apply verify that the matching
+`~/.codex/plugins/cache/openai-bundled/browser/<version>/scripts/browser-service.mjs` exists before writing any files.
+After updating ChatGPT, restart the app to initialize its bundled browser plugin before applying the template.
+
 ## Task Automation
 
 `deno task help` prints all commands. Every task respects `--dry-run` (pass it after `--` so Deno forwards the flag),

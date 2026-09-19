@@ -1,9 +1,11 @@
-#!/usr/bin/env -S deno run --allow-read --allow-write --allow-env
+#!/usr/bin/env -S deno run --allow-read --allow-write --allow-env --allow-run=/usr/bin/plutil
 
 import { dirname, join } from "@std/path";
+import { parse } from "@std/toml";
 
 export const START_MARKER = "# dotfiles-managed:start";
 export const END_MARKER = "# dotfiles-managed:end";
+const CHATGPT_APP_VERSION_TOKEN = "{{CHATGPT_APP_VERSION}}";
 
 type ApplyCodexTemplateOptions = {
   templateDir?: string;
@@ -12,6 +14,7 @@ type ApplyCodexTemplateOptions = {
   endMarker?: string;
   dryRun?: boolean;
   copyTargets?: string[];
+  chatgptAppPath?: string;
 };
 
 export class CodexTemplateApplyError extends Error {
@@ -54,6 +57,84 @@ function renderTemplateText(templateBody: string): string {
     /(^|[\s"'`])~(?=\/|["'`]|$)/gm,
     (_match, prefix: string) => `${prefix}${resolveHome()}`,
   );
+}
+
+async function renderConfigTemplate(
+  templateBody: string,
+  chatgptAppPath: string,
+): Promise<string> {
+  const rendered = renderTemplateText(templateBody);
+  if (!rendered.includes(CHATGPT_APP_VERSION_TOKEN)) {
+    return rendered;
+  }
+
+  const infoPath = join(chatgptAppPath, "Contents", "Info.plist");
+  let version: string;
+  try {
+    const result = await new Deno.Command("/usr/bin/plutil", {
+      args: ["-extract", "CFBundleShortVersionString", "raw", "-o", "-", infoPath],
+      stdout: "piped",
+      stderr: "piped",
+    }).output();
+    const decoder = new TextDecoder();
+    if (!result.success) {
+      throw new Error(
+        decoder.decode(result.stderr).trim() || decoder.decode(result.stdout).trim() ||
+          `plutil exited with code ${result.code}`,
+      );
+    }
+    version = decoder.decode(result.stdout).trim();
+  } catch (error) {
+    throw new CodexTemplateApplyError(
+      "Could not read the ChatGPT app version.",
+      [`Info.plist: ${infoPath}`, String(error), "Ensure the ChatGPT app is installed and its Info.plist is readable."],
+    );
+  }
+
+  if (!/^\d+\.\d+\.\d+$/.test(version)) {
+    throw new CodexTemplateApplyError(
+      "The ChatGPT app version is invalid.",
+      [`Info.plist: ${infoPath}`, `CFBundleShortVersionString: ${JSON.stringify(version)}`],
+    );
+  }
+
+  const configBody = rendered.replaceAll(CHATGPT_APP_VERSION_TOKEN, version);
+  let browserServicePath: string;
+  try {
+    const config = parse(configBody) as {
+      mcp_servers?: { node_repl?: { env?: { NODE_REPL_TRUSTED_SERVICES?: unknown } } };
+    };
+    const trustedServices = config.mcp_servers?.node_repl?.env?.NODE_REPL_TRUSTED_SERVICES;
+    if (typeof trustedServices !== "string") {
+      throw new Error("NODE_REPL_TRUSTED_SERVICES must be a JSON string containing a browser service path.");
+    }
+    const browser: unknown = JSON.parse(trustedServices).browser;
+    if (typeof browser !== "string" || browser.length === 0) {
+      throw new Error("NODE_REPL_TRUSTED_SERVICES.browser must be a non-empty string.");
+    }
+    browserServicePath = browser;
+  } catch (error) {
+    throw new CodexTemplateApplyError("The browser service configuration is invalid.", [String(error)]);
+  }
+
+  try {
+    if (!(await Deno.stat(browserServicePath)).isFile) {
+      throw new Error("The browser service path is not a regular file.");
+    }
+  } catch (error) {
+    throw new CodexTemplateApplyError(
+      "The browser service for the ChatGPT app version is unavailable.",
+      [
+        `ChatGPT app version: ${version}`,
+        `Browser service: ${browserServicePath}`,
+        String(error),
+        "Launch the updated ChatGPT app to initialize its bundled browser plugin, then retry.",
+      ],
+    );
+  }
+
+  console.log(`ChatGPT app version: ${version}`);
+  return configBody;
 }
 
 async function collectRelativeFilePaths(rootDirectory: string, prefix = ""): Promise<string[]> {
@@ -282,7 +363,10 @@ export async function applyCodexTemplate(options: ApplyCodexTemplateOptions = {}
   const configTemplatePath = join(templateDir, "config.toml");
   const configOutputPath = join(outputDir, "config.toml");
 
-  const configTemplateBody = renderTemplateText(await Deno.readTextFile(configTemplatePath));
+  const configTemplateBody = await renderConfigTemplate(
+    await Deno.readTextFile(configTemplatePath),
+    options.chatgptAppPath ?? "/Applications/ChatGPT.app",
+  );
   const currentConfig = await Deno.readTextFile(configOutputPath).catch((error: unknown) => {
     if (error instanceof Deno.errors.NotFound) {
       throw new CodexTemplateApplyError(
