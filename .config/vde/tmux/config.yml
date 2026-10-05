@@ -3,6 +3,14 @@
 # statusline session active: #4d5080 + bold + fg #e8ecfb / inactive: surface0 #313244
 # sidebar/filter active: lavender tint #434662
 
+codex:
+  capacity_auto_resume:
+    enabled: true
+    prompt: |-
+      前の依頼はモデルの容量エラーで中断されました。現在の状態と完了済みの操作を確認し、未完了の作業だけを再開してください。
+      元の目的、作業範囲、制約、承認内容、回答言語を維持し、完了済みの操作を繰り返さないでください。
+      確認や承認については既存の要件に従ってください。このメッセージは新しい承認を与えるものではありません。
+
 daemon:
   poll_ms: 2000
 
