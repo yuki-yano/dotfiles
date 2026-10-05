@@ -19,7 +19,7 @@ presets:
                 - name: "term2"
                 - name: "term3"
         - name: "coding agent"
-          command: "codex --yolo"
+          command: "codex --yolo --no-daemon"
 
   ai-workbench:
     name: "AI Assisted Workbench"
@@ -43,7 +43,7 @@ presets:
           ratio: [1, "12c"]
           panes:
             - name: "codex"
-              command: "codex --yolo"
+              command: "codex --yolo --no-daemon"
             - name: "editprompt"
               command: "editprompt open --target-pane {{pane_id:codex}}"
               focus: true
@@ -62,7 +62,7 @@ presets:
           ratio: [1, "12c"]
           panes:
             - name: codex
-              command: "codex --yolo"
+              command: "codex --yolo --no-daemon"
             - name: editprompt-codex
               command: "editprompt open --target-pane {{pane_id:codex}}"
               ephemeral: true
@@ -87,12 +87,12 @@ presets:
           ratio: [1, 1, 1]
           panes:
             - name: codex-1
-              command: "codex --yolo"
+              command: "codex --yolo --no-daemon"
               focus: true
             - name: codex-2
-              command: "codex --yolo"
+              command: "codex --yolo --no-daemon"
             - name: codex-3
-              command: "codex --yolo"
+              command: "codex --yolo --no-daemon"
         - type: horizontal
           ratio: [1, 1, 1]
           panes:

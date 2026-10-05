@@ -190,7 +190,7 @@ snippets:
 
   - name: codex yolo
     keyword: yolo
-    snippet: codex --yolo
+    snippet: codex --yolo --no-daemon
   - name: claude
     keyword: cc
     snippet: claude --dangerously-skip-permissions --add-dir "${AGENT_NOTE_DIR}"
