@@ -3,81 +3,101 @@
   "skills": {
     "agent-browser": {
       "source": "vercel-labs/agent-browser",
+      "ref": "526157cfd4ec64f45939f9ba0f10d5936aa7ac33",
       "sourceType": "github",
       "skillPath": "skills/agent-browser/SKILL.md",
-      "computedHash": "80161e6836b3b40f4e83730a290deb40ac14d877d38c97ad5f6d71be37ce74c3"
+      "computedHash": "dd491d53824ad9286ec950aee667098446332429a6d41fe28b4ba11f1959264c"
     },
     "apple-design": {
       "source": "emilkowalski/skills",
+      "ref": "e8a175de22ae1e49370fc144c1f3bb9aeedf988d",
       "sourceType": "github",
       "skillPath": "skills/apple-design/SKILL.md",
-      "computedHash": "8b94db67cb9edaad5f1501010804caa610131f1d2dfda0a27664b2e858deade3"
+      "computedHash": "0190417d092a0df447b000154e39733ea6d97efad6d3bec8a6ce3845aeb88914"
     },
     "domain-modeling": {
       "source": "mattpocock/skills",
+      "ref": "24fe0ef7737efae15c87225755e9f6f5965e4888",
       "sourceType": "github",
       "skillPath": "skills/engineering/domain-modeling/SKILL.md",
-      "computedHash": "a11713c0ff7870efa3c331b2e273f09116158485246edc89ae5088eefd1b0b48"
+      "computedHash": "b3eb40152b81f0c98fd2095a023c019452dbdce56f7540cc67fece2972db8369"
     },
     "frontend-design": {
       "source": "anthropics/claude-code",
+      "ref": "2bfb629dfaff0c8318047a4beb93cf1dc5b58b18",
       "sourceType": "github",
       "skillPath": "plugins/frontend-design/skills/frontend-design/SKILL.md",
       "computedHash": "b8c8329ad9b98fa57f4a279e37bdf4a0d55743140e54bb7da3e340d754d75b43"
     },
     "gh-stack": {
       "source": "github/gh-stack",
+      "ref": "d4ab7ab47e5b3e3708a27c8c42abcdf4bc321419",
       "sourceType": "github",
       "skillPath": "skills/gh-stack/SKILL.md",
-      "computedHash": "28d42250d52f33424b807add6fbdec75736e835f98752311db321ab51733fea6"
+      "computedHash": "6a5289601eedbeedc2d79c2d8627277afb9b9a3fbd78b4da3399a46dd788ae0a"
     },
     "grill-me": {
       "source": "mattpocock/skills",
+      "ref": "24fe0ef7737efae15c87225755e9f6f5965e4888",
       "sourceType": "github",
       "skillPath": "skills/productivity/grill-me/SKILL.md",
       "computedHash": "9cdbb4b8f7a3aeaef82e6230c9e823500d4a8a1214c726cf342cf9829d34fc7d"
     },
     "grill-with-docs": {
       "source": "mattpocock/skills",
+      "ref": "24fe0ef7737efae15c87225755e9f6f5965e4888",
       "sourceType": "github",
       "skillPath": "skills/engineering/grill-with-docs/SKILL.md",
       "computedHash": "35e62aa423aaeab6a414bcac273f56dfb17802ef2334b41b6a3b00f28196c8cf"
     },
     "grilling": {
       "source": "mattpocock/skills",
+      "ref": "24fe0ef7737efae15c87225755e9f6f5965e4888",
       "sourceType": "github",
       "skillPath": "skills/productivity/grilling/SKILL.md",
       "computedHash": "4dd886b0196bf43729d954ae326016f2bd9f5f79d892500b407c33a753362f14"
     },
+    "i-have-adhd": {
+      "source": "ayghri/i-have-adhd",
+      "ref": "839872f9d1cd634fed642b4589ce7226199cc15f",
+      "sourceType": "github",
+      "skillPath": "skills/i-have-adhd/SKILL.md",
+      "computedHash": "2be8f3214ebd0907429eafacc95c1cc3b4f21fe9d1892a30df9be7f32dc09d65"
+    },
     "portless": {
       "source": "vercel-labs/portless",
+      "ref": "e06a3572c0bcc04ef045582bbcdeb5ee18e72b3b",
       "sourceType": "github",
       "skillPath": "skills/portless/SKILL.md",
-      "computedHash": "cd93aa3d65f55d8ce528232bd1731c9d18d387ee5869614aa3832f925bc8617a"
+      "computedHash": "fffa128d19849b3b7815cd3ecd62e2e999c2b2b237a6fcb6ec89c296bce80254"
     },
     "react-doctor": {
       "source": "millionco/react-doctor",
+      "ref": "675ad3c7938c3d8b24a835c7f0f4572ad7328b23",
       "sourceType": "github",
       "skillPath": "skills/react-doctor/SKILL.md",
-      "computedHash": "2a003f397a4a94fc032019bc7fd97e938b4e2fae995c96df8603790db168dcc7"
+      "computedHash": "2e5bde473878686ffb1463b8385e07943c6545e63aa8e676ae3ff46cdb9b02fe"
     },
     "vercel-react-best-practices": {
       "source": "vercel-labs/agent-skills",
+      "ref": "063bee94c3f4df8453406c830b0a7df0f2860278",
       "sourceType": "github",
       "skillPath": "skills/react-best-practices/SKILL.md",
       "computedHash": "3219a1944e404ffc14d1d9d6aef6dd2e3855b81387ee0a044ccbfe14d34c2357"
     },
     "workers-best-practices": {
       "source": "cloudflare/skills",
+      "ref": "41e0d19858946d18af9ee2c2feebbe2e11d829ff",
       "sourceType": "github",
       "skillPath": "skills/workers-best-practices/SKILL.md",
-      "computedHash": "61834fa098e16280aae54e584f5a16e047391790b1e1e4995c0e9a111d6d75c3"
+      "computedHash": "e1c30e93854345114dfa6a0a077363119eb99c03e5c64a8f2109349802e1f2aa"
     },
     "wrangler": {
       "source": "cloudflare/skills",
+      "ref": "41e0d19858946d18af9ee2c2feebbe2e11d829ff",
       "sourceType": "github",
       "skillPath": "skills/wrangler/SKILL.md",
-      "computedHash": "4d247a243fec7e23f1247976e0e491520cb0feb397c5477022551e7b4f5cdd93"
+      "computedHash": "6d2bade1438d89034a750b1ddf30d0e5b62823306eccf85a5b25ccc4352ff8a9"
     }
   }
 }
