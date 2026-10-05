@@ -77,28 +77,56 @@ presets:
 
   cc-grid:
     name: cc-grid
-    description: "Three Codex panes above three Claude panes"
+    description: "Three columns, each with Codex above Claude"
     windowMode: current-window
     layout:
-      type: vertical
-      ratio: [1, 1]
+      type: horizontal
+      ratio: [1, 1, 1]
       panes:
-        - type: horizontal
-          ratio: [1, 1, 1]
+        - type: vertical
+          ratio: [1, 1]
           panes:
             - name: codex-1
               command: "codex --yolo --no-daemon"
               focus: true
-            - name: codex-2
-              command: "codex --yolo --no-daemon"
-            - name: codex-3
-              command: "codex --yolo --no-daemon"
-        - type: horizontal
-          ratio: [1, 1, 1]
-          panes:
             - name: claude-1
               command: "claude --dangerously-skip-permissions"
+        - type: vertical
+          ratio: [1, 1]
+          panes:
+            - name: codex-2
+              command: "codex --yolo --no-daemon"
             - name: claude-2
               command: "claude --dangerously-skip-permissions"
+        - type: vertical
+          ratio: [1, 1]
+          panes:
+            - name: codex-3
+              command: "codex --yolo --no-daemon"
             - name: claude-3
               command: "claude --dangerously-skip-permissions"
+
+  3x2:
+    name: "3x2"
+    description: "Three equal columns, each split into two shell panes"
+    windowMode: current-window
+    layout:
+      type: horizontal
+      ratio: [1, 1, 1]
+      panes:
+        - type: vertical
+          ratio: [1, 1]
+          panes:
+            - name: term1
+              focus: true
+            - name: term2
+        - type: vertical
+          ratio: [1, 1]
+          panes:
+            - name: term3
+            - name: term4
+        - type: vertical
+          ratio: [1, 1]
+          panes:
+            - name: term5
+            - name: term6
