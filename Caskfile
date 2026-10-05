@@ -19,6 +19,7 @@ install --cask obs
 install --cask obsidian
 install --cask raycast
 install --cask sharemouse
+install --cask spotify
 install --cask stats
 install --cask tableplus
 install --cask tailscale-app
