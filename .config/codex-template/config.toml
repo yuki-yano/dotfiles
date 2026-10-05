@@ -7,10 +7,10 @@ plan_mode_reasoning_effort = "xhigh"
 web_search = "live"
 
 notify = [
-  "vde-notifier",
-  "--codex",
-  "--skip-codex-subagent",
-  "--skip-codex-non-interactive"
+  "~/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient",
+  "turn-ended",
+  "--previous-notify",
+  "[\"vde-notifier\",\"--codex\",\"--skip-codex-subagent\",\"--skip-codex-non-interactive\"]"
 ]
 suppress_unstable_features_warning = true
 personality = "pragmatic"
@@ -68,25 +68,26 @@ status_line = ["model-with-reasoning", "git-branch", "context-remaining", "conte
 theme = "catppuccin-mocha"
 terminal_title = []
 whimsy = false
+fullscreen_transcript = false
+screen_reader_detection_done = true
 
 [tui.model_availability_nux]
 "gpt-6.1-sol" = 4
 
-[mcp_servers.chrome-devtools]
-command = "npx"
-args = [
-  "-y",
-  "chrome-devtools-mcp@latest",
-  "--autoConnect",
-  "--categoryExperimentalWebmcp",
-  "--no-usage-statistics"
-]
-startup_timeout_sec = 20
-tool_timeout_sec = 120
-enabled = true
+# [mcp_servers.chrome-devtools]
+# command = "npx"
+# args = [
+#   "-y",
+#   "chrome-devtools-mcp@latest",
+#   "--autoConnect",
+#   "--categoryExperimentalWebmcp",
+#   "--no-usage-statistics"
+# ]
+# startup_timeout_sec = 20
+# tool_timeout_sec = 120
+# enabled = true
 
 [mcp_servers.node_repl]
-enabled = false
 args = []
 command = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node_repl"
 startup_timeout_sec = 120
@@ -97,7 +98,7 @@ NODE_REPL_NODE_MODULE_DIRS = "/Applications/ChatGPT.app/Contents/Resources/cua_n
 NODE_REPL_NODE_PATH = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
 NODE_REPL_TRUSTED_CODE_PATHS = "~/.codex:/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
 CODEX_HOME = "~/.codex"
-BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab,mcpapps"
 BROWSER_USE_TINYSKY_ENABLED = "1"
 NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = ""
 NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = ""
@@ -106,9 +107,7 @@ BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
 BROWSER_USE_CODEX_APP_VERSION = "{{CHATGPT_APP_VERSION}}"
 NODE_REPL_TRUSTED_SERVICES = '{"browser":"~/.codex/plugins/cache/openai-bundled/browser/{{CHATGPT_APP_VERSION}}/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
 SKY_CUA_SERVICE_PATH = "~/.codex/computer-use/Codex Computer Use.app"
-CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
-CUA_REPL_ENABLED_SURFACES = "browser,computer"
-NODE_REPL_UNTRUSTED_ENV_ALLOWLIST = "CUA_REPL_ENABLED_SURFACES"
+CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex"
 
 [mcp_servers.computer-use]
 command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
@@ -152,8 +151,10 @@ enabled = true
 [plugins."computer-history@openai-bundled"]
 enabled = true
 
+[plugins."browser@openai-bundled"]
+enabled = true
+
 [marketplaces.openai-bundled]
-last_updated = "2026-04-24T03:46:51Z"
 source_type = "local"
 source = "~/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
