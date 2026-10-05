@@ -3,7 +3,7 @@
   "env": {
     "DISABLE_AUTOUPDATER": "1",
     "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1",
-    "CLAUDE_CODE_SUBAGENT_MODEL": "fable",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "opus",
     "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
     "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
     "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "1",
@@ -15,7 +15,7 @@
   "permissions": {
     "defaultMode": "auto"
   },
-  "model": "fable[1m]",
+  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -216,6 +216,13 @@
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
   "showClearContextOnPlanAccept": true,
+  "pluginConfigs": {
+    "agents-md@builtin": {
+      "options": {
+        "instructionFiles": "claude-md-and-agents-md"
+      }
+    }
+  },
   "tui": "default",
   "autoMemoryEnabled": false,
   "showThinkingSummaries": true,
@@ -225,11 +232,9 @@
   "preferredNotifChannel": "notifications_disabled",
   "remoteControlAtStartup": false,
   "agentPushNotifEnabled": true,
-  "pluginConfigs": {
-    "agents-md@builtin": {
-      "options": {
-        "instructionFiles": "claude-md-and-agents-md"
-      }
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "xhigh"
     }
   }
 }
