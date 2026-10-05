@@ -1,6 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
 import { dirname, join } from "@std/path";
-import { applyCodexTemplate, CodexTemplateApplyError, END_MARKER, START_MARKER } from "../bin/codex-template-apply.ts";
+import {
+  applyCodexTemplate,
+  CodexTemplateApplyError,
+  END_MARKER,
+  formatCodexTemplateApplyError,
+  START_MARKER,
+} from "../bin/codex-template-apply.ts";
 
 Deno.test("codex template expands home paths while preserving sources and unmanaged config", async () => {
   const root = await Deno.makeTempDir();
@@ -19,7 +25,7 @@ Deno.test("codex template expands home paths while preserving sources and unmana
     'absolute = "/tmp/config"',
     "",
   ].join("\n");
-  const existingConfig = `personal = "~/keep"\n${START_MARKER}\nold = true\n${END_MARKER}\n`;
+  const existingConfig = `personal = "~/keep"\n${START_MARKER}\n# managed by dotfiles\n${END_MARKER}\n`;
   const copyFiles = [
     {
       path: "AGENTS.md",
@@ -86,6 +92,227 @@ Deno.test("codex template expands home paths while preserving sources and unmana
   }
 });
 
+async function createManagedSettingsFixture(templateBody: string, managedBody: string) {
+  const root = await Deno.makeTempDir();
+  const templateDir = join(root, "template");
+  const outputDir = join(root, "output");
+  const configPath = join(outputDir, "config.toml");
+  const existingConfig = [
+    'personal = "~/keep"',
+    START_MARKER,
+    managedBody,
+    END_MARKER,
+    '[plugins."outside-managed"]',
+    "enabled = true",
+    "",
+  ].join("\n");
+  const copyFiles = ["AGENTS.md", "agents/explorer.toml", "hooks.json"];
+  await Deno.mkdir(join(templateDir, "agents"), { recursive: true });
+  await Deno.mkdir(join(outputDir, "agents"), { recursive: true });
+  await Deno.writeTextFile(join(templateDir, "config.toml"), templateBody);
+  await Deno.writeTextFile(configPath, existingConfig);
+  for (const path of copyFiles) {
+    await Deno.writeTextFile(join(templateDir, path), "new contents\n");
+    await Deno.writeTextFile(join(outputDir, path), "existing contents\n");
+  }
+  return {
+    root,
+    configPath,
+    existingConfig,
+    copyFiles,
+    options: { templateDir, outputDir, copyTargets: ["AGENTS.md", "agents", "hooks.json"] },
+  };
+}
+
+async function assertManagedSettingsFixtureUnchanged(
+  fixture: Awaited<ReturnType<typeof createManagedSettingsFixture>>,
+) {
+  assertEquals(await Deno.readTextFile(fixture.configPath), fixture.existingConfig);
+  for (const path of fixture.copyFiles) {
+    assertEquals(await Deno.readTextFile(join(fixture.options.outputDir, path)), "existing contents\n");
+  }
+}
+
+const managedSettingsTemplate = 'notify = ["vde-notifier"]\n[tui]\nfullscreen_transcript = false';
+const managedSettingsWithAppAdditions = [
+  'notify = ["app-turn-ended", "vde-notifier"]',
+  "[tui]",
+  "fullscreen_transcript = false",
+  "screen_reader_detection_done = true",
+  '[plugins."browser@openai-bundled"]',
+  "enabled = true",
+].join("\n");
+
+Deno.test("codex template stops before all writes and displays target-only settings and the complete diff", async () => {
+  const fixture = await createManagedSettingsFixture(managedSettingsTemplate, managedSettingsWithAppAdditions);
+  try {
+    for (const dryRun of [true, false]) {
+      const error = await assertRejects(
+        () => applyCodexTemplate({ ...fixture.options, dryRun }),
+        CodexTemplateApplyError,
+        "would remove or change existing managed settings",
+      );
+      const message = formatCodexTemplateApplyError(error);
+      assertStringIncludes(message, "No files were written.");
+      assertStringIncludes(message, "tui.screen_reader_detection_done");
+      assertStringIncludes(message, 'plugins."browser@openai-bundled".enabled');
+      assertStringIncludes(message, "--overwrite-managed");
+      assertEquals(
+        error.managedDiff,
+        [
+          `--- ${fixture.configPath} (managed section)`,
+          `+++ ${join(fixture.options.templateDir, "config.toml")} (rendered)`,
+          "@@ -1,6 +1,3 @@",
+          '-notify = ["app-turn-ended", "vde-notifier"]',
+          '+notify = ["vde-notifier"]',
+          " [tui]",
+          " fullscreen_transcript = false",
+          "-screen_reader_detection_done = true",
+          '-[plugins."browser@openai-bundled"]',
+          "-enabled = true",
+        ].join("\n"),
+      );
+      await assertManagedSettingsFixtureUnchanged(fixture);
+    }
+  } finally {
+    await Deno.remove(fixture.root, { recursive: true });
+  }
+});
+
+Deno.test("codex template requires an explicit overwrite flag and keeps unmanaged settings", async () => {
+  const fixture = await createManagedSettingsFixture(managedSettingsTemplate, managedSettingsWithAppAdditions);
+  const options = { ...fixture.options, overwriteManaged: true };
+  try {
+    assertEquals(await applyCodexTemplate({ ...options, dryRun: true }), true);
+    await assertManagedSettingsFixtureUnchanged(fixture);
+    assertEquals(await applyCodexTemplate(options), true);
+    assertEquals(
+      await Deno.readTextFile(fixture.configPath),
+      fixture.existingConfig.replace(managedSettingsWithAppAdditions, managedSettingsTemplate),
+    );
+    for (const path of fixture.copyFiles) {
+      assertEquals(await Deno.readTextFile(join(fixture.options.outputDir, path)), "new contents\n");
+    }
+    assertEquals(await applyCodexTemplate(fixture.options), false);
+  } finally {
+    await Deno.remove(fixture.root, { recursive: true });
+  }
+});
+
+Deno.test("codex template stops for known-key value changes until an overwrite is requested", async () => {
+  const template = [
+    'model = "new-model"',
+    'notify = ["new-notifier"]',
+    "new_setting = true",
+    "[tui]",
+    'theme = "new-theme"',
+    "[features]",
+    "hooks = true",
+  ].join("\n");
+  const existing = [
+    "# Existing comments and multiline values do not introduce settings.",
+    "tui.theme = 'old-theme'",
+    "features = { hooks = false }",
+    'model = "old-model"',
+    "notify = [",
+    '  "old-notifier",',
+    "]",
+    "",
+  ].join("\n");
+  const fixture = await createManagedSettingsFixture(template, existing);
+  try {
+    for (const dryRun of [true, false]) {
+      const error = await assertRejects(
+        () => applyCodexTemplate({ ...fixture.options, dryRun }),
+        CodexTemplateApplyError,
+        "would remove or change existing managed settings",
+      );
+      assertEquals(error.details.slice(1, 5), ["  features.hooks", "  model", "  notify", "  tui.theme"]);
+      await assertManagedSettingsFixtureUnchanged(fixture);
+    }
+    assertEquals(await applyCodexTemplate({ ...fixture.options, overwriteManaged: true }), true);
+    assertEquals(
+      await Deno.readTextFile(fixture.configPath),
+      fixture.existingConfig.replace(existing, template),
+    );
+  } finally {
+    await Deno.remove(fixture.root, { recursive: true });
+  }
+});
+
+Deno.test("codex template allows new settings and equivalent TOML values despite formatting changes", async () => {
+  const template = [
+    'model = "same-model"',
+    'notify = ["same-notifier"]',
+    "new_setting = true",
+    "[tui]",
+    'theme = "same-theme"',
+    "[features]",
+    "hooks = true",
+  ].join("\n");
+  const existing = [
+    "# Existing comments and multiline values do not change settings.",
+    "tui.theme = 'same-theme'",
+    "features = { hooks = true }",
+    'model = "same-model"',
+    "notify = [",
+    '  "same-notifier",',
+    "]",
+    "",
+  ].join("\n");
+  const fixture = await createManagedSettingsFixture(template, existing);
+  try {
+    assertEquals(await applyCodexTemplate(fixture.options), true);
+    assertEquals(
+      await Deno.readTextFile(fixture.configPath),
+      fixture.existingConfig.replace(existing, template),
+    );
+  } finally {
+    await Deno.remove(fixture.root, { recursive: true });
+  }
+});
+
+Deno.test("codex template checks quoted keys, inline tables and empty target-only tables", async () => {
+  const existing = [
+    'model = "same-model"',
+    'app = { "setting.with.dots" = true }',
+    "[empty_app_table]",
+  ].join("\n");
+  const fixture = await createManagedSettingsFixture('model = "same-model"', existing);
+  try {
+    const error = await assertRejects(() => applyCodexTemplate(fixture.options), CodexTemplateApplyError);
+    const message = formatCodexTemplateApplyError(error);
+    assertStringIncludes(message, 'app."setting.with.dots"');
+    assertStringIncludes(message, "empty_app_table");
+    await assertManagedSettingsFixtureUnchanged(fixture);
+  } finally {
+    await Deno.remove(fixture.root, { recursive: true });
+  }
+});
+
+for (const invalidSource of ["template", "target"]) {
+  Deno.test(`codex template stops before all writes for invalid ${invalidSource} TOML even with an overwrite flag`, async () => {
+    const invalidToml = 'model = "unterminated';
+    const validToml = 'model = "valid-model"';
+    const fixture = await createManagedSettingsFixture(
+      invalidSource === "template" ? invalidToml : validToml,
+      invalidSource === "target" ? invalidToml : validToml,
+    );
+    try {
+      for (const dryRun of [true, false]) {
+        await assertRejects(
+          () => applyCodexTemplate({ ...fixture.options, dryRun, overwriteManaged: true }),
+          CodexTemplateApplyError,
+          "Could not compare the managed Codex settings",
+        );
+        await assertManagedSettingsFixtureUnchanged(fixture);
+      }
+    } finally {
+      await Deno.remove(fixture.root, { recursive: true });
+    }
+  });
+}
+
 function appInfoPlist(version: string): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <plist version="1.0"><dict>
@@ -109,7 +336,13 @@ async function createChatgptTemplateFixture() {
     'unchanged_version = "26.911.61220"',
     "",
   ].join("\n");
-  const existingConfig = `personal = "~/keep"\n${START_MARKER}\nold = true\n${END_MARKER}\n`;
+  const existingConfig = [
+    'personal = "~/keep"',
+    START_MARKER,
+    "# managed by dotfiles",
+    END_MARKER,
+    "",
+  ].join("\n");
   await Deno.mkdir(templateDir);
   await Deno.mkdir(outputDir);
   await Deno.mkdir(dirname(infoPath), { recursive: true });
@@ -168,7 +401,13 @@ Deno.test({
 
       await Deno.mkdir(dirname(fixture.servicePath(updatedVersion)), { recursive: true });
       await Deno.writeTextFile(fixture.servicePath(updatedVersion), "export {};\n");
-      assertEquals(await applyCodexTemplate(options), true);
+      await assertRejects(
+        () => applyCodexTemplate(options),
+        CodexTemplateApplyError,
+        "would remove or change existing managed settings",
+      );
+      assertEquals(await Deno.readTextFile(configPath), expectedConfig(version));
+      assertEquals(await applyCodexTemplate({ ...options, overwriteManaged: true }), true);
       assertEquals(await Deno.readTextFile(configPath), expectedConfig(updatedVersion));
       assertEquals(await applyCodexTemplate({ ...options, dryRun: true }), false);
       assertEquals(await Deno.readTextFile(join(options.templateDir, "config.toml")), configTemplate);

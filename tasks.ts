@@ -89,6 +89,7 @@ const DUTI_CONFIG_FILE = `${HOME}/.duti`;
 
 let DRY_RUN = false;
 let APPLY = false;
+let OVERWRITE_MANAGED = false;
 
 async function readLines(filename: string): Promise<string[]> {
   const content = await Deno.readTextFile(filename);
@@ -747,6 +748,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
     const dryRun = DRY_RUN || !APPLY;
     const changed = await applyCodexTemplate({
       dryRun,
+      overwriteManaged: OVERWRITE_MANAGED,
       copyTargets: CODEX_TEMPLATE_COPY_TARGETS,
     });
 
@@ -950,6 +952,9 @@ const tasks: Record<string, () => Promise<void> | void> = {
     console.log("Options:");
     console.log("    --dry-run                     - Show what would be done without making changes");
     console.log("    --apply                       - Execute codex:template write (default is dry-run)");
+    console.log(
+      "    --overwrite-managed           - Replace existing managed Codex settings after reviewing the diff",
+    );
   },
 };
 
@@ -969,6 +974,16 @@ if (import.meta.main) {
   }
 
   const taskName = args[0];
+
+  const overwriteManagedIndex = args.indexOf("--overwrite-managed");
+  if (overwriteManagedIndex !== -1) {
+    if (taskName !== "codex:template") {
+      console.error("--overwrite-managed is only supported for codex:template");
+      Deno.exit(1);
+    }
+    OVERWRITE_MANAGED = true;
+    args.splice(overwriteManagedIndex, 1);
+  }
 
   if (!taskName) {
     console.error("Usage: deno task <task-name>");

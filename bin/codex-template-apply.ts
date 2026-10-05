@@ -13,17 +13,20 @@ type ApplyCodexTemplateOptions = {
   startMarker?: string;
   endMarker?: string;
   dryRun?: boolean;
+  overwriteManaged?: boolean;
   copyTargets?: string[];
   chatgptAppPath?: string;
 };
 
 export class CodexTemplateApplyError extends Error {
   readonly details: string[];
+  readonly managedDiff?: string;
 
-  constructor(message: string, details: string[] = []) {
+  constructor(message: string, details: string[] = [], managedDiff?: string) {
     super(message);
     this.name = "CodexTemplateApplyError";
     this.details = details;
+    this.managedDiff = managedDiff;
   }
 }
 
@@ -36,6 +39,10 @@ export function formatCodexTemplateApplyError(error: CodexTemplateApplyError): s
   if (error.details.length > 0) {
     lines.push("- How to fix:");
     lines.push(...error.details.map((line) => `  ${line}`));
+  }
+
+  if (error.managedDiff) {
+    lines.push("", "Managed section diff (current -> rendered template):", error.managedDiff);
   }
 
   return lines.join("\n");
@@ -247,6 +254,134 @@ export function applyManagedTemplateToTarget(
   return normalizeTrailingNewline(existing.replace(managedRegex, managedSection));
 }
 
+function isTomlTable(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value) && !(value instanceof Date);
+}
+
+function tomlValuesEqual(current: unknown, template: unknown): boolean {
+  if (current instanceof Date && template instanceof Date) {
+    return current.getTime() === template.getTime();
+  }
+  if (Array.isArray(current) && Array.isArray(template)) {
+    return current.length === template.length &&
+      current.every((value, index) => tomlValuesEqual(value, template[index]));
+  }
+  if (isTomlTable(current) && isTomlTable(template)) {
+    return Object.keys(current).length === Object.keys(template).length &&
+      Object.entries(current).every(([key, value]) =>
+        Object.hasOwn(template, key) && tomlValuesEqual(value, template[key])
+      );
+  }
+  return Object.is(current, template);
+}
+
+function collectManagedChanges(
+  current: Record<string, unknown>,
+  template: Record<string, unknown>,
+  prefix: string[] = [],
+): string[] {
+  const settings: string[] = [];
+  for (const [key, value] of Object.entries(current)) {
+    const path = [...prefix, /^[A-Za-z0-9_-]+$/.test(key) ? key : JSON.stringify(key)];
+    const exists = Object.hasOwn(template, key);
+    if (isTomlTable(value) && isTomlTable(template[key])) {
+      settings.push(...collectManagedChanges(value, template[key], path));
+    } else if (!exists && isTomlTable(value) && Object.keys(value).length > 0) {
+      settings.push(...collectManagedChanges(value, {}, path));
+    } else if (!exists || !tomlValuesEqual(value, template[key])) {
+      settings.push(path.join("."));
+    }
+  }
+  return settings;
+}
+
+function formatManagedSectionDiff(current: string, template: string, outputPath: string, templatePath: string): string {
+  const before = current ? current.split(/\r?\n/) : [];
+  const after = template ? template.split(/\r?\n/) : [];
+  const matches = Array.from({ length: before.length + 1 }, () => new Uint32Array(after.length + 1));
+  for (let i = before.length - 1; i >= 0; i--) {
+    for (let j = after.length - 1; j >= 0; j--) {
+      matches[i][j] = before[i] === after[j]
+        ? matches[i + 1][j + 1] + 1
+        : Math.max(matches[i + 1][j], matches[i][j + 1]);
+    }
+  }
+
+  const lines = [
+    `--- ${outputPath} (managed section)`,
+    `+++ ${templatePath} (rendered)`,
+    `@@ -${before.length ? 1 : 0},${before.length} +${after.length ? 1 : 0},${after.length} @@`,
+  ];
+  let i = 0;
+  let j = 0;
+  while (i < before.length || j < after.length) {
+    if (i < before.length && j < after.length && before[i] === after[j]) {
+      lines.push(` ${before[i++]}`);
+      j++;
+    } else if (i < before.length && (j === after.length || matches[i + 1][j] >= matches[i][j + 1])) {
+      lines.push(`-${before[i++]}`);
+    } else {
+      lines.push(`+${after[j++]}`);
+    }
+  }
+  return lines.join("\n");
+}
+
+function ensureManagedChangesReviewed(
+  currentConfig: string,
+  templateBody: string,
+  configOutputPath: string,
+  configTemplatePath: string,
+  startMarker: string,
+  endMarker: string,
+  overwriteManaged = false,
+): void {
+  const currentBody = currentConfig.slice(
+    currentConfig.indexOf(startMarker) + startMarker.length,
+    currentConfig.indexOf(endMarker),
+  ).trim();
+  const renderedBody = templateBody.trim();
+  let current: Record<string, unknown>;
+  let template: Record<string, unknown>;
+  try {
+    current = parse(currentBody);
+    template = parse(renderedBody);
+  } catch (error) {
+    throw new CodexTemplateApplyError(
+      "Could not compare the managed Codex settings.",
+      [
+        `Target: ${configOutputPath}`,
+        `Template: ${configTemplatePath}`,
+        String(error),
+        "Fix the invalid TOML before applying the template.",
+      ],
+    );
+  }
+
+  const changedSettings = collectManagedChanges(current, template).sort();
+  if (changedSettings.length === 0) {
+    return;
+  }
+
+  const diff = formatManagedSectionDiff(currentBody, renderedBody, configOutputPath, configTemplatePath);
+  if (overwriteManaged) {
+    console.log("Existing managed settings will be overwritten (--overwrite-managed).");
+    console.log(diff);
+    return;
+  }
+
+  throw new CodexTemplateApplyError(
+    "The template would remove or change existing managed settings. No files were written.",
+    [
+      "Existing settings that would be removed or changed:",
+      ...changedSettings.map((setting) => `  ${setting}`),
+      "Review the diff below and add any settings you want to keep to the template.",
+      "To intentionally overwrite them, rerun the apply command with --overwrite-managed.",
+    ],
+    diff,
+  );
+}
+
 async function readTextFileIfExists(path: string): Promise<string> {
   try {
     return await Deno.readTextFile(path);
@@ -279,8 +414,15 @@ async function updateFileIfNeeded(
   path: string,
   nextContent: string,
   dryRun = false,
+  expectedContent?: string,
 ): Promise<boolean> {
   const current = await readTextFileIfExists(path);
+  if (expectedContent !== undefined && current !== expectedContent) {
+    throw new CodexTemplateApplyError(
+      "The target config changed while preparing the template. No files were written.",
+      [`Target: ${path}`, "Rerun the command to review the latest managed settings."],
+    );
+  }
   if (current === nextContent) {
     console.log(`No changes: ${path}`);
     return false;
@@ -388,8 +530,17 @@ export async function applyCodexTemplate(options: ApplyCodexTemplateOptions = {}
     startMarker,
     endMarker,
   );
+  ensureManagedChangesReviewed(
+    currentConfig,
+    configTemplateBody,
+    configOutputPath,
+    configTemplatePath,
+    startMarker,
+    endMarker,
+    options.overwriteManaged,
+  );
 
-  const configChanged = await updateFileIfNeeded(configOutputPath, mergedConfig, options.dryRun);
+  const configChanged = await updateFileIfNeeded(configOutputPath, mergedConfig, options.dryRun, currentConfig);
   let copiedChanged = false;
   for (const copyTarget of copyTargets) {
     const changed = await applyCopyTarget(templateDir, outputDir, copyTarget, options.dryRun);
@@ -407,6 +558,11 @@ function parseCliArgs(args: string[]): ApplyCodexTemplateOptions {
 
     if (current === "--dry-run") {
       options.dryRun = true;
+      continue;
+    }
+
+    if (current === "--overwrite-managed") {
+      options.overwriteManaged = true;
       continue;
     }
 
