@@ -1,5 +1,5 @@
 # @nvim.on_save deno task codex:template -- --apply
-model = "gpt-6-astra"
+model = "gpt-6.1-sol"
 # model_context_window = 400000
 # model_auto_compact_token_limit = 360000
 model_reasoning_effort = "xhigh"
@@ -52,12 +52,12 @@ view_image = true
 shell_snapshot = true
 apps = true
 multi_agent = true
-# voice_transcription = true
 default_mode_request_user_input = true
 fast_mode = true
 hooks = true
 memories = true
 chronicle = true
+reasoning_effort_override = true
 
 # context_management = { experimental_mode = true }
 # token_budget.enabled = true
@@ -68,6 +68,9 @@ status_line = ["model-with-reasoning", "git-branch", "context-remaining", "conte
 theme = "catppuccin-mocha"
 terminal_title = []
 whimsy = false
+
+[tui.model_availability_nux]
+"gpt-6.1-sol" = 4
 
 [mcp_servers.chrome-devtools]
 command = "npx"
