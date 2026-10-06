@@ -7,6 +7,7 @@
 - Performance
 - Test coverage
 - Tech debtとarchitecture
+- Over-engineering
 - Dependenciesとmigrations
 - DXとtooling
 - Docs
@@ -76,6 +77,21 @@ coverage率だけを目的にしない。
 - repo中央値から大きく外れたmodule、深いnest、過剰なparameterを確認する。
 - data fetching、error handling、stylingの複数方式が混在していないか確認する。
 - 一実装しかない早すぎる抽象化と、同時変更を強いる抽象化不足を区別する。
+
+## Over-engineering
+
+要件と現在の挙動を保ったまま保守負担を減らせる候補だけをfindingにする。
+LOC削減は補助指標であり、短くなること自体を根拠にしない。
+未使用コード、不要な抽象化、重複はTech debtとarchitectureと観点を共有するため、`over-engineering` の分野限定でもTech debtとarchitectureの観点を併せて読んで確認する。全カテゴリ監査では同じfindingを一方のカテゴリだけで報告する。
+
+- 委譲しかしないwrapper、誰も設定しない設定項目や分岐、1箇所しか通らない層など、要件にない汎用化を確認する。
+- 既存の共通処理やhelperで置き換えられる個別実装を確認する。
+- 自前実装を標準ライブラリ、プラットフォーム標準機能、導入済み依存で置き換えられないか確認する。置換後も現在の挙動、UI操作、競合対策、入力検証、エラー処理、アクセシビリティが保たれる場合だけ候補にする。
+- 一実装のinterface、1 exportのfile、小さなwrapperは、それだけでは過剰実装と断定しない。責務の分離、境界の明示、型やlintによる制約など理由が確認できれば必要な実装として維持する。必要性が未確認、または保守負担の削減根拠が不足するものはLOW confidenceの調査候補にとどめ、根拠が揃ったものだけを改善候補にする。
+- 削除や置換の候補は、本体だけでなく参照元、test、fixture、設定、文字列参照やdynamic importによる動的利用まで確認する。確認しきれない場合はLOW confidenceの調査候補にする。
+
+Finding形式では、Evidenceに参照元と利用実態の確認結果を、Riskに削減で失う可能性のある保証と維持すべき挙動を書く。
+候補がなければ対応不要と報告し、件数を作らない。
 
 ## Dependenciesとmigrations
 

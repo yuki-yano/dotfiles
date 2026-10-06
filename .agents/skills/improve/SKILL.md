@@ -1,6 +1,6 @@
 ---
 name: improve
-description: コードベースやブランチ差分の改善監査・優先順位付け、改善バックログの作成・再照合、次の開発テーマの検討に使う。既知のバグ修正、通常のレビュー、実装には使わない。
+description: コードベースやブランチ差分の改善監査（過剰実装の監査を含む）・優先順位付け、改善バックログの作成・再照合、次の開発テーマの検討に使う。既知のバグ修正、通常のレビュー、実装には使わない。
 ---
 
 # Improve
@@ -52,7 +52,7 @@ description: コードベースやブランチ差分の改善監査・優先順�
 | 標準 | 主要packageを中心に全カテゴリ | 明示時、独立調査が有効なら最大3件 | 条件を満たす場合、最大3件を自動利用可 |
 | `deep` | 全packageをカテゴリごとに段階調査 | 明示時、1wave最大3件 | 条件を満たす場合、1wave最大3件を自動利用可 |
 | `branch` | default branchとのmerge-base以降の変更と直接の呼び出し元 | 原則、親agentのみ | 親agentのみ |
-| 分野指定 | `security`、`perf`、`tests`など指定カテゴリのみ | 明示時、必要な場合だけ | 明示時、必要な場合だけ |
+| 分野指定 | `security`、`perf`、`tests`、`over-engineering`など指定カテゴリのみ | 明示時、必要な場合だけ | 明示時、必要な場合だけ |
 | `next` | 今後の方向性だけを調査 | 明示時、必要な場合だけ | 明示時、必要な場合だけ |
 | `reconcile` | 既存の改善バックログを再検証 | 原則、親agentのみ | 親agentのみ |
 
@@ -65,6 +65,11 @@ subagentを使わないことを理由に、監査範囲を暗黙に縮小しな
 設計済みタスクの計画は `agent-handoff-plan` へ、実装後の検証は `agent-review-request` へ分ける。
 worktree実行やGitHub Issue作成が必要なら、このskillを終了し、ユーザーの明示指示を受けた別作業として扱う。
 
+範囲（全体、`branch`）と分野指定は組み合わせられる。範囲の指定がなければ対象packageの全体を監査する。
+
+- `improve over-engineering`：対象packageの全体を、Over-engineeringの観点だけで監査する。
+- `improve branch over-engineering`：merge-base以降のブランチ差分と直接の参照先・呼び出し元を、Over-engineeringの観点だけで監査する。
+
 `branch` では各findingを次のどちらかに分類する。
 
 - `introduced`：対象ブランチが導入した問題
@@ -74,7 +79,7 @@ worktree実行やGitHub Issue作成が必要なら、このskillを終了し、�
 
 ### 1. 対象範囲を固定する
 
-- リポジトリルート、選択したモード、対象package、除外範囲を明示する。
+- リポジトリルート、選択した範囲と分野、対象package、除外範囲を明示する。
 - `branch` ではdefault branchをリポジトリ情報から解決し、merge-baseを基準に対象ファイルを出す。
 - default branchを確定できない場合は推測せずユーザーに確認する。
 
@@ -89,6 +94,7 @@ packageや依存の境界にはmanifestと構成、検証方法にはCIとscript
 ### 3. カテゴリ別に監査する
 
 [references/audit-playbook.md](references/audit-playbook.md) の「Finding形式」と、今回監査するカテゴリを読む。
+標準と `deep` の全カテゴリにはOver-engineeringを含む。`quick` の重点は変えない。
 
 制約10と実行モード表の条件を満たしてsubagentを使う場合は、相互に独立したカテゴリまたはpackageへ分け、read-onlyの調査だけを任せる。
 各subagentへ次を渡す。
@@ -112,6 +118,7 @@ subagentの報告をそのまま採用しない。
 - 根拠ファイルや行番号が誤っているもの
 - 別カテゴリ間の重複
 - 影響が小さく、修正コストに見合わないもの
+- 責務、境界、制約に理由がある実装を、行数や一実装であることだけを理由に過剰実装としたもの
 
 棄却理由は、後続監査で繰り返さないため改善バックログのindexへ残す。
 
@@ -159,3 +166,8 @@ findingは、impactをeffortで割り、confidenceと修正riskで割り引い�
 - Upstream: <https://github.com/shadcn/improve>
 - 基準commit: `03369ee6`
 - License: MIT。著作権表示と許諾表示は `LICENSE.md` に保持する。
+
+`references/audit-playbook.md` のOver-engineeringの観点は、`DietrichGebert/ponytail` の `skills/ponytail-review/SKILL.md` と `skills/ponytail-audit/SKILL.md` にある分類と探索項目を参考に、根拠・失う保証・変更リスクを必須にする形で再構成した。本文の複製、付属skill、hookは取り込んでいない。
+
+- 参照: <https://github.com/DietrichGebert/ponytail>（ref `main`、取得日2026-10-06、plugin manifest 4.13.0、参照commitは未確認）
+- License: MIT（Copyright (c) 2026 DietrichGebert）
