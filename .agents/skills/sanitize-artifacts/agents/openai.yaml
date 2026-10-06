@@ -1,0 +1,6 @@
+interface:
+  display_name: "成果物の最終推敲"
+  short_description: "会話を知らない読者に渡す成果物を、根拠と必要な制約を保って推敲"
+  default_prompt: "$sanitize-artifacts を使って、この成果物から会話の経緯や不要な制作事情を取り除き、前提・根拠・未検証事項・DoDを保って読者向けに推敲してください。"
+policy:
+  allow_implicit_invocation: true
