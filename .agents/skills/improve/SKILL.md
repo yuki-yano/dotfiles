@@ -1,6 +1,6 @@
 ---
 name: improve
-description: コードベースやブランチ差分の改善監査（過剰実装の監査を含む）・優先順位付け、改善バックログの作成・再照合、次の開発テーマの検討に使う。既知のバグ修正、通常のレビュー、実装には使わない。
+description: コードベース、ブランチ差分、未commit差分の改善監査（過剰実装の監査を含む）・優先順位付け、改善バックログの作成・再照合、次の開発テーマの検討に使う。既知のバグ修正、通常のレビュー、実装には使わない。
 ---
 
 # Improve
@@ -51,7 +51,8 @@ description: コードベースやブランチ差分の改善監査（過剰実�
 | `quick` | 高変更頻度または高リスク箇所のcorrectness、security、tests | 原則、親agentのみ。明示時も大規模な場合だけ1件 | 親agentのみ |
 | 標準 | 主要packageを中心に全カテゴリ | 明示時、独立調査が有効なら最大3件 | 条件を満たす場合、最大3件を自動利用可 |
 | `deep` | 全packageをカテゴリごとに段階調査 | 明示時、1wave最大3件 | 条件を満たす場合、1wave最大3件を自動利用可 |
-| `branch` | default branchとのmerge-base以降の変更と直接の呼び出し元 | 原則、親agentのみ | 親agentのみ |
+| `branch` | default branchとのmerge-base以降の変更と直接の参照先・呼び出し元 | 原則、親agentのみ | 親agentのみ |
+| `uncommitted` | stagedとunstagedの未commit差分と直接の参照先・呼び出し元 | 原則、親agentのみ | 親agentのみ |
 | 分野指定 | `security`、`perf`、`tests`、`over-engineering`など指定カテゴリのみ | 明示時、必要な場合だけ | 明示時、必要な場合だけ |
 | `next` | 今後の方向性だけを調査 | 明示時、必要な場合だけ | 明示時、必要な場合だけ |
 | `reconcile` | 既存の改善バックログを再検証 | 原則、親agentのみ | 親agentのみ |
@@ -65,14 +66,19 @@ subagentを使わないことを理由に、監査範囲を暗黙に縮小しな
 設計済みタスクの計画は `agent-handoff-plan` へ、実装後の検証は `agent-review-request` へ分ける。
 worktree実行やGitHub Issue作成が必要なら、このskillを終了し、ユーザーの明示指示を受けた別作業として扱う。
 
-範囲（全体、`branch`）と分野指定は組み合わせられる。範囲の指定がなければ対象packageの全体を監査する。
+範囲（全体、`branch`、`uncommitted`）と分野指定は組み合わせられる。範囲の指定がなければ対象packageの全体を監査する。
 
 - `improve over-engineering`：対象packageの全体を、Over-engineeringの観点だけで監査する。
 - `improve branch over-engineering`：merge-base以降のブランチ差分と直接の参照先・呼び出し元を、Over-engineeringの観点だけで監査する。
+- `improve uncommitted over-engineering`：stagedとunstagedの未commit差分と直接の参照先・呼び出し元を、Over-engineeringの観点だけで監査する。
+- `branch` と `uncommitted` を同時に指定した場合は両方を対象にし、各findingの根拠にどちらの差分で確認したかを書く。
 
-`branch` では各findingを次のどちらかに分類する。
+`uncommitted` では、untrackedファイルはユーザーが対象に含めると明示した場合、またはstaged・unstagedの差分から直接参照されている場合だけfindingの対象にし、それ以外は対象外として報告する。
+`branch` と `uncommitted` のfindingは指定した差分に限定する。差分外の参照元、呼び出し元、test、fixture、設定、動的利用は、安全性や利用実態の根拠を確認するために必要な範囲で読み、それ自体を監査対象にしない。ignoredファイルを自動的に対象へ加えず、対象を暗黙にリポジトリ全体へ広げない。
 
-- `introduced`：対象ブランチが導入した問題
+`branch` と `uncommitted` では各findingを次のどちらかに分類する。
+
+- `introduced`：対象の差分が導入した問題
 - `pre-existing`：変更対象ファイルに以前から存在した問題
 
 ## 調査フロー
@@ -82,6 +88,7 @@ worktree実行やGitHub Issue作成が必要なら、このskillを終了し、�
 - リポジトリルート、選択した範囲と分野、対象package、除外範囲を明示する。
 - `branch` ではdefault branchをリポジトリ情報から解決し、merge-baseを基準に対象ファイルを出す。
 - default branchを確定できない場合は推測せずユーザーに確認する。
+- `uncommitted` では `git status` と未commit差分から対象ファイルを出す。`branch` を併用しない限り、default branchは解決しない。
 
 ### 2. リポジトリを把握する
 
