@@ -1,0 +1,286 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>@@TITLE@@</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style data-own>
+:root {
+  --canvas:#fafafa; --card:#ffffff; --well:#f2f2f2; --line:#ebebeb;
+  --ink:#171717; --prose:#262626; --body:#4d4d4d; --mute:#626262; --faint:#6e6e6e;
+  --ink-soft:#626262;
+  --link:#0070f3; --mem-bg:#d3e5ff;
+  --n2:#0070f3; --n1:#79a8f5; --n0:#d4d4d4; --n0-ink:#171717; --nm1:#f5a623; --nm2:#ee0000;
+  --on-n2:#ffffff; --on-n1:#171717; --on-nm1:#171717; --on-nm2:#ffffff;
+  --nm1-ink:#8a5200; --nm2-ink:#c40000;
+  --header-bg:rgba(250,250,250,.86); --mesh-o:.5;
+  --shadow-float:0 2px 2px rgba(0,0,0,.04), 0 8px 16px -4px rgba(0,0,0,.10);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --canvas:#0a0a0a; --card:#111111; --well:#161616; --line:#262626;
+  --ink:#ededed; --prose:#d6d6d6; --body:#a1a1a1; --mute:#9a9a9a; --faint:#8a8a8a;
+  --link:#52a8ff; --mem-bg:#102a4c;
+  --n2:#3291ff; --n1:#2f6fce; --n0:#3a3a3a; --n0-ink:#ededed; --nm1:#d9921f; --nm2:#ff4d4d;
+  --on-n2:#0a0a0a; --on-n1:#ffffff; --on-nm1:#171717; --on-nm2:#171717;
+  --nm1-ink:#f0a83a; --nm2-ink:#ff6b6b;
+  --header-bg:rgba(10,10,10,.82); --mesh-o:.3;
+  --shadow-float:0 2px 2px rgba(0,0,0,.3), 0 8px 16px -4px rgba(0,0,0,.5);
+} }
+:root[data-theme="dark"] {
+  --canvas:#0a0a0a; --card:#111111; --well:#161616; --line:#262626;
+  --ink:#ededed; --prose:#d6d6d6; --body:#a1a1a1; --mute:#9a9a9a; --faint:#8a8a8a;
+  --link:#52a8ff; --mem-bg:#102a4c;
+  --n2:#3291ff; --n1:#2f6fce; --n0:#3a3a3a; --n0-ink:#ededed; --nm1:#d9921f; --nm2:#ff4d4d;
+  --on-n2:#0a0a0a; --on-n1:#ffffff; --on-nm1:#171717; --on-nm2:#171717;
+  --nm1-ink:#f0a83a; --nm2-ink:#ff6b6b;
+  --header-bg:rgba(10,10,10,.82); --mesh-o:.3;
+  --shadow-float:0 2px 2px rgba(0,0,0,.3), 0 8px 16px -4px rgba(0,0,0,.5);
+}
+* { box-sizing:border-box }
+html { scroll-behavior:smooth; background:var(--canvas); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto } }
+body { background:var(--canvas); color:var(--ink); margin:0;
+  font-family:Geist, Inter, Arial, sans-serif; line-height:1.6;
+  -webkit-font-smoothing:antialiased; }
+
+/* ---------- top bar ---------- */
+header { position:sticky; top:0; z-index:9; background:var(--header-bg);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+  padding:10px 28px 12px; overflow:hidden; }
+.brief { border-bottom:1px solid var(--line); padding:16px 28px 20px; }
+header::before { content:""; position:absolute; top:-140px; right:-60px;
+  width:520px; height:340px; pointer-events:none; opacity:var(--mesh-o);
+  background:
+    radial-gradient(200px 160px at 20% 60%, rgba(80,227,194,.35), transparent 70%),
+    radial-gradient(240px 180px at 55% 30%, rgba(0,112,243,.30), transparent 70%),
+    radial-gradient(220px 170px at 80% 65%, rgba(121,40,202,.28), transparent 70%),
+    radial-gradient(180px 150px at 95% 30%, rgba(255,0,128,.22), transparent 70%),
+    radial-gradient(160px 140px at 40% 85%, rgba(249,203,40,.20), transparent 70%); }
+.hrow { max-width:1080px; margin:0 auto; position:relative; }
+.topline { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+h1.room { font-size:20px; font-weight:600; letter-spacing:-0.4px; margin:0; color:var(--ink); }
+.chips { display:flex; gap:6px; flex-wrap:wrap; }
+.statchip { font-family:"Geist Mono", "IBM Plex Mono", monospace; font-size:11px;
+  color:var(--body); background:var(--card); border:1px solid var(--line);
+  border-radius:6px; padding:3px 8px; white-space:nowrap; }
+.statchip b { color:var(--ink); font-weight:500; }
+.verdict { font-size:14px; color:var(--body); margin:10px 0 0; max-width:74ch; line-height:1.55; }
+.verdict b { color:var(--ink); font-weight:600; }
+.prev { font-size:13px; color:var(--body); margin:8px 0 0; max-width:74ch; line-height:1.55;
+  border-left:2px solid var(--n2); padding-left:10px; }
+.prev b { color:var(--ink); font-weight:500; }
+
+/* ---------- skim verdict, how to consult ---------- */
+.verdict:first-child { margin-top:0 }
+.flabel { font-family:"Geist Mono", monospace; font-size:11px; font-weight:500;
+  letter-spacing:.04em; text-transform:uppercase; color:var(--mute); margin-bottom:2px; }
+.skim { margin:14px 0 0; max-width:74ch; border:1px solid var(--line); border-radius:8px;
+  background:var(--card); padding:10px 14px; }
+.skim p { margin:4px 0 0; font-size:14px; color:var(--body); line-height:1.55; }
+.askhint { margin:12px 0 0; max-width:74ch; font-size:13px; color:var(--body); line-height:1.55; }
+
+/* ---------- buttons ---------- */
+.btn { border:1px solid var(--line); background:var(--card); color:var(--ink);
+  padding:4px 10px; border-radius:6px; cursor:pointer; font:inherit;
+  font-size:13px; font-weight:500; line-height:20px;
+  transition:border-color .12s, background .12s; }
+.btn:hover { border-color:var(--faint); }
+.btn[aria-pressed="true"] { background:var(--ink); color:var(--canvas); border-color:var(--ink); }
+.btn:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+
+/* ---------- scrubber ---------- */
+.scrub { display:flex; gap:4px; margin:10px 0 2px; max-width:1080px; }
+.cell { flex:1; height:30px; position:relative; border:1px solid var(--line);
+  background:var(--card); border-radius:6px; cursor:pointer; padding:0;
+  display:flex; flex-direction:column; justify-content:center; gap:3px;
+  align-items:stretch; transition:border-color .12s; }
+.cell:hover { border-color:var(--faint); }
+.cell:focus-visible { outline:2px solid var(--link); }
+.tr { height:4px; border-radius:2px; margin:0 18%; }
+.v2 { background:var(--n2) } .v1 { background:var(--n1) } .v0 { background:var(--n0) }
+.v-1 { background:var(--nm1) } .v-2 { background:var(--nm2) } .vx { background:var(--line) }
+.fmark { position:absolute; top:-4px; left:50%; width:6px; height:6px; border-radius:50%;
+  background:var(--link); transform:translateX(-50%); }
+
+.scrublabel { font-family:"Geist Mono", monospace; font-size:10px; font-weight:500;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--faint); margin:10px 0 -6px; }
+.scrub.prev { opacity:.55 }
+.scrub.prev .cell { height:22px; cursor:default }
+.views { margin-top:12px; }
+.skey { display:flex; gap:14px; align-items:center; margin-top:8px;
+  font-family:"Geist Mono", monospace; font-size:10px; letter-spacing:.04em;
+  text-transform:uppercase; color:var(--faint); }
+.skey i { display:inline-block; width:14px; height:4px; border-radius:2px; margin-right:5px; vertical-align:middle; }
+
+
+.made { font-family:"Geist Mono", monospace; font-size:10px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--faint); margin-top:28px; }
+.views summary { list-style:none; cursor:pointer; color:var(--mute);
+  font-family:"Geist Mono", monospace; font-size:11px; font-weight:500;
+  letter-spacing:.04em; text-transform:uppercase; display:inline-block; }
+.views summary::-webkit-details-marker { display:none }
+.views summary:hover { color:var(--body); }
+.controls { display:flex; flex-wrap:wrap; gap:14px; align-items:center; margin-top:10px; }
+.grp { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.grp label { color:var(--mute); font-family:"Geist Mono", monospace;
+  letter-spacing:.04em; text-transform:uppercase; font-size:10px; margin-right:4px; }
+
+/* ---------- manuscript ---------- */
+main { max-width:1080px; margin:0 auto; padding:40px 28px 140px; }
+.legend { border:1px solid var(--line); border-radius:8px; background:var(--card);
+  padding:12px 16px; margin:0 0 24px; font-size:13px; color:var(--body);
+  display:flex; flex-direction:column; gap:8px; max-width:74ch; }
+.legend .lrow { display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; line-height:1.5; }
+.legend .flabel { margin:0; flex:none; }
+.litem { display:inline-flex; align-items:center; gap:6px; }
+.litem .who, .litem .chip, .litem .skimtag { flex:none }
+.chunk { display:grid; grid-template-columns:minmax(0,64ch) 1fr; gap:44px;
+  padding:28px 0 16px; border-bottom:1px solid var(--line); }
+.fold { font-family:"Geist Mono", monospace; color:var(--nm2-ink);
+  border-top:1px dashed var(--nm2); padding:12px 0 4px; font-size:13px; }
+.cnum { font-family:"Geist Mono", monospace; font-size:10px; font-weight:500;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--faint); margin-bottom:12px;
+  display:flex; align-items:center; gap:12px; }
+
+.flag { font-family:"Geist Mono", monospace; color:var(--link); font-size:11px;
+  font-weight:500; letter-spacing:.04em; text-transform:uppercase; margin-bottom:4px; }
+.prose { color:var(--prose); }
+.prose p, .prose li { font-size:15px; line-height:1.65; }
+.prose h2,.prose h3,.prose h4 { font-weight:600; line-height:1.25;
+  text-wrap:balance; color:var(--ink); }
+.prose h2 { font-size:28px; line-height:1.2; letter-spacing:-1.1px; }
+.prose h3 { font-size:20px; letter-spacing:-0.4px; }
+.prose h4 { font-size:16px; letter-spacing:-0.2px; }
+.prose a { color:var(--link); text-decoration:none; }
+.prose a:hover { text-decoration:underline; }
+.code { background:var(--card); border:1px solid var(--line); border-radius:8px;
+  padding:14px 16px; overflow-x:auto; font-family:"Geist Mono", monospace;
+  font-size:12.5px; line-height:1.55; color:var(--body); }
+p code, li code { font-family:"Geist Mono", monospace; font-size:.85em;
+  background:var(--well); border:1px solid var(--line); padding:1px 5px; border-radius:4px; }
+mark.mem { background:transparent; color:inherit; }
+
+/* ---------- edits applied after the read ---------- */
+
+/* ---------- margin notes ---------- */
+.notes { display:flex; flex-direction:column; gap:8px; padding-top:36px; }
+.note { font-family:"Geist Mono", monospace; font-size:11.5px; line-height:1.55;
+  color:var(--body); padding:9px 11px; background:var(--card); border-radius:8px;
+  border:1px solid var(--line); }
+.note.final { border-color:var(--faint); }
+.who { display:inline-block; width:15px; height:15px; border-radius:50%; text-align:center;
+  line-height:15px; font-size:9px; font-weight:500; margin-right:6px;
+  font-family:Geist, sans-serif; }
+@@WHO_CSS@@
+.chip { display:inline-block; font-size:10px; padding:0 5px; border-radius:4px;
+  color:#fff; margin-right:6px; font-weight:500; font-family:Geist, sans-serif; }
+.chip.n2 { background:var(--n2); color:var(--on-n2) } .chip.n1 { background:var(--n1); color:var(--on-n1) }
+.chip.n0 { background:var(--n0); color:var(--n0-ink) }
+.chip.nm1 { background:var(--nm1); color:var(--on-nm1) } .chip.nm2 { background:var(--nm2); color:var(--on-nm2) }
+.skimtag { font-size:9px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--nm1-ink); margin-right:6px; }
+.skimtag.stop { color:var(--nm2-ink) }
+
+/* ---------- envelope / footer ---------- */
+.envelope { margin-top:40px; border:1px solid var(--line); border-radius:8px;
+  padding:16px 20px; background:var(--card); max-width:64ch; }
+.envelope summary { cursor:pointer; font-size:15px; font-weight:500; color:var(--ink); }
+.envelope li { font-size:14px; color:var(--body); }
+.howto { max-width:64ch; margin:32px 0 0; font-size:13px; color:var(--body); }
+.howto summary { list-style:none; cursor:pointer; font-family:"Geist Mono", monospace;
+  font-size:11px; font-weight:500; letter-spacing:.04em; text-transform:uppercase;
+  color:var(--mute); }
+.howto summary::-webkit-details-marker { display:none }
+.howto summary:hover { color:var(--body) }
+.howto p { margin:.6em 0; line-height:1.6; }
+
+/* ---------- persona / lens states ---------- */
+@@SEL_CSS@@
+body.lens-scan .prose p, body.lens-scan .prose li { color:var(--faint); opacity:.4 }
+body.lens-scan .prose .fs, body.lens-scan .prose h2, body.lens-scan .prose h3,
+body.lens-scan .prose h4, body.lens-scan .prose strong,
+body.lens-scan .prose .num { color:var(--ink); opacity:1 }
+body.lens-scan .code { opacity:.3 } body.lens-scan .code .num { opacity:1; color:var(--ink) }
+body.lens-scan .notes { opacity:.25 }
+body.lens-mem .prose :is(p,li,h2,h3,h4,.code) { color:var(--faint); opacity:.3 }
+body.lens-mem .prose mark.mem { background:var(--mem-bg); color:var(--ink); opacity:1;
+  padding:0 3px; border-radius:3px; }
+body.lens-mem .prose :is(p,li,h2,h3,h4):has(mark.mem) { opacity:.8 }
+body.lens-mem .notes { opacity:.25 }
+body.lens-trust .prose .num, body.lens-trust .prose .ent {
+  border-bottom:2px solid var(--link); font-weight:600; }
+body.lens-trust .prose .portable { opacity:.4; text-decoration:line-through;
+  text-decoration-color:var(--nm1); text-decoration-thickness:1px; }
+body.replay .chunk.future { opacity:.1 }
+body.replay .chunk.now { opacity:1 }
+@media (max-width:880px) { .chunk { grid-template-columns:minmax(0,1fr); gap:12px } .notes { padding-top:6px }
+  header { position:static } }
+</style>
+<header>
+ <div class="hrow">
+  <div class="topline">
+   <h1 class="room">@@TITLE@@</h1>
+   <div class="chips">@@STATS@@</div>
+  </div>
+  @@PREVSCRUB@@
+  <div class="scrub" role="group" title="each block is one stretch of the piece; blue means readers leaned in, amber and red mean they drifted; a dot marks a moment worth clicking" aria-label="how each reader felt, stretch by stretch">@@SCRUB@@</div>
+  <div class="skey"><span><i class="v2"></i>leaning in</span><span><i class="v-1"></i>drifting</span><span><i class="v-2"></i>gone</span><span>· click a block to jump there</span></div>
+ </div>
+</header>
+<section class="brief" aria-label="Verdict and findings">
+ <div class="hrow">
+  <p class="verdict">@@VERDICT_LEAD@@ @@VERDICT_REST@@</p>
+  @@PREVIOUS@@
+  @@SKIM@@
+  @@ASKHINT@@
+  <details class="views"><summary>@@VIEWS_LABEL@@ ▾</summary>
+   <div class="controls">
+    <div class="grp"><label>readers</label>@@SEL_BTNS@@</div>
+    <div class="grp"><label>lens</label>@@LENS_BTNS@@</div>
+    <div class="grp"><button class="btn" id="playBtn" aria-pressed="false" onclick="replay()">replay the read</button></div>
+   </div>
+  </details>
+ </div>
+</section>
+<main>
+@@LEGEND@@
+@@CHUNKS@@
+@@OPINIONS@@
+<details class="howto"><summary>how this page was made ▾</summary>
+ <p>AI readers with different lives got this piece the way a person would: one passage at a time, no peeking ahead, free to quit whenever. A passage is a paragraph-sized cut, roughly 85 words; this piece became @@N@@ of them, and a script refused to show each reader the next passage until they wrote down what just happened in them.</p>
+ <p>The readers: @@READER_INTRO@@ Their real notes sit beside each passage with the needle they logged: +2 leaning in, -2 done. A dashed line means a reader stopped and never saw the rest. Afterward, a separate agent was quizzed with the piece taken away, holding only the reading notes; the "what stuck" lens shows what survived. None of this is a score. It's what happened to the readers, written down as it happened.</p>
+</details>
+<div class="made">first-reader @@VERSION@@ · readers before you publish</div>
+</main>
+<script data-own>
+if(!document.documentElement.lang)document.documentElement.lang='en';
+function sel(k){
+ document.body.className=document.body.className.replace(/\bsel-\S+/g,'').trim();
+ if(k!=='all')document.body.classList.add('sel-'+k);
+ document.querySelectorAll('[id^="sel"]').forEach(b=>b.setAttribute('aria-pressed',
+   String(b.id==='sel'+k||(k==='all'&&b.id==='selall'))));
+}
+function lens(m){
+ document.body.classList.remove('lens-scan','lens-mem','lens-trust');
+ if(m!=='read')document.body.classList.add('lens-'+m);
+ const map={read:'lensRead',scan:'lensScan',mem:'lensMem',trust:'lensTrust'};
+ Object.entries(map).forEach(([kk,id])=>{const b=document.getElementById(id);
+  if(b)b.setAttribute('aria-pressed',String(kk===m));});
+}
+function jump(i){document.getElementById('c'+i).scrollIntoView({block:'start'});}
+let timer=null;
+function replay(){
+ const btn=document.getElementById('playBtn');
+ if(timer){clearInterval(timer);timer=null;document.body.classList.remove('replay');
+  document.querySelectorAll('.chunk').forEach(c=>c.classList.remove('now','future'));
+  btn.setAttribute('aria-pressed','false');btn.textContent='replay the read';return;}
+ document.body.classList.add('replay');btn.setAttribute('aria-pressed','true');btn.textContent='stop replay';
+ const cs=[...document.querySelectorAll('.chunk')];cs.forEach(c=>c.classList.add('future'));
+ let i=0;
+ const step=()=>{if(i>0)cs[i-1].classList.remove('now');
+  if(i>=cs.length){clearInterval(timer);timer=null;document.body.classList.remove('replay');
+   cs.forEach(c=>c.classList.remove('future','now'));
+   btn.setAttribute('aria-pressed','false');btn.textContent='replay the read';return;}
+  cs[i].classList.remove('future');cs[i].classList.add('now');
+  cs[i].scrollIntoView({block:'center'});i++;};
+ step();timer=setInterval(step,2600);}
+</script>

@@ -1,0 +1,10 @@
+first-reader
+Copyright Shubham Saboo and contributors
+https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/first-reader
+(upstream commit f12ecedf337e4732bd5ec628a1ee5b666f0d1262), licensed under the Apache License 2.0 (see LICENSE).
+
+Changes in this copy (explainer project, 2026-09):
+- scripts/feed.py: CJK-aware word counting (nwords) and 。！？ sentence ends,
+  so Japanese drafts are chunked and paced like English ones.
+- Tests live in tests/first-reader/ of the explainer repository
+  (test_first_reader.py adjusted for the new path; test_cjk.py added).

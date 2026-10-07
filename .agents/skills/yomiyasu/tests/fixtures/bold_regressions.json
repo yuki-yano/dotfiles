@@ -1,0 +1,376 @@
+[
+  {
+    "id": "issue2",
+    "text": "**太字は1行目から始まり、\n2行目で閉じる。** 続きの文には**別の太字**もある。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Core reproduction: closing delimiter plus later opening on line 2 must not be paired together."
+  },
+  {
+    "id": "simple_two_lines",
+    "text": "**太字は行1から\n行2まで**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Strong emphasis can span a soft line break inside one paragraph."
+  },
+  {
+    "id": "simple_three_lines",
+    "text": "前置き。**行1から\n行2を通って\n行3まで**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Carry delimiters across all lines of the same paragraph."
+  },
+  {
+    "id": "crlf",
+    "text": "**行1\r\n行2** 続き**次**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "CRLF handling must preserve original source line numbers."
+  },
+  {
+    "id": "multiple_following_pairs",
+    "text": "**行1から\n行2まで** 続き**第2**、さらに**第3**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "An odd local delimiter count cannot shift later valid pairs."
+  },
+  {
+    "id": "two_multiline_spans",
+    "text": "**最初は\nここまで** 続き**次は\n最後まで**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Two multiline spans in the same paragraph."
+  },
+  {
+    "id": "hard_line_break",
+    "text": "**行1  \n行2** 続き**次**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Two spaces before newline are a hard break, not a paragraph boundary."
+  },
+  {
+    "id": "offset_lines",
+    "text": "# 見出し\n\n前置き。\n\n**行5から\n行6まで** 続き**次**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Do not renumber findings by a stripped or joined block representation."
+  },
+  {
+    "id": "list_continuation",
+    "text": "- **同じ項目の行1\n  行2まで** 続き**次**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Continuation lines of one list item paragraph may share emphasis."
+  },
+  {
+    "id": "ordered_list_continuation",
+    "text": "1. **同じ項目の行1\n   行2まで** 続き**次**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Ordered-list marker width changes continuation indentation."
+  },
+  {
+    "id": "quote_continuation",
+    "text": "> **引用の行1\n> 行2まで** 続き**次**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Strip container markers semantically, while keeping source offsets."
+  },
+  {
+    "id": "quote_lazy_continuation",
+    "text": "> **引用の行1\n行2まで** 続き**次**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Lazy continuation remains in the same quoted paragraph."
+  },
+  {
+    "id": "list_quote_continuation",
+    "text": "- > **行1\n  > 行2まで** 続き**次**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Nested list and quote container continuation."
+  },
+  {
+    "id": "escaped_delimiters",
+    "text": "\\*\\*字面だけ\\*\\* **本当の\n太字** 続き**次**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Escaped asterisks must not enter the delimiter stack."
+  },
+  {
+    "id": "even_backslash_escape",
+    "text": "\\\\**本当の\n太字** 続き**次**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Two backslashes escape each other; the following asterisks are active."
+  },
+  {
+    "id": "odd_backslash_escape",
+    "text": "\\\\\\*\\*字面だけ **本当の\n太字** 続き**次**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Escape classification must count backslash parity."
+  },
+  {
+    "id": "inline_code_same_line",
+    "text": "`**コード**` **本当の\n太字** 続き**次**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Inline code has priority over emphasis delimiters."
+  },
+  {
+    "id": "inline_code_multiline",
+    "text": "`**コードの行1\n行2**` 続き**太字**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Inline code itself can span a newline; inner asterisks remain literal."
+  },
+  {
+    "id": "inline_code_double_tick",
+    "text": "``**コード`行1\n行2**`` 続き**太字**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Match equal-length backtick runs across a soft break."
+  },
+  {
+    "id": "inline_html",
+    "text": "**行1 <span>補足</span>\n行2** 続き**次**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Inline HTML is not a leaf-block boundary."
+  },
+  {
+    "id": "true_broken_open_close",
+    "text": "次は**「行1から\n行2まで」**を読む。",
+    "expected_bold_problems": 1,
+    "expected_line_numbers": [
+      1
+    ],
+    "note": "Both Japanese brackets fail flanking; repair keeps brackets, newline and emphasized text."
+  },
+  {
+    "id": "true_broken_close",
+    "text": "**行1から\n行2まで。**続き。",
+    "expected_bold_problems": 1,
+    "expected_line_numbers": [
+      1
+    ],
+    "note": "Punctuation before closing delimiter and following letter breaks strong emphasis; move punctuation outside."
+  },
+  {
+    "id": "broken_with_later_valid",
+    "text": "次は**「行1から\n行2まで」**を読む。続き**次**。",
+    "expected_bold_problems": 1,
+    "expected_line_numbers": [
+      1
+    ],
+    "note": "Fix only the intended first span and retain the independently valid source pair **次**. The original broken delimiters accidentally render を読む。続き as strong; that incidental broken range is an observation, not a preservation obligation."
+  },
+  {
+    "id": "singleline_bracket_regression",
+    "text": "次は**「立場」**を読む。",
+    "expected_bold_problems": 1,
+    "expected_line_numbers": [
+      1
+    ],
+    "note": "Existing single-line bracket relocation must remain supported."
+  },
+  {
+    "id": "singleline_punctuation_regression",
+    "text": "これは**必須です。**詳しくは下。",
+    "expected_bold_problems": 1,
+    "expected_line_numbers": [
+      1
+    ],
+    "note": "Existing single-line punctuation relocation must remain supported."
+  },
+  {
+    "id": "paragraph_boundary",
+    "text": "**開始\n\n終了** 続き**次**。",
+    "expected_bold_problems": null,
+    "expected_line_numbers": null,
+    "note": "Blank line ends the paragraph; no repair may pair the first and second blocks."
+  },
+  {
+    "id": "heading_boundary",
+    "text": "**開始\n## 見出し\n終了** 続き**次**。",
+    "expected_bold_problems": null,
+    "expected_line_numbers": null,
+    "note": "ATX heading interrupts a paragraph; later valid strong must survive."
+  },
+  {
+    "id": "list_item_boundary",
+    "text": "- **開始\n- 終了** 続き**次**。",
+    "expected_bold_problems": null,
+    "expected_line_numbers": null,
+    "note": "Separate list items must never share a strong delimiter pair."
+  },
+  {
+    "id": "quote_boundary",
+    "text": "> **開始\n\n終了** 続き**次**。",
+    "expected_bold_problems": null,
+    "expected_line_numbers": null,
+    "note": "A new paragraph outside a quote cannot close emphasis inside the quote."
+  },
+  {
+    "id": "fence_boundary",
+    "text": "**開始\n```text\nコード ** 字面\n```\n終了** 続き**次**。",
+    "expected_bold_problems": null,
+    "expected_line_numbers": null,
+    "note": "A fenced code block is a block boundary and ignores contained asterisks."
+  },
+  {
+    "id": "tilde_fence_boundary",
+    "text": "**開始\n~~~text\nコード ** 字面\n~~~\n終了** 続き**次**。",
+    "expected_bold_problems": null,
+    "expected_line_numbers": null,
+    "note": "Tilde fences require the same protection as backtick fences."
+  },
+  {
+    "id": "indented_code_boundary",
+    "text": "**開始\n\n    コード ** 字面\n\n終了** 続き**次**。",
+    "expected_bold_problems": null,
+    "expected_line_numbers": null,
+    "note": "Indented code block follows a blank line; its asterisks are not active."
+  },
+  {
+    "id": "thematic_break_boundary",
+    "text": "**開始\n\n---\n\n終了** 続き**次**。",
+    "expected_bold_problems": null,
+    "expected_line_numbers": null,
+    "note": "Thematic break creates separate leaf blocks."
+  },
+  {
+    "id": "heading_then_multiline",
+    "text": "# **独立見出し**\n\n**本文の行1\n行2** 続き**次**。",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Heading strong and body strong must use separate inline contexts."
+  },
+  {
+    "id": "broken_offset_lines",
+    "text": "# 見出し\n\n前置き。\n\n次は**「行5から\n行6まで」**を読む。",
+    "expected_bold_problems": 1,
+    "expected_line_numbers": [
+      5
+    ],
+    "note": "Opening delimiter is on original line 5, not line 1 after block normalization."
+  },
+  {
+    "id": "broken_quote_multiline",
+    "text": "> 次は**「行1から\n> 行2まで」**を読む。",
+    "expected_bold_problems": 1,
+    "expected_line_numbers": [
+      1
+    ],
+    "note": "Repair multiline brackets without removing or moving quote prefixes."
+  },
+  {
+    "id": "broken_list_multiline",
+    "text": "- 次は**「行1から\n  行2まで」**を読む。",
+    "expected_bold_problems": 1,
+    "expected_line_numbers": [
+      1
+    ],
+    "note": "Repair multiline brackets without removing list marker or continuation indentation."
+  },
+  {
+    "id": "quote_start_destructive",
+    "text": "**「始まり\n> 終わり」**続き**次**。",
+    "expected_bold_problems": null,
+    "expected_line_numbers": [],
+    "note": "Unclosed marks in the first paragraph cannot pair with marks in the new blockquote."
+  },
+  {
+    "id": "setext_start_destructive",
+    "text": "**「始まり\n===\n終わり」**続き**次**。",
+    "expected_bold_problems": null,
+    "expected_line_numbers": [],
+    "note": "A Setext heading and following paragraph are separate inline blocks."
+  },
+  {
+    "id": "table_start_destructive",
+    "text": "**「始まり\n| 終わり」**続き**次**。 | 後 |\n| -- | -- |\n| 行 | 後 |",
+    "expected_bold_problems": null,
+    "expected_line_numbers": [],
+    "note": "A table header, cells and preceding text must not form a single emphasis pair."
+  },
+  {
+    "id": "quote_depth_destructive",
+    "text": "> **「始まり\n>> 終わり」**続き**次**。",
+    "expected_bold_problems": null,
+    "expected_line_numbers": [],
+    "note": "A nested quote creates a separate paragraph; depth changes cannot carry unmatched delimiters."
+  },
+  {
+    "id": "heading_inside_quote_destructive",
+    "text": "> **「始まり\n> ## 見出し\n> 終わり」**続き**次**。",
+    "expected_bold_problems": null,
+    "expected_line_numbers": [],
+    "note": "The blockquote contains different leaf blocks separated by a heading."
+  },
+  {
+    "id": "list_inside_quote_destructive",
+    "text": "> **「始まり\n> - 終わり」**続き**次**。",
+    "expected_bold_problems": null,
+    "expected_line_numbers": [],
+    "note": "A new list item inside a quote is a separate inline block."
+  },
+  {
+    "id": "quote_depth_spaced_marker_destructive",
+    "text": "> **「始まり\n>  > 終わり」**続き**次**。",
+    "expected_bold_problems": null,
+    "expected_line_numbers": [],
+    "note": "A nested quote marker may be preceded by up to three spaces inside its parent container."
+  },
+  {
+    "id": "table_without_outer_pipes_destructive",
+    "text": "**「始まり\n終わり」**続き**次**。 | 後\n-- | --\n行 | 後",
+    "expected_bold_problems": null,
+    "expected_line_numbers": [],
+    "note": "Outer pipes are optional in GFM tables; the separator creates a real block boundary."
+  },
+  {
+    "id": "issue2_comment_even_delimiters",
+    "text": "**太字は1行目から始まり、\n2行目で閉じる。** 続きの文では**次の太字が始まり、\n3行目で閉じる。**",
+    "expected_bold_problems": 0,
+    "expected_line_numbers": [],
+    "note": "Exact additional public Issue #2 example, issuecomment-5970836936, with two local delimiters on line 2."
+  },
+  {
+    "id": "inner_whitespace_1",
+    "text": "** 重要 **",
+    "expected_bold_problems": 1,
+    "expected_line_numbers": [
+      1
+    ],
+    "note": "Both sides have inner whitespace."
+  },
+  {
+    "id": "inner_whitespace_2",
+    "text": "次は** 重要 **です",
+    "expected_bold_problems": 1,
+    "expected_line_numbers": [
+      1
+    ],
+    "note": "Both sides have inner whitespace in sentence."
+  },
+  {
+    "id": "inner_whitespace_3",
+    "text": "次は**重要 **です",
+    "expected_bold_problems": 1,
+    "expected_line_numbers": [
+      1
+    ],
+    "note": "Closing delimiter has leading inner whitespace."
+  },
+  {
+    "id": "inner_whitespace_4",
+    "text": "次は** 重要**です",
+    "expected_bold_problems": 1,
+    "expected_line_numbers": [
+      1
+    ],
+    "note": "Opening delimiter has trailing inner whitespace."
+  }
+]

@@ -1,0 +1,1182 @@
+{
+  "total_files": 160,
+  "summary": {
+    "human": {
+      "file_count": 16,
+      "avg_score": 98.7,
+      "total_naive_matches": 14,
+      "total_lookaround_findings": 6,
+      "metaphor_verbs": 0,
+      "symbols": 0,
+      "formatting": 0
+    },
+    "edge_cases": {
+      "file_count": 48,
+      "avg_score": 100.0,
+      "total_naive_matches": 46,
+      "total_lookaround_findings": 0,
+      "metaphor_verbs": 0,
+      "symbols": 0,
+      "formatting": 0
+    },
+    "raw_ai": {
+      "file_count": 24,
+      "avg_score": 98.0,
+      "total_naive_matches": 7,
+      "total_lookaround_findings": 10,
+      "metaphor_verbs": 0,
+      "symbols": 0,
+      "formatting": 0
+    },
+    "blacklist_ai": {
+      "file_count": 24,
+      "avg_score": 97.4,
+      "total_naive_matches": 1,
+      "total_lookaround_findings": 13,
+      "metaphor_verbs": 0,
+      "symbols": 0,
+      "formatting": 0
+    },
+    "yomiyasu_rewritten": {
+      "file_count": 48,
+      "avg_score": 97.9,
+      "total_naive_matches": 2,
+      "total_lookaround_findings": 20,
+      "metaphor_verbs": 0,
+      "symbols": 0,
+      "formatting": 0
+    }
+  },
+  "details": {
+    "human": [
+      {
+        "file": "human_doc_09.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 267
+      },
+      {
+        "file": "human_doc_10.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 249
+      },
+      {
+        "file": "human_doc_11.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 247
+      },
+      {
+        "file": "human_doc_12.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 209
+      },
+      {
+        "file": "human_doc_13.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 251
+      },
+      {
+        "file": "human_doc_14.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 227
+      },
+      {
+        "file": "human_doc_15.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 222
+      },
+      {
+        "file": "human_doc_16.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 206
+      },
+      {
+        "file": "human_oga_01.md",
+        "naive_matches": 2,
+        "lookaround_findings": 1,
+        "score": 95,
+        "char_count": 249
+      },
+      {
+        "file": "human_oga_02.md",
+        "naive_matches": 2,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 213
+      },
+      {
+        "file": "human_oga_03.md",
+        "naive_matches": 3,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 400
+      },
+      {
+        "file": "human_oga_04.md",
+        "naive_matches": 0,
+        "lookaround_findings": 1,
+        "score": 95,
+        "char_count": 405
+      },
+      {
+        "file": "human_oga_05.md",
+        "naive_matches": 2,
+        "lookaround_findings": 2,
+        "score": 93,
+        "char_count": 603
+      },
+      {
+        "file": "human_oga_06.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 335
+      },
+      {
+        "file": "human_oga_07.md",
+        "naive_matches": 2,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 469
+      },
+      {
+        "file": "human_oga_08.md",
+        "naive_matches": 2,
+        "lookaround_findings": 2,
+        "score": 96,
+        "char_count": 597
+      }
+    ],
+    "edge_cases": [
+      {
+        "file": "edge_kiku_45.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 59
+      },
+      {
+        "file": "edge_kiku_46.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 54
+      },
+      {
+        "file": "edge_kowareru_37.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 54
+      },
+      {
+        "file": "edge_kowareru_38.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 60
+      },
+      {
+        "file": "edge_kowareru_39.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 61
+      },
+      {
+        "file": "edge_kowareru_40.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 57
+      },
+      {
+        "file": "edge_kowareru_41.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 65
+      },
+      {
+        "file": "edge_kowareru_42.md",
+        "naive_matches": 2,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 60
+      },
+      {
+        "file": "edge_kowareru_43.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 63
+      },
+      {
+        "file": "edge_kowareru_44.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 54
+      },
+      {
+        "file": "edge_nigiru_01.md",
+        "naive_matches": 2,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 57
+      },
+      {
+        "file": "edge_nigiru_02.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 59
+      },
+      {
+        "file": "edge_nigiru_03.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 50
+      },
+      {
+        "file": "edge_nigiru_04.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 53
+      },
+      {
+        "file": "edge_nigiru_05.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 55
+      },
+      {
+        "file": "edge_nigiru_06.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 50
+      },
+      {
+        "file": "edge_nigiru_07.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 52
+      },
+      {
+        "file": "edge_nigiru_08.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 43
+      },
+      {
+        "file": "edge_nigiru_09.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 57
+      },
+      {
+        "file": "edge_nigiru_10.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 48
+      },
+      {
+        "file": "edge_taosu_11.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 56
+      },
+      {
+        "file": "edge_taosu_12.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 50
+      },
+      {
+        "file": "edge_taosu_13.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 54
+      },
+      {
+        "file": "edge_taosu_14.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 51
+      },
+      {
+        "file": "edge_taosu_15.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 51
+      },
+      {
+        "file": "edge_taosu_16.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 51
+      },
+      {
+        "file": "edge_taosu_17.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 52
+      },
+      {
+        "file": "edge_taosu_18.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 50
+      },
+      {
+        "file": "edge_taosu_19.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 53
+      },
+      {
+        "file": "edge_taosu_20.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 54
+      },
+      {
+        "file": "edge_tokasu_21.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 59
+      },
+      {
+        "file": "edge_tokasu_22.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 51
+      },
+      {
+        "file": "edge_tokasu_23.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 56
+      },
+      {
+        "file": "edge_tokasu_24.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 51
+      },
+      {
+        "file": "edge_tokasu_25.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 52
+      },
+      {
+        "file": "edge_tokasu_26.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 55
+      },
+      {
+        "file": "edge_tokasu_27.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 57
+      },
+      {
+        "file": "edge_tokasu_28.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 53
+      },
+      {
+        "file": "edge_waru_29.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 52
+      },
+      {
+        "file": "edge_waru_30.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 58
+      },
+      {
+        "file": "edge_waru_31.md",
+        "naive_matches": 2,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 48
+      },
+      {
+        "file": "edge_waru_32.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 53
+      },
+      {
+        "file": "edge_waru_33.md",
+        "naive_matches": 2,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 54
+      },
+      {
+        "file": "edge_waru_34.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 52
+      },
+      {
+        "file": "edge_waru_35.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 52
+      },
+      {
+        "file": "edge_waru_36.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 49
+      },
+      {
+        "file": "edge_watasu_47.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 58
+      },
+      {
+        "file": "edge_watasu_48.md",
+        "naive_matches": 2,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 52
+      }
+    ],
+    "raw_ai": [
+      {
+        "file": "01_tech_arch_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 496
+      },
+      {
+        "file": "01_tech_arch_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 463
+      },
+      {
+        "file": "01_tech_arch_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 422
+      },
+      {
+        "file": "02_incident_report_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 1,
+        "score": 95,
+        "char_count": 481
+      },
+      {
+        "file": "02_incident_report_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 2,
+        "score": 90,
+        "char_count": 554
+      },
+      {
+        "file": "02_incident_report_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 1,
+        "score": 95,
+        "char_count": 425
+      },
+      {
+        "file": "03_pr_description_sonnet_casual.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 364
+      },
+      {
+        "file": "03_pr_description_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 2,
+        "score": 90,
+        "char_count": 389
+      },
+      {
+        "file": "03_pr_description_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 1,
+        "score": 95,
+        "char_count": 350
+      },
+      {
+        "file": "04_slack_announce_sonnet_casual.md",
+        "naive_matches": 1,
+        "lookaround_findings": 1,
+        "score": 95,
+        "char_count": 395
+      },
+      {
+        "file": "04_slack_announce_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 563
+      },
+      {
+        "file": "04_slack_announce_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 367
+      },
+      {
+        "file": "05_comparison_sonnet_casual.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 377
+      },
+      {
+        "file": "05_comparison_sonnet_default.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 393
+      },
+      {
+        "file": "05_comparison_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 385
+      },
+      {
+        "file": "06_spec_draft_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 447
+      },
+      {
+        "file": "06_spec_draft_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 425
+      },
+      {
+        "file": "06_spec_draft_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 411
+      },
+      {
+        "file": "07_code_review_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 1,
+        "score": 95,
+        "char_count": 385
+      },
+      {
+        "file": "07_code_review_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 429
+      },
+      {
+        "file": "07_code_review_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 465
+      },
+      {
+        "file": "08_essay_retrospective_sonnet_casual.md",
+        "naive_matches": 2,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 383
+      },
+      {
+        "file": "08_essay_retrospective_sonnet_default.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 384
+      },
+      {
+        "file": "08_essay_retrospective_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 1,
+        "score": 98,
+        "char_count": 435
+      }
+    ],
+    "blacklist_ai": [
+      {
+        "file": "01_tech_arch_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 423
+      },
+      {
+        "file": "01_tech_arch_sonnet_default.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 526
+      },
+      {
+        "file": "01_tech_arch_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 500
+      },
+      {
+        "file": "02_incident_report_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 2,
+        "score": 90,
+        "char_count": 437
+      },
+      {
+        "file": "02_incident_report_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 2,
+        "score": 90,
+        "char_count": 439
+      },
+      {
+        "file": "02_incident_report_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 1,
+        "score": 95,
+        "char_count": 552
+      },
+      {
+        "file": "03_pr_description_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 2,
+        "score": 90,
+        "char_count": 466
+      },
+      {
+        "file": "03_pr_description_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 2,
+        "score": 90,
+        "char_count": 441
+      },
+      {
+        "file": "03_pr_description_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 360
+      },
+      {
+        "file": "04_slack_announce_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 404
+      },
+      {
+        "file": "04_slack_announce_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 384
+      },
+      {
+        "file": "04_slack_announce_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 335
+      },
+      {
+        "file": "05_comparison_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 404
+      },
+      {
+        "file": "05_comparison_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 384
+      },
+      {
+        "file": "05_comparison_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 426
+      },
+      {
+        "file": "06_spec_draft_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 536
+      },
+      {
+        "file": "06_spec_draft_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 471
+      },
+      {
+        "file": "06_spec_draft_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 501
+      },
+      {
+        "file": "07_code_review_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 545
+      },
+      {
+        "file": "07_code_review_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 3,
+        "score": 85,
+        "char_count": 422
+      },
+      {
+        "file": "07_code_review_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 313
+      },
+      {
+        "file": "08_essay_retrospective_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 370
+      },
+      {
+        "file": "08_essay_retrospective_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 1,
+        "score": 98,
+        "char_count": 422
+      },
+      {
+        "file": "08_essay_retrospective_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 392
+      }
+    ],
+    "yomiyasu_rewritten": [
+      {
+        "file": "01_tech_arch_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 560
+      },
+      {
+        "file": "01_tech_arch_sonnet_casual_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 499
+      },
+      {
+        "file": "01_tech_arch_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 2,
+        "score": 90,
+        "char_count": 560
+      },
+      {
+        "file": "01_tech_arch_sonnet_default_bl.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 574
+      },
+      {
+        "file": "01_tech_arch_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 446
+      },
+      {
+        "file": "01_tech_arch_sonnet_formal_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 514
+      },
+      {
+        "file": "02_incident_report_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 2,
+        "score": 90,
+        "char_count": 551
+      },
+      {
+        "file": "02_incident_report_sonnet_casual_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 471
+      },
+      {
+        "file": "02_incident_report_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 3,
+        "score": 85,
+        "char_count": 620
+      },
+      {
+        "file": "02_incident_report_sonnet_default_bl.md",
+        "naive_matches": 1,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 523
+      },
+      {
+        "file": "02_incident_report_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 465
+      },
+      {
+        "file": "02_incident_report_sonnet_formal_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 591
+      },
+      {
+        "file": "03_pr_description_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 428
+      },
+      {
+        "file": "03_pr_description_sonnet_casual_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 2,
+        "score": 90,
+        "char_count": 550
+      },
+      {
+        "file": "03_pr_description_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 2,
+        "score": 90,
+        "char_count": 470
+      },
+      {
+        "file": "03_pr_description_sonnet_default_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 3,
+        "score": 85,
+        "char_count": 464
+      },
+      {
+        "file": "03_pr_description_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 2,
+        "score": 90,
+        "char_count": 406
+      },
+      {
+        "file": "03_pr_description_sonnet_formal_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 371
+      },
+      {
+        "file": "04_slack_announce_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 453
+      },
+      {
+        "file": "04_slack_announce_sonnet_casual_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 447
+      },
+      {
+        "file": "04_slack_announce_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 574
+      },
+      {
+        "file": "04_slack_announce_sonnet_default_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 415
+      },
+      {
+        "file": "04_slack_announce_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 360
+      },
+      {
+        "file": "04_slack_announce_sonnet_formal_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 327
+      },
+      {
+        "file": "05_comparison_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 442
+      },
+      {
+        "file": "05_comparison_sonnet_casual_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 455
+      },
+      {
+        "file": "05_comparison_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 414
+      },
+      {
+        "file": "05_comparison_sonnet_default_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 441
+      },
+      {
+        "file": "05_comparison_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 423
+      },
+      {
+        "file": "05_comparison_sonnet_formal_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 531
+      },
+      {
+        "file": "06_spec_draft_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 508
+      },
+      {
+        "file": "06_spec_draft_sonnet_casual_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 584
+      },
+      {
+        "file": "06_spec_draft_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 505
+      },
+      {
+        "file": "06_spec_draft_sonnet_default_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 527
+      },
+      {
+        "file": "06_spec_draft_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 458
+      },
+      {
+        "file": "06_spec_draft_sonnet_formal_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 521
+      },
+      {
+        "file": "07_code_review_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 2,
+        "score": 90,
+        "char_count": 461
+      },
+      {
+        "file": "07_code_review_sonnet_casual_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 561
+      },
+      {
+        "file": "07_code_review_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 451
+      },
+      {
+        "file": "07_code_review_sonnet_default_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 2,
+        "score": 90,
+        "char_count": 421
+      },
+      {
+        "file": "07_code_review_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 505
+      },
+      {
+        "file": "07_code_review_sonnet_formal_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 320
+      },
+      {
+        "file": "08_essay_retrospective_sonnet_casual.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 424
+      },
+      {
+        "file": "08_essay_retrospective_sonnet_casual_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 361
+      },
+      {
+        "file": "08_essay_retrospective_sonnet_default.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 442
+      },
+      {
+        "file": "08_essay_retrospective_sonnet_default_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 419
+      },
+      {
+        "file": "08_essay_retrospective_sonnet_formal.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 437
+      },
+      {
+        "file": "08_essay_retrospective_sonnet_formal_bl.md",
+        "naive_matches": 0,
+        "lookaround_findings": 0,
+        "score": 100,
+        "char_count": 391
+      }
+    ]
+  }
+}

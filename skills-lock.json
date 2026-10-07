@@ -15,12 +15,40 @@
       "skillPath": "skills/apple-design/SKILL.md",
       "computedHash": "0190417d092a0df447b000154e39733ea6d97efad6d3bec8a6ce3845aeb88914"
     },
+    "archify": {
+      "source": "tt-a1i/archify",
+      "ref": "73aaa0696e8f72c232ea710e6fa94fd953f3e773",
+      "sourceType": "github",
+      "skillPath": "archify/SKILL.md",
+      "computedHash": "d96f95fd2f5c043c18919bfade7688fb0eb62a051b3be4ab98faa312fc2ee927"
+    },
     "domain-modeling": {
       "source": "mattpocock/skills",
       "ref": "24fe0ef7737efae15c87225755e9f6f5965e4888",
       "sourceType": "github",
       "skillPath": "skills/engineering/domain-modeling/SKILL.md",
       "computedHash": "b3eb40152b81f0c98fd2095a023c019452dbdce56f7540cc67fece2972db8369"
+    },
+    "eli5": {
+      "source": "anthropics/claude-plugins-community",
+      "ref": "f60f0454df3045f724c43c6346ec80bdcc3472b2",
+      "sourceType": "github",
+      "skillPath": "eli5/skills/eli5/SKILL.md",
+      "computedHash": "6c626392eca359b7408fc25073ccd47ca07c7442ab5548df79e43bafc85a1818"
+    },
+    "explainer": {
+      "source": "mizchi/explainer",
+      "ref": "578defba7249fde5366689424ed6017f76b5598b",
+      "sourceType": "github",
+      "skillPath": "skills/explainer/SKILL.md",
+      "computedHash": "704768ba5840c1586b009cc8e3c87696e0159b31a222401b132e368005dc163f"
+    },
+    "first-reader": {
+      "source": "mizchi/explainer",
+      "ref": "578defba7249fde5366689424ed6017f76b5598b",
+      "sourceType": "github",
+      "skillPath": "skills/first-reader/SKILL.md",
+      "computedHash": "4d3d4aadae2812bb326ad7ab70bdbb4975b7960dc95ae5b27e612af2824827cc"
     },
     "frontend-design": {
       "source": "anthropics/claude-code",
@@ -98,6 +126,13 @@
       "sourceType": "github",
       "skillPath": "skills/wrangler/SKILL.md",
       "computedHash": "6d2bade1438d89034a750b1ddf30d0e5b62823306eccf85a5b25ccc4352ff8a9"
+    },
+    "yomiyasu": {
+      "source": "nanaism/yomiyasu",
+      "ref": "8f77b7aa8f19c3f718b511e71a3eee5d06eb3013",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "259305b8c71534e4df89c92a175eb31f175dcc830a912bdcad4192d7f0551d20"
     }
   }
 }
