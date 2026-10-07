@@ -31,55 +31,85 @@ setopt no_global_rcs
 
 typeset -U path
 
+# Preserve absolute environment paths; let mise shims select repo tools.
+typeset -a dot_zsh_inherited_path=()
+for dot_zsh_directory in "${path[@]}"; do
+  [[ $dot_zsh_directory == /* ]] || continue
+  while [[ $dot_zsh_directory != / && $dot_zsh_directory == */ ]]; do
+    dot_zsh_directory=${dot_zsh_directory%/}
+  done
+  [[ $dot_zsh_directory != ${XDG_DATA_HOME}/mise/installs/* &&
+     $dot_zsh_directory != "$HOME/.nix-profile/bin" &&
+     $dot_zsh_directory != "${XDG_STATE_HOME:-$HOME/.local/state}/nix/profile/bin" ]] || continue
+  dot_zsh_inherited_path+=("$dot_zsh_directory")
+done
+unset dot_zsh_directory
+
+# Global startup files are disabled; initialize Nix's variables once ourselves.
+if [[ -z ${__ETC_PROFILE_NIX_SOURCED:-} && -r /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
+  source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+fi
+
 # default path
-path=(/opt/homebrew/bin(N-/) /usr/local/bin(N-/) /usr/bin(N-/) /bin(N-/) /sbin(N-/) /usr/sbin(N-/) /usr/local/sbin(N-/) ~/dotfiles/bin(N-/) ~/.bin(N-/))
+# Add only Nix itself globally; repo environments provide their own package paths.
+# ^M prevents mark_dirs from appending slashes when this file is sourced again.
+path=(
+  /nix/var/nix/profiles/default/bin(N-/^M)
+  /opt/homebrew/bin(N-/^M) /usr/local/bin(N-/^M)
+  /usr/bin(N-/^M) /bin(N-/^M) /sbin(N-/^M) /usr/sbin(N-/^M) /usr/local/sbin(N-/^M)
+  ~/dotfiles/bin(N-/^M) ~/.bin(N-/^M)
+)
 
 # mise
-path=(${MISE_SHIMS_DIR}(N-/) $path)
+path=(${MISE_SHIMS_DIR}(N-/^M) $path)
 
 # cargo
-path=(~/.cargo/bin(N-/) $path)
+path=(~/.cargo/bin(N-/^M) $path)
 
 # pnpm
-path=($PNPM_HOME(N-/) $path)
+path=($PNPM_HOME(N-/^M) $path)
 
 # deno
-path=(~/.deno/bin(N-/) $path)
+path=(~/.deno/bin(N-/^M) $path)
 
 # bun
-path=(~/.bun/bin(N-/) $path)
-path=(~/.cache/.bun/bin(N-/) $path)
+path=(~/.bun/bin(N-/^M) $path)
+path=(~/.cache/.bun/bin(N-/^M) $path)
 
 # vite-plus
-path=(${VITE_PLUS_HOME}/bin(N-/) $path)
+path=(${VITE_PLUS_HOME}/bin(N-/^M) $path)
 
 # Ruby
-path=(/opt/homebrew/opt/ruby/bin(N-/) $path)
+path=(/opt/homebrew/opt/ruby/bin(N-/^M) $path)
 
 # go
-path=($GOPATH/bin(N-/) ~/.ghg/bin(N-/) $path)
+path=($GOPATH/bin(N-/^M) ~/.ghg/bin(N-/^M) $path)
 
 # luarocks
-path=(~/.luarocks/bin(N-/) $path)
+path=(~/.luarocks/bin(N-/^M) $path)
 
 # llvm
 # path=(/usr/local/opt/llvm/bin(N-/) $path)
 
 # home bin
-path=(~/bin(N-/) $path)
-path=(~/dotfiles/bin(N-/) $path)
-path=(~/.local/bin(N-/) $path)
+path=(~/bin(N-/^M) $path)
+path=(~/dotfiles/bin(N-/^M) $path)
+path=(~/.local/bin(N-/^M) $path)
 
 # Added by Alacritty
-path=(/Applications/Alacritty.app/Contents/MacOS/(N-/) $path)
+path=(/Applications/Alacritty.app/Contents/MacOS(N-/^M) $path)
 
 # Flutter SDK
-path=(~/develop/flutter/bin(N-/) $path)
+path=(~/develop/flutter/bin(N-/^M) $path)
 
 # LM Studio
-path=(~/.lmstudio/bin(N-/) $path)
+path=(~/.lmstudio/bin(N-/^M) $path)
 
 # Obsidian
-path=(/Applications/Obsidian.app/Contents/MacOS(N-/) $path)
+path=(/Applications/Obsidian.app/Contents/MacOS(N-/^M) $path)
+
+# Keep inherited environment paths ahead of the normal host tools.
+path=("${(@)dot_zsh_inherited_path:|path}" "${path[@]}")
+unset dot_zsh_inherited_path
 
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:

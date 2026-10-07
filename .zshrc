@@ -99,34 +99,8 @@ if whence -p vp >/dev/null; then
 fi
 # }}}
 
-# mise {{{
-dot_zsh_prioritize_local_tool_paths() {
-  path=(
-    $HOME/.cache/.bun/bin(N-/)
-    $HOME/.bun/bin(N-/)
-    $HOME/.cargo/bin(N-/)
-    $path
-  )
-}
-
-dot_zsh_activate_mise() {
-  source "$1"
-  autoload -Uz add-zsh-hook
-  add-zsh-hook precmd dot_zsh_prioritize_local_tool_paths
-  add-zsh-hook chpwd dot_zsh_prioritize_local_tool_paths
-  dot_zsh_prioritize_local_tool_paths
-}
-
-if [[ -r ${MISE_ACTIVATE_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/mise.zsh} ]]; then
-  if (( $+functions[zsh-defer] )); then
-    zsh-defer dot_zsh_activate_mise "${MISE_ACTIVATE_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/mise.zsh}"
-  else
-    dot_zsh_activate_mise "${MISE_ACTIVATE_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/zsh/profile/mise.zsh}"
-  fi
-fi
-# }}}
-
 # direnv {{{
+# direnv owns shell environment updates; mise tools use the shims in .zshenv.
 if whence direnv >/dev/null; then
   eval "$(direnv hook zsh)"
 fi

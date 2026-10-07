@@ -12,7 +12,6 @@ typeset -r DOT_ZSH_PNPM_CACHE="${DOT_ZSH_CACHE_PROFILE}/pnpm-completion.zsh"
 typeset -r DOT_ZSH_NPM_SOURCE="/opt/homebrew/share/zsh/site-functions/_npm"
 typeset -r DOT_ZSH_NPM_CACHE="${DOT_ZSH_CACHE_PROFILE}/npm-completion.zsh"
 typeset -r DOT_ZSH_BUN_CACHE="${DOT_ZSH_CACHE_PROFILE}/bun-completion.zsh"
-typeset -r DOT_ZSH_MISE_ACTIVATE_CACHE="${DOT_ZSH_CACHE_PROFILE}/mise.zsh"
 typeset -r DOT_ZSH_MISE_COMPLETION_CACHE="${DOT_ZSH_CACHE_PROFILE}/mise-completion.zsh"
 
 dot_zsh_cache_needs_refresh() {
@@ -87,18 +86,6 @@ fi
 
 if whence mise >/dev/null; then
   typeset -r DOT_ZSH_MISE_BIN="${commands[mise]}"
-  typeset -r DOT_ZSH_MISE_CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/mise/config.toml"
-  typeset -r DOT_ZSH_MISE_SHIMS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/mise/shims"
-
-  dot_zsh_refresh_command_cache \
-    "$DOT_ZSH_MISE_ACTIVATE_CACHE" \
-    "$HOME/.zshenv" \
-    "$HOME/.zprofile" \
-    "$DOT_ZSH_MISE_BIN" \
-    "$DOT_ZSH_MISE_CONFIG_FILE" \
-    -- \
-    env PATH="${DOT_ZSH_MISE_SHIMS_DIR}:$PATH" mise activate zsh
-
   dot_zsh_refresh_command_cache \
     "$DOT_ZSH_MISE_COMPLETION_CACHE" \
     "$HOME/.zprofile" \

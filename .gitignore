@@ -20,6 +20,9 @@ tmp/
 /.config/homebrew/*
 !/.config/homebrew/brew.env
 !/.config/mise
+!/.config/nix/
+/.config/nix/*
+!/.config/nix/nix.conf
 !/.config/nvim
 !/.config/octorus
 !/.config/previm

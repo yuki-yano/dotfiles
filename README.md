@@ -154,9 +154,19 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
   installed by Homebrew, and `.zshenv` / `.zprofile` keep PATH/runtime order sane for login shells.
 - **Aliases & completions** – eza replaces `ls`, dust/lazygit replacements are wired, `~/.zsh/completions` and
   `.config/tabtab/zsh` host generated completions, and `~/.safe-chain` is sourced when available.
-- **direnv & mise** – `.envrc` and `.config/mise/config.toml` manage per-project env vars plus runtime installs (`bun`,
-  `node`, `python`, `uv`, AI CLI packages such as `@anthropic-ai/claude-code`, `@google/gemini-cli`, `sdd-mcp`,
-  `safe-chain`, `vde-*`). Run `mise install` after cloning to sync tool versions.
+- **direnv & mise** – direnv loads project `.envrc` files; mise tools use shims without shell activation hooks.
+  `.zshenv` preserves inherited absolute environment paths and removes inherited `mise/installs/` paths so shims can select
+  the current repo's versions. Run `mise install` to sync tools, `mise exec -- <command>` to apply mise `[env]`,
+  and `mise reshim` after adding executables with another package manager. `mise shell` and `mise deactivate`
+  require activation and are not used in this setup. The old `~/.cache/zsh/profile/mise.zsh` activation cache is
+  no longer used and should not be sourced.
+- **Nix** – an existing multi-user installation is initialized explicitly because global zsh startup files are
+  disabled. Only `/nix/var/nix/profiles/default/bin` joins the host PATH, after user tools and mise shims but before
+  Homebrew. Inherited Nix user profile bins are removed; project environments provide their package paths.
+  `.config/nix/nix.conf` enables `nix-command` and `flakes`. Nix and nix-direnv installation remain separate setup steps.
+  Run `bash tests/zsh_env_test.sh` to check inherited
+  PATH handling, nested shells, and Nix initialization. Open a new terminal or pane after changing startup files;
+  existing shells retain their loaded hooks.
 - **Shell history & snippets** – `.config/atuin/config.toml` tunes Atuin (fuzzy search with previews).
   `.config/zeno/config.yml` defines CLI snippets (git helpers, tmux commands, redirection shorthands).
 - **Color & search defaults** – `ripgrep`, `vivid`, and `bat` configs standardize palette and output.
