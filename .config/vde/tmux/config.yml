@@ -61,26 +61,27 @@ statusline:
     inactive_prefix: " #[fg=#332c46]#[default]"
     inactive_suffix: "#[fg=#332c46,bg=default]#[default] "
   windows:
-    separator: ""
+    separator: " "
+    badge_style: inline
     agent_badge:
-      enabled: false
+      enabled: true
+      mode: counts
+      hide_idle: false
     current:
-      format: " {index}:{window} "
+      format: " {index} {badge} "
       bold: true
       colors:
-        fg: "#cdd6f4"
-      prefix: "#[fg=#b4befe]▍"
-      suffix: "#[fg=#1e1e2e,bg=default]#[default]"
+        fg: "#e8ecfb"
+        bg: "#434662"
     other:
-      format: " {index}:{window} "
+      format: " {index} {badge} "
       colors:
-        fg: "#7f849c"
-      prefix: "#[fg=#1e1e2e]"
-      suffix: "#[fg=#1e1e2e,bg=default]#[default]"
+        fg: "#a6adc8"
+        bg: "#2a2b3c"
     bell:
-      fg: "#f38ba8"
+      fg: "#f9e2af"
     activity:
-      fg: "#f38ba8"
+      fg: "#f9e2af"
   panes:
     current:
       format: " {pane}  {detail} "
