@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative "../../_shared/html-artifacts/scripts/validate_html"
+require_relative "validate_html"
 
 module UiMockProposals
   ID_PATTERN = /\A[a-z][a-z0-9]*(?:-[a-z0-9]+)*\z/
@@ -22,7 +22,7 @@ module UiMockProposals
     end
 
     def validate!
-      validate_shared_contract
+      validate_html
       validate_current
       validate_proposals
       raise ValidationError, @errors unless @errors.empty?
@@ -32,9 +32,9 @@ module UiMockProposals
 
     private
 
-    def validate_shared_contract
-      HtmlArtifacts::Validator.new(@html, profile: "ui-mock").validate!
-    rescue HtmlArtifacts::ValidationError => e
+    def validate_html
+      UiMockHtml::Validator.new(@html).validate!
+    rescue UiMockHtml::ValidationError => e
       @errors.concat(e.errors)
     end
 
@@ -51,7 +51,7 @@ module UiMockProposals
 
     def validate_proposals
       proposals = proposal_elements
-      @errors << "must contain 2 to 5 proposals" unless proposals.length.between?(2, 5)
+      @errors << "must contain at least 2 proposals" unless proposals.length >= 2
 
       ids = proposals.map { |proposal| proposal.fetch(:id) }
       duplicates = ids.tally.select { |_id, count| count > 1 }.keys

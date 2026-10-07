@@ -11,6 +11,14 @@ class UiMockProposalValidatorTest < Minitest::Test
     assert UiMockProposals::Validator.new(valid_html).validate!
   end
 
+  def test_accepts_six_proposals_when_requested
+    extra = %w[d e f].map do |id|
+      %(<a href="#proposal-#{id}">#{id}</a><section id="proposal-#{id}" data-proposal-id="#{id}"><h2>案#{id}</h2></section>)
+    end.join
+
+    assert UiMockProposals::Validator.new(valid_html.sub("</body>", "#{extra}</body>")).validate!
+  end
+
   def test_rejects_missing_current_mismatched_data_id_and_single_proposal
     html = document(<<~HTML)
       <nav><a href="#proposal-a">A</a></nav>
@@ -23,7 +31,7 @@ class UiMockProposalValidatorTest < Minitest::Test
 
     assert_includes error.errors, "current baseline anchor is missing"
     assert_includes error.errors, "current baseline navigation link is missing"
-    assert_includes error.errors, "must contain 2 to 5 proposals"
+    assert_includes error.errors, "must contain at least 2 proposals"
     assert_includes error.errors, 'proposal-a must use data-proposal-id="a"'
   end
 
@@ -55,6 +63,11 @@ class UiMockProposalValidatorTest < Minitest::Test
 
       assert_equal 0, UiMockProposals::CLI.run([path], out: out, err: StringIO.new)
       assert_includes out.string, "Valid UI proposals"
+
+      File.write(path, "<html></html>", encoding: "UTF-8")
+      err = StringIO.new
+      assert_equal 2, UiMockProposals::CLI.run([path], out: StringIO.new, err: err)
+      assert_includes err.string, "Validation failed"
     end
   end
 

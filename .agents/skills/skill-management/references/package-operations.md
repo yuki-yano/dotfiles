@@ -160,6 +160,23 @@ npx --yes skills add vercel-labs/agent-skills --skill vercel-react-best-practice
 npx --yes skills add github/gh-stack --skill gh-stack -a codex -y
 ```
 
+説明・図解・日本語推敲:
+
+```bash
+npx --yes skills add https://github.com/anthropics/claude-plugins-community/tree/main/eli5/skills/eli5 --skill eli5 -a codex -y
+npx --yes skills add tt-a1i/archify --skill archify -a codex -y
+npx --yes skills add mizchi/explainer --skill explainer first-reader -a codex -y
+npx --yes skills add nanaism/yomiyasu --skill yomiyasu -a codex -y
+```
+
+- 初歩的な絵中心の説明は`eli5`、構成・処理・状態の図は`archify`、読み手に合わせた説明資料は`explainer`、日本語の推敲は`yomiyasu`を使う。通常の調査メモや判断記録はMarkdownでよく、全skillを毎回通す必要はない。
+- `first-reader`は`explainer`が参照する補助skill。`explainer-book`、`d2-diagram`、`d2-slides`は導入対象に含めない。
+- `archify`はNode 18以上を使い、`finalize`のブラウザ検証にはChromeが必要。`finalize` / `deliver`には更新確認の外部GETが含まれる。更新確認を止める場合は`ARCHIFY_UPDATE_CHECK_DISABLED=1`を指定する。
+- `explainer`のHTML生成・検証はNode 24以上と、資料を作るprojectの`@mizchi/vlmkit marked playwright mermaid`を使う。利用時にそのprojectのpackage managerで準備する。D2とIconifyは必要な場合だけ追加する。skillの配置先に一括installしても、利用projectの依存の代わりにはならない。
+- `verify-doc.mjs`の引用照合は出力文字列の一致を検査する。実行コマンドの成功や技術的な正しさを保証するものとして扱わない。
+- 外部skillの本文は上流のまま管理する。旧rendererの再現機能は引き継がず、過去の資料はそのまま残す。UIの比較・選択はローカルの`ui-mock-proposals`で扱う。
+- `npx skills`が取り込む上流のtests・examples・補助資料も保持する。lockのhashと再導入結果を一致させるため、一部だけ削除したりgitignoreで追跡対象から外したりしない。
+
 ## Common Mistakes
 
 - Running `npx skills add -g -a codex`: this installs into Codex global storage instead of the dotfiles `.agents` tree.
@@ -168,4 +185,3 @@ npx --yes skills add github/gh-stack --skill gh-stack -a codex -y
 - Installing the same skill for Cursor or Gemini just to make Codex see it: Codex should read the `.agents` copy through the dotfiles-managed path.
 - Hand-editing external skill files without recording that they now diverge from the upstream `skills-lock.json` entry.
 - Removing only `~/dotfiles/.agents/skills/<name>` while leaving copies under `~/.cursor/skills`, `~/.gemini/skills`, `~/.config/opencode/skills`, or `~/.claude/skills`.
-
