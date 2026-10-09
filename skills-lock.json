@@ -22,6 +22,13 @@
       "skillPath": "archify/SKILL.md",
       "computedHash": "d96f95fd2f5c043c18919bfade7688fb0eb62a051b3be4ab98faa312fc2ee927"
     },
+    "concise": {
+      "source": "kmizu/concise",
+      "ref": "325dd673be7c08af03b5c61df7a1ba9fbcf02018",
+      "sourceType": "github",
+      "skillPath": "skills/concise/SKILL.md",
+      "computedHash": "261c536d6e215ae356d50c96e6dc7dd6555b848f079b7078fd0e9f5330a3676a"
+    },
     "domain-modeling": {
       "source": "mattpocock/skills",
       "ref": "24fe0ef7737efae15c87225755e9f6f5965e4888",
@@ -84,13 +91,6 @@
       "sourceType": "github",
       "skillPath": "skills/productivity/grilling/SKILL.md",
       "computedHash": "4dd886b0196bf43729d954ae326016f2bd9f5f79d892500b407c33a753362f14"
-    },
-    "i-have-adhd": {
-      "source": "ayghri/i-have-adhd",
-      "ref": "839872f9d1cd634fed642b4589ce7226199cc15f",
-      "sourceType": "github",
-      "skillPath": "skills/i-have-adhd/SKILL.md",
-      "computedHash": "2be8f3214ebd0907429eafacc95c1cc3b4f21fe9d1892a30df9be7f32dc09d65"
     },
     "portless": {
       "source": "vercel-labs/portless",

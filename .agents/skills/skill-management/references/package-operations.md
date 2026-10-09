@@ -167,9 +167,12 @@ npx --yes skills add https://github.com/anthropics/claude-plugins-community/tree
 npx --yes skills add tt-a1i/archify --skill archify -a codex -y
 npx --yes skills add mizchi/explainer --skill explainer first-reader -a codex -y
 npx --yes skills add nanaism/yomiyasu --skill yomiyasu -a codex -y
+npx --yes skills add kmizu/concise --skill concise -a codex -y
 ```
 
 - 初歩的な絵中心の説明は`eli5`、構成・処理・状態の図は`archify`、読み手に合わせた説明資料は`explainer`、日本語の推敲は`yomiyasu`を使う。通常の調査メモや判断記録はMarkdownでよく、全skillを毎回通す必要はない。
+- 会話・進捗・結果報告の分量と構造は`concise`で整える。`i-have-adhd`とは併用しない。日本語そのものの推敲は`yomiyasu`で扱う。
+- `concise`はcanonicalの`skills/concise`を無改変で導入する。Claude Codeでは`/concise`、Codexでは`$concise`で明示し、解除は`stop concise mode`と伝える。単体導入にalways-on hookは含まれない。Claude Codeは`disable-model-invocation: true`で自動起動を抑止するが、canonicalには`agents/openai.yaml`がなく、Codexでの明示起動指定はdescriptionに依存する。
 - `first-reader`は`explainer`が参照する補助skill。`explainer-book`、`d2-diagram`、`d2-slides`は導入対象に含めない。
 - `archify`はNode 18以上を使い、`finalize`のブラウザ検証にはChromeが必要。`finalize` / `deliver`には更新確認の外部GETが含まれる。更新確認を止める場合は`ARCHIFY_UPDATE_CHECK_DISABLED=1`を指定する。
 - `explainer`のHTML生成・検証はNode 24以上と、資料を作るprojectの`@mizchi/vlmkit marked playwright mermaid`を使う。利用時にそのprojectのpackage managerで準備する。D2とIconifyは必要な場合だけ追加する。skillの配置先に一括installしても、利用projectの依存の代わりにはならない。
