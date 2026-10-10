@@ -1,4 +1,9 @@
-import { assertEquals, assertStringIncludes } from "@std/assert";
+import { test } from "bun:test";
+import { mkdtempSync } from "node:fs";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
+import { assertEquals, assertStringIncludes } from "./assertions.ts";
 
 const ANSI_PATTERN = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, "g");
 
@@ -19,20 +24,24 @@ async function renderStatusLine(configDir: string, overrides: Record<string, unk
     },
     ...overrides,
   };
-  const statusLinePath = decodeURIComponent(new URL("../bin/cc-statusline", import.meta.url).pathname);
-  const command = new Deno.Command(statusLinePath, {
-    cwd: Deno.cwd(),
-    env: { CLAUDE_CONFIG_DIR: configDir, HOME: configDir },
-    stdin: "piped",
-    stdout: "piped",
-    stderr: "piped",
+  const statusLinePath = decodeURIComponent(new URL("../bin/cc-statusline.ts", import.meta.url).pathname);
+  const child = Bun.spawn([statusLinePath], {
+    cwd: process.cwd(),
+    env: { ...process.env, CLAUDE_CONFIG_DIR: configDir, HOME: configDir, TMPDIR: configDir },
+    stdin: "pipe",
+    stdout: "pipe",
+    stderr: "pipe",
   });
-  const child = command.spawn();
-  const writer = child.stdin.getWriter();
-  await writer.write(new TextEncoder().encode(JSON.stringify(payload)));
-  await writer.close();
+  child.stdin.write(JSON.stringify(payload));
+  child.stdin.end();
+  const [code, output, errorOutput] = await Promise.all([
+    child.exited,
+    new Response(child.stdout).text(),
+    new Response(child.stderr).text(),
+  ]);
+  const stdout = new TextEncoder().encode(output);
+  const stderr = new TextEncoder().encode(errorOutput);
 
-  const { code, stdout, stderr } = await child.output();
   assertEquals(code, 0, new TextDecoder().decode(stderr));
   assertEquals(new TextDecoder().decode(stderr), "");
 
@@ -50,12 +59,12 @@ async function configureVdeMonitor(
   token = "test-token",
 ): Promise<void> {
   const runtimeDir = `${configDir}/.vde-monitor/server-runtimes`;
-  await Deno.mkdir(runtimeDir, { recursive: true });
-  await Deno.writeTextFile(
+  await mkdir(runtimeDir, { recursive: true });
+  await writeFile(
     `${configDir}/.vde-monitor/token.json`,
     JSON.stringify({ token }),
   );
-  await Deno.writeTextFile(
+  await writeFile(
     `${runtimeDir}/server-runtime.${port}.aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee.json`,
     JSON.stringify({
       version: 1,
@@ -92,27 +101,20 @@ function createVdeMonitorUsageResponse(resetAt: string) {
   };
 }
 
-Deno.test("cc-statusline displays all three vde-monitor limits", async () => {
-  const configDir = Deno.makeTempDirSync();
+test("cc-statusline displays all three vde-monitor limits", async () => {
+  const configDir = mkdtempSync(join(tmpdir(), "cc-statusline-test-"));
   const resetAt = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
-  let resolvePort: (port: number) => void;
-  const portPromise = new Promise<number>((resolve) => {
-    resolvePort = resolve;
-  });
-  const server = Deno.serve(
-    {
-      hostname: "127.0.0.1",
-      port: 0,
-      onListen: ({ port }) => resolvePort(port),
-    },
-    (request) => {
+  const server = Bun.serve({
+    hostname: "127.0.0.1",
+    port: 0,
+    fetch(request) {
       if (request.headers.get("Authorization") !== "Bearer test-token") {
         return new Response(null, { status: 401 });
       }
       return Response.json(createVdeMonitorUsageResponse(resetAt));
     },
-  );
-  await configureVdeMonitor(configDir, await portPromise);
+  });
+  await configureVdeMonitor(configDir, server.port!);
 
   try {
     const lines = await renderStatusLine(configDir);
@@ -125,33 +127,26 @@ Deno.test("cc-statusline displays all three vde-monitor limits", async () => {
     assertStringIncludes(lines[3], "Fable");
     assertStringIncludes(lines[3], "● 26%");
   } finally {
-    await server.shutdown();
-    await Deno.remove(configDir, { recursive: true });
+    server.stop(true);
+    await rm(configDir, { recursive: true });
   }
 });
 
-Deno.test("cc-statusline reads the current vde-monitor token on every render", async () => {
-  const configDir = Deno.makeTempDirSync();
+test("cc-statusline reads the current vde-monitor token on every render", async () => {
+  const configDir = mkdtempSync(join(tmpdir(), "cc-statusline-test-"));
   const resetAt = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
   let expectedToken = "first-token";
-  let resolvePort: (port: number) => void;
-  const portPromise = new Promise<number>((resolve) => {
-    resolvePort = resolve;
-  });
-  const server = Deno.serve(
-    {
-      hostname: "127.0.0.1",
-      port: 0,
-      onListen: ({ port }) => resolvePort(port),
-    },
-    (request) => {
+  const server = Bun.serve({
+    hostname: "127.0.0.1",
+    port: 0,
+    fetch(request) {
       if (request.headers.get("Authorization") !== `Bearer ${expectedToken}`) {
         return new Response(null, { status: 401 });
       }
       return Response.json(createVdeMonitorUsageResponse(resetAt));
     },
-  );
-  const port = await portPromise;
+  });
+  const port = server.port!;
   await configureVdeMonitor(configDir, port, expectedToken);
 
   try {
@@ -162,15 +157,15 @@ Deno.test("cc-statusline reads the current vde-monitor token on every render", a
 
     assertStringIncludes((await renderStatusLine(configDir))[3], "● 26%");
   } finally {
-    await server.shutdown();
-    await Deno.remove(configDir, { recursive: true });
+    server.stop(true);
+    await rm(configDir, { recursive: true });
   }
 });
 
-Deno.test("cc-statusline does not fall back to the Claude cache without the vde-monitor API", async () => {
-  const configDir = Deno.makeTempDirSync();
+test("cc-statusline does not fall back to the Claude cache without the vde-monitor API", async () => {
+  const configDir = mkdtempSync(join(tmpdir(), "cc-statusline-test-"));
   const resetAt = new Date(Date.now() + 5 * 60 * 60 * 1000).toISOString();
-  await Deno.writeTextFile(
+  await writeFile(
     `${configDir}/.claude.json`,
     JSON.stringify({
       cachedUsageUtilization: {
@@ -195,19 +190,19 @@ Deno.test("cc-statusline does not fall back to the Claude cache without the vde-
     assertStringIncludes(lines[2], "● 50%");
     assertStringIncludes(lines[3], "● --% | unavailable");
   } finally {
-    await Deno.remove(configDir, { recursive: true });
+    await rm(configDir, { recursive: true });
   }
 });
 
-Deno.test("cc-statusline keeps all rows without vde-monitor or native limits", async () => {
-  const configDir = Deno.makeTempDirSync();
+test("cc-statusline keeps all rows without vde-monitor or native limits", async () => {
+  const configDir = mkdtempSync(join(tmpdir(), "cc-statusline-test-"));
   try {
     const lines = await renderStatusLine(configDir, { rate_limits: undefined });
     for (const line of lines.slice(1)) {
       assertStringIncludes(line, "● --% | unavailable");
     }
   } finally {
-    await Deno.remove(configDir, { recursive: true });
+    await rm(configDir, { recursive: true });
   }
 });
 
@@ -215,18 +210,18 @@ async function withVdeMonitor(
   handler: (request: Request) => Response | Promise<Response>,
   check: (configDir: string) => Promise<void>,
 ): Promise<void> {
-  const configDir = await Deno.makeTempDir();
-  const server = Deno.serve({ hostname: "127.0.0.1", port: 0, onListen: () => {} }, handler);
+  const configDir = await mkdtemp(join(tmpdir(), "cc-statusline-test-"));
+  const server = Bun.serve({ hostname: "127.0.0.1", port: 0, fetch: handler });
   try {
-    await configureVdeMonitor(configDir, server.addr.port);
+    await configureVdeMonitor(configDir, server.port!);
     await check(configDir);
   } finally {
-    await server.shutdown();
-    await Deno.remove(configDir, { recursive: true });
+    server.stop(true);
+    await rm(configDir, { recursive: true });
   }
 }
 
-Deno.test("cc-statusline displays degraded data as stale without pace scores", async () => {
+test("cc-statusline displays degraded data as stale without pace scores", async () => {
   const response = createVdeMonitorUsageResponse(new Date(Date.now() + 86400000).toISOString());
   response.provider.status = "degraded";
   await withVdeMonitor(() => Response.json(response), async (configDir) => {
@@ -240,7 +235,7 @@ Deno.test("cc-statusline displays degraded data as stale without pace scores", a
   });
 });
 
-Deno.test("cc-statusline preserves independent windows and unknown reset times", async () => {
+test("cc-statusline preserves independent windows and unknown reset times", async () => {
   const response = createVdeMonitorUsageResponse(new Date(Date.now() + 86400000).toISOString());
   const [session, weekly, fable] = response.provider.windows;
   const body = {
@@ -262,7 +257,7 @@ Deno.test("cc-statusline preserves independent windows and unknown reset times",
   });
 });
 
-Deno.test("cc-statusline keeps the Fable row when the model window is absent", async () => {
+test("cc-statusline keeps the Fable row when the model window is absent", async () => {
   const response = createVdeMonitorUsageResponse(new Date(Date.now() + 86400000).toISOString());
   response.provider.windows.pop();
   await withVdeMonitor(() => Response.json(response), async (configDir) => {
@@ -273,7 +268,7 @@ Deno.test("cc-statusline keeps the Fable row when the model window is absent", a
   });
 });
 
-Deno.test("cc-statusline does not present expired usage as a current budget", async () => {
+test("cc-statusline does not present expired usage as a current budget", async () => {
   const response = createVdeMonitorUsageResponse(new Date(Date.now() - 1000).toISOString());
   await withVdeMonitor(() => Response.json(response), async (configDir) => {
     const lines = await renderStatusLine(configDir);
@@ -296,7 +291,7 @@ for (
     }],
   ] as const
 ) {
-  Deno.test(`cc-statusline keeps all rows on ${name}`, async () => {
+  test(`cc-statusline keeps all rows on ${name}`, async () => {
     await withVdeMonitor(respond, async (configDir) => {
       const lines = await renderStatusLine(configDir, { rate_limits: {} });
       for (const line of lines.slice(1)) {
@@ -306,7 +301,7 @@ for (
   });
 }
 
-Deno.test("cc-statusline selects current windows across multiple monitors", async () => {
+test("cc-statusline selects current windows across multiple monitors", async () => {
   const response = createVdeMonitorUsageResponse(new Date(Date.now() + 86400000).toISOString());
   const stale = structuredClone(response);
   stale.provider.status = "degraded";
@@ -314,9 +309,9 @@ Deno.test("cc-statusline selects current windows across multiple monitors", asyn
   const current = structuredClone(response);
   current.provider.windows = current.provider.windows.slice(0, 2);
   await withVdeMonitor(() => Response.json(stale), async (configDir) => {
-    const second = Deno.serve({ hostname: "127.0.0.1", port: 0, onListen: () => {} }, () => Response.json(current));
+    const second = Bun.serve({ hostname: "127.0.0.1", port: 0, fetch: () => Response.json(current) });
     try {
-      await configureVdeMonitor(configDir, second.addr.port);
+      await configureVdeMonitor(configDir, second.port!);
       const lines = await renderStatusLine(configDir, { rate_limits: undefined });
       assertStringIncludes(lines[1], "● 90%");
       assertEquals(lines[1].includes("stale"), false);
@@ -324,7 +319,7 @@ Deno.test("cc-statusline selects current windows across multiple monitors", asyn
       assertStringIncludes(lines[3], "● 26%");
       assertStringIncludes(lines[3], " | stale");
     } finally {
-      await second.shutdown();
+      second.stop(true);
     }
   });
 });

@@ -18,10 +18,10 @@ exec 2>>"$LOG_DIR/compact-hooks.log"
 chmod 600 "$LOG_DIR/compact-hooks.log" 2>/dev/null || true
 
 command -v jq >/dev/null 2>&1 || exit 0
-command -v node >/dev/null 2>&1 || exit 0
+command -v bun >/dev/null 2>&1 || exit 0
 
 HOOK_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
-HOOK_FIELDS=$(node "$HOOK_DIR/read-hook-json.mjs" \
+HOOK_FIELDS=$(bun "$HOOK_DIR/read-hook-json.ts" \
   | jq -r '[.session_id // "", .hook_event_name // "", .agent_id // ""] | @tsv')
 [[ -n "$HOOK_FIELDS" ]] || exit 0
 IFS=$'\t' read -r SESSION_ID EVENT AGENT_ID <<<"$HOOK_FIELDS"

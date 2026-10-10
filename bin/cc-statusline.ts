@@ -1,6 +1,6 @@
-#!/usr/bin/env -S deno run --allow-read --allow-run --allow-env --allow-net=127.0.0.1 --allow-write=/var/folders,/tmp
+#!/usr/bin/env bun
 
-import { readAll } from "jsr:@std/io@0.224/read-all";
+import { chmodSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 
 type UsageMetric = {
   used_percentage?: number;
@@ -98,44 +98,15 @@ const PALETTE = {
 
 async function getGitBranch(): Promise<string> {
   try {
-    const isGitRepo = new Deno.Command("git", {
-      args: ["rev-parse"],
-      stdout: "null",
-      stderr: "null",
-    });
-    const { success } = await isGitRepo.output();
-
-    if (!success) {
-      return "";
-    }
-
-    const branchCmd = new Deno.Command("git", {
-      args: ["branch", "--show-current"],
-      stdout: "piped",
-      stderr: "null",
-    });
-    const { stdout } = await branchCmd.output();
-    const branch = new TextDecoder().decode(stdout).trim();
-
-    if (branch) {
-      return branch;
-    }
-
-    const hashCmd = new Deno.Command("git", {
-      args: ["rev-parse", "--short", "HEAD"],
-      stdout: "piped",
-      stderr: "null",
-    });
-    const { stdout: hashStdout } = await hashCmd.output();
-    const commitHash = new TextDecoder().decode(hashStdout).trim();
-
-    if (commitHash) {
-      return `HEAD (${commitHash})`;
-    }
+    const git = (...args: string[]) => Bun.spawnSync(["git", ...args], { stdout: "pipe", stderr: "ignore" });
+    if (git("rev-parse").exitCode !== 0) return "";
+    const branch = git("branch", "--show-current").stdout.toString().trim();
+    if (branch) return branch;
+    const hash = git("rev-parse", "--short", "HEAD").stdout.toString().trim();
+    return hash ? `HEAD (${hash})` : "";
   } catch {
+    return "";
   }
-
-  return "";
 }
 
 function clampPercentage(value: number): number {
@@ -258,7 +229,7 @@ function getContextInputTokens(currentUsage?: ContextWindowUsage | null): number
 
 function getVdeMonitorAccess(homeDir: string): { ports: number[]; token: string } | null {
   try {
-    const tokenFile = JSON.parse(Deno.readTextFileSync(`${homeDir}/.vde-monitor/token.json`)) as {
+    const tokenFile = JSON.parse(readFileSync(`${homeDir}/.vde-monitor/token.json`, "utf8")) as {
       token?: unknown;
     };
     const token = typeof tokenFile.token === "string" ? tokenFile.token.trim() : "";
@@ -266,12 +237,12 @@ function getVdeMonitorAccess(homeDir: string): { ports: number[]; token: string 
       return null;
     }
 
-    const ports = [...Deno.readDirSync(`${homeDir}/.vde-monitor/server-runtimes`)]
-      .filter((entry) => entry.isFile && VDE_MONITOR_RUNTIME_FILE_PATTERN.test(entry.name))
+    const ports = [...readdirSync(`${homeDir}/.vde-monitor/server-runtimes`, { withFileTypes: true })]
+      .filter((entry) => entry.isFile() && VDE_MONITOR_RUNTIME_FILE_PATTERN.test(entry.name))
       .flatMap((entry) => {
         try {
           const marker = JSON.parse(
-            Deno.readTextFileSync(`${homeDir}/.vde-monitor/server-runtimes/${entry.name}`),
+            readFileSync(`${homeDir}/.vde-monitor/server-runtimes/${entry.name}`, "utf8"),
           ) as VdeMonitorRuntimeMarker;
           const port = marker.endpoint?.port;
           if (
@@ -359,7 +330,7 @@ async function fetchVdeMonitorRateLimits(port: number, token: string): Promise<V
 }
 
 async function getVdeMonitorRateLimits(): Promise<VdeMonitorRateLimits | null> {
-  const homeDir = Deno.env.get("HOME");
+  const homeDir = process.env.HOME;
   if (!homeDir) {
     return null;
   }
@@ -509,11 +480,11 @@ function maybeWriteCompactWarnMarker(input: StatusLineInput): void {
   if (typeof usedPct !== "number") return;
   const band = COMPACT_WARN_BANDS.find((threshold) => usedPct >= threshold) ?? 0;
   if (band === 0) return;
-  const tmpDir = Deno.env.get("TMPDIR") ?? "/tmp";
+  const tmpDir = process.env.TMPDIR ?? "/tmp";
   let warned = 0;
   try {
     warned = Number.parseInt(
-      Deno.readTextFileSync(`${tmpDir}/claude-compact-warned/${sessionId}`).trim(),
+      readFileSync(`${tmpDir}/claude-compact-warned/${sessionId}`, "utf8").trim(),
       10,
     ) || 0;
   } catch {
@@ -521,16 +492,15 @@ function maybeWriteCompactWarnMarker(input: StatusLineInput): void {
   }
   if (band <= warned) return;
   const warnDir = `${tmpDir}/claude-compact-warn`;
-  Deno.mkdirSync(warnDir, { recursive: true, mode: 0o700 });
-  Deno.chmodSync(warnDir, 0o700);
+  mkdirSync(warnDir, { recursive: true, mode: 0o700 });
+  chmodSync(warnDir, 0o700);
   const markerPath = `${warnDir}/${sessionId}`;
-  Deno.writeTextFileSync(markerPath, `${usedPct} ${band}\n`, { mode: 0o600 });
-  Deno.chmodSync(markerPath, 0o600);
+  writeFileSync(markerPath, `${usedPct} ${band}\n`, { mode: 0o600 });
+  chmodSync(markerPath, 0o600);
 }
 
-async function main() {
-  const stdin = await readAll(Deno.stdin);
-  const input = JSON.parse(new TextDecoder().decode(stdin)) as StatusLineInput;
+export async function main() {
+  const input = JSON.parse(await Bun.stdin.text()) as StatusLineInput;
 
   try {
     maybeWriteCompactWarnMarker(input);
@@ -576,8 +546,10 @@ async function main() {
 }
 
 if (import.meta.main) {
-  main().catch((error) => {
+  try {
+    await main();
+  } catch (error) {
     console.error("Error:", error);
-    Deno.exit(1);
-  });
+    process.exit(1);
+  }
 }

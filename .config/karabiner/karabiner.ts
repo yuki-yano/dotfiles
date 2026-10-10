@@ -1,12 +1,5 @@
-// Generate Karabiner complex_modifications via karabiner.ts (Deno edition).
-import {
-  ifApp,
-  ifInputSource,
-  map,
-  rule,
-  withMapper,
-  writeToProfile,
-} from "https://deno.land/x/karabinerts@1.35.1/deno.ts";
+// Generate Karabiner complex_modifications via karabiner.ts (Bun).
+import { ifApp, ifInputSource, map, rule, withMapper, writeToProfile } from "karabiner.ts";
 
 const profileName = "Default profile";
 
@@ -194,4 +187,4 @@ const rules = [
   ...imeRules,
 ];
 
-writeToProfile(profileName, rules);
+writeToProfile(process.argv.includes("--dry-run") ? "--dry-run" : profileName, rules);

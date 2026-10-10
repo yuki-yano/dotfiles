@@ -1,20 +1,23 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
-import { dirname, join } from "@std/path";
+import { test } from "bun:test";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { assertEquals, assertRejects, assertStringIncludes } from "./assertions.ts";
+import { dirname, join } from "node:path";
 import {
   applyCodexTemplate,
   CodexTemplateApplyError,
   END_MARKER,
   formatCodexTemplateApplyError,
   START_MARKER,
-} from "../bin/codex-template-apply.ts";
+} from "../lib/codex-template.ts";
 
-Deno.test("codex template expands home paths while preserving sources and unmanaged config", async () => {
-  const root = await Deno.makeTempDir();
-  const home = Deno.env.get("HOME")!;
+test("codex template expands home paths while preserving sources and unmanaged config", async () => {
+  const root = await mkdtemp(join(tmpdir(), "codex-template-test-"));
+  const home = process.env.HOME!;
   const templateDir = join(root, "template");
   const outputDir = join(root, "output");
   const configTemplate = [
-    "# @nvim.on_save deno task codex:template -- --apply",
+    "# @nvim.on_save bun run codex:template --apply",
     'config_file = "~/.codex/agents/explorer.toml"',
     "source = '~/.cache/plugins'",
     'home = "~"',
@@ -51,26 +54,26 @@ Deno.test("codex template expands home paths while preserving sources and unmana
   ];
 
   try {
-    await Deno.mkdir(join(templateDir, "agents"), { recursive: true });
-    await Deno.mkdir(join(outputDir, "agents"), { recursive: true });
-    await Deno.writeTextFile(join(templateDir, "config.toml"), configTemplate);
-    await Deno.writeTextFile(join(outputDir, "config.toml"), existingConfig);
+    await mkdir(join(templateDir, "agents"), { recursive: true });
+    await mkdir(join(outputDir, "agents"), { recursive: true });
+    await writeFile(join(templateDir, "config.toml"), configTemplate);
+    await writeFile(join(outputDir, "config.toml"), existingConfig);
     for (const file of copyFiles) {
-      await Deno.writeTextFile(join(templateDir, file.path), file.source);
-      await Deno.writeTextFile(join(outputDir, file.path), "existing\n");
+      await writeFile(join(templateDir, file.path), file.source);
+      await writeFile(join(outputDir, file.path), "existing\n");
     }
 
     const options = { templateDir, outputDir, copyTargets: ["AGENTS.md", "agents", "hooks.json"] };
 
     assertEquals(await applyCodexTemplate({ ...options, dryRun: true }), true);
-    assertEquals(await Deno.readTextFile(join(outputDir, "config.toml")), existingConfig);
+    assertEquals(await readFile(join(outputDir, "config.toml"), "utf8"), existingConfig);
     for (const file of copyFiles) {
-      assertEquals(await Deno.readTextFile(join(outputDir, file.path)), "existing\n");
+      assertEquals(await readFile(join(outputDir, file.path), "utf8"), "existing\n");
     }
 
     assertEquals(await applyCodexTemplate(options), true);
     assertEquals(
-      await Deno.readTextFile(join(outputDir, "config.toml")),
+      await readFile(join(outputDir, "config.toml"), "utf8"),
       [
         'personal = "~/keep"',
         START_MARKER,
@@ -92,20 +95,20 @@ Deno.test("codex template expands home paths while preserving sources and unmana
         "",
       ].join("\n"),
     );
-    assertEquals(await Deno.readTextFile(join(templateDir, "config.toml")), configTemplate);
+    assertEquals(await readFile(join(templateDir, "config.toml"), "utf8"), configTemplate);
     for (const file of copyFiles) {
-      assertEquals(await Deno.readTextFile(join(outputDir, file.path)), file.expected);
-      assertEquals(await Deno.readTextFile(join(templateDir, file.path)), file.source);
+      assertEquals(await readFile(join(outputDir, file.path), "utf8"), file.expected);
+      assertEquals(await readFile(join(templateDir, file.path), "utf8"), file.source);
     }
     assertEquals(await applyCodexTemplate(options), false);
     assertEquals(await applyCodexTemplate({ ...options, dryRun: true }), false);
   } finally {
-    await Deno.remove(root, { recursive: true });
+    await rm(root, { recursive: true });
   }
 });
 
 async function createManagedSettingsFixture(templateBody: string, managedBody: string) {
-  const root = await Deno.makeTempDir();
+  const root = await mkdtemp(join(tmpdir(), "codex-template-test-"));
   const templateDir = join(root, "template");
   const outputDir = join(root, "output");
   const configPath = join(outputDir, "config.toml");
@@ -119,13 +122,13 @@ async function createManagedSettingsFixture(templateBody: string, managedBody: s
     "",
   ].join("\n");
   const copyFiles = ["AGENTS.md", "agents/explorer.toml", "hooks.json"];
-  await Deno.mkdir(join(templateDir, "agents"), { recursive: true });
-  await Deno.mkdir(join(outputDir, "agents"), { recursive: true });
-  await Deno.writeTextFile(join(templateDir, "config.toml"), templateBody);
-  await Deno.writeTextFile(configPath, existingConfig);
+  await mkdir(join(templateDir, "agents"), { recursive: true });
+  await mkdir(join(outputDir, "agents"), { recursive: true });
+  await writeFile(join(templateDir, "config.toml"), templateBody);
+  await writeFile(configPath, existingConfig);
   for (const path of copyFiles) {
-    await Deno.writeTextFile(join(templateDir, path), "new contents\n");
-    await Deno.writeTextFile(join(outputDir, path), "existing contents\n");
+    await writeFile(join(templateDir, path), "new contents\n");
+    await writeFile(join(outputDir, path), "existing contents\n");
   }
   return {
     root,
@@ -139,13 +142,52 @@ async function createManagedSettingsFixture(templateBody: string, managedBody: s
 async function assertManagedSettingsFixtureUnchanged(
   fixture: Awaited<ReturnType<typeof createManagedSettingsFixture>>,
 ) {
-  assertEquals(await Deno.readTextFile(fixture.configPath), fixture.existingConfig);
+  assertEquals(await readFile(fixture.configPath, "utf8"), fixture.existingConfig);
   for (const path of fixture.copyFiles) {
-    assertEquals(await Deno.readTextFile(join(fixture.options.outputDir, path)), "existing contents\n");
+    assertEquals(await readFile(join(fixture.options.outputDir, path), "utf8"), "existing contents\n");
   }
 }
 
 const managedSettingsTemplate = 'notify = ["vde-notifier"]\n[tui]\nfullscreen_transcript = false';
+
+for (
+  const [kind, current, next] of [
+    ["offset datetime", "1979-05-27T07:32:00Z", "1980-05-27T07:32:00Z"],
+    ["local datetime", "1979-05-27T07:32:00", "1980-05-27T07:32:00"],
+    ["local date", "1979-05-27", "1980-05-27"],
+    ["local time", "07:32:00", "08:32:00"],
+    ["datetime in an array", "[1979-05-27T07:32:00Z]", "[1980-05-27T07:32:00Z]"],
+  ]
+) {
+  test(`codex template detects changes to ${kind} before writing`, async () => {
+    const fixture = await createManagedSettingsFixture(`date = ${next}`, `date = ${current}`);
+    try {
+      for (const dryRun of [true, false]) {
+        await assertRejects(
+          () => applyCodexTemplate({ ...fixture.options, dryRun }),
+          CodexTemplateApplyError,
+          "would remove or change existing managed settings",
+        );
+        await assertManagedSettingsFixtureUnchanged(fixture);
+      }
+    } finally {
+      await rm(fixture.root, { recursive: true });
+    }
+  });
+}
+
+test("codex template accepts equivalent datetime offsets", async () => {
+  const fixture = await createManagedSettingsFixture(
+    "date = 1979-05-27T07:32:00Z",
+    "date = 1979-05-27T00:32:00-07:00",
+  );
+  try {
+    assertEquals(await applyCodexTemplate({ ...fixture.options, dryRun: true }), true);
+    await assertManagedSettingsFixtureUnchanged(fixture);
+  } finally {
+    await rm(fixture.root, { recursive: true });
+  }
+});
 const managedSettingsWithAppAdditions = [
   'notify = ["app-turn-ended", "vde-notifier"]',
   "[tui]",
@@ -155,7 +197,7 @@ const managedSettingsWithAppAdditions = [
   "enabled = true",
 ].join("\n");
 
-Deno.test("codex template stops before all writes and displays target-only settings and the complete diff", async () => {
+test("codex template stops before all writes and displays target-only settings and the complete diff", async () => {
   const fixture = await createManagedSettingsFixture(managedSettingsTemplate, managedSettingsWithAppAdditions);
   try {
     for (const dryRun of [true, false]) {
@@ -187,11 +229,11 @@ Deno.test("codex template stops before all writes and displays target-only setti
       await assertManagedSettingsFixtureUnchanged(fixture);
     }
   } finally {
-    await Deno.remove(fixture.root, { recursive: true });
+    await rm(fixture.root, { recursive: true });
   }
 });
 
-Deno.test("codex template requires an explicit overwrite flag and keeps unmanaged settings", async () => {
+test("codex template requires an explicit overwrite flag and keeps unmanaged settings", async () => {
   const fixture = await createManagedSettingsFixture(managedSettingsTemplate, managedSettingsWithAppAdditions);
   const options = { ...fixture.options, overwriteManaged: true };
   try {
@@ -199,19 +241,19 @@ Deno.test("codex template requires an explicit overwrite flag and keeps unmanage
     await assertManagedSettingsFixtureUnchanged(fixture);
     assertEquals(await applyCodexTemplate(options), true);
     assertEquals(
-      await Deno.readTextFile(fixture.configPath),
+      await readFile(fixture.configPath, "utf8"),
       fixture.existingConfig.replace(managedSettingsWithAppAdditions, managedSettingsTemplate),
     );
     for (const path of fixture.copyFiles) {
-      assertEquals(await Deno.readTextFile(join(fixture.options.outputDir, path)), "new contents\n");
+      assertEquals(await readFile(join(fixture.options.outputDir, path), "utf8"), "new contents\n");
     }
     assertEquals(await applyCodexTemplate(fixture.options), false);
   } finally {
-    await Deno.remove(fixture.root, { recursive: true });
+    await rm(fixture.root, { recursive: true });
   }
 });
 
-Deno.test("codex template stops for known-key value changes until an overwrite is requested", async () => {
+test("codex template stops for known-key value changes until an overwrite is requested", async () => {
   const template = [
     'model = "new-model"',
     'notify = ["new-notifier"]',
@@ -244,15 +286,15 @@ Deno.test("codex template stops for known-key value changes until an overwrite i
     }
     assertEquals(await applyCodexTemplate({ ...fixture.options, overwriteManaged: true }), true);
     assertEquals(
-      await Deno.readTextFile(fixture.configPath),
+      await readFile(fixture.configPath, "utf8"),
       fixture.existingConfig.replace(existing, template),
     );
   } finally {
-    await Deno.remove(fixture.root, { recursive: true });
+    await rm(fixture.root, { recursive: true });
   }
 });
 
-Deno.test("codex template allows new settings and equivalent TOML values despite formatting changes", async () => {
+test("codex template allows new settings and equivalent TOML values despite formatting changes", async () => {
   const template = [
     'model = "same-model"',
     'notify = ["same-notifier"]',
@@ -276,15 +318,15 @@ Deno.test("codex template allows new settings and equivalent TOML values despite
   try {
     assertEquals(await applyCodexTemplate(fixture.options), true);
     assertEquals(
-      await Deno.readTextFile(fixture.configPath),
+      await readFile(fixture.configPath, "utf8"),
       fixture.existingConfig.replace(existing, template),
     );
   } finally {
-    await Deno.remove(fixture.root, { recursive: true });
+    await rm(fixture.root, { recursive: true });
   }
 });
 
-Deno.test("codex template checks quoted keys, inline tables and empty target-only tables", async () => {
+test("codex template checks quoted keys, inline tables and empty target-only tables", async () => {
   const existing = [
     'model = "same-model"',
     'app = { "setting.with.dots" = true }',
@@ -298,12 +340,12 @@ Deno.test("codex template checks quoted keys, inline tables and empty target-onl
     assertStringIncludes(message, "empty_app_table");
     await assertManagedSettingsFixtureUnchanged(fixture);
   } finally {
-    await Deno.remove(fixture.root, { recursive: true });
+    await rm(fixture.root, { recursive: true });
   }
 });
 
 for (const invalidSource of ["template", "target"]) {
-  Deno.test(`codex template stops before all writes for invalid ${invalidSource} TOML even with an overwrite flag`, async () => {
+  test(`codex template stops before all writes for invalid ${invalidSource} TOML even with an overwrite flag`, async () => {
     const invalidToml = 'model = "unterminated';
     const validToml = 'model = "valid-model"';
     const fixture = await createManagedSettingsFixture(
@@ -320,7 +362,7 @@ for (const invalidSource of ["template", "target"]) {
         await assertManagedSettingsFixtureUnchanged(fixture);
       }
     } finally {
-      await Deno.remove(fixture.root, { recursive: true });
+      await rm(fixture.root, { recursive: true });
     }
   });
 }
@@ -334,7 +376,7 @@ function appInfoPlist(version: string): string {
 }
 
 async function createChatgptTemplateFixture() {
-  const root = await Deno.makeTempDir();
+  const root = await mkdtemp(join(tmpdir(), "codex-template-test-"));
   const templateDir = join(root, "template");
   const outputDir = join(root, "output");
   const chatgptAppPath = join(root, "ChatGPT.app");
@@ -355,16 +397,16 @@ async function createChatgptTemplateFixture() {
     END_MARKER,
     "",
   ].join("\n");
-  await Deno.mkdir(templateDir);
-  await Deno.mkdir(outputDir);
-  await Deno.mkdir(dirname(infoPath), { recursive: true });
-  await Deno.mkdir(dirname(servicePath(version)), { recursive: true });
-  await Deno.writeTextFile(infoPath, appInfoPlist(version));
-  await Deno.writeTextFile(servicePath(version), "export {};\n");
-  await Deno.writeTextFile(join(templateDir, "config.toml"), configTemplate);
-  await Deno.writeTextFile(join(templateDir, "AGENTS.md"), "new instructions\n");
-  await Deno.writeTextFile(join(outputDir, "config.toml"), existingConfig);
-  await Deno.writeTextFile(join(outputDir, "AGENTS.md"), "existing instructions\n");
+  await mkdir(templateDir);
+  await mkdir(outputDir);
+  await mkdir(dirname(infoPath), { recursive: true });
+  await mkdir(dirname(servicePath(version)), { recursive: true });
+  await writeFile(infoPath, appInfoPlist(version));
+  await writeFile(servicePath(version), "export {};\n");
+  await writeFile(join(templateDir, "config.toml"), configTemplate);
+  await writeFile(join(templateDir, "AGENTS.md"), "new instructions\n");
+  await writeFile(join(outputDir, "config.toml"), existingConfig);
+  await writeFile(join(outputDir, "AGENTS.md"), "existing instructions\n");
   return {
     root,
     infoPath,
@@ -376,17 +418,16 @@ async function createChatgptTemplateFixture() {
   };
 }
 
-Deno.test({
-  name: "codex template reads the app release version on each apply and validates the referenced browser service",
-  ignore: Deno.build.os !== "darwin",
-  async fn() {
+test.skipIf(process.platform !== "darwin")(
+  "codex template reads the app release version on each apply and validates the referenced browser service",
+  async () => {
     const fixture = await createChatgptTemplateFixture();
     const { options, version, configTemplate, existingConfig } = fixture;
     const configPath = join(options.outputDir, "config.toml");
     try {
       assertEquals(await applyCodexTemplate({ ...options, dryRun: true }), true);
-      assertEquals(await Deno.readTextFile(configPath), existingConfig);
-      assertEquals(await Deno.readTextFile(join(options.outputDir, "AGENTS.md")), "existing instructions\n");
+      assertEquals(await readFile(configPath, "utf8"), existingConfig);
+      assertEquals(await readFile(join(options.outputDir, "AGENTS.md"), "utf8"), "existing instructions\n");
 
       assertEquals(await applyCodexTemplate(options), true);
       const expectedConfig = (appVersion: string) =>
@@ -397,80 +438,80 @@ Deno.test({
           END_MARKER,
           "",
         ].join("\n");
-      assertEquals(await Deno.readTextFile(configPath), expectedConfig(version));
-      assertEquals(await Deno.readTextFile(join(options.outputDir, "AGENTS.md")), "new instructions\n");
-      assertEquals(await Deno.readTextFile(join(options.templateDir, "config.toml")), configTemplate);
+      assertEquals(await readFile(configPath, "utf8"), expectedConfig(version));
+      assertEquals(await readFile(join(options.outputDir, "AGENTS.md"), "utf8"), "new instructions\n");
+      assertEquals(await readFile(join(options.templateDir, "config.toml"), "utf8"), configTemplate);
       assertEquals(await applyCodexTemplate(options), false);
 
       const updatedVersion = "26.918.70000";
-      await Deno.writeTextFile(fixture.infoPath, appInfoPlist(updatedVersion));
+      await writeFile(fixture.infoPath, appInfoPlist(updatedVersion));
       await assertRejects(
         () => applyCodexTemplate(options),
         CodexTemplateApplyError,
         "browser service for the ChatGPT app version is unavailable",
       );
-      assertEquals(await Deno.readTextFile(configPath), expectedConfig(version));
+      assertEquals(await readFile(configPath, "utf8"), expectedConfig(version));
 
-      await Deno.mkdir(dirname(fixture.servicePath(updatedVersion)), { recursive: true });
-      await Deno.writeTextFile(fixture.servicePath(updatedVersion), "export {};\n");
+      await mkdir(dirname(fixture.servicePath(updatedVersion)), { recursive: true });
+      await writeFile(fixture.servicePath(updatedVersion), "export {};\n");
       await assertRejects(
         () => applyCodexTemplate(options),
         CodexTemplateApplyError,
         "would remove or change existing managed settings",
       );
-      assertEquals(await Deno.readTextFile(configPath), expectedConfig(version));
+      assertEquals(await readFile(configPath, "utf8"), expectedConfig(version));
       assertEquals(await applyCodexTemplate({ ...options, overwriteManaged: true }), true);
-      assertEquals(await Deno.readTextFile(configPath), expectedConfig(updatedVersion));
+      assertEquals(await readFile(configPath, "utf8"), expectedConfig(updatedVersion));
       assertEquals(await applyCodexTemplate({ ...options, dryRun: true }), false);
-      assertEquals(await Deno.readTextFile(join(options.templateDir, "config.toml")), configTemplate);
+      assertEquals(await readFile(join(options.templateDir, "config.toml"), "utf8"), configTemplate);
     } finally {
-      await Deno.remove(fixture.root, { recursive: true });
+      await rm(fixture.root, { recursive: true });
     }
   },
-});
+);
 
 const chatgptFailureCases = [
   {
     name: "missing app Info.plist",
-    prepare: (fixture: Awaited<ReturnType<typeof createChatgptTemplateFixture>>) => Deno.remove(fixture.infoPath),
+    prepare: (fixture: Awaited<ReturnType<typeof createChatgptTemplateFixture>>) => rm(fixture.infoPath),
     message: "Could not read the ChatGPT app version",
   },
   {
     name: "malformed app Info.plist",
     prepare: (fixture: Awaited<ReturnType<typeof createChatgptTemplateFixture>>) =>
-      Deno.writeTextFile(fixture.infoPath, "not a plist"),
+      writeFile(fixture.infoPath, "not a plist"),
     message: "Could not read the ChatGPT app version",
   },
   {
     name: "missing app release version",
     prepare: (fixture: Awaited<ReturnType<typeof createChatgptTemplateFixture>>) =>
-      Deno.writeTextFile(fixture.infoPath, '<plist version="1.0"><dict></dict></plist>'),
+      writeFile(fixture.infoPath, '<plist version="1.0"><dict></dict></plist>'),
     message: "Could not read the ChatGPT app version",
   },
   {
     name: "invalid app release version",
     prepare: (fixture: Awaited<ReturnType<typeof createChatgptTemplateFixture>>) =>
-      Deno.writeTextFile(fixture.infoPath, appInfoPlist("26.invalid.123")),
+      writeFile(fixture.infoPath, appInfoPlist("26.invalid.123")),
     message: "The ChatGPT app version is invalid",
   },
   {
     name: "missing browser service",
     prepare: (fixture: Awaited<ReturnType<typeof createChatgptTemplateFixture>>) =>
-      Deno.remove(fixture.servicePath(fixture.version)),
+      rm(fixture.servicePath(fixture.version)),
     message: "browser service for the ChatGPT app version is unavailable",
   },
   {
     name: "browser service is a directory",
     async prepare(fixture: Awaited<ReturnType<typeof createChatgptTemplateFixture>>) {
-      await Deno.remove(fixture.servicePath(fixture.version));
-      await Deno.mkdir(fixture.servicePath(fixture.version));
+      await rm(fixture.servicePath(fixture.version));
+      await mkdir(fixture.servicePath(fixture.version));
     },
     message: "browser service for the ChatGPT app version is unavailable",
   },
   {
     name: "invalid trusted services JSON",
     prepare: (fixture: Awaited<ReturnType<typeof createChatgptTemplateFixture>>) =>
-      Deno.writeTextFile(
+      writeFile(
         join(fixture.options.templateDir, "config.toml"),
         fixture.configTemplate.replace('{"browser":', "{browser:"),
       ),
@@ -479,15 +520,14 @@ const chatgptFailureCases = [
 ];
 
 for (const failureCase of chatgptFailureCases) {
-  Deno.test({
-    name: `codex template leaves all output files unchanged for ${failureCase.name}`,
-    ignore: Deno.build.os !== "darwin",
-    async fn() {
+  test.skipIf(process.platform !== "darwin")(
+    `codex template leaves all output files unchanged for ${failureCase.name}`,
+    async () => {
       const fixture = await createChatgptTemplateFixture();
       try {
         await failureCase.prepare(fixture);
         const templatePath = join(fixture.options.templateDir, "config.toml");
-        const configTemplate = await Deno.readTextFile(templatePath);
+        const configTemplate = await readFile(templatePath, "utf8");
         for (const dryRun of [true, false]) {
           await assertRejects(
             () => applyCodexTemplate({ ...fixture.options, dryRun }),
@@ -495,18 +535,18 @@ for (const failureCase of chatgptFailureCases) {
             failureCase.message,
           );
           assertEquals(
-            await Deno.readTextFile(join(fixture.options.outputDir, "config.toml")),
+            await readFile(join(fixture.options.outputDir, "config.toml"), "utf8"),
             fixture.existingConfig,
           );
           assertEquals(
-            await Deno.readTextFile(join(fixture.options.outputDir, "AGENTS.md")),
+            await readFile(join(fixture.options.outputDir, "AGENTS.md"), "utf8"),
             "existing instructions\n",
           );
-          assertEquals(await Deno.readTextFile(templatePath), configTemplate);
+          assertEquals(await readFile(templatePath, "utf8"), configTemplate);
         }
       } finally {
-        await Deno.remove(fixture.root, { recursive: true });
+        await rm(fixture.root, { recursive: true });
       }
     },
-  });
+  );
 }

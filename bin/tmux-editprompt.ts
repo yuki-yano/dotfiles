@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-run=tmux,env
+#!/usr/bin/env bun
 
 type LayoutCell = {
   t: string;
@@ -10,20 +10,16 @@ type LayoutCell = {
   c?: LayoutCell[];
 };
 
-const target = Deno.args[0];
+const target = process.argv.slice(2)[0];
 if (!/^%\d+$/.test(target || "")) {
   console.error("Usage: tmux-editprompt.ts %pane-id");
-  Deno.exit(1);
+  process.exit(1);
 }
 
 const decoder = new TextDecoder();
 function tmux(...args: string[]): string {
-  const result = new Deno.Command("tmux", {
-    args,
-    stdout: "piped",
-    stderr: "piped",
-  }).outputSync();
-  if (!result.success) throw new Error(decoder.decode(result.stderr).trim());
+  const result = Bun.spawnSync(["tmux", ...args], { stdout: "pipe", stderr: "pipe" });
+  if (result.exitCode !== 0) throw new Error(decoder.decode(result.stderr).trim());
   return decoder.decode(result.stdout).trim();
 }
 const quote = (value: string) => "'" + value.replace(/'/g, "'\\''") + "'";
@@ -64,13 +60,12 @@ try {
   const work = tmux("display-message", "-p", "-t", target, "#{@vde_category}") === "work";
   const envArgs = work ? ["-u", "PANEPILOT_API_KEY"] : [];
   const prefix = [...envArgs, "NODE_NO_WARNINGS=1", "editprompt"];
-  const resumed = new Deno.Command("env", {
-    args: [...prefix, "resume", "--target-pane", target, "--quiet"],
+  const resumed = Bun.spawnSync(["env", ...prefix, "resume", "--target-pane", target, "--quiet"], {
     stdin: "inherit",
     stdout: "inherit",
     stderr: "inherit",
-  }).outputSync();
-  if (resumed.success) Deno.exit(0);
+  });
+  if (resumed.exitCode === 0) process.exit(0);
 
   sourceHeight = tmux("display-message", "-p", "-t", target, "#{pane_unzoomed_height}");
   const channel = `editprompt-layout-${crypto.randomUUID()}`;
@@ -120,5 +115,5 @@ try {
     } catch { /* The window or source may already have been closed. */ }
   }
   console.error(`tmux-editprompt.ts: ${error instanceof Error ? error.message : String(error)}`);
-  Deno.exitCode = 1;
+  process.exitCode = 1;
 }

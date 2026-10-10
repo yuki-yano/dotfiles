@@ -1,4 +1,6 @@
-#!/usr/bin/env -S deno run -A
+#!/bin/zsh
+':' //; exec bun "$0" "$@"
+// Load the dotfiles PATH for Raycast before starting Bun.
 
 // Required parameters:
 // @raycast.schemaVersion 1
@@ -15,11 +17,11 @@
 // @raycast.author Yuki Yano
 // @raycast.authorURL https://github.com/yuki-yano
 
-import $ from "jsr:@david/dax@0.42.0";
+import { $ } from "bun";
 
-Deno.env.set("PATH", `${Deno.env.get("PATH")}:${Deno.env.get("HOME")}/.local/bin`);
+process.env.PATH = `${process.env.PATH}:${process.env.HOME}/.local/bin`;
 
-const [mode] = Deno.args as [string];
+const [mode] = process.argv.slice(2) as [string];
 
 const layouts = {
   main: [
@@ -35,7 +37,7 @@ const layouts = {
 const layout = layouts[mode as keyof typeof layouts];
 
 if (!layout) {
-  Deno.exit(1);
+  process.exit(1);
 }
 
 await $`displayplacer ${layout[0]} ${layout[1]}`;

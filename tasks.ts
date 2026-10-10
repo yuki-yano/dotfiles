@@ -1,11 +1,8 @@
-#!/usr/bin/env -S deno run --allow-read --allow-write --allow-env --allow-run --allow-sys
+#!/usr/bin/env bun
 
-import { $ } from "@david/dax";
-import {
-  applyCodexTemplate,
-  CodexTemplateApplyError,
-  formatCodexTemplateApplyError,
-} from "./bin/codex-template-apply.ts";
+import { $ } from "bun";
+import { lstat, mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
+import { applyCodexTemplate, CodexTemplateApplyError, formatCodexTemplateApplyError } from "./lib/codex-template.ts";
 
 const DOTFILES_SRCS = [
   ".agents",
@@ -25,11 +22,11 @@ const DOTFILES_SRCS = [
   ".zprofile",
 ];
 
-const SRC_DIR = Deno.cwd();
-const HOME = Deno.env.get("HOME");
+const SRC_DIR = process.cwd();
+const HOME = process.env.HOME;
 if (!HOME) {
   console.error("ERROR: HOME environment variable is not set");
-  Deno.exit(1);
+  process.exit(1);
 }
 const CLAUDE_DIR = `${SRC_DIR}/.config/claude`;
 const COPILOT_DIR = `${HOME}/.copilot`;
@@ -92,18 +89,18 @@ let APPLY = false;
 let OVERWRITE_MANAGED = false;
 
 async function readLines(filename: string): Promise<string[]> {
-  const content = await Deno.readTextFile(filename);
+  const content = await readFile(filename, "utf8");
   return content.split("\n").filter((line) => line && !line.startsWith("#"));
 }
 
 async function readRawLines(filename: string): Promise<string[]> {
-  const content = await Deno.readTextFile(filename);
+  const content = await readFile(filename, "utf8");
   return content.split("\n");
 }
 
 async function fileExists(path: string): Promise<boolean> {
   try {
-    await Deno.stat(path);
+    await stat(path);
     return true;
   } catch {
     return false;
@@ -112,8 +109,8 @@ async function fileExists(path: string): Promise<boolean> {
 
 async function isSymlink(path: string): Promise<boolean> {
   try {
-    const stat = await Deno.lstat(path);
-    return stat.isSymlink;
+    const stat = await lstat(path);
+    return stat.isSymbolicLink();
   } catch {
     return false;
   }
@@ -121,72 +118,34 @@ async function isSymlink(path: string): Promise<boolean> {
 
 async function ensureCommandAvailable(command: string): Promise<void> {
   try {
-    const process = new Deno.Command(command, {
-      args: ["--version"],
-      stdout: "null",
-      stderr: "null",
-    });
-    const { code } = await process.output();
-    if (code === 0) {
-      return;
-    }
+    if ((await runCommand(command, ["--version"])).code === 0) return;
   } catch {
     // handled below
   }
-
   console.error(`ERROR: ${command} command not found`);
-  Deno.exit(1);
+  process.exit(1);
 }
 
 async function ensureCommandOnPath(command: string): Promise<void> {
-  try {
-    const process = new Deno.Command("which", {
-      args: [command],
-      stdout: "null",
-      stderr: "null",
-    });
-    const { code } = await process.output();
-    if (code === 0) {
-      return;
-    }
-  } catch {
-    // handled below
-  }
-
+  if (Bun.which(command)) return;
   console.error(`ERROR: ${command} command not found`);
-  Deno.exit(1);
+  process.exit(1);
 }
 
 async function runSheldon(args: string[], profile?: string): Promise<string> {
-  const command = new Deno.Command("sheldon", {
-    args: ["--config-file", SHELDON_CONFIG_FILE, "--data-dir", SHELDON_DATA_DIR, ...args],
-    env: profile ? { SHELDON_PROFILE: profile } : undefined,
-    stdout: "piped",
-    stderr: "piped",
-  });
-  const { code, stdout, stderr } = await command.output();
-  if (code !== 0) {
-    const message = new TextDecoder().decode(stderr).trim();
-    throw new Error(message || `sheldon ${args.join(" ")} failed`);
-  }
-  return new TextDecoder().decode(stdout);
+  const result = await runCommand(
+    "sheldon",
+    ["--config-file", SHELDON_CONFIG_FILE, "--data-dir", SHELDON_DATA_DIR, ...args],
+    profile ? { SHELDON_PROFILE: profile } : undefined,
+  );
+  if (result.code !== 0) throw new Error(result.stderr.trim() || `sheldon ${args.join(" ")} failed`);
+  return result.stdout;
 }
 
 async function zcompileIfExists(path: string): Promise<void> {
-  if (!(await fileExists(path))) {
-    return;
-  }
-
-  const process = new Deno.Command("zsh", {
-    args: ["-dfc", `zcompile ${JSON.stringify(path)}`],
-    stdout: "null",
-    stderr: "piped",
-  });
-  const { code, stderr } = await process.output();
-  if (code !== 0) {
-    const message = new TextDecoder().decode(stderr).trim();
-    throw new Error(message || `zcompile failed for ${path}`);
-  }
+  if (!(await fileExists(path))) return;
+  const result = await runCommand("zsh", ["-dfc", `zcompile ${JSON.stringify(path)}`]);
+  if (result.code !== 0) throw new Error(result.stderr.trim() || `zcompile failed for ${path}`);
 }
 
 function promptYesNo(message: string): boolean {
@@ -213,19 +172,23 @@ type CommandResult = {
   stderr: string;
 };
 
-async function runCommand(command: string, args: string[]): Promise<CommandResult> {
-  const process = new Deno.Command(command, {
-    args,
-    stdout: "piped",
-    stderr: "piped",
+async function runCommand(
+  command: string,
+  args: string[],
+  env?: Record<string, string>,
+): Promise<CommandResult> {
+  const child = Bun.spawn([command, ...args], {
+    env: { ...process.env, ...env },
+    stdin: "ignore",
+    stdout: "pipe",
+    stderr: "pipe",
   });
-  const { code, stdout, stderr } = await process.output();
-  const decoder = new TextDecoder();
-  return {
-    code,
-    stdout: decoder.decode(stdout),
-    stderr: decoder.decode(stderr),
-  };
+  const [code, stdout, stderr] = await Promise.all([
+    child.exited,
+    new Response(child.stdout).text(),
+    new Response(child.stderr).text(),
+  ]);
+  return { code, stdout, stderr };
 }
 
 function commandDisplay(command: string, args: string[]): string {
@@ -421,7 +384,7 @@ export async function loadBrewCommands(filename: string): Promise<string[]> {
     if (!validateBrewCommand(line)) {
       console.error(`ERROR: Invalid brew command: ${line}`);
       console.error("Only 'install', 'tap', 'cask', 'update', 'upgrade', and 'cleanup' commands are allowed");
-      Deno.exit(1);
+      process.exit(1);
     }
 
     const installCommand = parseInstallCommand(line);
@@ -444,24 +407,28 @@ export async function loadBrewCommands(filename: string): Promise<string[]> {
   return commands;
 }
 
-export function buildBrewCommandOptions(command: string): Deno.CommandOptions {
+export function buildBrewCommandOptions(command: string) {
   const args = command.trim().split(/\s+/);
   return {
     args,
     env: {
       HOMEBREW_NO_ASK: "1",
     },
-    stdout: "inherit",
-    stderr: "inherit",
+    stdout: "inherit" as const,
+    stderr: "inherit" as const,
   };
 }
 
 async function runBrewCommand(command: string): Promise<void> {
-  const process = new Deno.Command("brew", buildBrewCommandOptions(command));
-  const { code } = await process.output();
-  if (code !== 0) {
-    throw new Error(`brew ${command} failed with exit code ${code}`);
-  }
+  const { args, env, stdout, stderr } = buildBrewCommandOptions(command);
+  const child = Bun.spawn(["brew", ...args], {
+    env: { ...process.env, ...env },
+    stdin: "ignore",
+    stdout,
+    stderr,
+  });
+  const code = await child.exited;
+  if (code !== 0) throw new Error(`brew ${command} failed with exit code ${code}`);
 }
 
 async function runBrewCommands(commands: string[]): Promise<void> {
@@ -478,9 +445,7 @@ async function runBrewCommands(commands: string[]): Promise<void> {
 async function listDirectoryEntries(path: string): Promise<string[]> {
   try {
     const entries: string[] = [];
-    for await (const entry of Deno.readDir(path)) {
-      entries.push(entry.name);
-    }
+    entries.push(...await readdir(path));
     return entries.sort();
   } catch {
     return [];
@@ -705,7 +670,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
   async "agent:link"() {
     if (!(await fileExists(AGENTS_SKILLS_DIR))) {
       console.error(`ERROR: ${AGENTS_SKILLS_DIR} does not exist`);
-      Deno.exit(1);
+      process.exit(1);
     }
 
     for (const target of AGENT_LINK_TARGETS) {
@@ -713,7 +678,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
         if (DRY_RUN) {
           console.log(`[DRY RUN] Would create directory: ${target.dir}`);
         } else {
-          await Deno.mkdir(target.dir, { recursive: true });
+          await mkdir(target.dir, { recursive: true });
         }
       }
     }
@@ -756,7 +721,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
       if (changed) {
         console.log("");
         console.log("Dry-run passed.");
-        console.log("To apply changes, run: deno task codex:template -- --apply");
+        console.log("To apply changes, run: bun run codex:template --apply");
       } else {
         console.log("");
         console.log("Dry-run passed. No changes to apply.");
@@ -767,7 +732,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
   async "zsh:sheldon:sync"() {
     if (!(await fileExists(SHELDON_CONFIG_FILE))) {
       console.error(`ERROR: ${SHELDON_CONFIG_FILE} not found`);
-      Deno.exit(1);
+      process.exit(1);
     }
 
     await ensureCommandAvailable("sheldon");
@@ -784,14 +749,14 @@ const tasks: Record<string, () => Promise<void> | void> = {
       return;
     }
 
-    await Deno.mkdir(SHELDON_CACHE_DIR, { recursive: true });
+    await mkdir(SHELDON_CACHE_DIR, { recursive: true });
     for (const phase of SHELDON_PHASES) {
       console.log(`Running: sheldon lock (${phase.profile})`);
       await runSheldon(["lock"], phase.profile);
       console.log(`Generating sheldon source: ${phase.profile}`);
       const content = await runSheldon(["source"], phase.profile);
       const outputPath = `${SHELDON_CACHE_DIR}/${phase.filename}`;
-      await Deno.writeTextFile(outputPath, content);
+      await writeFile(outputPath, content);
       await zcompileIfExists(outputPath);
     }
   },
@@ -799,7 +764,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
   async "zsh:sheldon:update"() {
     if (!(await fileExists(SHELDON_CONFIG_FILE))) {
       console.error(`ERROR: ${SHELDON_CONFIG_FILE} not found`);
-      Deno.exit(1);
+      process.exit(1);
     }
 
     await ensureCommandAvailable("sheldon");
@@ -816,14 +781,14 @@ const tasks: Record<string, () => Promise<void> | void> = {
       return;
     }
 
-    await Deno.mkdir(SHELDON_CACHE_DIR, { recursive: true });
+    await mkdir(SHELDON_CACHE_DIR, { recursive: true });
     for (const phase of SHELDON_PHASES) {
       console.log(`Running: sheldon lock --update (${phase.profile})`);
       await runSheldon(["lock", "--update"], phase.profile);
       console.log(`Generating sheldon source: ${phase.profile}`);
       const content = await runSheldon(["source"], phase.profile);
       const outputPath = `${SHELDON_CACHE_DIR}/${phase.filename}`;
-      await Deno.writeTextFile(outputPath, content);
+      await writeFile(outputPath, content);
       await zcompileIfExists(outputPath);
     }
   },
@@ -831,7 +796,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
   async "brew:bundle"() {
     if (!(await fileExists("Brewfile"))) {
       console.error("ERROR: Brewfile not found");
-      Deno.exit(1);
+      process.exit(1);
     }
 
     await runBrewCommands(await loadBrewCommands("Brewfile"));
@@ -840,7 +805,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
   async "brew:cask"() {
     if (!(await fileExists("Caskfile"))) {
       console.error("ERROR: Caskfile not found");
-      Deno.exit(1);
+      process.exit(1);
     }
 
     await runBrewCommands(await loadBrewCommands("Caskfile"));
@@ -866,8 +831,8 @@ const tasks: Record<string, () => Promise<void> | void> = {
 
     if (!(await fileExists(DUTI_CONFIG_FILE))) {
       console.error(`ERROR: ${DUTI_CONFIG_FILE} not found`);
-      console.error("Run 'deno task dotfiles:install' before applying duti settings");
-      Deno.exit(1);
+      console.error("Run 'bun run dotfiles:install' before applying duti settings");
+      process.exit(1);
     }
 
     await ensureCommandOnPath("duti");
@@ -879,7 +844,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
   async "mas:install"() {
     if (!(await fileExists("Masfile"))) {
       console.error("ERROR: Masfile not found");
-      Deno.exit(1);
+      process.exit(1);
     }
 
     const masfile = await readLines("Masfile");
@@ -891,7 +856,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
       .filter((id): id is string => id !== null);
 
     // インストール済みのアプリを取得
-    const installedList = await $`mas list`.lines();
+    const installedList = (await $`mas list`.text()).trim().split("\n").filter(Boolean);
     const installedIds = installedList.map((line) => line.split(" ")[0]);
 
     // 未インストールのアプリのみインストール
@@ -920,34 +885,34 @@ const tasks: Record<string, () => Promise<void> | void> = {
     console.log("Available tasks:");
     console.log("");
     console.log("  Dotfiles:");
-    console.log("    deno task dotfiles:install    - Install dotfiles symlinks");
+    console.log("    bun run dotfiles:install    - Install dotfiles symlinks");
     console.log(
-      "    deno task agent:link          - Link Claude/Copilot skills to ~/.agents/skills",
+      "    bun run agent:link          - Link Claude/Copilot skills to ~/.agents/skills",
     );
     console.log(
-      "    deno task agent:codex-plugins - Install all configured Codex plugins",
+      "    bun run agent:codex-plugins - Install all configured Codex plugins",
     );
     console.log(
-      "    deno task agent:claude-plugins - Install all configured Claude Code plugins",
+      "    bun run agent:claude-plugins - Install all configured Claude Code plugins",
     );
     console.log(
-      "    deno task codex:template      - Dry-run apply codex template (use -- --apply to write)",
+      "    bun run codex:template      - Dry-run apply codex template (use --apply to write)",
     );
     console.log("");
     console.log("  Zsh:");
-    console.log("    deno task zsh:sheldon:sync    - Lock plugins and generate sheldon source cache");
-    console.log("    deno task zsh:sheldon:update  - Update plugins and regenerate sheldon source cache");
+    console.log("    bun run zsh:sheldon:sync    - Lock plugins and generate sheldon source cache");
+    console.log("    bun run zsh:sheldon:update  - Update plugins and regenerate sheldon source cache");
     console.log("");
     console.log("  Homebrew:");
-    console.log("    deno task brew:bundle         - Install Homebrew packages");
-    console.log("    deno task brew:cask           - Install Homebrew Cask apps");
-    console.log("    deno task brew:update         - Update Homebrew package metadata");
-    console.log("    deno task brew:upgrade        - Upgrade installed formulae and casks");
-    console.log("    deno task brew:cleanup        - Remove stale Homebrew versions and caches");
-    console.log("    deno task duti:apply          - Apply default app handlers from ~/.duti");
+    console.log("    bun run brew:bundle         - Install Homebrew packages");
+    console.log("    bun run brew:cask           - Install Homebrew Cask apps");
+    console.log("    bun run brew:update         - Update Homebrew package metadata");
+    console.log("    bun run brew:upgrade        - Upgrade installed formulae and casks");
+    console.log("    bun run brew:cleanup        - Remove stale Homebrew versions and caches");
+    console.log("    bun run duti:apply          - Apply default app handlers from ~/.duti");
     console.log("");
     console.log("  Mac App Store:");
-    console.log("    deno task mas:install         - Install App Store apps");
+    console.log("    bun run mas:install         - Install App Store apps");
     console.log("");
     console.log("Options:");
     console.log("    --dry-run                     - Show what would be done without making changes");
@@ -960,7 +925,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
 
 if (import.meta.main) {
   // Check for --dry-run flag
-  const args = [...Deno.args];
+  const args = [...process.argv.slice(2)];
   const dryRunIndex = args.indexOf("--dry-run");
   if (dryRunIndex !== -1) {
     DRY_RUN = true;
@@ -979,23 +944,23 @@ if (import.meta.main) {
   if (overwriteManagedIndex !== -1) {
     if (taskName !== "codex:template") {
       console.error("--overwrite-managed is only supported for codex:template");
-      Deno.exit(1);
+      process.exit(1);
     }
     OVERWRITE_MANAGED = true;
     args.splice(overwriteManagedIndex, 1);
   }
 
   if (!taskName) {
-    console.error("Usage: deno task <task-name>");
-    console.error("Run 'deno task help' to see available tasks");
-    Deno.exit(1);
+    console.error("Usage: bun run <task-name>");
+    console.error("Run 'bun run help' to see available tasks");
+    process.exit(1);
   }
 
   const task = tasks[taskName];
   if (!task) {
     console.error(`Unknown task: ${taskName}`);
-    console.error("Run 'deno task help' to see available tasks");
-    Deno.exit(1);
+    console.error("Run 'bun run help' to see available tasks");
+    process.exit(1);
   }
 
   try {
@@ -1003,11 +968,11 @@ if (import.meta.main) {
   } catch (error) {
     if (error instanceof CodexTemplateApplyError) {
       console.error(formatCodexTemplateApplyError(error));
-      Deno.exit(1);
+      process.exit(1);
     }
 
     console.error(`Task failed: ${taskName}`);
     console.error(error);
-    Deno.exit(1);
+    process.exit(1);
   }
 }

@@ -30,7 +30,7 @@ _vw_worktree_candidate_rows_raw() {
   local vw_bin="${words[1]:-vw}"
   command -v "$vw_bin" >/dev/null 2>&1 || return 0
 
-  command "$vw_bin" list --json 2>/dev/null | command node -e '
+  command "$vw_bin" list --json 2>/dev/null | command bun --no-install -e '
 const fs = require("fs")
 const home = process.env.HOME || ""
 const toDisplayPath = (path) => {

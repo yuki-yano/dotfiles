@@ -1,0 +1,38 @@
+{
+  "name": "dotfiles-scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dotfiles:install": "bun tasks.ts dotfiles:install",
+    "agent:link": "bun tasks.ts agent:link",
+    "agent:codex-plugins": "bun tasks.ts agent:codex-plugins",
+    "agent:claude-plugins": "bun tasks.ts agent:claude-plugins",
+    "codex:template": "bun tasks.ts codex:template",
+    "zsh:sheldon:sync": "bun tasks.ts zsh:sheldon:sync",
+    "zsh:sheldon:update": "bun tasks.ts zsh:sheldon:update",
+    "brew:bundle": "bun tasks.ts brew:bundle",
+    "brew:cask": "bun tasks.ts brew:cask",
+    "brew:update": "bun tasks.ts brew:update",
+    "brew:upgrade": "bun tasks.ts brew:upgrade",
+    "brew:cleanup": "bun tasks.ts brew:cleanup",
+    "duti:apply": "bun tasks.ts duti:apply",
+    "mas:install": "bun tasks.ts mas:install",
+    "karabiner:build": "bun .config/karabiner/karabiner.ts",
+    "karabiner:watch": "bun --watch .config/karabiner/karabiner.ts",
+    "help": "bun tasks.ts help",
+    "test": "bun test tests/brew_tasks_test.ts tests/codex_template_apply_test.ts tests/cc_statusline_test.ts tests/bun_scripts.test.ts && bash tests/compact_guard_test.sh",
+    "typecheck": "tsc --noEmit",
+    "bundle": "bun build tasks.ts bin/cc-statusline.ts bin/codex-template-apply.ts bin/codex-session-start-agent-note.ts bin/display-layout.ts bin/shitsurae-resize.ts bin/tmux-editprompt.ts .config/claude/hooks/read-hook-json.ts .config/karabiner/karabiner.ts --target bun --outdir dist/scripts --root ."
+  },
+  "dependencies": {
+    "diff": "9.0.0",
+    "karabiner.ts": "1.35.1"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.2",
+    "typescript": "7.0.2"
+  },
+  "engines": {
+    "bun": ">=1.4.2"
+  }
+}

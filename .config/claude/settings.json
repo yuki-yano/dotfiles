@@ -186,7 +186,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "cc-statusline"
+    "command": "cc-statusline.ts"
   },
   "enabledPlugins": {
     "superpowers@superpowers-marketplace": false,

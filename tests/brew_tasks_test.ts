@@ -1,4 +1,6 @@
-import { assert, assertEquals, assertFalse, assertStringIncludes } from "@std/assert";
+import { test } from "bun:test";
+import { readFile } from "node:fs/promises";
+import { assert, assertEquals, assertFalse, assertStringIncludes } from "./assertions.ts";
 import { buildBrewCommandOptions, loadBrewCommands } from "../tasks.ts";
 
 const brewfile = new URL("../Brewfile", import.meta.url).pathname;
@@ -9,7 +11,7 @@ function commandTokens(commands: string[]): string[] {
   return commands.flatMap((command) => command.split(/\s+/));
 }
 
-Deno.test("Brewfile keeps install separate from maintenance and scopes HEAD to Neovim", async () => {
+test("Brewfile keeps install separate from maintenance and scopes HEAD to Neovim", async () => {
   const commands = await loadBrewCommands(brewfile);
   const tokens = commandTokens(commands);
 
@@ -23,7 +25,7 @@ Deno.test("Brewfile keeps install separate from maintenance and scopes HEAD to N
   }
 });
 
-Deno.test("Caskfile uses the current Arto tap and excludes maintenance commands", async () => {
+test("Caskfile uses the current Arto tap and excludes maintenance commands", async () => {
   const commands = await loadBrewCommands(caskfile);
   const rendered = commands.join("\n");
 
@@ -32,11 +34,11 @@ Deno.test("Caskfile uses the current Arto tap and excludes maintenance commands"
   assertFalse(commands.some((command) => ["update", "upgrade", "cleanup"].includes(command)));
 });
 
-Deno.test("Homebrew confirmations are disabled through the managed brew environment", async () => {
-  assertEquals(await Deno.readTextFile(brewEnv), "HOMEBREW_NO_ASK=1\n");
+test("Homebrew confirmations are disabled through the managed brew environment", async () => {
+  assertEquals(await readFile(brewEnv, "utf8"), "HOMEBREW_NO_ASK=1\n");
 });
 
-Deno.test("Homebrew tasks disable confirmations before dotfiles are linked", () => {
+test("Homebrew tasks disable confirmations before dotfiles are linked", () => {
   const options = buildBrewCommandOptions("install ripgrep");
 
   assertEquals(options.args, ["install", "ripgrep"]);

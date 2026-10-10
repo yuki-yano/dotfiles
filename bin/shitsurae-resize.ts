@@ -1,4 +1,6 @@
-#!/usr/bin/env -S deno run -A
+#!/bin/zsh
+':' //; exec bun "$0" "$@"
+// Load the dotfiles PATH for Raycast before starting Bun.
 
 // Required parameters:
 // @raycast.schemaVersion 1
@@ -16,22 +18,22 @@
 // @raycast.author Yuki Yano
 // @raycast.authorURL https://github.com/yuki-yano
 
-import $ from "jsr:@david/dax@0.45.0";
+import { $ } from "bun";
 
-Deno.env.set("PATH", `${Deno.env.get("PATH")}:${Deno.env.get("HOME")}/.local/bin`);
+process.env.PATH = `${process.env.PATH}:${process.env.HOME}/.local/bin`;
 
-const SHITSURAE_BIN = Deno.env.get("SHITSURAE_BIN") ?? "shitsurae";
-const [_width, _height] = Deno.args as [string, string];
+const SHITSURAE_BIN = process.env.SHITSURAE_BIN ?? "shitsurae";
+const [_width, _height] = process.argv.slice(2) as [string, string];
 
 if (!_width || !_height) {
-  Deno.exit(1);
+  process.exit(1);
 }
 
 const width = parseInt(_width, 10);
 const height = parseInt(_height, 10);
 
 if (Number.isNaN(width) || Number.isNaN(height) || width <= 0 || height <= 0) {
-  Deno.exit(1);
+  process.exit(1);
 }
 
 type Frame = {

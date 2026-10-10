@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 import fs from "node:fs";
 import os from "node:os";
@@ -8,7 +8,7 @@ function readStdin() {
   return fs.readFileSync(0, "utf8");
 }
 
-function expandHome(value) {
+function expandHome(value: string): string {
   if (value === "~") {
     return os.homedir();
   }

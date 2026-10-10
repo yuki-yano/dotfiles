@@ -46,7 +46,8 @@ desktop automation, and AI-first tooling for day-to-day development.
 - macOS 13+ (Sonoma/Ventura tested) with administrator rights for Homebrew/MAS installs and Accessibility permissions
   for window/input automation apps.
 - [Homebrew](https://brew.sh) with `brew` and `mas` available.
-- [Deno](https://deno.land) ≥ 1.42 for running `deno task`.
+- [Bun](https://bun.com) ≥ 1.4.2 for running scripts and automation tasks.
+- [Deno](https://deno.land) for denops plugins, zeno.zsh, and the Git prompt daemon.
 - Node.js + yarn (managed via [`mise`](https://github.com/jdx/mise) in `.config/mise/config.toml`).
 - Mac App Store sign-in (`mas signin`) if you plan to run `mas:install`.
 - Optional but recommended: [direnv](https://direnv.net) to auto-load `.envrc`, `mise` to sync language runtimes,
@@ -63,32 +64,34 @@ direnv allow .
 mise install
 
 # Install runtimes & tools
-deno task brew:bundle
-deno task brew:cask
-deno task mas:install         # requires `mas signin`
+bun install --frozen-lockfile
+
+bun run brew:bundle
+bun run brew:cask
+bun run mas:install         # requires `mas signin`
 
 # Link dotfiles (prompts before replacing non-symlinks)
-deno task dotfiles:install
-deno task agent:link
+bun run dotfiles:install
+bun run agent:link
 # agent:link replaces existing Claude/Copilot skill directories with symlinks to ~/.agents/skills.
-# Run `deno task agent:link -- --dry-run` first when checking a new machine.
-deno task agent:codex-plugins -- --dry-run
-deno task agent:codex-plugins
-deno task agent:claude-plugins -- --dry-run
-deno task agent:claude-plugins
-deno task zsh:sheldon:sync
+# Run `bun run agent:link --dry-run` first when checking a new machine.
+bun run agent:codex-plugins --dry-run
+bun run agent:codex-plugins
+bun run agent:claude-plugins --dry-run
+bun run agent:claude-plugins
+bun run zsh:sheldon:sync
 
-deno task codex:template      # dry-run
-deno task codex:template -- --apply
+bun run codex:template      # dry-run
+bun run codex:template --apply
 
-deno task help                # list all tasks
+bun run help                # list all tasks
 ```
 
 Put `~/dotfiles/bin` on your `PATH` (zsh does this automatically) so helper scripts such as `tmux-smart-switch-pane`,
 `tmux-list-sessions`, `shitsurae-resize.ts`, `wifi`, and `battery` are available everywhere.
 
 To inject startup context from your personal notes into Codex, set `AGENT_NOTE_DIR` to an existing directory and then
-run `deno task codex:template -- --apply` so `~/.codex/hooks.json` is refreshed.
+run `bun run codex:template --apply` so `~/.codex/hooks.json` is refreshed.
 
 The Codex config template expands `{{CHATGPT_APP_VERSION}}` using `CFBundleShortVersionString` from
 `/Applications/ChatGPT.app/Contents/Info.plist`. Both dry-run and apply verify that the matching
@@ -97,31 +100,31 @@ After updating ChatGPT, restart the app to initialize its bundled browser plugin
 
 ## Task Automation
 
-`deno task help` prints all commands. Every task respects `--dry-run` (pass it after `--` so Deno forwards the flag),
+`bun run help` prints all commands. Every task respects `--dry-run` (pass it after the script name),
 and `tasks.ts` validates input before it shells out.
 
 | Task                                                | Purpose                                                                                                                                                                                                                                                                       |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `deno task dotfiles:install [-- --dry-run]`         | Symlinks the files listed in `DOTFILES_SRCS` to `$HOME`, warning if a non-symlink already exists.                                                                                                                                                                             |
-| `deno task agent:link [-- --dry-run]`               | Replaces Claude (`~/.config/claude/skills` via the dotfiles-managed `.config`) and Copilot (`~/.copilot/skills`) skill targets with symlinks to `~/.agents/skills`. Dry-run reports existing entries that will stop being visible.                                            |
-| `deno task agent:codex-plugins [-- --dry-run]`      | Ensures every Codex plugin declared in `CODEX_PLUGIN_DEFINITIONS` in `tasks.ts` is installed and enabled.                                                                                                                                                                     |
-| `deno task agent:claude-plugins [-- --dry-run]`     | Ensures every Claude Code plugin declared in `CLAUDE_PLUGIN_DEFINITIONS` in `tasks.ts` is installed and matches its declared enabled state.                                                                                                                                   |
-| `deno task codex:template [-- --apply]`             | Dry-run by default. Applies `.config/codex-template/config.toml` (managed section merge) and copy targets (`AGENTS.md`, `agents/**`, `hooks.json`) to `~/.codex` only with `--apply` (`template` has no markers; `~/.codex/config.toml` must contain marker block). |
-| `deno task zsh:sheldon:sync` / `zsh:sheldon:update` | Generate the `sheldon` lock/cache for the `pre` and `post` shell phases under `~/.cache/sheldon`.                                                                                                                                                                             |
-| `deno task brew:bundle`                             | Installs formulae and command-line tools declared in `Brewfile` without performing a global upgrade or cleanup.                                                                                                                                                              |
-| `deno task brew:cask`                               | Installs GUI apps declared in `Caskfile` without performing a global upgrade or cleanup.                                                                                                                                                                                      |
-| `deno task brew:update`                             | Updates Homebrew package metadata.                                                                                                                                                                                                                                            |
-| `deno task brew:upgrade`                            | Upgrades installed formulae and casks.                                                                                                                                                                                                                                        |
-| `deno task brew:cleanup`                            | Removes stale Homebrew versions and caches.                                                                                                                                                                                                                                   |
-| `deno task duti:apply [-- --dry-run]`               | Applies default macOS file handlers from the dotfiles-managed `~/.duti` file.                                                                                                                                                                                                 |
-| `deno task mas:install`                             | Installs missing Mac App Store apps using IDs from `Masfile`.                                                                                                                                                                                                                 |
-| `deno task help`                                    | Prints grouped help text with descriptions of every task.                                                                                                                                                                                                                     |
+| `bun run dotfiles:install [--dry-run]`         | Symlinks the files listed in `DOTFILES_SRCS` to `$HOME`, warning if a non-symlink already exists.                                                                                                                                                                             |
+| `bun run agent:link [--dry-run]`               | Replaces Claude (`~/.config/claude/skills` via the dotfiles-managed `.config`) and Copilot (`~/.copilot/skills`) skill targets with symlinks to `~/.agents/skills`. Dry-run reports existing entries that will stop being visible.                                            |
+| `bun run agent:codex-plugins [--dry-run]`      | Ensures every Codex plugin declared in `CODEX_PLUGIN_DEFINITIONS` in `tasks.ts` is installed and enabled.                                                                                                                                                                     |
+| `bun run agent:claude-plugins [--dry-run]`     | Ensures every Claude Code plugin declared in `CLAUDE_PLUGIN_DEFINITIONS` in `tasks.ts` is installed and matches its declared enabled state.                                                                                                                                   |
+| `bun run codex:template [--apply]`             | Dry-run by default. Applies `.config/codex-template/config.toml` (managed section merge) and copy targets (`AGENTS.md`, `agents/**`, `hooks.json`) to `~/.codex` only with `--apply` (`template` has no markers; `~/.codex/config.toml` must contain marker block). |
+| `bun run zsh:sheldon:sync` / `zsh:sheldon:update` | Generate the `sheldon` lock/cache for the `pre` and `post` shell phases under `~/.cache/sheldon`.                                                                                                                                                                             |
+| `bun run brew:bundle`                             | Installs formulae and command-line tools declared in `Brewfile` without performing a global upgrade or cleanup.                                                                                                                                                              |
+| `bun run brew:cask`                               | Installs GUI apps declared in `Caskfile` without performing a global upgrade or cleanup.                                                                                                                                                                                      |
+| `bun run brew:update`                             | Updates Homebrew package metadata.                                                                                                                                                                                                                                            |
+| `bun run brew:upgrade`                            | Upgrades installed formulae and casks.                                                                                                                                                                                                                                        |
+| `bun run brew:cleanup`                            | Removes stale Homebrew versions and caches.                                                                                                                                                                                                                                   |
+| `bun run duti:apply [--dry-run]`               | Applies default macOS file handlers from the dotfiles-managed `~/.duti` file.                                                                                                                                                                                                 |
+| `bun run mas:install`                             | Installs missing Mac App Store apps using IDs from `Masfile`.                                                                                                                                                                                                                 |
+| `bun run help`                                    | Prints grouped help text with descriptions of every task.                                                                                                                                                                                                                     |
 
-This repository uses Deno tasks as the single automation entrypoint (`deno task ...`).
+This repository uses Bun package scripts as the single automation entrypoint (`bun run ...`).
 
 ## Repository Overview
 
-- `deno.json`, `tasks.ts` – automation entrypoints controlling symlinks, Codex template apply, Homebrew/MAS
+- `package.json`, `tasks.ts` – automation entrypoints controlling symlinks, Codex template apply, Homebrew/MAS
   installations, and dry-run behavior.
 - `Brewfile`, `Caskfile`, `Masfile` – declarative manifests for CLI formulae, casks, and App Store apps.
 - `.envrc` – placeholder for direnv; add secrets or environment-specific exports locally.
@@ -134,7 +137,7 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 - `.tmux.conf`, `.tmux/` – tmux settings and related local assets.
 - `.finicky.js`, `.config/shitsurae/config.yml`, `.config/karabiner/karabiner.json` – macOS automation suite (window
   layout/shortcuts, IME helpers, URL routing). `karabiner.json` is generated from `.config/karabiner/karabiner.ts` via
-  Deno (`deno task karabiner:build` / `karabiner:watch`).
+  Bun (`bun run karabiner:build` / `karabiner:watch`).
 - `.ctags.d/config.ctags`, `.tigrc`, `.config/ripgrep/rc`, `.config/vivid/themes/catppuccin.yml` – CLI defaults for
   tags, tig, search, and colors.
 - `.config/claude/{CLAUDE.md,settings.json}` and `.config/cage/presets.yml` – Claude Code settings and Warashi cage
@@ -145,7 +148,7 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
   wifi/battery monitors, Claude hooks, Shitsurae resize helpers, quick IME toggles). Every script is intended to run
   from PATH.
 - `stylua.toml` and `cspell.json` – formatting/spell-check rules for Lua and docs.
-- `deno.json` imports `@david/dax` for ergonomic shelling inside TypeScript tasks.
+- `tasks.ts` uses Bun Shell and standard file APIs; `package.json` defines the task aliases.
 
 ## Shell & Terminal Stack
 
@@ -211,7 +214,7 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 - **Karabiner-Elements** – `.config/karabiner/karabiner.json` is tuned for Alacritty/Claude workflows:
   Command/Shift+Return becomes backslash+Enter, IME toggles are inserted around shortcuts, and delayed actions ensure
   Japanese/English mode toggles fire correctly. Edit `.config/karabiner/karabiner.ts` and run
-  `deno task karabiner:build` to apply (or `karabiner:watch` to auto-rebuild).
+  `bun run karabiner:build` to apply (or `karabiner:watch` to auto-rebuild).
 - **Finicky** – `.finicky.js` routes specific sites (TypeScript docs, Google Docs) to Chrome while Firefox stays
   default.
 - **Quick IME helpers** – `bin/quick-ime.sh` uses a dedicated WezTerm window as a temporary IME editor, captures the
@@ -223,10 +226,10 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 - `.config/claude/` stores Claude settings in-repo (`CLAUDE.md`, `settings.json`), while Claude runtime state
   (history/snapshots/cache) is managed locally on each machine. Repository-scoped agent artifacts are managed under
   `z-ai/` (`z-ai/plans/`, `z-ai/tmp/`, `z-ai/references/`).
-- Codex plugins are declared once in `CODEX_PLUGIN_DEFINITIONS` in `tasks.ts`. `deno task agent:codex-plugins` installs
+- Codex plugins are declared once in `CODEX_PLUGIN_DEFINITIONS` in `tasks.ts`. `bun run agent:codex-plugins` installs
   every declared Codex marketplace/plugin pair in one command; individual Codex plugin tasks are not kept.
 - Claude Code plugins and their desired enabled state are declared once in `CLAUDE_PLUGIN_DEFINITIONS` in `tasks.ts`.
-  `deno task agent:claude-plugins` reconciles every declared Claude marketplace/plugin pair in one command; individual
+  `bun run agent:claude-plugins` reconciles every declared Claude marketplace/plugin pair in one command; individual
   Claude plugin tasks are not kept.
 - RTK and context-mode are no longer wired in: the `rtk hook claude` Bash hook, `RTK.md` instruction files, the
   context-mode plugin entries, and the context-mode SessionStart cache-heal hook were removed after a log-based
@@ -245,19 +248,19 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
 - **`Brewfile`** – grouped formulae for shell/session tooling, modern CLI utilities, language runtimes, build helpers,
   Git/review tools, cloud/container commands, local data tools, desktop capture helpers, notifications, and fonts.
   Commands are constrained to `install/tap/cask/update/upgrade/cleanup` for safety, while global maintenance is kept in
-  explicit Deno tasks.
+  explicit Bun tasks.
 - **`Caskfile`** – GUI and desktop casks including 1Password, 1Password CLI, Claude Code, CleanShot, Draw.io, Finicky,
   Firefox, Google Chrome, Karabiner-Elements, Obsidian, TablePlus, Visual Studio Code, VLC, Zoom, and local workflow
   apps such as Warashi `cage`, `arto`, `shitsurae`, and `vde-notifier-app`.
 - **`Masfile`** – Mac App Store IDs for CotEditor, Spark, Transmit, Evernote, DaisyDisk, PopClip, Yoink, LINE,
   Unclutter, Slack, Paste, and Fantastical, plus a commented history of previous installs.
-- **`deno.json`** – defines every task alias and pins `@david/dax` for shell helpers; run `deno fmt` or `deno task help`
-  for ergonomics.
+- **`package.json` / `bun.lock`** – define Bun task aliases and pin the script dependencies.
+- **`deno.json`** – retains settings and imports for the Deno-based Git prompt daemon and its tests.
 - **`stylua.toml` & `cspell.json`** – keep Lua and documentation formatting consistent before committing changes.
 
 ## Validation & Maintenance
 
-- **Dry runs first** – append `-- --dry-run` when testing `dotfiles:install`, `brew:*`, or other tasks to confirm the
+- **Dry runs first** – append `--dry-run` when testing `dotfiles:install`, `brew:*`, or other tasks to confirm the
   plan before touching the real system.
 - **Non-interactive Homebrew** – Homebrew tasks pass `HOMEBREW_NO_ASK=1` directly so they also work before
   `dotfiles:install`; `.config/homebrew/brew.env` applies the same behavior to manual `brew` commands. macOS
@@ -266,13 +269,26 @@ This repository uses Deno tasks as the single automation entrypoint (`deno task 
   files), and `cspell lint README.md` to keep tooling happy.
 - **Runtime sync** – `mise doctor` reveals missing runtimes defined in `.config/mise/config.toml`; re-run `mise install`
   after manifest changes.
-- **Package refresh** – periodically run `deno task brew:update`, `deno task brew:upgrade`, and
-  `deno task brew:cleanup`. Use `brew:bundle` and `brew:cask` to install newly declared packages, and review `Masfile`
+- **Package refresh** – periodically run `bun run brew:update`, `bun run brew:upgrade`, and
+  `bun run brew:cleanup`. Use `brew:bundle` and `brew:cask` to install newly declared packages, and review `Masfile`
   when App Store apps are added or removed.
 - **Local overrides** – place host-specific adjustments in `.gitconfig.local`, `.tmux.conf.local`, or `~/.zshrc.local`
   (sourced from the main configs) to keep git history clean.
 - **App permissions** – `shitsurae` and Karabiner depend on macOS Accessibility permissions; re-authorize them after OS
   upgrades.
+
+
+### Bun scripts
+
+Run `bun install --frozen-lockfile` after cloning or updating dependencies.
+`bun run test` checks the migrated scripts; `bun run typecheck` checks TypeScript.
+`bun run karabiner:build --dry-run` renders the rules without updating the active profile.
+
+`bun run bundle` writes standalone JavaScript files, including imported libraries, under
+`dist/scripts/`. Run them with Bun, for example `bun dist/scripts/tasks.js help`.
+The source files remain the normal entrypoints; generated files are ignored by Git.
+To include the Bun runtime in an executable as well, use
+`bun build tasks.ts --compile --outfile /tmp/dotfiles-tasks`.
 
 ## License
 

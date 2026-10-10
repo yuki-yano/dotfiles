@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 import { StringDecoder } from "node:string_decoder";
 
@@ -10,7 +10,7 @@ let input = "";
 let inputBytes = 0;
 let finished = false;
 
-function isCompleteHookInput(value) {
+function isCompleteHookInput(value: string) {
   try {
     const parsed = JSON.parse(value);
     return parsed !== null && typeof parsed === "object" && !Array.isArray(parsed);
@@ -25,7 +25,8 @@ function finish(output = "") {
   clearTimeout(deadline);
   process.stdin.removeAllListeners();
   process.stdin.destroy();
-  if (output) process.stdout.write(output);
+  if (output) process.stdout.write(output, () => process.exit(0));
+  else process.exit(0);
 }
 
 function finishIfComplete() {

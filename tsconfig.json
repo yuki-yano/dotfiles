@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "types": [
+      "bun"
+    ],
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "tasks.ts",
+    "bin/cc-statusline.ts",
+    "bin/codex-template-apply.ts",
+    "bin/codex-session-start-agent-note.ts",
+    "bin/display-layout.ts",
+    "bin/shitsurae-resize.ts",
+    "bin/tmux-editprompt.ts",
+    ".config/claude/hooks/read-hook-json.ts",
+    ".config/karabiner/karabiner.ts",
+    "tests/brew_tasks_test.ts",
+    "tests/codex_template_apply_test.ts",
+    "tests/cc_statusline_test.ts",
+    "tests/bun_scripts.test.ts",
+    "tests/assertions.ts"
+  ]
+}
