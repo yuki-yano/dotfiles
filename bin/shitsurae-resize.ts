@@ -23,16 +23,19 @@ import { $ } from "bun";
 process.env.PATH = `${process.env.PATH}:${process.env.HOME}/.local/bin`;
 
 const SHITSURAE_BIN = process.env.SHITSURAE_BIN ?? "shitsurae";
-const [_width, _height] = process.argv.slice(2) as [string, string];
+const dimensions = process.argv.slice(2);
+const [_width, _height] = dimensions;
 
-if (!_width || !_height) {
+if (dimensions.length !== 2 || !dimensions.every((value) => /^\d+$/.test(value))) {
+  console.error("Usage: shitsurae-resize.ts <width> <height> (positive integers)");
   process.exit(1);
 }
 
-const width = parseInt(_width, 10);
-const height = parseInt(_height, 10);
+const width = Number(_width);
+const height = Number(_height);
 
-if (Number.isNaN(width) || Number.isNaN(height) || width <= 0 || height <= 0) {
+if (!Number.isSafeInteger(width) || !Number.isSafeInteger(height) || width <= 0 || height <= 0) {
+  console.error("Width and height must be positive safe integers");
   process.exit(1);
 }
 

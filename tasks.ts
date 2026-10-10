@@ -2,6 +2,7 @@
 
 import { $ } from "bun";
 import { lstat, mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
+import { parseArgs } from "node:util";
 import { applyCodexTemplate, CodexTemplateApplyError, formatCodexTemplateApplyError } from "./lib/codex-template.ts";
 
 const DOTFILES_SRCS = [
@@ -146,6 +147,36 @@ async function zcompileIfExists(path: string): Promise<void> {
   if (!(await fileExists(path))) return;
   const result = await runCommand("zsh", ["-dfc", `zcompile ${JSON.stringify(path)}`]);
   if (result.code !== 0) throw new Error(result.stderr.trim() || `zcompile failed for ${path}`);
+}
+
+async function generateSheldonCache(update: boolean): Promise<void> {
+  if (!(await fileExists(SHELDON_CONFIG_FILE))) {
+    throw new Error(`${SHELDON_CONFIG_FILE} not found`);
+  }
+  await ensureCommandAvailable("sheldon");
+  const lockArgs = update ? ["lock", "--update"] : ["lock"];
+
+  if (DRY_RUN) {
+    console.log(
+      `[DRY RUN] Would run: sheldon --config-file ${SHELDON_CONFIG_FILE} --data-dir ${SHELDON_DATA_DIR} ${
+        lockArgs.join(" ")
+      }`,
+    );
+    for (const phase of SHELDON_PHASES) {
+      console.log(`[DRY RUN] Would generate profile '${phase.profile}' to ${SHELDON_CACHE_DIR}/${phase.filename}`);
+    }
+    return;
+  }
+
+  await mkdir(SHELDON_CACHE_DIR, { recursive: true });
+  for (const phase of SHELDON_PHASES) {
+    console.log(`Running: sheldon ${lockArgs.join(" ")} (${phase.profile})`);
+    await runSheldon(lockArgs, phase.profile);
+    console.log(`Generating sheldon source: ${phase.profile}`);
+    const outputPath = `${SHELDON_CACHE_DIR}/${phase.filename}`;
+    await writeFile(outputPath, await runSheldon(["source"], phase.profile));
+    await zcompileIfExists(outputPath);
+  }
 }
 
 function promptYesNo(message: string): boolean {
@@ -730,67 +761,11 @@ const tasks: Record<string, () => Promise<void> | void> = {
   },
 
   async "zsh:sheldon:sync"() {
-    if (!(await fileExists(SHELDON_CONFIG_FILE))) {
-      console.error(`ERROR: ${SHELDON_CONFIG_FILE} not found`);
-      process.exit(1);
-    }
-
-    await ensureCommandAvailable("sheldon");
-
-    if (DRY_RUN) {
-      console.log(
-        `[DRY RUN] Would run: sheldon --config-file ${SHELDON_CONFIG_FILE} --data-dir ${SHELDON_DATA_DIR} lock`,
-      );
-      for (const phase of SHELDON_PHASES) {
-        console.log(
-          `[DRY RUN] Would generate profile '${phase.profile}' to ${SHELDON_CACHE_DIR}/${phase.filename}`,
-        );
-      }
-      return;
-    }
-
-    await mkdir(SHELDON_CACHE_DIR, { recursive: true });
-    for (const phase of SHELDON_PHASES) {
-      console.log(`Running: sheldon lock (${phase.profile})`);
-      await runSheldon(["lock"], phase.profile);
-      console.log(`Generating sheldon source: ${phase.profile}`);
-      const content = await runSheldon(["source"], phase.profile);
-      const outputPath = `${SHELDON_CACHE_DIR}/${phase.filename}`;
-      await writeFile(outputPath, content);
-      await zcompileIfExists(outputPath);
-    }
+    await generateSheldonCache(false);
   },
 
   async "zsh:sheldon:update"() {
-    if (!(await fileExists(SHELDON_CONFIG_FILE))) {
-      console.error(`ERROR: ${SHELDON_CONFIG_FILE} not found`);
-      process.exit(1);
-    }
-
-    await ensureCommandAvailable("sheldon");
-
-    if (DRY_RUN) {
-      console.log(
-        `[DRY RUN] Would run: sheldon --config-file ${SHELDON_CONFIG_FILE} --data-dir ${SHELDON_DATA_DIR} lock --update`,
-      );
-      for (const phase of SHELDON_PHASES) {
-        console.log(
-          `[DRY RUN] Would generate profile '${phase.profile}' to ${SHELDON_CACHE_DIR}/${phase.filename}`,
-        );
-      }
-      return;
-    }
-
-    await mkdir(SHELDON_CACHE_DIR, { recursive: true });
-    for (const phase of SHELDON_PHASES) {
-      console.log(`Running: sheldon lock --update (${phase.profile})`);
-      await runSheldon(["lock", "--update"], phase.profile);
-      console.log(`Generating sheldon source: ${phase.profile}`);
-      const content = await runSheldon(["source"], phase.profile);
-      const outputPath = `${SHELDON_CACHE_DIR}/${phase.filename}`;
-      await writeFile(outputPath, content);
-      await zcompileIfExists(outputPath);
-    }
+    await generateSheldonCache(true);
   },
 
   async "brew:bundle"() {
@@ -924,46 +899,35 @@ const tasks: Record<string, () => Promise<void> | void> = {
 };
 
 if (import.meta.main) {
-  // Check for --dry-run flag
-  const args = [...process.argv.slice(2)];
-  const dryRunIndex = args.indexOf("--dry-run");
-  if (dryRunIndex !== -1) {
-    DRY_RUN = true;
-    args.splice(dryRunIndex, 1);
-  }
-
-  const applyIndex = args.indexOf("--apply");
-  if (applyIndex !== -1) {
-    APPLY = true;
-    args.splice(applyIndex, 1);
-  }
-
-  const taskName = args[0];
-
-  const overwriteManagedIndex = args.indexOf("--overwrite-managed");
-  if (overwriteManagedIndex !== -1) {
-    if (taskName !== "codex:template") {
-      console.error("--overwrite-managed is only supported for codex:template");
-      process.exit(1);
-    }
-    OVERWRITE_MANAGED = true;
-    args.splice(overwriteManagedIndex, 1);
-  }
-
-  if (!taskName) {
-    console.error("Usage: bun run <task-name>");
-    console.error("Run 'bun run help' to see available tasks");
-    process.exit(1);
-  }
-
-  const task = tasks[taskName];
-  if (!task) {
-    console.error(`Unknown task: ${taskName}`);
-    console.error("Run 'bun run help' to see available tasks");
-    process.exit(1);
-  }
-
+  let taskName: string | undefined;
   try {
+    const { values, positionals } = parseArgs({
+      args: process.argv.slice(2),
+      options: {
+        "dry-run": { type: "boolean" },
+        apply: { type: "boolean" },
+        "overwrite-managed": { type: "boolean" },
+      },
+      strict: true,
+      allowPositionals: true,
+    });
+    if (positionals.length !== 1) {
+      throw new Error("Usage: bun run <task-name> [options]. Exactly one task name is required.");
+    }
+    taskName = positionals[0];
+    if (!Object.hasOwn(tasks, taskName)) {
+      throw new Error(`Unknown task: ${taskName}. Run 'bun run help' to see available tasks.`);
+    }
+    if (taskName !== "codex:template" && (values.apply || values["overwrite-managed"])) {
+      throw new Error("--apply and --overwrite-managed are only supported for codex:template");
+    }
+    if (values.apply && values["dry-run"]) {
+      throw new Error("--apply and --dry-run cannot be used together");
+    }
+    DRY_RUN = values["dry-run"] ?? false;
+    APPLY = values.apply ?? false;
+    OVERWRITE_MANAGED = values["overwrite-managed"] ?? false;
+    const task = tasks[taskName];
     await task();
   } catch (error) {
     if (error instanceof CodexTemplateApplyError) {
@@ -971,8 +935,8 @@ if (import.meta.main) {
       process.exit(1);
     }
 
-    console.error(`Task failed: ${taskName}`);
-    console.error(error);
+    if (taskName) console.error(`Task failed: ${taskName}`);
+    console.error(error instanceof Error ? error.message : String(error));
     process.exit(1);
   }
 }

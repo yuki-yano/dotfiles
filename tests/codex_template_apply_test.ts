@@ -1,5 +1,5 @@
 import { test } from "bun:test";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { assertEquals, assertRejects, assertStringIncludes } from "./assertions.ts";
 import { dirname, join } from "node:path";
@@ -149,6 +149,36 @@ async function assertManagedSettingsFixtureUnchanged(
 }
 
 const managedSettingsTemplate = 'notify = ["vde-notifier"]\n[tui]\nfullscreen_transcript = false';
+
+test("codex template leaves every output unchanged when a later copy source is missing", async () => {
+  const fixture = await createManagedSettingsFixture('model = "new-model"', "");
+  try {
+    await rm(join(fixture.options.templateDir, "hooks.json"));
+    await assertRejects(
+      () => applyCodexTemplate(fixture.options),
+      CodexTemplateApplyError,
+      "copy target was not found",
+    );
+    await assertManagedSettingsFixtureUnchanged(fixture);
+  } finally {
+    await rm(fixture.root, { recursive: true });
+  }
+});
+
+test("codex template rejects unsupported directory entries before writing any outputs", async () => {
+  const fixture = await createManagedSettingsFixture('model = "new-model"', "");
+  try {
+    await symlink("explorer.toml", join(fixture.options.templateDir, "agents", "linked.toml"));
+    await assertRejects(
+      () => applyCodexTemplate(fixture.options),
+      CodexTemplateApplyError,
+      "unsupported entry type",
+    );
+    await assertManagedSettingsFixtureUnchanged(fixture);
+  } finally {
+    await rm(fixture.root, { recursive: true });
+  }
+});
 
 for (
   const [kind, current, next] of [

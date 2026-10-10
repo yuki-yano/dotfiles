@@ -167,18 +167,6 @@ const imeRules = [
   ]),
 ];
 
-const candsRules = [
-  rule("Send ctrl on space when used as modifiers").manipulators([
-    map("spacebar").to("left_control").toIfAlone("spacebar"),
-  ]),
-  rule("Send ctrl on lang2 when used as modifiers").manipulators([
-    map("lang2").to("left_control").toIfAlone("spacebar"),
-  ]),
-  rule("Send ctrl on lang1 when used as modifiers").manipulators([
-    map("lang1").to("left_control").toIfAlone("spacebar"),
-  ]),
-];
-
 const rules = [
   ...alacrittyRules,
   ...cursorEditorRules,

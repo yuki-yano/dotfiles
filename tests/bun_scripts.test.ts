@@ -81,6 +81,7 @@ import { basename } from "node:path";
 const bin = basename(process.argv[1]);
 const args = process.argv.slice(2);
 appendFileSync(process.env.MOCK_LOG, JSON.stringify({ bin, args, key: process.env.PANEPILOT_API_KEY ?? null }) + "\\n");
+if (bin === "sheldon" && args.includes("source")) console.log("# profile " + process.env.SHELDON_PROFILE);
 if (bin === "shitsurae" && args[0] === "display") console.log(JSON.stringify({ display: { frame: { x: -1000, y: 0, width: 1000, height: 800 }, visibleFrame: { x: -1000, y: 25, width: 1000, height: 775 } } }));
 if (bin === "editprompt") process.exit(Number(process.env.MOCK_RESUME_CODE ?? 1));
 if (bin === "tmux") {
@@ -100,7 +101,7 @@ type Call = { bin: string; args: string[]; key: string | null };
 async function withMockTools(check: (dir: string, log: string) => Promise<void>): Promise<void> {
   const dir = await mkdtemp(join(tmpdir(), "bun-script-tools-"));
   try {
-    for (const name of ["displayplacer", "shitsurae", "tmux", "editprompt"]) {
+    for (const name of ["displayplacer", "shitsurae", "tmux", "editprompt", "brew", "sheldon"]) {
       await writeFile(join(dir, name), mockTool, { mode: 0o700 });
     }
     await check(dir, join(dir, "calls.jsonl"));
@@ -112,6 +113,81 @@ async function withMockTools(check: (dir: string, log: string) => Promise<void>)
 async function calls(log: string): Promise<Call[]> {
   return (await readFile(log, "utf8")).trim().split("\n").filter(Boolean).map((line) => JSON.parse(line));
 }
+
+test("tasks reject invalid arguments before starting a command", async () => {
+  await withMockTools(async (dir, log) => {
+    for (
+      const args of [
+        ["brew:cleanup", "--dry-rnu"],
+        ["brew:cleanup", "unexpected"],
+        ["brew:cleanup", "--dry-run=false"],
+        ["brew:cleanup", "--apply"],
+        ["codex:template", "--apply", "--dry-run"],
+        ["toString"],
+      ]
+    ) {
+      const child = Bun.spawn([process.execPath, join(root, "tasks.ts"), ...args], {
+        cwd: root,
+        env: { ...process.env, HOME: dir, PATH: `${dir}:${process.env.PATH}`, MOCK_LOG: log },
+        stdout: "pipe",
+        stderr: "pipe",
+      });
+      const [code, error] = await Promise.all([child.exited, new Response(child.stderr).text()]);
+      expect(code).toBe(1);
+      expect(error).not.toBe("");
+    }
+    expect(await Bun.file(log).exists()).toBe(false);
+  });
+});
+
+test("tasks accept dry-run before or after the task without invoking brew", async () => {
+  await withMockTools(async (dir, log) => {
+    for (const args of [["--dry-run", "brew:cleanup"], ["brew:cleanup", "--dry-run"]]) {
+      const child = Bun.spawn([process.execPath, join(root, "tasks.ts"), ...args], {
+        cwd: root,
+        env: { ...process.env, HOME: dir, PATH: `${dir}:${process.env.PATH}`, MOCK_LOG: log },
+        stdout: "pipe",
+        stderr: "pipe",
+      });
+      const [code, output, error] = await Promise.all([
+        child.exited,
+        new Response(child.stdout).text(),
+        new Response(child.stderr).text(),
+      ]);
+      expect(code).toBe(0);
+      expect(error).toBe("");
+      expect(output).toContain("[DRY RUN] Would run: brew cleanup");
+    }
+    expect(await Bun.file(log).exists()).toBe(false);
+  });
+});
+
+test("window resize rejects malformed sizes before querying or changing the desktop", async () => {
+  await withMockTools(async (dir, log) => {
+    for (
+      const args of [
+        ["600px", "400"],
+        ["1e3", "400"],
+        ["600.5", "400"],
+        ["0", "400"],
+        ["600", "-1"],
+        ["9007199254740992", "400"],
+        ["600"],
+        ["600", "400", "extra"],
+      ]
+    ) {
+      const child = Bun.spawn([process.execPath, join(root, "bin/shitsurae-resize.ts"), ...args], {
+        env: { ...process.env, PATH: `${dir}:${process.env.PATH}`, MOCK_LOG: log },
+        stdout: "pipe",
+        stderr: "pipe",
+      });
+      const [code, error] = await Promise.all([child.exited, new Response(child.stderr).text()]);
+      expect(code).toBe(1);
+      expect(error).toContain("integers");
+    }
+    expect(await Bun.file(log).exists()).toBe(false);
+  });
+});
 
 test("Raycast scripts preserve argv and centered window coordinates", async () => {
   await withMockTools(async (dir, log) => {

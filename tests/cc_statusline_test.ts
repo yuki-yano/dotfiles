@@ -7,6 +7,28 @@ import { assertEquals, assertStringIncludes } from "./assertions.ts";
 
 const ANSI_PATTERN = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, "g");
 
+test("cc-statusline reads the workspace branch even when launched from another repository", async () => {
+  const workspace = await mkdtemp(join(tmpdir(), "cc-statusline-git-test-"));
+  try {
+    const initialized = Bun.spawnSync(["git", "init", "--quiet", "--initial-branch=workspace-branch", workspace]);
+    assertEquals(initialized.exitCode, 0);
+    const lines = await renderStatusLine(workspace);
+    assertStringIncludes(lines[0], "workspace-branch");
+  } finally {
+    await rm(workspace, { recursive: true });
+  }
+});
+
+test("cc-statusline does not show the launch directory branch for a non-Git workspace", async () => {
+  const workspace = await mkdtemp(join(tmpdir(), "cc-statusline-non-git-test-"));
+  try {
+    const lines = await renderStatusLine(workspace);
+    assertEquals(lines[0].includes("\u{f062c}"), false);
+  } finally {
+    await rm(workspace, { recursive: true });
+  }
+});
+
 async function renderStatusLine(configDir: string, overrides: Record<string, unknown> = {}): Promise<string[]> {
   const now = Date.now();
   const payload = {

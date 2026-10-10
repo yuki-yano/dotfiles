@@ -96,14 +96,18 @@ const PALETTE = {
   overlay0: [108, 112, 134] as Rgb,
 };
 
-async function getGitBranch(): Promise<string> {
+async function getGitBranch(currentDir: string): Promise<string> {
   try {
-    const git = (...args: string[]) => Bun.spawnSync(["git", ...args], { stdout: "pipe", stderr: "ignore" });
-    if (git("rev-parse").exitCode !== 0) return "";
-    const branch = git("branch", "--show-current").stdout.toString().trim();
-    if (branch) return branch;
-    const hash = git("rev-parse", "--short", "HEAD").stdout.toString().trim();
-    return hash ? `HEAD (${hash})` : "";
+    const git = async (...args: string[]) => {
+      const child = Bun.spawn(["git", "-C", currentDir, ...args], { stdout: "pipe", stderr: "ignore" });
+      const [code, output] = await Promise.all([child.exited, new Response(child.stdout).text()]);
+      return { code, output: output.trim() };
+    };
+    const branch = await git("branch", "--show-current");
+    if (branch.code !== 0) return "";
+    if (branch.output) return branch.output;
+    const hash = await git("rev-parse", "--short", "HEAD");
+    return hash.code === 0 && hash.output ? `HEAD (${hash.output})` : "";
   } catch {
     return "";
   }
@@ -513,14 +517,16 @@ export async function main() {
   const currentDir = input.workspace?.current_dir || ".";
   const dirName = currentDir.split("/").pop() || currentDir;
 
-  const gitBranch = await getGitBranch();
+  const [gitBranch, vdeMonitorRateLimits] = await Promise.all([
+    getGitBranch(currentDir),
+    getVdeMonitorRateLimits(),
+  ]);
   const contextInputTokens = getContextInputTokens(input.context_window?.current_usage);
   const contextWindowSize = input.context_window?.context_window_size;
   const ctxMeta = contextInputTokens != null && contextWindowSize != null
     ? formatTokenRatio(contextInputTokens, contextWindowSize)
     : null;
   const ctxSummary = formatContextSummary(input.context_window?.used_percentage, ctxMeta);
-  const vdeMonitorRateLimits = await getVdeMonitorRateLimits();
   const fiveHourRateLimit = vdeMonitorRateLimits?.fiveHour ?? input.rate_limits?.five_hour;
   const sevenDayRateLimit = vdeMonitorRateLimits?.sevenDay ?? input.rate_limits?.seven_day;
 

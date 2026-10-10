@@ -435,22 +435,24 @@ async function updateFileIfNeeded(
   return true;
 }
 
-async function updateTemplateTextFileIfNeeded(
+type PreparedTemplateFile = {
+  outputPath: string;
+  content: string;
+};
+
+async function prepareTemplateTextFile(
   templatePath: string,
   outputPath: string,
-  dryRun = false,
-): Promise<boolean> {
+): Promise<PreparedTemplateFile> {
   const templateBody = await readFile(templatePath, "utf8");
-  const normalized = normalizeTrailingNewline(renderTemplateText(templateBody));
-  return await updateFileIfNeeded(outputPath, normalized, dryRun);
+  return { outputPath, content: normalizeTrailingNewline(renderTemplateText(templateBody)) };
 }
 
-async function applyCopyTarget(
+async function prepareCopyTarget(
   templateDir: string,
   outputDir: string,
   copyTarget: string,
-  dryRun = false,
-): Promise<boolean> {
+): Promise<PreparedTemplateFile[]> {
   const templatePath = join(templateDir, copyTarget);
 
   let templateStat: Stats;
@@ -471,19 +473,17 @@ async function applyCopyTarget(
 
   if (templateStat.isFile()) {
     const outputPath = join(outputDir, copyTarget);
-    return await updateTemplateTextFileIfNeeded(templatePath, outputPath, dryRun);
+    return [await prepareTemplateTextFile(templatePath, outputPath)];
   }
 
   if (templateStat.isDirectory()) {
     const relativeFiles = await collectRelativeFilePaths(templatePath);
-    let hasChanged = false;
-    for (const relativeFilePath of relativeFiles) {
-      const sourcePath = join(templatePath, relativeFilePath);
-      const destinationPath = join(outputDir, copyTarget, relativeFilePath);
-      const changed = await updateTemplateTextFileIfNeeded(sourcePath, destinationPath, dryRun);
-      hasChanged = hasChanged || changed;
-    }
-    return hasChanged;
+    return await Promise.all(relativeFiles.map((relativeFilePath) =>
+      prepareTemplateTextFile(
+        join(templatePath, relativeFilePath),
+        join(outputDir, copyTarget, relativeFilePath),
+      )
+    ));
   }
 
   throw new CodexTemplateApplyError(
@@ -537,12 +537,16 @@ export async function applyCodexTemplate(options: ApplyCodexTemplateOptions = {}
     options.overwriteManaged,
   );
 
-  const configChanged = await updateFileIfNeeded(configOutputPath, mergedConfig, options.dryRun, currentConfig);
-  let copiedChanged = false;
+  const copyFiles: PreparedTemplateFile[] = [];
   for (const copyTarget of copyTargets) {
-    const changed = await applyCopyTarget(templateDir, outputDir, copyTarget, options.dryRun);
-    copiedChanged = copiedChanged || changed;
+    copyFiles.push(...await prepareCopyTarget(templateDir, outputDir, copyTarget));
   }
 
-  return configChanged || copiedChanged;
+  let changed = await updateFileIfNeeded(configOutputPath, mergedConfig, options.dryRun, currentConfig);
+  for (const file of copyFiles) {
+    const copiedChanged = await updateFileIfNeeded(file.outputPath, file.content, options.dryRun);
+    changed = changed || copiedChanged;
+  }
+
+  return changed;
 }
