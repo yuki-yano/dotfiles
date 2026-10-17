@@ -12,6 +12,7 @@ install --cask google-chrome
 install --cask karabiner-elements
 install --cask keyboard-cleaner
 install --cask keycastr
+install --cask llama-app
 install --cask microsoft-edge
 install --cask neohtop
 install --cask notion
