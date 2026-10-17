@@ -165,7 +165,7 @@
     ],
     "SessionStart": [
       {
-        "matcher": "startup|resume|clear",
+        "matcher": "startup|resume|clear|compact",
         "hooks": [
           {
             "type": "command",
@@ -179,6 +179,16 @@
           {
             "type": "command",
             "command": "bash \"$HOME/.config/claude/hooks/compact-recovery.sh\""
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "vt hook claude SessionEnd"
           }
         ]
       }

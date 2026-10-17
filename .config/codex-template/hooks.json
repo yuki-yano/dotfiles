@@ -13,7 +13,7 @@
         ]
       },
       {
-        "matcher": "^startup$|^resume$|^clear$",
+        "matcher": "^startup$|^resume$|^clear$|^compact$",
         "hooks": [
           {
             "type": "command",
