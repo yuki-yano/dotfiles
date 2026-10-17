@@ -107,6 +107,7 @@ return {
               vim.system({ 'tmux', 'select-pane', '-t', pane }, { text = true })
             end
             local function send_buffer_auto_send()
+              require('panepilot').dismiss()
               editprompt_utils.save_buffer()
 
               local original = editprompt_utils.get_buffer_content()
@@ -162,6 +163,7 @@ return {
               send_next_chunk()
             end
             local function stash_buffer_to_history()
+              require('panepilot').dismiss()
               editprompt_utils.save_buffer()
               local original = editprompt_utils.get_buffer_content()
 
@@ -172,6 +174,9 @@ return {
               editprompt.stash_push()
             end
             local function handle_cr()
+              if require('panepilot').consume_empty_enter() then
+                return ''
+              end
               local mode = vim.api.nvim_get_mode().mode
               if is_buffer_blank() then
                 if mode:sub(1, 1) == 'i' then
@@ -405,13 +410,14 @@ return {
     },
     config = function()
       require('panepilot').setup({
-        backend = 'openai',
+        backend = 'codex',
+        context = { source = 'vde' },
         openai = {
           model = 'gpt-5.6-luna',
           reasoning_effort = 'low',
         },
         codex = {
-          model = 'gpt-5.3-codex-spark',
+          model = 'gpt-5.6-luna',
           reasoning_effort = 'low',
         },
         cmp = {
