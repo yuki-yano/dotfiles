@@ -601,6 +601,26 @@ function pointLiesOnSegment(point, start, end) {
     && point[1] <= Math.max(start[1], end[1]) + epsilon;
 }
 
+// A bend meeting another route's interior can look like a branch even when
+// no pair of segment interiors forms a proper X. Keep actual route endpoints
+// out of this geometric query; callers decide which relationships are allowed
+// to share junctions. Collinear corridors remain a separate quality measure.
+export function polylineBendContacts(left, right) {
+  const contacts = [];
+  const near = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]) <= 0.0001;
+  for (const [points, other] of [[left, right], [right, left]]) {
+    if (other.length < 2) continue;
+    for (let index = 1; index < points.length - 1; index += 1) {
+      const point = points[index];
+      if (Math.abs(crossProduct(points[index - 1], point, points[index + 1])) <= 0.0001
+        || near(point, other[0]) || near(point, other.at(-1))) continue;
+      if (other.slice(1).some((end, segment) => pointLiesOnSegment(point, other[segment], end))
+        && !contacts.some(otherPoint => near(point, otherPoint))) contacts.push(point);
+    }
+  }
+  return contacts;
+}
+
 // Authored shared endpoints retain their junction interpretation by default.
 // Renderers can opt their automatic routes into proper interior X checks;
 // endpoint touches and collinear trunks still are not proper crossings.
@@ -701,6 +721,10 @@ export function cleanCrossingProblems({
 // exception. Other callers keep their existing authored-junction contract.
 // The counterflow-only opt-in serves older workflow exports without a root
 // readable-v2 contract; full shared-endpoint checking takes precedence.
+// Relationships a renderer declares on one junction (a Lifecycle exit bracket)
+// may share that junction's horizontal bus, the first tick from a common
+// source port and, when they end at the same state, the merged drop into it;
+// other overlaps between them count.
 // Tiny overlaps below the route rhythm
 // floor are ignored to avoid turning sub-pixel rounding into a quality debt.
 export function collectAmbiguousCorridors({
@@ -719,6 +743,8 @@ export function collectAmbiguousCorridors({
       relation,
       relationIndex: Number.isInteger(entry.relationIndex) ? entry.relationIndex : fallbackIndex,
       points,
+      ...(entry.sourceEndpoint === false ? { sourceEndpoint: false } : {}),
+      ...(entry.targetEndpoint === false ? { targetEndpoint: false } : {}),
     };
   }).filter(Boolean);
   const hits = [];
@@ -727,6 +753,7 @@ export function collectAmbiguousCorridors({
     const left = routed[leftIndex];
     for (let rightIndex = leftIndex + 1; rightIndex < routed.length; rightIndex += 1) {
       const right = routed[rightIndex];
+      const sharedBus = Boolean(left.relation.junction) && left.relation.junction === right.relation.junction;
       const sharedEndpoint = [left.relation.from, left.relation.to].some((id) => id === right.relation.from || id === right.relation.to);
       const counterflowOnly = sharedEndpoint && !includeSharedEndpoints(left.relation, right.relation);
       if (counterflowOnly && !includeSharedEndpointCounterflow(left.relation, right.relation)) continue;
@@ -742,6 +769,15 @@ export function collectAmbiguousCorridors({
           );
           if (!overlap || overlap.length + 0.0001 < minOverlapPx) continue;
           if (allowShortWorkflowTrunks && shortWorkflowTrunk(left, right, leftSegment, rightSegment, overlap.length)) continue;
+          // A multi-target bracket repeats its source tick for each target.
+          // Limit that exemption to the first segment at the same source port:
+          // a common source identity cannot waive an interior vertical overlap.
+          const sharedSourceTick = left.sourceEndpoint !== false && right.sourceEndpoint !== false
+            && left.relation.from === right.relation.from && leftSegment === 0 && rightSegment === 0
+            && Math.abs(left.points[0][0] - right.points[0][0]) < 0.0001
+            && Math.abs(left.points[0][1] - right.points[0][1]) < 0.0001;
+          if (sharedBus && (Math.abs(overlap.start[1] - overlap.end[1]) < 0.0001
+              || left.relation.to === right.relation.to || sharedSourceTick)) continue;
           if (counterflowOnly) {
             const leftDelta = left.points[leftSegment + 1].map((value, axis) => value - left.points[leftSegment][axis]);
             const rightDelta = right.points[rightSegment + 1].map((value, axis) => value - right.points[rightSegment][axis]);
@@ -773,9 +809,11 @@ function shortWorkflowTrunk(left, right, leftSegment, rightSegment, length) {
   const width = (edge) => edge.width || (variant(edge) === 'emphasis' ? 1.8 : 1.4);
   if (variant(a) !== variant(b) || width(a) !== width(b) || (a.role || '') !== (b.role || '')) return false;
   const same = (p, q) => Math.abs(p[0] - q[0]) < 0.0001 && Math.abs(p[1] - q[1]) < 0.0001;
-  const source = a.from === b.from && leftSegment === 0 && rightSegment === 0
+  const source = left.sourceEndpoint !== false && right.sourceEndpoint !== false
+    && a.from === b.from && leftSegment === 0 && rightSegment === 0
     && same(left.points[0], right.points[0]);
-  const target = a.to === b.to && leftSegment === left.points.length - 2 && rightSegment === right.points.length - 2
+  const target = left.targetEndpoint !== false && right.targetEndpoint !== false
+    && a.to === b.to && leftSegment === left.points.length - 2 && rightSegment === right.points.length - 2
     && same(left.points.at(-1), right.points.at(-1));
   if (!source && !target) return false;
   const p = left.points[leftSegment], q = left.points[leftSegment + 1];
@@ -784,7 +822,8 @@ function shortWorkflowTrunk(left, right, leftSegment, rightSegment, length) {
 }
 
 // Bundled arrow markers are 7 stroke-widths across the direction of travel.
-// Callers select the automatic routes they own; explicit junctions are preserved.
+// Callers select the automatic routes they own; explicit junctions are preserved,
+// and relations on one junction ending at the same state share a merged drop.
 export function collectArrowheadCollisions({ routedRelations, allowShortWorkflowTrunks = false }) {
   const incoming = new Map();
   const hits = [];
@@ -801,6 +840,9 @@ export function collectArrowheadCollisions({ routedRelations, allowShortWorkflow
     const siblings = incoming.get(key) || [];
     const current = { ...entry, tip, halfWidth };
     for (const sibling of siblings) {
+      // One junction's merged drop into a state carries a single arrowhead.
+      if (sibling.relation.junction && sibling.relation.junction === entry.relation.junction
+          && sibling.relation.to === entry.relation.to) continue;
       if (Math.abs(tip[1 - axis] - sibling.tip[1 - axis]) > 0.0001) continue;
       const distance = Math.abs(tip[axis] - sibling.tip[axis]);
       const minimum = halfWidth + sibling.halfWidth;
@@ -1483,6 +1525,82 @@ export function anchor(rect, side) {
   }
 }
 
+export function portHasCornerClearance(rect, side, point) {
+  if (side === 'left' || side === 'right') {
+    const inset = Math.min(16, rect.height / 2);
+    return point[1] >= rect.y + inset && point[1] <= rect.y + rect.height - inset;
+  }
+  if (side === 'top' || side === 'bottom') {
+    const inset = Math.min(16, rect.width / 2);
+    return point[0] >= rect.x + inset && point[0] <= rect.x + rect.width - inset;
+  }
+  return false;
+}
+
+
+// Reuse the same bounded alignment for facing automatic ports; callers own
+// obstacle and occupied-port checks for their renderer. Spread slots stay fixed.
+export function alignAutomaticFacingPorts(conn, from, to, start, end, fromSide, toSide, ports, { accept } = {}) {
+  const hasExplicitGeometry = (
+    conn.via
+    || (conn.route && conn.route !== 'auto')
+    || conn.channelX !== undefined
+    || conn.channelY !== undefined
+    || conn.labelAt
+  );
+  const horizontallyFacing = (
+    (fromSide === 'right' && toSide === 'left')
+    || (fromSide === 'left' && toSide === 'right')
+  );
+  const verticallyFacing = (
+    (fromSide === 'bottom' && toSide === 'top')
+    || (fromSide === 'top' && toSide === 'bottom')
+  );
+  if (hasExplicitGeometry || (!horizontallyFacing && !verticallyFacing)) return { start, end };
+
+  const fromSpread = Boolean(ports?.from);
+  const toSpread = Boolean(ports?.to);
+  if (fromSpread && toSpread) return { start, end };
+  const hasExplicitSides = (
+    (conn.fromSide && conn.fromSide !== 'auto')
+    || (conn.toSide && conn.toSide !== 'auto')
+  );
+  if (!fromSpread && !toSpread && hasExplicitSides) return { start, end };
+
+  const alignmentDelta = horizontallyFacing
+    ? Math.abs(start[1] - end[1])
+    : Math.abs(start[0] - end[0]);
+  if (alignmentDelta >= 16) return { start, end };
+
+  // Keep the shared endpoint's distinct spread slot and move only the
+  // relationship's unshared endpoint onto that axis. With no spread endpoint,
+  // retain the existing least-movement choice between the two facing sides.
+  // If both endpoints are shared, preserve the outside bridge so no competing
+  // port is silently collapsed.
+  const alignEndToStart = horizontallyFacing
+    ? { start, end: [end[0], start[1]] }
+    : { start, end: [start[0], end[1]] };
+  const alignStartToEnd = horizontallyFacing
+    ? { start: [start[0], end[1]], end }
+    : { start: [end[0], start[1]], end };
+  const candidates = fromSpread
+    ? [alignEndToStart]
+    : toSpread
+      ? [alignStartToEnd]
+      : [alignEndToStart, alignStartToEnd];
+  for (const candidate of candidates) {
+    const points = [candidate.start, candidate.end];
+    if (portHasCornerClearance(from, fromSide, candidate.start)
+        && portHasCornerClearance(to, toSide, candidate.end)
+        && routeHonorsEndpointSides(points, fromSide, toSide)
+        && (typeof accept !== 'function' || accept(points))) {
+      return candidate;
+    }
+  }
+  return { start, end };
+}
+
+
 const PORT_OUTWARD_VECTOR = {
   left: [-1, 0],
   right: [1, 0],
@@ -1930,12 +2048,26 @@ export function suggestLabelPairFix(a, b) {
   ].join('\n');
 }
 
+/**
+ * The two placements that separate b from a, in the order the prose hint
+ * offers them. Shared so the text hint and its structured repair cannot
+ * offer different coordinates.
+ */
+export function componentSeparationOptions(a, b, minGap = 8) {
+  // Ceil, not round: on fractional geometry a rounded right/below coordinate
+  // can land a fraction of a pixel short of minGap, and the advised position
+  // would never clear the diagnostic that offered it.
+  return [
+    { pos: [Math.ceil(a.x + a.width + minGap), Math.round(b.y)], relation: `right of "${a.id}"` },
+    { pos: [Math.round(b.x), Math.ceil(a.y + a.height + minGap)], relation: 'below' },
+  ];
+}
+
 /** Hint when two components/nodes are too close. */
 export function suggestComponentSeparation(a, b, minGap = 8) {
-  const rightX = Math.round(a.x + a.width + minGap);
-  const belowY = Math.round(a.y + a.height + minGap);
+  const [right, below] = componentSeparationOptions(a, b, minGap);
   return [
     `  "${a.id}" ${formatRect(a)}; "${b.id}" ${formatRect(b)}`,
-    `  Suggested fix: move "${b.id}" pos to [${rightX}, ${Math.round(b.y)}] (right of "${a.id}") or [${Math.round(b.x)}, ${belowY}] (below)`,
+    `  Suggested fix: move "${b.id}" pos to [${right.pos[0]}, ${right.pos[1]}] (${right.relation}) or [${below.pos[0]}, ${below.pos[1]}] (${below.relation})`,
   ].join('\n');
 }

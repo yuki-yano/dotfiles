@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { esc, renderDefinitions, renderSemanticSigil, textUnits } from '../shared/utils.mjs';
+import { NODE_CARD_ATTR, nodeCardStyle } from '../shared/node-card-style.mjs';
 import { animateAttr, focusEdgeAttrs, focusNodeAttrs, focusNodeTitle, loadDiagramWithBrandMarks, writeDiagram, svgAccessibleText, svgRootAttrs } from '../shared/cli.mjs';
 import { componentBox, boundaryBox, connectionPath } from '../shared/layout-report.mjs';
 import { rendererFailure, throwDiagnosticProblems } from '../shared/diagnostics.mjs';
@@ -11,12 +12,13 @@ import { minimumReadableSourceTextPx } from '../shared/desktop-readability.mjs';
 import { translateMessage as i18nText } from '../shared/i18n.mjs';
 import { gridLayout, resolveComponentPos, validateGridPlacement } from './grid.mjs';
 import { createRouter } from './routing.mjs';
-import { placeAutomaticLabels, reservedLabelRect } from './labels.mjs';
+import { placeAutomaticLabels, reservedLabelRect } from '../shared/automatic-labels.mjs';
 import { cleanRouteDetourProblems } from '../shared/route-quality.mjs';
 import {
   asArray,
   isFinitePoint,
   rectsOverlap,
+  segmentIntersectsRect,
   cleanEndpointSideProblems,
   cleanFlowProblems,
   cleanCrossingProblems,
@@ -27,6 +29,7 @@ import {
   cleanLabelRouteClearanceProblems,
   cleanLabelCanvasContainmentProblems,
   suggestLabelObstacleFix,
+  componentSeparationOptions,
   suggestComponentSeparation,
   polylinePath,
   routePointsValue,
@@ -121,6 +124,10 @@ function boundaryRect(boundary) {
   const topPad = Math.max(
     pad,
     layout.boundaryLabelBaseline + layout.boundaryLabelClearance,
+    // Routes must avoid the title rail that the final frame will contain.
+    enforcesBoundaryTitleComposition
+      ? layout.boundaryLabelMaskHeight + layout.boundaryLabelClearance + layout.boundaryLabelFrameInset
+      : 0,
   );
   return {
     ...boundary,
@@ -252,6 +259,42 @@ function horizontalOverlap(left, right) {
   return left.x < right.x + right.width && left.x + left.width > right.x;
 }
 
+// A route through a title disappears under its mask and reads as struck-through
+// text. Keep the left rail position when it is clear; otherwise slide the title
+// along its rail to the nearest clear position inside the frame.
+let titleRouteSegments = null;
+function slideTitleOffRoutes(boundary, title, placedTitles) {
+  if (!enforcesBoundaryTitleComposition) return;
+  titleRouteSegments ||= asArray(arch.connections)
+    .filter((conn) => components.has(conn.from) && components.has(conn.to))
+    .flatMap((conn) => {
+      const points = pathFor(conn).points;
+      return points.slice(1).map((end, index) => ({ start: points[index], end }));
+    });
+  const clear = (x) => {
+    const rect = { ...title, x };
+    return !titleRouteSegments.some((segment) => segmentIntersectsRect(segment, rect, 2))
+      && ![...placedTitles, ...components.values(), ...connectionLabels].some((other) => rectsOverlap(rect, other));
+  };
+  if (clear(title.x)) return;
+  const left = boundary.x + layout.boundaryLabelFrameInset;
+  const right = boundary.x + boundary.width - layout.boundaryLabelFrameInset - title.width;
+  const band = titleRouteSegments.filter(({ start, end }) => (
+    Math.max(start[1], end[1]) >= title.y - 2 && Math.min(start[1], end[1]) <= title.y + title.height + 2
+  ));
+  const labelBlockers = connectionLabels.filter((label) => (
+    label.y < title.y + title.height && label.y + label.height > title.y
+  ));
+  const x = [right, ...band.flatMap(({ start, end }) => [
+    Math.max(start[0], end[0]) + 8, Math.min(start[0], end[0]) - 8 - title.width,
+  ]), ...labelBlockers.flatMap((label) => [
+    label.x + label.width + 8, label.x - 8 - title.width,
+  ])].filter((value) => value >= left && value <= right)
+    .sort((a, b) => a - b)
+    .find(clear);
+  if (x !== undefined) title.x = x;
+}
+
 function layoutBoundaryTitles(rawBoundaries, minimumFontSize) {
   const placedTitles = [];
   const measured = new Map();
@@ -280,6 +323,7 @@ function layoutBoundaryTitles(rawBoundaries, minimumFontSize) {
         Infinity,
       );
     }
+    slideTitleOffRoutes(boundary, title, placedTitles);
     placedTitles.push(title);
     measured.set(index, { boundary, title });
   }
@@ -311,9 +355,12 @@ function layoutBoundaryTitles(rawBoundaries, minimumFontSize) {
 // automatic route never borrows a frame border as its corridor), never the
 // title-expanded frames or the viewBox.
 const rawBoundaries = asArray(arch.boundaries).map(boundaryRect).filter(Boolean);
-const { pathFor, connectionSides, connectionEndpointSide } = createRouter(components, arch.connections, {
+const routerOptions = {
   distinctAutomaticPorts: true,
   preferReadableRoutes: true,
+  // A single outward stub below the scene can remove a crossing without
+  // widening the canvas or shrinking its text. Fixed canvases keep their bounds.
+  readabilityBottomMargin: arch.meta?.viewBox ? 0 : 24,
   frames: rawBoundaries.map((boundary) => ({
     ...boundary,
     radius: boundary.kind === 'security-group' ? 8 : 12,
@@ -325,7 +372,8 @@ const { pathFor, connectionSides, connectionEndpointSide } = createRouter(compon
     labels,
     components: [...components.values()],
   }) : null),
-});
+};
+const { pathFor, connectionSides, connectionEndpointSide } = createRouter(components, arch.connections, routerOptions);
 function hasAutomaticRouteGeometry(connection) {
   return !Array.isArray(connection?.via)
     && (!connection?.route || connection.route === 'auto')
@@ -427,6 +475,15 @@ if (arch.meta?.quality_profile === 'showcase') {
 }
 
 // ---- Validation: mechanical correctness, never layout taste -----------------
+function componentDiagnosticBox(component) {
+  return {
+    ...componentBox(component),
+    x: component.x,
+    y: component.y,
+    ...(Array.isArray(component.pos) ? { pos: [...component.pos] } : {}),
+  };
+}
+
 function validateArchitecture() {
   const problems = [];
   const diagnostics = [];
@@ -447,19 +504,80 @@ function validateArchitecture() {
 
   for (const c of components.values()) {
     if (!isFinitePoint(c.x, c.y, c.width, c.height)) {
-      problems.push(`Component "${c.id}" has non-finite pos/size — pos and size must be [number, number].`);
+      const message = `Component "${c.id}" has non-finite pos/size — pos and size must be [number, number].`;
+      diagnostics.push({
+        code: 'architecture/non-finite-component-geometry', severity: 'error', message,
+        subject: { diagramType: 'architecture', nodeId: c.id },
+        evidence: { pos: c.pos ?? null, size: [c.width, c.height] },
+        supportedFixes: [`replace component "${c.id}" pos and size with finite [number, number] values`],
+      });
+      problems.push(message);
       continue;
     }
     if (c.width <= 0 || c.height <= 0) {
-      problems.push(`Component "${c.id}" has invalid size ${c.width}x${c.height} — width and height must be greater than 0.`);
+      const message = `Component "${c.id}" has invalid size ${c.width}x${c.height} — width and height must be greater than 0.`;
+      diagnostics.push({
+        code: 'architecture/invalid-component-size', severity: 'error', message,
+        subject: { diagramType: 'architecture', nodeId: c.id },
+        evidence: { width: c.width, height: c.height },
+        supportedFixes: [`set component "${c.id}" width and height to values greater than 0`],
+      });
+      problems.push(message);
       continue;
     }
     if (c.x < 0 || c.y < 0 || c.x + c.width > viewBox[0] || c.y + c.height > viewBox[1]) {
-      problems.push(`Component "${c.id}" falls outside the viewBox ${viewBox[0]}x${viewBox[1]} — adjust pos/size or set a larger meta.viewBox.`);
+      const message = `Component "${c.id}" falls outside the viewBox ${viewBox[0]}x${viewBox[1]} — adjust pos/size or set a larger meta.viewBox.`;
+      const overflow = {
+        left: Math.max(0, -c.x),
+        top: Math.max(0, -c.y),
+        right: Math.max(0, c.x + c.width - viewBox[0]),
+        bottom: Math.max(0, c.y + c.height - viewBox[1]),
+      };
+      const widerThanCanvas = overflow.left > 0 && overflow.right > 0;
+      const tallerThanCanvas = overflow.top > 0 && overflow.bottom > 0;
+      const supportedFixes = [];
+      // Move by exactly the overflow: it lands the edge flush (x + (-x) is exact
+      // in IEEE 754), while a rounded-up move pushes the opposite edge past a
+      // tight canvas and a rounded-down one leaves the overflow in place. When
+      // the component is larger than the canvas, the move must shrink it too.
+      if (overflow.left > 0) {
+        const shrink = Math.max(0, c.width - viewBox[0]);
+        supportedFixes.push(shrink > 0
+          ? `move component "${c.id}" right by ${overflow.left}px and shrink its width by at least ${shrink}px`
+          : `move component "${c.id}" right by ${overflow.left}px`);
+      }
+      if (overflow.top > 0) {
+        const shrink = Math.max(0, c.height - viewBox[1]);
+        supportedFixes.push(shrink > 0
+          ? `move component "${c.id}" down by ${overflow.top}px and shrink its height by at least ${shrink}px`
+          : `move component "${c.id}" down by ${overflow.top}px`);
+      }
+      if ((overflow.right > 0 && !widerThanCanvas) || (overflow.bottom > 0 && !tallerThanCanvas)) {
+        const coveredWidth = overflow.right > 0 && !widerThanCanvas ? Math.ceil(c.x + c.width) : viewBox[0];
+        const coveredHeight = overflow.bottom > 0 && !tallerThanCanvas ? Math.ceil(c.y + c.height) : viewBox[1];
+        supportedFixes.push(`set meta.viewBox to at least [${Math.max(viewBox[0], coveredWidth)}, ${Math.max(viewBox[1], coveredHeight)}]`);
+      }
+      diagnostics.push({
+        code: 'layout/component-out-of-bounds', severity: 'error', message,
+        subject: { diagramType: 'architecture', nodeId: c.id },
+        evidence: { bounds: componentDiagnosticBox(c), viewBox: [...viewBox], overflow },
+        supportedFixes,
+      });
+      problems.push(message);
     }
     const estLabelW = textUnits(c.label) * 6.6;
     if (estLabelW > c.width + 8) {
-      problems.push(`Label "${c.label}" (~${Math.round(estLabelW)}px) is wider than component "${c.id}" (${c.width}px) — shorten the label or widen size.`);
+      const message = `Label "${c.label}" (~${Math.round(estLabelW)}px) is wider than component "${c.id}" (${c.width}px) — shorten the label or widen size.`;
+      diagnostics.push({
+        code: 'architecture/component-label-overflow', severity: 'error', message,
+        subject: { diagramType: 'architecture', nodeId: c.id },
+        evidence: { text: c.label, estimatedWidthPx: Math.round(estLabelW), availableWidthPx: c.width },
+        supportedFixes: [
+          `shorten component "${c.id}" label "${c.label}" while preserving its meaning`,
+          `or widen component "${c.id}" to at least ${Math.ceil(estLabelW - 8)}px`,
+        ],
+      });
+      problems.push(message);
     }
     const brandRailProblem = brandTopRailProblem(c, c.width, 8, 'Component');
     if (brandRailProblem) problems.push(brandRailProblem);
@@ -473,7 +591,18 @@ function validateArchitecture() {
       if (!value) continue;
       const minimumW = minimumNodeTextWidth(value, minimum);
       if (minimumW > availableTextW) {
-        problems.push(`${field} "${value}" needs ~${Math.ceil(minimumW)}px at the ${minimum}px legible minimum, but component "${c.id}" provides ${availableTextW}px — shorten the ${field.toLowerCase()} or widen size.`);
+        const fieldKey = field.toLowerCase();
+        const message = `${field} "${value}" needs ~${Math.ceil(minimumW)}px at the ${minimum}px legible minimum, but component "${c.id}" provides ${availableTextW}px — shorten the ${fieldKey} or widen size.`;
+        diagnostics.push({
+          code: `architecture/component-${fieldKey}-overflow`, severity: 'error', message,
+          subject: { diagramType: 'architecture', nodeId: c.id },
+          evidence: { text: value, minimumFontPx: minimum, requiredWidthPx: Math.ceil(minimumW), availableWidthPx: availableTextW },
+          supportedFixes: [
+            `shorten component "${c.id}" ${fieldKey} "${value}" while preserving its meaning`,
+            `or widen component "${c.id}" so the ${fieldKey} keeps at least ${Math.ceil(minimumW)}px of text width at the ${minimum}px legible minimum`,
+          ],
+        });
+        problems.push(message);
       }
     }
   }
@@ -483,7 +612,19 @@ function validateArchitecture() {
   for (let i = 0; i < list.length; i += 1) {
     for (let j = i + 1; j < list.length; j += 1) {
       if (rectsOverlap(list[i], list[j], 8)) {
-        problems.push(`Components "${list[i].id}" and "${list[j].id}" are less than 8px apart — move one or shrink its size.\n${suggestComponentSeparation(list[i], list[j], 8)}`);
+        const separation = componentSeparationOptions(list[i], list[j], 8);
+        const message = `Components "${list[i].id}" and "${list[j].id}" are less than 8px apart — move one or shrink its size.\n${suggestComponentSeparation(list[i], list[j], 8)}`;
+        diagnostics.push({
+          code: 'layout/component-overlap', severity: 'error', message,
+          subject: { diagramType: 'architecture', nodeId: list[i].id },
+          evidence: { otherId: list[j].id, minimumGapPx: 8, boxes: [componentDiagnosticBox(list[i]), componentDiagnosticBox(list[j])] },
+          supportedFixes: [
+            `move component "${list[j].id}" pos to [${separation[0].pos[0]}, ${separation[0].pos[1]}] (${separation[0].relation})`,
+            `or move component "${list[j].id}" pos to [${separation[1].pos[0]}, ${separation[1].pos[1]}] (${separation[1].relation})`,
+            `or shrink "${list[i].id}" or "${list[j].id}" while keeping every label and sublabel readable`,
+          ],
+        });
+        problems.push(message);
       }
     }
   }
@@ -618,9 +759,71 @@ function validateArchitecture() {
     }
   }
 
-  for (const conn of asArray(arch.connections)) {
-    if (!components.has(conn.from)) problems.push(`Connection "${conn.label || conn.from}" references unknown source "${conn.from}".`);
-    if (!components.has(conn.to)) problems.push(`Connection "${conn.label || conn.to}" references unknown target "${conn.to}".`);
+  // A boundary frame is drawn as the padded box around its members, so a
+  // component that is not in `wraps` but sits wholly inside that box reads as
+  // a member. Report it instead of letting the picture claim false ownership.
+  // A box the frame border visibly cuts through does not claim membership,
+  // and earlier valid inputs depend on that, so only full enclosure fails.
+  // This new composition gate applies to showcase; standard keeps its existing
+  // acceptance contract while authors can opt into the stricter check.
+  if (arch.meta?.quality_profile === 'showcase') {
+    for (const b of boundaries) {
+      const members = new Set(asArray(b.wraps));
+      for (const component of components.values()) {
+        if (members.has(component.id) || !rectContains(b, component)) continue;
+        const message = `Component "${component.id}" is not wrapped by boundary "${b.label}" but sits inside its frame — `
+          + 'move it outside the frame, place the wrapped members in one compact axis-aligned cluster (no empty bay for a non-member), or add it to wraps only when it truly belongs there.';
+        problems.push(message);
+        diagnostics.push({
+          code: 'layout/boundary-encloses-non-member',
+          severity: 'error',
+          message,
+          subject: { diagramType: 'architecture', boundary: { kind: b.kind, label: b.label, wraps: b.wraps }, component: component.id },
+          evidence: {
+            bounds: { x: b.x, y: b.y, width: b.width, height: b.height },
+            component: componentBox(component),
+          },
+          supportedFixes: [
+            `move "${component.id}" outside the boundary frame`,
+            'reposition the wrapped members into one compact axis-aligned cluster (no empty bay) that leaves non-members outside',
+          ],
+        });
+      }
+    }
+  }
+
+  const connectionList = asArray(arch.connections);
+  const knownComponentIds = [...components.keys()].sort();
+  for (const conn of connectionList) {
+    const connIndex = connectionList.indexOf(conn);
+    for (const [field, endpoint] of [['from', 'source'], ['to', 'target']]) {
+      if (components.has(conn[field])) continue;
+      const message = `Connection "${conn.label || conn[field]}" references unknown ${endpoint} "${conn[field]}".`;
+      const otherId = conn[field === 'from' ? 'to' : 'from'];
+      const neighbors = new Set();
+      for (const edge of connectionList) {
+        if (edge === conn) continue;
+        if (edge.from === otherId) neighbors.add(edge.to);
+        if (edge.to === otherId) neighbors.add(edge.from);
+      }
+      const candidates = knownComponentIds
+        .filter((id) => id !== otherId)
+        .sort((a, b) => (neighbors.has(b) - neighbors.has(a)) || a.localeCompare(b));
+      diagnostics.push({
+        code: 'architecture/unknown-endpoint', severity: 'error', message,
+        subject: {
+          diagramType: 'architecture',
+          connection: conn.id ?? null,
+          path: `/connections/${connIndex}/${field}`,
+          from: conn.from,
+          to: conn.to,
+        },
+        evidence: { endpoint, unknownNodeId: conn[field], availableNodeIds: knownComponentIds },
+        supportedFixes: candidates.slice(0, 3).map((id) => `set /connections/${connIndex}/${field} to verified node id "${id}"`),
+      });
+      problems.push(message);
+      problems.push(`Connection "${conn.label || conn[field]}" endpoint "${conn[field]}" does not name a declared component.`);
+    }
     if (components.has(conn.from) && components.has(conn.to)) {
       const routed = pathFor(conn);
       const outsidePoints = routed.points.filter(([x, y]) => x < 0 || y < 0 || x > viewBox[0] || y > viewBox[1]);
@@ -748,7 +951,6 @@ function validateArchitecture() {
     relationCollection: 'connections',
     profile: arch.meta?.quality_profile,
   }));
-
   // Connection labels must not land on top of components.
   const labelRects = connectionLabels;
   for (const rect of labelRects) {
@@ -895,8 +1097,8 @@ function renderComponent(c) {
   const passport = { kind: c.type, sublabel: c.sublabel, tag: c.tag, context: componentContext(c), ...brandMetadataFor(c) };
   return `        <g ${focusNodeAttrs(c.id, c.label, passport, arch.meta.locale)}>
           ${focusNodeTitle(c.label, passport)}
-          <rect x="${c.x}" y="${c.y}" width="${c.width}" height="${c.height}" rx="6" class="c-mask"/>
-          <rect x="${c.x}" y="${c.y}" width="${c.width}" height="${c.height}" rx="6" class="${fill}"${animateAttr(arch.meta, 'node', componentSteps.get(c.id))} stroke-width="1.5"/>
+          <rect x="${c.x}" y="${c.y}" width="${c.width}" height="${c.height}" rx="8" class="c-mask"/>
+          <rect x="${c.x}" y="${c.y}" width="${c.width}" height="${c.height}" rx="8" class="${fill}"${animateAttr(arch.meta, 'node', componentSteps.get(c.id))} stroke-width="1.5"/>
           ${renderSemanticSigil(c.type, { icon: c.icon, x: c.x + 6, y: c.y + 6 })}${brand ? `\n          ${brand}` : ''}
           <text data-node-label=""${hasSub ? ' data-detail-anchor=""' : ''} x="${cx}" y="${labelY}" class="t-primary" font-size="${labelFontSize}" font-weight="600" text-anchor="middle">${esc(c.label)}</text>${sub}${tag}
         </g>`;
@@ -945,9 +1147,10 @@ function renderSvg() {
   // shrinking a semantically rich graph to the universal emergency floor.
   const readerMinimumText = arch.meta?.viewBox ? '' : ' data-reader-min-text="7.5"';
   const readerPrimaryText = arch.meta?.viewBox ? '' : ' data-reader-primary-text="14"';
-  return `      <svg viewBox="0 0 ${viewBox[0]} ${viewBox[1]}" ${svgRootAttrs(arch.meta)}${readerFit}${readerMinimumText}${readerPrimaryText}>
+  return `      <svg viewBox="0 0 ${viewBox[0]} ${viewBox[1]}" ${svgRootAttrs(arch.meta)} ${NODE_CARD_ATTR}${readerFit}${readerMinimumText}${readerPrimaryText}>
 ${svgAccessibleText(arch.meta, 'architecture')}
 ${renderDefinitions()}
+${nodeCardStyle()}
 
         <!-- Background Grid -->
         <rect width="100%" height="100%" fill="url(#grid)" />

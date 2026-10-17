@@ -9,7 +9,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const skillRoot = path.resolve(__dirname, '..');
 
-const TYPES = new Set(['architecture', 'workflow', 'sequence', 'dataflow', 'lifecycle']);
+const TYPES = new Set(['architecture', 'workflow', 'sequence', 'dataflow', 'lifecycle', 'erd', 'tree', 'class', 'timeline', 'waterfall']);
 const DELIVERY_SIDECAR_SUFFIXES = Object.freeze([
   '.delivery.json',
   '.delivery-pending.json',
@@ -1871,6 +1871,21 @@ function recordDeliveryFailure(options) {
   return recorded;
 }
 
+// Locale warnings for a successfully rendered candidate. Diagnostic renderers
+// record them without printing text; validate/deliver disclose them before
+// checking the artifact and reuse the same diagnostics in successful receipts.
+async function specificationLocaleDiagnostics(type, specification) {
+  let meta;
+  try {
+    meta = JSON.parse(String(specification)).meta;
+  } catch {
+    return [];
+  }
+  if (!meta?.locale) return [];
+  const { localeDiagnostics } = await import('../renderers/shared/i18n.mjs');
+  return localeDiagnostics(type, meta);
+}
+
 function deliverySuccessProvenance(receipt) {
   return {
     schemaVersion: 1,
@@ -2173,28 +2188,33 @@ function invalidProvenance(artifactPath, sidecar, reason, evidence = {}) {
   };
 }
 
+const COMMAND_USAGE = {
+  render: '<type> <input.json> [output.html] [--quality standard|showcase] [--repo-root path]',
+  compare: 'architecture <base.json> <head.json> [output.html] [--receipt path] [--json] [--quality standard|showcase] [--repo-root path]',
+  deliver: '<type> <input.json> [output.html] [--json] [--open] [--quality standard|showcase] [--repo-root path]',
+  finalize: '<type> <input.json> <output.html> [--json] [--receipt path] [--out-dir <dir>] [--quality standard|showcase] [--repo-root path] [--candidate-sha256 hex]',
+  preview: '<type> <input.json> [output.html] [--no-open] [--quality standard|showcase] [--repo-root path]',
+  validate: '<type> <input.json> [--json] [--layout-json] [--quality standard|showcase] [--repo-root path]',
+  migrate: 'workflow <old.json> <new.json> --to-schema 2 [--output portable.html] [--json] [--repo-root path]',
+  inspect: '<type> <input.json>',
+  check: '<output.html> [--json] [--require-provenance]',
+  'browser-check': '<output.html> [--json|--summary] [--require-provenance] [--out-dir <dir>]',
+  'visual-check': '<output.html> [--json|--summary] [--require-provenance] [--out-dir <dir>]',
+  guide: '[scenario or question] [--json] [--lang en|zh]',
+  brands: ['[name, alias, domain, or category] [--json]', 'capture <url> [--json]'],
+  examples: '',
+  doctor: '',
+  demo: '[output-directory]',
+};
+
 function usage() {
+  const commands = Object.entries(COMMAND_USAGE).flatMap(([command, forms]) =>
+    (Array.isArray(forms) ? forms : [forms]).map(form => `  archify ${command}${form ? ` ${form}` : ''}`));
   return `Usage:
-  archify render <type> <input.json> [output.html] [--quality standard|showcase] [--repo-root path]
-  archify compare architecture <base.json> <head.json> [output.html] [--receipt path] [--json] [--quality standard|showcase] [--repo-root path]
-  archify deliver <type> <input.json> [output.html] [--json] [--open] [--quality standard|showcase] [--repo-root path]
-  archify finalize <type> <input.json> <output.html> [--json] [--receipt path] [--out-dir <dir>] [--quality standard|showcase] [--repo-root path] [--candidate-sha256 hex]
-  archify preview <type> <input.json> [output.html] [--no-open] [--quality standard|showcase] [--repo-root path]
-  archify validate <type> <input.json> [--json] [--layout-json] [--quality standard|showcase] [--repo-root path]
-  archify migrate workflow <old.json> <new.json> --to-schema 2 [--output portable.html] [--json] [--repo-root path]
-  archify inspect <type> <input.json>
-  archify check <output.html> [--json] [--require-provenance]
-  archify browser-check <output.html> [--json|--summary] [--require-provenance] [--out-dir <dir>]
-  archify visual-check <output.html> [--json|--summary] [--require-provenance] [--out-dir <dir>]
-  archify guide [scenario or question] [--json] [--lang en|zh]
-  archify brands [name, alias, domain, or category] [--json]
-  archify brands capture <url> [--json]
-  archify examples
-  archify doctor
-  archify demo [output-directory]
+${commands.join('\n')}
 
 Types:
-  architecture, workflow, sequence, dataflow, lifecycle
+  architecture, workflow, sequence, dataflow, lifecycle, erd, tree, class, timeline, waterfall
 `;
 }
 
@@ -2226,13 +2246,59 @@ function rendererPath(type) {
   return path.join(skillRoot, 'renderers', type, `render-${type}.mjs`);
 }
 
+// Default capture ceiling for piped child output. spawnSync's own default
+// is 1 MiB, which is below what a dense diagram's checker receipt reaches.
+const DEFAULT_MAX_BUFFER = 64 * 1024 * 1024;
+
 function runNode(args, options = {}) {
-  return spawnSync(process.execPath, args, {
+  const result = spawnSync(process.execPath, args, {
     cwd: options.cwd || process.cwd(),
     encoding: 'utf8',
     stdio: options.stdio || 'inherit',
+    maxBuffer: options.maxBuffer ?? DEFAULT_MAX_BUFFER,
     env: options.env ? { ...process.env, ...options.env } : process.env,
   });
+  // spawnSync can report a system failure after a child has exited zero. A
+  // truncated renderer or checker result is never a successful invocation.
+  if (result.error && result.status === 0) {
+    result.archifyRawStatus = result.status;
+    result.status = 1;
+  }
+  return result;
+}
+
+// The artifact checker prints its whole receipt on stdout; a dense,
+// warning-heavy diagram can grow that receipt past spawnSync's 1 MiB
+// default, which kills the child before it reports a verdict. Deliver,
+// validate, migrate, compare, and check share this explicit limit so one
+// environment knob moves them together.
+function artifactCheckMaxBuffer() {
+  const raw = process.env.ARCHIFY_CHECK_MAX_BUFFER;
+  if (raw === undefined || raw === '') return DEFAULT_MAX_BUFFER;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && Math.floor(parsed) >= 1 ? Math.floor(parsed) : DEFAULT_MAX_BUFFER;
+}
+
+// A checker terminated while streaming its output never judged the
+// artifact; its truncated stdout must not be reinterpreted as a verdict.
+function checkerOutputLimitDiagnostics(check, limitBytes) {
+  if (check.error?.code !== 'ENOBUFS') return null;
+  const receivedBytes = Buffer.byteLength(check.stdout || '', 'utf8');
+  return [diagnostic({
+    code: 'artifact/check-output-limit',
+    message: `The artifact checker exceeded the ${limitBytes} byte output buffer and was terminated before reporting a verdict (${receivedBytes} stdout bytes received); the artifact was not judged.`,
+    subject: { check: 'render_output' },
+    evidence: {
+      systemCode: check.error.code,
+      ...(check.signal ? { signal: check.signal } : {}),
+      status: check.archifyRawStatus ?? check.status ?? null,
+      limitBytes,
+      receivedBytes,
+    },
+    supportedFixes: [
+      'set ARCHIFY_CHECK_MAX_BUFFER to a much larger limit (for example 1073741824) and re-run',
+    ],
+  })];
 }
 
 function extractQualityArgs(args) {
@@ -2632,6 +2698,16 @@ function checkerDiagnostics(checker) {
   }
   for (const check of checker?.checks || []) {
     if (check.ok || COMPOSITION_CHECKS.has(check.name)) continue;
+    if (check.name === 'svg_path_data') {
+      const pathDiagnostics = (checker.diagnostics || []).filter(item => (
+        item?.severity === 'error'
+        && ['artifact/svg-path-malformed', 'artifact/svg-path-unsupported'].includes(item.code)
+      ));
+      if (pathDiagnostics.length) {
+        diagnostics.push(...pathDiagnostics.map(item => diagnostic(item)));
+        continue;
+      }
+    }
     diagnostics.push(diagnostic({
       code: `artifact/${check.name.replaceAll('_', '-')}`,
       message: (check.details || []).find(Boolean) || `Final artifact failed ${check.name}.`,
@@ -3527,16 +3603,25 @@ function renderValidatedArchitecture(inputPath, outputPath, quality, repoRoot, c
     artifact = fs.readFileSync(outputPath);
     captureStagingFile(outputPath, artifactIdentity(artifact));
   }
-  const check = runNode([path.join(skillRoot, 'scripts/check-render-output.mjs'), outputPath], { stdio: 'pipe' });
+  const checkMaxBuffer = artifactCheckMaxBuffer();
+  const check = runNode([path.join(skillRoot, 'scripts/check-render-output.mjs'), outputPath], {
+    stdio: 'pipe',
+    maxBuffer: checkMaxBuffer,
+  });
   if (check.status !== 0) {
     const error = new Error('Validated snapshot failed final artifact checks.');
     error.compareStage = 'check';
     error.compareStatus = check.status ?? 1;
-    try {
-      error.checker = JSON.parse(check.stdout);
-      error.diagnostics = checkerDiagnostics(error.checker);
-    } catch {
-      error.diagnostics = [];
+    const outputLimit = checkerOutputLimitDiagnostics(check, checkMaxBuffer);
+    if (outputLimit) {
+      error.diagnostics = outputLimit;
+    } else {
+      try {
+        error.checker = JSON.parse(check.stdout);
+        error.diagnostics = checkerDiagnostics(error.checker);
+      } catch {
+        error.diagnostics = [];
+      }
     }
     throw error;
   }
@@ -4240,10 +4325,6 @@ function writeDeliveryFailureReceipt(options) {
   return recorded;
 }
 
-function reportValidateFailure(options) {
-  reportArtifactFailure({ ...options, command: 'validate' });
-}
-
 function reportArtifactArgumentFailure(command, error) {
   const details = error.archifyArgument || {};
   reportArtifactFailure({
@@ -4749,6 +4830,8 @@ async function commandDeliver(args) {
       return;
     }
     if (render.stderr) process.stderr.write(render.stderr);
+    const localeWarnings = await specificationLocaleDiagnostics(type, specification);
+    for (const warning of localeWarnings) process.stderr.write(`archify: ${warning.message}\n`);
     try {
       const renderedCandidate = fs.readFileSync(candidatePath);
       if (preparedDeliveryTargets.artifact.mode !== null) {
@@ -4760,11 +4843,27 @@ async function commandDeliver(args) {
       // Leave an unbound entry untouched during private-directory cleanup.
     }
 
+    const checkMaxBuffer = artifactCheckMaxBuffer();
     const check = runNode([path.join(skillRoot, 'scripts/check-render-output.mjs'), candidatePath], {
       stdio: 'pipe',
+      maxBuffer: checkMaxBuffer,
     });
     if (check.status !== 0) {
       if (check.stderr) process.stderr.write(check.stderr);
+      const outputLimit = checkerOutputLimitDiagnostics(check, checkMaxBuffer);
+      if (outputLimit) {
+        await reportDeliveryFailure({
+          json,
+          stage: 'check',
+          type,
+          input: inputPath,
+          output: outputPath,
+          error: `The artifact checker exceeded its ${checkMaxBuffer} byte output buffer and was terminated before reporting a verdict; the previous artifact was preserved.`,
+          diagnostics: outputLimit,
+          status: check.status ?? 1,
+        });
+        return;
+      }
       let checker;
       try {
         checker = JSON.parse(check.stdout);
@@ -4887,6 +4986,7 @@ async function commandDeliver(args) {
           ...(sourceEvidence.repository.linkMode ? { linkMode: sourceEvidence.repository.linkMode } : {}),
         },
       } : {}),
+      ...(localeWarnings.length ? { diagnostics: localeWarnings } : {}),
     };
 
     const provenanceBytes = Buffer.from(`${JSON.stringify(deliverySuccessProvenance(receipt), null, 2)}\n`);
@@ -5387,9 +5487,30 @@ async function commandCheck(args) {
     process.exitCode = 1;
     return;
   }
-  const result = runNode([path.join(skillRoot, 'scripts/check-render-output.mjs'), html], { stdio: 'pipe' });
+  const checkMaxBuffer = artifactCheckMaxBuffer();
+  const result = runNode([path.join(skillRoot, 'scripts/check-render-output.mjs'), html], {
+    stdio: 'pipe',
+    maxBuffer: checkMaxBuffer,
+  });
   if (result.error) {
-    console.error(result.error.message);
+    if (result.stderr) process.stderr.write(result.stderr);
+    const outputLimit = checkerOutputLimitDiagnostics(result, checkMaxBuffer);
+    if (outputLimit) {
+      const file = path.resolve(html);
+      const message = outputLimit[0].message;
+      console.log(JSON.stringify({
+        schemaVersion: 1,
+        ok: false,
+        command: 'check',
+        artifact: { path: file },
+        file,
+        error: message,
+        diagnostic: message,
+        diagnostics: outputLimit,
+      }, null, 2));
+    } else {
+      console.error(result.error.message);
+    }
     process.exitCode = 1;
     return;
   }
@@ -5733,6 +5854,9 @@ async function commandFinalize(rawArgs) {
     console.log(`gates ${Object.entries(result.summary.gates).map(([stage, status]) => `${stage}:${status}`).join(' ')}`);
     console.log(`receipt ${result.summary.evidence.receipt}`);
     console.log(`perceptual visual review ${result.summary.visualReview}`);
+    for (const entry of result.summary.diagnostics || []) {
+      if (entry.severity === 'warning') console.error(`warning [${entry.code}] ${entry.message}`);
+    }
     if (result.summary.update?.noticeRequired) console.log(result.summary.update.noticeText);
   }
   process.exitCode = result.exitCode;
@@ -5885,6 +6009,11 @@ async function commandDoctor(args) {
     sequence: 'cache-miss-request.sequence.json',
     dataflow: 'product-analytics.dataflow.json',
     lifecycle: 'agent-run.lifecycle.json',
+    erd: 'orders.erd.json',
+    tree: 'payment-platform.tree.json',
+    class: 'payments.class.json',
+    timeline: 'payment-incident.timeline.json',
+    waterfall: 'checkout-request.waterfall.json',
   };
 
   for (const type of TYPES) {
@@ -6384,10 +6513,24 @@ async function commandMigrate(args) {
       content: artifactIdentity(migrationArtifact),
     });
 
+    const checkMaxBuffer = artifactCheckMaxBuffer();
     const check = runNode([path.join(skillRoot, 'scripts/check-render-output.mjs'), artifactPath], {
       stdio: 'pipe',
+      maxBuffer: checkMaxBuffer,
     });
     if (check.status !== 0) {
+      const outputLimit = checkerOutputLimitDiagnostics(check, checkMaxBuffer);
+      if (outputLimit) {
+        reportMigrationFailure({
+          ...migration,
+          newSchemaDiagnostics: [
+            ...migration.newSchemaDiagnostics,
+            ...outputLimit,
+          ],
+          status: check.status ?? 1,
+        });
+        return;
+      }
       let checker;
       try {
         checker = JSON.parse(check.stdout);
@@ -6676,7 +6819,11 @@ async function commandMigrate(args) {
   }
 }
 
-async function commandValidate(args) {
+// `inspect` delegates here in layout-JSON mode, so argument failures must be
+// attributed to the command the caller actually invoked.
+async function commandValidate(args, invocation = {}) {
+  const invokingCommand = invocation.command || 'validate';
+  const reportFailure = (options) => reportArtifactFailure({ ...options, command: invokingCommand });
   const qualityArgs = extractQualityArgs(args);
   const repoArgs = extractRepoRootArgs(qualityArgs.rest);
   args = repoArgs.rest;
@@ -6684,7 +6831,7 @@ async function commandValidate(args) {
   const repoRoot = repoArgs.repoRoot;
   const knownOptions = new Set(['--json', '--layout-json']);
   const unknown = args.filter((arg) => arg.startsWith('--') && !knownOptions.has(arg));
-  if (unknown.length) rejectCliArgument(`Unknown validate option "${unknown[0]}".`, {
+  if (unknown.length) rejectCliArgument(`Unknown ${invokingCommand} option "${unknown[0]}".`, {
     code: 'cli/unknown-option',
     subject: { option: unknown[0] },
     supportedFixes: ['remove the unknown option and retry'],
@@ -6695,7 +6842,7 @@ async function commandValidate(args) {
   const [type, input] = rest;
   if (!type || !input || rest.length !== 2) rejectCliArgument(usage(), {
     code: 'cli/usage',
-    supportedFixes: ['use: archify validate <type> <input.json> [options]'],
+    supportedFixes: [`use: archify ${invokingCommand} <type> <input.json> [options]`],
   });
   const renderer = rendererPath(type);
 
@@ -6720,7 +6867,7 @@ async function commandValidate(args) {
     else validateAuthoredOutputPath(document.meta.output);
   } catch (error) {
     const diagnostics = error.archifyDiagnostics || [inputDiagnostic(error, inputPath)];
-    reportValidateFailure({
+    reportFailure({
       json,
       stage: diagnostics.some((entry) => entry.code.startsWith('input/')) ? 'input' : 'render',
       type,
@@ -6740,19 +6887,21 @@ async function commandValidate(args) {
       env: rendererEnv(quality, repoRoot, true),
     });
     if (result.status !== 0) {
-      try {
-        const receipt = JSON.parse(result.stdout);
-        if (receipt?.contract && Array.isArray(receipt.diagnostics)) {
-          process.stdout.write(`${JSON.stringify(receipt, null, 2)}\n`);
-          process.exitCode = result.status ?? 1;
-          return;
+      if (!result.error) {
+        try {
+          const receipt = JSON.parse(result.stdout);
+          if (receipt?.contract && Array.isArray(receipt.diagnostics)) {
+            process.stdout.write(`${JSON.stringify(receipt, null, 2)}\n`);
+            process.exitCode = result.status ?? 1;
+            return;
+          }
+        } catch {
+          // Fall through to the renderer failure contract when no compiler
+          // receipt was produced (for example, input JSON could not be read).
         }
-      } catch {
-        // Fall through to the renderer failure contract when no compiler
-        // receipt was produced (for example, input JSON could not be read).
       }
       const failure = rendererFailure(result);
-      reportValidateFailure({
+      reportFailure({
         json,
         stage: failure.diagnostics.some((entry) => entry.code.startsWith('input/')) ? 'input' : 'render',
         type,
@@ -6767,9 +6916,12 @@ async function commandValidate(args) {
     return;
   }
 
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'archify-validate-'));
+  const { createOwnedTempDirectory } = await import('../renderers/shared/owned-temp-directory.mjs');
+  const temporary = createOwnedTempDirectory('archify-validate-');
+  const tmp = temporary.path;
   const out = path.join(tmp, `${type}.html`);
   let exitCode = 0;
+  let report = () => {};
 
   try {
     const snapshot = path.join(tmp, 'specification.snapshot.json');
@@ -6780,7 +6932,7 @@ async function commandValidate(args) {
     });
     if (render.status !== 0) {
       const failure = rendererFailure(render);
-      reportValidateFailure({
+      report = () => reportFailure({
         json,
         stage: failure.diagnostics.some((entry) => entry.code.startsWith('input/')) ? 'input' : 'render',
         type,
@@ -6792,26 +6944,45 @@ async function commandValidate(args) {
       exitCode = render.status ?? 1;
     } else {
       if (render.stderr) process.stderr.write(render.stderr);
-      const check = runNode([path.join(skillRoot, 'scripts/check-render-output.mjs'), out], { stdio: 'pipe' });
+      const localeWarnings = await specificationLocaleDiagnostics(type, specification);
+      for (const warning of localeWarnings) process.stderr.write(`archify: ${warning.message}\n`);
+      const checkMaxBuffer = artifactCheckMaxBuffer();
+      const check = runNode([path.join(skillRoot, 'scripts/check-render-output.mjs'), out], {
+        stdio: 'pipe',
+        maxBuffer: checkMaxBuffer,
+      });
       if (check.status !== 0) {
-        let checker;
-        try {
-          checker = JSON.parse(check.stdout);
-          checker.file = path.resolve(input);
-        } catch {
-          checker = { ok: false, diagnostic: 'Artifact checker failed without a parseable receipt.' };
-        }
-        reportValidateFailure({
-          json,
-          stage: 'check',
-          type,
-          input: path.resolve(input),
-          error: 'Final artifact check failed.',
-          diagnostics: checkerDiagnostics(checker),
-          checker,
-          status: check.status ?? 1,
-        });
         exitCode = check.status ?? 1;
+        const outputLimit = checkerOutputLimitDiagnostics(check, checkMaxBuffer);
+        if (outputLimit) {
+          report = () => reportFailure({
+            json,
+            stage: 'check',
+            type,
+            input: path.resolve(input),
+            error: `The artifact checker exceeded its ${checkMaxBuffer} byte output buffer and was terminated before reporting a verdict.`,
+            diagnostics: outputLimit,
+            status: check.status ?? 1,
+          });
+        } else {
+          let checker;
+          try {
+            checker = JSON.parse(check.stdout);
+            checker.file = path.resolve(input);
+          } catch {
+            checker = { ok: false, diagnostic: 'Artifact checker failed without a parseable receipt.' };
+          }
+          report = () => reportFailure({
+            json,
+            stage: 'check',
+            type,
+            input: path.resolve(input),
+            error: 'Final artifact check failed.',
+            diagnostics: checkerDiagnostics(checker),
+            checker,
+            status: check.status ?? 1,
+          });
+        }
       } else {
         const result = JSON.parse(check.stdout);
         const engineeringProfile = engineeringProfileFromArtifact(fs.readFileSync(out));
@@ -6821,7 +6992,7 @@ async function commandValidate(args) {
             ...artifactIdentity(specification),
           };
           const resolvedQuality = quality || result.composition.profile || 'standard';
-          console.log(JSON.stringify({
+          const receipt = {
             schemaVersion: 1,
             ok: true,
             command: 'validate',
@@ -6846,26 +7017,53 @@ async function commandValidate(args) {
             checks: result.checks,
             composition: result.composition,
             ...(engineeringProfile ? { engineeringProfile } : {}),
-          }, null, 2));
+            ...(localeWarnings.length ? { diagnostics: localeWarnings } : {}),
+          };
+          report = () => console.log(JSON.stringify(receipt, null, 2));
         } else {
           const engineering = engineeringProfile
             ? `; engineering ${engineeringProfile}: pass`
             : '';
-          console.log(`ok ${type} ${path.resolve(input)} (${result.checks.length} artifact checks; composition ${result.composition.profile}: ${result.composition.summary.errors} errors, ${result.composition.summary.warnings} warnings${engineering})`);
+          report = () => console.log(`ok ${type} ${path.resolve(input)} (${result.checks.length} artifact checks; composition ${result.composition.profile}: ${result.composition.summary.errors} errors, ${result.composition.summary.warnings} warnings${engineering})`);
         }
       }
     }
   } finally {
-    fs.rmSync(tmp, { recursive: true, force: true });
+    try {
+      await temporary.cleanup();
+    } catch (error) {
+      exitCode = 1;
+      report = () => reportFailure({
+        json,
+        stage: 'cleanup',
+        type,
+        input: path.resolve(input),
+        error: error.message,
+        diagnostics: [{
+          code: 'validate/temp-cleanup-incomplete',
+          severity: 'error',
+          message: error.message,
+          subject: { directory: tmp },
+          evidence: { reason: error.cause?.code || error.code },
+          supportedFixes: ['resolve the reported filesystem error and inspect the retained temporary directory before retrying'],
+        }],
+        status: 1,
+      });
+    }
   }
 
+  report();
   if (exitCode !== 0) process.exitCode = exitCode;
 }
 
 const [command, ...args] = process.argv.slice(2);
+// Reuse the canonical help metadata rather than a separate help registry.
+// Only the sole --help form bypasses command argument parsing and operations.
+const soleCommandHelp = args.length === 1 && args[0] === '--help'
+  && Object.hasOwn(COMMAND_USAGE, command);
 
 try {
-  switch (command) {
+  switch (soleCommandHelp ? '--help' : command) {
     case undefined:
     case '-h':
     case '--help':
@@ -6895,9 +7093,13 @@ try {
       break;
     case 'inspect':
       if (args[0] !== 'architecture') {
-        fail('inspect is currently supported for architecture diagrams only.');
+        rejectCliArgument('inspect is currently supported for architecture diagrams only.', {
+          code: 'cli/unsupported-option',
+          subject: { command: 'inspect', type: args[0] },
+          supportedFixes: ['use an architecture diagram', 'use validate <type> <input.json> --layout-json for workflow diagrams'],
+        });
       }
-      commandValidate([...args, '--layout-json']);
+      await commandValidate([...args, '--layout-json'], { command: 'inspect' });
       break;
     case 'check':
       await commandCheck(args);
@@ -6928,7 +7130,7 @@ try {
   }
 } catch (error) {
   if (!error.archifyArgument) throw error;
-  if (['validate', 'deliver', 'finalize'].includes(command) && args.includes('--json')) {
+  if (['validate', 'deliver', 'finalize', 'inspect'].includes(command) && args.includes('--json')) {
     reportArtifactArgumentFailure(command, error);
   } else {
     fail(error.message);

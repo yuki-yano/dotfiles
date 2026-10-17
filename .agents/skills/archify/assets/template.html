@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="generator" content="archify 3.0.1">
+  <meta name="generator" content="archify 3.1.0">
   <meta name="archify-reader-contract" content="declared-wide-v1">
   <title>[PROJECT NAME] Architecture Diagram</title>
   <script>
@@ -186,7 +186,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       --lane-fill: rgba(15, 23, 42, 0.22);
       --lane-stroke: #334155;
 
-      --arrow: #64748b;
+      --arrow: #94a3b8;
       --arrow-emphasis: #34d399;
 
       /* Opaque mask color used behind semi-transparent component fills
@@ -218,7 +218,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     [data-theme="light"] {
       --bg: #f4f5f7;
       --grid: #e9edf2;
-      --canvas-dot: #d9dee5;
+      --canvas-dot: #e2e7ec;
       --text: #111827;
       --text-muted: #5b6474;
       --text-dim: #9aa3b2;
@@ -229,7 +229,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       --lane-fill: rgba(248, 250, 252, 0.65);
       --lane-stroke: #cbd5e1;
 
-      --arrow: #94a3b8;
+      --arrow: #64748b;
       --arrow-emphasis: #059669;
 
       --mask: #ffffff;
@@ -599,14 +599,29 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       color: var(--frontend-stroke);
     }
 
-    /* The reader owns only the outer scale. Wide diagrams and measured tall workflows keep one authored
-       SVG/viewBox while the runtime chooses a desktop width from the actual
-       vertical budget. This avoids device-specific files and breakpoint
-       jumps between a laptop and a tall monitor. */
+    /* The reader owns only the outer scale. Compact automatic sequences fit at
+       their authored text size or larger. Long sequences and waterfall rows
+       favor reading width and page scroll; other diagrams keep height fitting.
+       Small automatic canvases retain a modest scale inside a usable shell.
+       Every strategy preserves the authored SVG/viewBox and semantic geometry. */
     .container {
       width: 100%;
       max-width: var(--archify-reader-width, 1440px);
       margin: 0 auto;
+    }
+    html[data-reader-area="true"] .diagram-container {
+      min-height: var(--archify-diagram-min-height);
+      display: flex;
+      align-items: center;
+    }
+    html[data-reader-area="true"] .diagram-container > svg { flex-shrink: 0; }
+    /* The original SVG legend can use the outer corner while the capped or fitted
+       diagram stays centered. The container still clips all outer paint. */
+    .diagram-container:has([data-reader-legend-corner]) > svg { overflow: visible; }
+    .diagram-container [data-reader-legend-corner] {
+      transform-origin: 0 0;
+      transform-box: view-box;
+      transform: var(--archify-reader-legend-transform);
     }
     html[data-reader-narrow="true"]:not([data-present="true"]) .diagram-container > svg {
       min-width: 0;
@@ -811,7 +826,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       pointer-events: none;
     }
     html[data-embed="true"][data-preset="editorial"] .diagram-container::after { display: none; }
-    html[data-motion-capable="true"][data-preset="signal-flow"][data-ambient-motion="running"] .diagram-container::before {
+    html[data-motion-capable="true"][data-preset="signal-flow"][data-ambient-entry="running"] .diagram-container::before {
       content: "";
       position: absolute;
       inset: 0;
@@ -993,8 +1008,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     }
     .diagram-nav-icon {
       display: block;
-      width: 0.875rem;
-      height: 0.875rem;
+      width: 0.95rem;
+      height: 0.95rem;
       margin: auto;
       background: currentColor;
       -webkit-mask-position: center;
@@ -1058,8 +1073,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     .diagram-nav #btn-overview-map::before,
     .diagram-nav #btn-semantic-lens::before {
       flex: none;
-      width: 0.875rem;
-      height: 0.875rem;
+      width: 0.95rem;
+      height: 0.95rem;
       background: currentColor;
       content: "";
       opacity: 0.85;
@@ -1073,21 +1088,33 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     .diagram-nav [data-view="out"],
     .diagram-nav [data-view="reset"],
     .diagram-nav [data-view="in"] {
+      position: relative;
       border-radius: 0;
-      background: color-mix(in srgb, var(--text) 4.5%, transparent);
+      background: color-mix(in srgb, var(--panel-border) 38%, transparent);
     }
     .diagram-nav [data-view="out"] { margin-left: 0.375rem; border-radius: 0.5rem 0 0 0.5rem; }
     .diagram-nav [data-view="out"]::before { display: none; }
     .diagram-nav [data-view="reset"],
     .diagram-nav [data-view="in"] { margin-left: -0.0625rem; }
     .diagram-nav [data-view="in"] { border-radius: 0 0.5rem 0.5rem 0; }
+    .diagram-nav [data-view="reset"]::after,
+    .diagram-nav [data-view="in"]::after {
+      position: absolute;
+      top: 0.55rem;
+      bottom: 0.55rem;
+      left: 0;
+      width: 1px;
+      background: color-mix(in srgb, var(--panel-border) 75%, transparent);
+      content: "";
+      pointer-events: none;
+    }
     .diagram-nav [data-view="out"]:hover,
     .diagram-nav [data-view="reset"]:hover,
-    .diagram-nav [data-view="in"]:hover { background: color-mix(in srgb, var(--text) 9%, transparent); }
+    .diagram-nav [data-view="in"]:hover { background: color-mix(in srgb, var(--panel-border) 60%, transparent); }
     .diagram-nav [data-view="out"]:disabled,
     .diagram-nav [data-view="in"]:disabled { opacity: 1; color: color-mix(in srgb, var(--text-muted) 40%, transparent); }
     .diagram-nav [data-view="out"]:disabled:hover,
-    .diagram-nav [data-view="in"]:disabled:hover { background: color-mix(in srgb, var(--text) 4.5%, transparent); }
+    .diagram-nav [data-view="in"]:disabled:hover { background: color-mix(in srgb, var(--panel-border) 38%, transparent); }
     .diagram-nav [data-view="reset"] { min-width: 3.25rem; }
     .diagram-container[data-camera-indicator="true"] .diagram-nav-detail,
     .diagram-container[data-camera-indicator="true"] .diagram-nav-percent { color: var(--frontend-stroke); }
@@ -2261,6 +2288,41 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       font-size: 0.5rem;
     }
     .diagram-guide-feedback:empty { display: none; }
+    .diagram-guide-credit {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      padding: 0.46rem 0.9rem 0.56rem;
+      border-top: 1px solid color-mix(in srgb, var(--toolbar-border) 74%, transparent);
+      color: var(--text-faint);
+      font-size: 0.5rem;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+    }
+    .diagram-guide-credit-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.28rem;
+      flex: none;
+      opacity: 0.72;
+      transition: opacity 120ms ease, color 120ms ease;
+    }
+    .diagram-guide-star {
+      width: 0.62rem;
+      height: 0.62rem;
+      background: currentColor;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.6l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.4l-3.8 2 .7-4.3-3.1-3 4.3-.6z' fill='none' stroke='black' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.6l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.4l-3.8 2 .7-4.3-3.1-3 4.3-.6z' fill='none' stroke='black' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+    .diagram-guide-credit:hover .diagram-guide-star,
+    .diagram-guide-credit:focus-visible .diagram-guide-star {
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.6l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.4l-3.8 2 .7-4.3-3.1-3 4.3-.6z' stroke='black' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E");
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.6l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.4l-3.8 2 .7-4.3-3.1-3 4.3-.6z' stroke='black' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E");
+    }
+    .diagram-guide-credit:hover .diagram-guide-credit-link,
+    .diagram-guide-credit:focus-visible .diagram-guide-credit-link { opacity: 1; color: var(--cloud-stroke); }
+    .diagram-guide-credit:focus-visible { outline: 2px solid var(--cloud-stroke); outline-offset: -2px; }
     @keyframes archify-guide-in {
       from { opacity: 0; transform: translateY(-5px) scale(0.985); }
       to { opacity: 1; transform: translateY(0) scale(1); }
@@ -2331,7 +2393,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       gap: 0.55rem;
       margin: 0 0.55rem 0.55rem;
       padding: 0 0.7rem;
-      min-height: 2.6rem;
+      min-height: 2.35rem;
       border: 1px solid var(--toolbar-border);
       border-radius: 0.55rem;
       background: color-mix(in srgb, var(--panel) 78%, transparent);
@@ -2341,7 +2403,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     .node-finder-search > span { color: var(--frontend-stroke); font-size: 0.875rem; }
     .node-finder-search:focus-within {
       border-color: var(--frontend-stroke);
-      box-shadow: 0 0 0 2px color-mix(in srgb, var(--frontend-stroke) 20%, transparent);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--frontend-stroke) 14%, transparent);
     }
     .node-finder-input {
       appearance: none;
@@ -2379,6 +2441,21 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       background: color-mix(in srgb, var(--panel) 54%, transparent);
       scroll-padding-block: 0.25rem;
       scrollbar-width: thin;
+      scrollbar-color: color-mix(in srgb, var(--panel-border) 90%, transparent) transparent;
+    }
+    /* Slim overlay-style thumb instead of the chunky platform default. */
+    .node-finder-results::-webkit-scrollbar { width: 10px; }
+    .node-finder-results::-webkit-scrollbar-track { background: transparent; }
+    .node-finder-results::-webkit-scrollbar-thumb {
+      background: color-mix(in srgb, var(--panel-border) 85%, transparent);
+      border: 3px solid transparent;
+      border-radius: 999px;
+      background-clip: padding-box;
+    }
+    .node-finder-results::-webkit-scrollbar-thumb:hover {
+      background: color-mix(in srgb, var(--text-muted) 65%, transparent);
+      border: 3px solid transparent;
+      background-clip: padding-box;
     }
     html[data-preset="blueprint"] .node-finder-results { border-radius: 0.18rem; }
     .node-finder-result {
@@ -2386,8 +2463,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       grid-template-columns: minmax(0, 1fr) auto;
       gap: 0.2rem 0.75rem;
       width: 100%;
-      min-height: 3.25rem;
-      padding: 0.58rem 0.65rem;
+      min-height: 3rem;
+      padding: 0.52rem 0.65rem;
       border: 0;
       border-radius: 0;
       background: transparent;
@@ -2428,6 +2505,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       font-size: 0.625rem;
       font-style: normal;
     }
+    /* A zero count is absence, not information — let it recede. */
+    .node-finder-result em[data-zero] { color: var(--text-faint); }
     .node-finder[data-context^="route-"] .node-finder-result em {
       padding: 0.1rem 0.3rem;
       border: 1px solid color-mix(in srgb, currentColor 52%, transparent);
@@ -2463,6 +2542,13 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       border-radius: 0.75rem;
       border: 1px solid var(--panel-border);
       padding: 1.125rem 1.25rem;
+      /* Card notes are authored prose and may carry an unbreakable run such as a
+         slash-joined pipeline or a long identifier. Without this, that run sets the
+         card's min-content width, spills past its track in every rail placement,
+         and pushes the whole page into horizontal overflow at desktop widths.
+         `anywhere` rather than `break-word` because only `anywhere` shrinks the
+         intrinsic minimum the layout is sized from. */
+      overflow-wrap: anywhere;
     }
 
     html[data-preset="signal-flow"] .card {
@@ -3499,6 +3585,16 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       background: transparent;
       box-shadow: none;
     }
+    /* The motion button breathes on the relay cycle, so the chrome keeps time
+       with the wave it controls. Motion Governor mirrors the planned cycle from
+       the diagram SVG onto the document. */
+    html[data-ambient-motion="running"][data-motion="live"]:not([data-motion-owner]):not([data-embed]):not([data-share-playback]):not([data-document-hidden]) #btn-motion .motion-control-dot {
+      animation: archify-motion-dot-breathe var(--flow-cycle-chrome, 6.4s) ease-in-out infinite;
+    }
+    @keyframes archify-motion-dot-breathe {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      46% { opacity: 0.55; transform: scale(0.72); }
+    }
     .toolbar .export-menu {
       position: absolute;
       top: calc(100% + 0.125rem);
@@ -4035,10 +4131,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     }
     html[data-preset="classic"] .diagram-container > svg .c-grid { stroke: transparent; }
     html[data-preset="classic"][data-theme="light"] .diagram-container > svg [data-node-id] > rect:not(.c-mask) {
-      filter: drop-shadow(0 1px 1px rgba(17, 24, 39, 0.05)) drop-shadow(0 6px 12px rgba(17, 24, 39, 0.06));
+      --ambient-node-base-filter: drop-shadow(0 1px 1px rgba(17, 24, 39, 0.05)) drop-shadow(0 6px 12px rgba(17, 24, 39, 0.06));
+      filter: var(--ambient-node-base-filter);
     }
     html[data-preset="classic"][data-theme="dark"] .diagram-container > svg [data-node-id] > rect:not(.c-mask) {
-      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
+      --ambient-node-base-filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
+      filter: var(--ambient-node-base-filter);
     }
     html[data-preset="classic"] .diagram-container > svg [data-edge-from] {
       stroke-linecap: round;
@@ -4170,41 +4268,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     svg [data-node-id]:focus-visible {
       filter: drop-shadow(0 0 7px var(--frontend-stroke));
       outline: none;
-    }
-    /* Verified Source Beacons are installed at runtime only for nodes whose
-       repository evidence passed the local revision/blob/line checks. They
-       live inside the owning node so every focus, route, story, and guided
-       view keeps one coherent opacity state. Export serialization removes
-       them before producing the canonical SVG or any derived visual. */
-    .source-evidence-beacon {
-      pointer-events: none;
-      opacity: 1;
-      transition: filter 160ms ease;
-    }
-    .source-evidence-beacon rect {
-      fill: color-mix(in srgb, var(--mask) 92%, var(--backend-stroke));
-      stroke: color-mix(in srgb, var(--backend-stroke) 82%, var(--panel-border));
-      stroke-width: 1;
-      vector-effect: non-scaling-stroke;
-    }
-    .source-evidence-beacon text {
-      fill: var(--backend-stroke);
-      font-size: 7px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-anchor: middle;
-      text-transform: uppercase;
-    }
-    svg [data-node-id]:hover .source-evidence-beacon,
-    svg [data-node-id]:focus-visible .source-evidence-beacon,
-    svg [data-node-id][data-focus-selected] .source-evidence-beacon {
-      opacity: 1;
-      filter: drop-shadow(0 0 4px color-mix(in srgb, var(--backend-stroke) 72%, transparent));
-    }
-    svg[data-preset="signal-flow"] .source-evidence-beacon { opacity: 0.9; }
-    svg[data-preset="blueprint"] .source-evidence-beacon rect {
-      rx: 0.8px;
-      filter: none;
     }
     svg [data-legend-kind][role="button"] { cursor: pointer; }
     svg [data-legend-kind]:focus { outline: none; }
@@ -4696,69 +4759,177 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     .c-region         { fill: rgba(251, 191, 36, 0.05); stroke: var(--cloud-stroke); stroke-dasharray: 8,4; }
     .c-lane           { fill: var(--lane-fill); stroke: var(--lane-stroke); stroke-dasharray: 6,6; }
 
-    /* Optional trace animation, enabled only by meta.animation = "trace".
-       The ordinary viewer performs one ambient pass and then restores the
-       authored solid/security/async line language. WebM samples the same
-       authored geometry into an explicit canvas timeline. */
-    html[data-ambient-motion="running"] svg[data-animation="trace"] [data-animate="edge"] {
-      animation: archify-edge-flow 2.4s linear 1;
-      animation-delay: calc(var(--step, 0) * 160ms);
+    /* Live plays one relay per cycle: a comet (halo, tail, head) leaves each
+       source when the signal reaches it, travels at one shared speed, leaves a
+       soft wake, and lands as a ripple while its target glows. Downstream edges
+       depart only after their source is reached, so the reader sees the path the
+       diagram describes rather than every edge shimmering at once. Sequence
+       messages relay in authored chronological order. Motion Governor plans the
+       timeline and its per-edge keyframes; this stylesheet owns appearance.
+       Original line language and markers remain static. Node entry is bounded to
+       one pass per document. */
+    svg[data-animation="trace"] {
+      --flow-cycle: 6.4s;
+      --flow-halo-peak: 0.17;
+      --flow-glow-peak: 0.5;
+      --flow-tail-peak: 0.42;
+      --flow-head-peak: 0.95;
+      --flow-wake-peak: 0.3;
+      --flow-ripple-peak: 0.65;
     }
-    html[data-ambient-motion="running"] svg[data-animation="trace"] [data-graph-role="automatic-crossover"]:has(> [data-animate="edge"]) > [data-graph-role="automatic-crossover-underlay"] {
-      animation: archify-edge-flow 2.4s linear 1;
-      animation-delay: calc(var(--step, 0) * 160ms);
+    .ambient-edge-flow {
+      fill: none;
+      stroke: var(--arrow-emphasis);
+      stroke-linecap: round;
+      pointer-events: none;
+      display: none;
     }
-    html[data-ambient-motion="running"] svg[data-animation="trace"] [data-animate="node"] {
+    .ambient-flow-wake {
+      --flow-peak: var(--flow-wake-peak, 0.3);
+      stroke-width: 3.2;
+      stroke-dasharray: var(--flow-dasharray, none);
+    }
+    .ambient-flow-halo {
+      --flow-peak: var(--flow-halo-peak, 0.17);
+      stroke-width: 6;
+      stroke-dasharray: var(--flow-dash, 12px) calc(var(--flow-len, 0px) - var(--flow-dash, 12px));
+    }
+    /* A wide blurred streak centered on the head: this is the bloom that makes
+       the comet read as a traveling orb of light rather than a bright dash. */
+    .ambient-flow-glow {
+      --flow-peak: var(--flow-glow-peak, 0.5);
+      stroke-width: 9;
+      stroke-dasharray: var(--flow-dash, 12px) calc(var(--flow-len, 0px) - var(--flow-dash, 12px));
+      filter: blur(2.5px);
+    }
+    .ambient-flow-tail {
+      --flow-peak: var(--flow-tail-peak, 0.42);
+      stroke-width: 2.4;
+      stroke-dasharray: var(--flow-dasharray, var(--flow-dash, 20px) calc(var(--flow-len, 0px) - var(--flow-dash, 20px)));
+    }
+    .ambient-flow-head {
+      --flow-peak: var(--flow-head-peak, 0.95);
+      stroke: color-mix(in srgb, var(--arrow-emphasis) 40%, white);
+      stroke-width: 2.6;
+      stroke-dasharray: var(--flow-dash, 6px) calc(var(--flow-len, 0px) - var(--flow-dash, 6px));
+    }
+    .ambient-flow-ripple {
+      --flow-peak: var(--flow-ripple-peak, 0.65);
+      stroke: color-mix(in srgb, var(--arrow-emphasis) 55%, white);
+      stroke-width: 2;
+    }
+    html[data-ambient-motion="running"][data-motion="live"]:not([data-motion-owner]):not([data-embed]):not([data-share-playback]):not([data-document-hidden]) .ambient-edge-flow {
+      display: inline;
+      animation-name: var(--flow-name, none);
+      animation-duration: var(--flow-cycle, 6.4s);
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      animation-delay: var(--flow-delay, 0s);
+      /* Without backwards fill a delayed layer would sit at its natural opacity
+         (fully lit) until its departure arrives. */
+      animation-fill-mode: backwards;
+    }
+    /* Stream packets trail the comet head as smaller, dimmer beads. */
+    .ambient-flow-head.packet {
+      --flow-peak: calc(var(--flow-head-peak, 0.95) * 0.62);
+      stroke-width: 3.4;
+    }
+    /* Timeline and waterfall playhead: a crisp rule over a soft bloom. */
+    .ambient-flow-playhead {
+      --flow-peak: 0.9;
+      stroke: color-mix(in srgb, var(--arrow-emphasis) 55%, white);
+      stroke-width: 1.6;
+    }
+    .ambient-flow-playhead-glow {
+      --flow-peak: 0.32;
+      stroke-width: 10;
+      filter: blur(4px);
+    }
+    /* Waterfall spans fill in proportion to their measured time, then settle. */
+    .ambient-flow-fill {
+      --flow-peak: 0.5;
+      fill: color-mix(in srgb, var(--flow-fill, var(--arrow-emphasis)) 55%, white);
+      stroke: none;
+      transform-box: fill-box;
+      transform-origin: left center;
+    }
+    .ambient-flow-fill-failed { fill: var(--security-stroke); --flow-peak: 0.5; }
+    html[data-theme="light"] .ambient-flow-playhead { stroke: color-mix(in srgb, var(--arrow-emphasis) 70%, black); }
+    html[data-theme="light"] .ambient-flow-fill { --flow-peak: 0.42; fill: color-mix(in srgb, var(--flow-fill, var(--arrow-emphasis)) 70%, black); }
+    svg[data-preset="editorial"] .ambient-flow-fill { --flow-peak: 0.2; }
+    svg[data-preset="editorial"] .ambient-flow-playhead-glow { --flow-peak: 0.14; }
+    /* Each decorative flow follows its owning edge through tree visibility. */
+    .ambient-edge-flow[data-tree-hidden] { display: none !important; animation: none !important; }
+    svg[data-preset="blueprint"] .ambient-edge-flow { stroke-linecap: square; }
+    svg[data-preset="editorial"] { --flow-halo-peak: 0.07; --flow-glow-peak: 0.28; --flow-tail-peak: 0.2; --flow-head-peak: 0.7; --flow-wake-peak: 0.14; --flow-ripple-peak: 0.3; }
+    /* On light canvases the relay reads by saturation instead of bloom: the head
+       and ripple mix toward ink instead of white, and every layer's peak rises so
+       the wave survives the bright background. */
+    html[data-theme="light"] svg[data-animation="trace"] {
+      --flow-halo-peak: 0.22;
+      --flow-glow-peak: 0.4;
+      --flow-tail-peak: 0.5;
+      --flow-wake-peak: 0.34;
+    }
+    html[data-theme="light"] .ambient-flow-head {
+      stroke: color-mix(in srgb, var(--arrow-emphasis) 55%, black);
+      stroke-width: 2.8;
+    }
+    html[data-theme="light"] .ambient-flow-ripple {
+      stroke: color-mix(in srgb, var(--arrow-emphasis) 65%, black);
+    }
+    html[data-ambient-entry="running"] svg[data-animation="trace"] [data-animate="node"] {
       transform-box: fill-box;
       transform-origin: center;
-      animation: archify-node-pulse 3.6s ease-in-out 1;
-      animation-delay: calc(var(--step, 0) * 160ms);
+      animation: archify-node-pulse 3.6s ease-in-out 1 calc(var(--step, 0) * 160ms),
+        archify-node-enter 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards calc(var(--step, 0) * 160ms);
     }
-    svg[data-preset="signal-flow"][data-animation="trace"] [data-animate="edge"] {
-      stroke-linecap: round;
-      filter: drop-shadow(0 0 3px var(--arrow-emphasis));
-      animation-duration: 1.75s;
+    html[data-ambient-entry="running"] svg[data-preset="signal-flow"][data-animation="trace"] [data-animate="node"] {
+      animation: archify-node-pulse 3.1s ease-in-out 1 calc(var(--step, 0) * 160ms),
+        archify-node-enter 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards calc(var(--step, 0) * 160ms);
     }
-    svg[data-preset="signal-flow"][data-animation="trace"] [data-graph-role="automatic-crossover"]:has(> [data-animate="edge"]) > [data-graph-role="automatic-crossover-underlay"] { animation-duration: 1.75s; }
-    svg[data-preset="signal-flow"][data-animation="trace"] [data-animate="node"] {
-      animation-duration: 3.1s;
+    html[data-ambient-entry="running"] svg[data-preset="blueprint"][data-animation="trace"] [data-animate="node"] {
+      animation: archify-blueprint-node-pulse 3.8s ease-in-out 1 calc(var(--step, 0) * 160ms),
+        archify-node-enter 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards calc(var(--step, 0) * 160ms);
     }
-    svg[data-preset="blueprint"][data-animation="trace"] [data-animate="edge"] {
-      stroke-linecap: square;
-      filter: none;
-      animation-duration: 2.15s;
+    html[data-ambient-entry="running"] svg[data-preset="editorial"][data-animation="trace"] [data-animate="node"] {
+      animation: archify-editorial-node-pulse 3.5s ease-in-out 1 calc(var(--step, 0) * 160ms),
+        archify-node-enter 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards calc(var(--step, 0) * 160ms);
     }
-    svg[data-preset="blueprint"][data-animation="trace"] [data-graph-role="automatic-crossover"]:has(> [data-animate="edge"]) > [data-graph-role="automatic-crossover-underlay"] { animation-duration: 2.15s; }
-    svg[data-preset="blueprint"][data-animation="trace"] [data-animate="node"] {
-      animation-name: archify-blueprint-node-pulse;
-      animation-duration: 3.8s;
+    /* Each node glows in its planned windows: when the relay reaches it, while a
+       walk token rests on it, as a message lands, or as the playhead passes.
+       During the bounded entrance all three animations run; the entrance pulse is
+       listed after the repeating glow and wins on filter until it completes. */
+    html[data-ambient-motion="running"][data-motion="live"]:not([data-motion-owner]):not([data-embed]):not([data-share-playback]):not([data-document-hidden]) svg[data-animation="trace"] [data-animate="node"] {
+      animation: var(--flow-node-name, none) var(--flow-cycle, 6.4s) linear infinite;
     }
-    svg[data-preset="editorial"][data-animation="trace"] [data-animate="edge"] {
-      filter: none;
-      animation-duration: 2.2s;
+    html[data-ambient-motion="running"][data-motion="live"]:not([data-motion-owner]):not([data-embed]):not([data-share-playback]):not([data-document-hidden])[data-ambient-entry="running"] svg[data-animation="trace"] [data-animate="node"] {
+      animation: var(--flow-node-name, none) var(--flow-cycle, 6.4s) linear infinite,
+        archify-node-pulse 3.6s ease-in-out 1 calc(var(--step, 0) * 160ms),
+        archify-node-enter 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards calc(var(--step, 0) * 160ms);
     }
-    svg[data-preset="editorial"][data-animation="trace"] [data-graph-role="automatic-crossover"]:has(> [data-animate="edge"]) > [data-graph-role="automatic-crossover-underlay"] { animation-duration: 2.2s; }
-    svg[data-preset="editorial"][data-animation="trace"] [data-animate="node"] {
-      animation-name: archify-editorial-node-pulse;
-      animation-duration: 3.5s;
+    html[data-ambient-motion="running"][data-motion="live"]:not([data-motion-owner]):not([data-embed]):not([data-share-playback]):not([data-document-hidden])[data-ambient-entry="running"] svg[data-preset="signal-flow"][data-animation="trace"] [data-animate="node"] {
+      animation: var(--flow-node-name, none) var(--flow-cycle, 6.4s) linear infinite,
+        archify-node-pulse 3.1s ease-in-out 1 calc(var(--step, 0) * 160ms),
+        archify-node-enter 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards calc(var(--step, 0) * 160ms);
     }
-    /* Embedded proofs stay static so proof grids are calm instead of leaving
-       ambient trace loops on. */
-    html[data-embed="true"] svg[data-animation="trace"] [data-animate],
-    html[data-share-playback="true"] svg[data-animation="trace"] [data-animate] {
-      animation: none !important;
-      stroke-dashoffset: 0;
+    html[data-ambient-motion="running"][data-motion="live"]:not([data-motion-owner]):not([data-embed]):not([data-share-playback]):not([data-document-hidden])[data-ambient-entry="running"] svg[data-preset="blueprint"][data-animation="trace"] [data-animate="node"] {
+      animation: var(--flow-node-name, none) var(--flow-cycle, 6.4s) linear infinite,
+        archify-blueprint-node-pulse 3.8s ease-in-out 1 calc(var(--step, 0) * 160ms),
+        archify-node-enter 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards calc(var(--step, 0) * 160ms);
     }
-    html[data-embed="true"] svg[data-animation="trace"] [data-graph-role="automatic-crossover"]:has(> [data-animate="edge"]) > [data-graph-role="automatic-crossover-underlay"],
-    html[data-share-playback="true"] svg[data-animation="trace"] [data-graph-role="automatic-crossover"]:has(> [data-animate="edge"]) > [data-graph-role="automatic-crossover-underlay"] {
-      animation: none !important;
-      stroke-dashoffset: 0;
+    html[data-ambient-motion="running"][data-motion="live"]:not([data-motion-owner]):not([data-embed]):not([data-share-playback]):not([data-document-hidden])[data-ambient-entry="running"] svg[data-preset="editorial"][data-animation="trace"] [data-animate="node"] {
+      animation: var(--flow-node-name, none) var(--flow-cycle, 6.4s) linear infinite,
+        archify-editorial-node-pulse 3.5s ease-in-out 1 calc(var(--step, 0) * 160ms),
+        archify-node-enter 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards calc(var(--step, 0) * 160ms);
     }
-    @keyframes archify-edge-flow {
-      0% { stroke-dasharray: 10 8; stroke-dashoffset: 54; opacity: 0.42; }
-      88% { stroke-dasharray: 10 8; stroke-dashoffset: 0; opacity: 1; }
-      99.9% { stroke-dasharray: 10 8; stroke-dashoffset: 0; opacity: 1; }
-      100% { stroke-dashoffset: 0; opacity: 1; }
+    @keyframes archify-node-enter {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @media print {
+      .ambient-edge-flow { display: none !important; animation: none !important; }
+      svg[data-animation="trace"] [data-animate="node"] { animation: none !important; }
     }
     @keyframes archify-node-pulse {
       0%, 72%, 100% { filter: none; stroke-width: 1.5; }
@@ -4825,10 +4996,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       50% { opacity: 0.48; transform: scale(0.78); }
     }
     @media (prefers-reduced-motion: reduce) {
+      .ambient-edge-flow { display: none !important; animation: none !important; }
       html[data-preset="signal-flow"] .diagram-container::before {
         animation: none !important;
       }
       .pulse-dot { animation: none !important; }
+      .motion-control-dot { animation: none !important; }
       svg[data-animation="trace"] [data-animate] {
         animation: none !important;
         stroke-dashoffset: 0;
@@ -4864,7 +5037,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         filter: none;
       }
       .relationship-pulse-overlay { display: none !important; }
-      .source-evidence-beacon,
       svg [data-node-id], svg [data-edge-from], svg [data-detail], svg [data-detail-anchor], svg [data-legend-hit], svg { transition: none !important; }
     }
   </style>
@@ -5177,6 +5349,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <span><kbd>E</kbd> {{i18n:viewer.guide.shortcut.export}}</span><span><kbd>T</kbd> {{i18n:viewer.guide.shortcut.theme}}</span><span><kbd>S</kbd> {{i18n:viewer.guide.shortcut.style}}</span><span><kbd>0</kbd> {{i18n:viewer.guide.shortcut.reset}}</span><span><kbd>+</kbd> {{i18n:viewer.guide.shortcut.zoomIn}}</span><span><kbd>-</kbd> {{i18n:viewer.guide.shortcut.zoomOut}}</span><span><kbd>Esc</kbd> {{i18n:viewer.guide.shortcut.close}}</span>
         </div>
         <p class="diagram-guide-feedback" id="diagram-guide-feedback" aria-live="polite"></p>
+        <a class="diagram-guide-credit" href="https://github.com/tt-a1i/archify" target="_blank" rel="noopener noreferrer"><span>{{i18n:viewer.guide.credit}}</span><span class="diagram-guide-credit-link"><span class="diagram-guide-star" aria-hidden="true"></span>{{i18n:viewer.guide.star}} <span aria-hidden="true">&#8599;</span></span></a>
       </div>
       <div class="node-finder no-print" id="node-finder" hidden role="dialog" aria-modal="false" aria-labelledby="node-finder-title">
         <div class="node-finder-head">
@@ -5297,7 +5470,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <button id="btn-overview-map" type="button" aria-label="{{i18n:viewer.nav.radar}}" aria-expanded="false" aria-controls="overview-map" title="{{i18n:viewer.nav.radar.title}}">{{i18n:viewer.nav.radar.short}}</button>
         <button id="btn-semantic-lens" type="button" aria-label="{{i18n:viewer.nav.lens}}" aria-haspopup="dialog" aria-expanded="false" aria-pressed="false" aria-controls="semantic-lens" title="{{i18n:viewer.nav.lens.title}}">{{i18n:viewer.nav.lens.short}}</button>
         <button id="btn-node-finder" type="button" aria-label="{{i18n:viewer.nav.find}}" aria-haspopup="dialog" aria-expanded="false" aria-controls="node-finder" title="{{i18n:viewer.nav.find.title}}" data-node-finder-trigger><span class="diagram-nav-icon find" aria-hidden="true"></span></button>
-        <button id="btn-diagram-guide" type="button" hidden aria-label="{{i18n:viewer.nav.guide}}" aria-haspopup="dialog" aria-expanded="false" aria-controls="diagram-guide" title="{{i18n:viewer.nav.guide.title}}"><span class="diagram-nav-icon guide" aria-hidden="true"></span></button>
+        <button id="btn-diagram-guide" type="button" aria-label="{{i18n:viewer.nav.guide}}" aria-haspopup="dialog" aria-expanded="false" aria-controls="diagram-guide" title="{{i18n:viewer.nav.guide.title}}"><span class="diagram-nav-icon guide" aria-hidden="true"></span></button>
         <button data-view="out" type="button" aria-label="{{i18n:viewer.nav.zoomOut}}" title="{{i18n:viewer.nav.zoomOut.title}}"><span class="diagram-nav-icon minus" aria-hidden="true"></span></button>
         <button data-view="reset" type="button" aria-label="{{i18n:viewer.nav.reset}}" title="{{i18n:viewer.nav.reset.title}}"><span class="diagram-nav-detail" data-view-detail hidden>{{i18n:viewer.nav.read}}</span><span class="diagram-nav-percent" data-view-percent>100%</span></button>
         <button data-view="in" type="button" aria-label="{{i18n:viewer.nav.zoomIn}}" title="{{i18n:viewer.nav.zoomIn.title}}"><span class="diagram-nav-icon plus" aria-hidden="true"></span></button>
@@ -5396,12 +5569,47 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         .replace(/\b\w/g, function (letter) { return letter.toUpperCase(); });
     }
 
+    function readerLink(state) {
+      var template = document.documentElement.getAttribute('data-reading-link-template');
+      if (template === null) return location.href.replace(/#.*$/, '') + '#' + state;
+      if (!template || template.length > 4096 || template.split('{state}').length !== 2) return null;
+      try {
+        var url = new URL(template.replace('{state}', encodeURIComponent(state)));
+        if (['http:', 'https:', 'file:'].indexOf(url.protocol) === -1 || url.username || url.password) return null;
+        return url.href;
+      } catch (_) { return null; }
+    }
+
+    function copyReaderText(value) {
+      function fallbackCopy() {
+        var field = document.createElement('textarea');
+        field.value = value;
+        field.setAttribute('readonly', '');
+        field.style.position = 'fixed';
+        field.style.opacity = '0';
+        document.body.appendChild(field);
+        field.select();
+        var copied = false;
+        try { copied = document.execCommand('copy'); } catch (_) {}
+        field.remove();
+        return copied;
+      }
+      var policy = document.permissionsPolicy || document.featurePolicy;
+      var allowed = !policy || typeof policy.allowsFeature !== 'function' || policy.allowsFeature('clipboard-write');
+      if (allowed && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        try { return Promise.resolve(navigator.clipboard.writeText(value)).then(function () { return true; }).catch(fallbackCopy); }
+        catch (_) {}
+      }
+      return Promise.resolve(fallbackCopy());
+    }
+
     function hasDrawableGeometry(element) {
-      if (!element) return false;
+      if (!element || element.hasAttribute('data-ambient-flow-overlay')) return false;
       var geometries = /^(path|line|polyline)$/i.test(element.tagName)
         ? [element]
         : Array.prototype.slice.call(element.querySelectorAll('path, line, polyline'));
       return geometries.some(function (geometry) {
+        if (geometry.hasAttribute('data-ambient-flow-overlay')) return false;
         var source = geometry.tagName.toLowerCase() === 'path'
           ? geometry.getAttribute('d')
           : geometry.tagName.toLowerCase() === 'polyline'
@@ -5646,6 +5854,16 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       }
 
       function cleanExportClone(clone) {
+        Array.prototype.forEach.call(clone.querySelectorAll('[data-ambient-flow-overlay]'), function (el) {
+          el.remove();
+        });
+        // Route interaction rewrites CSS declarations through CSSOM. Normalize
+        // authored motion delays on the clone so exported bytes do not depend
+        // on whether the reader traced a route before downloading.
+        Array.prototype.forEach.call(clone.querySelectorAll('[data-animate]'), function (el) {
+          var step = el.style.getPropertyValue('--step');
+          if (step) el.setAttribute('style', el.style.cssText);
+        });
         // View transforms and neighborhood focus are HTML exploration state,
         // never part of a downloaded full-diagram artifact.
         clone.style.removeProperty('transform');
@@ -5666,6 +5884,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         clone.removeAttribute('data-route-journey');
         clone.removeAttribute('data-share-route');
         clone.removeAttribute('data-share-reach');
+        Array.prototype.forEach.call(clone.querySelectorAll('[data-reader-legend-corner]'), function (el) {
+          el.removeAttribute('data-reader-legend-corner');
+          el.style.removeProperty('--archify-reader-legend-transform');
+        });
         Array.prototype.forEach.call(clone.querySelectorAll('[data-intent-trace-overlay]'), function (el) {
           el.remove();
         });
@@ -5711,7 +5933,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         });
         Array.prototype.forEach.call(clone.querySelectorAll('[data-source-evidence-count]'), function (el) {
           var originalLabel = el.getAttribute('data-source-evidence-original-label');
-          if (originalLabel == null || originalLabel === '') el.removeAttribute('aria-label');
+          if (originalLabel == null) el.removeAttribute('aria-label');
           else el.setAttribute('aria-label', originalLabel);
           el.removeAttribute('data-source-evidence-count');
           el.removeAttribute('data-source-evidence-original-label');
@@ -5774,6 +5996,17 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         Array.prototype.forEach.call(clone.querySelectorAll('[data-node-id][aria-pressed]'), function (el) {
           el.setAttribute('aria-pressed', 'false');
         });
+        // A downloaded tree is always the complete hierarchy: collapsing is a
+        // reading aid, never a silent change to what the artifact contains.
+        clone.removeAttribute('data-tree-any-collapsed');
+        Array.prototype.forEach.call(clone.querySelectorAll('[data-tree-hidden], [data-tree-collapsed]'), function (el) {
+          el.removeAttribute('data-tree-hidden');
+          el.removeAttribute('data-tree-collapsed');
+        });
+        Array.prototype.forEach.call(clone.querySelectorAll('[data-tree-toggle]'), function (el) {
+          el.setAttribute('aria-expanded', 'true');
+          el.setAttribute('aria-label', el.getAttribute('data-tree-label-collapse') || '');
+        });
         return !clone.hasAttribute('data-view-scale') &&
           !clone.hasAttribute('data-focus-active') &&
           !clone.hasAttribute('data-reach-active') &&
@@ -5789,9 +6022,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           !clone.hasAttribute('data-route-journey') &&
           !clone.hasAttribute('data-share-route') &&
           !clone.hasAttribute('data-share-reach') &&
+          !clone.hasAttribute('data-tree-any-collapsed') &&
           !clone.style.getPropertyValue('transform') &&
           !clone.style.getPropertyValue('clip-path') &&
-          clone.querySelectorAll('[data-focus-match], [data-focus-selected], [data-reach-match], [data-reach-origin], [data-reach-depth], [data-semantic-lens-overlay], [data-lens-match], [data-lens-selected], [data-lens-peer], [data-legend-bridge], [data-legend-kind], [data-legend-bridge-runtime], [data-legend-count], [data-legend-zero], [data-legend-selected], [data-legend-preview-match], [data-legend-preview-selected], [data-legend-preview-peer], [data-relationship-hit-overlay], [data-relationship-pulse-overlay], [data-relationship-preview], [data-relationship-preview-node], [data-relationship-preview-source], [data-relationship-preview-target], [data-intent-trace-overlay], [data-intent-trace-match], [data-intent-trace-selected], [data-route-probe-overlay], [data-route-journey-overlay], [data-route-match], [data-route-start], [data-route-end], [data-route-step], [data-route-candidate], [data-route-journey-state], [data-route-journey-current], [data-share-route-match], [data-share-route-step], [data-share-route-start], [data-share-route-end], [data-share-route-middle], [data-share-reach-match], [data-share-reach-origin], [data-share-reach-depth], [data-source-evidence-beacon], [data-source-evidence-count], [data-source-evidence-original-label], [data-detail], [data-detail-anchor]').length === 0;
+          clone.querySelectorAll('[data-ambient-flow-overlay], [data-reader-legend-corner], [data-focus-match], [data-focus-selected], [data-reach-match], [data-reach-origin], [data-reach-depth], [data-semantic-lens-overlay], [data-lens-match], [data-lens-selected], [data-lens-peer], [data-legend-bridge], [data-legend-kind], [data-legend-bridge-runtime], [data-legend-count], [data-legend-zero], [data-legend-selected], [data-legend-preview-match], [data-legend-preview-selected], [data-legend-preview-peer], [data-relationship-hit-overlay], [data-relationship-pulse-overlay], [data-relationship-preview], [data-relationship-preview-node], [data-relationship-preview-source], [data-relationship-preview-target], [data-intent-trace-overlay], [data-intent-trace-match], [data-intent-trace-selected], [data-route-probe-overlay], [data-route-journey-overlay], [data-route-match], [data-route-start], [data-route-end], [data-route-step], [data-route-candidate], [data-route-journey-state], [data-route-journey-current], [data-share-route-match], [data-share-route-step], [data-share-route-start], [data-share-route-end], [data-share-route-middle], [data-share-reach-match], [data-share-reach-origin], [data-share-reach-depth], [data-source-evidence-beacon], [data-source-evidence-count], [data-source-evidence-original-label], [data-detail], [data-detail-anchor], [data-tree-hidden], [data-tree-collapsed]').length === 0;
       }
 
 
@@ -6177,7 +6411,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var a = document.createElement('a');
         a.href = url;
         a.download = filename;
-        document.body.appendChild(a);
+        // Keep the export-owned activation inside its existing control boundary.
+        // The synthetic download click must not dismiss the reader selection.
+        menu.appendChild(a);
         a.click();
         a.remove();
         setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
@@ -6548,7 +6784,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var vb = svg.viewBox.baseVal;
         var scale = Math.min(1, 1280 / vb.width);
         var data = serializeSvg(scale);
-        var sourceUrl = URL.createObjectURL(new Blob([data.svgString], { type: 'image/svg+xml;charset=utf-8' }));
 
         function createMotionScene(root) {
           var rootMatrix = root.getCTM ? root.getCTM() : null;
@@ -6567,13 +6802,18 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
           function samplesFor(element) {
             if (typeof element.getTotalLength !== 'function' || typeof element.getPointAtLength !== 'function') return [];
+            var geometry = element;
+            if (element.getAttribute('data-motion-path')) {
+              geometry = element.cloneNode(false);
+              geometry.setAttribute('d', element.getAttribute('data-motion-path'));
+            }
             var length;
-            try { length = element.getTotalLength(); } catch (_) { return []; }
+            try { length = geometry.getTotalLength(); } catch (_) { return []; }
             if (!Number.isFinite(length) || length <= 0) return [];
             var count = Math.max(12, Math.min(72, Math.ceil(length / 12)));
             var points = [];
             for (var i = 0; i <= count; i++) {
-              points.push(pointInRoot(element, element.getPointAtLength(length * i / count)));
+              points.push(pointInRoot(element, geometry.getPointAtLength(length * i / count)));
             }
             return points;
           }
@@ -6700,73 +6940,99 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var motionScene = createMotionScene(svg);
 
         return new Promise(function (resolve, reject) {
-          var backgroundImage = new Image();
-          backgroundImage.onload = function () {
-            var canvas = document.createElement('canvas');
-            canvas.width = Math.max(2, Math.round(data.width / 2) * 2);
-            canvas.height = Math.max(2, Math.round(data.height / 2) * 2);
-            var ctx = canvas.getContext('2d');
-            var stream = canvas.captureStream(fps);
-            var mime = motionMimeType();
-            var recorder;
-            try {
-              recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 6000000 });
-            } catch (err) {
-              URL.revokeObjectURL(sourceUrl);
-              stream.getTracks().forEach(function (track) { track.stop(); });
-              reject(err);
-              return;
+          var sourceUrl = null;
+          var backgroundImage = null;
+          var stream = null;
+          var recorder = null;
+          var raf = 0;
+          var durationTimer = 0;
+          var flushTimer = 0;
+          var settled = false;
+
+          function finish(error, blob) {
+            if (settled) return;
+            // 先锁定终态：停止录制和释放流可能产生晚到的编码事件。
+            settled = true;
+            cancelAnimationFrame(raf);
+            clearTimeout(durationTimer);
+            clearTimeout(flushTimer);
+            if (backgroundImage) {
+              backgroundImage.onload = null;
+              backgroundImage.onerror = null;
             }
-            var chunks = [];
-            var raf = 0;
-            var stopped = false;
-            var startedAt = performance.now();
-            function cleanup() {
-              if (stopped) return;
-              stopped = true;
-              cancelAnimationFrame(raf);
-              URL.revokeObjectURL(sourceUrl);
-              stream.getTracks().forEach(function (track) { track.stop(); });
+            if (recorder) {
+              recorder.ondataavailable = null;
+              recorder.onerror = null;
+              recorder.onstop = null;
+              try { if (recorder.state !== 'inactive') recorder.stop(); } catch (_) {}
             }
-            function draw(now) {
-              var elapsed = Math.max(0, ((Number(now) || performance.now()) - startedAt) / 1000);
-              drawMotionFrame(ctx, backgroundImage, motionScene, elapsed);
-              raf = requestAnimationFrame(draw);
-            }
-            recorder.ondataavailable = function (event) {
-              if (event.data && event.data.size) chunks.push(event.data);
+            if (stream) stream.getTracks().forEach(function (track) { track.stop(); });
+            if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+            if (blob) resolve(blob);
+            else reject(error);
+          }
+
+          try {
+            sourceUrl = URL.createObjectURL(new Blob([data.svgString], { type: 'image/svg+xml;charset=utf-8' }));
+            backgroundImage = new Image();
+            backgroundImage.onload = function () {
+              if (settled) return;
+              try {
+                var canvas = document.createElement('canvas');
+                canvas.width = Math.max(2, Math.round(data.width / 2) * 2);
+                canvas.height = Math.max(2, Math.round(data.height / 2) * 2);
+                var ctx = canvas.getContext('2d');
+                if (!ctx) throw exportError('viewer.export.error.contextUnavailable', { label: 'WebM' });
+                stream = canvas.captureStream(fps);
+                var mime = motionMimeType();
+                recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 6000000 });
+                var chunks = [];
+                var startedAt = performance.now();
+                function draw(now) {
+                  if (settled) return;
+                  try {
+                    var elapsed = Math.max(0, ((Number(now) || performance.now()) - startedAt) / 1000);
+                    drawMotionFrame(ctx, backgroundImage, motionScene, elapsed);
+                    raf = requestAnimationFrame(draw);
+                  } catch (error) { finish(error); }
+                }
+                recorder.ondataavailable = function (event) {
+                  if (!settled && event.data && event.data.size) chunks.push(event.data);
+                };
+                recorder.onerror = function (event) {
+                  finish(event.error || exportError('viewer.export.error.mediaRecorder'));
+                };
+                recorder.onstop = function () {
+                  if (settled) return;
+                  try {
+                    var blob = new Blob(chunks, { type: recorder.mimeType || mime });
+                    if (!blob.size) throw exportError('viewer.export.error.emptyWebm');
+                    finish(null, blob);
+                  } catch (error) { finish(error); }
+                };
+                drawMotionFrame(ctx, backgroundImage, motionScene, 0);
+                recorder.start(250);
+                if (settled) return;
+                startedAt = performance.now();
+                raf = requestAnimationFrame(draw);
+                durationTimer = setTimeout(function () {
+                  if (settled || recorder.state === 'inactive') return;
+                  // 保留最佳努力的编码器 flush；失败后仍通过 stop 收集最后的片段。
+                  try { recorder.requestData(); } catch (_) {}
+                  if (settled) return;
+                  flushTimer = setTimeout(function () {
+                    if (settled) return;
+                    try { if (recorder.state !== 'inactive') recorder.stop(); }
+                    catch (error) { finish(error); }
+                  }, 120);
+                }, duration);
+              } catch (error) { finish(error); }
             };
-            recorder.onerror = function (event) {
-              cleanup();
-              reject(event.error || exportError('viewer.export.error.mediaRecorder'));
+            backgroundImage.onerror = function () {
+              finish(exportError('viewer.export.error.webmBackground'));
             };
-            recorder.onstop = function () {
-              cleanup();
-              var blob = new Blob(chunks, { type: recorder.mimeType || mime });
-              if (!blob.size) reject(exportError('viewer.export.error.emptyWebm'));
-              else resolve(blob);
-            };
-            drawMotionFrame(ctx, backgroundImage, motionScene, 0);
-            recorder.start(250);
-            startedAt = performance.now();
-            raf = requestAnimationFrame(draw);
-            setTimeout(function () {
-              if (recorder.state === 'inactive') return;
-              // Chromium normally emits the final chunk during stop(), but
-              // some embedded browser shells need an explicit encoder flush
-              // first. Keep the short grace window bounded and harmless for
-              // browsers that already delivered timeslice chunks.
-              try { recorder.requestData(); } catch (_) {}
-              setTimeout(function () {
-                if (recorder.state !== 'inactive') recorder.stop();
-              }, 120);
-            }, duration);
-          };
-          backgroundImage.onerror = function () {
-            URL.revokeObjectURL(sourceUrl);
-            reject(exportError('viewer.export.error.webmBackground'));
-          };
-          backgroundImage.src = sourceUrl;
+            backgroundImage.src = sourceUrl;
+          } catch (error) { finish(error); }
         });
       }
 
@@ -7147,38 +7413,498 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       var ownerToken = 0;
       var ownerCleanup = null;
       var lastEffectivePaused = null;
-      var ambientStarted = false;
-      var ambientPending = new Set();
+      var entryStarted = false;
+      var entryPending = new Set();
+      var flowCount = 0;
 
-      function detachAmbientBoundary() {
-        if (!svg) return;
-        svg.removeEventListener('animationend', onAmbientBoundary, true);
-        svg.removeEventListener('animationcancel', onAmbientBoundary, true);
+      // Runtime decoration carries geometry and tree visibility only. Keep each
+      // flow beside its authored edge so transforms, clipping and crossover
+      // paint order apply.
+      // Each renderer may declare a choreography that matches what its diagram
+      // means. Relay (the default) sends a comet from each source when the
+      // signal reaches it; stream adds a packet train for continuous data; walk
+      // moves one token along the main state path; sequence plays messages in
+      // authored order; sweep runs a playhead along a timeline; replay fills
+      // waterfall spans in proportion to their measured time. Motion Governor
+      // plans the timeline and per-element keyframes; viewer.css owns looks.
+      var SVG_NS = 'http://www.w3.org/2000/svg';
+      var choreography = svg ? (svg.getAttribute('data-motion-choreography') || 'relay') : 'relay';
+      var RELAY = {
+        speed: 280,
+        minTravel: 0.42,
+        maxTravel: 1.5,
+        handoff: 0.1,
+        dwell: 0.55,
+        maxSpan: 9,
+        land: 0.9,
+        rest: 1.4,
+        minCycle: 3.6
+      };
+      function stepOf(element, fallback) {
+        var step = parseFloat(element && element.style ? element.style.getPropertyValue('--step') : '');
+        return Number.isFinite(step) ? step : fallback;
       }
-      function settleAmbient(reason) {
-        if (!capable) return false;
-        ambientStarted = true;
-        ambientPending.clear();
-        detachAmbientBoundary();
-        html.setAttribute('data-ambient-motion', 'settled');
-        html.setAttribute('data-ambient-settle-reason', reason || 'complete');
-        return true;
+      function byStep(a, b) { return a.step - b.step || a.index - b.index; }
+      function addWindow(windows, id, start, end, strong) {
+        if (!id) return;
+        (windows[id] = windows[id] || []).push({ start: start, end: end, strong: !!strong });
       }
-      function onAmbientBoundary(event) {
-        if (!ambientPending.has(event.target)) return;
-        ambientPending.delete(event.target);
-        if (!ambientPending.size) settleAmbient('complete');
+      function planRelay(records, windows) {
+        var arrive = Object.create(null);
+        var seeded = Object.create(null);
+        var targets = Object.create(null);
+        records.forEach(function (record) { if (record.from !== record.to) targets[record.to] = true; });
+        function seed(id) {
+          if (arrive[id] !== undefined) return;
+          arrive[id] = 0;
+          seeded[id] = true;
+        }
+        function relax() {
+          // Earliest arrival over a few dozen edges; a scan per settle keeps
+          // cycles and fan-in deterministic without a priority queue.
+          var settled = Object.create(null);
+          for (;;) {
+            var next = null;
+            Object.keys(arrive).forEach(function (id) {
+              if (!settled[id] && (next === null || arrive[id] < arrive[next])) next = id;
+            });
+            if (next === null) return;
+            settled[next] = true;
+            var depart = arrive[next] + (seeded[next] ? 0 : RELAY.handoff);
+            records.forEach(function (record) {
+              if (record.from !== next) return;
+              var at = depart + record.travel;
+              if (arrive[record.to] === undefined || at < arrive[record.to]) arrive[record.to] = at;
+            });
+          }
+        }
+        records.forEach(function (record) { if (!targets[record.from]) seed(record.from); });
+        relax();
+        for (;;) {
+          // A closed cycle has no entry; start it at its earliest authored edge.
+          var orphan = records.filter(function (record) { return arrive[record.from] === undefined; }).sort(byStep)[0];
+          if (!orphan) break;
+          seed(orphan.from);
+          relax();
+        }
+        records.forEach(function (record) {
+          record.depart = arrive[record.from] + (seeded[record.from] ? 0 : RELAY.handoff);
+          record.active = true;
+        });
+        Object.keys(arrive).forEach(function (id) { addWindow(windows, id, arrive[id], arrive[id]); });
       }
-      function startAmbient() {
-        if (ambientStarted || !capable) return false;
-        ambientStarted = true;
-        ambientPending = new Set(Array.prototype.slice.call(svg.querySelectorAll('[data-animate="edge"], [data-animate="node"]')));
-        if (!ambientPending.size) return settleAmbient('empty');
-        svg.addEventListener('animationend', onAmbientBoundary, true);
-        svg.addEventListener('animationcancel', onAmbientBoundary, true);
-        html.setAttribute('data-ambient-motion', 'running');
-        html.removeAttribute('data-ambient-settle-reason');
-        return true;
+      function planWalk(records, windows) {
+        // A state machine is in one state at a time: follow the first authored
+        // transition to an unvisited state and let the current state stay lit.
+        var targets = Object.create(null);
+        records.forEach(function (record) { if (record.from !== record.to) targets[record.to] = true; });
+        var ordered = records.slice().sort(byStep);
+        var start = (ordered.find(function (record) { return !targets[record.from]; }) || ordered[0]).from;
+        var visited = Object.create(null);
+        var current = start;
+        var clock = 0;
+        var enteredAt = 0;
+        visited[start] = true;
+        for (var hops = 0; hops < 16; hops += 1) {
+          var next = ordered.find(function (record) { return record.from === current && !visited[record.to]; });
+          if (!next) break;
+          next.active = true;
+          next.depart = clock + RELAY.dwell;
+          addWindow(windows, current, enteredAt, next.depart, true);
+          clock = next.depart + next.travel;
+          enteredAt = clock;
+          current = next.to;
+          visited[current] = true;
+        }
+        addWindow(windows, current, enteredAt, enteredAt + 1.2, true);
+      }
+      function planSequence(records, windows) {
+        var clock = 0;
+        records.slice().sort(byStep).forEach(function (record) {
+          record.active = true;
+          record.depart = clock;
+          clock += record.travel + RELAY.handoff;
+          addWindow(windows, record.from, record.depart, record.depart);
+          addWindow(windows, record.to, record.depart + record.travel, record.depart + record.travel);
+        });
+      }
+      function scalePlan(records, windows, span) {
+        var scale = span > RELAY.maxSpan ? RELAY.maxSpan / span : 1;
+        if (scale === 1) return span;
+        records.forEach(function (record) {
+          if (!record.active) return;
+          record.depart *= scale;
+          record.travel *= scale;
+        });
+        Object.keys(windows).forEach(function (id) {
+          windows[id].forEach(function (window) { window.start *= scale; window.end *= scale; });
+        });
+        return span * scale;
+      }
+      function nodeShapes() {
+        var shapes = Object.create(null);
+        Array.prototype.forEach.call(svg.querySelectorAll('[data-animate="node"]'), function (shape) {
+          var wrapper = shape.closest('[data-node-id]');
+          var id = wrapper ? wrapper.getAttribute('data-node-id') : '';
+          if (id) (shapes[id] = shapes[id] || []).push(shape);
+        });
+        return shapes;
+      }
+      function sceneBounds(elements) {
+        var box = null;
+        elements.forEach(function (element) {
+          var b = null;
+          try { b = element.getBBox(); } catch (_) {}
+          if (!b || !(b.width || b.height)) return;
+          if (!box) box = { x: b.x, y: b.y, right: b.x + b.width, bottom: b.y + b.height };
+          else {
+            box.x = Math.min(box.x, b.x); box.y = Math.min(box.y, b.y);
+            box.right = Math.max(box.right, b.x + b.width); box.bottom = Math.max(box.bottom, b.y + b.height);
+          }
+        });
+        return box;
+      }
+      function overlay(tag, cls, attrs, parent, before) {
+        var element = document.createElementNS(SVG_NS, tag);
+        Object.keys(attrs).forEach(function (name) { element.setAttribute(name, attrs[name]); });
+        element.setAttribute('class', 'ambient-edge-flow ' + cls);
+        element.setAttribute('data-ambient-flow-overlay', 'true');
+        element.setAttribute('aria-hidden', 'true');
+        parent.insertBefore(element, before || null);
+        return element;
+      }
+      // Timeline and waterfall share a playhead: a lit vertical rule and its
+      // bloom travel the time axis linearly, because time is the subject.
+      function addPlayhead(box, x0, x1, lead, sweep, extras) {
+        var anchor = svg.querySelector('[data-node-id]');
+        var parent = anchor ? anchor.parentNode : svg;
+        var attrs = { x1: x0.toFixed(1), x2: x0.toFixed(1), y1: (box.y - 10).toFixed(1), y2: (box.bottom + 10).toFixed(1) };
+        ['playhead-glow', 'playhead'].forEach(function (kind) {
+          var line = overlay('line', 'ambient-flow-' + kind, attrs, parent, anchor);
+          line.style.setProperty('--flow-name', 'archify-motion-playhead');
+          extras.push(line);
+        });
+        extras.playhead = { distance: x1 - x0, lead: lead, sweep: sweep };
+      }
+      function planSweep(windows, extras) {
+        var events = Array.prototype.filter.call(svg.querySelectorAll('[data-node-id][data-timeline-x]'), function (node) {
+          return Number.isFinite(parseFloat(node.getAttribute('data-timeline-x')));
+        });
+        if (!events.length) return 0;
+        var xs = events.map(function (node) { return parseFloat(node.getAttribute('data-timeline-x')); });
+        var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
+        var lead = 0.35;
+        var sweep = Math.min(7, Math.max(3.2, events.length * 0.6));
+        events.forEach(function (node, index) {
+          var at = lead + (x1 > x0 ? (xs[index] - x0) / (x1 - x0) : 0) * sweep;
+          addWindow(windows, node.getAttribute('data-node-id'), at, at + 0.35, true);
+        });
+        var box = sceneBounds(Array.prototype.slice.call(svg.querySelectorAll('[data-timeline-lane]')));
+        if (box && x1 > x0) addPlayhead(box, x0, x1, lead, sweep, extras);
+        return lead + sweep + 0.6;
+      }
+      function planReplay(windows, extras) {
+        var spans = [];
+        Array.prototype.forEach.call(svg.querySelectorAll('[data-node-id][data-waterfall-start]'), function (node) {
+          var start = parseFloat(node.getAttribute('data-waterfall-start'));
+          var end = parseFloat(node.getAttribute('data-waterfall-end'));
+          var bar = node.querySelector('[data-animate="node"]');
+          if (!bar || !Number.isFinite(start) || !(end >= start)) return;
+          var width = parseFloat(bar.getAttribute('width'));
+          var x = parseFloat(bar.getAttribute('x'));
+          if (!(width > 0) || !Number.isFinite(x)) return;
+          spans.push({ node: node, bar: bar, start: start, end: end, x: x, width: width });
+        });
+        if (!spans.length) return 0;
+        var t0 = Math.min.apply(null, spans.map(function (span) { return span.start; }));
+        var t1 = Math.max.apply(null, spans.map(function (span) { return span.end; }));
+        if (!(t1 > t0)) return 0;
+        var ruler = spans.reduce(function (best, span) { return span.end - span.start > best.end - best.start ? span : best; });
+        var pxPerUnit = ruler.width / Math.max(ruler.end - ruler.start, 1e-9);
+        var x0 = ruler.x - (ruler.start - t0) * pxPerUnit;
+        var lead = 0.35;
+        var replay = Math.min(6, Math.max(3.4, spans.length * 0.45));
+        var at = function (t) { return lead + (t - t0) / (t1 - t0) * replay; };
+        var settle = lead + replay + 0.9;
+        spans.forEach(function (span) {
+          var fill = overlay('rect', 'ambient-flow-fill', {
+            x: span.bar.getAttribute('x'), y: span.bar.getAttribute('y'),
+            width: span.bar.getAttribute('width'), height: span.bar.getAttribute('height'),
+            rx: span.bar.getAttribute('rx') || '0'
+          }, span.bar.parentNode, span.bar.nextSibling);
+          var tone = /(?:^|\s)c-([a-z]+)(?:\s|$)/.exec(span.bar.getAttribute('class') || '');
+          if (tone) fill.style.setProperty('--flow-fill', 'var(--' + tone[1] + '-stroke)');
+          if (span.node.getAttribute('data-waterfall-status') && span.node.getAttribute('data-waterfall-status') !== 'ok') {
+            fill.classList.add('ambient-flow-fill-failed');
+          }
+          fill.timing = { start: at(span.start), end: Math.max(at(span.end), at(span.start) + 0.08), settle: settle };
+          extras.push(fill);
+          addWindow(windows, span.node.getAttribute('data-node-id'), fill.timing.end, fill.timing.end);
+        });
+        var box = sceneBounds(spans.map(function (span) { return span.bar; }));
+        if (box) addPlayhead(box, x0, x0 + (t1 - t0) * pxPerUnit, lead, replay, extras);
+        return settle;
+      }
+      function writeKeyframes(records, windows, extras, cycle) {
+        function at(seconds) {
+          return (Math.min(100, Math.max(0, seconds / cycle * 100))).toFixed(3) + '%';
+        }
+        var ease = 'animation-timing-function: cubic-bezier(0.45, 0.05, 0.35, 1);';
+        var rules = [
+          '@keyframes archify-relay-ripple {',
+          '  0% { r: 2px; opacity: var(--flow-peak, 0.6); }',
+          '  ' + at(0.75) + ', 100% { r: 20px; opacity: 0; }',
+          '}'
+        ];
+        records.forEach(function (record) {
+          if (!record.active) return;
+          var travel = record.travel;
+          rules.push(
+            '@keyframes archify-relay-comet-' + record.index + ' {',
+            '  0% { stroke-dashoffset: calc(var(--flow-len, 0px) + var(--flow-shift, 0px)); opacity: 0; ' + ease + ' }',
+            '  ' + at(Math.min(0.12, travel * 0.2)) + ' { opacity: var(--flow-peak, 0.9); }',
+            '  ' + at(travel) + ' { stroke-dashoffset: var(--flow-shift, 0px); opacity: var(--flow-peak, 0.9); }',
+            '  ' + at(travel + 0.16) + ', 100% { stroke-dashoffset: var(--flow-shift, 0px); opacity: 0; }',
+            '}',
+            // A solid wake draws the travelled path behind the head on the same
+            // easing; a dashed wake only brightens its authored segments.
+            '@keyframes archify-relay-wake-' + record.index + ' {',
+            record.dashed
+              ? '  0%, ' + at(travel * 0.3) + ' { opacity: 0; }'
+              : '  0% { stroke-dashoffset: var(--flow-len, 0px); opacity: var(--flow-peak, 0.3); ' + ease + ' }',
+            record.dashed
+              ? '  ' + at(travel) + ' { opacity: var(--flow-peak, 0.3); }'
+              : '  ' + at(travel) + ' { stroke-dashoffset: 0px; opacity: var(--flow-peak, 0.3); }',
+            '  ' + at(travel + 0.9) + ', 100% { stroke-dashoffset: 0px; opacity: 0; }',
+            '}'
+          );
+        });
+        var glow = function (strong) {
+          return 'filter: var(--ambient-node-base-filter,) drop-shadow(0 0 ' + (strong ? 14 : 10) + 'px var(--arrow-emphasis));';
+        };
+        var base = 'filter: var(--ambient-node-base-filter, none);';
+        Object.keys(windows).forEach(function (id, index) {
+          var merged = [];
+          windows[id].slice().sort(function (a, b) { return a.start - b.start; }).forEach(function (window) {
+            var peakEnd = Math.max(window.end, window.start + 0.42);
+            var last = merged[merged.length - 1];
+            if (last && window.start <= last.peakEnd + 0.78) {
+              last.peakEnd = Math.max(last.peakEnd, peakEnd);
+              last.strong = last.strong || window.strong;
+            } else merged.push({ start: window.start, peakEnd: peakEnd, strong: window.strong });
+          });
+          var frames = ['  0%, 100% { ' + base + ' }'];
+          merged.forEach(function (window) {
+            frames.push(
+              '  ' + at(window.start) + ' { ' + base + ' }',
+              '  ' + at(window.start + 0.12) + ', ' + at(window.peakEnd) + ' { ' + glow(window.strong) + ' }',
+              '  ' + at(window.peakEnd + 0.78) + ' { ' + base + ' }'
+            );
+          });
+          rules.push('@keyframes archify-relay-node-' + index + ' {', frames.join('\n'), '}');
+          windows[id].keyframes = 'archify-relay-node-' + index;
+        });
+        if (extras.playhead) {
+          var p = extras.playhead;
+          rules.push(
+            '@keyframes archify-motion-playhead {',
+            '  0% { transform: translateX(0px); opacity: 0; }',
+            '  ' + at(Math.max(0.05, p.lead - 0.2)) + ' { transform: translateX(0px); opacity: 0; }',
+            '  ' + at(p.lead) + ' { transform: translateX(0px); opacity: var(--flow-peak, 0.9); }',
+            '  ' + at(p.lead + p.sweep) + ' { transform: translateX(' + p.distance.toFixed(1) + 'px); opacity: var(--flow-peak, 0.9); }',
+            '  ' + at(p.lead + p.sweep + 0.45) + ', 100% { transform: translateX(' + p.distance.toFixed(1) + 'px); opacity: 0; }',
+            '}'
+          );
+        }
+        extras.forEach(function (element, index) {
+          if (!element.timing) return;
+          var t = element.timing;
+          rules.push(
+            '@keyframes archify-replay-fill-' + index + ' {',
+            '  0%, ' + at(t.start) + ' { transform: scaleX(0); opacity: var(--flow-peak, 0.4); }',
+            '  ' + at(t.end) + ', ' + at(t.settle) + ' { transform: scaleX(1); opacity: var(--flow-peak, 0.4); }',
+            '  ' + at(t.settle + 0.7) + ', 100% { transform: scaleX(1); opacity: 0; }',
+            '}'
+          );
+          element.style.setProperty('--flow-name', 'archify-replay-fill-' + index);
+        });
+        var style = document.createElement('style');
+        style.setAttribute('data-ambient-flow-keyframes', 'true');
+        style.textContent = rules.join('\n');
+        document.head.appendChild(style);
+      }
+      function createFlows() {
+        var records = [];
+        Array.prototype.forEach.call(svg.querySelectorAll('path[data-animate="edge"]'), function (shape, index) {
+          var d = shape.getAttribute('data-motion-path') || shape.getAttribute('d');
+          if (!d) return;
+          var anchor = shape;
+          // Tree Branches initializes after these overlays and includes their
+          // inherited ancestors in its existing collapse/expand lifecycle.
+          function tagOverlay(flow) {
+            flow.setAttribute('data-ambient-flow-overlay', 'true');
+            flow.setAttribute('aria-hidden', 'true');
+            if (shape.hasAttribute('data-tree-ancestors')) {
+              flow.setAttribute('data-tree-ancestors', shape.getAttribute('data-tree-ancestors'));
+            }
+          }
+          function addPath(cls) {
+            var flow = document.createElementNS(SVG_NS, 'path');
+            flow.setAttribute('d', d);
+            ['transform', 'mask', 'clip-path', 'vector-effect'].forEach(function (name) {
+              if (shape.hasAttribute(name)) flow.setAttribute(name, shape.getAttribute(name));
+            });
+            flow.setAttribute('class', 'ambient-edge-flow ambient-flow-' + cls);
+            tagOverlay(flow);
+            shape.parentNode.insertBefore(flow, anchor.nextSibling);
+            anchor = flow;
+            return flow;
+          }
+          var wake = addPath('wake');
+          var len = 0;
+          try { len = wake.getTotalLength(); } catch (_) {}
+          if (!(len > 0)) {
+            wake.remove();
+            return;
+          }
+          var record = {
+            index: records.length,
+            len: len,
+            from: shape.getAttribute('data-edge-from') || shape.getAttribute('data-composition-edge-from') || '',
+            to: shape.getAttribute('data-edge-to') || shape.getAttribute('data-composition-edge-to') || '',
+            step: stepOf(shape, index),
+            travel: Math.min(RELAY.maxTravel, Math.max(RELAY.minTravel, len / RELAY.speed)),
+            depart: 0,
+            active: false,
+            layers: []
+          };
+          records.push(record);
+          // Dashed authored lines keep their dash language through the relay:
+          // the wake brightens only the authored segments and never fills the
+          // gaps back into a solid line.
+          var authoredDash = '';
+          try { authoredDash = window.getComputedStyle(shape).strokeDasharray; } catch (_) {}
+          record.dashed = !!(authoredDash && authoredDash !== 'none');
+          wake.style.setProperty('--flow-dasharray', record.dashed ? authoredDash : len.toFixed(1) + ' ' + len.toFixed(1));
+          // Absolute caps keep the comet a slim streak on long edges instead
+          // of growing into a bright slab; the tail disintegrates into a
+          // sparkle of fragments behind the head, and --flow-shift trails
+          // each layer behind the head tip by its own length.
+          var headLen = Math.min(14, Math.max(7, len * 0.03));
+          var haloLen = Math.min(22, Math.max(12, len * 0.07));
+          var trail = len >= 120
+            ? { pattern: '2.5 2 4 3 5.5 4.5 8 ' + (len - 30).toFixed(1), length: 30 }
+            : (len >= 60
+              ? { pattern: '3 3 7 ' + (len - 13).toFixed(1), length: 13 }
+              : { pattern: '5 ' + Math.max(4, len - 5).toFixed(1), length: 5 });
+          record.layers.push(
+            { flow: wake, kind: 'wake', dash: len, shift: 0 },
+            { flow: addPath('glow'), kind: 'comet', dash: haloLen, shift: (haloLen - headLen) / 2 },
+            { flow: addPath('halo'), kind: 'comet', dash: haloLen, shift: (haloLen - headLen) / 2 },
+            { flow: addPath('tail'), kind: 'comet', dash: trail.length, shift: trail.length - headLen, dasharray: trail.pattern },
+            { flow: addPath('head'), kind: 'comet', dash: headLen, shift: 0 }
+          );
+          if (choreography === 'stream') {
+            // A packet train behind the comet reads as a continuous stream.
+            [1, 2, 3].forEach(function (order) {
+              record.layers.push({ flow: addPath('head packet'), kind: 'comet', dash: Math.max(4, headLen * 0.55), shift: 0, packet: order });
+            });
+          }
+          // The ripple lands where the comet does; keep it out of the edge's
+          // mask so it can bloom over the node boundary.
+          var end = null;
+          try { end = wake.getPointAtLength(len); } catch (_) {}
+          if (end) {
+            var ripple = document.createElementNS(SVG_NS, 'circle');
+            ripple.setAttribute('cx', end.x.toFixed(1));
+            ripple.setAttribute('cy', end.y.toFixed(1));
+            ripple.setAttribute('r', '2');
+            if (shape.hasAttribute('transform')) ripple.setAttribute('transform', shape.getAttribute('transform'));
+            ripple.setAttribute('class', 'ambient-edge-flow ambient-flow-ripple');
+            tagOverlay(ripple);
+            shape.parentNode.insertBefore(ripple, anchor.nextSibling);
+            record.ripple = ripple;
+          }
+        });
+        var windows = Object.create(null);
+        var extras = [];
+        var span = 0;
+        if (choreography === 'sweep') span = planSweep(windows, extras);
+        else if (choreography === 'replay') span = planReplay(windows, extras);
+        else if (records.length) {
+          var linked = records.filter(function (record) { return record.from && record.to; });
+          if (choreography === 'sequence' || linked.length < records.length) planSequence(records, windows);
+          else if (choreography === 'walk') planWalk(records, windows);
+          else planRelay(records, windows);
+          span = records.reduce(function (max, record) {
+            return record.active ? Math.max(max, record.depart + record.travel) : max;
+          }, 0);
+          span = scalePlan(records, windows, span);
+        }
+        records.forEach(function (record) {
+          if (record.active) return;
+          record.layers.forEach(function (layer) { layer.flow.remove(); });
+          if (record.ripple) record.ripple.remove();
+        });
+        var active = records.filter(function (record) { return record.active; });
+        if (!active.length && !extras.length) return;
+        var cycle = Math.max(RELAY.minCycle, span + RELAY.land + RELAY.rest);
+        writeKeyframes(active, windows, extras, cycle);
+        svg.style.setProperty('--flow-cycle', cycle.toFixed(3) + 's');
+        html.style.setProperty('--flow-cycle-chrome', cycle.toFixed(3) + 's');
+        active.forEach(function (record) {
+          var gap = Math.min(0.22, record.travel * 0.28);
+          record.layers.forEach(function (layer) {
+            var flow = layer.flow;
+            flow.style.setProperty('--flow-len', record.len.toFixed(1) + 'px');
+            flow.style.setProperty('--flow-delay', (record.depart + (layer.packet || 0) * gap).toFixed(3) + 's');
+            flow.style.setProperty('--flow-dash', layer.dash.toFixed(1) + 'px');
+            flow.style.setProperty('--flow-shift', layer.shift.toFixed(1) + 'px');
+            flow.style.setProperty('--flow-name', 'archify-relay-' + layer.kind + '-' + record.index);
+            if (layer.dasharray) flow.style.setProperty('--flow-dasharray', layer.dasharray);
+          });
+          if (record.ripple) {
+            record.ripple.style.setProperty('--flow-delay', (record.depart + record.travel).toFixed(3) + 's');
+            record.ripple.style.setProperty('--flow-name', 'archify-relay-ripple');
+          }
+        });
+        var shapes = nodeShapes();
+        Object.keys(windows).forEach(function (id) {
+          (shapes[id] || []).forEach(function (shape) {
+            shape.style.setProperty('--flow-node-name', windows[id].keyframes);
+          });
+        });
+        flowCount = active.length + extras.length;
+      }
+      function settleEntry() {
+        entryPending.clear();
+        svg.removeEventListener('animationend', onEntryBoundary, true);
+        svg.removeEventListener('animationcancel', onEntryBoundary, true);
+        html.setAttribute('data-ambient-entry', 'settled');
+      }
+      function onEntryBoundary(event) {
+        if (!entryPending.has(event.target)) return;
+        // The entrance settles only when each node's pulse finishes; the
+        // shorter fade-rise enter animation may end first without ending it.
+        if (event.animationName && !/node-pulse/.test(event.animationName)) return;
+        entryPending.delete(event.target);
+        if (!entryPending.size) settleEntry();
+      }
+      function renderAmbient(suppressed) {
+        html.setAttribute('data-ambient-motion', flowCount ? (suppressed ? 'paused' : 'running') : 'empty');
+        if (suppressed) {
+          entryStarted = true;
+          settleEntry();
+        } else if (!entryStarted) {
+          entryStarted = true;
+          entryPending = new Set(Array.prototype.slice.call(svg.querySelectorAll('[data-animate="node"]')));
+          if (!entryPending.size) settleEntry();
+          else {
+            svg.addEventListener('animationend', onEntryBoundary, true);
+            svg.addEventListener('animationcancel', onEntryBoundary, true);
+            html.setAttribute('data-ambient-entry', 'running');
+          }
+        }
       }
 
       function readStored() {
@@ -7186,8 +7912,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       }
       function writeStored() {
         try {
-          if (readerPaused) localStorage.setItem(STORAGE_KEY, 'still');
-          else localStorage.removeItem(STORAGE_KEY);
+          if (readerPaused) localStorage.removeItem(STORAGE_KEY);
+          else localStorage.setItem(STORAGE_KEY, 'live');
         } catch (_) {}
       }
       function reducedMotion() {
@@ -7213,11 +7939,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var systemPaused = reducedMotion();
         var paused = effectivePaused();
         html.setAttribute('data-motion', paused ? 'still' : 'live');
-        if (paused || owner || html.hasAttribute('data-embed') || html.hasAttribute('data-share-playback') || html.hasAttribute('data-document-hidden')) {
-          settleAmbient('suppressed');
-        } else if (!ambientStarted) {
-          startAmbient();
-        }
+        renderAmbient(paused || owner || html.hasAttribute('data-embed') || html.hasAttribute('data-share-playback') || html.hasAttribute('data-document-hidden'));
         btn.setAttribute('aria-pressed', paused ? 'false' : 'true');
         btn.disabled = systemPaused;
         label.textContent = viewerText(paused ? 'viewer.motion.still' : 'viewer.motion.live');
@@ -7322,7 +8044,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         html.removeAttribute('data-motion');
         html.removeAttribute('data-motion-owner');
         html.removeAttribute('data-ambient-motion');
-        html.removeAttribute('data-ambient-settle-reason');
+        html.removeAttribute('data-ambient-entry');
         return {
           capable: false,
           pause: function () { return false; },
@@ -7338,15 +8060,20 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         };
       }
 
+      createFlows();
       html.setAttribute('data-motion-capable', 'true');
       btn.hidden = false;
-      readerPaused = readStored() === 'still';
+      readerPaused = readStored() !== 'live';
       btn.addEventListener('click', function () { setPaused(!readerPaused); });
       if (motionQuery) {
         if (typeof motionQuery.addEventListener === 'function') motionQuery.addEventListener('change', render);
         else if (typeof motionQuery.addListener === 'function') motionQuery.addListener(render);
       }
       document.addEventListener('visibilitychange', syncVisibility);
+      if (typeof MutationObserver !== 'undefined') {
+        var contextObserver = new MutationObserver(render);
+        contextObserver.observe(html, { attributes: true, attributeFilter: ['data-embed', 'data-share-playback'] });
+      }
       if (document.documentElement.getAttribute('data-embed') !== 'true' && typeof MutationObserver !== 'undefined' && typeof Node !== 'undefined' && svg instanceof Node) {
         var ownerObserver = new MutationObserver(function () { publishOwner(); });
         ownerObserver.observe(svg, {
@@ -7387,83 +8114,172 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     Archify.sourceEvidence = (function () {
       var element = document.getElementById('archify-source-evidence-data');
       var payload = null;
-      var svgNamespace = 'http://www.w3.org/2000/svg';
       if (element) {
         try {
           var parsed = JSON.parse(element.textContent || 'null');
           if (parsed && parsed.verified === true && parsed.repository && parsed.nodes) payload = parsed;
         } catch (_) {}
       }
-      function installBeacons() {
-        if (!payload) return 0;
-        var svg = document.querySelector('.diagram-container svg');
-        if (!svg) return 0;
-        var installed = 0;
-        Array.prototype.forEach.call(svg.querySelectorAll('[data-node-id]'), function (node) {
-          var id = node.getAttribute('data-node-id');
-          var sources = payload.nodes[id];
-          if (!Array.isArray(sources) || !sources.length || node.querySelector('[data-source-evidence-beacon]')) return;
-          var shape = node.querySelector('[data-animate="node"]') || node.querySelector('[class*="c-"]');
-          var box;
-          try { box = (shape || node).getBBox(); } catch (_) { return; }
-          if (!box || !Number.isFinite(box.x) || !Number.isFinite(box.y) || !Number.isFinite(box.width) || box.width < 36) return;
-
-          var count = sources.length;
-          var label = viewerCount('viewer.passport.beacon', count);
-          var beacon = document.createElementNS(svgNamespace, 'g');
-          beacon.classList.add('source-evidence-beacon');
-          beacon.setAttribute('data-source-evidence-beacon', '');
-          beacon.setAttribute('aria-hidden', 'true');
-          var brandOffset = node.hasAttribute('data-node-brand') ? 22 : 0;
-          var title = document.createElementNS(svgNamespace, 'title');
-          title.textContent = label;
-          var plate = document.createElementNS(svgNamespace, 'rect');
-          plate.setAttribute('height', '13');
-          plate.setAttribute('rx', '6.5');
-          var text = document.createElementNS(svgNamespace, 'text');
-          text.setAttribute('y', '9.4');
-          text.textContent = viewerText('viewer.passport.sourceMarker') + ' ' + count;
-          beacon.appendChild(title);
-          beacon.appendChild(plate);
-          beacon.appendChild(text);
-          node.appendChild(beacon);
-
-          // Measure the real glyph advance, then clamp the plate between 24
-          // and 36px; a still-wider label is squeezed with textLength so the
-          // badge never overlaps the neighbouring brand mark or sigil.
-          var textWidth = 16;
-          try {
-            var measured = text.getComputedTextLength();
-            if (Number.isFinite(measured) && measured > 0) textWidth = measured;
-          } catch (_) {}
-          var plateWidth = Math.min(36, Math.max(24, textWidth + 8));
-          if (textWidth > plateWidth - 8) {
-            text.setAttribute('textLength', String(plateWidth - 8));
-            text.setAttribute('lengthAdjust', 'spacingAndGlyphs');
-          }
-          plate.setAttribute('width', String(plateWidth));
-          text.setAttribute('x', String(plateWidth / 2));
-          beacon.setAttribute('transform', 'translate(' + (box.x + box.width - 6 - brandOffset - plateWidth) + ' ' + (box.y + 4.5) + ')');
-
-          var originalLabel = node.getAttribute('aria-label') || '';
-          node.setAttribute('data-source-evidence-count', String(count));
-          node.setAttribute('data-source-evidence-original-label', originalLabel);
-          node.setAttribute('aria-label', (originalLabel ? originalLabel + ', ' : '') + viewerCount('viewer.passport.sourceCount', count));
-          installed += 1;
-        });
-        return installed;
-      }
+      // Keep verified evidence discoverable to screen readers without adding
+      // visual marks. Restore first so repeated initialization never appends
+      // another count or retains one after evidence becomes unavailable.
+      var svg = document.querySelector('.diagram-container svg');
+      if (svg) Array.prototype.forEach.call(svg.querySelectorAll('[data-node-id]'), function (node) {
+        if (node.hasAttribute('data-source-evidence-count')) {
+          var savedLabel = node.getAttribute('data-source-evidence-original-label');
+          if (savedLabel == null) node.removeAttribute('aria-label');
+          else node.setAttribute('aria-label', savedLabel);
+          node.removeAttribute('data-source-evidence-count');
+          node.removeAttribute('data-source-evidence-original-label');
+        }
+        var sources = payload && payload.nodes[node.getAttribute('data-node-id')];
+        if (!Array.isArray(sources) || !sources.length) return;
+        var originalLabel = node.getAttribute('aria-label');
+        node.setAttribute('data-source-evidence-count', String(sources.length));
+        if (originalLabel != null) node.setAttribute('data-source-evidence-original-label', originalLabel);
+        node.setAttribute('aria-label', (originalLabel ? originalLabel + ', ' : '') +
+          viewerCount('viewer.passport.sourceCount', sources.length));
+      });
       return {
         available: function () { return Boolean(payload); },
         repository: function () { return payload ? payload.repository : null; },
         node: function (id) {
           var sources = payload && payload.nodes ? payload.nodes[id] : null;
           return Array.isArray(sources) ? sources.slice() : [];
-        },
-        installBeacons: installBeacons
+        }
       };
     })();
-    Archify.sourceEvidence.installBeacons();
+
+    /* ============================================================
+       Tree Branches — expand/collapse for hierarchy diagrams. The renderer
+       lays out the complete tree once and tags every node, link, and toggle
+       with its ancestors; collapsing only hides descendants, so visible nodes
+       never move and the reader keeps their place. Selecting a hidden node
+       through Finder, Outline, or a shared link expands its ancestors. Export
+       always writes the complete tree (see Export Cleanup).
+       ============================================================ */
+    Archify.treeBranches = (function () {
+      var svg = document.querySelector('.diagram-container > svg[data-tree-ui]');
+      if (!svg) return { active: false };
+      var collapsed = Object.create(null);
+      var toggles = Object.create(null);
+      Array.prototype.forEach.call(svg.querySelectorAll('[data-tree-toggle]'), function (toggle) {
+        toggles[toggle.getAttribute('data-tree-toggle')] = toggle;
+      });
+      var tagged = svg.querySelectorAll('[data-tree-ancestors]');
+      var expandAll = svg.querySelector('[data-tree-expand-all]');
+
+      function ancestors(el) {
+        return (el.getAttribute('data-tree-ancestors') || '').split(' ').filter(Boolean);
+      }
+
+      function apply() {
+        Array.prototype.forEach.call(tagged, function (el) {
+          var hidden = ancestors(el).some(function (id) { return collapsed[id]; });
+          if (hidden) el.setAttribute('data-tree-hidden', '');
+          else el.removeAttribute('data-tree-hidden');
+        });
+        var any = false;
+        Object.keys(toggles).forEach(function (id) {
+          var toggle = toggles[id];
+          var isCollapsed = Boolean(collapsed[id]);
+          any = any || isCollapsed;
+          toggle.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+          toggle.setAttribute('aria-label', toggle.getAttribute(isCollapsed ? 'data-tree-label-expand' : 'data-tree-label-collapse') || '');
+          var node = svg.querySelector('[data-node-id="' + id + '"]');
+          if (node) {
+            if (isCollapsed) node.setAttribute('data-tree-collapsed', '');
+            else node.removeAttribute('data-tree-collapsed');
+          }
+        });
+        if (any) svg.setAttribute('data-tree-any-collapsed', '');
+        else svg.removeAttribute('data-tree-any-collapsed');
+      }
+
+      function setCollapsed(id, value) {
+        if (!toggles[id]) return false;
+        if (value) collapsed[id] = true;
+        else delete collapsed[id];
+        apply();
+        return true;
+      }
+
+      function toggle(id) { return setCollapsed(id, !collapsed[id]); }
+
+      // Reveal a node by expanding every collapsed ancestor; nothing else moves.
+      function reveal(id) {
+        var node = svg.querySelector('[data-node-id="' + id + '"]');
+        if (!node) return false;
+        var changed = false;
+        ancestors(node).forEach(function (ancestor) {
+          if (collapsed[ancestor]) { delete collapsed[ancestor]; changed = true; }
+        });
+        if (changed) apply();
+        return changed;
+      }
+
+      function restoreAll() {
+        collapsed = Object.create(null);
+        apply();
+      }
+
+      function activate(event) {
+        var target = event.target.closest('[data-tree-toggle], [data-tree-expand-all]');
+        if (!target || !svg.contains(target)) return false;
+        event.preventDefault();
+        event.stopPropagation();
+        if (target.hasAttribute('data-tree-expand-all')) {
+          restoreAll();
+          var root = svg.querySelector('[data-tree-toggle]:not([data-tree-ancestors])');
+          if (root) root.focus();
+        } else {
+          toggle(target.getAttribute('data-tree-toggle'));
+          target.focus();
+        }
+        return true;
+      }
+
+      // Capture phase so the canvas focus handler never treats a toggle press
+      // as a background click that clears the current focus.
+      svg.addEventListener('click', activate, true);
+      svg.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') { activate(event); return; }
+        var node = event.target.closest('[data-node-id]');
+        if (!node || !svg.contains(node)) return;
+        var id = node.getAttribute('data-node-id');
+        // Arrow keys follow the tree convention: left collapses, right expands.
+        if (event.key === 'ArrowLeft' && toggles[id] && !collapsed[id]) { event.preventDefault(); setCollapsed(id, true); }
+        else if (event.key === 'ArrowRight' && collapsed[id]) { event.preventDefault(); setCollapsed(id, false); }
+      }, true);
+
+      // Focus reveals ancestors synchronously before positioning its lens.
+      // The observer also covers paths that change pressed state directly.
+      new MutationObserver(function (records) {
+        records.forEach(function (record) {
+          var el = record.target;
+          if (el.hasAttribute && el.hasAttribute('data-tree-hidden') && el.getAttribute('aria-pressed') === 'true') {
+            reveal(el.getAttribute('data-node-id'));
+          }
+        });
+      }).observe(svg, { subtree: true, attributes: true, attributeFilter: ['aria-pressed'] });
+
+      Object.keys(toggles).forEach(function (id) {
+        if (toggles[id].hasAttribute('data-tree-initially-collapsed')) collapsed[id] = true;
+      });
+      apply();
+
+      return {
+        active: true,
+        toggle: toggle,
+        collapse: function (id) { return setCollapsed(id, true); },
+        expand: function (id) { return setCollapsed(id, false); },
+        reveal: reveal,
+        restoreAll: restoreAll,
+        collapsedIds: function () { return Object.keys(collapsed); },
+        expandAllControl: expandAll
+      };
+    })();
+
 
     /* ============================================================
        Explore — stable-ID neighborhood focus + dependency-free pan/zoom.
@@ -7886,7 +8702,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       function relationshipEdgeShapes(edge) {
         if (!edge) return [];
         if (/^(path|line|polyline)$/i.test(edge.tagName || '')) return [edge];
-        return Array.prototype.slice.call(edge.querySelectorAll('path, line, polyline'));
+        return Array.prototype.slice.call(edge.querySelectorAll('path:not([data-ambient-flow-overlay]), line, polyline'));
       }
       function relationshipHitRecords() {
         var recordsByKey = {};
@@ -7990,6 +8806,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       }
       function relationshipPulseGeometry(shape) {
         var clone = shape.cloneNode(false);
+        if (shape.getAttribute('data-motion-path')) clone.setAttribute('d', relationshipTokenPath(shape));
+        clone.removeAttribute('data-motion-path');
         clone.removeAttribute('id');
         clone.removeAttribute('class');
         clone.removeAttribute('style');
@@ -8034,7 +8852,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       function relationshipTokenPath(shape) {
         if (!shape) return '';
         var tagName = String(shape.tagName || '').toLowerCase();
-        if (tagName === 'path') return shape.getAttribute('d') || '';
+        if (tagName === 'path') return shape.getAttribute('data-motion-path') || shape.getAttribute('d') || '';
         if (tagName === 'line') {
           return 'M ' + shape.getAttribute('x1') + ' ' + shape.getAttribute('y1') +
             ' L ' + shape.getAttribute('x2') + ' ' + shape.getAttribute('y2');
@@ -8795,6 +9613,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           if (byId[id] && normalized.indexOf(id) === -1) normalized.push(id);
         });
         if (!normalized.length) return false;
+        // Hash restoration and internal selections use this path too. Reveal
+        // tree ancestors before measuring the selected node for its lens.
+        if (Archify.treeBranches && Archify.treeBranches.active) {
+          normalized.forEach(function (id) { Archify.treeBranches.reveal(id); });
+        }
         if (normalized.length === activeIds.length && normalized.every(function (id, index) { return activeIds[index] === id; }) && options.toggle !== false) {
           clear();
           return true;
@@ -8852,31 +9675,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         return setMany([id], options);
       }
 
-      function fallbackCopy(value) {
-        var field = document.createElement('textarea');
-        field.value = value;
-        field.setAttribute('readonly', '');
-        field.style.position = 'fixed';
-        field.style.opacity = '0';
-        document.body.appendChild(field);
-        field.select();
-        var copied = false;
-        try { copied = document.execCommand('copy'); } catch (_) {}
-        field.remove();
-        return copied;
-      }
-
       function copyFocusLink() {
         if (activeIds.length !== 1) return Promise.resolve(false);
         var record = pinnedRelationshipRecord();
         var relationId = record && record.id;
-        var value = location.href.replace(/#.*$/, '') + (relationId
-          ? '#relation=' + encodeURIComponent(relationId)
-          : '#focus=' + encodeURIComponent(activeIds[0]) + (reachabilityMode ? '&reach=' + reachabilityMode : ''));
-        var copy = navigator.clipboard && typeof navigator.clipboard.writeText === 'function'
-          ? navigator.clipboard.writeText(value).then(function () { return true; }).catch(function () { return fallbackCopy(value); })
-          : Promise.resolve(fallbackCopy(value));
-        return copy.then(function (copied) {
+        var value = readerLink(relationId
+          ? 'relation=' + encodeURIComponent(relationId)
+          : 'focus=' + encodeURIComponent(activeIds[0]) + (reachabilityMode ? '&reach=' + reachabilityMode : ''));
+        return (value === null ? Promise.resolve(false) : copyReaderText(value)).then(function (copied) {
           copyBtn.textContent = viewerText(copied ? 'viewer.common.copied' : 'viewer.common.copyFailed');
           copyBtn.setAttribute('aria-label', copied
             ? viewerText(relationId ? 'viewer.passport.copy.pinned.success' : 'viewer.passport.copy.focused.success')
@@ -9004,12 +9810,21 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var target = event.target;
         if (chip.hidden || !target || typeof target.closest !== 'function' || chip.contains(target)) return;
         if (container.getAttribute('data-just-panned') === 'true') return;
-        if (target.closest('[data-node-id], [data-relationship-hit-key], .overview-map')) return;
+        // Export consumes the active semantic snapshot; its controls are not
+        // an outside selection. Genuine outside activation still clears it.
+        if (target.closest('[data-node-id], [data-relationship-hit-key], .overview-map, #btn-export, #export-menu')) return;
         clear();
       }, true);
       window.addEventListener('scroll', requestLensPlacement, { passive: true });
       window.addEventListener('resize', requestLensPlacement);
       container.addEventListener('scroll', requestLensPlacement, { passive: true });
+      // Reader and Chrome may finish resizing the stage after window resize.
+      // The absolute Passport does not resize its container when reclamped.
+      if (typeof ResizeObserver === 'function') {
+        new ResizeObserver(function () {
+          if (!chip.hidden) requestLensPlacement();
+        }).observe(container);
+      }
       document.addEventListener('visibilitychange', function () {
         if (document.hidden) removeRelationshipPulse();
       });
@@ -9121,7 +9936,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       }
       function edgeShapes(edge) {
         if (/^(path|line|polyline)$/i.test(edge.tagName)) return [edge];
-        return Array.prototype.slice.call(edge.querySelectorAll('path, line, polyline'));
+        return Array.prototype.slice.call(edge.querySelectorAll('path:not([data-ambient-flow-overlay]), line, polyline'));
       }
       function removeOverlay() {
         Array.prototype.forEach.call(svg.querySelectorAll('[data-intent-trace-overlay]'), function (overlay) {
@@ -9144,6 +9959,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       }
       function traceGeometry(shape, direction) {
         var clone = shape.cloneNode(false);
+        if (shape.getAttribute('data-motion-path')) clone.setAttribute('d', shape.getAttribute('data-motion-path'));
+        clone.removeAttribute('data-motion-path');
         clone.removeAttribute('id');
         clone.removeAttribute('class');
         clone.removeAttribute('style');
@@ -9291,6 +10108,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       };
     })();
 
+
     /* ============================================================
        Adaptive Reader Shell — one diagram across laptop and monitor.
        The canonical SVG and viewBox never change. On ordinary desktop pages,
@@ -9347,14 +10165,20 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       var shell = document.querySelector('.container');
       var diagram = document.querySelector('.diagram-container');
       var svg = diagram && diagram.querySelector(':scope > svg');
+      var legend = svg && svg.querySelector('[data-legend]');
       var header = shell && shell.querySelector('.header');
       var cards = shell && shell.querySelector('.cards');
       var viewBox = svg && svg.viewBox && svg.viewBox.baseVal;
       var ratio = viewBox && viewBox.height > 0 ? viewBox.width / viewBox.height : 0;
-      var measuredHeightFit = svg && svg.getAttribute('data-reader-fit') === 'intrinsic-height';
+      var readerFit = svg && svg.getAttribute('data-reader-fit');
+      var widthFirstReading = readerFit === 'width-first';
+      var automaticSequence = widthFirstReading && svg.hasAttribute('data-sequence-column-fit');
+      var readingScroll = widthFirstReading;
+      var measuredHeightFit = readerFit === 'intrinsic-height' || widthFirstReading;
       var frame = 0;
       var settleFrame = 0;
       var lastWidth = 0;
+      var automaticAreaHeight = 0;
       // Widest reader the overflow settle has accepted for this viewport (0 =
       // uncapped). Card copy rewraps as the reader narrows, so recomputing
       // from fixed heights alone would widen again and oscillate; only a
@@ -9364,6 +10188,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       var MIN_DESKTOP_WIDTH = 1024;
       var MIN_READER_WIDTH = 960;
       var MAX_READER_WIDTH = 1920;
+      var MAX_AUTOMATIC_SCALE = 1.5;
       var MIN_PROJECTED_NODE_TEXT_PX = 6;
       var declaredMinimumText = svg ? parseFloat(svg.getAttribute('data-reader-min-text') || '') : null;
       var requestedMinimumText = Number.isFinite(declaredMinimumText)
@@ -9475,12 +10300,65 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       function clear() {
         html.style.removeProperty('--archify-reader-width');
         html.style.removeProperty('--archify-diagram-max-width');
+        html.style.removeProperty('--archify-diagram-min-height');
+        html.removeAttribute('data-reader-area');
         html.removeAttribute('data-reader-narrow');
         html.removeAttribute('data-reader-layout');
         html.removeAttribute('data-reader-overflow');
         setRail(false);
         lastWidth = 0;
+        automaticAreaHeight = 0;
         settledCap = 0;
+        clearLegend();
+      }
+      function clearLegend() {
+        if (!legend || !legend.hasAttribute('data-reader-legend-corner')) return;
+        legend.removeAttribute('data-reader-legend-corner');
+        legend.style.removeProperty('--archify-reader-legend-transform');
+      }
+      // Keep the original legend in its SVG: renderer hover/focus selectors and
+      // canonical export still own that same group. Ordinary capped reading
+      // and fitted automatic sequences borrow the outer corner at 25–100%.
+      function syncLegend() {
+        var cameraScale = Number(svg && svg.getAttribute('data-view-scale')) || 1;
+        var cornerReading = html.getAttribute('data-reader-area') === 'true' || automaticSequence && !readingScroll;
+        if (!legend || !eligible() || !cornerReading || cameraScale > 1.001) {
+          clearLegend();
+          return;
+        }
+        var box = legend.getBBox();
+        var parentMatrix = legend.parentNode.getScreenCTM();
+        if (!parentMatrix || !box.width || !box.height) {
+          clearLegend();
+          return;
+        }
+        var rect = diagram.getBoundingClientRect();
+        var style = window.getComputedStyle(diagram);
+        var scale = Math.min(svg.clientWidth / viewBox.width, svg.clientHeight / viewBox.height);
+        if (!Number.isFinite(scale) || scale <= 0) {
+          clearLegend();
+          return;
+        }
+        var left = rect.left + number(style.borderLeftWidth) + number(style.paddingLeft);
+        var right = rect.right - number(style.borderRightWidth) - number(style.paddingRight);
+        var bottom = rect.bottom - number(style.borderBottomWidth) - number(style.paddingBottom);
+        var top = bottom - box.height * scale;
+        var nav = diagram.querySelector('.diagram-nav');
+        var navRect = visible(nav) ? nav.getBoundingClientRect() : null;
+        // Long or multi-row legends retain their canonical position if the
+        // spare corner cannot hold them clear of the dock and content area.
+        if (left + box.width * scale > right || top < rect.top + number(style.paddingTop) + number(style.borderTopWidth) ||
+            (navRect && left < navRect.right + 10 && left + box.width * scale > navRect.left - 10 &&
+              top < navRect.bottom + 10 && bottom > navRect.top - 10)) {
+          clearLegend();
+          return;
+        }
+        var matrix = parentMatrix.inverse().translate(left, top).scale(scale).translate(-box.x, -box.y);
+        var value = 'matrix(' + [matrix.a, matrix.b, matrix.c, matrix.d, matrix.e, matrix.f].join(',') + ')';
+        if (legend.style.getPropertyValue('--archify-reader-legend-transform') !== value) {
+          legend.style.setProperty('--archify-reader-legend-transform', value);
+        }
+        if (!legend.hasAttribute('data-reader-legend-corner')) legend.setAttribute('data-reader-legend-corner', '');
       }
       // Rail modes: "true" docks beside the diagram, "collapsed" leaves only the
       // reveal control, "overlay" opens a drawer when docking would break the
@@ -9542,22 +10420,36 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       // usable header, toolbar, and controls; its SVG is centred instead.
       function applyWidth(width, minWidth) {
         var rounded = Math.max(Math.ceil(minWidth || 0), Math.round(width));
-        if (Math.abs(rounded - lastWidth) < 1) return false;
+        var changed = Math.abs(rounded - lastWidth) >= 1;
         lastWidth = rounded;
         var shellFloor = Math.min(MIN_READER_WIDTH, Math.max(0, window.innerWidth - chromeMetrics().bodyX));
         html.style.setProperty('--archify-reader-width', Math.max(rounded, shellFloor) + 'px');
-        if (rounded < shellFloor) {
-          // `rounded` already includes a docked rail and its gap; the SVG cap
-          // is only the diagram's share, not the space beside it.
-          var railShare = html.getAttribute('data-reader-rail') === 'true' ? RAIL_WIDTH + RAIL_GAP : 0;
-          html.style.setProperty('--archify-diagram-max-width', Math.max(1, rounded - railShare - chromeMetrics().diagramX) + 'px');
+        var railShare = html.getAttribute('data-reader-rail') === 'true' ? RAIL_WIDTH + RAIL_GAP : 0;
+        var diagramWidth = Math.max(1, rounded - railShare - chromeMetrics().diagramX);
+        // Content fitting and automatic enlargement never reduce the outer
+        // reader region. The SVG alone takes the narrower reading width.
+        var automaticWidthCap = measuredHeightFit && viewBox && viewBox.width > 0
+          ? viewBox.width * MAX_AUTOMATIC_SCALE : 0;
+        if (automaticWidthCap && diagramWidth > automaticWidthCap) {
+          diagramWidth = automaticWidthCap;
+          html.style.setProperty('--archify-diagram-min-height', automaticAreaHeight + 'px');
+          html.setAttribute('data-reader-area', 'true');
+        } else {
+          // Ordinary automatic diagrams retain their existing document flow.
+          // Settling can also stop binding the cap without a new measure.
+          html.style.removeProperty('--archify-diagram-min-height');
+          html.removeAttribute('data-reader-area');
+        }
+        if (diagramWidth < Math.max(rounded, shellFloor) - railShare - chromeMetrics().diagramX) {
+          html.style.setProperty('--archify-diagram-max-width', diagramWidth + 'px');
           html.setAttribute('data-reader-narrow', 'true');
         } else {
           html.style.removeProperty('--archify-diagram-max-width');
           html.removeAttribute('data-reader-narrow');
         }
         html.setAttribute('data-reader-layout', 'adaptive');
-        return true;
+        syncLegend();
+        return changed;
       }
       function settleOverflow(minWidth) {
         if (settleFrame) cancelAnimationFrame(settleFrame);
@@ -9569,11 +10461,13 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             document.documentElement.scrollHeight,
             document.body.scrollHeight
           ) - window.innerHeight - belowFold();
-          if (overflow > 1 && lastWidth > Math.ceil(minWidth)) {
+          // visual-check fails any page whose rounded-up height exceeds the
+          // viewport, so even a 1px remainder must be reduced or declared.
+          if (overflow > 0 && !readingScroll && lastWidth > Math.ceil(minWidth)) {
             applyWidth(Math.max(minWidth, lastWidth - overflow * ratio - 4), minWidth);
             settledCap = lastWidth;
             html.setAttribute('data-reader-overflow', 'reduced');
-          } else if (overflow > 1) {
+          } else if (overflow > 0) {
             html.setAttribute('data-reader-overflow', 'authored');
           } else {
             html.removeAttribute('data-reader-overflow');
@@ -9588,17 +10482,21 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         }
         var chrome = chromeMetrics();
         var viewportCap = Math.max(0, window.innerWidth - chrome.bodyX);
+        // Sequence first-screen fitting preserves source text sizes instead
+        // of shrinking to the shared hard readability floor.
         var readableWidth = viewBox && viewBox.width > 0
-          ? viewBox.width * minimumReadableScale() + chrome.diagramX
+          ? viewBox.width * (automaticSequence ? 1 : minimumReadableScale()) + chrome.diagramX
           : MIN_READER_WIDTH;
         var maxWidth = Math.min(MAX_READER_WIDTH, viewportCap);
-        var readableMinimumWidth = measuredHeightFit && ratio < WIDE_RATIO
+        var readableMinimumWidth = automaticSequence || measuredHeightFit && ratio < WIDE_RATIO
           ? readableWidth
           : measuredHeightFit && ratio >= WIDE_RATIO && Number.isFinite(declaredMinimumText)
             ? Math.max(MIN_READER_WIDTH, readableWidth)
             : MIN_READER_WIDTH;
         var minWidth;
-        if (measuredHeightFit && ratio < WIDE_RATIO) {
+        if (automaticSequence) {
+          minWidth = Math.min(readableMinimumWidth, maxWidth);
+        } else if (measuredHeightFit && ratio < WIDE_RATIO) {
           minWidth = Math.min(readableMinimumWidth, viewportCap);
         } else if (measuredHeightFit && ratio >= WIDE_RATIO && Number.isFinite(declaredMinimumText)) {
           minWidth = Math.min(readableMinimumWidth, maxWidth);
@@ -9620,10 +10518,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           if (collapsedPreference === '1' || (collapsedPreference !== '0' && !comfortable)) mode = 'collapsed';
           else mode = fitsReadable ? 'true' : 'overlay';
         }
-        // With notes below the fold, the first screen belongs to the whole
-        // diagram and its controls: it may shrink past the comfortable primary
-        // size down to the renderer's readable text floor, and zoom restores
-        // detail. Only a graph taller than that floor allows still scrolls.
+        // Height-fit families with notes below the fold may shrink to their
+        // readable floor. Width-first families choose their reading width
+        // below and retain page scrolling instead.
         if (mode === 'bottom') primaryWidth = 0;
         if (primaryWidth > 0) minWidth = Math.max(minWidth, Math.min(maxWidth, primaryWidth + chrome.diagramX));
         var docked = mode === 'true';
@@ -9635,6 +10532,16 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           outerHeight(header) + stackedBelow;
         var availableSvgHeight = Math.max(1, window.innerHeight - fixedHeight);
         var desiredWidth = availableSvgHeight * ratio + chrome.diagramX + (docked ? railExtra : 0);
+        // Compact automatic sequences fit the first screen without shrinking
+        // their authored text. Longer sequences retain reading width and page
+        // scroll; other width-first families keep their existing strategy.
+        var sequenceFits = automaticSequence && Math.min(desiredWidth, maxWidth) >=
+          readableWidth + (docked ? railExtra : 0);
+        readingScroll = widthFirstReading && !sequenceFits;
+        if (readingScroll) desiredWidth = maxWidth;
+        // Only a binding enlargement cap needs a separate normal reader area.
+        // Uncapped diagrams keep their existing natural height and Chrome fit.
+        automaticAreaHeight = availableSvgHeight + chrome.diagramY;
         var width = Math.max(minWidth, Math.min(maxWidth, desiredWidth, settledCap || desiredWidth));
         applyWidth(width, minWidth);
         settleOverflow(minWidth);
@@ -9663,7 +10570,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           Math.round(shellRect.width * 100) / 100,
           Math.round(shellRect.height * 100) / 100,
           Math.round(diagramRect.width * 100) / 100,
-          Math.round(diagramRect.height * 100) / 100
+          Math.round(diagramRect.height * 100) / 100,
+          legend && legend.hasAttribute('data-reader-legend-corner') ? legend.style.getPropertyValue('--archify-reader-legend-transform') : ''
         ].join('|');
       }
       function layoutPending() { return Boolean(frame || settleFrame); }
@@ -9682,6 +10590,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         schedule();
       }, { passive: true });
       window.addEventListener('load', schedule, { once: true });
+      window.addEventListener('beforeprint', clearLegend);
+      window.addEventListener('afterprint', schedule);
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule).catch(function () {});
       if (typeof ResizeObserver === 'function') {
         var resizeObserver = new ResizeObserver(schedule);
@@ -9724,6 +10634,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         measure: measure,
         schedule: schedule,
         whenStable: whenStable,
+        syncLegend: syncLegend,
         active: function () { return html.getAttribute('data-reader-layout') === 'adaptive'; },
         receipt: function () { return { ratio: ratio, width: lastWidth }; }
       };
@@ -10016,6 +10927,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var legendRect = legend ? legend.getBoundingClientRect() : { top: 0, left: 0 };
         return [
           reserve,
+          lift,
           Math.round(containerRect.width * 100) / 100,
           Math.round(containerRect.height * 100) / 100,
           Math.round(navRect.left * 100) / 100,
@@ -10026,7 +10938,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           lastReceipt ? lastReceipt.stageGap : ''
         ].join('|');
       }
-      function layoutPending() { return Boolean(frame || settleFrame || probingBaseline); }
+      function layoutPending() { return Boolean(frame || settleFrame || liftFrame || probingBaseline); }
       function whenStable() {
         return Archify.waitForStableLayout({
           schedule: schedule,
@@ -10046,6 +10958,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       if (typeof ResizeObserver === 'function') {
         var resizeObserver = new ResizeObserver(schedule);
         [nav, svg, legend].forEach(function (element) { if (element) resizeObserver.observe(element); });
+        // Camera zoom changes outer page flow without changing intrinsic SVG
+        // size. Follow that box for dock placement, independently of scrolling
+        // and the baseline stage-rail measurement.
+        new ResizeObserver(scheduleLift).observe(container);
       }
       if (typeof MutationObserver === 'function') {
         var contentObserver = new MutationObserver(function (records) {
@@ -10129,6 +11045,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       var resetPercentLabel = resetBtn.querySelector('[data-view-percent]');
       var inBtn = container.querySelector('[data-view="in"]');
       var state = { scale: 1, x: 0, y: 0, mode: 'overview' };
+      var minimumZoom = 0.25;
+      var maximumZoom = 3;
       var drag = null;
       var cameraTimer = null;
       var cameraFrame = null;
@@ -10137,12 +11055,25 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       var clipFrame = 0;
       var resizeFrame = 0;
       var autoScrollUntil = 0;
+      var originalFlowHeight = container.style.getPropertyValue('height');
+      var originalFlowHeightPriority = container.style.getPropertyPriority('height');
+      var compactPageFlow = false;
 
       var viewBox = svg.viewBox && svg.viewBox.baseVal;
 
       function clamp() {
         var width = svg.clientWidth || 1;
         var height = svg.clientHeight || 1;
+        if (state.scale < 1) {
+          var visibleWidth = Math.min(width, container.clientWidth);
+          var availableX = visibleWidth - width * state.scale;
+          state.x = availableX >= 0 ? container.scrollLeft + availableX / 2
+            : Math.max(container.scrollLeft + availableX, Math.min(container.scrollLeft, state.x));
+          // Long sequences keep their first rows in view instead of centering
+          // inside a layout box that can be several screens tall.
+          state.y = height > window.innerHeight ? 0 : height * (1 - state.scale) / 2;
+          return;
+        }
         state.x = Math.min(0, Math.max(width - width * state.scale, state.x));
         state.y = Math.min(0, Math.max(height - height * state.scale, state.y));
       }
@@ -10165,26 +11096,35 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       function logicalViewport() {
         var metrics = contentMetrics();
         if (!metrics) return null;
+        var camera = sampleRenderedState();
         var x;
         var y;
         var width;
         var height;
-        if (window.innerWidth <= 720 && container.hasAttribute('data-wide-diagram')) {
+        if (window.innerWidth <= 720 && container.hasAttribute('data-wide-diagram') && camera.scale >= 1) {
           x = viewBox.x + container.scrollLeft / metrics.scale;
           y = viewBox.y;
           width = Math.min(viewBox.width, Math.max(1, container.clientWidth / metrics.scale));
           height = viewBox.height;
         } else {
-          x = viewBox.x + ((-state.x / state.scale) - metrics.offsetX) / metrics.scale;
-          y = viewBox.y + ((-state.y / state.scale) - metrics.offsetY) / metrics.scale;
-          width = Math.min(viewBox.width, metrics.width / state.scale / metrics.scale);
-          height = Math.min(viewBox.height, metrics.height / state.scale / metrics.scale);
+          x = viewBox.x + (((container.scrollLeft - camera.x) / camera.scale) - metrics.offsetX) / metrics.scale;
+          y = viewBox.y + ((-camera.y / camera.scale) - metrics.offsetY) / metrics.scale;
+          width = Math.min(viewBox.width, Math.min(metrics.width, container.clientWidth) / camera.scale / metrics.scale);
+          height = Math.min(viewBox.height, metrics.height / camera.scale / metrics.scale);
         }
         width = Math.max(1, Math.min(viewBox.width, width));
         height = Math.max(1, Math.min(viewBox.height, height));
         x = Math.max(viewBox.x, Math.min(viewBox.x + viewBox.width - width, x));
         y = Math.max(viewBox.y, Math.min(viewBox.y + viewBox.height - height, y));
-        return { x: x, y: y, width: width, height: height, scale: state.scale };
+        // The camera's layout box can span several browser screens. Intersect
+        // its logical bounds with the actual window, including page scrolling.
+        var matrix = svg.getScreenCTM();
+        if (matrix && matrix.d > 0) {
+          var end = y + height;
+          y = Math.max(y, Math.min(end - 1, -matrix.f / matrix.d));
+          height = Math.max(1, Math.min(end, (window.innerHeight - matrix.f) / matrix.d) - y);
+        }
+        return { x: x, y: y, width: width, height: height, scale: camera.scale };
       }
       function detailLevel() {
         if (state.mode === 'semantic') return 'full';
@@ -10214,7 +11154,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           semantic: semantic ? viewerText('viewer.nav.camera.semantic') : '',
           hint: detailHint
         });
-        resetBtn.setAttribute('aria-label', viewerText('viewer.nav.camera', { hint: detailHint }));
+        var readout = (showDetailLevel ? resolvedLevel + ' ' : '') + percent;
+        resetBtn.setAttribute('aria-label', readout + ' · ' + viewerText('viewer.nav.camera', { hint: detailHint }));
         resetBtn.setAttribute('data-detail-level', detail);
         container.setAttribute('data-detail-level', detail);
         container.setAttribute('data-camera-mode', state.mode);
@@ -10242,13 +11183,45 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           Math.abs(rendered.x - state.x) < 0.05 &&
           Math.abs(rendered.y - state.y) < 0.05;
       }
+      // CSS transforms keep the SVG's intrinsic layout size. Shrink only its
+      // outer page-flow box for long ordinary diagrams, never the SVG itself:
+      // changing its height would feed the smaller size back into camera math.
+      function ordinaryPage() {
+        var html = document.documentElement;
+        return html.getAttribute('data-embed') !== 'true' &&
+          html.getAttribute('data-present') !== 'true' &&
+          (!window.matchMedia || !window.matchMedia('print').matches);
+      }
+      function syncPageFlow(camera) {
+        camera = camera || state;
+        var height = svg.clientHeight;
+        var ordinary = ordinaryPage();
+        // Restore ordinary flow as soon as the target reaches 100%. Chrome
+        // uses that target to resume baseline rail measurement; retaining a
+        // partially shrunk box during the CSS transition would inflate reserve.
+        if (ordinary && state.scale < 1 && camera.scale < 1 && height > window.innerHeight) {
+          var style = getComputedStyle(container);
+          var chrome = ['paddingTop', 'paddingBottom', 'borderTopWidth', 'borderBottomWidth']
+            .reduce(function (total, key) { return total + (parseFloat(style[key]) || 0); }, 0);
+          var flowHeight = Math.ceil(height * camera.scale + Math.max(0, camera.y) + chrome) + 'px';
+          if (container.style.getPropertyValue('height') !== flowHeight) container.style.setProperty('height', flowHeight);
+          compactPageFlow = true;
+        } else if (compactPageFlow) {
+          if (originalFlowHeight) container.style.setProperty('height', originalFlowHeight, originalFlowHeightPriority);
+          else container.style.removeProperty('height');
+          compactPageFlow = false;
+        }
+      }
       function syncViewportClip() {
         if (clipFrame) cancelAnimationFrame(clipFrame);
         clipFrame = 0;
         function sample() {
           clipFrame = 0;
           var rendered = sampleRenderedState();
+          syncPageFlow(rendered);
           clipToViewport(rendered);
+          if (Archify.radar && Archify.radar.isOpen()) Archify.radar.sync();
+          if (Archify.readerLayout && typeof Archify.readerLayout.syncLegend === 'function') Archify.readerLayout.syncLegend();
           if (!cameraSettled(rendered)) clipFrame = requestAnimationFrame(sample);
         }
         sample();
@@ -10256,12 +11229,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       function apply() {
         clamp();
         svg.style.transform = 'translate(' + state.x + 'px,' + state.y + 'px) scale(' + state.scale + ')';
+        svg.setAttribute('data-view-scale', String(state.scale));
         syncViewportClip();
         renderControls();
-        outBtn.disabled = state.scale <= 1;
-        inBtn.disabled = state.scale >= 3;
+        outBtn.disabled = state.scale <= minimumZoom;
+        inBtn.disabled = state.scale >= maximumZoom;
         container.classList.toggle('is-pannable', state.scale > 1);
-        svg.setAttribute('data-view-scale', String(state.scale));
         if (Archify.radar && typeof Archify.radar.sync === 'function') Archify.radar.sync();
         if (Archify.viewerChromeLayout && typeof Archify.viewerChromeLayout.schedule === 'function') {
           Archify.viewerChromeLayout.schedule();
@@ -10355,8 +11328,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         options = options || {};
         if (options.manual !== false) interruptCamera();
         var previous = state.scale;
-        next = Math.max(1, Math.min(3, Math.round(next * 4) / 4));
+        next = Math.max(minimumZoom, Math.min(maximumZoom, Math.round(next * 4) / 4));
         if (next === previous) return;
+        var longDiagram = svg.clientHeight > window.innerHeight && Math.min(previous, next) < 1;
+        var before = longDiagram ? svg.getBoundingClientRect() : null;
+        var anchorY = before ? Math.max(0, Math.min(window.innerHeight, before.bottom) + Math.max(0, before.top)) / 2 : 0;
+        if (before && (before.bottom <= 0 || before.top >= window.innerHeight)) anchorY = window.innerHeight / 2;
+        var logicalY = before ? Math.max(0, Math.min(svg.clientHeight, (anchorY - before.top) / previous)) : 0;
+        var documentTop = before ? window.scrollY + before.top - state.y : 0;
         var centerX = (svg.clientWidth || 1) / 2;
         var centerY = (svg.clientHeight || 1) / 2;
         var contentX = (centerX - state.x) / previous;
@@ -10365,6 +11344,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         state.x = centerX - contentX * next;
         state.y = centerY - contentY * next;
         apply();
+        if (longDiagram) {
+          var scaledHeight = svg.clientHeight * next;
+          var pageY = scaledHeight <= window.innerHeight ? documentTop + state.y
+            : documentTop + state.y + logicalY * next - anchorY;
+          window.scrollTo({ left: window.scrollX, top: Math.max(0, pageY), behavior: 'instant' });
+        }
       }
       function reset(options) {
         options = options || {};
@@ -10372,6 +11357,17 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         else stopCameraMotion('reset', false);
         state = { scale: 1, x: 0, y: 0, mode: 'overview' };
         apply();
+      }
+      function scrollLongDiagramTo(contentY, metrics, options) {
+        if (!ordinaryPage() || metrics.height <= window.innerHeight) return;
+        // apply() may still be animating its CSS transform. Recover the layout
+        // origin from the painted transform, then use the final camera target.
+        var painted = sampleRenderedState();
+        var rect = svg.getBoundingClientRect();
+        var pixelScale = rect.height / metrics.height / painted.scale;
+        var documentTop = window.scrollY + rect.top - painted.y * pixelScale;
+        var target = documentTop + (state.y + contentY * state.scale) * pixelScale - window.innerHeight / 2;
+        window.scrollTo({ left: window.scrollX, top: Math.max(0, target), behavior: options.instant ? 'instant' : 'smooth' });
       }
       function centerAt(logicalX, logicalY, options) {
         options = options || {};
@@ -10391,6 +11387,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           autoScrollUntil = Date.now() + 80;
           try { container.scrollTo({ left: mobileTarget, behavior: options.instant ? 'auto' : 'smooth' }); }
           catch (_) { container.scrollLeft = mobileTarget; }
+          scrollLongDiagramTo(metrics.offsetY + (logicalY - viewBox.y) * metrics.scale, metrics, options);
           return true;
         }
         var minimumScale = Math.max(1, Math.min(3, Number(options.minimumScale) || 1));
@@ -10402,6 +11399,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         state.y = metrics.height / 2 - contentY * state.scale;
         state.mode = 'manual';
         apply();
+        scrollLongDiagramTo(contentY, metrics, options);
         if (Archify.focus && Archify.focus.reposition) Archify.focus.reposition();
         return true;
       }
@@ -10621,6 +11619,20 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           else apply();
         });
       });
+      // Reader width and Chrome reserve can change without a window resize.
+      // Observe their resulting sizes; the SVG remains intrinsically sized, so
+      // the outer flow height cannot feed back into its camera base.
+      if (typeof ResizeObserver === 'function') {
+        var flowObserver = new ResizeObserver(function () { syncPageFlow(sampleRenderedState()); });
+        flowObserver.observe(svg);
+        flowObserver.observe(container);
+      }
+      if (typeof MutationObserver === 'function') {
+        new MutationObserver(function () { syncPageFlow(sampleRenderedState()); })
+          .observe(document.documentElement, { attributes: true, attributeFilter: ['data-embed', 'data-present'] });
+      }
+      var printMedia = window.matchMedia && window.matchMedia('print');
+      if (printMedia && printMedia.addEventListener) printMedia.addEventListener('change', function () { syncPageFlow(sampleRenderedState()); });
       window.addEventListener('hashchange', function () { requestAnimationFrame(syncSemantic); });
       apply();
       pinControls();
@@ -11501,6 +12513,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           var links = document.createElement('em');
           links.textContent = badge;
           links.title = context.kind === 'focus' ? badge : action;
+          if (item.links === 0) links.setAttribute('data-zero', 'true');
           var meta = document.createElement('small');
           meta.textContent = [viewerKindLabel(item.type), item.id, item.sublabel, item.tag].filter(Boolean).join(' \u00b7 ');
           meta.title = [viewerKindLabel(item.type), item.id, item.context, item.sublabel, item.tag].filter(Boolean).join(' \u00b7 ');
@@ -11741,6 +12754,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     })();
 
 
+
     /* ============================================================
        Route Probe — shortest directed path over compiled semantics.
        The graph is read from renderer-owned stable IDs and relationship
@@ -11847,7 +12861,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       }
       function edgeShapes(edge) {
         if (/^(path|line|polyline)$/i.test(edge.tagName)) return [edge];
-        return Array.prototype.slice.call(edge.querySelectorAll('path, line, polyline'));
+        return Array.prototype.slice.call(edge.querySelectorAll('path:not([data-ambient-flow-overlay]), line, polyline'));
       }
       function removeOverlay() {
         Array.prototype.forEach.call(svg.querySelectorAll('[data-route-probe-overlay]'), function (overlay) {
@@ -12077,6 +13091,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       }
       function traceGeometry(shape, step) {
         var clone = shape.cloneNode(false);
+        if (shape.getAttribute('data-motion-path')) clone.setAttribute('d', shape.getAttribute('data-motion-path'));
+        clone.removeAttribute('data-motion-path');
         clone.removeAttribute('id');
         clone.removeAttribute('class');
         clone.removeAttribute('style');
@@ -12177,6 +13193,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       }
       function journeyGeometry(shape) {
         var clone = shape.cloneNode(false);
+        if (shape.getAttribute('data-motion-path')) clone.setAttribute('d', shape.getAttribute('data-motion-path'));
+        clone.removeAttribute('data-motion-path');
         clone.removeAttribute('id');
         clone.removeAttribute('class');
         clone.removeAttribute('style');
@@ -12624,26 +13642,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         if (!context || !Archify.finder) return false;
         return Archify.finder.open({ context: context });
       }
-      function fallbackCopy(value) {
-        var field = document.createElement('textarea');
-        field.value = value;
-        field.setAttribute('readonly', '');
-        field.style.position = 'fixed';
-        field.style.opacity = '0';
-        document.body.appendChild(field);
-        field.select();
-        var copied = false;
-        try { copied = document.execCommand('copy'); } catch (_) {}
-        field.remove();
-        return copied;
-      }
       function copyLink() {
         if (mode !== 'result') return Promise.resolve(false);
-        var value = location.href.replace(/#.*$/, '') + '#route=' + encodeURIComponent(startId) + '~' + encodeURIComponent(endId);
-        var copy = navigator.clipboard && typeof navigator.clipboard.writeText === 'function'
-          ? navigator.clipboard.writeText(value).then(function () { return true; }).catch(function () { return fallbackCopy(value); })
-          : Promise.resolve(fallbackCopy(value));
-        return copy.then(function (copied) {
+        var value = readerLink('route=' + encodeURIComponent(startId) + '~' + encodeURIComponent(endId));
+        return (value === null ? Promise.resolve(false) : copyReaderText(value)).then(function (copied) {
           copyBtn.textContent = viewerText(copied ? 'viewer.common.copied' : 'viewer.common.copyFailed');
           copyBtn.setAttribute('aria-label', viewerText(copied ? 'viewer.route.copy.success' : 'viewer.route.copy.failed'));
           window.setTimeout(function () {
@@ -12773,6 +13775,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       };
     })();
 
+
     /* ============================================================
        Semantic Lens — a counted, viewer-only legend over data-node-kind.
        One selected kind reveals every authored relationship touching it.
@@ -12836,7 +13839,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       function edgeShapes(edge) {
         if (!edge) return [];
         if (/^(path|line|polyline)$/i.test(edge.tagName || '')) return [edge];
-        return Array.prototype.slice.call(edge.querySelectorAll('path, line, polyline'));
+        return Array.prototype.slice.call(edge.querySelectorAll('path:not([data-ambient-flow-overlay]), line, polyline'));
       }
       function legendSourceBounds(entry) {
         var bounds = null;
@@ -13009,6 +14012,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       }
       function flowGeometry(shape, direction, step) {
         var clone = shape.cloneNode(false);
+        if (shape.getAttribute('data-motion-path')) clone.setAttribute('d', shape.getAttribute('data-motion-path'));
+        clone.removeAttribute('data-motion-path');
         clone.removeAttribute('id');
         clone.removeAttribute('class');
         clone.removeAttribute('style');
@@ -13292,28 +14297,16 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         if (options.closePanel === true) close({ restoreFocus: false });
         return false;
       }
-      function fallbackCopy(value) {
-        var field = document.createElement('textarea');
-        field.value = value;
-        field.setAttribute('readonly', '');
-        field.style.position = 'fixed';
-        field.style.opacity = '0';
-        document.body.appendChild(field);
-        field.select();
-        var copied = false;
-        try { copied = document.execCommand('copy'); } catch (_) {}
-        field.remove();
-        return copied;
-      }
       function copyLink() {
         if (!selectedKinds.length) return Promise.resolve(false);
-        var value = location.href.replace(/#.*$/, '') + '#lens=' + selectedKinds.map(encodeURIComponent).join('~');
-        var copy = navigator.clipboard && typeof navigator.clipboard.writeText === 'function'
-          ? navigator.clipboard.writeText(value).then(function () { return true; }).catch(function () { return fallbackCopy(value); })
-          : Promise.resolve(fallbackCopy(value));
-        return copy.then(function (copied) {
+        var value = readerLink('lens=' + selectedKinds.map(encodeURIComponent).join('~'));
+        return (value === null ? Promise.resolve(false) : copyReaderText(value)).then(function (copied) {
           copyBtn.textContent = viewerText(copied ? 'viewer.common.copied' : 'viewer.common.copyFailed');
-          window.setTimeout(function () { copyBtn.textContent = viewerText('viewer.common.copyLink'); }, 1600);
+          copyBtn.setAttribute('aria-label', viewerText(copied ? 'viewer.common.copied' : 'viewer.common.copyFailed'));
+          window.setTimeout(function () {
+            copyBtn.textContent = viewerText('viewer.common.copyLink');
+            copyBtn.setAttribute('aria-label', viewerText('viewer.lens.copy'));
+          }, 1600);
           return copied;
         });
       }
@@ -13446,6 +14439,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       };
     })();
 
+
     /* ============================================================
        Diagram Guide — a factual command deck over existing interactions.
        Counts come from compiled semantics; actions delegate to Finder, Route
@@ -13497,7 +14491,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         trigger.setAttribute('aria-label', viewerText('viewer.guide.open'));
         feedback.textContent = '';
         if (options.restoreFocus !== false) {
-          var target = trigger.hidden ? returnFocus : trigger;
+          // Return focus where the reader was when the guide opened; the
+          // trigger itself is only the fallback when that element is gone.
+          var target = returnFocus && returnFocus.isConnected ? returnFocus : trigger;
           if (target && typeof target.focus === 'function') target.focus();
         }
         return false;
@@ -13597,7 +14593,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         execute(action);
       });
       document.addEventListener('click', function (event) {
-        if (!panel.hidden && !panel.contains(event.target) && event.target !== trigger) close({ restoreFocus: false });
+        // Clicks anywhere on the trigger (including its icon span) are the
+        // toggle itself, never an outside dismissal.
+        if (!panel.hidden && !panel.contains(event.target) && !trigger.contains(event.target)) close({ restoreFocus: false });
       });
 
       renderFacts();

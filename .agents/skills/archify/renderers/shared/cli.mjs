@@ -18,55 +18,26 @@ import {
   removeOwnedRegularFile,
   verifyAtomicOutput,
 } from './atomic-output.mjs';
-import { resolveLocale, translateMessage, registerLocale, SUPPORTED_LOCALES } from './i18n.mjs';
+import { resolveLocale, translateMessage, registerLocale, localeDiagnostics } from './i18n.mjs';
 import { prepareDiagramBrandMarks } from './brand-marks.mjs';
 
 const outputPathGuards = new Map();
 let renderCandidateSequence = 0;
 
-// meta.locale is renderer-owned Viewer UI, not authored content.
-// en and zh-CN ship as built-in catalogs.
-// Any other tag needs meta.translations (validated against the English
-// message-key set, layered over English per-key so partial/invalid entries
-// never break rendering) or it falls back to the English Viewer chrome —
-// the same "omit locale, disclose the fallback" contract as before, just
-// resolved from data instead of a hard-coded enum. See i18n.mjs.
+// meta.locale is renderer-owned Viewer UI, not authored content. Each message
+// resolves as: valid meta.translations value → bundled catalog enrolled in
+// locales/manifest.json → English (see i18n.mjs). Every fallback is disclosed
+// by human renderers on stderr. Diagnostic JSON mode records warnings without
+// mixing text into failure receipts; validate/deliver disclose them publicly.
 function applyLocaleTranslations(diagramType, diagram) {
   const locale = diagram.meta?.locale;
   if (!locale) return;
-  const translations = diagram.meta?.translations;
-  if (translations && Object.keys(translations).length) {
-    const report = registerLocale(locale, translations);
-    if (report.missingKeys.length || report.unknownKeys.length || report.placeholderMismatches.length) {
-      recordDiagnostic({
-        code: 'i18n/translation-coverage',
-        severity: 'warning',
-        message: `meta.translations for locale ${JSON.stringify(locale)} covers ${report.coveredKeys}/${report.totalKeys} renderer-owned messages (${Math.round(report.coverage * 100)}%); uncovered keys fall back to English.`,
-        subject: { diagramType, path: '/meta/translations' },
-        evidence: {
-          missingKeys: report.missingKeys.slice(0, 10),
-          missingKeysTotal: report.missingKeys.length,
-          unknownKeys: report.unknownKeys.slice(0, 10),
-          unknownKeysTotal: report.unknownKeys.length,
-          placeholderMismatches: report.placeholderMismatches.slice(0, 10),
-          placeholderMismatchesTotal: report.placeholderMismatches.length,
-        },
-        supportedFixes: ['Add the missing keys to meta.translations.', 'Match each translation\'s {placeholders} to the English source string.'],
-      });
-      // Coverage is a fact about this render, not just a diagnostic-mode
-      // artifact: print it to stderr unconditionally so `render`/`deliver`/
-      // `validate` disclose the fallback even without ARCHIFY_DIAGNOSTIC_FORMAT.
-      console.warn(`archify: meta.translations for locale ${JSON.stringify(locale)} covers ${report.coveredKeys}/${report.totalKeys} renderer-owned messages (${Math.round(report.coverage * 100)}%); uncovered keys fall back to English.`);
+  registerLocale(locale, diagram.meta.translations);
+  for (const diagnostic of localeDiagnostics(diagramType, diagram.meta)) {
+    recordDiagnostic(diagnostic);
+    if (process.env.ARCHIFY_DIAGNOSTIC_FORMAT !== 'json') {
+      console.warn(`archify: ${diagnostic.message}`);
     }
-  } else if (!SUPPORTED_LOCALES.includes(locale)) {
-    recordDiagnostic({
-      code: 'i18n/locale-fallback',
-      severity: 'warning',
-      message: `meta.locale ${JSON.stringify(locale)} has no built-in catalog and no meta.translations; the Viewer chrome and <html lang> fall back to English.`,
-      subject: { diagramType, path: '/meta/locale' },
-      supportedFixes: ['Supply meta.translations for this locale.', `Use a built-in locale: ${SUPPORTED_LOCALES.join(', ')}.`],
-    });
-    console.warn(`archify: meta.locale ${JSON.stringify(locale)} has no built-in catalog and no meta.translations; the Viewer chrome and <html lang> fall back to English.`);
   }
 }
 
@@ -139,7 +110,7 @@ export async function loadDiagramWithBrandMarks(options) {
   return loaded;
 }
 
-const START_TYPES = new Set(['architecture', 'workflow', 'sequence', 'dataflow', 'lifecycle']);
+const START_TYPES = new Set(['architecture', 'workflow', 'sequence', 'dataflow', 'lifecycle', 'erd', 'tree', 'class', 'timeline', 'waterfall']);
 
 function isFilesystemError(error) {
   return typeof error?.code === 'string'
@@ -336,6 +307,11 @@ const SEMANTIC_COLLECTIONS = {
   sequence: 'participants',
   dataflow: 'nodes',
   lifecycle: 'states',
+  erd: 'entities',
+  tree: 'nodes',
+  class: 'types',
+  timeline: 'events',
+  waterfall: 'spans',
 };
 
 const RELATIONSHIP_COLLECTIONS = {
@@ -344,6 +320,8 @@ const RELATIONSHIP_COLLECTIONS = {
   sequence: 'messages',
   dataflow: 'flows',
   lifecycle: 'transitions',
+  erd: 'relationships',
+  class: 'relationships',
 };
 
 // Relationship IDs are optional for backwards compatibility, but once an
@@ -380,7 +358,8 @@ export function validateCrossCollectionContracts(diagramType, diagram) {
 
 // Accessible name for the generated diagram SVG.
 export function svgRootAttrs(meta, explicitQualityProfile) {
-  const animation = meta.animation === 'trace' ? ' data-animation="trace"' : '';
+  // Motion is a Viewer capability for every diagram; Live/Still controls playback.
+  const animation = ' data-animation="trace"';
   const preset = ` data-preset="${esc(meta.visual_preset || 'classic')}"`;
   const engineeringProfile = meta.engineering_profile
     ? ` data-engineering-profile="${esc(meta.engineering_profile)}"`
@@ -400,7 +379,6 @@ export function svgAccessibleText(meta, kind) {
 }
 
 export function animateAttr(meta, kind, step) {
-  if (meta.animation !== 'trace') return '';
   // Ambient trace must finish inside the fixed six-second WebM capture. The
   // cap affects visual delay only; authored order and semantic identity stay
   // untouched in the JSON, DOM, and relationship contracts.

@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { throwDiagnosticError, withDiagnosticRecordingSuppressed } from './diagnostics.mjs';
 import { sameEntry } from './path-semantics.mjs';
-import { parseRepositoryRemote, redactRepositoryRemote, repositorySourceHref } from './repository-location.mjs';
+import { parseRepositoryRemote, redactRepositoryRemote, repositorySourceHref, repositoryTreeHref } from './repository-location.mjs';
 
 const FULL_SHA_RE = /^[a-f0-9]{40}$/i;
 const CONTROL_CHARACTER_RE = /[\u0000-\u001f\u007f]/;
@@ -25,6 +25,8 @@ function runGit(repoRoot, args) {
   const result = spawnSync('git', ['--no-replace-objects', '-C', repoRoot, ...args], {
     encoding: 'utf8',
     maxBuffer: MAX_SOURCE_BYTES,
+    // Older Git may ignore NO_LAZY_FETCH; no transport is needed for local reads.
+    env: { ...process.env, GIT_NO_LAZY_FETCH: '1', GIT_ALLOW_PROTOCOL: '' },
   });
   if (result.error) evidenceFailure('repository-evidence/git-unavailable', `Could not run Git: ${result.error.message}`, {
     evidence: { reason: result.error.message },
@@ -55,6 +57,7 @@ function readBatchObjects(repoRoot, objects, includeContent) {
   const result = spawnSync('git', ['--no-replace-objects', '-C', repoRoot, 'cat-file', mode], {
     input: objects.join('\n') + '\n',
     maxBuffer: 64 * 1024 * 1024,
+    env: { ...process.env, GIT_NO_LAZY_FETCH: '1', GIT_ALLOW_PROTOCOL: '' },
   });
   if (result.error || result.status !== 0 || !Buffer.isBuffer(result.stdout)) return null;
   const buffer = result.stdout;
@@ -129,6 +132,11 @@ const EVIDENCE_NODE_COLLECTIONS = {
   sequence: 'participants',
   dataflow: 'nodes',
   lifecycle: 'states',
+  erd: 'entities',
+  tree: 'nodes',
+  class: 'types',
+  timeline: 'events',
+  waterfall: 'spans',
 };
 
 function evidenceNodes(diagramType, diagram) {
@@ -159,7 +167,7 @@ export function verifyRepositoryEvidence(diagramType, diagram, repoRootInput) {
       supportedFixes: ['pin one full 40-character commit SHA'],
     });
   }
-  const location = parseRepositoryRemote(repository.url, { authored: true });
+  const location = parseRepositoryRemote(repository.url, { authored: true, provider: repository.provider });
   if (!location) {
     // A filesystem path is the common authoring mistake: the field carries the
     // remote origin identity, which `git remote get-url origin` reports.
@@ -172,16 +180,18 @@ export function verifyRepositoryEvidence(diagramType, diagram, repoRootInput) {
   }
   const linkMode = repository.link_mode ?? 'web';
   if (!['web', 'local-only'].includes(linkMode)) evidenceFailure('repository-evidence/link-mode-invalid', 'Repository link_mode must be web or local-only.');
-  if (repository.provider !== undefined && (!['github', 'gitee'].includes(repository.provider) || repository.provider !== location.provider)) {
-    evidenceFailure('repository-evidence/provider-invalid', 'Repository provider must match its supported public host (github.com or gitee.com).', {
+  if (repository.provider !== undefined && (!['github', 'gitee', 'gitlab'].includes(repository.provider) || repository.provider !== location.provider)) {
+    evidenceFailure('repository-evidence/provider-invalid', 'Repository provider must match its supported public host (github.com, gitee.com or gitlab.com); gitlab also names a self-managed GitLab host.', {
       subject: { path: '/meta/repository/provider' },
       supportedFixes: ['use the matching provider or omit provider and select link_mode: local-only'],
     });
   }
-  if (linkMode === 'web' && (!location.provider || location.protocol !== 'https:' || location.endpoint !== 'standard' || !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(location.path))) {
-    evidenceFailure('repository-evidence/links-unsupported', 'Web source links require a canonical GitHub or Gitee HTTPS owner/repository URL.', {
+  // GitLab projects may sit in nested groups; GitHub and Gitee are owner/repository.
+  const webPath = location.provider === 'gitlab' ? /^[A-Za-z0-9_.-]+(?:\/[A-Za-z0-9_.-]+)+$/ : /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
+  if (linkMode === 'web' && (!location.provider || location.protocol !== 'https:' || location.endpoint !== 'standard' || !webPath.test(location.path))) {
+    evidenceFailure('repository-evidence/links-unsupported', 'Web source links require a canonical GitHub, Gitee, or GitLab HTTPS repository URL.', {
       subject: { path: '/meta/repository/url' },
-      supportedFixes: ['use a canonical GitHub or Gitee URL, or select link_mode: local-only to retain local verification without web links'],
+      supportedFixes: ['use a canonical GitHub, Gitee, or GitLab HTTPS URL; declare provider: gitlab for a self-managed GitLab host', 'select link_mode: local-only to retain local verification without web links'],
     });
   }
   if (!repoRootInput) {
@@ -219,7 +229,7 @@ export function verifyRepositoryEvidence(diagramType, diagram, repoRootInput) {
     });
   }
   const origin = gitValue(realRoot, ['remote', 'get-url', 'origin'], 'Evidence repository must have an origin remote.');
-  if (parseRepositoryRemote(origin)?.identity !== location.identity) {
+  if (parseRepositoryRemote(origin, { provider: repository.provider })?.identity !== location.identity) {
     const safeOrigin = redactRepositoryRemote(origin);
     evidenceFailure('repository-evidence/origin-mismatch', `Evidence repository origin ${JSON.stringify(safeOrigin)} does not match ${JSON.stringify(repository.url)}.`, {
       subject: { repoRoot: realRoot },
@@ -240,7 +250,7 @@ export function verifyRepositoryEvidence(diagramType, diagram, repoRootInput) {
 
   // The batch is an optimization only: every path, line-range, file and line
   // check still runs in source order in the verification loop below, so a
-  // citation the batch cannot answer for never reorders the first diagnostic.
+  // citation the batch cannot answer for never reorders the diagnostics.
   const citedObjects = new Map();
   for (const [nodeIndex, node] of authoredNodes.entries()) {
     if (!Array.isArray(node.sources) || node.sources.length === 0) continue;
@@ -259,6 +269,7 @@ export function verifyRepositoryEvidence(diagramType, diagram, repoRootInput) {
   const prefetchedBlobs = prefetchBlobs(realRoot, citedObjects);
 
   const nodes = Object.create(null);
+  const sourceDiagnostics = [];
   let referenceCount = 0;
   for (const [nodeIndex, node] of authoredNodes.entries()) {
     if (!Array.isArray(node.sources) || node.sources.length === 0) continue;
@@ -271,63 +282,93 @@ export function verifyRepositoryEvidence(diagramType, diagram, repoRootInput) {
     for (const [sourceIndex, authored] of node.sources.entries()) {
       const at = `/${collection}/${nodeIndex}/sources/${sourceIndex}`;
       const where = `${at}/path`;
-      const source = {
-        path: verifiedSourcePath(authored.path, where),
-        ...(authored.line ? { line: authored.line } : {}),
-        ...(authored.end_line ? { endLine: authored.end_line } : {}),
-        ...(authored.label ? { label: authored.label } : {}),
-      };
-      if (source.endLine && !source.line) {
-        evidenceFailure('repository-evidence/line-required', `${at}/end_line requires line.`, {
-          subject: { path: `${at}/end_line`, ...nodeSubject },
-          supportedFixes: ['add line or remove end_line'],
-        });
-      }
-      if (source.endLine && source.endLine < source.line) {
-        evidenceFailure('repository-evidence/line-range-invalid', `${at}/end_line must be greater than or equal to line.`, {
-          subject: { path: at, ...nodeSubject },
-          evidence: { line: source.line, endLine: source.endLine },
-          supportedFixes: ['use an end_line greater than or equal to line'],
-        });
-      }
-      const object = `${revision}:${source.path}`;
-      const prefetched = prefetchedBlobs ? prefetchedBlobs.get(object) : undefined;
-      const objectIsBlob = prefetched
-        ? !prefetched.missing && prefetched.type === 'blob'
-        : (() => {
-          const type = runGit(realRoot, ['cat-file', '-t', object]);
-          return type.status === 0 && type.stdout.trim() === 'blob';
-        })();
-      if (!objectIsBlob) {
-        evidenceFailure('repository-evidence/file-missing', `${where} does not identify a file at revision ${revision}.`, {
-          subject: { path: where, ...nodeSubject },
-          evidence: { sourcePath: source.path, revision },
-          supportedFixes: ['use a file path that exists at the pinned revision'],
-        });
-      }
-      if (source.line) {
-        const content = prefetched && Object.hasOwn(prefetched, 'content')
-          ? { status: 0, stdout: prefetched.content }
-          : runGit(realRoot, ['show', object]);
-        if (content.status !== 0) evidenceFailure('repository-evidence/file-unreadable', `${where} could not be read at revision ${revision}.`, {
-          subject: { path: where, ...nodeSubject },
-          evidence: { sourcePath: source.path, revision },
-          supportedFixes: ['verify the pinned blob is readable in the local checkout'],
-        });
-        const lineCount = sourceLineCount(content.stdout);
-        const requestedLine = source.endLine || source.line;
-        if (requestedLine > lineCount) {
-          evidenceFailure('repository-evidence/line-out-of-range', `${at} requests line ${requestedLine}, but ${source.path} has ${lineCount} lines at revision ${revision}.`, {
-            subject: { path: at, ...nodeSubject },
-            evidence: { sourcePath: source.path, requestedLine, lineCount, revision },
-            supportedFixes: ['use a line range that exists at the pinned revision'],
+      try {
+        const source = {
+          path: verifiedSourcePath(authored.path, where),
+          ...(authored.line ? { line: authored.line } : {}),
+          ...(authored.end_line ? { endLine: authored.end_line } : {}),
+          ...(authored.label ? { label: authored.label } : {}),
+        };
+        if (source.endLine && !source.line) {
+          evidenceFailure('repository-evidence/line-required', `${at}/end_line requires line.`, {
+            subject: { path: `${at}/end_line`, ...nodeSubject },
+            supportedFixes: ['add line or remove end_line'],
           });
         }
+        if (source.endLine && source.endLine < source.line) {
+          evidenceFailure('repository-evidence/line-range-invalid', `${at}/end_line must be greater than or equal to line.`, {
+            subject: { path: at, ...nodeSubject },
+            evidence: { line: source.line, endLine: source.endLine },
+            supportedFixes: ['use an end_line greater than or equal to line'],
+          });
+        }
+        const object = `${revision}:${source.path}`;
+        const prefetched = prefetchedBlobs ? prefetchedBlobs.get(object) : undefined;
+        const objectIsBlob = prefetched
+          ? !prefetched.missing && prefetched.type === 'blob'
+          : (() => {
+            const type = runGit(realRoot, ['cat-file', '-t', object]);
+            return type.status === 0 && type.stdout.trim() === 'blob';
+          })();
+        if (!objectIsBlob) {
+          // A promisor blob can exist in the pinned tree without being stored
+          // locally. Do not tell the caller to change a correct source path.
+          const tree = runGit(realRoot, ['ls-tree', '-z', revision, '--', source.path]);
+          const knownBlob = tree.status === 0 && tree.stdout.split('\0').some((entry) => {
+            const separator = entry.indexOf('\t');
+            return entry.slice(separator + 1) === source.path
+              && /^\d+ blob [a-f0-9]+$/.test(entry.slice(0, separator));
+          });
+          if (knownBlob) {
+            evidenceFailure('repository-evidence/object-unavailable', `${where} exists at revision ${revision}, but its content is unavailable in the local repository.`, {
+              subject: { path: where, ...nodeSubject },
+              evidence: { sourcePath: source.path, revision },
+              supportedFixes: ['explicitly fetch the pinned source objects into the local checkout, then retry verification'],
+            });
+          }
+          evidenceFailure('repository-evidence/file-missing', `${where} does not identify a file at revision ${revision}.`, {
+            subject: { path: where, ...nodeSubject },
+            evidence: { sourcePath: source.path, revision },
+            supportedFixes: ['use a file path that exists at the pinned revision'],
+          });
+        }
+        if (source.line) {
+          const content = prefetched && Object.hasOwn(prefetched, 'content')
+            ? { status: 0, stdout: prefetched.content }
+            : runGit(realRoot, ['show', object]);
+          if (content.status !== 0) evidenceFailure('repository-evidence/file-unreadable', `${where} could not be read at revision ${revision}.`, {
+            subject: { path: where, ...nodeSubject },
+            evidence: { sourcePath: source.path, revision },
+            supportedFixes: ['verify the pinned blob is readable in the local checkout'],
+          });
+          const lineCount = sourceLineCount(content.stdout);
+          const requestedLine = source.endLine || source.line;
+          if (requestedLine > lineCount) {
+            evidenceFailure('repository-evidence/line-out-of-range', `${at} requests line ${requestedLine}, but ${source.path} has ${lineCount} lines at revision ${revision}.`, {
+              subject: { path: at, ...nodeSubject },
+              evidence: { sourcePath: source.path, requestedLine, lineCount, revision },
+              supportedFixes: ['use a line range that exists at the pinned revision'],
+            });
+          }
+        }
+        verified.push({ ...source, ...(linkMode === 'web' ? { href: repositorySourceHref(location.provider, location.url, revision, source) } : {}) });
+        referenceCount += 1;
+      } catch (error) {
+        // Independent citations can be repaired together. Keep the first
+        // diagnostic and source order; an invalid reference never verifies.
+        if (!error?.archifyDiagnostics?.length) throw error;
+        sourceDiagnostics.push(...error.archifyDiagnostics);
+        // An unavailable Git process or an oversized read is not a bad
+        // citation. Stop rather than repeat that failure for every source.
+        if (error.archifyDiagnostics.some(({ code }) => code === 'repository-evidence/git-unavailable')) {
+          throwDiagnosticError(sourceDiagnostics[0].message, sourceDiagnostics);
+        }
       }
-      verified.push({ ...source, ...(linkMode === 'web' ? { href: repositorySourceHref(location.provider, location.url, revision, source) } : {}) });
-      referenceCount += 1;
     }
     nodes[node.id] = verified;
+  }
+  if (sourceDiagnostics.length) {
+    throwDiagnosticError(sourceDiagnostics[0].message, sourceDiagnostics);
   }
   if (referenceCount === 0) {
     evidenceFailure('repository-evidence/source-required', `/meta/repository requires at least one /${collection} source reference.`, {
@@ -344,7 +385,7 @@ export function verifyRepositoryEvidence(diagramType, diagram, repoRootInput) {
       revision,
       shortRevision: revision.slice(0, 7),
       label: location.provider === 'github' ? location.path : location.url.replace(/^(?:https?:\/\/|ssh:\/\/git@|git@)/, ''),
-      ...(linkMode === 'web' ? { href: `${location.url}/tree/${revision}` } : { linkMode }),
+      ...(linkMode === 'web' ? { href: repositoryTreeHref(location.provider, location.url, revision) } : { linkMode }),
     },
     referenceCount,
     nodes,

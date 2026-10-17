@@ -6,6 +6,8 @@ import {
   segmentIntersectsRect,
   anchor,
   automaticPortSpread,
+  alignAutomaticFacingPorts,
+  portHasCornerClearance,
   automaticPortRhythmBridge,
   defaultFromSide,
   defaultToSide,
@@ -35,6 +37,40 @@ import { shortestOrthogonalGridRoute } from '../shared/route-quality.mjs';
  *   default label rect of a routed relationship given the routes and label
  *   rects resolved so far; later automatic routes keep clear of it so a dense
  *   fan-out does not leave the label nowhere to go
+ * @param {(conn: object, endpoint: 'source'|'target') => string|undefined} [options.sideFor]
+ *   endpoint side of a relationship whose author did not pin one, for a type
+ *   that reads its layout on a different axis than architecture's row fan-out;
+ *   an endpoint this hook leaves undefined keeps the shared inference
+ * @param {number} [options.maxPortSpacing] widest spacing the automatic port
+ *   spread may use on a shared side; a type whose endpoint glyphs are taller
+ *   than the default raises this so two symbols never draw over each other
+ * @param {(context: {conn: object, from: object, to: object, start: number[], end: number[], fromSide: string, toSide: string}) => number[][][]} [options.preferredCandidates]
+ *   candidate families tried before the shared ones, so a type-owned corridor
+ *   (a bundled trunk, a dedicated lane) wins over the generic midpoint
+ * @param {boolean} [options.crossingFreeGridFirst = false] before the obstacle
+ *   grid search that may cross earlier routes, try one that treats every
+ *   unrelated resolved route as a wall. A type whose showcase gate rejects any
+ *   proper crossing (erd) opts in so a later relationship takes a clear detour
+ *   instead of the shorter crossing the gate would refuse.
+ * @param {number} [options.componentGapPx = 0] when positive, the obstacle
+ *   grid first keeps a route this far from every component it merely passes
+ *   (its own endpoints stay at the 2-unit clearance) and falls back to the
+ *   tight search only when no spaced route is accepted, so a detour does not
+ *   run along a neighbouring box edge 3 units away from its border.
+ * @param {number} [options.minimumTerminalSegmentPx = 0] shortest first and
+ *   last segment any automatic route may have, applied even with
+ *   compositionFloors off: a type that rounds its corners when drawing needs
+ *   the end segment to outlast the corner radius plus the micro-segment floor.
+ * @param {boolean} [options.compositionFloors = true] hold every automatic
+ *   route to the rhythm floors the showcase gate enforces, so the planner never
+ *   accepts a route the gate will reject. A type that draws a route differently
+ *   from its logical points (the erd renderer removes the bundled trunk stretch
+ *   from each branch and draws the bus as one path) turns this off: the floors
+ *   describe a route drawn exactly as planned, and that type answers for the
+ *   drawn result at its own gate instead.
+ * @param {number} [options.readabilityBottomMargin = 0] extra vertical room for
+ *   the bounded readability sweep on an intrinsic-height canvas. Width and
+ *   authored geometry stay fixed; fixed canvases leave this at zero.
  */
 export function createRouter(components, connections = [], {
   frames = [],
@@ -43,6 +79,14 @@ export function createRouter(components, connections = [], {
   labelRectFor = null,
   distinctAutomaticPorts = false,
   preferReadableRoutes = false,
+  sideFor = null,
+  maxPortSpacing = null,
+  preferredCandidates = null,
+  compositionFloors = true,
+  crossingFreeGridFirst = false,
+  componentGapPx = 0,
+  minimumTerminalSegmentPx = 0,
+  readabilityBottomMargin = 0,
 } = {}) {
   const frameBorders = frames.flatMap((frame) => frameBorderSegments(frame));
   const LABEL_CLEARANCE = 4;
@@ -81,7 +125,13 @@ export function createRouter(components, connections = [], {
   // gate enforces afterwards. Accepting a route here that the gate rejects
   // only hands the author a hand-routing repair the planner could have made.
   function routeMeetsCompositionFloors(points) {
-    if (collectRouteRhythmIssues({ routedRelations: [{ points }], interiorSegmentPx, microSegmentPx }).length) {
+    if (minimumTerminalSegmentPx > 0 && points.length > 2) {
+      const span = (a, b) => Math.abs(b[0] - a[0]) + Math.abs(b[1] - a[1]);
+      if (span(points[0], points[1]) < minimumTerminalSegmentPx
+        || span(points.at(-2), points.at(-1)) < minimumTerminalSegmentPx) return false;
+    }
+    if (compositionFloors
+        && collectRouteRhythmIssues({ routedRelations: [{ points }], interiorSegmentPx, microSegmentPx }).length) {
       return false;
     }
     return !frames.length || collectBorderRuns({ routedRelations: [{ points }], frames }).length === 0;
@@ -103,12 +153,30 @@ export function createRouter(components, connections = [], {
     crossoverRoutedCount: 0,
     readabilityCandidateCount: 0,
     readabilityImprovedCount: 0,
+    labelRelocationCandidateCount: 0,
+    labelRelocationImprovedCount: 0,
     reciprocalCandidateCount: 0,
     reciprocalImprovedCount: 0,
     gridAttempts: [],
   };
 
   // ---- Connection routing ------------------------------------------------------
+  const gridComponentGaps = componentGapPx > 0 ? [componentGapPx, 0] : [0];
+  // The spaced search is a readability preference, so its route must also be
+  // clean as drawn: full rhythm floors (even for a type that turns them off)
+  // and terminal segments long enough for a rounded corner and an end marker.
+  function spacedRouteIsClean(points, gap) {
+    if (gap === 0) return true;
+    const terminal = (a, b) => Math.abs(b[0] - a[0]) + Math.abs(b[1] - a[1]);
+    return terminal(points[0], points[1]) >= 16 && terminal(points.at(-2), points.at(-1)) >= 16
+      && collectRouteRhythmIssues({ routedRelations: [{ points }], interiorSegmentPx, microSegmentPx }).length === 0;
+  }
+  function gridComponentObstacles(conn, gap) {
+    return [...components.values()].map((component) => (gap === 0 || component.id === conn.from || component.id === conn.to
+      ? component
+      : { ...component, x: component.x - gap, y: component.y - gap, width: component.width + gap * 2, height: component.height + gap * 2 }));
+  }
+
   function routeClearsComponents(conn, points, clearance = 2) {
     const endpointIds = new Set([conn.from, conn.to]);
     for (const component of components.values()) {
@@ -305,83 +373,16 @@ export function createRouter(components, connections = [], {
       .filter((points) => !collinearBacktrack(points[0], points[1], points[2] || points[1]))
       .filter((points) => !collinearBacktrack(points.at(-3) || points.at(-2), points.at(-2), points.at(-1)))
       .filter((points) => routeHonorsEndpointSides(points, fromSide, toSide))
+      .sort((a, b) => a.length - b.length)
       .map((points) => points.slice(1, -1));
   }
 
   const AUTOMATIC_PORT_CORNER_GUTTER = 16;
-  const AUTOMATIC_PORT_ALIGNMENT_DELTA = 16;
-
-  function portHasCornerClearance(rect, side, point) {
-    if (side === 'left' || side === 'right') {
-      const inset = Math.min(AUTOMATIC_PORT_CORNER_GUTTER, rect.height / 2);
-      return point[1] >= rect.y + inset && point[1] <= rect.y + rect.height - inset;
-    }
-    if (side === 'top' || side === 'bottom') {
-      const inset = Math.min(AUTOMATIC_PORT_CORNER_GUTTER, rect.width / 2);
-      return point[0] >= rect.x + inset && point[0] <= rect.x + rect.width - inset;
-    }
-    return false;
-  }
 
   function alignFacingPorts(conn, from, to, start, end, fromSide, toSide, ports) {
-    const hasExplicitGeometry = (
-      conn.via
-      || (conn.route && conn.route !== 'auto')
-      || conn.channelX !== undefined
-      || conn.channelY !== undefined
-      || conn.labelAt
-    );
-    const horizontallyFacing = (
-      (fromSide === 'right' && toSide === 'left')
-      || (fromSide === 'left' && toSide === 'right')
-    );
-    const verticallyFacing = (
-      (fromSide === 'bottom' && toSide === 'top')
-      || (fromSide === 'top' && toSide === 'bottom')
-    );
-    if (hasExplicitGeometry || (!horizontallyFacing && !verticallyFacing)) return { start, end };
-
-    const fromSpread = Boolean(ports?.from);
-    const toSpread = Boolean(ports?.to);
-    if (fromSpread && toSpread) return { start, end };
-    const hasExplicitSides = (
-      (conn.fromSide && conn.fromSide !== 'auto')
-      || (conn.toSide && conn.toSide !== 'auto')
-    );
-    if (!fromSpread && !toSpread && hasExplicitSides) return { start, end };
-
-    const alignmentDelta = horizontallyFacing
-      ? Math.abs(start[1] - end[1])
-      : Math.abs(start[0] - end[0]);
-    if (alignmentDelta >= AUTOMATIC_PORT_ALIGNMENT_DELTA) return { start, end };
-
-    // Keep the shared endpoint's distinct spread slot and move only the
-    // relationship's unshared endpoint onto that axis. With no spread endpoint,
-    // retain the existing least-movement choice between the two facing sides.
-    // If both endpoints are shared, preserve the outside bridge so no competing
-    // port is silently collapsed.
-    const alignEndToStart = horizontallyFacing
-      ? { start, end: [end[0], start[1]] }
-      : { start, end: [start[0], end[1]] };
-    const alignStartToEnd = horizontallyFacing
-      ? { start: [start[0], end[1]], end }
-      : { start: [end[0], start[1]], end };
-    const candidates = fromSpread
-      ? [alignEndToStart]
-      : toSpread
-        ? [alignStartToEnd]
-        : [alignEndToStart, alignStartToEnd];
-    for (const candidate of candidates) {
-      const points = [candidate.start, candidate.end];
-      if (portHasCornerClearance(from, fromSide, candidate.start)
-          && portHasCornerClearance(to, toSide, candidate.end)
-          && routeHonorsEndpointSides(points, fromSide, toSide)
-          && routeClearsEndpointComponents(points, from, to)
-          && routeClearsComponents(conn, points)) {
-        return candidate;
-      }
-    }
-    return { start, end };
+    return alignAutomaticFacingPorts(conn, from, to, start, end, fromSide, toSide, ports, {
+      accept: points => routeClearsEndpointComponents(points, from, to) && routeClearsComponents(conn, points),
+    });
   }
 
   // A reciprocal pair is repaired jointly after planning, so crossings that
@@ -407,6 +408,22 @@ export function createRouter(components, connections = [], {
       }
       case 'auto':
       default: {
+        // A caller may own the corridor for relationships that would otherwise
+        // share one channel. Preferred candidates are tried before the shared
+        // families, so a declared trunk or lane wins over the generic midpoint;
+        // a candidate that violates the endpoint contract or an obstacle is
+        // skipped and the historical order below still applies.
+        if (preferredCandidates) {
+          for (const candidate of preferredCandidates({ conn, from, to, start, end, fromSide, toSide }) || []) {
+            const points = [start, ...candidate, end];
+            if (routeHonorsEndpointSides(points, fromSide, toSide)
+                && routeClearsEndpointComponents(points, from, to)
+                && routeClearsComponents(conn, points)
+                && routeMeetsCompositionFloors(points)
+                && !routeConflictsWithResolved(conn, points, resolvedRoutes)) return candidate;
+          }
+        }
+
         // Direct line unless the anchors are clearly orthogonal-friendly.
         const deltaX = Math.abs(start[0] - end[0]);
         const deltaY = Math.abs(start[1] - end[1]);
@@ -489,15 +506,22 @@ export function createRouter(components, connections = [], {
           ...(nearParallelPorts ? sideAware : sideSafe),
           ...(nearParallelPorts ? sideSafe : sideAware),
         ];
+        let firstFeasible = null;
         for (const candidate of ordered) {
           const points = [start, ...candidate, end];
-          if (routeClearsEndpointComponents(points, from, to)
+          if (!(routeClearsEndpointComponents(points, from, to)
               && routeClearsComponents(conn, points)
               && routeMeetsCompositionFloors(points)
               && !routeConflictsWithResolved(conn, points, resolvedRoutes)
               && (!distinctAutomaticPorts || (!routeOverlapsResolved(conn, points, resolvedRoutes)
-                && !siblingCrossings(conn, points, resolvedRoutes)))) return candidate;
+                && !siblingCrossings(conn, points, resolvedRoutes))))) continue;
+          if (!conn.label || !labelRectFor || labelRectFor(conn, points, {
+            routes: resolvedRoutes.map((entry) => entry.points),
+            labels: reservedLabels.map((entry) => entry.rect),
+          })) return candidate;
+          firstFeasible ||= candidate;
         }
+        if (firstFeasible) return firstFeasible;
         // Siblings fanning out from one side all want the same midpoint
         // channel. Step outward through the corridor to a free parallel
         // channel before searching.
@@ -545,72 +569,111 @@ export function createRouter(components, connections = [], {
         // ambiguous shared corridors without forcing the model to hand-route
         // a sprawling perimeter detour. Cheap candidates above still prefer a
         // genuinely crossing-free path whenever one is available.
+        if (crossingFreeGridFirst) {
+          const unrelatedSegments = unrelatedResolvedRoutes(conn, resolvedRoutes)
+            .flatMap((entry) => entry.points.slice(1).map((end, index) => ({ start: entry.points[index], end })));
+          for (const gap of unrelatedSegments.length ? gridComponentGaps : []) {
+            planningMetrics.gridSearchCount += 1;
+            const strict = shortestOrthogonalGridRoute({
+              start,
+              end,
+              points: [start, end],
+              obstacles: [...gridComponentObstacles(conn, gap), ...reservedLabelObstacles(2)],
+              fromSide,
+              toSide,
+              clearance: 2,
+              maximumObstacleCount: 80,
+              endpointStubPx: 24,
+              maximumGridNodes: 4096,
+              avoidedSegments: unrelatedSegments,
+              allowAvoidedCrossings: false,
+              minimumAvoidedOverlapPx: 8,
+              routeSeparationPx: 8,
+              minimumSegmentPx: interiorSegmentPx,
+              borderSegments: frameBorders,
+              bendPenaltyPx: 48,
+            });
+            if (strict
+                && routeClearsEndpointComponents(strict.points, from, to)
+                && routeClearsComponents(conn, strict.points)
+                && !routeConflictsWithResolved(conn, strict.points, resolvedRoutes)
+                && !routeOverlapsResolved(conn, strict.points, resolvedRoutes)
+                && routeMeetsCompositionFloors(strict.points)
+                && spacedRouteIsClean(strict.points, gap)) {
+              planningMetrics.gridRoutedCount += 1;
+              return strict.points.slice(1, -1);
+            }
+          }
+        }
         const avoidedSegments = resolvedRoutes
           .filter((entry) => distinctAutomaticPorts && relationshipsShareEndpoint(conn, entry.conn)
             && !hasAuthoredRouteGeometry(entry.conn) && !entry.conn.labelAt && !conn.labelAt)
           .flatMap((entry) => entry.points.slice(1).map((end, index) => ({
             start: entry.points[index], end,
           })));
-        const gridMetrics = {};
-        planningMetrics.gridSearchCount += 1;
-        planningMetrics.avoidedSegmentCount += avoidedSegments.length;
-        const searched = shortestOrthogonalGridRoute({
-          start,
-          end,
-          points: [start, end],
-          obstacles: [...components.values(), ...reservedLabelObstacles(2)],
-          fromSide,
-          toSide,
-          clearance: 2,
-          maximumObstacleCount: 80,
-          endpointStubPx: 24,
-          maximumGridNodes: 4096,
-          avoidedSegments,
-          allowAvoidedCrossings: true,
-          minimumAvoidedOverlapPx: 8,
-          routeSeparationPx: 8,
-          minimumSegmentPx: interiorSegmentPx,
-          borderSegments: frameBorders,
-          bendPenaltyPx: 48,
-          metrics: gridMetrics,
-        });
-        planningMetrics.gridCandidateNodeCount += gridMetrics.candidateNodeCount || 0;
-        planningMetrics.gridUsableNodeCount += gridMetrics.usableNodeCount || 0;
-        planningMetrics.gridEdgeCount += gridMetrics.graphEdgeCount || 0;
-        planningMetrics.gridVisitedNodeCount += gridMetrics.visitedNodeCount || 0;
-        const clearsEndpoints = searched
-          ? routeClearsEndpointComponents(searched.points, from, to) : false;
-        const clearsComponents = searched
-          ? routeClearsComponents(conn, searched.points) : false;
-        const clearsRelationships = searched
-          ? !routeConflictsWithResolved(conn, searched.points, resolvedRoutes) : false;
-        const clearsSharedCorridors = searched
-          ? !routeOverlapsResolved(conn, searched.points, resolvedRoutes) : false;
-        const meetsFloors = searched ? routeMeetsCompositionFloors(searched.points) : false;
-        const accepted = Boolean(
-          searched && clearsEndpoints && clearsComponents && clearsSharedCorridors && meetsFloors,
-        );
-        planningMetrics.gridAttempts.push({
-          relationship: conn.id || `${conn.from}->${conn.to}`,
-          fromSide,
-          toSide,
-          inputAvoidedSegmentCount: avoidedSegments.length,
-          ...gridMetrics,
-          accepted,
-          ...(!accepted && searched ? {
-            rejectedBy: [
-              ...(!clearsEndpoints ? ['endpoint-components'] : []),
-              ...(!clearsComponents ? ['components'] : []),
-              ...(!clearsSharedCorridors ? ['shared-corridor'] : []),
-              ...(!meetsFloors ? ['composition-floors'] : []),
-            ],
-            candidatePoints: searched.points,
-          } : {}),
-        });
-        if (accepted) {
-          planningMetrics.gridRoutedCount += 1;
-          if (!clearsRelationships) planningMetrics.crossoverRoutedCount += 1;
-          return searched.points.slice(1, -1);
+        for (const gap of gridComponentGaps) {
+          const gridMetrics = {};
+          planningMetrics.gridSearchCount += 1;
+          planningMetrics.avoidedSegmentCount += avoidedSegments.length;
+          const searched = shortestOrthogonalGridRoute({
+            start,
+            end,
+            points: [start, end],
+            obstacles: [...gridComponentObstacles(conn, gap), ...reservedLabelObstacles(2)],
+            fromSide,
+            toSide,
+            clearance: 2,
+            maximumObstacleCount: 80,
+            endpointStubPx: 24,
+            maximumGridNodes: 4096,
+            avoidedSegments,
+            allowAvoidedCrossings: true,
+            minimumAvoidedOverlapPx: 8,
+            routeSeparationPx: 8,
+            minimumSegmentPx: interiorSegmentPx,
+            borderSegments: frameBorders,
+            bendPenaltyPx: 48,
+            metrics: gridMetrics,
+          });
+          planningMetrics.gridCandidateNodeCount += gridMetrics.candidateNodeCount || 0;
+          planningMetrics.gridUsableNodeCount += gridMetrics.usableNodeCount || 0;
+          planningMetrics.gridEdgeCount += gridMetrics.graphEdgeCount || 0;
+          planningMetrics.gridVisitedNodeCount += gridMetrics.visitedNodeCount || 0;
+          const clearsEndpoints = searched
+            ? routeClearsEndpointComponents(searched.points, from, to) : false;
+          const clearsComponents = searched
+            ? routeClearsComponents(conn, searched.points) : false;
+          const clearsRelationships = searched
+            ? !routeConflictsWithResolved(conn, searched.points, resolvedRoutes) : false;
+          const clearsSharedCorridors = searched
+            ? !routeOverlapsResolved(conn, searched.points, resolvedRoutes) : false;
+          const meetsFloors = searched
+            ? routeMeetsCompositionFloors(searched.points) && spacedRouteIsClean(searched.points, gap) : false;
+          const accepted = Boolean(
+            searched && clearsEndpoints && clearsComponents && clearsSharedCorridors && meetsFloors,
+          );
+          planningMetrics.gridAttempts.push({
+            relationship: conn.id || `${conn.from}->${conn.to}`,
+            fromSide,
+            toSide,
+            inputAvoidedSegmentCount: avoidedSegments.length,
+            ...gridMetrics,
+            accepted,
+            ...(!accepted && searched ? {
+              rejectedBy: [
+                ...(!clearsEndpoints ? ['endpoint-components'] : []),
+                ...(!clearsComponents ? ['components'] : []),
+                ...(!clearsSharedCorridors ? ['shared-corridor'] : []),
+                ...(!meetsFloors ? ['composition-floors'] : []),
+              ],
+              candidatePoints: searched.points,
+            } : {}),
+          });
+          if (accepted) {
+            planningMetrics.gridRoutedCount += 1;
+            if (!clearsRelationships) planningMetrics.crossoverRoutedCount += 1;
+            return searched.points.slice(1, -1);
+          }
         }
 
         // Both bounded doglegs are blocked. Keep the best endpoint-safe route
@@ -670,9 +733,18 @@ export function createRouter(components, connections = [], {
   const stroke = (relation) => relation.width || (relation.variant === 'emphasis' ? 1.8 : 1.5);
   const markerSpacing = (left, right) => 3.5 * (stroke(left) + stroke(right));
   const portSpacing = (left, right) => Math.max(14, markerSpacing(left, right) + 3.5);
+  function fanOutSide(conn, endpoint) {
+    const fanOut = rowFanOutSides(components.get(conn.from), components.get(conn.to));
+    return endpoint === 'source' ? fanOut?.fromSide : fanOut?.toSide;
+  }
+  // A caller may own the endpoint side of a relationship; whatever it leaves
+  // unresolved keeps architecture's row fan-out inference.
+  function inferredSide(conn, endpoint) {
+    return sideFor?.(conn, endpoint) || fanOutSide(conn, endpoint);
+  }
   const automaticPorts = automaticPortSpread(connections, components, {
-    sideFor: (relation, endpoint) => rowFanOutSides(components.get(relation.from), components.get(relation.to))
-      ?.[endpoint === 'source' ? 'fromSide' : 'toSide'],
+    sideFor: inferredSide,
+    ...(maxPortSpacing === null ? {} : { maxSpacing: maxPortSpacing }),
     // Preserve the established initial placement for ordinary markers; only
     // widen groups whose arrowheads cannot fit the legacy 14px slots.
     ...(distinctAutomaticPorts ? { spacingFor: (left, right) =>
@@ -690,16 +762,23 @@ export function createRouter(components, connections = [], {
   function inferredConnectionSides(conn) {
     const from = components.get(conn.from);
     const to = components.get(conn.to);
-    const fanOut = rowFanOutSides(from, to);
     return {
-      fromSide: chosenSide(conn.fromSide, fanOut?.fromSide || defaultFromSide(from, to)),
-      toSide: chosenSide(conn.toSide, fanOut?.toSide || defaultToSide(from, to)),
+      fromSide: chosenSide(conn.fromSide, inferredSide(conn, 'source') || defaultFromSide(from, to)),
+      toSide: chosenSide(conn.toSide, inferredSide(conn, 'target') || defaultToSide(from, to)),
     };
   }
 
   function connectionSides(conn) {
     if (!routesPlanned && !routesPlanning) planRoutes();
     return selectedSides.get(conn) || inferredConnectionSides(conn);
+  }
+
+  // The same side inference without the planning pass. A caller that must group
+  // relationships before any route exists (the erd renderer assigns a shared
+  // trunk per fan-in) reads its sides here: connectionSides() plans routes, and
+  // planning asks the grouping what the trunks are.
+  function inferredSides(conn) {
+    return inferredConnectionSides(conn);
   }
 
   function connectionEndpointSide(conn, endpoint) {
@@ -742,8 +821,14 @@ export function createRouter(components, connections = [], {
       occupied.push({ value: point[axis], spacing: portSpacing(conn, other) });
     }
     if (!occupied.length) return { point: preferred, spread: Boolean(initial) };
+    // On an alternate side, equally close slots should approach the other
+    // node rather than pass its neighbours just because a coordinate is lower.
+    // Keep the established spread order on the inferred side unchanged.
+    const counterpart = components.get(endpoint === 'from' ? conn.to : conn.from);
+    const toward = side === inferredSide ? preferred[axis] : (axis === 1 ? counterpart.cy : counterpart.cx);
     const candidates = [preferred[axis], ...occupied.flatMap(({ value, spacing }) => [value - spacing, value + spacing])]
-      .sort((a, b) => Math.abs(a - preferred[axis]) - Math.abs(b - preferred[axis]) || a - b);
+      .sort((a, b) => Math.abs(a - preferred[axis]) - Math.abs(b - preferred[axis])
+        || Math.abs(a - toward) - Math.abs(b - toward) || a - b);
     for (const value of candidates) {
       const point = [...preferred];
       point[axis] = value;
@@ -844,12 +929,22 @@ export function createRouter(components, connections = [], {
   }
 
   function crossingCount(conn, points, resolvedRoutes) {
-    return resolvedRoutes.reduce((total, entry) => total + Number(
-      !(relationshipsShareEndpoint(conn, entry.conn)
-        && (!distinctAutomaticPorts || hasAuthoredRouteGeometry(entry.conn) || entry.conn.labelAt || conn.labelAt))
-      && points.slice(1).some((end, index) => entry.points.slice(1).some((otherEnd, otherIndex) =>
-        properSegmentIntersection(points[index], end, entry.points[otherIndex], otherEnd))),
-    ), 0);
+    let count = 0;
+    for (const entry of resolvedRoutes) {
+      if (relationshipsShareEndpoint(conn, entry.conn)
+          && (!distinctAutomaticPorts || hasAuthoredRouteGeometry(entry.conn) || entry.conn.labelAt || conn.labelAt)) continue;
+      let crosses = false;
+      for (let index = 1; index < points.length && !crosses; index += 1) {
+        for (let otherIndex = 1; otherIndex < entry.points.length; otherIndex += 1) {
+          if (properSegmentIntersection(points[index - 1], points[index], entry.points[otherIndex - 1], entry.points[otherIndex])) {
+            crosses = true;
+            break;
+          }
+        }
+      }
+      if (crosses) count += 1;
+    }
+    return count;
   }
 
   function readabilityCost(conn, routed, resolvedRoutes) {
@@ -952,10 +1047,44 @@ export function createRouter(components, connections = [], {
       }
       const bounds = {
         left: Math.min(...scenePoints.map(([x]) => x)), right: Math.max(...scenePoints.map(([x]) => x)),
-        top: Math.min(...scenePoints.map(([, y]) => y)), bottom: Math.max(...scenePoints.map(([, y]) => y)),
+        top: Math.min(...scenePoints.map(([, y]) => y)),
+        bottom: Math.max(...scenePoints.map(([, y]) => y)),
       };
       const withinScene = ([x, y]) => x >= bounds.left && x <= bounds.right && y >= bounds.top && y <= bounds.bottom;
       const jointlyImproved = new Set();
+      const endpointSlotsClear = (candidateRoutes, others, sidesOf) => {
+        const entries = [...others, ...candidateRoutes];
+        for (const candidate of candidateRoutes) {
+          const sides = sidesOf(candidate.conn);
+          for (const [componentId, side, point] of [
+            [candidate.conn.from, sides.fromSide, candidate.points[0]],
+            [candidate.conn.to, sides.toSide, candidate.points.at(-1)],
+          ]) {
+            const coordinate = side === 'left' || side === 'right' ? 1 : 0;
+            for (const other of entries) {
+              if (other.conn === candidate.conn) continue;
+              const otherSides = sidesOf(other.conn);
+              for (const [otherId, otherSide, otherPoint] of [
+                [other.conn.from, otherSides.fromSide, other.points[0]],
+                [other.conn.to, otherSides.toSide, other.points.at(-1)],
+              ]) {
+                if (componentId === otherId && side === otherSide
+                    && Math.abs(point[coordinate] - otherPoint[coordinate])
+                      < portSpacing(candidate.conn, other.conn) - 0.0001) return false;
+              }
+            }
+          }
+        }
+        return true;
+      };
+      const labelClears = (rect, owner, entries, labels) => {
+        if (!rect) return !owner.label;
+        if (!withinScene([rect.x, rect.y])
+            || !withinScene([rect.x + rect.width, rect.y + rect.height])
+            || labels.some((other) => rectsOverlap(rect, other.rect, 2))) return false;
+        return entries.every((entry) => entry.conn === owner || entry.points.slice(1).every((end, index) =>
+          !segmentIntersectsRect({ start: entry.points[index], end }, rect, LABEL_CLEARANCE)));
+      };
       function improveReciprocalPairs() {
         // A one-route sweep cannot repair reciprocal facing edges whose initial
         // spread groups differ. Try both direct lanes together after final side
@@ -963,11 +1092,11 @@ export function createRouter(components, connections = [], {
         const paired = new Set();
         for (const first of resolvedRoutes) {
           const conn = first.conn;
-          if (paired.has(conn) || hasAuthoredRouteGeometry(conn) || hasAuthoredLabelPlacement(conn)
+          if (paired.has(conn) || typeOwned.has(conn) || hasAuthoredRouteGeometry(conn) || hasAuthoredLabelPlacement(conn)
               || (conn.fromSide && conn.fromSide !== 'auto')
               || (conn.toSide && conn.toSide !== 'auto')) continue;
           const second = resolvedRoutes.find((entry) => entry !== first
-            && entry.conn.from === conn.to && entry.conn.to === conn.from
+            && entry.conn.from === conn.to && entry.conn.to === conn.from && !typeOwned.has(entry.conn)
             && !hasAuthoredRouteGeometry(entry.conn) && !hasAuthoredLabelPlacement(entry.conn)
             && (!entry.conn.fromSide || entry.conn.fromSide === 'auto')
             && (!entry.conn.toSide || entry.conn.toSide === 'auto'));
@@ -1003,40 +1132,8 @@ export function createRouter(components, connections = [], {
               end[axis] = lane;
               return { points: [start, end], d: roundedPath([start, end], 8) };
             };
-            const endpointSlotsClear = (candidateRoutes) => {
-              const entries = [...others, ...candidateRoutes];
-              for (const candidate of candidateRoutes) {
-                const sides = candidate.conn === conn ? firstSides : secondSides;
-                for (const [componentId, side, point] of [
-                  [candidate.conn.from, sides.fromSide, candidate.points[0]],
-                  [candidate.conn.to, sides.toSide, candidate.points.at(-1)],
-                ]) {
-                  const coordinate = side === 'left' || side === 'right' ? 1 : 0;
-                  for (const other of entries) {
-                    if (other.conn === candidate.conn) continue;
-                    const otherSides = other.conn === conn ? firstSides
-                      : other.conn === second.conn ? secondSides : selectedSides.get(other.conn);
-                    for (const [otherId, otherSide, otherPoint] of [
-                      [other.conn.from, otherSides.fromSide, other.points[0]],
-                      [other.conn.to, otherSides.toSide, other.points.at(-1)],
-                    ]) {
-                      if (componentId === otherId && side === otherSide
-                          && Math.abs(point[coordinate] - otherPoint[coordinate])
-                            < portSpacing(candidate.conn, other.conn) - 0.0001) return false;
-                    }
-                  }
-                }
-              }
-              return true;
-            };
-            const labelClears = (rect, owner, entries, labels) => {
-              if (!rect) return !owner.label;
-              if (!withinScene([rect.x, rect.y])
-                  || !withinScene([rect.x + rect.width, rect.y + rect.height])
-                  || labels.some((other) => rectsOverlap(rect, other.rect, 2))) return false;
-              return entries.every((entry) => entry.conn === owner || entry.points.slice(1).every((end, index) =>
-                !segmentIntersectsRect({ start: entry.points[index], end }, rect, LABEL_CLEARANCE)));
-            };
+            const pairSides = (candidate) => (candidate === conn ? firstSides
+              : candidate === second.conn ? secondSides : selectedSides.get(candidate));
             let best = null;
             let bestCost = readabilityCost(conn, first, [...others, second])
               + readabilityCost(second.conn, second, [...others, first]);
@@ -1047,7 +1144,7 @@ export function createRouter(components, connections = [], {
                 const secondRoute = { conn: second.conn, ...direct(secondGeometry, secondLane) };
                 const candidates = [firstRoute, secondRoute];
                 if (!candidates.every((entry) => entry.points.every(withinScene))) continue;
-                if (!endpointSlotsClear(candidates)) continue;
+                if (!endpointSlotsClear(candidates, others, pairSides)) continue;
                 if (!candidates.every((entry, index) => {
                   const geometry = entry.conn === conn ? firstGeometry : secondGeometry;
                   if (!portHasCornerClearance(geometry.from, geometry.fromSide, entry.points[0])
@@ -1093,33 +1190,83 @@ export function createRouter(components, connections = [], {
           }
         }
       }
-      allowGridSearch = false;
-      try {
-        improveReciprocalPairs();
+      // A type-owned corridor (an erd bundled trunk or dedicated lane) is the
+      // route its renderer draws around; the generic sweep must not trade it
+      // for a shorter lane and leave the bus without its branch.
+      const followsPreferredCorridor = (entry) => {
+        if (!preferredCandidates) return false;
+        const sides = selectedSides.get(entry.conn);
+        if (!sides) return false;
+        const interior = JSON.stringify(entry.points.slice(1, -1));
+        return (preferredCandidates({
+          conn: entry.conn,
+          from: components.get(entry.conn.from),
+          to: components.get(entry.conn.to),
+          start: entry.points[0],
+          end: entry.points.at(-1),
+          fromSide: sides.fromSide,
+          toSide: sides.toSide,
+        }) || []).some((candidate) => JSON.stringify(candidate) === interior);
+      };
+      const typeOwned = new Set(resolvedRoutes.filter(followsPreferredCorridor).map((entry) => entry.conn));
+      function relocatedLabelsFor(conn, routed, others) {
+        // A provisional label may occupy an otherwise clear corridor. Move at
+        // most one automatic label, on its existing route, and accept the pair
+        // only when both labels fit without borrowing other labels' space.
+        const displaced = reservedLabels.filter((label) => label.conn !== conn && routed.points.slice(1).some((end, index) =>
+          segmentIntersectsRect({ start: routed.points[index], end }, label.rect, LABEL_CLEARANCE)));
+        if (displaced.length !== 1) return null;
+        const owner = displaced[0].conn;
+        if (typeOwned.has(owner) || hasAuthoredRouteGeometry(owner) || hasAuthoredLabelPlacement(owner)) return null;
+        const labels = reservedLabels.filter((label) => label.conn !== conn && label.conn !== owner);
+        const routes = [...others, { conn, points: routed.points }];
+        const moved = routes.find((entry) => entry.conn === owner);
+        for (const entry of [moved, { conn, points: routed.points }]) {
+          const rect = labelRectFor?.(entry.conn, entry.points, {
+            routes: routes.map((route) => route.points),
+            labels: labels.map((label) => label.rect),
+          });
+          if (!labelClears(rect, entry.conn, routes, labels)
+              || (rect && [...components.values()].some((component) => rectsOverlap(rect, component, -2)))) return null;
+          if (rect) labels.push({ conn: entry.conn, rect });
+        }
+        return labels;
+      }
+      function improveComplexRoutes(onlyCrossings = false) {
         for (const entry of resolvedRoutes) {
           const { conn } = entry;
-          if (jointlyImproved.has(conn) || hasAuthoredRouteGeometry(conn) || conn.labelAt) continue;
+          if (jointlyImproved.has(conn) || typeOwned.has(conn) || hasAuthoredRouteGeometry(conn) || hasAuthoredLabelPlacement(conn)) continue;
           const others = resolvedRoutes.filter((other) => other !== entry);
           // Preserve uncomplicated routes and their established inferred sides.
           // Spend the comparison budget where the complete scene has a reading
-          // cost: a crossover or more than two bends.
-          if (entry.points.length <= 4 && crossingCount(conn, entry.points, others) === 0) continue;
+          // cost: a crossover, more than two bends, or no room for its label.
+          const crossingsBefore = crossingCount(conn, entry.points, others);
+          const currentLabel = labelRectFor?.(conn, entry.points, {
+            routes: others.map(other => other.points),
+            labels: reservedLabels.filter(label => label.conn !== conn).map(label => label.rect),
+          });
+          const labelBlocked = Boolean(conn.label && labelRectFor && !currentLabel);
+          if (!labelBlocked && crossingsBefore === 0 && (onlyCrossings || entry.points.length <= 4)) continue;
           let best = null;
-          let bestCost = readabilityCost(conn, { points: entry.points }, others);
+          let bestCost = labelBlocked ? Infinity : readabilityCost(conn, { points: entry.points }, others);
           for (const sides of candidateSidePairs(conn)) {
             const geometry = connectionGeometry(conn, sides);
             const routed = routedForGeometry(conn, others, geometry);
             planningMetrics.readabilityCandidateCount += 1;
             if (!routed.points.every(withinScene) || !routeIsClear(conn, routed, geometry, others)) continue;
+            if (onlyCrossings && crossingCount(conn, routed.points, others) >= crossingsBefore) continue;
             const cost = readabilityCost(conn, routed, others);
             if (cost < bestCost) {
               const rect = labelRectFor?.(conn, routed.points, {
                 routes: [...others.map((other) => other.points), routed.points],
                 labels: reservedLabels.filter((label) => label.conn !== conn).map((label) => label.rect),
               });
-              // A shorter route must not expand the canvas and shrink every
-              // label at the default viewport. Include its reserved label too.
-              if (rect && (!withinScene([rect.x, rect.y]) || !withinScene([rect.x + rect.width, rect.y + rect.height]))) continue;
+              // Include the reserved label in this pass's bounds. In
+              // particular, a shorter route must not widen and shrink the graph.
+              if (labelRectFor && !labelClears(rect, conn, others, reservedLabels.filter(label => label.conn !== conn))) continue;
+              if (onlyCrossings && (!endpointSlotsClear([{ conn, points: routed.points }], others,
+                candidate => candidate === conn ? sides : selectedSides.get(candidate))
+                  || (rect && [...components.values()].some(component => rectsOverlap(rect, component, -2))))) continue;
               best = { routed, sides, rect };
               bestCost = cost;
             }
@@ -1130,6 +1277,171 @@ export function createRouter(components, connections = [], {
           planningMetrics.readabilityImprovedCount += 1;
           reservedLabels = reservedLabels.filter((label) => label.conn !== conn);
           if (best.rect) reservedLabels.push({ conn, rect: best.rect });
+        }
+      }
+      allowGridSearch = false;
+      try {
+        improveReciprocalPairs();
+        improveComplexRoutes();
+        // A bent route between nodes that overlap across the gap separating
+        // them can run straight through facing sides inside that overlap.
+        // Authored sides must already face; every other route, slot and label
+        // stays fixed, and the straight lane must pass the same checks.
+        for (const entry of resolvedRoutes) {
+          const { conn } = entry;
+          if (entry.points.length < 4 || jointlyImproved.has(conn) || typeOwned.has(conn)
+              || hasAuthoredRouteGeometry(conn) || hasAuthoredLabelPlacement(conn)) continue;
+          const from = components.get(conn.from);
+          const to = components.get(conn.to);
+          const facing = from.x + from.width <= to.x ? { fromSide: 'right', toSide: 'left' }
+            : to.x + to.width <= from.x ? { fromSide: 'left', toSide: 'right' }
+              : from.y + from.height <= to.y ? { fromSide: 'bottom', toSide: 'top' }
+                : to.y + to.height <= from.y ? { fromSide: 'top', toSide: 'bottom' } : null;
+          if (!facing) continue;
+          const axis = facing.fromSide === 'right' || facing.fromSide === 'left' ? 1 : 0;
+          const [origin, size] = axis === 1 ? ['y', 'height'] : ['x', 'width'];
+          const low = Math.max(from[origin], to[origin]) + AUTOMATIC_PORT_CORNER_GUTTER;
+          const high = Math.min(from[origin] + from[size], to[origin] + to[size]) - AUTOMATIC_PORT_CORNER_GUTTER;
+          if (high < low
+              || (conn.fromSide && conn.fromSide !== 'auto' && conn.fromSide !== facing.fromSide)
+              || (conn.toSide && conn.toSide !== 'auto' && conn.toSide !== facing.toSide)) continue;
+          const sides = facing;
+          const geometry = connectionGeometry(conn, sides);
+          const start = geometry.start;
+          const end = geometry.end;
+          const clamp = (value) => Math.min(high, Math.max(low, value));
+          const others = resolvedRoutes.filter((other) => other !== entry);
+          const otherLabels = reservedLabels.filter((label) => label.conn !== conn);
+          const crossingsBefore = crossingCount(conn, entry.points, others);
+          const sidesOf = (candidate) => (candidate === conn ? sides : selectedSides.get(candidate));
+          for (const lane of new Set([start[axis], end[axis], (start[axis] + end[axis]) / 2, (low + high) / 2].map(clamp))) {
+            const points = [[...start], [...end]];
+            points[0][axis] = lane;
+            points[1][axis] = lane;
+            const routed = { conn, points, d: roundedPath(points, 8) };
+            if (!points.every(withinScene)
+                || !endpointSlotsClear([routed], others, sidesOf)
+                || !routeIsClear(conn, routed, geometry, others)
+                || crossingCount(conn, points, others) > crossingsBefore) continue;
+            const rect = labelRectFor?.(conn, points, {
+              routes: [...others.map((other) => other.points), points],
+              labels: otherLabels.map((label) => label.rect),
+            });
+            if (!labelClears(rect, conn, others, otherLabels)) continue;
+            cachePath(conn, { points, d: routed.d }, sides);
+            entry.points = points;
+            planningMetrics.readabilityImprovedCount += 1;
+            reservedLabels = [...otherLabels, ...(rect ? [{ conn, rect }] : [])];
+            break;
+          }
+        }
+        // Finish the established route/straightening plan first. Moving a
+        // label earlier could prevent a later edge from taking its straight
+        // corridor, even though the local candidate was cheaper.
+        for (const entry of resolvedRoutes) {
+          const { conn } = entry;
+          if (jointlyImproved.has(conn) || typeOwned.has(conn) || hasAuthoredRouteGeometry(conn) || hasAuthoredLabelPlacement(conn)) continue;
+          const others = resolvedRoutes.filter((other) => other !== entry);
+          if (entry.points.length <= 4 && crossingCount(conn, entry.points, others) === 0) continue;
+          let best = null;
+          let bestCost = readabilityCost(conn, entry, others);
+          if (labelRectFor && reservedLabels.some((label) => label.conn !== conn)) {
+            // One additional side sweep, with no grid search or cascading
+            // relayout. Temporary reservations can be ignored only after a
+            // replacement placement is verified against the complete scene.
+            for (const sides of candidateSidePairs(conn)) {
+              const geometry = connectionGeometry(conn, sides);
+              let routed;
+              let clear;
+              honourReservedLabels = false;
+              try {
+                routed = routedForGeometry(conn, others, geometry);
+                clear = routeIsClear(conn, routed, geometry, others);
+              } finally {
+                honourReservedLabels = true;
+              }
+              planningMetrics.labelRelocationCandidateCount += 1;
+              const cost = readabilityCost(conn, routed, others);
+              if (cost >= bestCost || !clear || !routed.points.every(withinScene)
+                  || crossingCount(conn, routed.points, others) > crossingCount(conn, entry.points, others)
+                  || !endpointSlotsClear([{ conn, points: routed.points }], others,
+                    (candidate) => candidate === conn ? sides : selectedSides.get(candidate))) continue;
+              const labels = relocatedLabelsFor(conn, routed, others);
+              if (!labels) continue;
+              best = { routed, sides, labels };
+              bestCost = cost;
+            }
+          }
+          if (!best) continue;
+          cachePath(conn, best.routed, best.sides);
+          entry.points = best.routed.points;
+          reservedLabels = best.labels;
+          planningMetrics.labelRelocationImprovedCount += 1;
+        }
+        // A side's midpoint may be blocked even when a corner port has a
+        // clear one-bend route. Probe bent automatic routes, keeping
+        // all other paths/labels fixed and the existing corner inset intact.
+        // Eight perpendicular side pairs, at most three slots per endpoint:
+        // 72 cheap candidates per route, without another grid search.
+        for (const entry of resolvedRoutes) {
+          const { conn } = entry;
+          if (entry.points.length < 4 || jointlyImproved.has(conn) || typeOwned.has(conn)
+              || hasAuthoredRouteGeometry(conn) || hasAuthoredLabelPlacement(conn)) continue;
+          const others = resolvedRoutes.filter((other) => other !== entry);
+          const labels = reservedLabels.filter((label) => label.conn !== conn);
+          const crossingsBefore = crossingCount(conn, entry.points, others);
+          let best = null;
+          let bestCost = readabilityCost(conn, entry, others);
+          const slots = (rect, side, preferred) => {
+            const horizontal = side === 'left' || side === 'right';
+            const axis = horizontal ? 1 : 0;
+            const origin = horizontal ? rect.y : rect.x;
+            const size = horizontal ? rect.height : rect.width;
+            const inset = Math.min(AUTOMATIC_PORT_CORNER_GUTTER, size / 2);
+            return [...new Set([preferred[axis], origin + inset, origin + size - inset])].map((value) => {
+              const point = [...preferred];
+              point[axis] = value;
+              return point;
+            }).filter((point) => portHasCornerClearance(rect, side, point));
+          };
+          for (const sides of candidateSidePairs(conn)) {
+            const horizontal = (side) => side === 'left' || side === 'right';
+            if (horizontal(sides.fromSide) === horizontal(sides.toSide)) continue;
+            const geometry = connectionGeometry(conn, sides);
+            for (const start of slots(geometry.from, sides.fromSide, geometry.start)) {
+              for (const end of slots(geometry.to, sides.toSide, geometry.end)) {
+                const corner = horizontal(sides.fromSide) ? [end[0], start[1]] : [start[0], end[1]];
+                const points = normalizeRoutePoints([start, corner, end]);
+                const routed = { points, d: roundedPath(points, 8) };
+                const cost = readabilityCost(conn, routed, others);
+                if (cost >= bestCost || points.length !== 3 || !points.every(withinScene)
+                    || !endpointSlotsClear([{ conn, points }], others,
+                      (candidate) => candidate === conn ? sides : selectedSides.get(candidate))
+                    || !routeIsClear(conn, routed, { ...geometry, start, end, crowded: false }, others)
+                    || crossingCount(conn, points, others) > crossingsBefore) continue;
+                const rect = labelRectFor?.(conn, points, {
+                  routes: [...others.map((other) => other.points), points],
+                  labels: labels.map((label) => label.rect),
+                });
+                if (!labelClears(rect, conn, others, labels)
+                    || (rect && [...components.values()].some((component) => rectsOverlap(rect, component, -2)))) continue;
+                best = { routed, sides, rect };
+                bestCost = cost;
+              }
+            }
+          }
+          if (!best) continue;
+          cachePath(conn, best.routed, best.sides);
+          entry.points = best.routed.points;
+          reservedLabels = [...labels, ...(best.rect ? [{ conn, rect: best.rect }] : [])];
+          planningMetrics.readabilityImprovedCount += 1;
+        }
+        // Complete the original bounded plan first. Only a remaining crossing
+        // can justify using an extra lower corridor; an already clear scene
+        // must not grow merely because its labels could move into that space.
+        if (readabilityBottomMargin > 0) {
+          bounds.bottom += readabilityBottomMargin;
+          improveComplexRoutes(true);
         }
       } finally {
         allowGridSearch = true;
@@ -1153,5 +1465,5 @@ export function createRouter(components, connections = [], {
     return { ...planningMetrics };
   }
 
-  return { pathFor, connectionSides, connectionEndpointSide, routingMetrics };
+  return { ports: automaticPorts, pathFor, connectionSides, inferredSides, connectionEndpointSide, routingMetrics };
 }
