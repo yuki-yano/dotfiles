@@ -3,14 +3,14 @@
   "skills": {
     "agent-browser": {
       "source": "vercel-labs/agent-browser",
-      "ref": "526157cfd4ec64f45939f9ba0f10d5936aa7ac33",
+      "ref": "dac13bb87468fe9d74a040d862720f6cc17a9565",
       "sourceType": "github",
       "skillPath": "skills/agent-browser/SKILL.md",
       "computedHash": "dd491d53824ad9286ec950aee667098446332429a6d41fe28b4ba11f1959264c"
     },
     "apple-design": {
       "source": "emilkowalski/skills",
-      "ref": "e8a175de22ae1e49370fc144c1f3bb9aeedf988d",
+      "ref": "2d228630ba1446365f614a108cb8252f1feda202",
       "sourceType": "github",
       "skillPath": "skills/apple-design/SKILL.md",
       "computedHash": "0190417d092a0df447b000154e39733ea6d97efad6d3bec8a6ce3845aeb88914"
@@ -31,66 +31,66 @@
     },
     "domain-modeling": {
       "source": "mattpocock/skills",
-      "ref": "24fe0ef7737efae15c87225755e9f6f5965e4888",
+      "ref": "49dd158d1076134a641b33efb035946536778336",
       "sourceType": "github",
       "skillPath": "skills/engineering/domain-modeling/SKILL.md",
       "computedHash": "b3eb40152b81f0c98fd2095a023c019452dbdce56f7540cc67fece2972db8369"
     },
     "eli5": {
       "source": "anthropics/claude-plugins-community",
-      "ref": "f60f0454df3045f724c43c6346ec80bdcc3472b2",
+      "ref": "06ec7b6a0a82bdc4bec44bd82d4368c42f20d7c1",
       "sourceType": "github",
       "skillPath": "eli5/skills/eli5/SKILL.md",
       "computedHash": "6c626392eca359b7408fc25073ccd47ca07c7442ab5548df79e43bafc85a1818"
     },
     "explainer": {
       "source": "mizchi/explainer",
-      "ref": "578defba7249fde5366689424ed6017f76b5598b",
+      "ref": "ccdd7bacfb47451e38506d837af8a629504960b2",
       "sourceType": "github",
       "skillPath": "skills/explainer/SKILL.md",
-      "computedHash": "704768ba5840c1586b009cc8e3c87696e0159b31a222401b132e368005dc163f"
+      "computedHash": "76aa3da0f7363815838e29e61e5c2fe2c063c7c51b0ffbb61872af27ba7a572d"
     },
     "first-reader": {
       "source": "mizchi/explainer",
-      "ref": "578defba7249fde5366689424ed6017f76b5598b",
+      "ref": "ccdd7bacfb47451e38506d837af8a629504960b2",
       "sourceType": "github",
       "skillPath": "skills/first-reader/SKILL.md",
       "computedHash": "4d3d4aadae2812bb326ad7ab70bdbb4975b7960dc95ae5b27e612af2824827cc"
     },
     "frontend-design": {
       "source": "anthropics/claude-code",
-      "ref": "2bfb629dfaff0c8318047a4beb93cf1dc5b58b18",
+      "ref": "c017428c8c27e604840435048d5bce6a9a22c040",
       "sourceType": "github",
       "skillPath": "plugins/frontend-design/skills/frontend-design/SKILL.md",
       "computedHash": "b8c8329ad9b98fa57f4a279e37bdf4a0d55743140e54bb7da3e340d754d75b43"
     },
     "gh-stack": {
       "source": "github/gh-stack",
-      "ref": "d4ab7ab47e5b3e3708a27c8c42abcdf4bc321419",
+      "ref": "29a36d314be664583705f18e41cebdf2b61ad514",
       "sourceType": "github",
       "skillPath": "skills/gh-stack/SKILL.md",
       "computedHash": "6a5289601eedbeedc2d79c2d8627277afb9b9a3fbd78b4da3399a46dd788ae0a"
     },
     "grill-me": {
       "source": "mattpocock/skills",
-      "ref": "24fe0ef7737efae15c87225755e9f6f5965e4888",
+      "ref": "49dd158d1076134a641b33efb035946536778336",
       "sourceType": "github",
       "skillPath": "skills/productivity/grill-me/SKILL.md",
       "computedHash": "9cdbb4b8f7a3aeaef82e6230c9e823500d4a8a1214c726cf342cf9829d34fc7d"
     },
     "grill-with-docs": {
       "source": "mattpocock/skills",
-      "ref": "24fe0ef7737efae15c87225755e9f6f5965e4888",
+      "ref": "49dd158d1076134a641b33efb035946536778336",
       "sourceType": "github",
       "skillPath": "skills/engineering/grill-with-docs/SKILL.md",
       "computedHash": "35e62aa423aaeab6a414bcac273f56dfb17802ef2334b41b6a3b00f28196c8cf"
     },
     "grilling": {
       "source": "mattpocock/skills",
-      "ref": "24fe0ef7737efae15c87225755e9f6f5965e4888",
+      "ref": "49dd158d1076134a641b33efb035946536778336",
       "sourceType": "github",
       "skillPath": "skills/productivity/grilling/SKILL.md",
-      "computedHash": "4dd886b0196bf43729d954ae326016f2bd9f5f79d892500b407c33a753362f14"
+      "computedHash": "ef1641a2047b71b60f1942cd35efb47d3afc9d584dff5a0b01f8c7db923aaa08"
     },
     "orca-cli": {
       "source": "stablyai/orca",
@@ -108,17 +108,17 @@
     },
     "portless": {
       "source": "vercel-labs/portless",
-      "ref": "e06a3572c0bcc04ef045582bbcdeb5ee18e72b3b",
+      "ref": "27598545f08f8055cb3b9fb410f8d250f054f46d",
       "sourceType": "github",
       "skillPath": "skills/portless/SKILL.md",
-      "computedHash": "fffa128d19849b3b7815cd3ecd62e2e999c2b2b237a6fcb6ec89c296bce80254"
+      "computedHash": "70b3906c1ca063c873f53687b569e9a447de269d00b8ba5fef6203511533a8b0"
     },
     "react-doctor": {
       "source": "millionco/react-doctor",
-      "ref": "675ad3c7938c3d8b24a835c7f0f4572ad7328b23",
+      "ref": "84ad0c8d0df7a3ab7d26946367fae3bc39c100d0",
       "sourceType": "github",
       "skillPath": "skills/react-doctor/SKILL.md",
-      "computedHash": "2e5bde473878686ffb1463b8385e07943c6545e63aa8e676ae3ff46cdb9b02fe"
+      "computedHash": "803447f3251d555207f8935893d4d2950243a2ac0b407a1c95c7755bb38433a3"
     },
     "vde-open": {
       "source": "yuki-yano/vde-open",
@@ -136,17 +136,17 @@
     },
     "workers-best-practices": {
       "source": "cloudflare/skills",
-      "ref": "41e0d19858946d18af9ee2c2feebbe2e11d829ff",
+      "ref": "86505e44f87d801aa1864a3c4109e9a8ae5c409f",
       "sourceType": "github",
       "skillPath": "skills/workers-best-practices/SKILL.md",
-      "computedHash": "e1c30e93854345114dfa6a0a077363119eb99c03e5c64a8f2109349802e1f2aa"
+      "computedHash": "e12970301753ed7eaa5ca375d4b98e0e36c9554e8f2809cb4b543c2ea7d9b4b8"
     },
     "wrangler": {
       "source": "cloudflare/skills",
-      "ref": "41e0d19858946d18af9ee2c2feebbe2e11d829ff",
+      "ref": "86505e44f87d801aa1864a3c4109e9a8ae5c409f",
       "sourceType": "github",
       "skillPath": "skills/wrangler/SKILL.md",
-      "computedHash": "6d2bade1438d89034a750b1ddf30d0e5b62823306eccf85a5b25ccc4352ff8a9"
+      "computedHash": "9b410cfe14c41d3d4ace5d42e2e19f4eb96104c659b5ed45abf341db28d81029"
     },
     "yomiyasu": {
       "source": "nanaism/yomiyasu",

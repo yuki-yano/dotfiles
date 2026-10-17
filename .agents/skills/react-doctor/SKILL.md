@@ -42,6 +42,12 @@ The playbook is the single source of truth — a scan → filter → triage → 
 
 Pair it with the matching per-rule prompts at `https://www.react.doctor/prompts/rules/<plugin>/<rule>.md` (fetched on demand inside the playbook) so each fix uses the canonical, reviewer-tested recipe.
 
+Use `--scope contextual --base origin/main` when a team wants existing findings
+in the code it is editing. Rules can select an element, function, file, or an
+explicit set of related nodes. For `exhaustive-deps`, edits in the hook call or a
+resolved local callback can surface a finding on an unchanged dependency array.
+Rules without wider ownership keep changed-line filtering.
+
 ## Configuring or explaining rules
 
 When the user wants to understand a rule, disagrees with one, or wants to disable / tune which rules run (not fix code), read [references/explain.md](references/explain.md) and follow it. Start with `npx react-doctor@latest rules explain <rule>`, then apply the narrowest control via `npx react-doctor@latest rules disable|set|category|ignore-tag …`, which edits your `doctor.config.*` (or `package.json#reactDoctor`).
@@ -52,15 +58,20 @@ When the user wants to understand a rule, disagrees with one, or wants to disabl
 npx react-doctor@latest --verbose --scope changed
 ```
 
-| Flag              | Purpose                                                          |
-| ----------------- | ---------------------------------------------------------------- |
-| `.`               | Scan current directory                                           |
-| `--verbose`       | Show affected files and line numbers per rule                    |
-| `--scope changed` | Only report issues introduced vs the base branch (default: full) |
-| `--scope lines`   | Only report issues on the changed lines                          |
-| `--score`         | Output only the numeric score                                    |
-| `design`          | Run only the focused UI design diagnostics                       |
+| Flag                 | Purpose                                                                                 |
+| -------------------- | --------------------------------------------------------------------------------------- |
+| `.`                  | Scan current directory                                                                  |
+| `--verbose`          | Show affected files and line numbers per rule                                           |
+| `--scope changed`    | Only report issues introduced vs the base branch (default: full)                        |
+| `--scope contextual` | Report findings in modified functions, JSX elements, or files, as selected by each rule |
+| `--scope lines`      | Only report issues on the changed lines                                                 |
+| `--score`            | Output only the numeric score                                                           |
+| `design`             | Run only the focused UI design diagnostics                                              |
 
 ### Reuse a base scan
 
-Save a complete `--json` scan, then pass `--baseline base-report.json` to report only new findings. This also works with `--scope changed`. Use the same version and rules for both scans. Matches use the rule, file path with Git renames, message, and normalized flagged source. Each base finding can match once; line and column shifts do not make it new. Older reports without fingerprints must be regenerated.
+Save a complete `--json` scan, then pass `--baseline base-report.json` to report only new findings. This also works with `--scope changed`. Use the same version and rules for both scans. Findings are grouped by rule and file path, following Git renames. Only increases in each group's count are reported; groups without an increase skip location matching. Fingerprints, message similarity, and Git-adjusted line distance select the added findings. Formatting and edits that keep the same counts report no new findings. Saved reports must use the same `textComponents`, `rawTextWrapperComponents`, and `respectInlineDisables` settings. Regenerate the base report after changing these settings, or use a Git comparison. Older reports without fingerprints or `sourceFilterConfigHash` must be regenerated.
+
+### GitLab warning status
+
+For GitLab CI, `--warning-exit-code 123` returns `123` for non-blocking warnings. Pair it with `allow_failure: { exit_codes: 123 }`. Errors still return `1`. Accepts integers from `2` to `255`. `--blocking warning` still returns `1`. `--blocking none` or `--score` skips this warning signal.
