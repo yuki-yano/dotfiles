@@ -15,7 +15,6 @@
   "permissions": {
     "defaultMode": "auto"
   },
-  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -225,6 +224,12 @@
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "xhigh"
+    }
+  },
+  "advisorModel": "fable",
   "showClearContextOnPlanAccept": true,
   "pluginConfigs": {
     "agents-md@builtin": {
@@ -241,10 +246,5 @@
   "theme": "dark",
   "preferredNotifChannel": "notifications_disabled",
   "remoteControlAtStartup": false,
-  "agentPushNotifEnabled": true,
-  "modelSettings": {
-    "claude-opus-5-5": {
-      "effortLevel": "xhigh"
-    }
-  }
+  "agentPushNotifEnabled": true
 }
