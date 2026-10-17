@@ -1,4 +1,4 @@
 interface:
   display_name: "Tsuzuri CLI"
-  short_description: "Tsuzuriの会議検索・参照、録音・音声処理・書き出しを操作する"
+  short_description: "Tsuzuriの会議検索・参照、会議名変更、録音・音声処理・書き出しを操作する"
   default_prompt: "$tsuzuri-cli を使って、指定した期間の会議から決定事項と残っているタスクを整理してください。"
