@@ -3,6 +3,7 @@
 Offsets are half-open Python string positions. This is a targeted scanner,
 not a claim to implement every CommonMark or GFM construct.
 """
+__version__ = "2.0.1"
 
 import re
 import unicodedata
@@ -21,12 +22,15 @@ _AUTOLINK = re.compile(r'<(?:[A-Za-z][A-Za-z0-9+.-]{1,31}:[^<>\x00-\x20]*|'
                        r'(?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?'
                        r'(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*>)')
 _CONTAINER_MARKER = re.compile(r'(?:[-+*]|\d{1,9}[.)])(?:[ \t]+|$)')
+_CONTAINER_MARKER_DEFAULT = _CONTAINER_MARKER
 _BARE_URL = re.compile(r'(?:https?://|www\.)[^\s<>]+')
 _REFERENCE_LABEL = re.compile(r'^ {0,3}\[((?:\\.|[^\[\]\\]){1,999})\]:[ \t]*')
 _BLANK_TITLE_LINE = re.compile(r'(?:\r\n|\r|\n)[ \t]*(?:\r\n|\r|\n)')
 _SETEXT = re.compile(r'^ {0,3}(?:=+|-+)[ \t]*$')
 _THEMATIC = re.compile(r'^ {0,3}(?:(?:\*[ \t]*){3,}|(?:-[ \t]*){3,}|(?:_[ \t]*){3,})$')
 _INLINE_EVENTS = re.compile(r'[\\`<\[\]hw]')
+_FENCE_OPEN = re.compile(r'^ {0,3}(`{3,}|~{3,})(.*)$')
+_ATX_HEADING = re.compile(r'^ {0,3}#{1,6}(?:[ \t]+|$)')
 
 
 def unicode_whitespace(ch):
@@ -218,12 +222,16 @@ def inline_protected_spans(text):
                     continue
         # GFM bare URLs are data for prose inspection, not emphasis instructions.
         if text.startswith(('http://', 'https://', 'www.'), pos):
+            www = text.startswith('www.', pos)
+            # Reject an impossible www start before scanning its entire suffix.
+            if www and pos and not (unicode_whitespace(text[pos - 1]) or text[pos - 1] in '*_~('):
+                pos += 1
+                continue
             match = _BARE_URL.match(text, pos)
             if match:
                 end = match.end()
                 # New www recognition is restricted to published GFM boundaries
                 # and a valid ASCII domain. Adjacent-Japanese policy is not widened.
-                www = text.startswith('www.', pos)
                 domain = re.split(r'[/?:#]', match.group(0), maxsplit=1)[0]
                 segments = domain.split('.')
                 valid_www = (len(segments) >= 2
@@ -255,6 +263,13 @@ def _columns(text):
 
 
 def _containers(raw, allow_list=True):
+    # Default containers can start only with an ASCII space, a quote marker,
+    # a list marker, or a Unicode digit. isdigit() is a conservative superset
+    # of regex \d; unusual custom marker patterns keep the original path.
+    if (type(raw) is str and raw and raw[0] not in ' >'
+            and (not allow_list or (_CONTAINER_MARKER is _CONTAINER_MARKER_DEFAULT
+                                   and raw[0] not in '-+*' and not raw[0].isdigit()))):
+        return 0, 0, False
     pos = 0
     quotes = 0
     list_item = False
@@ -522,7 +537,7 @@ def analyze_markdown(text, skip_frontmatter=True):
                 if not stripped: html_until = None
             elif re.search(html_until, content, re.I): html_until = None
         if kind is None:
-            marker = re.match(r'^ {0,3}(`{3,}|~{3,})(.*)$', content)
+            marker = _FENCE_OPEN.match(content)
             if marker and not (marker.group(1)[0] == '`' and '`' in marker.group(2)):
                 kind = 'code'
                 fence = (marker.group(1)[0], len(marker.group(1)), depth)
@@ -530,7 +545,7 @@ def analyze_markdown(text, skip_frontmatter=True):
                 kind = 'code'
             elif not stripped:
                 kind = 'blank'
-            elif re.match(r'^ {0,3}#{1,6}(?:[ \t]+|$)', content):
+            elif _ATX_HEADING.match(content):
                 kind = 'heading'
             elif _SETEXT.match(content) and current is not None and current['kind'] in ('paragraph', 'quote', 'list'):
                 current['kind'] = 'heading'
@@ -545,7 +560,9 @@ def analyze_markdown(text, skip_frontmatter=True):
                 if current['lines']:
                     header = current['lines'].pop()
                     header['kind'] = 'table'
-                    if not current['lines']: blocks.remove(current)
+                    if not current['lines']:
+                        # current is the active (last appended) block.
+                        blocks.pop()
                     blocks.append({'kind': 'table', 'lines': [header]})
                     current = None
                 kind = 'table'
@@ -659,6 +676,9 @@ def line_visible_text(analysis, line_no, protected_kinds=None):
     row = analysis['lines'][line_no - 1]
     start = row['start']
     end = start + len(row['raw'])
+    if not analysis['protected_spans']:
+        cached[cache_key] = row['raw']
+        return row['raw']
     if protected_kinds is None:
         masks, ends = analysis['mask_spans'], analysis['mask_ends']
     else:
@@ -694,3 +714,95 @@ def range_overlaps_protected(analysis, start, end, protected_kinds=None):
         masks, ends = cache[key]
     index = bisect_right(ends, start)
     return index < len(masks) and masks[index][0] < end
+
+
+def decode_source(data):
+    """入力のバイト列を、検査に使う文字列にする。lint、diff、check で同じ読み方にするための関数。
+
+    UTF-8 として厳密に解き（読めなければ UnicodeDecodeError）、先頭の BOM を1つ外し、
+    CRLF と CR を LF にそろえる。戻り値は (文字列, 情報) の組。情報は
+    {"bom": BOM があったか, "eol": 元の改行コード}。eol は "lf"、"crlf"、"cr"、
+    2種類以上が混ざるときは "mixed"、改行がなければ "none"。
+
+    標準入力が StringIO のようにバイト列を読めないときは、read() した文字列を渡してよい。
+    そのときは解く処理を飛ばし、BOM と改行の処理だけをする。
+    """
+    if isinstance(data, str):
+        text = data
+    else:
+        text = bytes(data).decode("utf-8")
+    bom = text.startswith("\ufeff")
+    if bom:
+        text = text[1:]
+    if "\r" in text:
+        crlf = text.count("\r\n")
+        cr = text.count("\r") - crlf
+        lf = text.count("\n") - crlf
+        kinds = [name for name, count in (("lf", lf), ("crlf", crlf), ("cr", cr)) if count]
+        eol = kinds[0] if len(kinds) == 1 else "mixed"
+        text = text.replace("\r\n", "\n").replace("\r", "\n")
+    else:
+        eol = "lf" if "\n" in text else "none"
+    return text, {"bom": bom, "eol": eol}
+
+
+# ---- 文書の種類と読者 ----
+# lint、diff、check の3本が同じ値と名前を使うので、ここに1つだけ置く（ほかは import する）。
+# 公開の名前として読むだけにし、書き換えて使う使い方は約束しない。
+
+# (値, 名前, あわせて読む domains のファイル)。順は種類の表のとおり（formal と promo は、あとから足した）
+DOC_TYPES = (
+    ("pr", "PR説明", ("business.md",)),
+    ("article", "技術記事", ("tech.md",)),
+    ("incident", "障害報告", ("business.md",)),
+    ("proposal", "提案書", ("business.md",)),
+    ("minutes", "議事録", ("business.md",)),
+    ("manual", "マニュアル", ("tech.md", "business.md")),
+    ("slides", "スライド", ("tech.md", "business.md")),
+    ("essay", "エッセイ・小説", ("essay.md",)),
+    ("formal", "公用文、規程、契約書、仕様書", ("business.md", "tech.md")),
+    ("promo", "紹介記事・宣伝文", ("essay.md", "business.md")),
+    ("mail", "メール・チャット", ("business.md",)),
+    ("paper", "論文・研究レポート", ("tech.md",)),
+)
+# (値, 名前)
+READER_LEVELS = (
+    ("expert", "同じ分野の専門家"),
+    ("informed", "分野は違うが技術に詳しい人"),
+    ("general", "専門知識のない人"),
+)
+
+
+def _normalize_choice(option, value, rows):
+    """NFKC にし、前後の空白を外し、英字を小文字にして、使える値なら返す。None はそのまま返す。
+    使えない値（空の文字列を含む）は、標準エラーにそのまま書ける1行の文の ValueError にする。"""
+    if value is None:
+        return None
+    normalized = unicodedata.normalize("NFKC", str(value)).strip().lower()
+    for row in rows:
+        if row[0] == normalized:
+            return normalized
+    # 空や空白だけの値は、目に見えないので「（空）」と書く（--stance、--fail-on と同じ）
+    shown = value if str(value).strip() else "（空）"
+    # 値の一覧の閉じ括弧と「です」の間に空白を入れない（設計の文どおり。反証で見つけた例）
+    raise ValueError("{} に使えない値です: {}。使えるのは {}です。".format(
+        option, shown, "、".join("{}（{}）".format(row[0], row[1]) for row in rows)))
+
+
+def normalize_doc_type(value):
+    """--doc-type の値を正規化する（SLIDES、前後の空白、全角も slides）。None はそのまま。使えない値は ValueError。"""
+    return _normalize_choice("--doc-type", value, DOC_TYPES)
+
+
+def normalize_reader(value):
+    """--reader の値を正規化する。None はそのまま。使えない値は ValueError。"""
+    return _normalize_choice("--reader", value, READER_LEVELS)
+
+
+def context_label(doc_type, reader):
+    """lint と diff の人が読む出力の1行の頭（「文書の種類: スライド（slides）、読者: 指定なし。」）。"""
+    doc_type, reader = normalize_doc_type(doc_type), normalize_reader(reader)
+    kinds, readers = dict(row[:2] for row in DOC_TYPES), dict(READER_LEVELS)
+    return "文書の種類: {}、読者: {}。".format(
+        "{}（{}）".format(kinds[doc_type], doc_type) if doc_type else "指定なし",
+        "{}（{}）".format(readers[reader], reader) if reader else "指定なし")

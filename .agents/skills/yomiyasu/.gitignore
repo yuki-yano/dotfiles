@@ -1,8 +1,0 @@
-__pycache__/
-*.py[cod]
-*$py.class
-.DS_Store
-.env
-.venv/
-venv/
-*.skill
