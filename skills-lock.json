@@ -106,6 +106,13 @@
       "skillPath": "skills/react-doctor/SKILL.md",
       "computedHash": "2e5bde473878686ffb1463b8385e07943c6545e63aa8e676ae3ff46cdb9b02fe"
     },
+    "vde-open": {
+      "source": "yuki-yano/vde-open",
+      "ref": "28694f45e2c5520192a773da434d987abdff8de0",
+      "sourceType": "github",
+      "skillPath": "skills/vde-open/SKILL.md",
+      "computedHash": "4232ff66900de3999561f465e025669e9c218507ef95283cf8ebd759a340b553"
+    },
     "vercel-react-best-practices": {
       "source": "vercel-labs/agent-skills",
       "ref": "063bee94c3f4df8453406c830b0a7df0f2860278",
