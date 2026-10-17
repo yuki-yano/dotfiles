@@ -174,7 +174,7 @@ return {
   },
   {
     'Shougo/ddu.vim',
-    enable = false,
+    enabled = false,
     dependencies = {
       { 'vim-denops/denops.vim' },
       { 'yuki-yano/denops-lazy.nvim' },
