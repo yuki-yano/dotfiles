@@ -92,6 +92,20 @@
       "skillPath": "skills/productivity/grilling/SKILL.md",
       "computedHash": "4dd886b0196bf43729d954ae326016f2bd9f5f79d892500b407c33a753362f14"
     },
+    "orca-cli": {
+      "source": "stablyai/orca",
+      "ref": "6fcc183ab951fb751cf02ccb9e2af3cf129a4316",
+      "sourceType": "github",
+      "skillPath": "skills/orca-cli/SKILL.md",
+      "computedHash": "ccd717aed7b9866a059b0b31d9a009641a28f6db3201749943fbbb797af4a317"
+    },
+    "orchestration": {
+      "source": "stablyai/orca",
+      "ref": "6fcc183ab951fb751cf02ccb9e2af3cf129a4316",
+      "sourceType": "github",
+      "skillPath": "skills/orchestration/SKILL.md",
+      "computedHash": "0dc04a0a354974eed5c15115fc6cb7461d7423e95a5b19ee995796cf1383e7ed"
+    },
     "portless": {
       "source": "vercel-labs/portless",
       "ref": "e06a3572c0bcc04ef045582bbcdeb5ee18e72b3b",
