@@ -58,6 +58,12 @@ reasoning_effort_override = true
 # token_budget.enabled = true
 # token_budget.use_history_notes_extension = true
 
+[memories]
+generate_memories = true
+use_memories = true
+extract_model = "gpt-6-luna"
+consolidation_model = "gpt-6.1-sol"
+
 [tui]
 status_line = ["model-with-reasoning", "git-branch", "context-remaining", "context-window-size", "fast-mode", "weekly-limit", "five-hour-limit"]
 theme = "catppuccin-mocha"
