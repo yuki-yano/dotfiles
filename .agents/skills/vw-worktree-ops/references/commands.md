@@ -26,6 +26,16 @@ vw -C "$repo" switch feature/topic --json
 `switch` の新規ブランチと `new` は設定された base から分岐する。現在の HEAD を起点にするつもりで使わない。新規作成では `.worktreeinclude` の自動コピーもあるため、配置済みのファイルを重複して copy しない。
 対話選択を人間に提供するときだけ `vw cd`（fzf が必要）を使う。自動実行では JSON から対象を決める。
 
+## 開発環境の読み込み
+
+作成・再利用後、返された `$path` の直下に `.envrc` がある場合に適用する。`.envrc` がない repo に設定を作ったり、親ディレクトリの `.envrc` を代わりに承認したりしない。
+
+1. `.envrc` と、そこから読み込む設定を確認する。`direnv status` を対象の作業ディレクトリで実行し、未承認・変更済みなら `direnv allow "$path"` で承認する。承認済みで変更がなければ再承認は不要。
+2. 対象環境で repo の runtime 検証を実行し、読み込みエラーと実体・バージョンを確認する。例えば、この repo が `check:runtime` を提供するなら、作業ディレクトリを `$path` にして `direnv exec . pnpm run check:runtime` を使う。`direnv exec` は `.envrc` の評価エラーでも子コマンドを実行する場合があるため、終了コードだけで読み込み成功と判断しない。
+3. 既にその環境から起動した Agent が、同じ環境を使い続けるなら通常のコマンドで作業する。実行中 Agent が別環境の worktree を作成・選択した場合は、作業ディレクトリを `$path` にして以後の環境依存コマンドを `direnv exec . <command>` で実行する。1回のツール呼び出し内の `export` や `eval` が次回にも残るとは扱わない。
+
+新しい Agent を起動する場合は、承認・読み込み確認後にその worktree で `direnv exec . codex` または `direnv exec . claude` とする。通常の対話 shell で direnv hook による読み込みが済んでいれば、直接 CLI を起動できる。Flake・lock・`.envrc` の更新後も、起動済み Agent へ自動反映されるとは扱わない。
+
 ## 作業中の worktree を保護する
 
 owner は開始時に一度だけ、例えば `owner="vw-agent-$(date -u +%Y%m%dT%H%M%SZ)-$$"` で生成する。得られた値を保存し、別のツール呼び出しでも同じ値を使う。

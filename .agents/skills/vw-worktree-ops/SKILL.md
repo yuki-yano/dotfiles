@@ -14,6 +14,7 @@ description: Git worktree の作成・再利用・状態確認・診断・作業
 - 別ディレクトリの操作は `vw -C "$repo" ...` で起点を明示する。`-C` は設定・hook・相対パスの解決にも使われるため、無条件に primary のルートへ置き換えない。
 - 起点や初期化状態が不明なら `vw -C "$repo" context --json` を読む。`data.repository` の `repoRoot` と `currentWorktreeRoot` を区別し、設定値と由来は `data.config`、初期化状態は `data.initialized` で確認する。
 - worktree のパスは応答の `path` を使う。ブランチ名から `.worktree/...` などを組み立てない。プロセスから親 shell の cwd は変えられないため、以降のツールの作業ディレクトリをそのパスに設定する。
+- 作成・再利用した worktree で作業を始める際は、その直下に `.envrc` があれば内容を確認し、未承認・変更済みなら `direnv allow "$path"` を実行する。設定が Git 管理されていればコピーは不要。承認だけでは実行中 Agent の環境は変わらないため、[開発環境の読み込み](references/commands.md#開発環境の読み込み)に従う。状態確認・一覧取得だけの依頼では承認しない。
 - ブランチが複数の worktree に存在する場合は、エラーの `details.candidates` を読み、意図したパスを選ぶ。`--worktree "$path"` を使えるのは `status`・`path`・`exec`・`copy`・`link` のみ。ブランチ引数と併用しない。未対応の変更コマンドでは曖昧さを解消するまで実行しない。
 
 ## 目的に応じて選ぶ

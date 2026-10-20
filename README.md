@@ -166,7 +166,13 @@ This repository uses Bun package scripts as the single automation entrypoint (`b
 - **Nix** – an existing multi-user installation is initialized explicitly because global zsh startup files are
   disabled. Only `/nix/var/nix/profiles/default/bin` joins the host PATH, after user tools and mise shims but before
   Homebrew. Inherited Nix user profile bins are removed; project environments provide their package paths.
-  `.config/nix/nix.conf` enables `nix-command` and `flakes`. Nix and nix-direnv installation remain separate setup steps.
+  `.config/nix/nix.conf` enables `nix-command` and `flakes`. After installing Nix, run
+  `nix profile add github:NixOS/nixpkgs/nixpkgs-unstable#nix-direnv` once.
+  `.config/direnv/direnvrc` loads nix-direnv from that profile; Homebrew's direnv and modern Bash are already in `Brewfile`.
+  Each Nix repo tracks its `.envrc`, `flake.nix`, and `flake.lock`, and ignores `.direnv/`.
+  Review and run `direnv allow` in each new worktree, then check its runtime before starting Codex or Claude.
+  Without an interactive prompt, launch with `direnv exec . codex` or `direnv exec . claude`.
+  Approval does not change an already running Agent's environment; use `direnv exec . <command>` when it moves to a different environment.
   Run `bash tests/zsh_env_test.sh` to check inherited
   PATH handling, nested shells, and Nix initialization. Open a new terminal or pane after changing startup files;
   existing shells retain their loaded hooks.
