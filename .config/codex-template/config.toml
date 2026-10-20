@@ -15,6 +15,9 @@ notify = [
 suppress_unstable_features_warning = true
 personality = "pragmatic"
 
+[shell_environment_policy.set]
+OP_ACCOUNT = "dionore.1password.com"
+
 [sandbox_workspace_write]
 network_access = true
 
