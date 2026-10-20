@@ -13,7 +13,6 @@ notify = [
   "[\"vde-notifier\",\"--codex\",\"--skip-codex-subagent\",\"--skip-codex-non-interactive\"]"
 ]
 suppress_unstable_features_warning = true
-personality = "pragmatic"
 
 [shell_environment_policy.set]
 OP_ACCOUNT = "dionore.1password.com"
@@ -22,7 +21,7 @@ OP_ACCOUNT = "dionore.1password.com"
 network_access = true
 
 [agents]
-max_threads = 6
+max_concurrent_threads_per_session = 6
 max_depth = 1
 
 [agents.explorer]
@@ -50,14 +49,7 @@ description = "Runtime diagnosis agent. Use for observed bugs involving logs, pr
 config_file = "~/.codex/agents/diagnostician.toml"
 
 [features]
-unified_exec = true
-view_image = true
-shell_snapshot = true
-apps = true
-multi_agent = true
 default_mode_request_user_input = true
-fast_mode = true
-hooks = true
 memories = true
 chronicle = true
 reasoning_effort_override = true
@@ -70,12 +62,8 @@ reasoning_effort_override = true
 status_line = ["model-with-reasoning", "git-branch", "context-remaining", "context-window-size", "fast-mode", "weekly-limit", "five-hour-limit"]
 theme = "catppuccin-mocha"
 terminal_title = []
-whimsy = false
 fullscreen_transcript = false
 screen_reader_detection_done = true
-
-[tui.model_availability_nux]
-"gpt-6.1-sol" = 4
 
 # [mcp_servers.chrome-devtools]
 # command = "npx"
@@ -162,11 +150,9 @@ source_type = "local"
 source = "~/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
 [marketplaces.openai-primary-runtime]
-last_updated = "2026-04-24T03:45:21Z"
 source_type = "local"
 source = "~/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
 
 [marketplaces.drawio]
-last_updated = "2026-08-10T08:51:22Z"
 source_type = "git"
 source = "https://github.com/jgraph/drawio-mcp.git"
