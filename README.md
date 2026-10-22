@@ -237,6 +237,12 @@ This repository uses Bun package scripts as the single automation entrypoint (`b
 - Claude Code plugins and their desired enabled state are declared once in `CLAUDE_PLUGIN_DEFINITIONS` in `tasks.ts`.
   `bun run agent:claude-plugins` reconciles every declared Claude marketplace/plugin pair in one command; individual
   Claude plugin tasks are not kept.
+- Ponytail is installed as a full plugin for both Codex and Claude Code, using its default `full` level. After installing
+  it in Codex, review and trust its hooks in `/hooks`, then start a new thread (restart the desktop app when using it).
+  Start a new Claude Code session to run its startup hook. Plugin hooks stay in the plugin; do not copy them into the
+  dotfiles hook settings. The Codex AGENTS template contains the Japanese output, audit scope, and verification rules;
+  Claude's `CLAUDE.md` imports that same file. `ponytail-audit` and `ponytail-review` replace the local `improve` skill;
+  implementation handoffs and acceptance checks remain with `agent-handoff-plan` and `agent-review-request`.
 - RTK and context-mode are no longer wired in: the `rtk hook claude` Bash hook, `RTK.md` instruction files, the
   context-mode plugin entries, and the context-mode SessionStart cache-heal hook were removed after a log-based
   cost/benefit review. The installed plugin/marketplace state is kept disabled (`context-mode@context-mode: false`)

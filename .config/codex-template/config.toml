@@ -118,6 +118,9 @@ enabled = true
 [plugins."superpowers@openai-curated"]
 enabled = true
 
+[plugins."ponytail@ponytail"]
+enabled = true
+
 [plugins."browser-use@openai-bundled"]
 enabled = false
 
@@ -168,3 +171,7 @@ source = "~/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-r
 [marketplaces.drawio]
 source_type = "git"
 source = "https://github.com/jgraph/drawio-mcp.git"
+
+[marketplaces.ponytail]
+source_type = "git"
+source = "https://github.com/DietrichGebert/ponytail.git"

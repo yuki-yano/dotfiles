@@ -200,7 +200,8 @@
   "enabledPlugins": {
     "superpowers@superpowers-marketplace": false,
     "context-mode@context-mode": false,
-    "toolcall-recover@nam-tech-studio": true
+    "toolcall-recover@nam-tech-studio": true,
+    "ponytail@ponytail": true
   },
   "extraKnownMarketplaces": {
     "superpowers-marketplace": {
@@ -219,6 +220,12 @@
       "source": {
         "source": "github",
         "repo": "nam-tech-studio/toolcall-recover"
+      }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
       }
     }
   },

@@ -35,7 +35,7 @@ const AGENTS_SKILLS_DIR = `${HOME}/.agents/skills`;
 const CLAUDE_SKILLS_DIR = `${CLAUDE_DIR}/skills`;
 const COPILOT_SKILLS_DIR = `${COPILOT_DIR}/skills`;
 const CODEX_TEMPLATE_COPY_TARGETS = ["AGENTS.md", "agents", "hooks.json"];
-type CodexPluginId = "superpowers";
+type CodexPluginId = "superpowers" | "ponytail";
 
 type CodexPluginDefinition = {
   id: CodexPluginId;
@@ -51,9 +51,17 @@ const CODEX_PLUGIN_DEFINITIONS: readonly CodexPluginDefinition[] = [
     id: "superpowers",
     plugin: "superpowers@openai-curated",
   },
+  {
+    id: "ponytail",
+    plugin: "ponytail@ponytail",
+    marketplace: {
+      name: "ponytail",
+      source: "DietrichGebert/ponytail",
+    },
+  },
 ];
 
-export type ClaudePluginId = "superpowers";
+export type ClaudePluginId = "superpowers" | "ponytail";
 
 export type ClaudePluginDefinition = {
   id: ClaudePluginId;
@@ -70,6 +78,13 @@ export const CLAUDE_PLUGIN_DEFINITIONS: readonly ClaudePluginDefinition[] = [
     marketplaceSource: "obra/superpowers-marketplace",
     plugin: "superpowers@superpowers-marketplace",
     enabled: false,
+  },
+  {
+    id: "ponytail",
+    marketplaceName: "ponytail",
+    marketplaceSource: "DietrichGebert/ponytail",
+    plugin: "ponytail@ponytail",
+    enabled: true,
   },
 ];
 const SHELDON_CONFIG_FILE = `${SRC_DIR}/.config/sheldon/plugins.toml`;
