@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import fs from 'node:fs';
+import { isExplainerHtml, checkExplainerHtml } from '../explainer/check.mjs';
 import { analyzeSvgPath } from '../renderers/shared/svg-path-analysis.mjs';
 import { textUnits } from '../renderers/shared/utils.mjs';
 import { createHash } from 'node:crypto';
@@ -38,6 +39,12 @@ try {
     checks: [{ name: 'file_readable', ok: false, details: [err.message] }],
   }, null, 2));
   process.exit(1);
+}
+
+if (isExplainerHtml(html)) {
+  const result = checkExplainerHtml(html, { file: htmlPath });
+  console.log(JSON.stringify(result, null, 2));
+  process.exit(result.ok ? 0 : 1);
 }
 
 const checks = [];

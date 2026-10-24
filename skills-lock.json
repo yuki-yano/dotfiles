@@ -17,10 +17,10 @@
     },
     "archify": {
       "source": "tt-a1i/archify",
-      "ref": "88d1ae4498b6a1df610badf690c5406882622d15",
+      "ref": "25cf37080fc8b1dbe758a4efc3935b55f3327083",
       "sourceType": "github",
       "skillPath": "archify/SKILL.md",
-      "computedHash": "0ab1326212791f367efe2729c3eac48bca1e21f1bdcb02fba88edf8c12f21b61"
+      "computedHash": "e8cbde4db89de7b49cfab034923a9f6028afd0bc413ab26fe1a68c242e2005fe"
     },
     "concise": {
       "source": "kmizu/concise",

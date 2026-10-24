@@ -61,6 +61,14 @@ and is distributed under the SIL Open Font License 1.1. The complete license
 text is preserved in `assets/JetBrainsMono-OFL.txt` in the packaged Skill and
 in the font CSS carried by standalone HTML and SVG exports.
 
+## Pele
+
+The explainer renders Mermaid chart fences with an unmodified subset of
+[Pele 1.3.0](https://github.com/obsidianmd/pele), copyright (c) 2026 kepano,
+distributed under the MIT License. The subset and its license text are in
+`explainer/vendor/pele/` in the packaged Skill. Charts are rendered to static
+SVG when a page is built; delivered pages contain no Pele code.
+
 ## No additional rights granted
 
 Brand names, logos, and trademarks remain the property of their respective
