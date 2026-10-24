@@ -52,6 +52,7 @@ install orbstack
 install awscli session-manager-plugin
 install tailscale
 install lego
+install lume
 
 ## Local Data
 install sqlite

@@ -120,6 +120,13 @@
       "skillPath": "skills/react-doctor/SKILL.md",
       "computedHash": "803447f3251d555207f8935893d4d2950243a2ac0b407a1c95c7755bb38433a3"
     },
+    "using-vitro": {
+      "source": "lambdalisue/vitro",
+      "ref": "v0.6.1",
+      "sourceType": "github",
+      "skillPath": "plugins/vitro/skills/using-vitro/SKILL.md",
+      "computedHash": "9fe7707c40491e4e6bf3a86e09fd8ddaf88862de579762cbbcd2f2360c6da91d"
+    },
     "vde-open": {
       "source": "yuki-yano/vde-open",
       "ref": "28694f45e2c5520192a773da434d987abdff8de0",
