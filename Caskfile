@@ -1,5 +1,6 @@
 ## Casks
 install --cask 1password
+install --cask brave-browser
 install --cask claude-code@latest
 install --cask cleanshot
 install --cask cursor

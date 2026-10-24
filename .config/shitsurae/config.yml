@@ -101,8 +101,7 @@ layouts:
           - slot: 1
             launch: true
             match:
-              bundleID: com.google.Chrome
-              profile: "Profile 2"
+              bundleID: com.brave.Browser
             frame:
               x: "0%"
               y: "0%"
@@ -189,8 +188,7 @@ layouts:
           - slot: 1
             launch: true
             match:
-              bundleID: com.google.Chrome
-              profile: "Profile 2"
+              bundleID: com.brave.Browser
             frame:
               x: "0%"
               y: "0%"
