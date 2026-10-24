@@ -169,6 +169,8 @@ period.
 
 Outside LAN mode, the proxy and its HTTP redirect listener bind only to the IPv4 and IPv6 loopback addresses, `127.0.0.1` and `::1`. They do not accept connections through LAN, VPN, or other network interfaces.
 
+When portless itself returns an error (404 for an unknown host, 502 when the app is unreachable, 508 for a request loop), the body depends on the `Accept` header. Browsers (`text/html`) get an HTML page. curl, `fetch`, and other clients get JSON such as `{"error":"bad_gateway","upstream":"myapp.localhost","message":"..."}`, with `error` set to `not_found`, `bad_gateway`, or `loop_detected`. Parse that JSON instead of scraping HTML. Responses from the app itself are forwarded unchanged.
+
 `.localhost` domains resolve to `127.0.0.1` natively in Chrome, Firefox, and Edge. Safari relies on the system DNS resolver, which may not handle `.localhost` subdomains on all configurations. Run `portless hosts sync` to add entries to `/etc/hosts` if needed.
 
 Use `portless proxy start --tld localhost --tld test` to serve the same app names under multiple TLDs from one proxy. `PORTLESS_URL` uses the first configured TLD. When configured TLDs overlap (e.g. `example.com` and `dev.example.com`), hostnames are matched against the longest TLD first, regardless of configuration order. `PORTLESS_TLD` accepts the same comma separated list format, e.g. `PORTLESS_TLD=localhost,test`.
@@ -196,6 +198,7 @@ Portless stores its state (routes, PID file, port file) in `~/.portless`. When t
 | `PORTLESS_TAILSCALE`  | Set to `1` to share apps on your Tailscale network (same as `--tailscale`)     |
 | `PORTLESS_FUNNEL`     | Set to `1` to share apps publicly via Tailscale Funnel (same as `--funnel`)    |
 | `PORTLESS_NGROK`      | Set to `1` to share apps publicly via ngrok (same as `--ngrok`)                |
+| `PORTLESS_CLOUDFLARE` | Set to `1` to share apps publicly via Cloudflare (same as `--cloudflare`)      |
 | `PORTLESS_STATE_DIR`  | Override the state directory                                                   |
 | `PORTLESS=0`          | Bypass the proxy, run the command directly                                     |
 
@@ -266,6 +269,15 @@ portless myapp --ngrok next dev
 
 Set `PORTLESS_NGROK=1` to enable ngrok by default when portless runs an app. `portless list` shows both local and ngrok URLs. The ngrok tunnel is cleaned up when the app exits. Requires the `ngrok` CLI to be installed and authenticated with `ngrok config add-authtoken <token>`.
 
+### Cloudflare sharing
+
+```bash
+portless myapp --cloudflare next dev
+# -> https://<random>.trycloudflare.com (public internet)
+```
+
+`--cloudflare` opens a Cloudflare quick tunnel; no Cloudflare account is needed. Set `PORTLESS_CLOUDFLARE=1` to enable it by default. The app gets `PORTLESS_CLOUDFLARE_URL`, `portless list` shows a `cloudflare:` line, and the tunnel stops when the app exits. It combines with `--ngrok`, `--tailscale` and `--funnel`. Quick tunnels do not support Server-Sent Events, allow at most 200 in-flight requests, and get a new URL every run. Requires the `cloudflared` CLI on PATH (https://developers.cloudflare.com/tunnel/downloads/).
+
 ## OS startup service
 
 Use the service command when users want the proxy to start automatically after reboot:
@@ -295,7 +307,7 @@ The chosen service configuration is written into launchd, systemd, or Task Sched
 | `portless <name> <cmd> [args...]`                 | Run app at `https://<name>.localhost` (auto-starts proxy)      |
 | `portless get <name>`                             | Print URL for a service (for cross-service wiring)             |
 | `portless get <name> --no-worktree`               | Print URL without worktree prefix                              |
-| `portless list`                                   | Show active routes                                             |
+| `portless list`                                   | Show active routes and uptime                                  |
 | `portless doctor`                                 | Check proxy, routes, DNS, CA trust, and LAN prerequisites      |
 | `portless trust`                                  | Add local CA to system trust store (for HTTPS)                 |
 | `portless clean`                                  | Remove state, CA trust entry, and /etc/hosts block             |
@@ -325,6 +337,7 @@ The chosen service configuration is written into launchd, systemd, or Task Sched
 | `portless <name> --tailscale <cmd>`               | Share the app on your Tailscale network (tailnet)              |
 | `portless <name> --funnel <cmd>`                  | Share the app publicly via Tailscale Funnel                    |
 | `portless <name> --ngrok <cmd>`                   | Share the app publicly via ngrok                               |
+| `portless <name> --cloudflare <cmd>`              | Share the app publicly via a Cloudflare quick tunnel           |
 | `portless <name> --force <cmd>`                   | Kill the existing process and take over its route              |
 | `portless --name <name> <cmd>`                    | Force `<name>` as app name (bypasses subcommand dispatch)      |
 | `portless <name> -- <cmd> [args...]`              | Stop flag parsing; everything after `--` is passed to child    |
@@ -487,3 +500,4 @@ Requires the ngrok CLI to be installed (https://ngrok.com/download) and on PATH.
 - `openssl` (for `--https` cert generation; ships with macOS and most Linux distributions; on Windows, install via `winget install -e --id ShiningLight.OpenSSL.Dev` or use the copy bundled with Git for Windows)
 - `tailscale` CLI (optional, for `--tailscale` and `--funnel`)
 - `ngrok` CLI (optional, for `--ngrok`)
+- `cloudflared` CLI (optional, for `--cloudflare`)

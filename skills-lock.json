@@ -3,7 +3,7 @@
   "skills": {
     "agent-browser": {
       "source": "vercel-labs/agent-browser",
-      "ref": "dac13bb87468fe9d74a040d862720f6cc17a9565",
+      "ref": "372ac5ce20fab885dbf45ee0c9d510ec8c3b6fdb",
       "sourceType": "github",
       "skillPath": "skills/agent-browser/SKILL.md",
       "computedHash": "dd491d53824ad9286ec950aee667098446332429a6d41fe28b4ba11f1959264c"
@@ -31,7 +31,7 @@
     },
     "domain-modeling": {
       "source": "mattpocock/skills",
-      "ref": "49dd158d1076134a641b33efb035946536778336",
+      "ref": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
       "sourceType": "github",
       "skillPath": "skills/engineering/domain-modeling/SKILL.md",
       "computedHash": "b3eb40152b81f0c98fd2095a023c019452dbdce56f7540cc67fece2972db8369"
@@ -59,59 +59,59 @@
     },
     "frontend-design": {
       "source": "anthropics/claude-code",
-      "ref": "c017428c8c27e604840435048d5bce6a9a22c040",
+      "ref": "318b7e6ac4e726e88a4ad326214866a93c373b1b",
       "sourceType": "github",
       "skillPath": "plugins/frontend-design/skills/frontend-design/SKILL.md",
       "computedHash": "b8c8329ad9b98fa57f4a279e37bdf4a0d55743140e54bb7da3e340d754d75b43"
     },
     "gh-stack": {
       "source": "github/gh-stack",
-      "ref": "29a36d314be664583705f18e41cebdf2b61ad514",
+      "ref": "c477b7d1f290a9df463b86773742a5237d14b980",
       "sourceType": "github",
       "skillPath": "skills/gh-stack/SKILL.md",
-      "computedHash": "6a5289601eedbeedc2d79c2d8627277afb9b9a3fbd78b4da3399a46dd788ae0a"
+      "computedHash": "15d9ce292d8b90b097463c8c3232fdc61f93474add776235245326de532fef2e"
     },
     "grill-me": {
       "source": "mattpocock/skills",
-      "ref": "49dd158d1076134a641b33efb035946536778336",
+      "ref": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
       "sourceType": "github",
       "skillPath": "skills/productivity/grill-me/SKILL.md",
       "computedHash": "9cdbb4b8f7a3aeaef82e6230c9e823500d4a8a1214c726cf342cf9829d34fc7d"
     },
     "grill-with-docs": {
       "source": "mattpocock/skills",
-      "ref": "49dd158d1076134a641b33efb035946536778336",
+      "ref": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
       "sourceType": "github",
       "skillPath": "skills/engineering/grill-with-docs/SKILL.md",
       "computedHash": "35e62aa423aaeab6a414bcac273f56dfb17802ef2334b41b6a3b00f28196c8cf"
     },
     "grilling": {
       "source": "mattpocock/skills",
-      "ref": "49dd158d1076134a641b33efb035946536778336",
+      "ref": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
       "sourceType": "github",
       "skillPath": "skills/productivity/grilling/SKILL.md",
       "computedHash": "ef1641a2047b71b60f1942cd35efb47d3afc9d584dff5a0b01f8c7db923aaa08"
     },
     "orca-cli": {
       "source": "stablyai/orca",
-      "ref": "6fcc183ab951fb751cf02ccb9e2af3cf129a4316",
+      "ref": "31fe3c74818b63dcc8c28043f00fecd33d97f14d",
       "sourceType": "github",
       "skillPath": "skills/orca-cli/SKILL.md",
       "computedHash": "ccd717aed7b9866a059b0b31d9a009641a28f6db3201749943fbbb797af4a317"
     },
     "orchestration": {
       "source": "stablyai/orca",
-      "ref": "6fcc183ab951fb751cf02ccb9e2af3cf129a4316",
+      "ref": "31fe3c74818b63dcc8c28043f00fecd33d97f14d",
       "sourceType": "github",
       "skillPath": "skills/orchestration/SKILL.md",
       "computedHash": "0dc04a0a354974eed5c15115fc6cb7461d7423e95a5b19ee995796cf1383e7ed"
     },
     "portless": {
       "source": "vercel-labs/portless",
-      "ref": "27598545f08f8055cb3b9fb410f8d250f054f46d",
+      "ref": "0ce58c8a8f35bcdd4b62f0095cd641369f5ab68b",
       "sourceType": "github",
       "skillPath": "skills/portless/SKILL.md",
-      "computedHash": "70b3906c1ca063c873f53687b569e9a447de269d00b8ba5fef6203511533a8b0"
+      "computedHash": "909d9a5758afb0af3aac43bb5cce9bbc7f69d2e04092876d6f23468dd3b8cd2b"
     },
     "react-doctor": {
       "source": "millionco/react-doctor",
