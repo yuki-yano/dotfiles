@@ -5,14 +5,14 @@ sys.dont_write_bytecode = True
 import json
 import os
 
-__version__ = "2.0.1"
+__version__ = "2.3.0"
 _EVENTS = ("UserPromptExpansion", "UserPromptSubmit", "PreToolUse", "PostToolUse", "Stop", "SessionEnd")
 _BUDGETS = {"UserPromptExpansion": 4, "UserPromptSubmit": 4, "PreToolUse": 7,
             "PostToolUse": 7, "Stop": 20, "SessionEnd": 0.8}
 _LIMITS = {"max_stop_blocks": 2, "max_runs": 3, "deadline_min": 30}
 _MAX_INPUT = 4 * 1024 * 1024
 _MAX_TEXT = 2 * 1024 * 1024
-_HELP = """使い方: yomiyasu_hook.py --host claude-code|codex [--state-dir DIR]
+_HELP = """使い方: yomiyasu_hook.py --host claude-code|codex [--state-dir DIR] [--words フォルダ | --no-words]
        yomiyasu_hook.py --print-config claude-code|codex
        yomiyasu_hook.py --version
 
@@ -26,6 +26,11 @@ _HELP = """使い方: yomiyasu_hook.py --host claude-code|codex [--state-dir DIR
   --state-dir DIR           登録を探す状態フォルダ。省くと環境変数 YOMIYASU_STATE_DIR（空白だけの値と ${ を
                             含む値は使いません）、git の最上位（なければ作業ディレクトリ）の .yomiyasu/ の順に探します。
                             Claude Code では、環境変数 CLAUDE_PROJECT_DIR のプロジェクトの .yomiyasu/ も探します。
+  --words フォルダ          語の一覧（allow.txt と flag.txt）のフォルダ。フックは lint を動かさないので、続けさせるときや
+                            止めるときに案内する yomiyasu_check.py run のコマンドに --words と絶対パスを付けます。
+                            一覧を読めないときは付けず、check が作った状態フォルダの hook-errors.log に1行残します。
+  --no-words                案内する yomiyasu_check.py run のコマンドに --no-words を付けます（--words と一緒には使えず、
+                            両方あればどちらも付けません）。どちらも省くと、run が自分で .yomiyasu-words/ を探します。
   --print-config claude-code|codex
                             設定に貼る JSON の例（このスクリプトの絶対パス入り）を出します。設定ファイルには書き込みません。
   --version                 版を表示して終わります。
@@ -49,9 +54,12 @@ def _options(argv):
         if key in ("--version", "-h", "--help"):
             result[key] = True
             index += 1
-        elif key in ("--host", "--state-dir", "--print-config") and index + 1 < len(argv):
+        elif key in ("--host", "--state-dir", "--print-config", "--words") and index + 1 < len(argv):
             result[key] = argv[index + 1]
             index += 2
+        elif key == "--no-words":
+            result[key] = True
+            index += 1
         elif key == "--print-config":
             # A missing value is reported by main (exit 2); --print-config is never in a host's settings.
             result[key] = None
@@ -72,6 +80,27 @@ def _project_state(cwd):
         current = parent
 
 
+def _home_path(value):
+    """A leading ~ in --state-dir or YOMIYASU_STATE_DIR becomes the home folder (same rule as check._home_path).
+
+    Only "~" alone and "~/" (also "~\\" on Windows) are expanded, with os.path.expanduser. "~user/x" and "~x" are kept.
+    When the home folder cannot be found (the result still starts with ~, or expanduser raised), the value is kept,
+    as before (a path relative to cwd). A home folder that is empty, blank or only a root ("/", or "C:\\" on Windows)
+    also counts as not found: with HOME set to "", expanduser turns "~/x" into "/x" and "~" into "/", and the state
+    folder must not land at the filesystem root (HOME="/" gives the same results, so the two cannot be told apart).
+    """
+    if isinstance(value, str) and (value == "~" or value[:2] in ("~/", "~" + os.sep)):
+        try:
+            home = os.path.expanduser("~")
+            expanded = os.path.expanduser(value)
+        except Exception:
+            return value
+        if (not home.startswith("~") and os.path.splitdrive(home)[1].strip().strip("/" + os.sep)
+                and not expanded.startswith("~")):
+            return expanded
+    return value
+
+
 def _state_given(option):
     """The first state folder came from --state-dir or YOMIYASU_STATE_DIR (same test as _states and check)."""
     env = os.environ.get("YOMIYASU_STATE_DIR", "")
@@ -83,7 +112,7 @@ def _states(cwd, host, option):
     env = os.environ.get("YOMIYASU_STATE_DIR", "")
     for value in (option, env if env.strip() and "${" not in env else None):
         if value:
-            candidates.append(os.path.abspath(os.path.join(cwd, value)))
+            candidates.append(os.path.abspath(os.path.join(cwd, _home_path(value))))
     candidates.append(_project_state(cwd))
     project = os.environ.get("CLAUDE_PROJECT_DIR")
     if host == "claude-code" and project and "${" not in project:
@@ -243,7 +272,8 @@ def _paths(args, cwd):
             continue
         path = os.path.abspath(os.path.join(cwd, word))
         key = _place(path)
-        if key in seen:
+        # A word that cannot name a file here (a lone surrogate) is skipped; later words are still tried.
+        if key is None or key in seen:
             continue
         seen.add(key)
         try:
@@ -255,7 +285,15 @@ def _paths(args, cwd):
 
 
 def _place(path):
-    return os.path.normcase(os.path.realpath(path))
+    """The compared form of a path, or None when it cannot name a file on this system.
+
+    A lone surrogate from JSON (such as '\\ud800') cannot be encoded for the file system, and realpath then
+    raises UnicodeEncodeError (Python 3.14). Callers treat None as matching nothing.
+    """
+    try:
+        return os.path.normcase(os.path.realpath(path))
+    except ValueError:
+        return None
 
 
 def _project_root(path):
@@ -279,6 +317,8 @@ def _same_project(entry, cwd):
         return False
     root = _place(_project_root(recorded))
     here = _place(cwd)
+    if root is None or here is None:
+        return False
     return here == root or here.startswith(root.rstrip(os.sep) + os.sep)
 
 
@@ -308,24 +348,59 @@ def _notice(entry, cwd):
                 _shown(entry['targets']['source']['path'], cwd), entry['run_id'], _limit_label(entry))
 
 
-def _reason(entry, final, v, cwd):
+class WordsOptionError(ValueError):
+    """--words と --no-words を両方受けた（hook-errors.log には型の名前だけを残す）。"""
+
+
+def _words_arguments(check, options, cwd, states, event):
+    """案内する check run のコマンドに付ける語の一覧の引数（先頭に空白。付けないときは空の文字列）。
+    --words は check と同じ決まりで探して読み、読めなければ付けずに hook-errors.log に残す（終了コードは0のまま）。"""
+    import shlex
+    if '--words' in options and options.get('--no-words'):
+        _error_log(states, event, WordsOptionError('words_and_no_words'))
+        return ''
+    if options.get('--no-words'):
+        return ' --no-words'
+    if '--words' not in options:
+        return ''
+    try:
+        check.resolve_words(cwd, options['--words'])
+    except check.WordsError as error:
+        _error_log(states, event, error)
+        return ''
+    folder = os.path.abspath(os.path.join(cwd, check._home_path(options['--words'])))
+    return ' --words ' + shlex.quote(folder)
+
+
+def _words_note(words):
+    """run の名前だけを書いた案内のあとに足す文（語の一覧の引数があるときだけ）。"""
+    return "yomiyasu_check.py run には{}を付けてください。".format(words + ' ') if words else ''
+
+
+def _no_words():
+    return ''
+
+
+def _reason(entry, final, v, cwd, words=_no_words):
     import shlex
     source = shlex.quote(_shown(entry['targets']['source']['path'], cwd))
     final = shlex.quote(_shown(final, cwd))
     prefix = "yomiyasu（実行ID {}）: ".format(entry['run_id'])
     tail = "実行できない場合は、完了報告の「実行しなかった検査」に書いてください。"
     if v['status'] == 'no_record':
-        message = ("登録した原稿 {} の最終稿 {} に、検査記録がありません。yomiyasu_check.py run --source {} --final {} "
-                   "を実行し、そのあと verify を実行してください。").format(source, final, source, final) + tail
+        # 語の一覧の引数は、案内する run のコマンドの中に付ける
+        message = ("登録した原稿 {} の最終稿 {} に、検査記録がありません。yomiyasu_check.py run --source {} --final {}{} "
+                   "を実行し、そのあと verify を実行してください。").format(source, final, source, final, words()) + tail
     elif v['status'] == 'final_changed':
         message = ("最終稿 {} が、最後に検査した本文と違います（検査のあとに書き換えがありました）。run をもう一度実行し、"
-                   "そのあと verify を実行してください。").format(final) + tail
+                   "そのあと verify を実行してください。").format(final) + _words_note(words()) + tail
     elif v['status'] == 'incomplete':
         names = [name for name in ('lint', 'diff', 'materials') if any(
             p['code'] in ('missing_check', 'check_target') and p['detail'].startswith(name) for p in v['problems'])]
-        message = "検査記録に {} の結果がありません。run をもう一度実行してください。".format('、'.join(names)) + tail
+        message = ("検査記録に {} の結果がありません。run をもう一度実行してください。".format('、'.join(names))
+                   + _words_note(words()) + tail)
     elif v['status'] == 'tool_changed':
-        message = "記録のあとで検査スクリプトが変わりました。run をもう一度実行してください。" + tail
+        message = "記録のあとで検査スクリプトが変わりました。run をもう一度実行してください。" + _words_note(words()) + tail
     else:
         # These verify messages are fixed text, never report excerpts or exception messages.
         message = "最終稿 {}: {}".format(final, v['message'])
@@ -333,7 +408,7 @@ def _reason(entry, final, v, cwd):
         max(0, entry['limits']['max_stop_blocks'] - entry['counters']['stop_blocks']))
 
 
-def _stop(check, state, entry, data, host, session, cwd, started, budget):
+def _stop(check, state, entry, data, host, session, cwd, started, budget, words=_no_words):
     import hashlib
     response = {}
     def change(current):
@@ -378,7 +453,7 @@ def _stop(check, state, entry, data, host, session, cwd, started, budget):
             _log(current, 'Stop', 'unverified:' + reason, started, data.get('stop_hook_active', False))
         else:
             current['counters']['stop_blocks'] += 1
-            response.update(decision='block', reason=_reason(current, final, v, cwd))
+            response.update(decision='block', reason=_reason(current, final, v, cwd, words))
             _log(current, 'Stop', 'block:' + v['status'], started, data.get('stop_hook_active', False))
     check.armed_update(state, entry['run_id'], change, budget)
     return response
@@ -484,11 +559,13 @@ def _bodies(data, cwd):
     if not isinstance(name, str) or not isinstance(tool, dict):
         return []
     bodies = []
+    # A lone surrogate (JSON "\ud800") stays as bytes that are not UTF-8, so that field alone cannot match a
+    # registered draft (_related skips it) while the other fields are still checked.
     if name.startswith('mcp__'):
         def scan(value, depth):
             for key, item in value.items():
                 if key in ('body', 'text', 'content', 'description', 'message', 'notes') and isinstance(item, str):
-                    bodies.append((item.encode('utf-8'), None, ''))
+                    bodies.append((item.encode('utf-8', 'surrogatepass'), None, ''))
                 elif isinstance(item, dict) and depth < 2:
                     scan(item, depth + 1)
         scan(tool, 1)
@@ -558,7 +635,7 @@ def _bodies(data, cwd):
                     raw = None
                 bodies.append((raw, path, context))
             else:
-                bodies.append((value.encode('utf-8'), None, context))
+                bodies.append((value.encode('utf-8', 'surrogatepass'), None, context))
             index += 1
     return bodies
 
@@ -571,10 +648,12 @@ def _related(check, state, entry, body, path, command):
     final = entry['targets']['final'] or check.latest_final_path(state, entry['run_id'])
     if final:
         paths.add(final)
-    if path:
-        placed = _place(path)
-        exports = _place(os.path.join(state, 'exports')) + os.sep
-        if placed in {_place(p) for p in paths} or placed.startswith(exports):
+    # A path that cannot name a file (None from _place) matches no registered path; its body is None, so it is
+    # judged below like any other unreadable body file, and the other bodies are still checked.
+    placed = _place(path) if path else None
+    if placed is not None:
+        exports = _place(os.path.join(state, 'exports'))
+        if placed in {_place(p) for p in paths} - {None} or (exports is not None and placed.startswith(exports + os.sep)):
             return True
     if body is None:
         for p in paths:
@@ -592,7 +671,7 @@ def _related(check, state, entry, body, path, command):
         return False
 
 
-def _pretool(check, state, entry, bodies, host, session, cwd, started, budget):
+def _pretool(check, state, entry, bodies, host, session, cwd, started, budget, words=_no_words):
     response = {}
     def change(current):
         if not _mine(current, host, session):
@@ -614,9 +693,10 @@ def _pretool(check, state, entry, bodies, host, session, cwd, started, budget):
                     continue
                 # Keep successful body matching (including copies and line-ending differences).
                 # Only refine a failure's reason when the file is a registered final.
-                if path:
+                placed = _place(path) if path else None
+                if placed is not None:
                     finals = (current['targets']['final'], check.latest_final_path(state, current['run_id']))
-                    if any(final and _place(path) == _place(final) for final in finals):
+                    if any(final and placed == _place(final) for final in finals):
                         v = check.verify_quick(state, final_path=path, final_bytes=body,
                                                run_id=current['run_id'], since=current['created_at'])
                         if v['status'] == 'executed':
@@ -627,6 +707,7 @@ def _pretool(check, state, entry, bodies, host, session, cwd, started, budget):
                           "yomiyasu_check.py run と verify を実行し、yomiyasu_check.py export --final {} で書き出した写しを "
                           "--body-file に渡してください。照合できないときは、投稿せずに未確認として利用者に伝えてください。").format(
                               current['run_id'], _shown(current['targets']['source']['path'], cwd), status, _shown(final, cwd))
+                reason += _words_note(words())
             response.update(hookSpecificOutput={'hookEventName': 'PreToolUse', 'permissionDecision': decision,
                                                'permissionDecisionReason': reason})
             _log(current, 'PreToolUse', decision + ':' + status, started)
@@ -636,9 +717,17 @@ def _pretool(check, state, entry, bodies, host, session, cwd, started, budget):
     return response
 
 
-def _process(check, states, invocation, data, host, event, cwd, started, budget, processing, default_place=False):
+def _process(check, states, invocation, data, host, event, cwd, started, budget, processing, default_place=False,
+             options=None):
     import time
     session = data['session_id']
+    # 案内する check run のコマンドに付ける語の一覧の引数（--words、--no-words を受けたときだけ）。案内の文を作るときだけ
+    # 一覧を読み、読めない一覧を hook-errors.log に残すのも1回だけにする
+    found = []
+    def words():
+        if not found:
+            found.append(_words_arguments(check, options or {}, cwd, states, event))
+        return found[0]
     registrations, combined = [], {}
     def remaining():
         if time.monotonic() >= budget:
@@ -646,8 +735,9 @@ def _process(check, states, invocation, data, host, event, cwd, started, budget,
     if invocation is not None:
         for path in _paths(invocation, cwd):
             remaining()
+            placed = _place(path)
             existing = [e for state in states for e in check.armed_entries(state)
-                        if _mine(e, host, session) and _place(e['targets']['source']['path']) == _place(path)]
+                        if _mine(e, host, session) and placed is not None and _place(e['targets']['source']['path']) == placed]
             if existing:
                 continue
             # First candidate follows --state-dir, environment, project priority. A project .yomiyasu/
@@ -657,7 +747,7 @@ def _process(check, states, invocation, data, host, event, cwd, started, budget,
             registrations.append(("yomiyasu の管理: 原稿 {} を登録しました（実行ID {}。上限: 続けさせる2回、run 3回、30分）。"
                                   "この原稿を yomiyasu_check.py run の --source に渡すと、記録がこの登録につながります。"
                                   "返答を終えるときに、最終稿が検査記録と合うかをフックが確かめます。").format(
-                                      _shown(path, cwd), entry['run_id']))
+                                      _shown(path, cwd), entry['run_id']) + _words_note(words()))
     bodies = _bodies(data, cwd) if event == 'PreToolUse' else []
     for state in states:
         remaining()
@@ -692,14 +782,14 @@ def _process(check, states, invocation, data, host, event, cwd, started, budget,
                     _log(current, event, 'ended:session_end', started)
                 check.armed_update(state, entry['run_id'], finish, budget)
             elif event == 'Stop':
-                response = _stop(check, state, entry, data, host, session, cwd, started, budget)
+                response = _stop(check, state, entry, data, host, session, cwd, started, budget, words)
                 for key, value in response.items():
                     if key in ('reason', 'systemMessage') and key in combined:
                         combined[key] += '\n' + value
                     else:
                         combined[key] = value
             elif event == 'PreToolUse' and bodies:
-                response = _pretool(check, state, entry, bodies, host, session, cwd, started, budget)
+                response = _pretool(check, state, entry, bodies, host, session, cwd, started, budget, words)
                 if response:
                     old = combined.get('hookSpecificOutput')
                     new = response['hookSpecificOutput']
@@ -742,7 +832,7 @@ def main(argv=None):
         elif '--print-config' in options:
             # Only a person runs --print-config (it is never in a host's settings), so a wrong value is a usage error.
             if hasattr(sys.stderr, 'reconfigure'):
-                sys.stderr.reconfigure(encoding='utf-8')
+                sys.stderr.reconfigure(encoding='utf-8', newline='\n')
             sys.stderr.write(_PRINT_CONFIG_ERROR + '\n')
             return 2
         else:
@@ -789,14 +879,17 @@ def main(argv=None):
                 with contextlib.redirect_stdout(_SilentStream()), contextlib.redirect_stderr(_SilentStream()):
                     spec.loader.exec_module(check)
                     output = _process(check, states, invocation, data, host, event, cwd, started, budget, processing,
-                                      default_place=not _state_given(options.get('--state-dir')))
+                                      default_place=not _state_given(options.get('--state-dir')), options=options)
             finally:
                 if timer and previous is not None:
                     signal.setitimer(signal.ITIMER_REAL, 0)
                     signal.signal(signal.SIGALRM, previous)
         if output:
             if hasattr(sys.stdout, 'reconfigure'):
-                sys.stdout.reconfigure(encoding='utf-8')
+                # The registration message is plain text with the draft's name. A name with bytes that are not
+                # UTF-8 (a lone surrogate such as '\udcff') is written as an escape instead of failing the hook.
+                # Write '\n' on every OS (Windows would otherwise write '\r\n').
+                sys.stdout.reconfigure(encoding='utf-8', errors='backslashreplace', newline='\n')
             sys.stdout.write(output + '\n')
             sys.stdout.flush()
     except BaseException as error:

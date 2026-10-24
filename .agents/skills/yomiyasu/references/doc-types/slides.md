@@ -1,12 +1,13 @@
 # スライド（slides）
 
 あわせて読む: domains/tech.md か domains/business.md（中身で選ぶ）
-lint で外す規則: bold_label_list、count_declaration、excess_list、short_summary_heading
+lint で外す規則: bare_verb_chain、bold_label_list、cleft_list_ending、count_declaration、excess_list、short_summary_heading
 
 ## 1. 普通な書き方（直さない）
 
 - 短い句や体言止めの見出しと箇条書き、ラベルと値の項目。
 - 目次と「ポイントは3つです」、まとめのページ。
+- 箇条で強調として選んだ「〜のは、A、B、C」の形（lint の cleft_list_ending はこの種類では外す）。
 - `---` のページの区切り、Marp などの先頭の設定、話者のノート。
 
 ## 2. それでも直すもの

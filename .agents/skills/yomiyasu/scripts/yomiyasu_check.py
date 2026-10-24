@@ -12,7 +12,7 @@ mail（メール・チャット）と paper（論文・研究レポート）も�
 同じ権限で原稿と記録の両方を書き換えられる環境では、記録は実行漏れを見つけるためのもので、
 改ざんの防止や人の承認の証明にはならない。
 """
-__version__ = "2.0.1"
+__version__ = "2.3.0"
 
 import sys
 
@@ -23,7 +23,9 @@ sys.dont_write_bytecode = True
 import os  # noqa: E402
 import re  # noqa: E402
 import json  # noqa: E402
+import errno  # noqa: E402
 import stat  # noqa: E402
+import shutil  # noqa: E402
 import time  # noqa: E402
 import signal  # noqa: E402
 import hashlib  # noqa: E402
@@ -38,13 +40,16 @@ import traceback  # noqa: E402
 import subprocess  # noqa: E402
 import unicodedata  # noqa: E402
 from collections import Counter, OrderedDict  # noqa: E402
-_VISIBILITY_NAMES = ("decode_source", "DOC_TYPES", "READER_LEVELS", "normalize_doc_type", "normalize_reader")
+_VISIBILITY_NAMES = ("decode_source", "DOC_TYPES", "READER_LEVELS", "normalize_doc_type", "normalize_reader",
+                     "WordsError", "resolve_words", "words_context", "words_label")
 try:
     try:
         if __package__:
             from .markdown_visibility import decode_source, DOC_TYPES, READER_LEVELS, normalize_doc_type, normalize_reader
+            from .markdown_visibility import WordsError, resolve_words, words_context, words_label
         else:
             from markdown_visibility import decode_source, DOC_TYPES, READER_LEVELS, normalize_doc_type, normalize_reader
+            from markdown_visibility import WordsError, resolve_words, words_context, words_label
     except SyntaxError as error:
         # 隣の markdown_visibility.py が壊れている。ほかの読めないときと同じく ImportError にする（スクリプトでは終了コード3）。
         raise ImportError(
@@ -81,6 +86,10 @@ try:
         READER_LEVELS = _visibility_module.READER_LEVELS
         normalize_doc_type = _visibility_module.normalize_doc_type
         normalize_reader = _visibility_module.normalize_reader
+        WordsError = _visibility_module.WordsError
+        resolve_words = _visibility_module.resolve_words
+        words_context = _visibility_module.words_context
+        words_label = _visibility_module.words_label
 except ImportError as _import_error:
     # スクリプトとして動かしたときは、main() が内部エラー（終了コード3）として出す。
     # モジュールとして読むときは、そのまま ImportError を出す。
@@ -100,10 +109,12 @@ RESULT_FORMAT_VERSION = 1   # run と verify の --json
 _HERE = os.path.dirname(os.path.realpath(__file__))
 # 記録の tools に入れる4本（名前を決めたファイルだけを数える。__pycache__ は数えない）
 _TOOL_NAMES = ("yomiyasu_check.py", "yomiyasu_lint.py", "yomiyasu_diff.py", "markdown_visibility.py")
-# 記録の tools に足す一覧のファイル（diff が scripts の隣の ../references/lists/<名前>.txt から読む。名前は yomiyasu_diff.py の
-# BUILTIN_LISTS と同じ）。ファイルがあるときだけ "references/lists/<名前>.txt" のキーで SHA-256 を入れ、verify で比べて、
+# 記録の tools に足す一覧のファイル（diff と lint が scripts の隣の ../references/lists/<名前>.txt から読む。名前は
+# yomiyasu_diff.py の BUILTIN_LISTS と、yomiyasu_lint.py の _V220_BUILTIN_LISTS（katakana-terms と thin-evaluation。2.2.0。
+# renyo-nouns。2.3.0）と
+# 同じ）。ファイルがあるときだけ "references/lists/<名前>.txt" のキーで SHA-256 を入れ、verify で比べて、
 # 変わっていれば tool_changed にする（diff の詰めの直し。反証で見つけた例）
-_LIST_NAMES = ("nominalization", "intensifiers", "feelings", "hedges")
+_LIST_NAMES = ("nominalization", "intensifiers", "feelings", "hedges", "katakana-terms", "thin-evaluation", "renyo-nouns")
 _LIST_KEYS = tuple("references/lists/{}.txt".format(name) for name in _LIST_NAMES)
 # 事実の穴の候補の一覧（--fact-gaps を付けた run の記録の tools にだけ入る）。入った記録は、ほかの4つと同じく verify で比べ、
 # 変わっていれば tool_changed にする（前は --replay だけで比べ、通常の verify は executed のままだった）
@@ -134,6 +145,7 @@ _REPORT_KEYS = {
 _LINK_SECONDS = 6 * 60 * 60     # 前の記録につなぐのは6時間以内
 _STDERR_LIMIT = 2000            # 記録に残す子の標準エラーの字数
 _REPLACE_TRIES = 6              # os.replace を PermissionError のあと50ミリ秒待って5回まで書き直す
+_TEMPORARY_TRIES = 100         # 一時ファイルと一時フォルダの名前を決めるのは100回まで
 _REPLACE_WAIT = 0.05
 _ATTEMPT_TRIES = 100            # 回の番号を確保するのは100回まで
 _NOT_JUDGED = ["meaning_preservation", "reader_comprehension"]
@@ -424,6 +436,52 @@ def _chmod(path, mode):
         os.chmod(path, mode)
 
 
+def _busy_on_windows():
+    """PermissionError を、ほかのプロセスがファイルを入れ替えているか消している途中のためとみなせるか（Windows だけ真）。
+    Windows では、os.replace や os.unlink の途中のファイルを開く、作る、stat すると PermissionError になることがある。"""
+    return os.name == "nt"
+
+
+# Windows で、入れ替えの途中とみなして読み直すときに待つ時間の、1つのプロセスでの合計の上限（秒）。ほかの OS ユーザーが
+# 作った記録のように、ずっと読めないファイルが並んでも、フックや一覧が長く止まらないようにする
+_SETTLE_BUDGET = [1.0]
+
+
+def _settle_wait(path, attempt, opening=False):
+    """読み直す前に待つ。待たずに例外を出すべきとき（POSIX、最後の回、開こうとした名前がフォルダ、待つ時間の合計を
+    使い切った）は False。Windows ではフォルダを開いても PermissionError になるので、opening のときは名前がフォルダかを見る。"""
+    if not _busy_on_windows() or attempt == _REPLACE_TRIES - 1 or (opening and os.path.isdir(path)):
+        return False
+    if _SETTLE_BUDGET[0] < _REPLACE_WAIT:
+        return False
+    _SETTLE_BUDGET[0] -= _REPLACE_WAIT
+    time.sleep(_REPLACE_WAIT)
+    return True
+
+
+def _read_bytes(path):
+    """ファイルの中身を読む。Windows で PermissionError になったときは、ほかのプロセスが入れ替えている途中とみなして、
+    50ミリ秒待って5回まで読み直す（POSIX では読み直さない。待つ時間の合計は _SETTLE_BUDGET まで）。"""
+    for attempt in range(_REPLACE_TRIES):
+        try:
+            with open(path, "rb") as handle:
+                return handle.read()
+        except PermissionError:
+            if not _settle_wait(path, attempt, opening=True):
+                raise
+
+
+def _stat_settled(path):
+    """os.stat。Windows で PermissionError になったときは、50ミリ秒待って5回まで確かめ直す（POSIX では確かめ直さない。
+    待つ時間の合計は _SETTLE_BUDGET まで）。"""
+    for attempt in range(_REPLACE_TRIES):
+        try:
+            return os.stat(path)
+        except PermissionError:
+            if not _settle_wait(path, attempt):
+                raise
+
+
 def _replace(source, target):
     """os.replace。ほかのプロセスがファイルを開いているときの PermissionError は、50ミリ秒待って5回まで書き直す
     （Windows を考えたもの。OS によらず書き直す）。"""
@@ -437,9 +495,77 @@ def _replace(source, target):
             time.sleep(_REPLACE_WAIT)
 
 
+def _temporary_name_taken(path):
+    """一時の名前を作るときに PermissionError が出たのは、同じ名前のフォルダがあるためか。Windows では、同じ名前の
+    フォルダがあっても PermissionError になる。フォルダ自体に書き込めないときも同じ例外なので、名前が本当にフォルダの
+    ときだけ次の名前を試す（tempfile は os.access で確かめるが、Windows の os.access は読み取り専用の属性しか見ず、
+    ACL で書き込みを拒まれたフォルダでも真になる。そのため Python 3.12 までの tempfile は、約21億回まで名前を試し続ける）。"""
+    return os.name == "nt" and os.path.isdir(path)
+
+
+def _mkstemp(folder):
+    """folder に一時ファイル（.tmp-<16進>）を作って開く。(ファイル記述子, 絶対パス) を返す。フラグとモードは tempfile.mkstemp
+    と同じ（O_EXCL、0o600、O_NOFOLLOW、Windows では O_BINARY。O_NOINHERIT は Windows の os.open も足すものを明示しただけ）。
+    名前を試すのは _TEMPORARY_TRIES 回まで（tempfile は TMP_MAX 回で、Python 3.12 までの Windows では約21億回）。"""
+    folder = os.path.abspath(folder)
+    flags = (os.O_RDWR | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOINHERIT", 0) | getattr(os, "O_BINARY", 0)
+             | getattr(os, "O_NOFOLLOW", 0))
+    for _ in range(_TEMPORARY_TRIES):
+        path = os.path.join(folder, ".tmp-" + os.urandom(8).hex())
+        try:
+            return os.open(path, flags, 0o600), path
+        except FileExistsError:
+            continue
+        except PermissionError:
+            if _temporary_name_taken(path):
+                continue
+            raise
+    raise FileExistsError(errno.EEXIST, "一時ファイルの名前を{}回試して決められません".format(_TEMPORARY_TRIES), folder)
+
+
+def _mkdtemp(prefix):
+    """システムの一時フォルダに、自分だけが使うフォルダ（<prefix><16進>、0o700。tempfile.mkdtemp と同じ）を作り、絶対パスを
+    返す。名前を試すのは _TEMPORARY_TRIES 回まで（tempfile は TMP_MAX 回）。"""
+    parent = os.path.abspath(tempfile.gettempdir())
+    for _ in range(_TEMPORARY_TRIES):
+        path = os.path.join(parent, prefix + os.urandom(8).hex())
+        try:
+            os.mkdir(path, 0o700)
+            return path
+        except FileExistsError:
+            continue
+        except PermissionError:
+            if _temporary_name_taken(path):
+                continue
+            raise
+    raise FileExistsError(errno.EEXIST, "一時フォルダの名前を{}回試して決められません".format(_TEMPORARY_TRIES), parent)
+
+
+def _remove_temporary(path):
+    """_mkdtemp で作った一時フォルダを消す。tempfile.TemporaryDirectory の後片付けと同じく、消せないものは権限（と BSD の
+    フラグ）を戻して消し直す。それでも消せなければ、原稿の写しが残っていることを標準エラーに1行で知らせる（結果の出力と
+    終了コードは変えない）。"""
+    def again(function, target, *_):
+        for item in (os.path.dirname(target), target):
+            try:
+                if hasattr(os, "chflags"):
+                    os.chflags(item, 0)
+                os.chmod(item, 0o700)
+            except OSError:
+                pass
+        function(target)
+    try:
+        if sys.version_info >= (3, 12):
+            shutil.rmtree(path, onexc=again)
+        else:
+            shutil.rmtree(path, onerror=again)
+    except OSError:
+        _error("yomiyasu_check.py: 一時フォルダ {} を消せませんでした。原稿の写しが残っているので、消してください。".format(path))
+
+
 def _write_atomic(path, data):
     """同じフォルダの一時ファイルに書いてから入れ替える（読む側が書きかけを見ない）。"""
-    handle, temporary = tempfile.mkstemp(prefix=".tmp-", dir=os.path.dirname(path))
+    handle, temporary = _mkstemp(os.path.dirname(path))
     try:
         with os.fdopen(handle, "wb") as stream:
             stream.write(data)
@@ -461,6 +587,18 @@ def _touch(folder, name):
     _chmod(path, 0o600)
 
 
+def _raise_if_hidden(path, error):
+    """os.mkdir が FileExistsError を出したのに path がフォルダと確かめられないとき、確かめられない理由が PermissionError
+    なら、それを出す。Windows では、一覧や属性の読み取りを拒まれた名前で os.path.isdir が False になる。書き込みの拒否と
+    同じく、状態フォルダをユーザーごとに分ける案内につなげるため。"""
+    try:
+        os.lstat(path)
+    except PermissionError as denied:
+        raise denied from error
+    except OSError:
+        pass
+
+
 def _ensure_dir(base, *parts):
     """base の下にフォルダを1段ずつ作る（作ったフォルダだけ 0o700 にする）。作ったフォルダのパスを返す。"""
     path = base
@@ -468,8 +606,9 @@ def _ensure_dir(base, *parts):
         path = os.path.join(path, part)
         try:
             os.mkdir(path, 0o700)
-        except FileExistsError:
+        except FileExistsError as error:
             if not os.path.isdir(path):
+                _raise_if_hidden(path, error)
                 raise
             continue
         _chmod(path, 0o700)
@@ -490,7 +629,7 @@ def _place_new_file(path, data):
     （上書きしない）。同じフォルダの一時ファイルに書いてから os.link で置くので、読む側は書きかけを見ない。
     ハードリンクを作れないファイルシステムでは、O_EXCL で作ってから書く。書けなかったときは、ここで作ったファイル
     だけを消して例外を出す（ほかのプロセスが同じ名前に置き直したファイルは消さない）。"""
-    handle, temporary = tempfile.mkstemp(prefix=".tmp-", dir=os.path.dirname(path))
+    handle, temporary = _mkstemp(os.path.dirname(path))
     try:
         with os.fdopen(handle, "wb") as stream:
             stream.write(data)
@@ -576,12 +715,13 @@ def _ensure_state(state, default_place=False):
         os.makedirs(parent, exist_ok=True)
     try:
         os.mkdir(state, 0o700)
-    except FileExistsError:
+    except FileExistsError as error:
         if os.path.isdir(state):
             # 並列の run が作ったばかりのフォルダ。その run が .gitignore を置く前に写しを書かないよう、
             # すでにあるフォルダと同じ決まりで、自分でも2つを置きにいく（先に置かれていれば何もしない）
             _add_state_files(state, default_place)
             return
+        _raise_if_hidden(state, error)
         raise
     try:
         _chmod(state, 0o700)
@@ -594,18 +734,42 @@ def _ensure_state(state, default_place=False):
         raise
 
 
+def _home_path(value):
+    """--state-dir と環境変数 YOMIYASU_STATE_DIR の値の頭の ~ を、ホームフォルダに置き換える（フックの _home_path と同じ）。
+
+    置き換えるのは、値が「~」だけのときと、「~/」で始まるとき（Windows では「~\\」も）だけで、os.path.expanduser で
+    展開する。シェルの引用符の中や、エージェントの設定ファイルの環境変数では、~ が展開されないまま届くため。
+    「~user/x」や「~x」は置き換えない（その名前の利用者が機械にいるかどうかで、場所が変わらないように）。
+    HOME がなければ expanduser と同じく利用者の情報から探す。それでも決まらないとき（結果がまだ ~ で始まるか、
+    expanduser が例外を出したとき）は、値をそのまま返す（これまでと同じく、作業ディレクトリからの相対パス）。
+    ホームフォルダが空か空白だけ、またはルート（「/」、Windows では「C:\\」など）だけのときも、決まらないものとして
+    値をそのまま返す。HOME が空の文字列のとき expanduser は「~/x」を「/x」に、「~」を「/」にするので、状態フォルダを
+    ファイルシステムのルートに置かないため（HOME が「/」のときも expanduser の結果は同じで、見分けられない）。"""
+    if isinstance(value, str) and (value == "~" or value[:2] in ("~/", "~" + os.sep)):
+        try:
+            home = os.path.expanduser("~")
+            expanded = os.path.expanduser(value)
+        except Exception:  # pwd を読めない環境など
+            return value
+        if (not home.startswith("~") and os.path.splitdrive(home)[1].strip().strip("/" + os.sep)
+                and not expanded.startswith("~")):
+            return expanded
+    return value
+
+
 def state_dir_for(cwd, option=None):
     """状態フォルダの決め方（run、verify、フックで同じ規則）。
 
     1 --state-dir、2 環境変数 YOMIYASU_STATE_DIR、3 作業ディレクトリから上へたどり、.git（フォルダでもファイルでもよい）が
     ある最初のフォルダの .yomiyasu/、4 作業ディレクトリの .yomiyasu/。ここではフォルダを作らない。
     環境変数が空白だけのときと、展開されなかった ${…} を含むときは、ないものとして3と4に進む（--session の ${ と同じ扱い。
-    作業フォルダに「${CLAUDE_PROJECT_DIR}」のようなフォルダを作らない。反証で見つけた例）。"""
+    作業フォルダに「${CLAUDE_PROJECT_DIR}」のようなフォルダを作らない。反証で見つけた例）。
+    1と2の値の頭の ~ は、_home_path の決まりでホームフォルダに置き換える。"""
     if option:
-        return os.path.abspath(os.path.join(cwd, option))
+        return os.path.abspath(os.path.join(cwd, _home_path(option)))
     environment = os.environ.get("YOMIYASU_STATE_DIR")
     if environment and environment.strip() and "${" not in environment:
-        return os.path.abspath(os.path.join(cwd, environment))
+        return os.path.abspath(os.path.join(cwd, _home_path(environment)))
     cwd = os.path.abspath(cwd)
     current = cwd
     while True:
@@ -621,6 +785,8 @@ def _state_dir(option):
     # Absolute overrides must still work when the process cwd has disappeared.
     environment = os.environ.get("YOMIYASU_STATE_DIR")
     selected = option or (environment if environment and environment.strip() and "${" not in environment else None)
+    if selected:
+        selected = _home_path(selected)
     if selected and os.path.isabs(selected):
         return os.path.normpath(selected)
     return state_dir_for(_getcwd(), option)
@@ -661,8 +827,7 @@ def _read_record_status(path):
     data = b""
     for attempt in range(2):
         try:
-            with open(path, "rb") as handle:
-                data = handle.read()
+            data = _read_bytes(path)
         except FileNotFoundError:
             return "missing", None
         except OSError:
@@ -961,10 +1126,15 @@ def _split_material(item, first_index):
         blocks.append(block)
     return blocks, None
 
+_LINE_END = re.compile(b"\r\n|\r|\n")
+
+
 def _split_stdin(data, with_labels=False):
     """区切りの行で標準入力を分ける。([(役割, バイト列)], None) か (None, 理由)。
 
-    各部分は、区切りの行の次のバイトから、次の区切りの行の先頭まで（末尾の改行を含む）。先頭の BOM は1つ外す。"""
+    各部分は、区切りの行の次のバイトから、次の区切りの行の先頭まで（末尾の改行を含む）。先頭の BOM は1つ外す。
+    行の終わりは、ファイル入力の decode_source と同じく LF、CRLF、CR のどれでもよい。各部分のバイト列は書き換えない
+    （CRLF と LF の入力の記録は前と同じになり、CR だけの入力はファイルで渡したときと同じ eol "cr" になる）。"""
     if data.startswith(b"\xef\xbb\xbf"):
         data = data[3:]
     parts = []
@@ -972,12 +1142,10 @@ def _split_stdin(data, with_labels=False):
     position = 0
     number = 0
     while position < len(data):
-        end = data.find(b"\n", position)
-        following = len(data) if end < 0 else end + 1
+        match = _LINE_END.search(data, position)
+        following = len(data) if match is None else match.end()
         number += 1
-        bare = data[position:following].rstrip(b"\n")
-        if bare.endswith(b"\r"):
-            bare = bare[:-1]
+        bare = data[position:following if match is None else match.start()]
         role = _MARKERS.get(bare)
         label = None
         material = _material_marker(bare)
@@ -1455,6 +1623,7 @@ class _Context(object):
         self.diff_risks = None       # diff の basis 入りの写し
         self.texts = {}              # 人が読む形（.txt に書く文。lint と diff は子の JSON から作ったもの）
         self.lint_findings = None    # lint の render_findings() の文
+        self.kept_marks = []         # 2.2.1: 最終稿に残った直訳語と語の一覧の語（_kept_marks。lint が動いたときに1回だけ作る）
         self.diff_parts = None       # diff の report_parts()
         self.final_changed = False
         self.no_record = False
@@ -1465,6 +1634,7 @@ class _Context(object):
         self.state_dir_option = None     # --state-dir で決めた状態フォルダ（{仕上げ} に書く）
         self.doc_type = None             # 文書の種類と読者（正規化した値。lint と diff に渡し、記録と状態の行に残す）
         self.reader = None
+        self.words = None                # 語の一覧の context.words の5つのキー（使わないときは None。子に --words で渡す）
 
     @property
     def diff_source(self):
@@ -1511,12 +1681,30 @@ def _context_arguments(doc_type, reader):
     return arguments
 
 
-def _context_problem(parsed, doc_type, reader):
-    """子の JSON の context が、渡した種類と読者と合わないときの理由（合えば None）。lint の外した件数は整数に限る
-    （3行目に合計を書くため）。"""
+def _words_arguments(words):
+    """子の lint と diff に渡す語の一覧の引数。check が読んだ一覧の場所を --words で渡し、使わないときは --no-words
+    （子が作業ディレクトリから探し直して、check と別の一覧を読まないように）。words は context.words の値か None。"""
+    return ["--words", words["path"]] if words is not None else ["--no-words"]
+
+
+def _report_words(context):
+    """子の JSON の context.words から、check が比べる5つのキー（lint の allow_removed を除く）。ないときは None。"""
+    words = context.get("words")
+    if not isinstance(words, dict):
+        return None
+    return OrderedDict((key, words.get(key)) for key in ("path", "allow_lines", "flag_lines", "allow_sha256", "flag_sha256"))
+
+
+def _context_problem(parsed, doc_type, reader, words=None):
+    """子の JSON の context が、渡した種類と読者と語の一覧と合わないときの理由（合えば None）。lint の外した件数は整数に限る
+    （3行目に合計を書くため）。語の一覧は、check が読んだ中身（SHA-256）と子が読んだ中身が同じかも見る（間に書き換えられた一覧を
+    使わない）。"""
     context = parsed["context"]
     if context.get("doc_type") != doc_type or context.get("reader") != reader:
         return "子の JSON の context が、渡した種類と読者と違います"
+    found = _report_words(context)
+    if (dict(found) if found is not None else None) != (dict(words) if words is not None else None):
+        return "子の JSON の context.words が、check が読んだ語の一覧と違います"
     skipped = context.get("skipped_by_doc_type", {})
     if parsed.get("format") == "yomiyasu-lint" and not (
             isinstance(skipped, dict) and all(type(value) is int and value >= 0 for value in skipped.values())):
@@ -1529,7 +1717,7 @@ def _run_checks(ctx, snapshots, stance, timeout):
     lint_module, diff_module = _lint_module(), _diff_module()
     environment = dict(os.environ, PYTHONIOENCODING="utf-8")
     final_snapshot = snapshots[id(ctx.final)]
-    context = _context_arguments(ctx.doc_type, ctx.reader)
+    context = _context_arguments(ctx.doc_type, ctx.reader) + _words_arguments(ctx.words)
     commands = OrderedDict()
     commands["lint"] = ([sys.executable, "-B", os.path.join(_HERE, "yomiyasu_lint.py"), "--json"] + context
                         + [final_snapshot])
@@ -1586,7 +1774,7 @@ def _run_checks(ctx, snapshots, stance, timeout):
         if status == "ran":
             parsed, problem = _parse_report(stdout, "lint", versions["lint"])
             if parsed is not None:
-                problem = _context_problem(parsed, ctx.doc_type, ctx.reader)
+                problem = _context_problem(parsed, ctx.doc_type, ctx.reader, ctx.words)
             if problem is None:
                 ctx.source_lint_result = parsed
             else:
@@ -1602,7 +1790,7 @@ def _run_checks(ctx, snapshots, stance, timeout):
             continue
         parsed, problem = _parse_report(stdout, name, versions[name])
         if parsed is not None:
-            problem = _context_problem(parsed, ctx.doc_type, ctx.reader)
+            problem = _context_problem(parsed, ctx.doc_type, ctx.reader, ctx.words)
             if problem is not None:
                 parsed = None
         try:
@@ -1626,7 +1814,9 @@ def _run_checks(ctx, snapshots, stance, timeout):
         if name == "lint":
             ctx.lint_result = parsed
             ctx.lint_findings = findings
-            entry["summary"] = OrderedDict((("candidate_count", parsed["candidate_count"]), ("counts", parsed["counts"])))
+            ctx.kept_marks = _kept_marks(parsed["findings"])
+            entry["summary"] = OrderedDict((("candidate_count", parsed["candidate_count"]), ("counts", parsed["counts"]),
+                                            ("kept_marks", ctx.kept_marks)))
         else:
             ctx.diff_result = parsed
             ctx.diff_parts = parts
@@ -1671,7 +1861,8 @@ def _review_count(section):
 
 def _fail_on_hits(ctx, diff_module):
     """--fail-on に当たった値（指定した順）。meaning-risk は diff の FAIL_ON_KINDS（数値・否定・入れ替え・文の種類・引用の印・
-    確度の強まり・状態の語の消え・書き手の約束の足し）と、新規作成の資料にない数値、warn と error は lint の候補で決める。"""
+    確度の強まり・状態の語の消え・書き手の約束の足し・許可の言い方の変化・選ぶ範囲の入れ替え・関連から因果への強まり）と、新規作成の資料にない数値、warn と error は
+    lint の候補で決める。diff の数え方は --doc-type で変わる（事実や仕様を述べる種類では、確度の2つも数える）。"""
     hits = []
     counts = (ctx.lint_result or {}).get("counts") or {}
     for value in ctx.fail_on:
@@ -1712,8 +1903,10 @@ def _treated_note(ctx):
     return _TREATED_INHERITED_PENDING_NOTE if inherited else _TREATED_PENDING_NOTE
 
 
-def _decide(ctx, recorded, problem=None, attempt=None, run_id=None, fix_count=0, same_as_previous=False):
-    """状態、1行目、next、状態の行を決める（1行目の表を上から当てはめる）。"""
+def _decide(ctx, recorded, problem=None, attempt=None, run_id=None, fix_count=0, same_as_previous=False,
+            denied=False):
+    """状態、1行目、next、状態の行を決める（1行目の表を上から当てはめる）。denied は、記録を書けなかった理由が
+    書き込みの拒否（PermissionError）のときに真で、1行目に状態フォルダを分ける案内を足す。"""
     finalize = _finalize_text(ctx)
     failed = ctx.failed
     if ctx.final_changed:
@@ -1735,8 +1928,13 @@ def _decide(ctx, recorded, problem=None, attempt=None, run_id=None, fix_count=0,
             "、".join(clauses), "、".join(items)) + _PARTIAL_TAIL)
         following = "report_partial"
     elif not recorded and not ctx.no_record:
-        line = ("検査を実行しましたが、記録を書けませんでした（{0}）。--state-dir に書ける場所を指定してもう一度実行するか、"
-                "完了報告の「実行しなかった検査」に「記録（{0}）」と書いてください。".format(problem))
+        if denied:
+            line = ("検査を実行しましたが、記録を書けませんでした（{0}）。" + _DENIED_STATE_NOTE + "--state-dir か "
+                    "YOMIYASU_STATE_DIR で自分が書ける場所を指定してもう一度実行するか、完了報告の「実行しなかった検査」に"
+                    "「記録（{0}）」と書いてください。").format(problem)
+        else:
+            line = ("検査を実行しましたが、記録を書けませんでした（{0}）。--state-dir に書ける場所を指定してもう一度実行するか、"
+                    "完了報告の「実行しなかった検査」に「記録（{0}）」と書いてください。".format(problem))
         following = "report_unrecorded"
     else:
         if ctx.text_unchanged() or (ctx.source is not None and ctx.diff_result is not None
@@ -1866,6 +2064,226 @@ def _summary_line(ctx, diff_module=None):
         else:
             summary += "、事実の穴の候補{}件".format(ctx.fact_gaps["count"])
     return summary
+
+
+# 頭の一覧で、検査ごとに並べる候補の数の上限（残りは「ほかN件」）
+_HEAD_LIMIT = 3
+# 候補があるときに、頭の一覧のすぐ下に置く文（出力の頭だけを読んで、下の節を読まずに終えないため）
+_HEAD_NOTE = "候補の中身は下の節にあります。出力を切らずに読んでください。"
+# 2.2.1: 最終稿に残った直訳語（calque）と語の一覧（project_term）の語。lint の message から語を取る（「当たった言い方: 語、語）の
+# 候補です」と「語の一覧（flag.txt）の語（語、語）の候補です」。語に「）」があっても読めるよう、末尾の「）の候補です」まで取る。
+# 語に「、」がある語の一覧の語は分かれる）。run の「残した印の語」の節と頭の行、verify の行、記録の lint の要約に使う
+_KEPT_MARK_RULES = {"calque": ("直訳語", re.compile(r"当たった言い方: (.*)）の候補です")),
+                    "project_term": ("語の一覧", re.compile(r"語の一覧（flag\.txt）の語（(.*)）の候補です"))}
+_KEPT_MARK_SHOWN_LINES = 5
+_KEPT_MARK_SHOWN_WORDS = 10
+_KEPT_MARK_HEAD = "残した印の語: {}。下の「■ 残した印の語」のとおり、書き直すか、尋ねるか、残す理由を書いてください。"
+_KEPT_MARK_SECTION = (
+    "■ 残した印の語（最終稿の直訳語と語の一覧の印。{}語）\n"
+    "最終稿に残した次の語は、その文を SKILL.md Step 2 の問いで読み直し、書き直すか、残すなら次のどちらかにしてください。\n"
+    "- 書き直しに使う名前や動作、その動作をする人が、原文、依頼、提供資料、文脈のどれにも書いていないか、前後の文と呼び名がそろわず"
+    "同じものを指すか分からない: 本文を残し、「書き手に確かめたい点」で尋ねる（残す理由を書くだけにしない）。問いは3点までの決まりと"
+    "選び方に従い、入らない分は「ほかに N か所」に数える。\n"
+    "- 直訳語の印で、その分野で定着した言い方か、文字どおりの意味（音、実物の場所など）: 残す理由を「残したAIっぽいところ」に書く。"
+    "語の一覧（flag.txt）の語は、定着した言い方でも残さない。\n"
+    "- 本文だけを返す指定では、確かめたい点も説明も付けないので、書き直せない語は本文のまま残す。")
+_KEPT_MARK_VERIFY = ("残した印の語: {}。完了報告を付けるときは、「書き手に確かめたい点」で尋ねたか（3点を超える分は「ほかに N か所」"
+                     "に数える）、残す理由を「残したAIっぽいところ」に書いたかを確かめてから提出してください。")
+
+
+def _kept_marks(findings):
+    """最終稿の lint の候補から、残った直訳語と語の一覧の語を語ごとにまとめ、最初に出た行の順に並べる
+    （[{"rule", "word", "lines"}]）。同じ語に語の一覧の印があれば rule は project_term（定着していても残さない決まりが先）。
+    語の取れない message は word を None にして規則ごとにまとめる。行は集合で持つので、手間は候補の数に比例する
+    （並べ替えを除く）。run では1回だけ呼び、ctx.kept_marks を使い回す。"""
+    marks = {}
+    for finding in findings or ():
+        if not isinstance(finding, dict):
+            continue
+        rule = finding.get("rule")
+        if rule not in _KEPT_MARK_RULES:
+            continue
+        found = _KEPT_MARK_RULES[rule][1].search(finding.get("message") or "")
+        words = [word for word in found.group(1).split("、") if word] if found else []
+        line = finding.get("line") if type(finding.get("line")) is int else None
+        for word in words or [None]:
+            key = word if word is not None else ("", rule)
+            entry = marks.get(key)
+            if entry is None:
+                entry = marks[key] = ({}, {})      # 規則と行を、挿入の順を保つ集合として持つ
+            entry[0][rule] = None
+            if line is not None:
+                entry[1][line] = None
+    rows = [{"rule": "project_term" if "project_term" in rules else "calque",
+             "word": key if isinstance(key, str) else None, "lines": sorted(lines)}
+            for key, (rules, lines) in marks.items()]
+    rows.sort(key=lambda row: row["lines"][0] if row["lines"] else 0)   # 同じ行どうしは出た順のまま
+    return rows
+
+
+def _kept_marks_text(marks):
+    """「語（語の一覧か直訳語。L と行の番号の並び）」を「、」でつないだ形。行と語が多いときは初めのほうだけを出す。"""
+    shown = []
+    for mark in marks[:_KEPT_MARK_SHOWN_WORDS]:
+        lines = mark["lines"]
+        where = "、".join("L{}".format(line) for line in lines[:_KEPT_MARK_SHOWN_LINES])
+        if len(lines) > _KEPT_MARK_SHOWN_LINES:
+            where += "、ほか{}行".format(len(lines) - _KEPT_MARK_SHOWN_LINES)
+        label = _KEPT_MARK_RULES[mark["rule"]][0]
+        shown.append("{}（{}{}）".format(mark["word"] if mark["word"] else "語の取れない印", label,
+                                       "。" + where if where else ""))
+    if len(marks) > _KEPT_MARK_SHOWN_WORDS:
+        shown.append("ほか{}語".format(len(marks) - _KEPT_MARK_SHOWN_WORDS))
+    return "、".join(shown)
+
+
+def _record_kept_marks(record):
+    """記録の lint の要約にある、残した印の語（2.2.1 より前の記録や、lint が動かなかった記録では None）。"""
+    if record is None:
+        return None
+    for entry in record["checks"]:
+        if entry["name"] == "lint" and isinstance(entry.get("summary"), dict):
+            marks = entry["summary"].get("kept_marks")
+            if isinstance(marks, list) and all(isinstance(mark, dict) and mark.get("rule") in _KEPT_MARK_RULES
+                                               and isinstance(mark.get("lines"), list) for mark in marks):
+                return marks
+    return None
+# diff の規則の見直し候補の、頭の一覧での名前（行番号を持たない候補。同じ名前はまとめて件数を付ける）
+# 構造の文の中の行番号（「後3行目」を先に、なければ「元3行目」）
+_HEAD_STRUCTURE_LINE = (re.compile(r"(後)(\d+)行目"), re.compile(r"(元)(\d+)行目"))
+_HEAD_RULE_NAMES = (("structure", "構造"), ("logic", "つながり"), ("endings.changes", "文末の種類"),
+                    ("type_changes", "文の種類の印"), ("endings.flags", "文末の立場"), ("bold", "太字"))
+
+
+def _head_where(old_line, new_line):
+    """頭の一覧の行番号（最終稿の行があれば「後N行目」、消えた行なら「元N行目」）。行がなければ空。"""
+    if new_line is not None:
+        return "後{}行目 ".format(new_line)
+    if old_line is not None:
+        return "元{}行目 ".format(old_line)
+    return ""
+
+
+def _head_line_of(old_line, new_line):
+    """頭の一覧で並べる順に使う行（最終稿の行、なければ原文の行）。どちらもなければ None。"""
+    return new_line if new_line is not None else old_line
+
+
+def _head_part(label, entries, total):
+    """頭の一覧の1つの検査の分（「lint の候補: 」に「L」と行番号と規則の名前を並べ、残りを「（ほか2件）」とする形）。
+    entries は（表示、件数、行）の並び。行のある項目を行の順に先に並べ（同じ行と、行のない項目どうしは元の順のまま）、
+    上限で切る。前のほうの行が「ほかN件」に隠れないため。上限を超えた分と、並べられない候補は「ほかN件」にする。"""
+    entries = sorted(entries, key=lambda entry: (entry[2] is None, entry[2] if entry[2] is not None else 0))
+    shown = [(name, weight) for name, weight, _ in entries[:_HEAD_LIMIT]]
+    rest = total - sum(weight for _, weight in shown)
+    if not shown:
+        return "{}: {}件".format(label, total)
+    text = "{}: {}".format(label, "、".join(name for name, _ in shown))
+    if rest > 0:
+        text += "（ほか{}件）".format(rest)
+    return text
+
+
+def _materials_line_names(result):
+    """照合の candidate_count に数える、節の見直し候補の行の頭の一覧での名前（ground と同じ条件で、行の順に）。
+    新規作成の「資料にない語」、確度の語、推敲の「資料に基づく補足の候補」の3つ。「参考」の行は数えない。"""
+    items = result.get("items") or []
+    rewrite = result.get("mode") == "rewrite"
+    names = []
+    if any(item.get("classification") == "from_materials" for item in items) and rewrite:
+        names.append("資料に基づく補足")
+    if not rewrite and any(item.get("kind") == "word" and item.get("classification") == "not_in_sources"
+                           for item in items):
+        names.append("資料にない語")
+    if any(item.get("classification") == "dropped_certainty" for item in items):
+        names.append("最終稿にない確度の語")
+    return names
+
+
+def _head_lines(ctx, diff_module):
+    """run の3行目のすぐあとに足す行（候補の短い一覧と、下の節を読む案内の2行）。出力の頭だけを読んでも、どの行の
+    どの規則に当たったかが分かるようにする。候補がない、または途中で最終稿が変わったときは何も足さない。
+    lint、diff（意味が変わる恐れと規則の見直し候補）、文体の硬化などの見直し候補、資料との照合、事実の穴の順に並べ、
+    数え方は下の節と同じにする（diff の候補の数は3行目の「候補N件」と同じ）。"""
+    if ctx.final_changed:
+        return []
+    parts = []
+    lint = ctx.lint_result
+    if lint is not None and lint.get("candidate_count"):
+        entries = [("L{} {}".format(finding.get("line"), finding.get("rule")), 1,
+                    finding.get("line") if isinstance(finding.get("line"), int) else None)
+                   for finding in lint.get("findings") or []]
+        parts.append(_head_part("lint の候補", entries, lint["candidate_count"]))
+    result = ctx.diff_result
+    if result is not None and ctx.diff_parts is not None:
+        entries = []
+        risks = ctx.diff_risks if ctx.diff_risks is not None else result.get("meaning_risks") or []
+        for risk in risks:
+            if (risk.get("kind"), risk.get("subkind")) == ("sentence_type", "marks"):
+                continue
+            entries.append((_head_where(risk.get("old_line"), risk.get("new_line")) + str(risk.get("kind")), 1,
+                            _head_line_of(risk.get("old_line"), risk.get("new_line"))))
+        for marker in result.get("markers") or []:
+            entries.append(("{}の増減".format(marker.get("kind")), 1, None))
+        if result.get("new_words"):
+            entries.append(("元の文にない語", 1, None))
+        if result.get("lost_words"):
+            entries.append(("消えた語", 1, None))
+        rewritten_only = diff_module._shows_rewritten_only(result)
+        endings = result.get("endings") or {}
+        for key, name in _HEAD_RULE_NAMES:
+            if key in ("logic", "endings.flags", "bold") and not rewritten_only:
+                continue
+            items = endings.get(key.split(".")[1]) if key.startswith("endings.") else result.get(key)
+            if items and key == "structure":
+                # 見出しの変化の文は行番号を持つので、最初に挙げた行を添えて行の順に並べる。行のない文はまとめる
+                plain = []
+                for item in items:
+                    found = None
+                    if isinstance(item, str):
+                        found = _HEAD_STRUCTURE_LINE[0].search(item) or _HEAD_STRUCTURE_LINE[1].search(item)
+                    if found is None:
+                        plain.append(item)
+                        continue
+                    side, number = found.group(1), int(found.group(2))
+                    old_line, new_line = (number, None) if side == "元" else (None, number)
+                    entries.append((_head_where(old_line, new_line) + name, 1, number))
+                items = plain
+            if items:
+                entries.append((name + ("{}件".format(len(items)) if len(items) > 1 else ""), len(items), None))
+        total = sum(weight for _, weight, _ in entries)
+        if total:
+            parts.append(_head_part("diff の候補", entries, total))
+        entries = []
+        for key in ("stiffness", "tone", "hedges", "immutable", "politeness", "register"):
+            section = result.get(key)
+            if not isinstance(section, dict) or not isinstance(section.get("candidates"), list):
+                continue
+            for candidate in section["candidates"]:
+                if isinstance(candidate, dict) and candidate.get("level") == "review":
+                    entries.append((_head_where(candidate.get("old_line"), candidate.get("new_line")) + key, 1,
+                                    _head_line_of(candidate.get("old_line"), candidate.get("new_line"))))
+        if entries:
+            parts.append(_head_part("文体などの候補", entries, len(entries)))
+    materials = ctx.materials_result
+    if materials is not None and materials.get("candidate_count"):
+        names = {"number": "資料にない数値", "name": "資料にない名前"}
+        entries = [(_head_where(risk.get("old_line"), risk.get("new_line"))
+                    + names.get(risk.get("subkind"), str(risk.get("kind"))), 1,
+                    _head_line_of(risk.get("old_line"), risk.get("new_line")))
+                   for risk in materials.get("meaning_risks") or []]
+        # candidate_count の残りは照合の節の見直し候補の行（ground の数え方と同じ。1行を1件）。名前で並べる
+        entries.extend((name, 1, None) for name in _materials_line_names(materials))
+        parts.append(_head_part("資料との照合の候補", entries, materials["candidate_count"]))
+    gaps = ctx.fact_gaps
+    if gaps is not None and not gaps["skipped"] and gaps["count"]:
+        entries = [("後{}行目「{}」".format(item["line"], item["match"]), 1,
+                    item["line"] if isinstance(item.get("line"), int) else None) for item in gaps["items"]]
+        parts.append(_head_part("事実の穴の候補", entries, gaps["count"]))
+    if not parts:
+        return []
+    kept = ctx.kept_marks if lint is not None else []
+    return ["。".join(parts)] + ([_KEPT_MARK_HEAD.format(_kept_marks_text(kept))] if kept else []) + [_HEAD_NOTE]
 
 
 def _detector_value(ctx, diff_module, key):
@@ -2046,6 +2464,10 @@ def _sections(ctx, lint_module, diff_module):
     base = ctx.diff_result if ctx.diff_result is not None else diff_module.diff("", "")
     if ctx.risks:
         sections.append(diff_module.report_parts(dict(base, meaning_risks=ctx.risks))["risks"])
+    kept = ctx.kept_marks if ctx.lint_result is not None and not ctx.final_changed else []
+    if kept:
+        sections.append(_KEPT_MARK_SECTION.format(len(kept)) + "\n"
+                        + "\n".join("- " + _kept_marks_text([mark]) for mark in kept))
     parts = ctx.diff_parts
     if parts is not None and parts["rules"]:
         rules = parts["rules"]
@@ -2172,9 +2594,18 @@ def _put_snapshots(folder, inputs):
     return paths
 
 
+# 状態フォルダへの書き込みを拒まれたときに、1行目と start の案内に足す文。状態フォルダは作った OS ユーザーだけが
+# 書けるフォルダにする（POSIX の 0o700。Windows も Python の版によって作ったユーザーと管理者だけになる）ので、同じ
+# リポジトリをほかの OS ユーザーと使うときは、ユーザーごとに別の状態フォルダを指定してもらう
+_DENIED_STATE_NOTE = ("ほかの OS ユーザー（Codex のサンドボックスなど）が先に作った状態フォルダは、作ったユーザーしか"
+                      "書けないことがあります。")
+
+
 def _write_problem(state, error):
     """記録を書けなかった理由の文（1行目と5行目に入れる）。"""
     where = getattr(error, "filename", None) or state
+    if isinstance(where, str) and os.path.basename(where).startswith(".tmp-"):
+        where = os.path.dirname(where)  # 一時ファイルの名前ではなく、書けなかったフォルダを示す
     reason = getattr(error, "strerror", None) or str(error) or type(error).__name__
     return "{} に書けません: {}".format(where, reason)
 
@@ -2277,6 +2708,14 @@ def _timeout(raw):
     return (int(value) if value.is_integer() else value), None
 
 
+def _result_context(ctx):
+    """run の --json の context（種類と読者。語の一覧を使ったときだけ words の5つのキーを足す）。"""
+    context = OrderedDict((("doc_type", ctx.doc_type), ("reader", ctx.reader)))
+    if ctx.words is not None:
+        context["words"] = OrderedDict(ctx.words.items())
+    return context
+
+
 def _run(args, parser):
     # Managed runs reserve their attempt under the armed lock before any checks.
     # Remove an unfinished reservation on every exception/signal/early return.
@@ -2291,6 +2730,18 @@ def _run(args, parser):
                     os.unlink(reservation[1])
             except FileNotFoundError:
                 pass
+
+
+def _resolve_words(args, parser, cwd):
+    """--words と --no-words から語の一覧を決める（run と start）。(context.words の5つのキーか None, 誤りの文か None)。
+    両方の指定は使い方の誤り（parser.error で2）。"""
+    if args.words is not None and args.no_words:
+        parser.error("--words と --no-words は一緒に使えません")
+    try:
+        words = resolve_words(cwd, args.words, args.no_words)
+    except WordsError as error:
+        return None, str(error)
+    return (OrderedDict(words_context(words).items()) if words is not None else None), None
 
 
 def _run_impl(args, parser):
@@ -2334,6 +2785,11 @@ def _run_impl(args, parser):
         return 2
     # 作業ディレクトリは記録の cwd に入れる。消えていれば、何も書かずに2（_run_cli が受ける。反証で見つけた例）
     cwd = _getcwd()
+    # 語の一覧。子を動かす前に check が探して読み、読めなければ何も書かずに2。子には読んだ場所を --words で渡す
+    words, problem = _resolve_words(args, parser, cwd)
+    if problem:
+        _error(problem)
+        return 2
     lint_module, diff_module = _lint_module(), _diff_module()
     stance = None
     if args.stance is not None:
@@ -2369,6 +2825,7 @@ def _run_impl(args, parser):
     if original_snapshot is not None:
         ctx.source = original_snapshot
     ctx.doc_type, ctx.reader = doc_type, reader
+    ctx.words = words
     if not ctx.final.text.strip():
         # 空の最終稿（空白と改行だけの本文も同じ）は検査しない
         _error(_EMPTY_FINAL_ERROR)
@@ -2405,6 +2862,10 @@ def _run_impl(args, parser):
     # doc_type と reader は、文書の種類と読者のオプションを足したときに後ろに足した（キーを足すだけなので RECORD_FORMAT_VERSION は1のまま）
     options = OrderedDict((("stance", stance), ("fail_on", list(fail_on)), ("timeout", timeout),
                            ("doc_type", doc_type), ("reader", reader), ("fact_gaps", args.fact_gaps)))
+    if words is not None:
+        # 語の一覧（2.2.0 で足した）。使ったときだけ、context.words と同じ5つのキーを後ろに足す（RECORD_FORMAT_VERSION は1のまま）。
+        # verify --replay は、この場所を --words で渡す（ないときは --no-words）
+        options["words"] = OrderedDict(words.items())
 
     # 2. 実行IDと回を決める（読むだけ。別の原文の実行IDなら、何も書かずに2）
     state = None if args.no_record else _state_dir(args.state_dir)
@@ -2446,7 +2907,7 @@ def _run_impl(args, parser):
     # 3. 入力の写しを置き、検査はこの写しに対して行う。記録を書かないとき（--no-record、書けない）は、
     #    消す前提の一時フォルダに写しを置き、終わったら消す。ほかの場所に記録を逃がさない
     recording = state is not None
-    write_problem = None
+    write_problem, write_denied = None, False
     inputs = ([ctx.source] if ctx.source is not None else []) + list(ctx.materials) + [ctx.final]
     temporary = None
     try:
@@ -2457,13 +2918,14 @@ def _run_impl(args, parser):
                 snapshots = _put_snapshots(_ensure_dir(state, "inputs"), inputs)
             except OSError as error:
                 recording, write_problem = False, _write_problem(state, error)
+                write_denied = isinstance(error, PermissionError)
         if snapshots is None:
-            temporary = tempfile.TemporaryDirectory(prefix="yomiyasu-check-")
-            snapshots = _put_snapshots(temporary.name, inputs)
+            temporary = _mkdtemp("yomiyasu-check-")
+            snapshots = _put_snapshots(temporary, inputs)
         _run_checks(ctx, snapshots, stance, timeout)
     finally:
         if temporary is not None:
-            temporary.cleanup()
+            _remove_temporary(temporary)
 
     # 4. 最終稿のファイルを読み直し、検査の途中で変わっていないかを確かめる（標準入力なら省く）
     if ctx.final.via == "file":
@@ -2483,8 +2945,9 @@ def _run_impl(args, parser):
                                                               path_key, lint_module, diff_module)
         except OSError as error:
             recording, write_problem = False, _write_problem(state, error)
+            write_denied = isinstance(error, PermissionError)
     if not recording:
-        decision = _decide(ctx, False, problem=write_problem)
+        decision = _decide(ctx, False, problem=write_problem, denied=write_denied)
     status, line, following, token = decision
 
     # 6. 出力する。意味が変わる恐れを出す検査が最後まで動かなかったときは、件数を null にする（反証で見つけた例）
@@ -2513,7 +2976,7 @@ def _run_impl(args, parser):
             ("format", "yomiyasu-check-result"), ("format_version", RESULT_FORMAT_VERSION), ("tool_version", __version__),
             ("command", "run"), ("status", status), ("status_line", token), ("message", line), ("next", following),
             ("run_id", link["run_id"] if recording else None), ("attempt", attempt), ("fix_count", fix_count),
-            ("mode", ctx.mode), ("context", OrderedDict((("doc_type", ctx.doc_type), ("reader", ctx.reader)))),
+            ("mode", ctx.mode), ("context", _result_context(ctx)),
             ("record_path", record_path), ("fail_on_hit", bool(ctx.fail_on_hits)),
             ("meaning_risk_count", len(ctx.risks) if complete else None),
             ("fail_on_meaning_risk_count", diff_module.fail_on_count(ctx.risks) if complete else None),
@@ -2524,7 +2987,8 @@ def _run_impl(args, parser):
             ("politeness_check", _detector_value(ctx, diff_module, "politeness")),
             ("lint", ctx.lint_result), ("diff", diff_result), ("materials", ctx.materials_result),
             ("candidate_counts", candidate_counts), ("changed_places", changed_places),
-            ("fact_gaps", ctx.fact_gaps)))
+            ("fact_gaps", ctx.fact_gaps),
+            ("kept_marks", ctx.kept_marks if ctx.lint_result is not None else None)))
         print(json.dumps(result, ensure_ascii=True, indent=1))
     else:
         if recording:
@@ -2532,9 +2996,13 @@ def _run_impl(args, parser):
         else:
             record_line = "記録: なし（{}）".format("--no-record" if ctx.no_record else write_problem)
         sections = changed_sections + _sections(ctx, lint_module, diff_module)
-        # 記録を書かないときの4行目は「この結果は」（記録がないため）
+        # 記録を書かないときの断りの行（候補がなければ4行目）は「この結果は」（記録がないため）
         disclaimer = _DISCLAIMER if recording else _UNRECORDED_DISCLAIMER
-        text = "\n".join([line, token, _summary_line(ctx, diff_module), disclaimer, record_line]
+        # 語の一覧を使ったときだけ、記録の行のあとに一覧の行を足す
+        words_lines = [words_label(ctx.words)] if ctx.words is not None else []
+        # 候補があるときは、3行目のすぐあとに候補の短い一覧と案内を足す（2行目の状態の行と3行目は動かさない）
+        text = "\n".join([line, token, _summary_line(ctx, diff_module)] + _head_lines(ctx, diff_module)
+                         + [disclaimer, record_line] + words_lines
                          + _detector_lines(ctx, diff_module) + _candidate_lines(ctx, candidate_counts)) + "\n\n"
         if sections:
             text += "\n\n".join(sections) + "\n\n"
@@ -3089,6 +3557,9 @@ def _record_shape(record):
          "options")
     if isinstance(options, dict):
         need(type(options.get("fact_gaps", False)) is bool, "options.fact_gaps")
+        if "words" in options:
+            # 語の一覧（2.2.0 で足した。使った記録にだけある）
+            need(_words_shape(options["words"]), "options.words")
         gaps = record.get("fact_gaps")
         if options.get("fact_gaps"):
             need(_fact_gaps_shape(gaps), "fact_gaps")
@@ -3133,6 +3604,23 @@ def _record_shape(record):
          and isinstance(result.get("not_judged"), list), "result")
     need(is_text(record.get("record_digest")), "record_digest")
     return wrong
+
+
+def _words_shape(words):
+    """記録の options.words が、run の書く形（context.words の5つのキー）か。"""
+    def digest(value):
+        return value is None or (isinstance(value, str) and len(value) == 64 and all(c in "0123456789abcdef" for c in value))
+    return (isinstance(words, dict) and list(words) == ["path", "allow_lines", "flag_lines", "allow_sha256", "flag_sha256"]
+            and isinstance(words["path"], str) and os.path.isabs(words["path"])
+            and all(type(words[key]) is int and words[key] >= 0 for key in ("allow_lines", "flag_lines"))
+            and digest(words["allow_sha256"]) and digest(words["flag_sha256"])
+            and (words["allow_sha256"] is not None or words["flag_sha256"] is not None))
+
+
+def _record_words(record):
+    """記録の options.words（語の一覧を使わなかった記録と、このキーを足す前の記録は None）。"""
+    words = record["options"].get("words")
+    return words if isinstance(words, dict) else None
 
 
 def _known_value(value, rows):
@@ -3286,9 +3774,16 @@ def _summary_problems(state, record, required):
             # --replay なしでも見つける。context のないレポートは種類と読者のオプションを足す前のもので、値なしとして読む）
             found = value.get("context") if isinstance(value.get("context"), dict) else {}
             compare(name + ".context", context, [found.get("doc_type"), found.get("reader")])
+            # 語の一覧（使わなかった記録とレポートは、どちらも None）
+            recorded_words, report_words = _record_words(record), _report_words(found)
+            compare(name + ".context.words", dict(recorded_words) if recorded_words is not None else None,
+                    dict(report_words) if report_words is not None else None)
         if name == "lint":
             compare("lint.candidate_count", summary.get("candidate_count"), value.get("candidate_count"))
             compare("lint.counts", summary.get("counts"), value.get("counts"))
+            if "kept_marks" in summary:
+                # 2.2.1 で足した要約（それより前の記録にはない）
+                compare("lint.kept_marks", summary["kept_marks"], _kept_marks(value.get("findings")))
         elif name == "diff":
             full = value.get("full_diff")
             hunks = (full.get("hunks") or []) if isinstance(full, dict) else None
@@ -3353,8 +3848,9 @@ def _replay(state, record, timeout):
     def snapshot(item):
         return os.path.join(state, "inputs", item["sha256"] + ".bin")
 
-    # 記録と同じ種類と読者を付ける（付けないと lint のレポートが合わない）
-    context = _context_arguments(*_record_context(record))
+    # 記録と同じ種類と読者と語の一覧を付ける（付けないと lint のレポートが合わない）。語の一覧は記録の場所を渡し、
+    # 一覧を使わなかった記録は --no-words（verify の作業ディレクトリから探し直さない）
+    context = _context_arguments(*_record_context(record)) + _words_arguments(_record_words(record))
     commands = OrderedDict()
     if "lint" in entries:
         commands["lint"] = ([sys.executable, "-B", os.path.join(_HERE, "yomiyasu_lint.py"), "--json"] + context
@@ -3824,6 +4320,8 @@ def _verify(args, parser, _final=None, _return=False):
         record_line = _NO_RECORD_LINE.format(state)
     final_count = _record_summary_count(record if shown else None, "lint", "candidate_count")
     changed_count = _record_summary_count(record if shown else None, "diff", "hunk_count")
+    # 2.2.1: 記録の要約にある、残した印の語（照合が合ったときだけ出す）
+    kept_marks = _record_kept_marks(record) if shown and status == "executed" else None
     if args.json or _return:
         final_record = found.final() if found is not None else None
         recorded_sha = final_record.get("sha256") if isinstance(final_record, dict) else None
@@ -3843,7 +4341,8 @@ def _verify(args, parser, _final=None, _return=False):
             ("required_checks", required), ("checks", checks),
             ("meaning_risk_count", meaning), ("replay", replayed),
             ("problems", [OrderedDict((("code", code), ("detail", detail))) for code, detail in problems]),
-            ("final_candidate_count", final_count), ("changed_place_count", changed_count)))
+            ("final_candidate_count", final_count), ("changed_place_count", changed_count),
+            ("kept_marks", kept_marks)))
         if _return:
             result["_record_line"] = record_line
             return result
@@ -3852,6 +4351,8 @@ def _verify(args, parser, _final=None, _return=False):
         lines = [line, token, record_line]
         if status == "executed":
             lines.append(_verified_contents_line(final_count, changed_count, required))
+            if kept_marks:
+                lines.append(_KEPT_MARK_VERIFY.format(_kept_marks_text(kept_marks)))
         print("\n".join(lines))
     return 0 if status == "executed" else 1
 
@@ -3915,6 +4416,7 @@ class _ArmedLock(object):
         self.identity = None
 
     def __enter__(self):
+        denied = refused = 0
         while time.monotonic() < self.deadline:
             try:
                 fd = os.open(self.path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
@@ -3935,13 +4437,38 @@ class _ArmedLock(object):
                     raise
                 return self
             except FileExistsError:
+                denied = 0  # ほかのプロセスがロックを持っている（拒まれ続けているのではない）
                 try:
                     if time.time() - os.stat(self.path).st_mtime > _ARMED_STALE:
                         os.unlink(self.path)
                         continue
+                    refused = 0  # まだ新しいロック（使用中）。古いロックで続けて拒まれた数はここで切る
                 except FileNotFoundError:
                     continue
-                time.sleep(min(0.02, max(0, self.deadline - time.monotonic())))
+                except PermissionError:
+                    # Windows では、ほかのプロセスが先に消している途中の古いロックに stat や unlink をすると
+                    # PermissionError になる。使用中とみなして待ち直す。続けて _REPLACE_TRIES 回拒まれるときは、消せない
+                    # ロック（ほかの OS ユーザーの状態フォルダに残ったものなど）なので、締切まで待たずに出す。POSIX では
+                    # そのまま出す
+                    if not _busy_on_windows():
+                        raise
+                    refused += 1
+                    if refused >= _REPLACE_TRIES:
+                        raise
+            except PermissionError:
+                # Windows では、ほかのプロセスが消している途中（削除の保留中）のロックの名前には、O_EXCL で作れず
+                # PermissionError になる。使用中とみなして、同じ締切まで待ち直す。名前がないのに続けて拒まれるときは、
+                # フォルダに書けないので出す（消し終わった直後の分として、_REPLACE_TRIES 回までは待ち直す。ロックの名前が
+                # フォルダのときも同じ）。POSIX ではそのまま出す
+                if not _busy_on_windows():
+                    raise
+                if not os.path.lexists(self.path) or os.path.isdir(self.path):
+                    denied += 1
+                    if denied >= _REPLACE_TRIES:
+                        raise
+                else:
+                    denied = 0  # 名前がある（消している途中のロック）。続けて拒まれた数はここで切る
+            time.sleep(min(0.02, max(0, self.deadline - time.monotonic())))
         raise TimeoutError("armed_lock")
 
     def __exit__(self, *unused):
@@ -4022,8 +4549,9 @@ def start_run(state, source_path, final_path=None, run_id=None, session=None, ho
     record["record_digest"] = _record_digest(record)
     _ensure_state(state, default_place)
     _ensure_dir(state, "armed")
-    # 同じ原文の start を直列にする。登録用のロックも同じ方式で取得する。
-    source_lock = _sha256(_armed_place(source.path).encode("utf-8"))
+    # 同じ原文の start を直列にする。登録用のロックも同じ方式で取得する。UTF-8 で読めないバイトを含むファイル名
+    # （'\udcff' として届く）でも止まらないように、ほかのキーと同じく surrogateescape でバイト列にする
+    source_lock = _sha256(_armed_place(source.path).encode("utf-8", "surrogateescape"))
     with _ArmedLock(state, source_lock, source=True):
         with _ArmedLock(state, run_id):
             if os.path.lexists(os.path.join(state, "runs", run_id)) or os.path.lexists(os.path.join(state, "armed", run_id + ".json")):
@@ -4121,7 +4649,13 @@ def _managed_run_count(run_dir):
     now = time.time()
     for number in _attempt_numbers(run_dir):
         try:
-            info = os.stat(os.path.join(run_dir, "attempt-{}.json".format(number)))
+            info = _stat_settled(os.path.join(run_dir, "attempt-{}.json".format(number)))
+        except PermissionError:
+            # Windows で、ほかの run が記録に入れ替えている途中で確かめられない。回数を使ったものとして数え、
+            # 上限を超えて run を動かさない（POSIX では待ち直さずにここに来て、今までどおり数えない）
+            if _busy_on_windows():
+                count += 1
+            continue
         except OSError:
             continue
         if info.st_size > 0 or now - info.st_mtime < _RESERVATION_SECONDS:
@@ -4159,7 +4693,7 @@ def _managed_limit(state, entry, ctx, args, link):
               "status": "unverified", "status_line": token, "message": message, "run_id": entry["run_id"],
               "attempt": None, "record_path": None, "reason": entry["status_reason"], "armed_path": path,
               "next": "report_unverified", "fix_count": None, "mode": ctx.mode,
-              "context": {"doc_type": ctx.doc_type, "reader": ctx.reader}, "fail_on_hit": False,
+              "context": _result_context(ctx), "fail_on_hit": False,
               "meaning_risk_count": None, "fail_on_meaning_risk_count": None,
               "lint": None, "diff": None, "materials": None,
               "stiffness_check": None, "tone_check": None, "hedges_check": None,
@@ -4229,10 +4763,16 @@ def _management(command, args, parser):
         parser.error(_run_id_problem(args.run_id))
     if args.source == "-" or getattr(args, "final", None) == "-":
         parser.error("標準入力（-）は使えません")
+    if command == "start":
+        # 語の一覧（run と同じ探し方）。読めなければ、状態フォルダを決める前に2で断る
+        words, problem = _resolve_words(args, parser, _getcwd())
+        if problem:
+            _error(problem)
+            return 2
     state = _state_dir(args.state_dir)
     if command == "start":
         limits = {key: getattr(args, key) for key in _DEFAULT_LIMITS}
-        # 読む失敗は入力の誤り。書く失敗は main の内部エラー（3）。
+        # 読む失敗は入力の誤り。書く失敗は終了コード3（状態フォルダに書けないときは、トレースバックでなく案内を出す）。
         try:
             _managed_input(args.source)
         except (OSError, ValueError) as error:
@@ -4244,6 +4784,14 @@ def _management(command, args, parser):
                               default_place=not _state_dir_given(args.state_dir))
         except ValueError as error:
             parser.error(str(error))
+        except OSError as error:
+            if isinstance(error, TimeoutError):
+                raise  # 同じ原稿の登録のロックを待ちきれなかった（書けないのではない）。今までどおり内部エラーにする
+            # 状態フォルダに書けない。終了コードは今までどおり3（内部エラーと同じ）にし、トレースバックの代わりに案内を出す
+            _error("yomiyasu_check.py start: 原稿を登録できませんでした（{}）。{}--state-dir か YOMIYASU_STATE_DIR で"
+                   "自分が書ける場所を指定してもう一度実行してください。".format(
+                       _write_problem(state, error), _DENIED_STATE_NOTE if isinstance(error, PermissionError) else ""))
+            return 3
         run_id = entry["run_id"]
         message = ("原稿を登録しました（上限: 続けさせる{max_stop_blocks}回、run {max_runs}回、{deadline_min}分）。"
                    "この原稿で run と verify を実行すると、記録がこの登録につながります。").format(**limits)
@@ -4255,7 +4803,12 @@ def _management(command, args, parser):
                   "run_id": run_id, "armed_path": path, "start_path": os.path.join(state, "runs", run_id, "start.json"),
                   "source": {key: entry["targets"]["source"][key] for key in ("path", "sha256", "text_sha256")},
                   "final_path": args.final and entry["targets"]["final"], "limits": limits, "deadline": entry["deadline"]}
-        print(json.dumps(result, ensure_ascii=True, indent=1) if args.json else "\n".join((message, token, "登録: " + path)))
+        lines = [message, token, "登録: " + path]
+        if words is not None:
+            # 語の一覧を使ったときだけ（run に付ける場所を示す）
+            result["words"] = words
+            lines.append(words_label(words))
+        print(json.dumps(result, ensure_ascii=True, indent=1) if args.json else "\n".join(lines))
         return 0
     if command == "end":
         count = 0
@@ -4318,7 +4871,7 @@ _RECORD_NOTE = ("記録はこのコマンドだけが作ります。同じ権限
 _EXIT_CODES = """終了コード:
   0  run: 検査を最後まで実行し、--fail-on の条件に当たらなかった（状態 executed か unrecorded。候補の有無によらない）。verify: 記録と照合が合った（executed）。-h と --version も0。start: 登録した（started）。export: 写しを書いた（exported）。end: 登録を終えた（ended）
   1  run: --fail-on の条件に当たった（記録は残す）。verify: 記録がない、または記録と合わない（理由は2行目の状態の行と --json の problems）。run: 登録の上限で実行しなかった（unverified）。export: 照合が合わない。end: 登録がない
-  2  使い方か入力の誤り（ファイルを開けない、UTF-8 として読めない、区切りの誤り、使えない値、原文と最終稿が同じファイル、資料と最終稿が同じ中身、空の最終稿、別の原文の実行ID）。何も書かない（状態 not_run）
+  2  使い方か入力の誤り（ファイルを開けない、UTF-8 として読めない、区切りの誤り、使えない値、原文と最終稿が同じファイル、資料と最終稿が同じ中身、空の最終稿、別の原文の実行ID、語の一覧を読めない、--words と --no-words を一緒に指定した）。何も書かない（状態 not_run）
   3  検査の一部を実行できなかった（lint か diff が内部の誤りか時間切れで終わらなかった、途中で最終稿が変わった。状態 partial）か、check の予期しない内部の誤り、出力先が閉じられて結果を最後まで書けなかった"""
 _USAGE = ("yomiyasu_check.py run --final 最終稿 (--source 原文 | --material 資料) [オプション]\n"
           "       yomiyasu_check.py run --stdin [オプション]\n"
@@ -4330,13 +4883,19 @@ _USAGE = ("yomiyasu_check.py run --final 最終稿 (--source 原文 | --material
 _RUN_USAGE = ("yomiyasu_check.py run --final 最終稿 (--source 原文 | --material 資料) [--material 資料 …]\n"
               "           [--stance 立場] [--doc-type 種類] [--reader 読者] [--fail-on meaning-risk|warn|error …] [--timeout 秒]\n"
               "           [--run-id ID | --new-run] [--session ID] [--state-dir DIR] [--no-record] [--fact-gaps] [--json]\n"
+              "           [--words フォルダ | --no-words]\n"
               "       yomiyasu_check.py run --stdin [上と同じオプション]")
 _VERIFY_USAGE = ("yomiyasu_check.py verify --final 最終稿|- [--run-id ID] [--source 原文] [--since ISO8601]\n"
                  "           [--replay] [--timeout 秒] [--state-dir DIR] [--json]")
 _FAIL_ON_HELP = ("指定した条件に当たれば、記録を残したうえで終了コード1で終わります。何度でも、カンマ区切りでも指定できます。"
                  "meaning-risk: 意味が変わる恐れのうち、数値、否定、主語と目的語の入れ替え、文の種類（問いと平叙、文の種類の印）の"
                  "変化、引用の印の変化、確度を強めた書き換え（見込み → 予定、と思われる → 断定など）、原文の状態の語（未定、未確認、"
-                 "調査中など）が消えた書き換え、原文にない書き手の約束・保証・再発防止の誓いの足し（ここまでは diff の "
+                 "調査中など）が消えた書き換え、原文にない書き手の約束・保証・再発防止の誓いの足し、許可の言い方（してよい、"
+                 "してもよい、構わない）が消えたか増えた書き換え、関連・相関を述べた原文の文に因果の言い方（因果、原因、引き起こす など）を"
+                 "足した書き換え、選ぶ範囲が入れ替わった書き換え（または・どちらか → 両方・すべて、またはその逆）、同じ数に付いた"
+                 "概数や範囲の印（約、ほど、以上、未満 など）が消えたか増えた書き換え、"
+                 "--doc-type が pr、article、incident、proposal、manual、formal、paper の"
+                 "ときは「場合がある」の言い切りと「必ず」などの足し（ここまでは diff の "
                  "--fail-on=meaning-risk と同じ）と、新規作成で資料にない数値。コード・URL・引用ブロックなど変えない箇所の変化と、資料にない名前は数えません。"
                  "否定対比の主張の逆転と、元にない気持ちの語も数えません。確度を弱めた書き換え、数えない語だけの確度の変化、予定の言い切り（する予定です → します）、"
                  "かぎかっこの中の言葉の変化も数えません。原文にない因果のつながりの足しと、書き手の行為と読む印（いたします、今後・改めて、"
@@ -4374,6 +4933,18 @@ class _HelpFormatter(argparse.RawDescriptionHelpFormatter):
         return super().add_usage(usage, actions, groups, prefix)
 
 
+_WORDS_HELP = ("語の一覧（allow.txt と flag.txt）のフォルダ。省くと、作業ディレクトリから上へたどった git の最上位"
+               "（.git のあるフォルダ。git の外では作業ディレクトリ）の .yomiyasu-words/ を探します（lint、diff と同じ）。"
+               "check が探して読み、lint と diff にこの場所を渡して、記録に場所と語の数と SHA-256 を残します。"
+               "読めない一覧は終了コード2で、何も書きません。")
+_NO_WORDS_HELP = "語の一覧を探さず、読みません（--words と一緒には使えません）。"
+
+
+def _add_words_options(group):
+    group.add_argument("--words", metavar="フォルダ", help=_WORDS_HELP)
+    group.add_argument("--no-words", action="store_true", help=_NO_WORDS_HELP)
+
+
 def _build_parser():
     """(全体の parser, run の parser, verify の parser)。省略形は受けない（allow_abbrev=False）。"""
     parser = _ArgumentParser(prog="yomiyasu_check.py", usage=_USAGE, description=_DESCRIPTION + "\n" + _RECORD_NOTE,
@@ -4409,8 +4980,12 @@ def _build_parser():
                          help="文書の立場（diff と同じ）。勧め（読み手に勧める）、決まり（手順）、説明（報告、体験）のどれか。")
     options.add_argument("--doc-type", metavar="種類",
                          help="文書の種類。lint と diff に渡し、記録と状態の行に残します。lint は、その種類で普通な書き方を"
-                              "候補にする規則を外します（yomiyasu_lint.py -h の一覧）。差分（意味が変わる恐れと規則の見直し候補）と"
-                              "資料との照合の判定は変わりません。"
+                              "候補にする規則を外します（yomiyasu_lint.py -h の一覧）。差分（意味が変わる恐れと規則の見直し候補）の"
+                              "見つけ方と、資料との照合の判定は変わりません。"
+                              # yomiyasu_diff.py の _counted_doc_type_help() と同じ文（diff を読み込まずにヘルプを出すため、ここに書く）
+                              "pr、article、incident、proposal、manual、formal、paper（事実や仕様を述べる種類）では、"
+                              "「場合がある」「ことがある」を消した言い切りと、断定に「必ず」などを足した書き換えを --fail-on に数えます"
+                              "（意味の検査で種類によって変わるのはこの2つだけです）。"
                               # yomiyasu_diff.py の _detector_level_help() と同じ文（diff を読み込まずにヘルプを出すため、ここに書く。
                               # tests/test_v200_check_infra.py が一致を見張る。反証で見つけた例）
                               "文体の硬化の検査は incident、formal、paper のとき、勢いの検査は pr、article、incident、manual、formal、paper "
@@ -4436,6 +5011,7 @@ def _build_parser():
                               "（なければ作業ディレクトリ）の .yomiyasu/。書けないときもほかへ逃がしません。")
     options.add_argument("--no-record", action="store_true",
                          help="記録を書きません（状態 unrecorded）。利用者が記録も作らないよう頼んだときだけ使います。")
+    _add_words_options(options)
     options.add_argument("--json", action="store_true",
                          help="結果をJSON（結果の形式1）で出します。日本語は \\uXXXX の形で出します。")
     run.set_defaults(fail_on=[])
@@ -4467,7 +5043,8 @@ def _build_parser():
     additions = {}
     usages = {
         "start": "yomiyasu_check.py start --source 原文 [--final 最終稿] [--run-id ID] [--session ID] [--host claude-code|codex]\n"
-                 "                        [--max-stop-blocks N] [--max-runs N] [--deadline-min N] [--state-dir DIR] [--json]",
+                 "                        [--max-stop-blocks N] [--max-runs N] [--deadline-min N] [--state-dir DIR] [--json]\n"
+                 "                        [--words フォルダ | --no-words]",
         "export": "yomiyasu_check.py export --final 最終稿 [--run-id ID] [--source 原文] [--state-dir DIR] [--json]",
         "end": "yomiyasu_check.py end (--run-id ID | --source 原文) [--state-dir DIR] [--json]",
     }
@@ -4511,6 +5088,11 @@ def _build_parser():
                                  help="run の回数の上限（既定3、1〜10）。")
             options.add_argument("--deadline-min", type=int, default=30, metavar="分",
                                  help="登録からの期限（既定30分、1〜240）。")
+            # start は lint と diff を動かさないが、run と同じ引数を受け、一覧が読めるかを登録の前に確かめる
+            options.add_argument("--words", metavar="フォルダ",
+                                 help="語の一覧のフォルダ（run と同じ探し方）。登録の前に読めるかを確かめ、読めなければ"
+                                      "終了コード2で何も書きません。run にはこの値を付けてください（登録には残しません）。")
+            options.add_argument("--no-words", action="store_true", help=_NO_WORDS_HELP)
         additions[name] = sub
     parser._hook_commands = additions
     return parser, run, verify
@@ -4540,8 +5122,9 @@ def _version_line():
 
 
 def _use_utf8(stream, **options):
+    # 改行は OS によらず "\n" で書く（Windows の既定では "\r\n" になり、記録や CLI の出力が OS で変わる）
     if stream is not None and hasattr(stream, "reconfigure"):
-        stream.reconfigure(encoding="utf-8", **options)
+        stream.reconfigure(encoding="utf-8", newline="\n", **options)
 
 
 def _error(message):
@@ -4587,6 +5170,13 @@ def _run_cli(argv):
     if sys.stdout is not None:
         sys.stdout.flush()
     return code
+
+
+def _closed_output_on_windows(error):
+    """Windows で、読む側が閉じたパイプに書いたときの例外か。Windows では BrokenPipeError ではなく、errno が EINVAL の
+    OSError になる。ファイル名のある OSError（Windows で名前に使えない字を含むパスなど）と、POSIX では、ほかの誤りとして扱う。"""
+    return (os.name == "nt" and type(error) is OSError and error.errno == errno.EINVAL
+            and error.filename is None and error.filename2 is None)
 
 
 def _silence_stdout():
@@ -4670,6 +5260,11 @@ def main(argv=None):
         _error("yomiyasu_check.py: 出力先が閉じられたため、結果を最後まで書けませんでした。")
         return 3
     except Exception as error:
+        if _closed_output_on_windows(error):
+            # Windows で出力先が閉じられた。上の BrokenPipeError と同じく扱う
+            _silence_stdout()
+            _error("yomiyasu_check.py: 出力先が閉じられたため、結果を最後まで書けませんでした。")
+            return 3
         _error("yomiyasu_check.py: 内部エラー: {}: {}".format(type(error).__name__, error))
         _error(traceback.format_exc().rstrip("\n"))
         return 3
