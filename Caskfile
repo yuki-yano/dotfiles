@@ -23,6 +23,7 @@ install --cask raycast
 install --cask sharemouse
 install --cask spotify
 install --cask stats
+install --cask t3-code
 install --cask tableplus
 install --cask tailscale-app
 install --cask visual-studio-code
