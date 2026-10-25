@@ -101,5 +101,6 @@
 [delta]
   features = line-numbers decorations
   syntax-theme = Catppuccin-mocha
+  dark = true
 
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:
