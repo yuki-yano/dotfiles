@@ -253,5 +253,6 @@
   "theme": "dark",
   "preferredNotifChannel": "notifications_disabled",
   "remoteControlAtStartup": false,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "switchModelsOnFlag": false
 }
