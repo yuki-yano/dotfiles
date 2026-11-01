@@ -204,6 +204,13 @@ return {
             local panepilot = require('panepilot')
             local cmp = require('cmp')
             local fallback = require('fallback_map')
+            vim.keymap.set('n', '<Tab>', function()
+              if panepilot.visible() then
+                panepilot.accept()
+              else
+                panepilot.trigger()
+              end
+            end, map_opts)
             fallback.register('i', '<Tab>', {
               priority = 300,
               enabled = panepilot.visible,
