@@ -13,6 +13,9 @@ notify = [
   "[\"vde-notifier\",\"--codex\",\"--skip-codex-subagent\",\"--skip-codex-non-interactive\"]"
 ]
 suppress_unstable_features_warning = true
+approval_policy = "never"
+approvals_reviewer = "user"
+sandbox_mode = "danger-full-access"
 
 [shell_environment_policy.set]
 OP_ACCOUNT = "dionore.1password.com"
