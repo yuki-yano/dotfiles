@@ -1,4 +1,6 @@
-# sheldon {{{
+# Initialization {{{1
+
+# sheldon {{{2
 SHELDON_CACHE_DIR=${XDG_CACHE_HOME:-$HOME/.cache}/sheldon
 SHELDON_PRE_CACHE=${SHELDON_CACHE_DIR}/pre.zsh
 SHELDON_POST_CACHE=${SHELDON_CACHE_DIR}/post.zsh
@@ -79,9 +81,8 @@ else
   (( $+functions[compdef] )) && [[ -n ${ZENO_ROOT-} ]] && compdef _zeno zeno zeno-history-client zeno-server
   dot_zsh_load_completion_scripts
 fi
-# }}}
 
-# vite-plus {{{
+# vite-plus {{{2
 if whence -p vp >/dev/null; then
   function vp() {
     if [[ $1 == env && $2 == use ]]; then
@@ -97,22 +98,19 @@ if whence -p vp >/dev/null; then
     fi
   }
 fi
-# }}}
 
-# direnv {{{
+# direnv {{{2
 # direnv owns shell environment updates; mise tools use the shims in .zshenv.
 if whence direnv >/dev/null; then
   eval "$(direnv hook zsh)"
 fi
-# }}}
 
-# zsh-autosuggestions {{{
+# zsh-autosuggestions {{{2
 ZSH_AUTOSUGGEST_USE_ASYNC=1
 ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(accept-line zeno-auto-snippet-and-accept-line)
 ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(dot-prompt-accept-line-or-restore-buffer-stack)
-# }}}
 
-# fast-syntax-highlighting {{{
+# fast-syntax-highlighting {{{2
 function set_fast_theme() {
   FAST_HIGHLIGHT_STYLES[alias]='fg=blue'
   FAST_HIGHLIGHT_STYLES[suffix-alias]='fg=blue'
@@ -125,15 +123,19 @@ function set_fast_theme() {
   FAST_HIGHLIGHT_STYLES[globbing]='fg=green,bold'
   FAST_HIGHLIGHT_STYLES[history-expansion]='fg=green,bold'
 }
-# }}}
 
-# alias {{{
+# safe-chain (disabled) {{{2
+# [[ -f ~/.safe-chain/scripts/init-posix.sh ]] && source ~/.safe-chain/scripts/init-posix.sh
+
+# Aliases {{{1
+
+# Common aliases {{{2
 
 alias vi=nvim
 alias brew="PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin brew"
 alias p=popd
 
-# eza {{{
+# eza {{{2
 if whence eza > /dev/null; then
   alias ls="eza"
   alias ll="eza -lh  --git --time-style long-iso"
@@ -146,48 +148,36 @@ else
   alias ll='ls -lh'
   alias la='ls -alh'
 fi
-# }}}
 
-# bat {{{
+# bat {{{2
 if whence bat > /dev/null; then
   export BAT_THEME='Catppuccin-mocha'
   alias bat='bat --color=always --style=plain'
 fi
-# }}}
 
-# sed {{{
+# sed (disabled) {{{2
 # if whence gsed > /dev/null; then
 #   alias sed='gsed'
 # fi
-# }}}
 
-# find {{{
+# find {{{2
 if whence gfind > /dev/null; then
   alias find='gfind'
 fi
-# }}}
 
-# du {{{
+# du {{{2
 if whence dust > /dev/null; then
   alias du=dust
 fi
-# }}}
 
-# yq {{{
+# yq {{{2
 if whence gojq > /dev/null; then
   alias yq='gojq --yaml-input --yaml-output'
 fi
-# }}}
 
-# safe-chain {{{
-# [[ -f ~/.safe-chain/scripts/init-posix.sh ]] && source ~/.safe-chain/scripts/init-posix.sh
-# }}}
+# Shell settings {{{1
 
-# }}}
-
-# }}}
-
-# autoload {{{
+# autoload {{{2
 
 autoload -Uz add-zsh-hook
 autoload -Uz colors; colors
@@ -196,9 +186,7 @@ autoload -Uz history-search-end
 autoload -Uz smart-insert-last-word
 autoload -Uz terminfo
 
-# }}}
-
-# Color Definition {{{
+# Colors {{{2
 
 DEFAULT="${reset_color}"
 RED="${fg[red]}"
@@ -209,9 +197,7 @@ MAGENTA="${fg[magenta]}"
 CYAN="${fg[cyan]}"
 WHITE="${fg[white]}"
 
-# }}}
-
-# Basic {{{
+# Shell behavior {{{2
 
 # default settings
 setopt always_last_prompt
@@ -277,9 +263,7 @@ zle -N insert-last-word smart-insert-last-word
 # Show details automatically
 REPORTTIME=10
 
-# }}}
-
-# Prompt {{{
+# Prompt {{{1
 : ${DOT_PROMPT_ENABLE_TRANSIENT:=1}
 
 for prompt_file in \
@@ -292,9 +276,9 @@ for prompt_file in \
 done
 unset prompt_file
 
-# }}}
+# Completion and history {{{1
 
-# Completion {{{
+# Completion {{{2
 
 LISTMAX=1000
 
@@ -331,21 +315,18 @@ zstyle ':completion:*' cache-path "$HOME/.zsh/cache"
 zstyle ':completion:*' remote-access false
 zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
 
-# }}}
-
-# fzf {{{
+# fzf {{{2
 
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 export FZF_DEFAULT_OPTS='--reverse --no-separator --pointer=">" --marker=">"'
 export FZF_COMPLETION_TRIGGER=';'
 
-# }}}
-
-# atuin {{{
+# atuin (disabled) {{{2
 # eval "$(atuin init zsh)"
-# }}}
 
-# tmux {{{
+# Interactive commands {{{1
+
+# tmux navigation {{{2
 
 function _left-pane() {
   tmux run-shell 'tmux-smart-switch-pane left'
@@ -394,9 +375,7 @@ function _accept-line-or-down-pane() {
 }
 zle -N accept-line-or-down-pane _accept-line-or-down-pane
 
-# }}}
-
-# Bindkey {{{
+# Key bindings {{{2
 
 bindkey -e
 
@@ -445,15 +424,13 @@ zle -N edit-command-line
 bindkey '^xe'  edit-command-line
 bindkey '^x^e' edit-command-line
 
-# }}}
-
-# Misc {{{
+# Project selector {{{2
 
  if [[ -f $HOME/dotfiles/bin/ghq-project-selector.zsh ]]; then
    source $HOME/dotfiles/bin/ghq-project-selector.zsh
  fi
 
-# Automatically save the current git state to reflog
+# Git auto-save {{{2
 add-zsh-hook preexec git_auto_save
 
 function git_auto_save() {
@@ -469,7 +446,7 @@ function git_auto_save() {
   fi
 }
 
-# Select from git reflog using fzf and insert at cursor
+# Git reflog selector {{{2
 function _fzf-git-reflog-widget() {
   local git_root
   git_root=$(git rev-parse --show-toplevel 2>/dev/null)
@@ -499,7 +476,7 @@ zle -N fzf-git-reflog-widget _fzf-git-reflog-widget
 bindkey '^gr' fzf-git-reflog-widget
 bindkey '^g^r' fzf-git-reflog-widget
 
-# Auto rename tmux session when entering git repository
+# tmux session naming {{{2
 function tmux_auto_rename_hook() {
   if [[ -n "$TMUX" ]]; then
     # Get current session name
@@ -526,7 +503,7 @@ function tmux_auto_rename_hook() {
 }
 add-zsh-hook chpwd tmux_auto_rename_hook
 
-# show-suspend-jobs {{{
+# Suspended jobs {{{2
 zmodload -i zsh/parameter
 
 : ${SUSP_JOBS_MAX:=3}
@@ -559,9 +536,8 @@ function __susp_jobs_update_rprompt() {
     typeset -g SUSP_JOBS_RPROMPT=""
   fi
 }
-# }}}
 
-# show-buffer-stack {{{
+# Command buffer stack {{{2
 typeset -g COMMAND_BUFFER_STACK=""
 typeset -ga buffer_stack_arr=()
 typeset -ga buffer_stack_value_arr=()
@@ -633,9 +609,8 @@ function dot-prompt-accept-line-or-restore-buffer-stack() {
 zle -N dot-prompt-accept-line-or-restore-buffer-stack
 
 bindkey '^q' show-buffer-stack
-# }}}
 
-# fancy-ctrl-z {{{
+# fancy-ctrl-z {{{2
 function fancy-ctrl-z() {
   if [[ $#BUFFER -eq 0 ]]; then
     BUFFER=" fg"
@@ -647,11 +622,8 @@ function fancy-ctrl-z() {
 }
 zle -N fancy-ctrl-z
 bindkey '^Z' fancy-ctrl-z
-# }}}
 
-# }}}
-
-# zeno {{{
+# zeno {{{2
 if (( $+functions[zeno-register-lazy-widgets] )); then
   zeno-register-lazy-widgets \
     zeno-auto-snippet \
@@ -698,29 +670,25 @@ if (( ! $+functions[zeno-auto-snippet-and-accept-line] )); then
   bindkey '^m' dot-prompt-accept-line-or-restore-buffer-stack
 fi
 
-# }}}
+# Finalization {{{1
 
-# Profile {{{
+# Profiling {{{2
 
 if whence zprof > /dev/null ;then
   zprof | less
 fi
 
-# }}}
-
-# zcompile {{{
+# zcompile {{{2
 
 # .zshrc
 if [[ ! -f ~/.zshrc.zwc ]] || [[ "$(readlink ~/.zshrc)" -nt ~/.zshrc.zwc ]]; then
   zcompile ~/.zshrc
 fi
 
-# }}}
-
-# Load local {{{
+# Local settings {{{2
 
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
-# }}}
+# }}}1
 
 # vim:set expandtab shiftwidth=2 softtabstop=2 tabstop=2 foldenable foldmethod=marker:
