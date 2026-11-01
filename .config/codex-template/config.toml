@@ -182,3 +182,7 @@ source = "https://github.com/jgraph/drawio-mcp.git"
 [marketplaces.ponytail]
 source_type = "git"
 source = "https://github.com/DietrichGebert/ponytail.git"
+
+[marketplaces.spark-codex-marketplace]
+source_type = "git"
+source = "https://github.com/readdle/spark-codex-marketplace.git"
