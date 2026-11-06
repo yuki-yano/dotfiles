@@ -34,7 +34,8 @@ install --cask zoom
 
 install --cask 1password/tap/1password-cli
 install --cask Warashi/tap/cage
-install --cask didriksg/tap/crisp
 install --cask arto-app/tap/arto
+install --cask didriksg/tap/crisp
+# install --cask fif7y/tap/dimble
 install --cask yuki-yano/shitsurae/shitsurae
 install --cask yuki-yano/vde-notifier/vde-notifier-app
