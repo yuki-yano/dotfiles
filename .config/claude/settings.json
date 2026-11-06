@@ -236,6 +236,7 @@
     }
   },
   "advisorModel": "fable",
+  "subagentPromptCacheTtl": "1h",
   "showClearContextOnPlanAccept": true,
   "pluginConfigs": {
     "agents-md@builtin": {
