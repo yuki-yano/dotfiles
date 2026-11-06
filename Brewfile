@@ -53,6 +53,7 @@ install awscli session-manager-plugin
 install tailscale
 install lego
 install lume
+install lambdalisue/vitro/vitro
 
 ## Local Data
 install sqlite
