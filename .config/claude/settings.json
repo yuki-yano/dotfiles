@@ -25,7 +25,7 @@
           },
           {
             "type": "command",
-            "command": "vt hook claude PreToolUse"
+            "command": "if [ -n \"$TMUX\" ]; then vt hook claude PreToolUse; else cat >/dev/null; fi"
           }
         ]
       }
@@ -40,7 +40,7 @@
           },
           {
             "type": "command",
-            "command": "vt hook claude PostToolUse"
+            "command": "if [ -n \"$TMUX\" ]; then vt hook claude PostToolUse; else cat >/dev/null; fi"
           }
         ]
       }
@@ -64,7 +64,7 @@
           },
           {
             "type": "command",
-            "command": "vt hook claude Notification"
+            "command": "if [ -n \"$TMUX\" ]; then vt hook claude Notification; else cat >/dev/null; fi"
           }
         ]
       }
@@ -74,7 +74,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "vde-notifier --claude --skip-claude-non-interactive"
+            "command": "if [ -n \"$TMUX$HERDR_PANE_ID\" ]; then vde-notifier --claude --skip-claude-non-interactive; else cat >/dev/null; fi"
           }
         ]
       },
@@ -86,7 +86,7 @@
           },
           {
             "type": "command",
-            "command": "vt hook claude Stop"
+            "command": "if [ -n \"$TMUX\" ]; then vt hook claude Stop; else cat >/dev/null; fi"
           }
         ]
       }
@@ -96,7 +96,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "vt hook claude StopFailure"
+            "command": "if [ -n \"$TMUX\" ]; then vt hook claude StopFailure; else cat >/dev/null; fi"
           }
         ]
       }
@@ -110,7 +110,7 @@
           },
           {
             "type": "command",
-            "command": "vt hook claude UserPromptSubmit"
+            "command": "if [ -n \"$TMUX\" ]; then vt hook claude UserPromptSubmit; else cat >/dev/null; fi"
           }
         ]
       },
@@ -142,7 +142,7 @@
           },
           {
             "type": "command",
-            "command": "vt hook claude SubagentStart"
+            "command": "if [ -n \"$TMUX\" ]; then vt hook claude SubagentStart; else cat >/dev/null; fi"
           }
         ]
       }
@@ -156,7 +156,7 @@
           },
           {
             "type": "command",
-            "command": "vt hook claude SubagentStop"
+            "command": "if [ -n \"$TMUX\" ]; then vt hook claude SubagentStop; else cat >/dev/null; fi"
           }
         ]
       }
@@ -167,7 +167,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "vt hook claude SessionStart"
+            "command": "if [ -n \"$TMUX\" ]; then vt hook claude SessionStart; else cat >/dev/null; fi"
           }
         ]
       },
@@ -186,7 +186,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "vt hook claude SessionEnd"
+            "command": "if [ -n \"$TMUX\" ]; then vt hook claude SessionEnd; else cat >/dev/null; fi"
           }
         ]
       }

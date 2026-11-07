@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "vt hook codex SessionStart"
+            "command": "if [ -n \"$TMUX\" ]; then vt hook codex SessionStart; else cat >/dev/null; fi"
           }
         ]
       }
@@ -26,7 +26,7 @@
       {
         "hooks": [
           { "type": "command", "command": "vde-monitor-hook codex PreToolUse" },
-          { "type": "command", "command": "vt hook codex PreToolUse" }
+          { "type": "command", "command": "if [ -n \"$TMUX\" ]; then vt hook codex PreToolUse; else cat >/dev/null; fi" }
         ]
       }
     ],
@@ -34,7 +34,7 @@
       {
         "hooks": [
           { "type": "command", "command": "vde-monitor-hook codex PostToolUse" },
-          { "type": "command", "command": "vt hook codex PostToolUse" }
+          { "type": "command", "command": "if [ -n \"$TMUX\" ]; then vt hook codex PostToolUse; else cat >/dev/null; fi" }
         ]
       }
     ],
@@ -42,7 +42,7 @@
       {
         "hooks": [
           { "type": "command", "command": "vde-monitor-hook codex PermissionRequest" },
-          { "type": "command", "command": "vt hook codex PermissionRequest" }
+          { "type": "command", "command": "if [ -n \"$TMUX\" ]; then vt hook codex PermissionRequest; else cat >/dev/null; fi" }
         ]
       }
     ],
@@ -50,7 +50,7 @@
       {
         "hooks": [
           { "type": "command", "command": "vde-monitor-hook codex Stop" },
-          { "type": "command", "command": "vt hook codex Stop" }
+          { "type": "command", "command": "if [ -n \"$TMUX\" ]; then vt hook codex Stop; else cat >/dev/null; fi" }
         ]
       }
     ],
@@ -58,7 +58,7 @@
       {
         "hooks": [
           { "type": "command", "command": "vde-monitor-hook codex UserPromptSubmit" },
-          { "type": "command", "command": "vt hook codex UserPromptSubmit" }
+          { "type": "command", "command": "if [ -n \"$TMUX\" ]; then vt hook codex UserPromptSubmit; else cat >/dev/null; fi" }
         ]
       }
     ],
@@ -66,7 +66,7 @@
       {
         "hooks": [
           { "type": "command", "command": "vde-monitor-hook codex SubagentStart" },
-          { "type": "command", "command": "vt hook codex SubagentStart" }
+          { "type": "command", "command": "if [ -n \"$TMUX\" ]; then vt hook codex SubagentStart; else cat >/dev/null; fi" }
         ]
       }
     ],
@@ -74,7 +74,7 @@
       {
         "hooks": [
           { "type": "command", "command": "vde-monitor-hook codex SubagentStop" },
-          { "type": "command", "command": "vt hook codex SubagentStop" }
+          { "type": "command", "command": "if [ -n \"$TMUX\" ]; then vt hook codex SubagentStop; else cat >/dev/null; fi" }
         ]
       }
     ]
