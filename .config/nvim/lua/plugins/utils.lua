@@ -378,7 +378,9 @@ return {
     dev = true,
     lazy = false,
     config = function()
-      require('vde-tmux').setup()
+      local vde_term = require('rc.modules.vde_term')
+      require('vde-tmux').setup(vde_term.active and { keybindings = false } or nil)
+      vde_term.setup()
     end,
   },
   {

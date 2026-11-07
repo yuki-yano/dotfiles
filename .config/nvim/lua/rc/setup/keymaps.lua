@@ -1,4 +1,5 @@
 local with_isolated_undo = require('rc.modules.utils').with_isolated_undo
+local vde_term = require('rc.modules.vde_term')
 
 -- zero
 vim.keymap.set({ 'n', 'o', 'x' }, '0', [[getline('.')[0 : col('.') - 2] =~# '^\s\+$' ? '0' : '^']], { expr = true })
@@ -198,6 +199,8 @@ vim.keymap.set({ 'n', 'v', 'i' }, '<M-v>', function()
 
   if vim.env.TMUX then
     vim.fn.system({ 'tmux', 'split-window', '-h', '-c', vim.fn.getcwd() })
+  elseif vde_term.active then
+    vde_term.send('split-right')
   end
 end, { silent = true, desc = 'Insert: paste clipboard; other: tmux vertical split' })
 
@@ -205,6 +208,8 @@ end, { silent = true, desc = 'Insert: paste clipboard; other: tmux vertical spli
 vim.keymap.set({ 'n' }, '<M-c>', function()
   if vim.env.TMUX then
     vim.fn.system({ 'tmux', 'new-window', '-c', '#{pane_current_path}' })
+  elseif vde_term.active then
+    vde_term.send('new-window')
   end
 end, { silent = true, desc = 'Tmux new window from Neovim normal mode' })
 vim.keymap.set({ 'i' }, '<M-c>', '<Nop>', { silent = true })

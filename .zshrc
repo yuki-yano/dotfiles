@@ -353,6 +353,8 @@ function _backspace-or-left-pane() {
     zle backward-delete-char
   elif [[ ! -z ${TMUX} ]]; then
     zle left-pane
+  elif [[ -n ${VDE_TERM} ]]; then
+    printf '\e]7777;pane-move;left\a' > /dev/tty
   fi
 }
 zle -N backspace-or-left-pane _backspace-or-left-pane
@@ -362,6 +364,8 @@ function _kill-line-or-up-pane() {
     zle kill-line
   elif [[ ! -z ${TMUX} ]]; then
     zle up-pane
+  elif [[ -n ${VDE_TERM} ]]; then
+    printf '\e]7777;pane-move;up\a' > /dev/tty
   fi
 }
 zle -N kill-line-or-up-pane _kill-line-or-up-pane
@@ -371,6 +375,8 @@ function _accept-line-or-down-pane() {
     zle accept-line
   elif [[ ! -z ${TMUX} ]]; then
     zle down-pane
+  elif [[ -n ${VDE_TERM} ]]; then
+    printf '\e]7777;pane-move;down\a' > /dev/tty
   fi
 }
 zle -N accept-line-or-down-pane _accept-line-or-down-pane
