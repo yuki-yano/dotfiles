@@ -96,6 +96,9 @@ path=(~/bin(N-/^M) $path)
 path=(~/dotfiles/bin(N-/^M) $path)
 path=(~/.local/bin(N-/^M) $path)
 
+# vde-term (vte)
+path=(/Applications/VdeTerm.app/Contents/Resources/bin(N-/^M) $path)
+
 # Added by Alacritty
 path=(/Applications/Alacritty.app/Contents/MacOS(N-/^M) $path)
 

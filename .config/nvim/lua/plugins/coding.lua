@@ -219,6 +219,12 @@ return {
         { name = 'path' },
         -- { name = 'skkeleton' },
       }
+      -- vde-term の中には tmux も herdr もない
+      if require('rc.modules.vde_term').active then
+        sources = vim.tbl_filter(function(source)
+          return source.name ~= 'tmux' and source.name ~= 'herdr'
+        end, sources)
+      end
 
       if is_editprompt() then
         require('cmp_coding_agent').setup({
@@ -268,7 +274,8 @@ return {
           priority = 900,
         })
         table.insert(sources, 1, {
-          name = 'panepilot',
+          -- vde-term の ⌘I の editor では panepilot の代わりに vte.pilot（plugins/ime.lua）
+          name = require('rc.modules.ime').is_vte_prompt() and 'vte_pilot' or 'panepilot',
           priority = 800,
         })
       end
@@ -399,6 +406,7 @@ return {
                 coding_agent_slash = '[Agent /]',
                 prompt_abbr = '[Prompt Abbr]',
                 panepilot = '[Panepilot]',
+                vte_pilot = '[VtePilot]',
               }
 
               vim_item = require('tailwindcss-colorizer-cmp').formatter(entry, vim_item)

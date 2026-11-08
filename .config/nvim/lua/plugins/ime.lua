@@ -3,6 +3,34 @@ local ime_helpers = require('plugins.config.ime_helpers')
 
 local editprompt_group = vim.api.nvim_create_augroup('Editprompt', { clear = true })
 local editprompt_chunk_bytes = 8000
+local vte_prompt = ime.is_vte_prompt()
+local editprompt_module = vte_prompt and 'vte.prompt' or 'editprompt'
+local pilot_module = vte_prompt and 'vte.pilot' or 'panepilot'
+
+-- vde-term の ⌘I の editor では、同じ設定で ghq の vde-term の nvim/ にある vte.prompt・vte.pilot を、
+-- editprompt.nvim・panepilot.nvim の代わりに使う。元の plugin は cond で止めるだけにして、lazy-lock.json から外れないようにする。
+-- lazy は同じ dir の spec を1つにまとめる（後の config が前を上書きする）ので、両方の設定を1つの spec で読む
+local function with_vte(prompt, pilot)
+  if not vte_prompt then
+    return { prompt, pilot }
+  end
+  return {
+    vim.tbl_extend('force', prompt, { cond = false }),
+    vim.tbl_extend('force', pilot, { cond = false }),
+    {
+      dir = '~/repos/github.com/yuki-yano/vde-term/nvim',
+      name = 'vte',
+      cond = prompt.cond,
+      lazy = false,
+      dependencies = vim.list_extend(vim.list_extend({}, prompt.dependencies), pilot.dependencies),
+      init = prompt.init,
+      config = function()
+        prompt.config()
+        pilot.config()
+      end,
+    },
+  }
+end
 
 local function normalize_editprompt_content(content)
   local normalized = content:gsub('\t', '  ')
@@ -71,7 +99,7 @@ local function split_by_utf8_bytes(content, max_bytes)
 end
 
 return {
-  {
+  with_vte({
     'eetann/editprompt.nvim',
     -- dev = true,
     cond = function()
@@ -90,10 +118,10 @@ return {
           pattern = { 'markdown' },
           callback = function(ev)
             local bufnr = ev.buf
-            local editprompt = require('editprompt')
-            local editprompt_history = require('editprompt.history')
-            local editprompt_utils = require('editprompt.utils')
-            local vde_tmux = require('vde-tmux')
+            local editprompt = require(editprompt_module)
+            local editprompt_history = require(editprompt_module .. '.history')
+            local editprompt_utils = require(editprompt_module .. '.utils')
+            local navigate = vte_prompt and require('rc.modules.vde_term').navigate or require('vde-tmux').navigate
             local map_opts = { silent = true, nowait = true, buffer = bufnr }
             local function is_buffer_blank()
               local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
@@ -107,7 +135,7 @@ return {
               vim.system({ 'tmux', 'select-pane', '-t', pane }, { text = true })
             end
             local function send_buffer_auto_send()
-              require('panepilot').dismiss()
+              require(pilot_module).dismiss()
               editprompt_utils.save_buffer()
 
               local original = editprompt_utils.get_buffer_content()
@@ -116,7 +144,8 @@ return {
                 return
               end
 
-              if #content <= editprompt_chunk_bytes then
+              -- vte は長い本文も1回で送れる
+              if vte_prompt or #content <= editprompt_chunk_bytes then
                 editprompt.input_auto_send()
                 return
               end
@@ -163,7 +192,7 @@ return {
               send_next_chunk()
             end
             local function stash_buffer_to_history()
-              require('panepilot').dismiss()
+              require(pilot_module).dismiss()
               editprompt_utils.save_buffer()
               local original = editprompt_utils.get_buffer_content()
 
@@ -174,7 +203,7 @@ return {
               editprompt.stash_push()
             end
             local function handle_cr()
-              if require('panepilot').consume_empty_enter() then
+              if require(pilot_module).consume_empty_enter() then
                 return ''
               end
               local mode = vim.api.nvim_get_mode().mode
@@ -201,7 +230,7 @@ return {
             vim.bo[bufnr].filetype = 'markdown.editprompt'
             vim.opt_local.virtualedit = 'block'
 
-            local panepilot = require('panepilot')
+            local panepilot = require(pilot_module)
             local cmp = require('cmp')
             local fallback = require('fallback_map')
             vim.keymap.set('n', '<Tab>', function()
@@ -215,7 +244,7 @@ return {
               priority = 300,
               enabled = panepilot.visible,
               run = function()
-                return '<Cmd>lua require("panepilot").accept()<CR>'
+                return '<Cmd>lua require("' .. pilot_module .. '").accept()<CR>'
               end,
             }, { buffer = bufnr })
             fallback.register('i', '<Tab>', {
@@ -228,7 +257,7 @@ return {
             fallback.register('i', '<Tab>', {
               priority = 150,
               run = function()
-                return '<Cmd>lua require("panepilot").trigger()<CR>'
+                return '<Cmd>lua require("' .. pilot_module .. '").trigger()<CR>'
               end,
             }, { buffer = bufnr })
 
@@ -355,7 +384,7 @@ return {
                 if #lines == 0 or (#lines == 1 and lines[1] == '') then
                   vim.cmd('startinsert')
                 end
-                vde_tmux.navigate(dir)
+                navigate(dir)
               end, map_opts)
             end
 
@@ -371,7 +400,7 @@ return {
                 if #lines ~= 0 and (#lines ~= 1 or lines[1] ~= '') then
                   return fallback
                 end
-                vde_tmux.navigate(dir)
+                navigate(dir)
                 return ''
               end, vim.tbl_extend('force', map_opts, { expr = true }))
             end
@@ -382,10 +411,10 @@ return {
       end
     end,
     config = function()
-      local editprompt = require('editprompt')
+      local editprompt = require(editprompt_module)
 
       editprompt.setup({
-        cmd = 'editprompt',
+        cmd = vte_prompt and 'vte' or 'editprompt',
         picker = 'snacks',
         before_input = function(content)
           return normalize_editprompt_content(content)
@@ -403,8 +432,7 @@ return {
         end,
       })
     end,
-  },
-  {
+  }, {
     'yuki-yano/panepilot.nvim',
     dev = true,
     cond = function()
@@ -416,7 +444,7 @@ return {
       { 'yuki-yano/fallback-map.nvim', dev = true },
     },
     config = function()
-      require('panepilot').setup({
+      require(pilot_module).setup({
         backend = 'codex',
         context = { source = 'vde' },
         openai = {
@@ -432,7 +460,7 @@ return {
         },
       })
     end,
-  },
+  }),
   {
     'yuki-yano/vinsert.vim',
     dev = true,

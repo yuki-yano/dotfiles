@@ -13,7 +13,7 @@ local function is_floating()
   return vim.api.nvim_win_get_config(0).relative ~= ''
 end
 
-local function navigate(key)
+function M.navigate(key)
   if is_floating() or vim.fn.winnr() == vim.fn.winnr(key) then
     M.send('pane-move;' .. directions[key])
   else
@@ -52,7 +52,7 @@ function M.setup()
   end
   for key, direction in pairs(directions) do
     vim.keymap.set({ 'n', 't' }, '<C-' .. key .. '>', function()
-      navigate(key)
+      M.navigate(key)
     end, { silent = true, desc = 'Navigate ' .. direction })
   end
   vim.api.nvim_create_autocmd('TermResponse', {
