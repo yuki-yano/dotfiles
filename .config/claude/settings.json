@@ -65,6 +65,10 @@
           {
             "type": "command",
             "command": "if [ -n \"$TMUX\" ]; then vt hook claude Notification; else cat >/dev/null; fi"
+          },
+          {
+            "type": "command",
+            "command": "if [ -n \"$HC_TERMINAL_ID\" ] && command -v vte >/dev/null; then vte hook claude Notification; else cat >/dev/null; fi"
           }
         ]
       }
@@ -87,6 +91,10 @@
           {
             "type": "command",
             "command": "if [ -n \"$TMUX\" ]; then vt hook claude Stop; else cat >/dev/null; fi"
+          },
+          {
+            "type": "command",
+            "command": "if [ -n \"$HC_TERMINAL_ID\" ] && command -v vte >/dev/null; then vte hook claude Stop; else cat >/dev/null; fi"
           }
         ]
       }
@@ -111,6 +119,10 @@
           {
             "type": "command",
             "command": "if [ -n \"$TMUX\" ]; then vt hook claude UserPromptSubmit; else cat >/dev/null; fi"
+          },
+          {
+            "type": "command",
+            "command": "if [ -n \"$HC_TERMINAL_ID\" ] && command -v vte >/dev/null; then vte hook claude UserPromptSubmit; else cat >/dev/null; fi"
           }
         ]
       },
@@ -143,6 +155,10 @@
           {
             "type": "command",
             "command": "if [ -n \"$TMUX\" ]; then vt hook claude SubagentStart; else cat >/dev/null; fi"
+          },
+          {
+            "type": "command",
+            "command": "if [ -n \"$HC_TERMINAL_ID\" ] && command -v vte >/dev/null; then vte hook claude SubagentStart; else cat >/dev/null; fi"
           }
         ]
       }
@@ -157,6 +173,10 @@
           {
             "type": "command",
             "command": "if [ -n \"$TMUX\" ]; then vt hook claude SubagentStop; else cat >/dev/null; fi"
+          },
+          {
+            "type": "command",
+            "command": "if [ -n \"$HC_TERMINAL_ID\" ] && command -v vte >/dev/null; then vte hook claude SubagentStop; else cat >/dev/null; fi"
           }
         ]
       }
@@ -168,6 +188,10 @@
           {
             "type": "command",
             "command": "if [ -n \"$TMUX\" ]; then vt hook claude SessionStart; else cat >/dev/null; fi"
+          },
+          {
+            "type": "command",
+            "command": "if [ -n \"$HC_TERMINAL_ID\" ] && command -v vte >/dev/null; then vte hook claude SessionStart; else cat >/dev/null; fi"
           }
         ]
       },
@@ -187,6 +211,10 @@
           {
             "type": "command",
             "command": "if [ -n \"$TMUX\" ]; then vt hook claude SessionEnd; else cat >/dev/null; fi"
+          },
+          {
+            "type": "command",
+            "command": "if [ -n \"$HC_TERMINAL_ID\" ] && command -v vte >/dev/null; then vte hook claude SessionEnd; else cat >/dev/null; fi"
           }
         ]
       }
