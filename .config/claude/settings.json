@@ -256,6 +256,7 @@
       }
     }
   },
+  "subagentPromptCacheTtl": "1h",
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
   "modelSettings": {
@@ -264,7 +265,6 @@
     }
   },
   "advisorModel": "fable",
-  "subagentPromptCacheTtl": "1h",
   "showClearContextOnPlanAccept": true,
   "pluginConfigs": {
     "agents-md@builtin": {
@@ -280,7 +280,7 @@
   "skipWorkflowUsageWarning": true,
   "theme": "dark",
   "preferredNotifChannel": "notifications_disabled",
+  "switchModelsOnFlag": false,
   "remoteControlAtStartup": false,
-  "agentPushNotifEnabled": true,
-  "switchModelsOnFlag": false
+  "agentPushNotifEnabled": true
 }
