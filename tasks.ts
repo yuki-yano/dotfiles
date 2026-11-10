@@ -35,7 +35,7 @@ const AGENTS_SKILLS_DIR = `${HOME}/.agents/skills`;
 const CLAUDE_SKILLS_DIR = `${CLAUDE_DIR}/skills`;
 const COPILOT_SKILLS_DIR = `${COPILOT_DIR}/skills`;
 const CODEX_TEMPLATE_COPY_TARGETS = ["AGENTS.md", "agents", "hooks.json"];
-type CodexPluginId = "superpowers" | "ponytail";
+type CodexPluginId = "superpowers" | "ponytail" | "pstack";
 
 type CodexPluginDefinition = {
   id: CodexPluginId;
@@ -59,9 +59,17 @@ const CODEX_PLUGIN_DEFINITIONS: readonly CodexPluginDefinition[] = [
       source: "DietrichGebert/ponytail",
     },
   },
+  {
+    id: "pstack",
+    plugin: "pstack@pstack-claude",
+    marketplace: {
+      name: "pstack-claude",
+      source: "michael-denyer/pstack-claude",
+    },
+  },
 ];
 
-export type ClaudePluginId = "superpowers" | "ponytail";
+export type ClaudePluginId = "superpowers" | "ponytail" | "pstack";
 
 export type ClaudePluginDefinition = {
   id: ClaudePluginId;
@@ -84,6 +92,13 @@ export const CLAUDE_PLUGIN_DEFINITIONS: readonly ClaudePluginDefinition[] = [
     marketplaceName: "ponytail",
     marketplaceSource: "DietrichGebert/ponytail",
     plugin: "ponytail@ponytail",
+    enabled: true,
+  },
+  {
+    id: "pstack",
+    marketplaceName: "pstack-claude",
+    marketplaceSource: "michael-denyer/pstack-claude",
+    plugin: "pstack@pstack-claude",
     enabled: true,
   },
 ];
@@ -587,7 +602,33 @@ async function ensureCodexPlugin(definition: CodexPluginDefinition): Promise<voi
   await runRequiredCommand("codex", args);
 }
 
+async function ensurePstackManualRouting(configDir: string): Promise<void> {
+  const filename = `${configDir}/pstack-models.md`;
+  let content = "";
+  try {
+    content = await readFile(filename, "utf8");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  if (/^session hook: off\r?$/m.test(content.replace(/^\uFEFF/, ""))) {
+    console.log(`pstack: session hook is already off in ${filename}`);
+    return;
+  }
+  if (DRY_RUN) {
+    console.log(`[DRY RUN] pstack: would set session hook: off in ${filename}`);
+    return;
+  }
+
+  const updated = /^(\uFEFF?)session hook:/m.test(content)
+    ? content.replace(/^(\uFEFF?)session hook:[^\r\n]*/gm, "$1session hook: off")
+    : `${content}${content && !content.endsWith("\n") ? "\n" : ""}session hook: off\n`;
+  await mkdir(configDir, { recursive: true });
+  await writeFile(filename, updated);
+  console.log(`pstack: set session hook: off in ${filename}`);
+}
+
 async function ensureCodexPlugins(): Promise<void> {
+  await ensurePstackManualRouting(process.env.CODEX_HOME || `${HOME}/.codex`);
   for (const definition of CODEX_PLUGIN_DEFINITIONS) {
     await ensureCodexMarketplace(definition);
     await ensureCodexPlugin(definition);
@@ -665,6 +706,7 @@ async function ensureClaudePlugin(definition: ClaudePluginDefinition): Promise<v
 }
 
 async function ensureClaudePlugins(): Promise<void> {
+  await ensurePstackManualRouting(process.env.CLAUDE_CONFIG_DIR || `${HOME}/.claude`);
   for (const definition of CLAUDE_PLUGIN_DEFINITIONS) {
     await ensureClaudeMarketplace(definition);
     await ensureClaudePlugin(definition);

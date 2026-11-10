@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, stat, utimes, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -76,11 +76,27 @@ test("agent-note hook resolves a home-relative directory and emits SessionStart 
 });
 
 const mockTool = `#!/usr/bin/env bun
-import { appendFileSync } from "node:fs";
-import { basename } from "node:path";
+import { appendFileSync, readFileSync } from "node:fs";
+import { basename, join } from "node:path";
 const bin = basename(process.argv[1]);
 const args = process.argv.slice(2);
 appendFileSync(process.env.MOCK_LOG, JSON.stringify({ bin, args, key: process.env.PANEPILOT_API_KEY ?? null }) + "\\n");
+if (bin === "claude" || bin === "codex") {
+  if (args.join(" ") === "plugin marketplace list") console.log("ponytail superpowers-marketplace");
+  if (args[0] === "plugin" && args[1] === "list") {
+    const pstack = process.env.MOCK_PSTACK_INSTALLED === "1";
+    if (bin === "claude") console.log(JSON.stringify([
+      { id: "superpowers@superpowers-marketplace", enabled: false },
+      { id: "ponytail@ponytail", enabled: true },
+      ...(pstack ? [{ id: "pstack@pstack-claude", enabled: true }] : []),
+    ]));
+    else console.log("superpowers@openai-curated installed, enabled\\nponytail@ponytail installed, enabled" + (pstack ? "\\npstack@pstack-claude installed, enabled" : ""));
+  }
+  if (args.includes("pstack@pstack-claude") || args.includes("michael-denyer/pstack-claude")) {
+    const profile = bin === "claude" ? process.env.CLAUDE_CONFIG_DIR || join(process.env.HOME, ".claude") : process.env.CODEX_HOME || join(process.env.HOME, ".codex");
+    if (!/^session hook: off$/m.test(readFileSync(join(profile, "pstack-models.md"), "utf8"))) throw new Error("pstack must be manual before installation");
+  }
+}
 if (bin === "sheldon" && args.includes("source")) console.log("# profile " + process.env.SHELDON_PROFILE);
 if (bin === "shitsurae" && args[0] === "display") console.log(JSON.stringify({ display: { frame: { x: -1000, y: 0, width: 1000, height: 800 }, visibleFrame: { x: -1000, y: 25, width: 1000, height: 775 } } }));
 if (bin === "editprompt") process.exit(Number(process.env.MOCK_RESUME_CODE ?? 1));
@@ -101,7 +117,7 @@ type Call = { bin: string; args: string[]; key: string | null };
 async function withMockTools(check: (dir: string, log: string) => Promise<void>): Promise<void> {
   const dir = await mkdtemp(join(tmpdir(), "bun-script-tools-"));
   try {
-    for (const name of ["displayplacer", "shitsurae", "tmux", "editprompt", "brew", "sheldon"]) {
+    for (const name of ["displayplacer", "shitsurae", "tmux", "editprompt", "brew", "sheldon", "claude", "codex"]) {
       await writeFile(join(dir, name), mockTool, { mode: 0o700 });
     }
     await check(dir, join(dir, "calls.jsonl"));
@@ -112,6 +128,61 @@ async function withMockTools(check: (dir: string, log: string) => Promise<void>)
 
 async function calls(log: string): Promise<Call[]> {
   return (await readFile(log, "utf8")).trim().split("\n").filter(Boolean).map((line) => JSON.parse(line));
+}
+
+for (const client of ["claude", "codex"]) {
+  for (const customProfile of [false, true]) {
+    test(`${client} plugins configure manual pstack routing in ${customProfile ? "an overridden" : "the default"} profile`, async () => {
+      await withMockTools(async (dir, log) => {
+        const profile = join(dir, customProfile ? "custom profile" : `.${client}`);
+        const filename = join(profile, "pstack-models.md");
+        const env = {
+          ...process.env,
+          HOME: dir,
+          PATH: `${dir}:${process.env.PATH}`,
+          MOCK_LOG: log,
+          CLAUDE_CONFIG_DIR: client === "claude" && customProfile ? profile : "",
+          CODEX_HOME: client === "codex" && customProfile ? profile : "",
+        };
+        async function run(dryRun = false, installed = false): Promise<string> {
+          const child = Bun.spawn([process.execPath, join(root, "tasks.ts"), `agent:${client}-plugins`, ...(dryRun ? ["--dry-run"] : [])], {
+            cwd: root,
+            env: { ...env, MOCK_PSTACK_INSTALLED: installed ? "1" : "0" },
+            stdout: "pipe",
+            stderr: "pipe",
+          });
+          const [code, output, error] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()]);
+          expect(error).toBe("");
+          expect(code).toBe(0);
+          return output;
+        }
+
+        expect(await run(true)).toContain(`would set session hook: off in ${filename}`);
+        expect(await Bun.file(filename).exists()).toBe(false);
+        expect((await calls(log)).every(({ args }) => args.includes("list"))).toBe(true);
+        await run();
+        expect(await readFile(filename, "utf8")).toBe("session hook: off\n");
+        expect((await calls(log)).some(({ args }) => args.at(-1) === "pstack@pstack-claude" && args.includes(client === "claude" ? "install" : "add"))).toBe(true);
+
+        const existing = "# Local models\r\nfeature, refactoring: kept-model @xhigh\r\nsession hook: on\r\ndefault effort: high";
+        await writeFile(filename, existing);
+        await run(true, true);
+        expect(await readFile(filename, "utf8")).toBe(existing);
+        await run(false, true);
+        expect(await readFile(filename, "utf8")).toBe(existing.replace("session hook: on", "session hook: off"));
+        await utimes(filename, new Date(0), new Date(0));
+        const before = await stat(filename);
+        await run(false, true);
+        expect((await stat(filename)).mtimeMs).toBe(before.mtimeMs);
+
+        const modelsOnly = "bug-fix: kept-model\ndefault effort: medium";
+        await writeFile(filename, modelsOnly);
+        await run(false, true);
+        expect(await readFile(filename, "utf8")).toBe(`${modelsOnly}\nsession hook: off\n`);
+        if (customProfile) expect(await Bun.file(join(dir, `.${client}`, "pstack-models.md")).exists()).toBe(false);
+      });
+    });
+  }
 }
 
 test("tasks reject invalid arguments before starting a command", async () => {

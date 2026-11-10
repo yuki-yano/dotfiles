@@ -228,7 +228,8 @@
     "superpowers@superpowers-marketplace": false,
     "context-mode@context-mode": false,
     "toolcall-recover@nam-tech-studio": true,
-    "ponytail@ponytail": true
+    "ponytail@ponytail": true,
+    "pstack@pstack-claude": true
   },
   "extraKnownMarketplaces": {
     "superpowers-marketplace": {
@@ -253,6 +254,12 @@
       "source": {
         "source": "github",
         "repo": "DietrichGebert/ponytail"
+      }
+    },
+    "pstack-claude": {
+      "source": {
+        "source": "github",
+        "repo": "michael-denyer/pstack-claude"
       }
     }
   },

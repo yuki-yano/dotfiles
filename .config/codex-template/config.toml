@@ -4,6 +4,7 @@ model = "gpt-6.1-sol"
 # model_auto_compact_token_limit = 360000
 model_reasoning_effort = "xhigh"
 plan_mode_reasoning_effort = "xhigh"
+service_tier = "default"
 web_search = "live"
 
 notify = [
@@ -125,6 +126,9 @@ enabled = true
 [plugins."ponytail@ponytail"]
 enabled = true
 
+[plugins."pstack@pstack-claude"]
+enabled = true
+
 [plugins."browser-use@openai-bundled"]
 enabled = false
 
@@ -182,6 +186,10 @@ source = "https://github.com/jgraph/drawio-mcp.git"
 [marketplaces.ponytail]
 source_type = "git"
 source = "https://github.com/DietrichGebert/ponytail.git"
+
+[marketplaces.pstack-claude]
+source_type = "git"
+source = "https://github.com/michael-denyer/pstack-claude.git"
 
 [marketplaces.spark-codex-marketplace]
 source_type = "git"
