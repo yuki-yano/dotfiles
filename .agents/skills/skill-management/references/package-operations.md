@@ -152,6 +152,7 @@ External project skills:
 
 ```bash
 npx --yes skills add vercel-labs/agent-browser --skill agent-browser -a codex -y
+npx --yes skills add vercel-labs/agent-desktop --skill agent-desktop -a codex -y
 npx --yes skills add emilkowalski/skills --skill apple-design -a codex -y
 npx --yes skills add anthropics/claude-code --skill frontend-design --full-depth -a codex -y
 npx --yes skills add vercel-labs/portless --skill portless -a codex -y
@@ -178,6 +179,7 @@ npx --yes skills add kmizu/concise --skill concise -a codex -y
 - `verify-doc.mjs`の引用照合は出力文字列の一致を検査する。実行コマンドの成功や技術的な正しさを保証するものとして扱わない。
 - `yomiyasu`は削除済み。`explainer`上流の出典・任意連携の参照は保持し、未導入時のスキップ表示を理由に再導入しない。`explainer`から`argon-rewrite`を自動実行する置き換えも行わない。
 - 外部skillの本文は上流のまま管理する。旧rendererの再現機能は引き継がず、過去の資料はそのまま残す。UIの比較・選択はローカルの`ui-mock-proposals`で扱う。
+- `agent-desktop`のCLIはmiseの`npm:agent-desktop`で管理し、Codex/Claude用Skillは共有先に置く。Hermesには標準と必要なprofileの`skills/agent-desktop`へ実ファイルを直接配置し、tasksによる共有は行わない。macOSの権限は起動元アプリごとに`agent-desktop status`で確認する。
 - `npx skills`が取り込む上流のtests・examples・補助資料も保持する。lockのhashと再導入結果を一致させるため、一部だけ削除したりgitignoreで追跡対象から外したりしない。
 
 ## Common Mistakes

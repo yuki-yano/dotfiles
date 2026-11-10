@@ -8,6 +8,13 @@
       "skillPath": "skills/agent-browser/SKILL.md",
       "computedHash": "dd491d53824ad9286ec950aee667098446332429a6d41fe28b4ba11f1959264c"
     },
+    "agent-desktop": {
+      "source": "vercel-labs/agent-desktop",
+      "ref": "v1.2.0",
+      "sourceType": "github",
+      "skillPath": "skills/agent-desktop/SKILL.md",
+      "computedHash": "8af21e2d4a260eb859dfe589eecdf4ee4fa1abe43ad8a401c4fcb5eeead11e12"
+    },
     "apple-design": {
       "source": "emilkowalski/skills",
       "ref": "2d228630ba1446365f614a108cb8252f1feda202",
