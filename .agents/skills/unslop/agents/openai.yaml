@@ -1,0 +1,4 @@
+interface:
+  display_name: "Unslop"
+  short_description: "日本語の既存Web UIを診断し、必要な範囲で見た目を整える"
+  default_prompt: "$unslop でこの画面のAIっぽさを診断し、日本語の読みやすさと既存の機能・情報を保って整えてください。"
