@@ -51,3 +51,29 @@
 - 複数行のcommit messageは、1つの`-m`に改行を含めて渡す。`-m`の繰り返しによる箇条書き間の余分な空行を避ける。
 - 基本的には1行目にはやったことをシンプルに書いて、3行目程度で作業内容を箇条書きで書く
   - 内容がシンプルすぎる場合は無理に箇条書きを増やす必要はない
+
+## pstack model configuration
+
+pstackの役割別モデルは、各skillの既定値より以下を優先する。`inherit-parent` / `auto` は`model`を省略し、パネル内の各要素は1体と数える。`@<level>`で役割ごとの推論レベルを指定できる。`default effort: session` はpstackのCodex用platform mappingに従い、各ターンの親の推論レベルを取得する。取得できない場合は、dispatch前に明示的なレベルを確認する。
+
+feature, refactoring: gpt-6.1-sol
+bug-fix: gpt-6.1-sol
+perf-issue: gpt-6.1-sol
+hillclimb: gpt-6.1-sol
+judgment and prose: gpt-6.1-sol
+strongest judgment: gpt-6-astra
+how explorer: gpt-6.1-sol
+how explainer: gpt-6.1-sol
+why investigators: gpt-6.1-sol
+why synthesizer: gpt-6.1-sol
+reflect tooling: gpt-6.1-sol
+reflect judgment, divergent, synthesizer: gpt-6.1-sol
+arena runners: gpt-6-astra, gpt-6.1-sol, gpt-6.1-terra, gpt-6-luna
+arena cross-judge pool: gpt-6-astra, gpt-6.1-sol, gpt-6.1-terra, gpt-6-luna
+swarm workers: gpt-6.1-sol
+architect runners: gpt-6-astra, gpt-6.1-sol, gpt-6.1-terra, gpt-6-luna
+interrogate reviewers: gpt-6-astra, gpt-6.1-sol, gpt-6.1-terra, gpt-6-luna
+thermos reviewers: gpt-6.1-sol
+no-comments reviewer: gpt-6.1-sol
+
+default effort: session
