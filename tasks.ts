@@ -602,7 +602,7 @@ async function ensureCodexPlugin(definition: CodexPluginDefinition): Promise<voi
   await runRequiredCommand("codex", args);
 }
 
-async function ensurePstackManualRouting(configDir: string): Promise<void> {
+async function ensurePstackAutomaticRouting(configDir: string): Promise<void> {
   const filename = `${configDir}/pstack-models.md`;
   let content = "";
   try {
@@ -610,25 +610,25 @@ async function ensurePstackManualRouting(configDir: string): Promise<void> {
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
   }
-  if (/^session hook: off\r?$/m.test(content.replace(/^\uFEFF/, ""))) {
-    console.log(`pstack: session hook is already off in ${filename}`);
+  if (/^session hook: on\r?$/m.test(content.replace(/^\uFEFF/, ""))) {
+    console.log(`pstack: session hook is already on in ${filename}`);
     return;
   }
   if (DRY_RUN) {
-    console.log(`[DRY RUN] pstack: would set session hook: off in ${filename}`);
+    console.log(`[DRY RUN] pstack: would set session hook: on in ${filename}`);
     return;
   }
 
   const updated = /^(\uFEFF?)session hook:/m.test(content)
-    ? content.replace(/^(\uFEFF?)session hook:[^\r\n]*/gm, "$1session hook: off")
-    : `${content}${content && !content.endsWith("\n") ? "\n" : ""}session hook: off\n`;
+    ? content.replace(/^(\uFEFF?)session hook:[^\r\n]*/gm, "$1session hook: on")
+    : `${content}${content && !content.endsWith("\n") ? "\n" : ""}session hook: on\n`;
   await mkdir(configDir, { recursive: true });
   await writeFile(filename, updated);
-  console.log(`pstack: set session hook: off in ${filename}`);
+  console.log(`pstack: set session hook: on in ${filename}`);
 }
 
 async function ensureCodexPlugins(): Promise<void> {
-  await ensurePstackManualRouting(process.env.CODEX_HOME || `${HOME}/.codex`);
+  await ensurePstackAutomaticRouting(process.env.CODEX_HOME || `${HOME}/.codex`);
   for (const definition of CODEX_PLUGIN_DEFINITIONS) {
     await ensureCodexMarketplace(definition);
     await ensureCodexPlugin(definition);
@@ -706,7 +706,7 @@ async function ensureClaudePlugin(definition: ClaudePluginDefinition): Promise<v
 }
 
 async function ensureClaudePlugins(): Promise<void> {
-  await ensurePstackManualRouting(process.env.CLAUDE_CONFIG_DIR || `${HOME}/.claude`);
+  await ensurePstackAutomaticRouting(process.env.CLAUDE_CONFIG_DIR || `${HOME}/.claude`);
   for (const definition of CLAUDE_PLUGIN_DEFINITIONS) {
     await ensureClaudeMarketplace(definition);
     await ensureClaudePlugin(definition);
