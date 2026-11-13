@@ -44,7 +44,6 @@ GTAGS
 # keep
 !.keep
 !.gitkeep
-git-worktrees/*
 
 # vim
 cSpell.json
