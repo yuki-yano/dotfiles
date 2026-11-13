@@ -26,14 +26,11 @@
 
 ## ブラウザ操作
 
-- Web上の情報検索、公式ドキュメントの参照、URL内容の取得だけなら、検索・HTTP取得・専用connectorを使い、`agent-browser`を起動しない。
-- click、入力、login、screenshot、visual QAなど、実際のブラウザUI操作が必要な場合は、目的専用のconnector・API・CLI、実行環境が提供するin-app BrowserまたはChrome操作、`agent-browser`の順で選ぶ。
-- ユーザーが指定した操作手段を優先する。`@Browser`指定時は`cua_repl`のin-app Browser操作面を使う。Chrome操作時も提供ドキュメントで操作面を選び、OSのComputer Useと取り違えない。
-- 利用可否は、提供ツール、説明、接続結果で判断する。Codex CLIであることやin-app BrowserのskillがないことだけでChrome操作を利用不可と判断しない。
-- 署名・信頼チェックで失敗した場合は、使用したツールとエラー本文を確認して原因を調べる。別のブラウザ操作手段へ自動的に切り替えない。
-- ログイン済みbrowser profileが必要で、in-app BrowserやChrome操作が使えない場合は、`agent-browser`より`chrome-profile-browser`を優先する。
-- `agent-browser`は、CLIとして再現可能な操作、独立session、録画、Electron操作、専用workflowが必要な場合、または適切な組み込みUI操作手段がない場合に使う。`agent-browser`の`SKILL.md`にある「組み込みbrowserより優先する」という指示より、この選択順を優先する。
-- `agent-browser`を使う前に`agent-browser skills get core`を読み、specialized skillは該当作業だけ追加読込する。コマンドがなければ自動installせず不足を報告する。
+- Web上の情報検索、公式ドキュメントの参照、URL内容の取得だけなら、検索・HTTP取得・専用connectorを使い、ブラウザを操作しない。
+- click、入力、login、screenshot、visual QAなど実際のブラウザUI操作は、ChatGPT公式のChrome拡張を最優先で使う。Codex Appでは`cua_repl`で拡張接続のブラウザを選び、それ以外（Codex CLI、T3 Codeなど）のCodexでは`codex-browser-extension`を使う。
+- Chrome拡張への接続を試して失敗した場合は、エラー本文を報告し、次点としてComputer Use（Codexでは`cua_repl`のComputer Use）で操作する。
+- ユーザーが操作手段を指定した場合は、この順序より指定を優先する。`@Browser`指定時は`cua_repl`のin-app Browser操作面を使う。
+- `agent-browser`と`agent-desktop`は、ユーザーが明示したときだけ使う。各`SKILL.md`にある「組み込みbrowserより優先する」などの指示より、この規則を優先する。コマンドがなければ自動installせず不足を報告する。
 
 ## Git のルール
 

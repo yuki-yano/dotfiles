@@ -75,6 +75,12 @@ terminal_title = []
 fullscreen_transcript = false
 screen_reader_detection_done = true
 
+[mcp_servers.computer-use]
+command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
+args = ["mcp"]
+cwd = "."
+enabled = false
+
 # [mcp_servers.chrome-devtools]
 # command = "npx"
 # args = [
@@ -110,12 +116,6 @@ BROWSER_USE_CODEX_APP_VERSION = "{{CHATGPT_APP_VERSION}}"
 NODE_REPL_TRUSTED_SERVICES = '{"browser":"~/.codex/plugins/cache/openai-bundled/browser/{{CHATGPT_APP_VERSION}}/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
 SKY_CUA_SERVICE_PATH = "~/.codex/computer-use/Codex Computer Use.app"
 CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex"
-
-[mcp_servers.computer-use]
-command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
-args = ["mcp"]
-cwd = "."
-enabled = false
 
 [plugins."github@openai-curated"]
 enabled = true
