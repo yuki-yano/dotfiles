@@ -85,7 +85,9 @@ interface RepoState {
 interface SubscriptionTarget {
   repoId: string;
   metadataOnly: boolean;
+  watchRoot: string;
   namesRelativeTo: string;
+  lastWarning: string | null;
 }
 
 export function isInsideNestedWorktree(base: string, name: string, worktrees: string[]): boolean {
@@ -298,7 +300,6 @@ export function formatCache(
   cachePath: string,
   status: GitStatus,
   action: string,
-  conflict: boolean,
 ): string {
   const pairs: Array<[string, string | number]> = [
     ["pwd", top],
@@ -308,7 +309,6 @@ export function formatCache(
     ["detached", status.detached ? "1" : ""],
     ["upstream", status.upstream],
     ["action", action],
-    ["conflict", conflict ? "1" : ""],
     ["ahead", status.ahead],
     ["behind", status.behind],
     ["staged", status.staged],
@@ -320,6 +320,23 @@ export function formatCache(
     ["deleted", status.deleted],
   ];
   return `${pairs.flatMap(([key, value]) => [key, zshQuote(String(value))]).join(" ")}\n`;
+}
+
+const GIT_ACTIONS_BY_PRECEDENCE: Array<[string, string]> = [
+  ["rebase-merge", "Rebasing"],
+  ["rebase-apply/applying", "Applying"],
+  ["rebase-apply", "Rebasing"],
+  ["MERGE_HEAD", "Merging"],
+  ["CHERRY_PICK_HEAD", "Cherry-picking"],
+  ["REVERT_HEAD", "Reverting"],
+  ["BISECT_LOG", "Bisecting"],
+];
+
+export async function detectGitAction(gitDir: string): Promise<string> {
+  for (const [path, label] of GIT_ACTIONS_BY_PRECEDENCE) {
+    if (await exists(join(gitDir, path))) return label;
+  }
+  return "";
 }
 
 function pathContains(parent: string, child: string): boolean {
@@ -529,7 +546,12 @@ class GitPromptDaemon {
       worktreeTops: await listWorktreeTops(top).catch(() => []),
     };
     this.#repos.set(top, repo);
-    await this.#subscribeRepo(repo);
+    try {
+      await this.#subscribeRepo(repo);
+    } catch (error) {
+      this.#forget(repo);
+      throw error;
+    }
     this.log(`registered ${top} with ${repo.subscriptions.size} subscription(s)`);
     this.#markDirty(repo, UNKNOWN_CHANGES, true);
   }
@@ -590,11 +612,17 @@ class GitPromptDaemon {
         empty_on_fresh_instance: true,
       };
       if (relativeRoot) options.relative_root = relativeRoot;
+      // Starting from the current clock keeps the first notification from being
+      // a fresh instance, so a later fresh instance means events were lost.
+      const clock = await command(client, ["clock", watchRoot]);
+      if (typeof clock.clock === "string") options.since = clock.clock;
       await command(client, ["subscribe", watchRoot, name, options]);
       repo.subscriptions.add(name);
       this.#subscriptionRepos.set(name, {
         repoId: repo.id,
         metadataOnly: target.metadataOnly,
+        watchRoot,
+        lastWarning: null,
         namesRelativeTo: relativeRoot ? join(watchRoot, relativeRoot) : watchRoot,
       });
     }
@@ -604,11 +632,25 @@ class GitPromptDaemon {
     const client = new watchman.Client();
     this.#client = client;
     client.on("subscription", (response) => {
-      if (!Array.isArray(response.files) || response.files.length === 0) return;
       const subscription = typeof response.subscription === "string" ? response.subscription : "";
       const target = this.#subscriptionRepos.get(subscription);
       const repo = target ? this.#repos.get(target.repoId) : undefined;
       if (!target || !repo) return;
+      // Watchman cancels a subscription when its root goes away, for example a removed worktree.
+      if (response.canceled === true) {
+        this.#forget(repo);
+        return;
+      }
+      // Watchman repeats a recrawl warning on every later notification, so only
+      // a new warning means that events may have been lost.
+      const warning = typeof response.warning === "string" ? response.warning : null;
+      const recrawled = warning !== null && warning !== target.lastWarning;
+      target.lastWarning = warning;
+      if (response.is_fresh_instance === true || recrawled) {
+        this.#markDirty(repo, UNKNOWN_CHANGES, false);
+        return;
+      }
+      if (!Array.isArray(response.files) || response.files.length === 0) return;
       const names = response.files.filter((name): name is string => typeof name === "string");
       if (target.metadataOnly) {
         if (names.some((name) => WORKTREE_MARKER.test(name))) void this.#reloadNestedWorktrees(repo);
@@ -656,6 +698,20 @@ class GitPromptDaemon {
     }
   }
 
+  #forget(repo: RepoState): void {
+    if (this.#repos.get(repo.id) === repo) this.#repos.delete(repo.id);
+    if (repo.timer !== null) clearTimeout(repo.timer);
+    repo.timer = null;
+    const client = this.#client;
+    for (const name of repo.subscriptions) {
+      const target = this.#subscriptionRepos.get(name);
+      this.#subscriptionRepos.delete(name);
+      if (client && target) void command(client, ["unsubscribe", target.watchRoot, name]).catch(() => undefined);
+    }
+    repo.subscriptions.clear();
+    this.log(`forgot ${repo.top}`);
+  }
+
   async #reloadNestedWorktrees(repo: RepoState): Promise<void> {
     try {
       repo.worktreeTops = await listWorktreeTops(repo.top);
@@ -670,6 +726,7 @@ class GitPromptDaemon {
   }
 
   #scheduleRefresh(repo: RepoState, immediate: boolean): void {
+    if (this.#repos.get(repo.id) !== repo) return;
     const now = Date.now();
     repo.pendingSince ??= now;
     if (repo.running || repo.queued) return;
@@ -693,8 +750,9 @@ class GitPromptDaemon {
     while (this.#activeGit < MAX_CONCURRENT_GIT && this.#queue.length > 0) {
       const repo = this.#queue.shift();
       if (!repo) return;
-      const pending = repo.pending ?? UNKNOWN_CHANGES;
       repo.queued = false;
+      if (this.#repos.get(repo.id) !== repo) continue;
+      const pending = repo.pending ?? UNKNOWN_CHANGES;
       repo.running = true;
       repo.pending = null;
       repo.pendingSince = null;
@@ -732,10 +790,7 @@ class GitPromptDaemon {
           changedPaths: pending.mayHaveMissedWorktreeEvents ? "all" : pending.worktreePaths,
         }),
       );
-      const rebasing = await exists(join(repo.gitDir, "rebase-merge")) ||
-        await exists(join(repo.gitDir, "rebase-apply"));
-      const conflict = await exists(join(repo.gitDir, "MERGE_HEAD"));
-      const content = formatCache(repo.top, repo.cachePath, status, rebasing ? "Rebasing" : "", conflict);
+      const content = formatCache(repo.top, repo.cachePath, status, await detectGitAction(repo.gitDir));
       await writeCacheIfChanged(
         repo.cachePath,
         content,
@@ -743,6 +798,7 @@ class GitPromptDaemon {
       );
     } catch (error) {
       this.log(`refresh failed for ${repo.top}: ${error}`);
+      if (!await exists(repo.top).catch(() => true)) this.#forget(repo);
     }
   }
 }

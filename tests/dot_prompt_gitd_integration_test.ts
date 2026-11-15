@@ -709,6 +709,85 @@ Deno.test({
 });
 
 Deno.test({
+  name: "watchman の再クロールで更新し、削除した worktree の監視をやめる",
+  ignore: !watchmanAvailable,
+  async fn() {
+    const integrationRoot = await Deno.makeTempDir({ dir: "/tmp", prefix: "dp-gitd-lifecycle-" });
+    const repoPath = join(integrationRoot, "repo");
+    const worktreePath = join(integrationRoot, "wt");
+    const runtimePath = join(integrationRoot, "runtime");
+    const socketPath = join(runtimePath, "daemon.sock");
+    let daemon: Deno.ChildProcess | null = null;
+
+    try {
+      await run("git", ["init", "-q", repoPath]);
+      await run("git", ["config", "user.email", "prompt-test@example.invalid"], repoPath);
+      await run("git", ["config", "user.name", "prompt-test"], repoPath);
+      await Deno.writeTextFile(join(repoPath, ".gitignore"), "ignored/\n");
+      await Deno.writeTextFile(join(repoPath, "tracked.txt"), "initial\n");
+      await run("git", ["add", ".gitignore", "tracked.txt"], repoPath);
+      await run("git", ["commit", "-qm", "initial"], repoPath);
+      await run("git", ["worktree", "add", "-q", worktreePath, "-b", "wt"], repoPath);
+      await Deno.mkdir(join(repoPath, "ignored"));
+      const gitShim = await createGitShim(integrationRoot);
+      const statusCountFor = (top: string) =>
+        readText(gitShim.callLog).split("\n").filter((line) => line.startsWith(`-C ${top} status`)).length;
+
+      daemon = new Deno.Command("deno", {
+        args: ["run", "--quiet", "-A", daemonScript],
+        cwd: repositoryRoot,
+        env: {
+          PATH: `${gitShim.binPath}:${Deno.env.get("PATH") ?? ""}`,
+          DOT_PROMPT_GITD_RUNTIME_BASE: runtimePath,
+          DOT_PROMPT_GITD_SOCKET_PATH: socketPath,
+        },
+        stdout: "null",
+        stderr: "null",
+      }).spawn();
+      await waitFor(() => {
+        try {
+          return Deno.statSync(socketPath).isSocket === true;
+        } catch {
+          return false;
+        }
+      });
+      await register(socketPath, repoPath, join(integrationRoot, "cache", "main"));
+      await register(socketPath, worktreePath, join(integrationRoot, "cache", "wt"));
+      await waitFor(() =>
+        readText(join(integrationRoot, "cache", "main")).includes("unstaged '0'") &&
+        readText(join(integrationRoot, "cache", "wt")).includes("unstaged '0'")
+      );
+      await new Promise((resolvePromise) => setTimeout(resolvePromise, 700));
+      assertEquals(statusCountFor(repoPath), 1);
+
+      await run("watchman", ["debug-recrawl", repoPath]);
+      await Deno.writeTextFile(join(repoPath, "ignored", "after-recrawl.log"), "noise\n");
+      await waitFor(() => statusCountFor(repoPath) > 1);
+      await new Promise((resolvePromise) => setTimeout(resolvePromise, 700));
+      const refreshesAfterRecrawl = statusCountFor(repoPath);
+      await Deno.writeTextFile(join(repoPath, "ignored", "later.log"), "noise\n");
+      await new Promise((resolvePromise) => setTimeout(resolvePromise, 1_500));
+      assertEquals(statusCountFor(repoPath), refreshesAfterRecrawl);
+
+      await run("git", ["worktree", "remove", "--force", worktreePath], repoPath);
+      await new Promise((resolvePromise) => setTimeout(resolvePromise, 1_000));
+      const refreshesAfterRemoval = statusCountFor(worktreePath);
+      await run("git", ["commit", "--allow-empty", "-qm", "first"], repoPath);
+      await new Promise((resolvePromise) => setTimeout(resolvePromise, 1_000));
+      const refreshesAfterFirstCommit = statusCountFor(worktreePath);
+      await run("git", ["commit", "--allow-empty", "-qm", "second"], repoPath);
+      await new Promise((resolvePromise) => setTimeout(resolvePromise, 1_000));
+      assert(refreshesAfterFirstCommit - refreshesAfterRemoval <= 1);
+      assertEquals(statusCountFor(worktreePath), refreshesAfterFirstCommit);
+    } finally {
+      await daemon?.[Symbol.asyncDispose]();
+      await deleteWatchRoots(repoPath, join(repoPath, ".git"), worktreePath);
+      await Deno.remove(integrationRoot, { recursive: true });
+    }
+  },
+});
+
+Deno.test({
   name: "Git refs の変更を検知し、push 後に ahead をゼロへ戻す",
   ignore: !watchmanAvailable,
   async fn() {

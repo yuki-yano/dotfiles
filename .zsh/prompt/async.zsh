@@ -27,7 +27,6 @@ dot_prompt_async_reset_repo_state() {
   typeset -g DOT_PROMPT_GIT_DETACHED=""
   typeset -g DOT_PROMPT_GIT_UPSTREAM=""
   typeset -g DOT_PROMPT_GIT_ACTION=""
-  typeset -g DOT_PROMPT_GIT_CONFLICT=""
   typeset -g DOT_PROMPT_GIT_AHEAD=0
   typeset -g DOT_PROMPT_GIT_BEHIND=0
   typeset -g DOT_PROMPT_GIT_UNMERGED=0
@@ -199,7 +198,6 @@ dot_prompt_async_callback() {
           [[ $DOT_PROMPT_GIT_DETACHED != $info[detached] ]] && state_changed=1
           [[ $DOT_PROMPT_GIT_UPSTREAM != $info[upstream] ]] && state_changed=1
           [[ $DOT_PROMPT_GIT_ACTION != $info[action] ]] && state_changed=1
-          [[ $DOT_PROMPT_GIT_CONFLICT != $info[conflict] ]] && state_changed=1
           [[ $DOT_PROMPT_GIT_TOP != $info[top] ]] && state_changed=1
           [[ $DOT_PROMPT_GIT_PENDING != ${info[pending]:-0} ]] && state_changed=1
           [[ $DOT_PROMPT_GIT_CACHE_PATH != $info[cache] ]] && state_changed=1
@@ -217,7 +215,6 @@ dot_prompt_async_callback() {
           typeset -g DOT_PROMPT_GIT_DETACHED=$info[detached]
           typeset -g DOT_PROMPT_GIT_UPSTREAM=$info[upstream]
           typeset -g DOT_PROMPT_GIT_ACTION=$info[action]
-          typeset -g DOT_PROMPT_GIT_CONFLICT=$info[conflict]
           typeset -g DOT_PROMPT_GIT_TOP=$info[top]
           typeset -g DOT_PROMPT_GIT_PENDING=${info[pending]:-0}
           typeset -g DOT_PROMPT_GIT_CACHE_PATH=$info[cache]

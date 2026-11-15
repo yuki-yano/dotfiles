@@ -2,6 +2,7 @@ import { assertEquals } from "@std/assert";
 import { join } from "node:path";
 import {
   canSkipRefresh,
+  detectGitAction,
   formatCache,
   minimizeWatchPaths,
   parseNumstat,
@@ -55,13 +56,13 @@ Deno.test("parsePorcelainV2 displays a detached commit using seven characters", 
 
 Deno.test("formatCache produces zsh-readable quoted key-value pairs", () => {
   const status = parsePorcelainV2("# branch.oid abcdef0123456789\n# branch.head feature/it's-safe\n");
-  const cache = formatCache("/tmp/repo with spaces", "/tmp/cache file", status, "Rebasing", true);
+  const cache = formatCache("/tmp/repo with spaces", "/tmp/cache file", status, "Rebasing");
 
   assertEquals(zshQuote("feature/it's-safe"), "'feature/it'\\''s-safe'");
   assertEquals(
     cache,
     "pwd '/tmp/repo with spaces' top '/tmp/repo with spaces' cache '/tmp/cache file' " +
-      "branch 'feature/it'\\''s-safe' detached '' upstream '' action 'Rebasing' conflict '1' " +
+      "branch 'feature/it'\\''s-safe' detached '' upstream '' action 'Rebasing' " +
       "ahead '0' behind '0' staged '0' unstaged '0' untracked '0' unmerged '0' stash '0' added '0' deleted '0'\n",
   );
 });
@@ -183,6 +184,31 @@ Deno.test("未追跡ファイルの行数は変わったファイルだけ読み
     assertEquals([...untrackedLines.keys()], ["edited.txt"]);
   } finally {
     await Deno.remove(top, { recursive: true });
+  }
+});
+
+Deno.test("detectGitAction は進行中の Git の操作を優先順に表示名へ変える", async () => {
+  const gitDir = await Deno.makeTempDir({ prefix: "dp-gitd-action-" });
+  try {
+    assertEquals(await detectGitAction(gitDir), "");
+    const steps: Array<[string, string]> = [
+      ["BISECT_LOG", "Bisecting"],
+      ["REVERT_HEAD", "Reverting"],
+      ["CHERRY_PICK_HEAD", "Cherry-picking"],
+      ["MERGE_HEAD", "Merging"],
+    ];
+    for (const [file, label] of steps) {
+      await Deno.writeTextFile(join(gitDir, file), "");
+      assertEquals(await detectGitAction(gitDir), label);
+    }
+    await Deno.mkdir(join(gitDir, "rebase-apply"));
+    assertEquals(await detectGitAction(gitDir), "Rebasing");
+    await Deno.writeTextFile(join(gitDir, "rebase-apply", "applying"), "");
+    assertEquals(await detectGitAction(gitDir), "Applying");
+    await Deno.mkdir(join(gitDir, "rebase-merge"));
+    assertEquals(await detectGitAction(gitDir), "Rebasing");
+  } finally {
+    await Deno.remove(gitDir, { recursive: true });
   }
 });
 

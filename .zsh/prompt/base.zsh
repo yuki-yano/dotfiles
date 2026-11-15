@@ -19,9 +19,6 @@ dot_prompt_build_left() {
   dot_prompt_escape "$path_display"
   path_display=$REPLY
 
-  if [[ -n $DOT_PROMPT_GIT_CONFLICT ]]; then
-    badges+=("%F{1} Conflicting %f")
-  fi
   if [[ -n $DOT_PROMPT_GIT_ACTION ]]; then
     dot_prompt_escape "$DOT_PROMPT_GIT_ACTION"
     badges+=("%F{1} ${REPLY} %f")
