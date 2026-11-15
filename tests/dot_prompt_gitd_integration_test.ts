@@ -143,6 +143,19 @@ Deno.test("デーモンの受け付けが遅れても zsh からの登録要求�
   }
 });
 
+Deno.test("別の repo の top から同じキャッシュファイル名を作らない", async () => {
+  const output = await run("/bin/zsh", [
+    "-f",
+    "-c",
+    'source "$1"; for top in /repo/a/b /repo/a%b /repo/a%2Fb; do dot_prompt_git_cache_path_for_top "$top"; print -r -- "$REPLY"; done',
+    "--",
+    gitPromptScript,
+  ]);
+  const paths = new TextDecoder().decode(output.stdout).trimEnd().split("\n");
+  assertEquals(new Set(paths).size, 3);
+  assert(paths.every((path) => !path.slice(path.lastIndexOf("git-status/") + "git-status/".length).includes("/")));
+});
+
 Deno.test("初回キャッシュ待ちを保持し、キャッシュ読込後に Git 表示へ切り替える", async () => {
   const script = [
     'source "$1"',
@@ -323,7 +336,7 @@ Deno.test({
         "zsh",
         "prompt",
         "git-status",
-        `${canonicalRepoPath.replaceAll("/", "%")}.status`,
+        `${canonicalRepoPath.replaceAll("%", "%25").replaceAll("/", "%2F")}.status`,
       );
       const gitShim = await createGitShim(integrationRoot);
 

@@ -34,7 +34,9 @@ dot_prompt_git_cache_path_for_top() {
 
   local top=$1
   local cache_root=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/prompt/git-status
-  local cache_key=${top//\//%}
+  # Escape "%" first so that distinct paths never share a cache file.
+  local cache_key=${top//\%/%25}
+  cache_key=${cache_key//\//%2F}
 
   REPLY="${cache_root}/${cache_key}.status"
 }
