@@ -74,7 +74,69 @@ Deno.test("作業ツリーの変更をスナップショットとして reflog �
     assertEquals(result.code, 0);
     assertEquals(await git(worktree, "rev-parse", "HEAD"), headBefore);
     assertEquals(await Deno.readTextFile(join(worktree, "side.txt")), "edited\n");
-    assertStringIncludes(await git(worktree, "reflog", "-2", "--format=%gs"), "Git quick save");
+    const snapshot = (await git(worktree, "reflog", "--format=%H %gs")).split("\n")
+      .find((line) => line.includes("Git quick save"))?.split(" ")[0];
+    assertEquals(await git(worktree, "show", `${snapshot}:side.txt`), "edited");
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
+Deno.test("衝突を解消して commit した後も sequencer に残りがある cherry-pick の間は中止する", async () => {
+  const { root, worktree } = await repoWithLinkedWorktree();
+  try {
+    const main = join(root, "main");
+    await Deno.writeTextFile(join(main, "side.txt"), "conflicting\n");
+    await git(main, "add", "side.txt");
+    await git(main, "commit", "-qm", "conflicting");
+    await Deno.writeTextFile(join(main, "later.txt"), "later\n");
+    await git(main, "add", "later.txt");
+    await git(main, "commit", "-qm", "later");
+    const picked = await new Deno.Command("git", {
+      args: ["cherry-pick", "main~1", "main"],
+      cwd: worktree,
+      stdout: "null",
+      stderr: "null",
+    }).output();
+    assertEquals(picked.success, false);
+    await Deno.writeTextFile(join(worktree, "side.txt"), "resolved\n");
+    await git(worktree, "add", "side.txt");
+    await git(worktree, "commit", "-q", "--no-edit");
+
+    const result = await quickSave(worktree);
+    assertEquals(result.code, 0);
+    assertStringIncludes(result.output, "Skipped: cherry-pick or revert in progress.");
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
+Deno.test("スナップショットの後も ORIG_HEAD を元の値に戻す", async () => {
+  const { root, worktree } = await repoWithLinkedWorktree();
+  try {
+    await git(worktree, "reset", "-q", "HEAD^");
+    await git(worktree, "reset", "-q", "ORIG_HEAD");
+    const origHead = await git(worktree, "rev-parse", "ORIG_HEAD");
+    await Deno.writeTextFile(join(worktree, "side.txt"), "edited\n");
+
+    assertEquals((await quickSave(worktree)).code, 0);
+    assertEquals(await git(worktree, "rev-parse", "ORIG_HEAD"), origHead);
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
+Deno.test("最初の commit がない repo では何も commit せずに中止する", async () => {
+  const root = await Deno.makeTempDir({ prefix: "git-quick-save-unborn-" });
+  try {
+    await git(root, "init", "-q", "-b", "main");
+    await Deno.writeTextFile(join(root, "new.txt"), "new\n");
+
+    const result = await quickSave(root);
+    assertEquals(result.code, 0);
+    assertStringIncludes(result.output, "Skipped: no commit to return to yet.");
+    const head = await new Deno.Command("git", { args: ["rev-parse", "--verify", "-q", "HEAD"], cwd: root }).output();
+    assertEquals(head.success, false);
   } finally {
     await Deno.remove(root, { recursive: true });
   }

@@ -38,6 +38,11 @@ if [ -z "$git_root" ]; then
   exit 1
 fi
 
+if ! git rev-parse --verify --quiet HEAD >/dev/null; then
+  log "Skipped: no commit to return to yet."
+  exit 0
+fi
+
 if [ -e "$(git_path MERGE_HEAD)" ]; then
   log "Skipped: merge in progress."
   exit 0
@@ -50,6 +55,12 @@ fi
 
 if [ -e "$(git_path REVERT_HEAD)" ]; then
   log "Skipped: revert in progress."
+  exit 0
+fi
+
+# A multi-commit cherry-pick or revert keeps its plan here after the HEAD file is gone.
+if [ -d "$(git_path sequencer)" ]; then
+  log "Skipped: cherry-pick or revert in progress."
   exit 0
 fi
 
@@ -79,6 +90,7 @@ if git diff --cached --quiet --; then
   log "No working tree changes; creating empty snapshot."
 fi
 
+orig_head=$(git rev-parse --verify --quiet ORIG_HEAD)
 commit_message="$label: $(date -R)$msg"
 commit_output=$(git commit --no-verify --allow-empty --message "$commit_message" 2>&1)
 commit_status=$?
@@ -98,6 +110,13 @@ fi
 if ! git reset HEAD^ >/dev/null 2>&1; then
   log "Commit succeeded but git reset HEAD^ failed."
   exit 1
+fi
+
+# reset points ORIG_HEAD at the snapshot; restore what a merge, rebase or reset left there.
+if [ -n "$orig_head" ]; then
+  git update-ref --no-deref ORIG_HEAD "$orig_head"
+else
+  git update-ref -d ORIG_HEAD
 fi
 
 if [ -n "$commit_hash" ]; then
