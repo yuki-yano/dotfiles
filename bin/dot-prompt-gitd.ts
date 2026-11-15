@@ -49,7 +49,22 @@ interface RegistrationRequest {
   cachePath: string;
 }
 
-type PendingChanges = Set<string> | "all";
+export interface PendingChanges {
+  worktreePaths: Set<string>;
+  metadataChanged: boolean;
+  mayHaveMissedWorktreeEvents: boolean;
+}
+
+const UNKNOWN_CHANGES: PendingChanges = {
+  worktreePaths: new Set(),
+  metadataChanged: true,
+  mayHaveMissedWorktreeEvents: true,
+};
+const METADATA_CHANGES: PendingChanges = {
+  worktreePaths: new Set(),
+  metadataChanged: true,
+  mayHaveMissedWorktreeEvents: false,
+};
 
 interface RepoState {
   id: string;
@@ -236,10 +251,12 @@ async function countUntrackedLines(
 export async function readGitLineStats(
   top: string,
   oid: string,
-  { tracked = true, untracked = true, untrackedLines = new Map() }: {
+  { tracked = true, untracked = true, untrackedLines = new Map(), changedPaths = "all" }: {
     tracked?: boolean;
     untracked?: boolean;
     untrackedLines?: UntrackedLineCache;
+    // Paths that changed since the cache was filled; their stat may still match.
+    changedPaths?: Set<string> | "all";
   } = {},
 ): Promise<GitLineStats> {
   const readHeadToWorktreeNumstat = async () => {
@@ -260,7 +277,8 @@ export async function readGitLineStats(
   await Promise.all(Array.from({ length: Math.min(4, paths.length) }, async () => {
     while (next < paths.length) {
       const path = paths[next++];
-      const entry = await countUntrackedLines(join(top, path), untrackedLines.get(path));
+      const previous = changedPaths === "all" || changedPaths.has(path) ? undefined : untrackedLines.get(path);
+      const entry = await countUntrackedLines(join(top, path), previous);
       if (!entry) continue;
       counted.set(path, entry);
       stats.added += entry.lines;
@@ -350,9 +368,13 @@ export async function listWorktreeTops(top: string): Promise<string[]> {
   return resolved.filter((path) => path !== null);
 }
 
-export function mergePendingChanges(current: PendingChanges | null, change: PendingChanges): PendingChanges {
-  if (current === "all" || change === "all") return "all";
-  return current ? new Set([...current, ...change]) : new Set(change);
+function mergePendingChanges(current: PendingChanges | null, change: PendingChanges): PendingChanges {
+  const merged = current ??
+    { worktreePaths: new Set<string>(), metadataChanged: false, mayHaveMissedWorktreeEvents: false };
+  for (const path of change.worktreePaths) merged.worktreePaths.add(path);
+  merged.metadataChanged ||= change.metadataChanged;
+  merged.mayHaveMissedWorktreeEvents ||= change.mayHaveMissedWorktreeEvents;
+  return merged;
 }
 
 // These files change how other paths are classified, even when they are ignored themselves.
@@ -517,7 +539,7 @@ class GitPromptDaemon {
     this.#repos.set(top, repo);
     await this.#subscribeRepo(repo);
     this.log(`registered ${top} with ${repo.subscriptions.size} subscription(s)`);
-    this.#markDirty(repo, "all", true);
+    this.#markDirty(repo, UNKNOWN_CHANGES, true);
   }
 
   async #resolveGitMetadata(top: string): Promise<{ gitDir: string; commonDir: string }> {
@@ -601,11 +623,17 @@ class GitPromptDaemon {
         const changesStatus = (name: string) =>
           !WORKTREE_MARKER.test(name) && !isInsideNestedWorktree(target.namesRelativeTo, name, repo.worktreeTops);
         if (names.some(changesStatus)) {
-          this.#markDirty(repo, "all", false);
+          this.#markDirty(repo, METADATA_CHANGES, false);
         }
         return;
       }
-      if (names.length > 0) this.#markDirty(repo, new Set(names), false);
+      if (names.length > 0) {
+        this.#markDirty(repo, {
+          worktreePaths: new Set(names),
+          metadataChanged: false,
+          mayHaveMissedWorktreeEvents: false,
+        }, false);
+      }
     });
     client.on("error", (error) => {
       if (error) this.log(`Watchman client error: ${error}`);
@@ -629,7 +657,7 @@ class GitPromptDaemon {
     for (const repo of this.#repos.values()) {
       try {
         await this.#subscribeRepo(repo);
-        this.#markDirty(repo, "all", true);
+        this.#markDirty(repo, UNKNOWN_CHANGES, true);
       } catch (error) {
         this.log(`subscription restore failed for ${repo.top}: ${error}`);
       }
@@ -673,7 +701,7 @@ class GitPromptDaemon {
     while (this.#activeGit < MAX_CONCURRENT_GIT && this.#queue.length > 0) {
       const repo = this.#queue.shift();
       if (!repo) return;
-      const pending = repo.pending ?? "all";
+      const pending = repo.pending ?? UNKNOWN_CHANGES;
       repo.queued = false;
       repo.running = true;
       repo.pending = null;
@@ -690,7 +718,10 @@ class GitPromptDaemon {
 
   async #refresh(repo: RepoState, pending: PendingChanges): Promise<void> {
     try {
-      if (pending !== "all" && await canSkipRefresh(repo.top, pending).catch(() => false)) return;
+      if (
+        !pending.metadataChanged && !pending.mayHaveMissedWorktreeEvents &&
+        await canSkipRefresh(repo.top, pending.worktreePaths).catch(() => false)
+      ) return;
       const result = await new Deno.Command("git", {
         args: ["-C", repo.top, "status", "--show-stash", "--branch", "--porcelain=v2", "--untracked-files=normal"],
         env: { GIT_OPTIONAL_LOCKS: "0" },
@@ -706,6 +737,7 @@ class GitPromptDaemon {
           tracked: status.staged + status.unstaged + status.unmerged > 0,
           untracked: status.untracked > 0,
           untrackedLines: repo.untrackedLines,
+          changedPaths: pending.mayHaveMissedWorktreeEvents ? "all" : pending.worktreePaths,
         }),
       );
       const rebasing = await exists(join(repo.gitDir, "rebase-merge")) ||

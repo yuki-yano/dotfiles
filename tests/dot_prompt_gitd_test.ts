@@ -166,10 +166,20 @@ Deno.test("未追跡ファイルの行数は変わったファイルだけ読み
     assertEquals(await readGitLineStats(top, oid, { tracked: false, untrackedLines }), { added: 3, deleted: 0 });
     await Deno.chmod(join(top, "unchanged-unreadable.txt"), 0o000);
     await Deno.writeTextFile(join(top, "edited.txt"), "a\nb\nc\n");
-    assertEquals(await readGitLineStats(top, oid, { tracked: false, untrackedLines }), { added: 4, deleted: 0 });
+    assertEquals(
+      await readGitLineStats(top, oid, { tracked: false, untrackedLines, changedPaths: new Set(["edited.txt"]) }),
+      { added: 4, deleted: 0 },
+    );
 
     await Deno.remove(join(top, "unchanged-unreadable.txt"));
-    assertEquals(await readGitLineStats(top, oid, { tracked: false, untrackedLines }), { added: 3, deleted: 0 });
+    assertEquals(
+      await readGitLineStats(top, oid, {
+        tracked: false,
+        untrackedLines,
+        changedPaths: new Set(["unchanged-unreadable.txt"]),
+      }),
+      { added: 3, deleted: 0 },
+    );
     assertEquals([...untrackedLines.keys()], ["edited.txt"]);
   } finally {
     await Deno.remove(top, { recursive: true });
