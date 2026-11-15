@@ -546,14 +546,20 @@ export class GitPromptDaemon {
     }
     const client: Client = { conn, top, latest: null, writing: false };
     this.#clients.add(client);
+    // Watched from the start: a shell that leaves while the repository is being
+    // registered or its worktree list reloaded must stop counting as observing.
+    const peerClosed = conn.read(new Uint8Array(1)).catch(() => null).then(() => {
+      this.#clients.delete(client);
+      this.#detach(top);
+    });
     try {
       const repo = await this.register(top);
       if (repo.worktreeTopsStale) {
         repo.worktreeTopsStale = false;
         await this.#reloadNestedWorktrees(repo);
       }
-      if (this.#isCurrent(repo)) this.#attach(repo, client);
-      await conn.read(new Uint8Array(1)).catch(() => null);
+      if (this.#clients.has(client) && this.#isCurrent(repo)) this.#attach(repo, client);
+      await peerClosed;
     } catch (error) {
       this.log(`subscription for ${top} failed: ${error}`);
       if (error instanceof TopRefused) await refuse(conn);
