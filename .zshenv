@@ -111,6 +111,9 @@ path=(~/.lmstudio/bin(N-/^M) $path)
 # Obsidian
 path=(/Applications/Obsidian.app/Contents/MacOS(N-/^M) $path)
 
+# T3 Code CLI (launcher written by the desktop app)
+path=(~/.t3/bin(N-/^M) $path)
+
 # Keep inherited environment paths ahead of the normal host tools.
 path=("${(@)dot_zsh_inherited_path:|path}" "${path[@]}")
 unset dot_zsh_inherited_path
