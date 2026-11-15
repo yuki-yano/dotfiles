@@ -716,6 +716,55 @@ Deno.test({
 });
 
 Deno.test({
+  name: "precomposeUnicode が無効な repo で、分解形の名前の未追跡ファイルの変更を ignore と取り違えない",
+  ignore: !watchmanAvailable,
+  async fn() {
+    const integrationRoot = await Deno.makeTempDir({ dir: "/tmp", prefix: "dp-gitd-nfd-" });
+    const repoPath = join(integrationRoot, "repo");
+    const decomposedPath = join(repoPath, "cafe\u0301.txt");
+    const runtimePath = join(integrationRoot, "runtime");
+    const socketPath = join(runtimePath, "daemon.sock");
+    const cachePath = join(integrationRoot, "cache", "status");
+    let daemon: Deno.ChildProcess | null = null;
+
+    try {
+      await run("git", ["init", "-q", repoPath]);
+      await run("git", ["config", "user.email", "prompt-test@example.invalid"], repoPath);
+      await run("git", ["config", "user.name", "prompt-test"], repoPath);
+      await run("git", ["config", "core.precomposeUnicode", "false"], repoPath);
+      await Deno.writeTextFile(join(repoPath, ".gitignore"), "caf\u00e9.txt\n");
+      await run("git", ["add", ".gitignore"], repoPath);
+      await run("git", ["commit", "-qm", "initial"], repoPath);
+      await Deno.writeTextFile(decomposedPath, "one\n");
+
+      daemon = new Deno.Command("deno", {
+        args: ["run", "--quiet", "-A", daemonScript],
+        cwd: repositoryRoot,
+        env: { DOT_PROMPT_GITD_RUNTIME_BASE: runtimePath, DOT_PROMPT_GITD_SOCKET_PATH: socketPath },
+        stdout: "null",
+        stderr: "null",
+      }).spawn();
+      await waitFor(() => {
+        try {
+          return Deno.statSync(socketPath).isSocket === true;
+        } catch {
+          return false;
+        }
+      });
+      await register(socketPath, repoPath, cachePath);
+      await waitFor(() => readText(cachePath).includes("untracked '1'") && readText(cachePath).includes("added '1'"));
+
+      await Deno.writeTextFile(decomposedPath, "one\ntwo\nthree\n");
+      await waitFor(() => readText(cachePath).includes("added '3'"));
+    } finally {
+      await daemon?.[Symbol.asyncDispose]();
+      await deleteWatchRoots(repoPath, join(repoPath, ".git"));
+      await Deno.remove(integrationRoot, { recursive: true });
+    }
+  },
+});
+
+Deno.test({
   name: "watchman の再クロールで更新し、削除した worktree の監視をやめる",
   ignore: !watchmanAvailable,
   async fn() {

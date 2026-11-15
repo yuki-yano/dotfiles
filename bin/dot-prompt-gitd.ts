@@ -257,7 +257,7 @@ export async function readGitLineStats(
     tracked?: boolean;
     untracked?: boolean;
     untrackedLines?: UntrackedLineCache;
-    // NFC paths that changed since the cache was filled; their stat may still match.
+    // Paths that changed since the cache was filled; their stat may still match.
     changedPaths?: Set<string> | "all";
   } = {},
 ): Promise<GitLineStats> {
@@ -274,13 +274,16 @@ export async function readGitLineStats(
   ]);
   const stats = parseNumstat(numstat);
   const paths = untrackedOutput.split("\0").filter(Boolean);
+  // macOS keeps names as written (often NFD) while Git with core.precomposeUnicode
+  // reports NFC, so cache keys and reported paths are compared in NFC.
+  const changedKeys = changedPaths === "all" ? "all" : new Set([...changedPaths].map((path) => path.normalize("NFC")));
   const counted: UntrackedLineCache = new Map();
   let next = 0;
   await Promise.all(Array.from({ length: Math.min(4, paths.length) }, async () => {
     while (next < paths.length) {
       const path = paths[next++];
       const key = path.normalize("NFC");
-      const previous = changedPaths === "all" || changedPaths.has(key) ? undefined : untrackedLines.get(key);
+      const previous = changedKeys === "all" || changedKeys.has(key) ? undefined : untrackedLines.get(key);
       const entry = await countUntrackedLines(join(top, path), previous);
       if (!entry) continue;
       counted.set(key, entry);
@@ -409,8 +412,9 @@ const GIT_RULE_FILES = new Set([".gitignore", ".gitattributes", ".gitmodules"]);
 
 export async function canSkipRefresh(top: string, paths: Set<string>): Promise<boolean> {
   if (paths.size === 0 || [...paths].some((path) => GIT_RULE_FILES.has(basename(path)))) return false;
+  const inputs = [...paths];
   const child = new Deno.Command("git", {
-    args: ["-C", top, "check-ignore", "--stdin", "-z"],
+    args: ["-C", top, "check-ignore", "--stdin", "-z", "--verbose", "--non-matching"],
     env: { GIT_OPTIONAL_LOCKS: "0" },
     stdin: "piped",
     stdout: "piped",
@@ -418,13 +422,20 @@ export async function canSkipRefresh(top: string, paths: Set<string>): Promise<b
   }).spawn();
   const stdout = new Response(child.stdout).arrayBuffer();
   const writer = child.stdin.getWriter();
-  const inputWritten = writer.write(new TextEncoder().encode([...paths].map((path) => `${path}\0`).join("")))
+  const inputWritten = writer.write(new TextEncoder().encode(inputs.map((path) => `${path}\0`).join("")))
     .then(() => writer.close())
     .then(() => true, () => false);
   const [{ code }, output, written] = await Promise.all([child.status, stdout, inputWritten]);
   if (!written || code !== 0) return false;
-  const ignored = new Set(new TextDecoder().decode(output).split("\0").map((path) => path.normalize("NFC")));
-  return [...paths].every((path) => ignored.has(path.normalize("NFC")));
+  // Four fields per input path, in input order. Matching by position avoids
+  // comparing path spellings that Git may have precomposed. A pattern starting
+  // with "!" re-includes the path.
+  const fields = new TextDecoder().decode(output).split("\0");
+  if (fields.length < inputs.length * 4) return false;
+  return inputs.every((_, index) => {
+    const pattern = fields[index * 4 + 2];
+    return pattern !== "" && !pattern.startsWith("!");
+  });
 }
 
 function command(client: WatchmanClient, args: unknown[]): Promise<WatchmanResponse> {
@@ -695,9 +706,7 @@ class GitPromptDaemon {
       }
       if (names.length > 0) {
         this.#markDirty(repo, {
-          // macOS keeps names as written (often NFD) while Git with
-          // core.precomposeUnicode reports NFC, so paths are compared in NFC.
-          worktreePaths: new Set(names.map((name) => name.normalize("NFC"))),
+          worktreePaths: new Set(names),
           metadataChanged: false,
           mayHaveMissedWorktreeEvents: false,
         }, false);

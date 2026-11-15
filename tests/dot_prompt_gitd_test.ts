@@ -269,7 +269,7 @@ Deno.test("canSkipRefresh は全パスが ignore 対象で、ignore 規則のフ
   const repo = await Deno.makeTempDir({ prefix: "dp-gitd-ignore-" });
   try {
     await git(repo, "init", "-q");
-    await Deno.writeTextFile(join(repo, ".gitignore"), "ignored/\n*.log\n");
+    await Deno.writeTextFile(join(repo, ".gitignore"), "ignored/\n*.log\n!keep.log\n");
     await Deno.mkdir(join(repo, "ignored"));
     await Deno.writeTextFile(join(repo, "ignored", "forced.txt"), "tracked\n");
     await Deno.writeTextFile(join(repo, "ignored", ".gitignore"), "!keep.log\n");
@@ -281,6 +281,7 @@ Deno.test("canSkipRefresh は全パスが ignore 対象で、ignore 規則のフ
     assertEquals(await canSkipRefresh(repo, new Set(["ignored/a.txt", "tracked.txt"])), false);
     assertEquals(await canSkipRefresh(repo, new Set(["ignored/forced.txt"])), false);
     assertEquals(await canSkipRefresh(repo, new Set(["ignored/.gitignore"])), false);
+    assertEquals(await canSkipRefresh(repo, new Set(["debug.log", "keep.log"])), false);
     assertEquals(await canSkipRefresh(repo, new Set(["../outside.txt"])), false);
     assertEquals(await canSkipRefresh(repo, new Set()), false);
 
