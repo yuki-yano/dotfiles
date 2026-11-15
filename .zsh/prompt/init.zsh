@@ -105,6 +105,7 @@ clear() {
 }
 
 dot_prompt_setup() {
+  setopt prompt_subst
   autoload -Uz add-zsh-hook
   autoload -Uz add-zle-hook-widget
 

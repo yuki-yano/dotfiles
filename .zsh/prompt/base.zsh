@@ -72,12 +72,14 @@ dot_prompt_build_right_base() {
 
 dot_prompt_refresh_right() {
   dot_prompt_build_right_base
-  RPROMPT=$DOT_PROMPT_RIGHT_BASE
+  RPROMPT='${DOT_PROMPT_RIGHT_BASE}'
 }
 
 dot_prompt_apply_render() {
-  PROMPT=$DOT_PROMPT_LEFT
-  RPROMPT=$DOT_PROMPT_RIGHT_BASE
+  # prompt_subst expands these references but never re-expands their values,
+  # so a branch, directory or job name containing $(...) is only displayed.
+  PROMPT='${DOT_PROMPT_LEFT}'
+  RPROMPT='${DOT_PROMPT_RIGHT_BASE}'
 }
 
 dot_prompt_reset_prompt_full() {

@@ -143,6 +143,35 @@ Deno.test("デーモンの受け付けが遅れても zsh からの登録要求�
   }
 });
 
+Deno.test("prompt_subst のもとで、ディレクトリ名やブランチ名の $(...) をプロンプトの表示で実行しない", async () => {
+  const root = await Deno.realPath(await Deno.makeTempDir({ prefix: "dp-prompt-subst-" }));
+  const directory = join(root, "$(touch from-path)");
+  try {
+    await Deno.mkdir(directory);
+    const script = [
+      "setopt prompt_subst",
+      'source "$1"',
+      'source "$2"',
+      'cd "$3"',
+      "DOT_PROMPT_GIT_TOP=$PWD",
+      "DOT_PROMPT_GIT_BRANCH='$(touch from-branch)'",
+      "dot_prompt_build_git_prompt",
+      "dot_prompt_build_left 0",
+      "dot_prompt_apply_render",
+      // ${(e)...} performs the same single expansion pass that prompt_subst applies to PROMPT.
+      'print -r -- "${(e)PROMPT}"',
+    ].join("; ");
+    const output = await run("/bin/zsh", ["-f", "-c", script, "--", promptBaseScript, gitPromptScript, directory]);
+    assertEquals(new TextDecoder().decode(output.stderr), "");
+    const prompt = new TextDecoder().decode(output.stdout);
+    assertStringIncludes(prompt, "$(touch from-path)");
+    assertStringIncludes(prompt, "$(touch from-branch)");
+    assertEquals([...Deno.readDirSync(directory)].map((entry) => entry.name), []);
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
 Deno.test("初回キャッシュ待ちを保持し、キャッシュ読込後に Git 表示へ切り替える", async () => {
   const script = [
     'source "$1"',
@@ -515,7 +544,7 @@ Deno.test({
         'source "$3"',
         'output=$(dot_prompt_git_status_from_cache "$4")',
         'dot_prompt_async_callback dot_prompt_git_status 0 "$output" 0 0 0',
-        'print -r -- "$PROMPT"',
+        'print -r -- "${(e)PROMPT}"',
       ].join("; ");
       const output = await run("/bin/zsh", [
         "-f",
