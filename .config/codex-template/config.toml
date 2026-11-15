@@ -75,6 +75,9 @@ terminal_title = []
 fullscreen_transcript = false
 screen_reader_detection_done = true
 
+[mcp_servers.aqua]
+url = "https://api.aquavoice.com/mcp"
+
 [mcp_servers.computer-use]
 command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
 args = ["mcp"]
