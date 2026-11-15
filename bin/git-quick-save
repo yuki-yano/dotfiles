@@ -28,13 +28,28 @@ log() {
   printf '%s: %s\n' "$label" "$1"
 }
 
+# Linked worktrees keep this state in their own Git directory, not in "$git_root/.git".
+git_path() {
+  git rev-parse --path-format=absolute --git-path "$1"
+}
+
 if [ -z "$git_root" ]; then
   log "Not a Git repository."
   exit 1
 fi
 
-if [ -f "$git_root/.git/MERGE_HEAD" ]; then
+if [ -e "$(git_path MERGE_HEAD)" ]; then
   log "Skipped: merge in progress."
+  exit 0
+fi
+
+if [ -e "$(git_path CHERRY_PICK_HEAD)" ]; then
+  log "Skipped: cherry-pick in progress."
+  exit 0
+fi
+
+if [ -e "$(git_path REVERT_HEAD)" ]; then
+  log "Skipped: revert in progress."
   exit 0
 fi
 
@@ -43,12 +58,12 @@ if ! git --no-pager diff --cached --quiet; then
   exit 0
 fi
 
-if [ -f "$git_root/.git/index.lock" ]; then
+if [ -e "$(git_path index.lock)" ]; then
   log "Skipped: index is locked."
   exit 0
 fi
 
-if [ -d "$git_root/.git/rebase-merge" ] || [ -d "$git_root/.git/rebase-apply" ]; then
+if [ -d "$(git_path rebase-merge)" ] || [ -d "$(git_path rebase-apply)" ]; then
   log "Skipped: rebase in progress."
   exit 0
 fi
