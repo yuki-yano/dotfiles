@@ -83,7 +83,7 @@ interface RepoState {
 }
 
 interface SubscriptionTarget {
-  repoId: string;
+  repo: RepoState;
   metadataOnly: boolean;
   watchRoot: string;
   namesRelativeTo: string;
@@ -323,19 +323,36 @@ export function formatCache(
   return `${pairs.flatMap(([key, value]) => [key, zshQuote(String(value))]).join(" ")}\n`;
 }
 
-const GIT_ACTIONS_BY_PRECEDENCE: Array<[string, string]> = [
-  ["rebase-merge", "Rebasing"],
-  ["rebase-apply/applying", "Applying"],
-  ["rebase-apply", "Rebasing"],
-  ["MERGE_HEAD", "Merging"],
-  ["CHERRY_PICK_HEAD", "Cherry-picking"],
-  ["REVERT_HEAD", "Reverting"],
-  ["BISECT_LOG", "Bisecting"],
+type GitActionProbe = (gitDir: string) => Promise<string | null>;
+
+const marker = (path: string, label: string): GitActionProbe => async (gitDir) =>
+  await exists(join(gitDir, path)) ? label : null;
+
+// A multi-commit cherry-pick or revert is still in progress after its HEAD
+// file is gone, as long as the sequencer has commands left.
+const sequencerAction: GitActionProbe = async (gitDir) => {
+  const todo = await readTextIfExists(join(gitDir, "sequencer", "todo"));
+  const command = todo?.trimStart().split(/\s/, 1)[0];
+  if (command === "p" || command === "pick") return "Cherry-picking";
+  if (command === "revert") return "Reverting";
+  return null;
+};
+
+const GIT_ACTIONS_BY_PRECEDENCE: GitActionProbe[] = [
+  marker("rebase-merge", "Rebasing"),
+  marker("rebase-apply/applying", "Applying"),
+  marker("rebase-apply", "Rebasing"),
+  marker("MERGE_HEAD", "Merging"),
+  marker("CHERRY_PICK_HEAD", "Cherry-picking"),
+  marker("REVERT_HEAD", "Reverting"),
+  sequencerAction,
+  marker("BISECT_LOG", "Bisecting"),
 ];
 
 export async function detectGitAction(gitDir: string): Promise<string> {
-  for (const [path, label] of GIT_ACTIONS_BY_PRECEDENCE) {
-    if (await exists(join(gitDir, path))) return label;
+  for (const probe of GIT_ACTIONS_BY_PRECEDENCE) {
+    const label = await probe(gitDir);
+    if (label) return label;
   }
   return "";
 }
@@ -428,10 +445,19 @@ async function readTextIfExists(path: string): Promise<string | null> {
   }
 }
 
-async function writeCacheIfChanged(path: string, content: string, temporary: string): Promise<void> {
+async function writeCacheIfChanged(
+  path: string,
+  content: string,
+  temporary: string,
+  stillCurrent: () => boolean,
+): Promise<void> {
   if (await readTextIfExists(path) === content) return;
   await Deno.mkdir(dirname(path), { recursive: true });
   await Deno.writeTextFile(temporary, content);
+  if (!stillCurrent()) {
+    await Deno.remove(temporary).catch(() => undefined);
+    return;
+  }
   await Deno.rename(temporary, path);
 }
 
@@ -618,9 +644,14 @@ class GitPromptDaemon {
       const clock = await command(client, ["clock", watchRoot]);
       if (typeof clock.clock === "string") options.since = clock.clock;
       await command(client, ["subscribe", watchRoot, name, options]);
+      if (!this.#isCurrent(repo)) {
+        // The repository was forgotten while this subscription was being set up.
+        void command(client, ["unsubscribe", watchRoot, name]).catch(() => undefined);
+        return;
+      }
       repo.subscriptions.add(name);
       this.#subscriptionRepos.set(name, {
-        repoId: repo.id,
+        repo,
         metadataOnly: target.metadataOnly,
         watchRoot,
         lastWarning: null,
@@ -635,8 +666,8 @@ class GitPromptDaemon {
     client.on("subscription", (response) => {
       const subscription = typeof response.subscription === "string" ? response.subscription : "";
       const target = this.#subscriptionRepos.get(subscription);
-      const repo = target ? this.#repos.get(target.repoId) : undefined;
-      if (!target || !repo) return;
+      const repo = target?.repo;
+      if (!target || !repo || !this.#isCurrent(repo)) return;
       // Watchman cancels a subscription when its root goes away, for example a removed worktree.
       if (response.canceled === true) {
         this.#forget(repo);
@@ -697,12 +728,17 @@ class GitPromptDaemon {
         this.#markDirty(repo, UNKNOWN_CHANGES, true);
       } catch (error) {
         this.log(`subscription restore failed for ${repo.top}: ${error}`);
+        this.#forget(repo);
       }
     }
   }
 
+  #isCurrent(repo: RepoState): boolean {
+    return this.#repos.get(repo.id) === repo;
+  }
+
   #forget(repo: RepoState): void {
-    if (this.#repos.get(repo.id) === repo) this.#repos.delete(repo.id);
+    if (this.#isCurrent(repo)) this.#repos.delete(repo.id);
     if (repo.timer !== null) clearTimeout(repo.timer);
     repo.timer = null;
     const client = this.#client;
@@ -729,7 +765,7 @@ class GitPromptDaemon {
   }
 
   #scheduleRefresh(repo: RepoState, immediate: boolean): void {
-    if (this.#repos.get(repo.id) !== repo) return;
+    if (!this.#isCurrent(repo)) return;
     const now = Date.now();
     repo.pendingSince ??= now;
     if (repo.running || repo.queued) return;
@@ -754,7 +790,7 @@ class GitPromptDaemon {
       const repo = this.#queue.shift();
       if (!repo) return;
       repo.queued = false;
-      if (this.#repos.get(repo.id) !== repo) continue;
+      if (!this.#isCurrent(repo)) continue;
       const pending = repo.pending ?? UNKNOWN_CHANGES;
       repo.running = true;
       repo.pending = null;
@@ -794,10 +830,13 @@ class GitPromptDaemon {
         }),
       );
       const content = formatCache(repo.top, repo.cachePath, status, await detectGitAction(repo.gitDir));
+      // A refresh that started before the repository was forgotten and
+      // registered again must not overwrite the newer result.
       await writeCacheIfChanged(
         repo.cachePath,
         content,
         `${repo.cachePath}.${Deno.pid}.${++this.#cacheWriteSequence}.tmp`,
+        () => this.#isCurrent(repo),
       );
     } catch (error) {
       this.log(`refresh failed for ${repo.top}: ${error}`);

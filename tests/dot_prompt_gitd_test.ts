@@ -187,6 +187,47 @@ Deno.test("未追跡ファイルの行数は変わったファイルだけ読み
   }
 });
 
+Deno.test("detectGitAction は衝突を解消して commit した後も、残りのある cherry-pick を進行中とする", async () => {
+  const top = await Deno.makeTempDir({ prefix: "dp-gitd-sequencer-" });
+  try {
+    await git(top, "init", "-q");
+    await git(top, "config", "user.email", "prompt-test@example.invalid");
+    await git(top, "config", "user.name", "prompt-test");
+    await Deno.writeTextFile(join(top, "a.txt"), "base\n");
+    await git(top, "add", "a.txt");
+    await git(top, "commit", "-qm", "base");
+    const main = await git(top, "branch", "--show-current");
+    await git(top, "checkout", "-qb", "side");
+    await Deno.writeTextFile(join(top, "a.txt"), "side\n");
+    await git(top, "commit", "-qam", "conflicting");
+    await Deno.writeTextFile(join(top, "b.txt"), "later\n");
+    await git(top, "add", "b.txt");
+    await git(top, "commit", "-qm", "later");
+    await git(top, "checkout", "-q", main);
+    await Deno.writeTextFile(join(top, "a.txt"), "main\n");
+    await git(top, "commit", "-qam", "main");
+
+    const pick = await new Deno.Command("git", {
+      args: ["-C", top, "cherry-pick", "side~1", "side"],
+      stdout: "null",
+      stderr: "null",
+    }).output();
+    assertEquals(pick.success, false);
+    const gitDir = join(top, ".git");
+    assertEquals(await detectGitAction(gitDir), "Cherry-picking");
+
+    await Deno.writeTextFile(join(top, "a.txt"), "resolved\n");
+    await git(top, "add", "a.txt");
+    await git(top, "commit", "-q", "--no-edit");
+    assertEquals(await detectGitAction(gitDir), "Cherry-picking");
+
+    await git(top, "cherry-pick", "--continue");
+    assertEquals(await detectGitAction(gitDir), "");
+  } finally {
+    await Deno.remove(top, { recursive: true });
+  }
+});
+
 Deno.test("detectGitAction は進行中の Git の操作を優先順に表示名へ変える", async () => {
   const gitDir = await Deno.makeTempDir({ prefix: "dp-gitd-action-" });
   try {
