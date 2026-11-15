@@ -282,6 +282,22 @@ function command(client: WatchmanClient, args: unknown[]): Promise<WatchmanRespo
   });
 }
 
+async function readTextIfExists(path: string): Promise<string | null> {
+  try {
+    return await Deno.readTextFile(path);
+  } catch (error) {
+    if (error instanceof Deno.errors.NotFound) return null;
+    throw error;
+  }
+}
+
+async function writeCacheIfChanged(path: string, content: string, temporary: string): Promise<void> {
+  if (await readTextIfExists(path) === content) return;
+  await Deno.mkdir(dirname(path), { recursive: true });
+  await Deno.writeTextFile(temporary, content);
+  await Deno.rename(temporary, path);
+}
+
 async function exists(path: string): Promise<boolean> {
   try {
     await Deno.stat(path);
@@ -552,11 +568,11 @@ class GitPromptDaemon {
         await exists(join(repo.gitDir, "rebase-apply"));
       const conflict = await exists(join(repo.gitDir, "MERGE_HEAD"));
       const content = formatCache(repo.top, repo.cachePath, status, rebasing ? "Rebasing" : "", conflict);
-      await Deno.mkdir(dirname(repo.cachePath), { recursive: true });
-      const temporary = `${repo.cachePath}.${Deno.pid}.${++this.#cacheWriteSequence}.tmp`;
-      await Deno.writeTextFile(temporary, content);
-      await Deno.rename(temporary, repo.cachePath);
-      this.log(`refresh ok ${repo.top}`);
+      await writeCacheIfChanged(
+        repo.cachePath,
+        content,
+        `${repo.cachePath}.${Deno.pid}.${++this.#cacheWriteSequence}.tmp`,
+      );
     } catch (error) {
       this.log(`refresh failed for ${repo.top}: ${error}`);
     }

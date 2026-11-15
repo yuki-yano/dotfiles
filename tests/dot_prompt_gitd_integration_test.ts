@@ -42,8 +42,21 @@ function readText(path: string): string {
   }
 }
 
-function refreshCount(logPath: string, repoPath: string): number {
-  return readText(logPath).split(`refresh ok ${repoPath}`).length - 1;
+async function createGitShim(dir: string): Promise<{ binPath: string; callLog: string }> {
+  const realGit = new TextDecoder().decode((await run("/bin/zsh", ["-f", "-c", "command -v git"])).stdout).trim();
+  const binPath = join(dir, "git-shim");
+  const callLog = join(dir, "git-calls.log");
+  await Deno.mkdir(binPath);
+  await Deno.writeTextFile(
+    join(binPath, "git"),
+    `#!/bin/sh\nprintf '%s\\n' "$*" >> '${callLog}'\nexec '${realGit}' "$@"\n`,
+  );
+  await Deno.chmod(join(binPath, "git"), 0o755);
+  return { binPath, callLog };
+}
+
+function gitStatusCount(callLog: string): number {
+  return readText(callLog).split("\n").filter((line) => line.split(" ").includes("status")).length;
 }
 
 async function register(socketPath: string, top: string, cachePath: string): Promise<void> {
@@ -205,7 +218,7 @@ Deno.test("行数だけの更新を色付きで描画し、差分ゼロとリポ
 });
 
 Deno.test({
-  name: "100回の連続変更を1回の Git 更新にまとめ、同一秒内のキャッシュ置換も検知する",
+  name: "100回の連続変更を1回の Git 更新にまとめ、同一秒内の置換を検知し、内容が同じなら置き換えない",
   ignore: !watchmanAvailable,
   async fn() {
     // macOS limits Unix-domain socket paths to roughly 100 bytes.
@@ -234,11 +247,13 @@ Deno.test({
         "git-status",
         `${canonicalRepoPath.replaceAll("/", "%")}.status`,
       );
+      const gitShim = await createGitShim(integrationRoot);
 
       daemon = new Deno.Command("deno", {
         args: ["run", "--quiet", "-A", daemonScript],
         cwd: repositoryRoot,
         env: {
+          PATH: `${gitShim.binPath}:${Deno.env.get("PATH") ?? ""}`,
           DOT_PROMPT_GITD_RUNTIME_BASE: runtimePath,
           DOT_PROMPT_GITD_SOCKET_PATH: socketPath,
         },
@@ -270,15 +285,21 @@ Deno.test({
       assertStringIncludes(initialOutput, "pending 1");
       assertStringIncludes(initialOutput, `top ${canonicalRepoPath}`);
       assertStringIncludes(initialOutput, `cache ${cachePath}`);
-      await waitFor(() =>
-        refreshCount(logPath, canonicalRepoPath) >= 1 && readText(cachePath).includes("unstaged '0'")
-      );
+      try {
+        await waitFor(() => gitStatusCount(gitShim.callLog) >= 1 && readText(cachePath).includes("unstaged '0'"));
+      } catch (error) {
+        throw new Error(
+          `${error}\ndaemon log:\n${readText(logPath)}\ngit calls:\n${readText(gitShim.callLog)}\ncache:\n${
+            readText(cachePath)
+          }`,
+        );
+      }
       await new Promise((resolvePromise) => setTimeout(resolvePromise, 400));
 
-      const refreshesBeforeCookie = refreshCount(logPath, canonicalRepoPath);
+      const refreshesBeforeCookie = gitStatusCount(gitShim.callLog);
       await run("watchman", ["clock", repoPath]);
       await new Promise((resolvePromise) => setTimeout(resolvePromise, 500));
-      assertEquals(refreshCount(logPath, canonicalRepoPath), refreshesBeforeCookie);
+      assertEquals(gitStatusCount(gitShim.callLog), refreshesBeforeCookie);
 
       const initialRefreshes = refreshesBeforeCookie;
       const signatureBefore = await cacheSignature(repoPath, cachePath);
@@ -318,8 +339,7 @@ Deno.test({
 
       try {
         await waitFor(() =>
-          refreshCount(logPath, canonicalRepoPath) >= initialRefreshes + 1 &&
-          readText(cachePath).includes("unstaged '1'")
+          gitStatusCount(gitShim.callLog) >= initialRefreshes + 1 && readText(cachePath).includes("unstaged '1'")
         );
       } catch (error) {
         throw new Error(`${error}\ndaemon log:\n${readText(logPath)}\ncache:\n${readText(cachePath)}`);
@@ -327,14 +347,22 @@ Deno.test({
       await new Promise((resolvePromise) => setTimeout(resolvePromise, 700));
 
       const signatureAfter = await cacheSignature(repoPath, cachePath);
-      assertEquals(refreshCount(logPath, canonicalRepoPath) - initialRefreshes, 1);
+      assertEquals(gitStatusCount(gitShim.callLog) - initialRefreshes, 1);
       assert(signatureBefore !== signatureAfter);
       assertStringIncludes(readText(cachePath), "unstaged '1'");
       assertStringIncludes(readText(cachePath), "added '1' deleted '1'");
 
-      // The file counter stays at one, but the line count must still update.
       await Deno.writeTextFile(join(repoPath, "tracked.txt"), "one\ntwo\nthree\n");
       await waitFor(() => readText(cachePath).includes("added '3' deleted '1'"));
+      await new Promise((resolvePromise) => setTimeout(resolvePromise, 700));
+
+      const refreshesBeforeTouch = gitStatusCount(gitShim.callLog);
+      const signatureBeforeTouch = await cacheSignature(repoPath, cachePath);
+      const touchedAt = new Date();
+      await Deno.utime(join(repoPath, "tracked.txt"), touchedAt, touchedAt);
+      await waitFor(() => gitStatusCount(gitShim.callLog) > refreshesBeforeTouch);
+      await new Promise((resolvePromise) => setTimeout(resolvePromise, 700));
+      assertEquals(await cacheSignature(repoPath, cachePath), signatureBeforeTouch);
     } finally {
       if (daemon) {
         try {
