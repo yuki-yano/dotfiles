@@ -9,7 +9,7 @@ const MAX_CONCURRENT_GIT = 4;
 
 type WatchmanResponse = Record<string, unknown>;
 
-interface WatchmanClient {
+export interface WatchmanClient {
   command(
     args: unknown[],
     callback: (error: Error | null, response: WatchmanResponse) => void,
@@ -469,7 +469,8 @@ async function writeCacheIfChanged(
     await Deno.remove(temporary).catch(() => undefined);
     return;
   }
-  await Deno.rename(temporary, path);
+  // Synchronous so that nothing can forget the repository between the check and the rename.
+  Deno.renameSync(temporary, path);
 }
 
 async function exists(path: string): Promise<boolean> {
@@ -503,7 +504,7 @@ export function removePreBootIndexLock(gitDir: string, bootTimeMs: number): bool
   }
 }
 
-class GitPromptDaemon {
+export class GitPromptDaemon {
   #client: WatchmanClient | null = null;
   #repos = new Map<string, RepoState>();
   #pendingRegistrations = new Map<string, Promise<void>>();
@@ -519,8 +520,11 @@ class GitPromptDaemon {
   // created during this boot is never classified as belonging to an older boot.
   #bootTimeMs = Date.now() - (Deno.osUptime() + 1) * 1_000;
 
-  constructor(logPath: string) {
+  #newClient: () => WatchmanClient;
+
+  constructor(logPath: string, newClient: () => WatchmanClient = () => new watchman.Client()) {
     this.#logPath = logPath;
+    this.#newClient = newClient;
     this.#createClient();
   }
 
@@ -672,7 +676,7 @@ class GitPromptDaemon {
   }
 
   #createClient(): void {
-    const client = new watchman.Client();
+    const client = this.#newClient();
     this.#client = client;
     client.on("subscription", (response) => {
       const subscription = typeof response.subscription === "string" ? response.subscription : "";

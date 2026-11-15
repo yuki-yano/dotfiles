@@ -1,14 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertStringIncludes } from "@std/assert";
 import { join } from "node:path";
 import {
   canSkipRefresh,
   detectGitAction,
   formatCache,
+  GitPromptDaemon,
   minimizeWatchPaths,
   parseNumstat,
   parsePorcelainV2,
   readGitLineStats,
   removePreBootIndexLock,
+  type WatchmanClient,
   zshQuote,
 } from "../bin/dot-prompt-gitd.ts";
 
@@ -360,3 +362,118 @@ Deno.test("index.lock が symlink や directory なら除去しない", async ()
     await Deno.remove(gitDir, { recursive: true });
   }
 });
+
+class FakeWatchmanClient implements WatchmanClient {
+  readonly commands: unknown[][] = [];
+  #listeners = new Map<string, (value: never) => void>();
+
+  command(args: unknown[], callback: (error: Error | null, response: Record<string, unknown>) => void): void {
+    this.commands.push(args);
+    const response = args[0] === "watch" || args[0] === "watch-project"
+      ? { watch: args[1] }
+      : args[0] === "clock"
+      ? { clock: "c:1:1" }
+      : {};
+    queueMicrotask(() => callback(null, response));
+  }
+
+  on(event: string, callback: (value: never) => void): void {
+    this.#listeners.set(event, callback);
+  }
+
+  emit(event: string, value: unknown): void {
+    this.#listeners.get(event)?.(value as never);
+  }
+
+  end(): void {}
+
+  subscriptionNames(): string[] {
+    return this.commands.filter((args) => args[0] === "subscribe").map((args) => String(args[2]));
+  }
+}
+
+async function waitUntil(predicate: () => Promise<boolean>, timeoutMs = 5_000): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (await predicate()) return;
+    await new Promise((resolvePromise) => setTimeout(resolvePromise, 20));
+  }
+  throw new Error(`condition was not met within ${timeoutMs}ms`);
+}
+
+for (const heldStep of ["temporary write", "rename"] as const) {
+  Deno.test(`忘れて登録し直した repo のキャッシュを、${heldStep}で止まっていた古い refresh が上書きしない`, async () => {
+    const root = await Deno.makeTempDir({ prefix: "dp-gitd-stale-" });
+    const top = join(root, "repo");
+    const cachePath = join(root, "cache", "status");
+    const cacheHas = (text: string) => async () => (await Deno.readTextFile(cachePath).catch(() => "")).includes(text);
+    const client = new FakeWatchmanClient();
+    const daemon = new GitPromptDaemon(join(root, "daemon.log"), () => client);
+    const realWriteTextFile = Deno.writeTextFile;
+    const realRename = Deno.rename;
+    let release = () => {};
+    try {
+      await Deno.mkdir(top);
+      await git(top, "init", "-q", "-b", "main");
+      await git(
+        top,
+        "-c",
+        "user.name=t",
+        "-c",
+        "user.email=t@example.invalid",
+        "commit",
+        "-q",
+        "--allow-empty",
+        "-m",
+        "base",
+      );
+      await daemon.register({ top, cachePath });
+      await waitUntil(cacheHas("branch 'main'"));
+
+      let holding = true;
+      const gate = new Promise<void>((resolvePromise) => release = resolvePromise);
+      let reportHeld = () => {};
+      const held = new Promise<void>((resolvePromise) => reportHeld = resolvePromise);
+      const holdOnce = async (path: string | URL) => {
+        if (!holding || !String(path).endsWith(".tmp")) return;
+        holding = false;
+        reportHeld();
+        await gate;
+      };
+      if (heldStep === "temporary write") {
+        Deno.writeTextFile = (async (...args: Parameters<typeof Deno.writeTextFile>) => {
+          await realWriteTextFile(...args);
+          await holdOnce(args[0]);
+        }) as typeof Deno.writeTextFile;
+      } else {
+        Deno.rename = async (from, to) => {
+          await holdOnce(from);
+          await realRename(from, to);
+        };
+      }
+
+      await git(top, "checkout", "-qb", "old");
+      const [worktreeSubscription, metadataSubscription] = client.subscriptionNames();
+      client.emit("subscription", { subscription: metadataSubscription, files: ["HEAD"] });
+      if (heldStep === "temporary write") await held;
+      else await Promise.race([held, new Promise((resolvePromise) => setTimeout(resolvePromise, 1_500))]);
+
+      client.emit("subscription", { subscription: worktreeSubscription, canceled: true });
+      await git(top, "checkout", "-qb", "new");
+      await daemon.register({ top, cachePath });
+      await waitUntil(cacheHas("branch 'new'"));
+      release();
+      await waitUntil(() =>
+        Promise.resolve([...Deno.readDirSync(join(root, "cache"))].every((entry) => !entry.name.endsWith(".tmp")))
+      );
+      assertStringIncludes(await Deno.readTextFile(cachePath), "branch 'new'");
+    } finally {
+      release();
+      Deno.writeTextFile = realWriteTextFile;
+      Deno.rename = realRename;
+      daemon.shutdown();
+      await new Promise((resolvePromise) => setTimeout(resolvePromise, 100));
+      await Deno.remove(root, { recursive: true });
+    }
+  });
+}
