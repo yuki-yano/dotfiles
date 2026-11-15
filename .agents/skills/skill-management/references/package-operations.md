@@ -9,7 +9,7 @@
 Use this form from the dotfiles root:
 
 ```bash
-npx --yes skills add <owner/repo> --skill <skill-name> -a codex -y
+npx --yes skills add <owner/repo>#<commit SHA> --skill <skill-name> -a codex -y
 ```
 
 Multiple skills from one repo:
@@ -27,12 +27,16 @@ Expected result:
 - `skills-lock.json` gains or updates entries for each external skill.
 - `npx --yes skills list --json -a codex` shows the skill with path under `~/dotfiles/.agents/skills`.
 
+`skills-lock.json`は`version: 2`で管理する。`skills` 1.8.1の`add`は`#<ref>`を付けたときだけlockに`ref`を記録するため、各sourceを上流HEADのcommit SHA（`git ls-remote https://github.com/<owner/repo> HEAD`）で固定する。
+tree URLのsourceは`tree/main`をSHAに置き換える。CLIと版を合わせる`agent-desktop`と`using-vitro`には、導入済みCLIの版のタグ（例: `#v1.2.0`）を付ける。
+
 ## Update External Skills
 
 `skills` 1.5.19 の `update` は更新時の内部 `add` に対象 agent を引き継がない。
 このリポジトリにはローカル設定用の `.claude` があるため、`npx skills update -p`
 を実行すると Claude Code も自動検出され、不要な `.claude/skills/<name>` が作られる。
 `update` に `--agent` が追加されるまでは、このリポジトリで `npx skills update` を使わない。
+1.8.1の`update`にも`--agent`はなく、lockの`ref`でcloneするため、SHAで固定したentryは更新されない。
 
 `npx skills check` もread-onlyの更新確認ではなく、lockにあるskillを再取得して実体とhashを更新する。
 変更有無の確認だけを目的に実行しない。上流との差分確認が必要な場合はsourceを個別に調査し、
@@ -45,7 +49,7 @@ Expected result:
 単一 skill の更新例:
 
 ```bash
-npx --yes skills add <owner/repo> --skill <skill-name> -a codex -y
+npx --yes skills add <owner/repo>#<commit SHA> --skill <skill-name> -a codex -y
 ```
 
 全 external skill の更新では、`Current Known External Sources` のコマンドをすべて再実行する。
@@ -154,12 +158,18 @@ External project skills:
 npx --yes skills add vercel-labs/agent-browser --skill agent-browser -a codex -y
 npx --yes skills add vercel-labs/agent-desktop --skill agent-desktop -a codex -y
 npx --yes skills add emilkowalski/skills --skill apple-design -a codex -y
-npx --yes skills add anthropics/claude-code --skill frontend-design --full-depth -a codex -y
+npx --yes skills add anthropics/claude-plugins-official --skill frontend-design -a codex -y
 npx --yes skills add vercel-labs/portless --skill portless -a codex -y
 npx --yes skills add millionco/react-doctor --skill react-doctor -a codex -y
 npx --yes skills add vercel-labs/agent-skills --skill vercel-react-best-practices -a codex -y
 npx --yes skills add github/gh-stack --skill gh-stack -a codex -y
+npx --yes skills add mattpocock/skills --skill domain-modeling --skill grill-me --skill grill-with-docs --skill grilling -a codex -y
+npx --yes skills add stablyai/orca --skill orca-cli --skill orchestration -a codex -y
+npx --yes skills add lambdalisue/vitro --skill using-vitro -a codex -y
+npx --yes skills add yuki-yano/vde-open --skill vde-open -a codex -y
 ```
+
+`frontend-design`は`anthropics/claude-code`から削除され、`anthropics/claude-plugins-official`が正本になった。
 
 説明・図解・日本語推敲:
 

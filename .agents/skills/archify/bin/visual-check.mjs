@@ -1,3 +1,4 @@
+import { softwareNoticesHtml } from '../renderers/shared/software-notices.mjs';
 import { spawn } from 'node:child_process';
 import { isExplainerHtml } from '../explainer/check.mjs';
 import { EXPLAINER_VIEWPORTS, inspectExplainerBrowser, explainerObservation, explainerObservationDiagnostics } from '../explainer/browser-check.mjs';
@@ -2039,7 +2040,7 @@ function contactSheetHtml({ artifactPath, receipt, screenshots }) {
   return `<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="utf-8">${softwareNoticesHtml}
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Archify automated browser evidence · ${htmlEscape(path.basename(artifactPath))}</title>
 <style>

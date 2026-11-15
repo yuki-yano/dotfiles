@@ -6264,6 +6264,13 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var autoTheme = requestedTheme === 'auto';
         var svg = document.querySelector('.diagram-container svg');
         var clone = svg.cloneNode(true);
+        var softwareNotices = document.getElementById('archify-software-notices');
+        if (softwareNotices) {
+          var softwareMetadata = document.createElementNS('http://www.w3.org/2000/svg', 'metadata');
+          softwareMetadata.setAttribute('id', 'archify-software-notices');
+          softwareMetadata.textContent = JSON.parse(softwareNotices.textContent);
+          clone.insertBefore(softwareMetadata, clone.firstChild);
+        }
 
         var canonicalStateClean = cleanExportClone(clone);
 

@@ -1,166 +1,166 @@
 {
-  "version": 1,
+  "version": 2,
   "skills": {
     "agent-browser": {
       "source": "vercel-labs/agent-browser",
-      "ref": "372ac5ce20fab885dbf45ee0c9d510ec8c3b6fdb",
+      "ref": "1cc19526f3641c8543d55aa6700e7c55b37ac356",
       "sourceType": "github",
       "skillPath": "skills/agent-browser/SKILL.md",
-      "computedHash": "dd491d53824ad9286ec950aee667098446332429a6d41fe28b4ba11f1959264c"
+      "computedHash": "e24abc7a631250d49f24036ada4cd4bd8c44c313c92510b3ad7388416a66d405"
     },
     "agent-desktop": {
       "source": "vercel-labs/agent-desktop",
       "ref": "v1.2.0",
       "sourceType": "github",
       "skillPath": "skills/agent-desktop/SKILL.md",
-      "computedHash": "8af21e2d4a260eb859dfe589eecdf4ee4fa1abe43ad8a401c4fcb5eeead11e12"
+      "computedHash": "9e3748a866ef3784d9dc3301d4ae8cf037387d48e832c257d9eab9b5bd8ec43e"
     },
     "apple-design": {
       "source": "emilkowalski/skills",
-      "ref": "2d228630ba1446365f614a108cb8252f1feda202",
+      "ref": "f7ce8c02d6e3c8f0d980a44c57bcc41a40254349",
       "sourceType": "github",
       "skillPath": "skills/apple-design/SKILL.md",
-      "computedHash": "0190417d092a0df447b000154e39733ea6d97efad6d3bec8a6ce3845aeb88914"
+      "computedHash": "118d450c2d6ca54fee5f56cf8883fa3231bc2d917bb8f5a3f87488162c55fac9"
     },
     "archify": {
       "source": "tt-a1i/archify",
-      "ref": "25cf37080fc8b1dbe758a4efc3935b55f3327083",
+      "ref": "7e45f36c66de1254d5ad6ba1d878f6499ea269fd",
       "sourceType": "github",
       "skillPath": "archify/SKILL.md",
-      "computedHash": "e8cbde4db89de7b49cfab034923a9f6028afd0bc413ab26fe1a68c242e2005fe"
+      "computedHash": "dcc4821a0dd36701d56e571910de4e20ca99a036810a3ba4d4261b0f078ad7a1"
     },
     "concise": {
       "source": "kmizu/concise",
       "ref": "325dd673be7c08af03b5c61df7a1ba9fbcf02018",
       "sourceType": "github",
       "skillPath": "skills/concise/SKILL.md",
-      "computedHash": "261c536d6e215ae356d50c96e6dc7dd6555b848f079b7078fd0e9f5330a3676a"
+      "computedHash": "c4cd8977cc9cce9b52f1888b1d5a2fe54fec6aa0795f2cfb2560b63274116bfe"
     },
     "domain-modeling": {
       "source": "mattpocock/skills",
-      "ref": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
+      "ref": "5863806dd4e15c63174bee4e7515a4256792ecfa",
       "sourceType": "github",
       "skillPath": "skills/engineering/domain-modeling/SKILL.md",
-      "computedHash": "b3eb40152b81f0c98fd2095a023c019452dbdce56f7540cc67fece2972db8369"
+      "computedHash": "b78689833404148c769077355e12dbe5ad996a158a1e21e58ddf169e439d9d8c"
     },
     "eli5": {
       "source": "anthropics/claude-plugins-community",
-      "ref": "06ec7b6a0a82bdc4bec44bd82d4368c42f20d7c1",
+      "ref": "163301d1904c0a994539f5226ce0fcd65b8652bf",
       "sourceType": "github",
       "skillPath": "eli5/skills/eli5/SKILL.md",
-      "computedHash": "6c626392eca359b7408fc25073ccd47ca07c7442ab5548df79e43bafc85a1818"
+      "computedHash": "e2c9cb497283c74c88527baf587c7e3e499c0e37d0f2c105a3202d94dabb2095"
     },
     "explainer": {
       "source": "mizchi/explainer",
       "ref": "ccdd7bacfb47451e38506d837af8a629504960b2",
       "sourceType": "github",
       "skillPath": "skills/explainer/SKILL.md",
-      "computedHash": "76aa3da0f7363815838e29e61e5c2fe2c063c7c51b0ffbb61872af27ba7a572d"
+      "computedHash": "70db5605cf1a1b0272d41368157248cb945d1395f6fe369c9f745adef51e53a2"
     },
     "first-reader": {
       "source": "mizchi/explainer",
       "ref": "ccdd7bacfb47451e38506d837af8a629504960b2",
       "sourceType": "github",
       "skillPath": "skills/first-reader/SKILL.md",
-      "computedHash": "4d3d4aadae2812bb326ad7ab70bdbb4975b7960dc95ae5b27e612af2824827cc"
+      "computedHash": "d8226dba3c6c3ed1e7633d20be0e071800fb4910acb43f6c61553d8f4149e861"
     },
     "frontend-design": {
-      "source": "anthropics/claude-code",
-      "ref": "318b7e6ac4e726e88a4ad326214866a93c373b1b",
+      "source": "anthropics/claude-plugins-official",
+      "ref": "f75f5b25ae94f4332be4ff5f18435741d2589bdb",
       "sourceType": "github",
       "skillPath": "plugins/frontend-design/skills/frontend-design/SKILL.md",
-      "computedHash": "b8c8329ad9b98fa57f4a279e37bdf4a0d55743140e54bb7da3e340d754d75b43"
+      "computedHash": "83485963700bcf11d5bf78118facb301676b69d918fee2e45a95e7f1a2840f6c"
     },
     "gh-stack": {
       "source": "github/gh-stack",
-      "ref": "c477b7d1f290a9df463b86773742a5237d14b980",
+      "ref": "bd0a32504f9ae9f795875a9e6bb90ff7408fda08",
       "sourceType": "github",
       "skillPath": "skills/gh-stack/SKILL.md",
-      "computedHash": "15d9ce292d8b90b097463c8c3232fdc61f93474add776235245326de532fef2e"
+      "computedHash": "4ff26e30a0103af77552e5eebbabfbf80734fd23b1485f0c513a0b35a3126613"
     },
     "grill-me": {
       "source": "mattpocock/skills",
-      "ref": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
+      "ref": "5863806dd4e15c63174bee4e7515a4256792ecfa",
       "sourceType": "github",
       "skillPath": "skills/productivity/grill-me/SKILL.md",
-      "computedHash": "9cdbb4b8f7a3aeaef82e6230c9e823500d4a8a1214c726cf342cf9829d34fc7d"
+      "computedHash": "ab1acb9fbd9eaee03da254abb8a8de228d1e7a07475fe959da4a5eefa34ea4b9"
     },
     "grill-with-docs": {
       "source": "mattpocock/skills",
-      "ref": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
+      "ref": "5863806dd4e15c63174bee4e7515a4256792ecfa",
       "sourceType": "github",
       "skillPath": "skills/engineering/grill-with-docs/SKILL.md",
-      "computedHash": "35e62aa423aaeab6a414bcac273f56dfb17802ef2334b41b6a3b00f28196c8cf"
+      "computedHash": "02e258f41d210f9b2e7cce9faf62b3c59e8fcebe5d2736369c3cd07d471324f8"
     },
     "grilling": {
       "source": "mattpocock/skills",
-      "ref": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
+      "ref": "5863806dd4e15c63174bee4e7515a4256792ecfa",
       "sourceType": "github",
       "skillPath": "skills/productivity/grilling/SKILL.md",
-      "computedHash": "ef1641a2047b71b60f1942cd35efb47d3afc9d584dff5a0b01f8c7db923aaa08"
+      "computedHash": "485451958784497cd4c4dbea13cb5bbb579da58fac0d0e45f3bcb310fab68ac7"
     },
     "orca-cli": {
       "source": "stablyai/orca",
-      "ref": "31fe3c74818b63dcc8c28043f00fecd33d97f14d",
+      "ref": "b0c0377664adbbd67e893a8534c793daf9ee7727",
       "sourceType": "github",
       "skillPath": "skills/orca-cli/SKILL.md",
-      "computedHash": "ccd717aed7b9866a059b0b31d9a009641a28f6db3201749943fbbb797af4a317"
+      "computedHash": "3bff90cd25067ddc874ff68130f2efb762de9b2ab106f3907c846c3212d08b42"
     },
     "orchestration": {
       "source": "stablyai/orca",
-      "ref": "31fe3c74818b63dcc8c28043f00fecd33d97f14d",
+      "ref": "b0c0377664adbbd67e893a8534c793daf9ee7727",
       "sourceType": "github",
       "skillPath": "skills/orchestration/SKILL.md",
-      "computedHash": "0dc04a0a354974eed5c15115fc6cb7461d7423e95a5b19ee995796cf1383e7ed"
+      "computedHash": "2418592dc834fa9e22b2a18c91025d174514fc5e0f454a69cf1c0f2821516f68"
     },
     "portless": {
       "source": "vercel-labs/portless",
-      "ref": "0ce58c8a8f35bcdd4b62f0095cd641369f5ab68b",
+      "ref": "023fe90163f5caa364a5bc1125694223836cb094",
       "sourceType": "github",
       "skillPath": "skills/portless/SKILL.md",
-      "computedHash": "909d9a5758afb0af3aac43bb5cce9bbc7f69d2e04092876d6f23468dd3b8cd2b"
+      "computedHash": "504830c46fefd37dea514fd37aca100702583750f072b269f92553bb12722e55"
     },
     "react-doctor": {
       "source": "millionco/react-doctor",
-      "ref": "84ad0c8d0df7a3ab7d26946367fae3bc39c100d0",
+      "ref": "dfffab3bd9f9da1977a7c23fa6bc5ed5abb4bdf6",
       "sourceType": "github",
       "skillPath": "skills/react-doctor/SKILL.md",
-      "computedHash": "803447f3251d555207f8935893d4d2950243a2ac0b407a1c95c7755bb38433a3"
+      "computedHash": "c67a5188fbfee848cbd358a570d946e4612e440dd1f15715cc57c73d1acadd5a"
     },
     "using-vitro": {
       "source": "lambdalisue/vitro",
       "ref": "v0.6.1",
       "sourceType": "github",
       "skillPath": "plugins/vitro/skills/using-vitro/SKILL.md",
-      "computedHash": "9fe7707c40491e4e6bf3a86e09fd8ddaf88862de579762cbbcd2f2360c6da91d"
+      "computedHash": "957b7376a3ba907865d4c8960bf1c9314b55045dc72e1dc37f36193398c3e954"
     },
     "vde-open": {
       "source": "yuki-yano/vde-open",
-      "ref": "28694f45e2c5520192a773da434d987abdff8de0",
+      "ref": "49947a873edb1d01e09ea83a326e08a1efc6588d",
       "sourceType": "github",
       "skillPath": "skills/vde-open/SKILL.md",
-      "computedHash": "4232ff66900de3999561f465e025669e9c218507ef95283cf8ebd759a340b553"
+      "computedHash": "7b0e2a937cef09349a9ba5d71f0b14a8ea6d4629cf2293f0d1e8aff2bfe08862"
     },
     "vercel-react-best-practices": {
       "source": "vercel-labs/agent-skills",
-      "ref": "063bee94c3f4df8453406c830b0a7df0f2860278",
+      "ref": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62",
       "sourceType": "github",
       "skillPath": "skills/react-best-practices/SKILL.md",
-      "computedHash": "3219a1944e404ffc14d1d9d6aef6dd2e3855b81387ee0a044ccbfe14d34c2357"
+      "computedHash": "7991ed4fbecdac23f47c1a40c243e00a212a9e7f3604db93959b3ae11dffe299"
     },
     "workers-best-practices": {
       "source": "cloudflare/skills",
-      "ref": "86505e44f87d801aa1864a3c4109e9a8ae5c409f",
+      "ref": "cbf893b954222276bf1af57e5f23379231e0efb9",
       "sourceType": "github",
       "skillPath": "skills/workers-best-practices/SKILL.md",
-      "computedHash": "e12970301753ed7eaa5ca375d4b98e0e36c9554e8f2809cb4b543c2ea7d9b4b8"
+      "computedHash": "7f941bbc549454872a4c7c261bf75a1ef7aaa69666bc85cec91e97cf40c11cc6"
     },
     "wrangler": {
       "source": "cloudflare/skills",
-      "ref": "86505e44f87d801aa1864a3c4109e9a8ae5c409f",
+      "ref": "cbf893b954222276bf1af57e5f23379231e0efb9",
       "sourceType": "github",
       "skillPath": "skills/wrangler/SKILL.md",
-      "computedHash": "9b410cfe14c41d3d4ace5d42e2e19f4eb96104c659b5ed45abf341db28d81029"
+      "computedHash": "182e370d8c26e6bcb896a57a63e6cab006b253b9278cc3515f7b9db2c4d07661"
     }
   }
 }

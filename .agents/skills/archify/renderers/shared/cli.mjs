@@ -1,3 +1,4 @@
+import { softwareNoticesHtml } from './software-notices.mjs';
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -83,7 +84,7 @@ export function loadDiagram({ rendererDir, diagramType, defaultExample, argv = p
   validateCrossCollectionContracts(diagramType, diagram);
   validateEngineeringProfile(diagramType, diagram);
   const sourceEvidence = verifyRepositoryEvidence(diagramType, diagram, process.env.ARCHIFY_REPO_ROOT);
-  const template = fs.readFileSync(path.join(skillRoot, 'assets/template.html'), 'utf8');
+  const template = fs.readFileSync(path.join(skillRoot, 'assets/template.html'), 'utf8').replace('</head>', `${softwareNoticesHtml}\n</head>`);
   const outputRequest = {
     requestedOutput: argv[3],
     authoredOutput: diagram.meta?.output,
