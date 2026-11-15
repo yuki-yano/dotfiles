@@ -463,8 +463,7 @@ function _fzf-git-reflog-widget() {
   fi
 
   local selected
-  selected=$(git reflog --pretty=format:'%h %gD: %gs' | \
-    grep -E '(Git quick save:|Git auto save:)' | \
+  selected=$(git reflog show --pretty=format:'%h %gD: %gs' refs/worktree/quick-save 2>/dev/null | \
     fzf-tmux -p 70%,70% --reverse --ansi --exact --no-sort \
         --preview 'echo {} | cut -d" " -f1 | xargs git show --color=always' \
         --preview-window=right:70% \

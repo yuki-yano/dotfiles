@@ -1,8 +1,12 @@
 #!/bin/sh
 
-# Git working tree quick save utility
+# Git working tree quick save utility.
+# The snapshot is built in a temporary index and recorded in the reflog of
+# refs/worktree/quick-save, so HEAD, the index, ORIG_HEAD and the working tree
+# are never touched, even in the middle of a merge, rebase or cherry-pick.
 
 label=${GIT_QUICK_SAVE_LABEL:-"Git quick save"}
+snapshot_ref=refs/worktree/quick-save
 
 msg=""
 if [ "$#" -gt 0 ]; then
@@ -22,113 +26,50 @@ if [ "$#" -gt 0 ]; then
   fi
 fi
 
-git_root=$(git rev-parse --show-toplevel 2>/dev/null || printf '')
-
 log() {
   printf '%s: %s\n' "$label" "$1"
 }
 
-# Linked worktrees keep this state in their own Git directory, not in "$git_root/.git".
-git_path() {
-  git rev-parse --path-format=absolute --git-path "$1"
-}
-
-if [ -z "$git_root" ]; then
+if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
   log "Not a Git repository."
   exit 1
 fi
 
-if ! git rev-parse --verify --quiet HEAD >/dev/null; then
-  log "Skipped: no commit to return to yet."
-  exit 0
+index=$(git rev-parse --path-format=absolute --git-path index)
+temporary_index=$(mktemp "${TMPDIR:-/tmp}/git-quick-save-index.XXXXXX") || exit 1
+trap 'rm -f "$temporary_index"' EXIT
+if [ -f "$index" ]; then
+  cp "$index" "$temporary_index" || exit 1
+else
+  rm -f "$temporary_index"
 fi
 
-if [ -e "$(git_path MERGE_HEAD)" ]; then
-  log "Skipped: merge in progress."
-  exit 0
-fi
-
-if [ -e "$(git_path CHERRY_PICK_HEAD)" ]; then
-  log "Skipped: cherry-pick in progress."
-  exit 0
-fi
-
-if [ -e "$(git_path REVERT_HEAD)" ]; then
-  log "Skipped: revert in progress."
-  exit 0
-fi
-
-# A multi-commit cherry-pick or revert keeps its plan here after the HEAD file is gone.
-if [ -d "$(git_path sequencer)" ]; then
-  log "Skipped: cherry-pick or revert in progress."
-  exit 0
-fi
-
-if ! git --no-pager diff --cached --quiet; then
-  log "Skipped: staged changes present."
-  exit 0
-fi
-
-if [ -e "$(git_path index.lock)" ]; then
-  log "Skipped: index is locked."
-  exit 0
-fi
-
-if [ -d "$(git_path rebase-merge)" ] || [ -d "$(git_path rebase-apply)" ]; then
-  log "Skipped: rebase in progress."
-  exit 0
-fi
-
-if ! git add --all; then
+if ! GIT_INDEX_FILE=$temporary_index git add --all; then
   log "Failed: git add."
   exit 1
 fi
+tree=$(GIT_INDEX_FILE=$temporary_index git write-tree) || {
+  log "Failed: git write-tree."
+  exit 1
+}
 
-empty_snapshot=0
-if git diff --cached --quiet --; then
-  empty_snapshot=1
-  log "No working tree changes; creating empty snapshot."
-fi
-
-orig_head=$(git rev-parse --verify --quiet ORIG_HEAD)
 commit_message="$label: $(date -R)$msg"
-commit_output=$(git commit --no-verify --allow-empty --message "$commit_message" 2>&1)
-commit_status=$?
-
-if [ $commit_status -ne 0 ]; then
-  log "Commit failed."
-  printf '%s\n' "$commit_output" >&2
-  exit $commit_status
+if head=$(git rev-parse --verify --quiet HEAD); then
+  parent_tree=$(git rev-parse "$head^{tree}")
+  commit=$(git commit-tree "$tree" -p "$head" -m "$commit_message") || exit 1
+else
+  parent_tree=""
+  commit=$(git commit-tree "$tree" -m "$commit_message") || exit 1
 fi
 
-commit_hash=$(git rev-parse --short HEAD 2>/dev/null)
-
-if [ -z "$commit_hash" ]; then
-  log "Commit succeeded but failed to read hash."
-fi
-
-if ! git reset HEAD^ >/dev/null 2>&1; then
-  log "Commit succeeded but git reset HEAD^ failed."
+if ! git update-ref --create-reflog -m "$commit_message" "$snapshot_ref" "$commit"; then
+  log "Failed: recording the snapshot in $snapshot_ref."
   exit 1
 fi
 
-# reset points ORIG_HEAD at the snapshot; restore what a merge, rebase or reset left there.
-if [ -n "$orig_head" ]; then
-  git update-ref --no-deref ORIG_HEAD "$orig_head"
+commit_hash=$(git rev-parse --short "$commit")
+if [ "$tree" = "$parent_tree" ]; then
+  echo "$label!$msg (commit $commit_hash, empty snapshot)"
 else
-  git update-ref -d ORIG_HEAD
-fi
-
-if [ -n "$commit_hash" ]; then
-  if [ "$empty_snapshot" -eq 1 ]; then
-    echo "$label!$msg (commit $commit_hash, empty snapshot)"
-  else
-    echo "$label!$msg (commit $commit_hash)"
-  fi
-else
-  if [ "$empty_snapshot" -eq 1 ]; then
-    echo "$label!$msg (empty snapshot)"
-  else
-    echo "$label!$msg"
-  fi
+  echo "$label!$msg (commit $commit_hash)"
 fi
