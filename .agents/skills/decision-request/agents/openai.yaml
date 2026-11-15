@@ -1,0 +1,4 @@
+interface:
+  display_name: "判断を vde-open で聞く"
+  short_description: "人の判断を図と推奨つきの選択肢として vde-open に出し、回答を待って再開する"
+  default_prompt: "$decision-request を使って、人の判断が必要な点を vde-open に図と推奨つきの選択肢として出し、回答を受けたら作業を再開してください。"
