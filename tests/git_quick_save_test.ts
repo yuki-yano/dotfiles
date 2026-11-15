@@ -148,6 +148,30 @@ Deno.test("保存先の ref が symbolic ref でも hook があっても、ブ�
   }
 });
 
+Deno.test("partial clone で親の tree が未取得でも、remote から取得せずに記録する", async () => {
+  const root = await Deno.makeTempDir({ prefix: "git-quick-save-partial-" });
+  try {
+    const origin = join(root, "origin");
+    await Deno.mkdir(origin);
+    await git(origin, "init", "-q", "-b", "main");
+    await Deno.writeTextFile(join(origin, "a.txt"), "a\n");
+    await git(origin, "add", "a.txt");
+    await git(origin, "commit", "-qm", "base");
+    await git(origin, "config", "uploadpack.allowFilter", "true");
+    const clone = join(root, "clone");
+    await git(root, "clone", "-q", "--filter=tree:0", "--no-checkout", `file://${origin}`, clone);
+    const packDir = join(clone, ".git", "objects", "pack");
+    const packsBefore = [...Deno.readDirSync(packDir)].map((entry) => entry.name).sort();
+    await Deno.writeTextFile(join(clone, "new.txt"), "new\n");
+
+    assertEquals((await quickSave(clone)).code, 0);
+    assertEquals([...Deno.readDirSync(packDir)].map((entry) => entry.name).sort(), packsBefore);
+    assertEquals(await git(clone, "show", `${snapshotRef}:new.txt`), "new");
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
 Deno.test("最初の commit がない repo でも記録し、HEAD は作らない", async () => {
   const root = await Deno.makeTempDir({ prefix: "git-quick-save-unborn-" });
   try {

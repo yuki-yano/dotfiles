@@ -9,6 +9,9 @@
 
 label=${GIT_QUICK_SAVE_LABEL:-"Git quick save"}
 snapshot_ref=refs/worktree/quick-save
+# A partial clone would otherwise fetch missing objects through the remote's
+# transport command while taking the snapshot.
+export GIT_NO_LAZY_FETCH=1
 
 msg=""
 if [ "$#" -gt 0 ]; then
@@ -63,7 +66,7 @@ tree=$(GIT_INDEX_FILE=$temporary_index git_without_hooks write-tree) || {
 
 commit_message="$label: $(date -R)$msg"
 if head=$(git rev-parse --verify --quiet HEAD); then
-  parent_tree=$(git rev-parse "$head^{tree}")
+  parent_tree=$(git rev-parse --verify --quiet "$head^{tree}")
   commit=$(git commit-tree "$tree" -p "$head" -m "$commit_message") || exit 1
 else
   parent_tree=""
