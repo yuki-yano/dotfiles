@@ -118,6 +118,50 @@ Deno.test("初回キャッシュ待ちを保持し、キャッシュ読込後に
   assertStringIncludes(stdout, "ready=0 prompt=%B%F{7} main");
 });
 
+Deno.test("symlink 経由で repo 内に入っても Git 状態を消さずに known モードで更新する", async () => {
+  const root = await Deno.realPath(await Deno.makeTempDir({ prefix: "dp-symlink-" }));
+  const top = join(root, "repo");
+  const link = join(root, "link");
+  try {
+    await Deno.mkdir(join(top, "sub"), { recursive: true });
+    await Deno.symlink(join(top, "sub"), link);
+    const script = [
+      'source "$1"',
+      'source "$2"',
+      'source "$3"',
+      "async_start_worker() { :; }",
+      "async_register_callback() { :; }",
+      "async_worker_eval() { :; }",
+      'async_job() { print -r -- "job ${(j: :)@[3,-1]}"; }',
+      "DOT_PROMPT_GIT_AUTO_REFRESH_INTERVAL=0",
+      'cd "$5"',
+      "typeset -A info",
+      'info=(pwd "$PWD" top "$4" cache "$4.status" branch main)',
+      'dot_prompt_async_callback dot_prompt_git_status 0 "$(print -r -- ${(@kvq)info})" 0 0 0',
+      "dot_prompt_async_maybe_reset_for_pwd",
+      "dot_prompt_async_tasks cached",
+      'print -r -- "top=$DOT_PROMPT_GIT_TOP"',
+    ].join("; ");
+    const output = await run("/bin/zsh", [
+      "-f",
+      "-c",
+      script,
+      "--",
+      promptBaseScript,
+      gitPromptScript,
+      promptAsyncScript,
+      top,
+      link,
+    ]);
+    assertEquals(new TextDecoder().decode(output.stderr), "");
+    const stdout = new TextDecoder().decode(output.stdout);
+    assertStringIncludes(stdout, `job known ${top} ${top}.status`);
+    assertStringIncludes(stdout, `top=${top}`);
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
 const watchmanAvailable = await commandSucceeds("watchman", ["--version"]);
 
 Deno.test("行数だけの更新を色付きで描画し、差分ゼロとリポジトリ移動で表示を消す", async () => {

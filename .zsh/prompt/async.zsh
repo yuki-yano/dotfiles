@@ -4,7 +4,6 @@ typeset -g DOT_PROMPT_ASYNC_AUTO_REFRESH_SCHEDULED=0
 typeset -g DOT_PROMPT_GIT_FORCE_NEXT_REFRESH=0
 typeset -g DOT_PROMPT_GIT_CACHE_PATH=""
 typeset -g DOT_PROMPT_GIT_CACHE_SIGNATURE=""
-typeset -g DOT_PROMPT_GIT_PWD=""
 
 : ${DOT_PROMPT_GIT_AUTO_REFRESH_INTERVAL:=2}
 
@@ -42,11 +41,17 @@ dot_prompt_async_reset_repo_state() {
   typeset -g DOT_PROMPT_GIT_PENDING=0
   typeset -g DOT_PROMPT_GIT_CACHE_PATH=""
   typeset -g DOT_PROMPT_GIT_CACHE_SIGNATURE=""
-  typeset -g DOT_PROMPT_GIT_PWD=""
+}
+
+dot_prompt_async_pwd_in_repo() {
+  # Git reports the toplevel with symlinks resolved, while $PWD keeps the
+  # logical path (~/.config, /tmp on macOS).
+  local pwd=${PWD:A}
+  [[ -n $DOT_PROMPT_GIT_TOP ]] && [[ $pwd == "$DOT_PROMPT_GIT_TOP" || $pwd == "$DOT_PROMPT_GIT_TOP"/* ]]
 }
 
 dot_prompt_async_maybe_reset_for_pwd() {
-  if [[ -n $DOT_PROMPT_GIT_PWD ]] && [[ $PWD != $DOT_PROMPT_GIT_PWD && $PWD != $DOT_PROMPT_GIT_PWD/* ]]; then
+  if [[ -n $DOT_PROMPT_GIT_TOP ]] && ! dot_prompt_async_pwd_in_repo; then
     if (( DOT_PROMPT_ASYNC_INITED )); then
       async_flush_jobs dot_prompt_git
     fi
@@ -73,8 +78,7 @@ dot_prompt_async_tasks() {
   local cache_path=${2:-}
   local top=""
 
-  if [[ $mode != cache-only ]] && [[ -n $DOT_PROMPT_GIT_TOP && -n $DOT_PROMPT_GIT_CACHE_PATH ]] &&
-     [[ $PWD == $DOT_PROMPT_GIT_TOP || $PWD == $DOT_PROMPT_GIT_TOP/* ]]; then
+  if [[ $mode != cache-only && -n $DOT_PROMPT_GIT_CACHE_PATH ]] && dot_prompt_async_pwd_in_repo; then
     top=$DOT_PROMPT_GIT_TOP
     cache_path=$DOT_PROMPT_GIT_CACHE_PATH
     if [[ $mode == force ]]; then
@@ -226,14 +230,7 @@ dot_prompt_async_callback() {
           typeset -g DOT_PROMPT_GIT_STASH=${info[stash]:-0}
           typeset -g DOT_PROMPT_GIT_ADDED=${info[added]:-0}
           typeset -g DOT_PROMPT_GIT_DELETED=${info[deleted]:-0}
-          if [[ -n $info[top] ]]; then
-            typeset -g DOT_PROMPT_GIT_PWD=$info[top]
-          else
-            typeset -g DOT_PROMPT_GIT_PWD=""
-          fi
           if [[ -n ${info[signature]:-} ]]; then
-            # Use the signature captured at read time; re-statting could tie a
-            # newer atomic replacement to the older content we just parsed.
             typeset -g DOT_PROMPT_GIT_CACHE_SIGNATURE=$info[signature]
           elif dot_prompt_async_cache_signature "$DOT_PROMPT_GIT_CACHE_PATH"; then
             typeset -g DOT_PROMPT_GIT_CACHE_SIGNATURE=$REPLY
