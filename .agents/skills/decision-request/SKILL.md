@@ -73,11 +73,12 @@ vo ask questions.json --view decision.html --no-open --json
 - Bash の `run_in_background: true` で `vo feedback wait <requestId> --timeout 3600 --json` を実行する。Bash の `timeout` は `3700000` にする。
 - 終了すると通知で再開される。待つ間は、回答に依存しない作業を進めてよい。依存する作業しか残っていなければ、turn を終えてよい。
 - 出力ファイルの末尾には `[exited with code N]` が付く。JSON は最初の行だけを読む。
+- T3 Code で動いているときは、wait を始めたら `t3_background_wait` にその task ID を渡し、thread を Working のまま保つ。
 
 ### Codex
 
 - `vo feedback wait <requestId> --timeout 3600 --json` を実行セッションで動かし、turn を開いたまま出力を確認して待つ。待つ間に、回答に依存しない作業を進めてよい。
-- turn を終えると、回答が届いても自動では再開しない。回答を待たずに turn を終えるときは、質問の title と「回答したらこの会話で続行を指示してほしい」ことをユーザーに伝える。
+- turn を終えた後に、回答をきっかけに自動で再開する方法は確かめられていない。回答を待たずに turn を終えるときは、質問の title と「回答したらこの会話で続行を指示してほしい」ことをユーザーに伝える。
 
 ## 回答を受けたら
 
