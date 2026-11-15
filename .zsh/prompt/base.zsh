@@ -83,12 +83,6 @@ dot_prompt_apply_render() {
   RPROMPT=$DOT_PROMPT_RIGHT_BASE
 }
 
-dot_prompt_reset_prompt() {
-  if [[ -o zle ]] && zle >/dev/null 2>&1; then
-    zle -R
-  fi
-}
-
 dot_prompt_reset_prompt_full() {
   if [[ -o zle ]] && zle >/dev/null 2>&1; then
     zle reset-prompt

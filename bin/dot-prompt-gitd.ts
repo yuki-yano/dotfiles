@@ -3,10 +3,6 @@
 import watchmanModule from "fb-watchman";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 
-const LEGACY_TRIGGER_NAMES = new Set([
-  "dot-prompt-git-worktree",
-  "dot-prompt-git-gitdir",
-]);
 const DEBOUNCE_MS = 300;
 const MAX_DEBOUNCE_MS = 2_000;
 const MAX_CONCURRENT_GIT = 4;
@@ -65,7 +61,6 @@ interface RepoState {
   running: boolean;
   queued: boolean;
   timer: ReturnType<typeof setTimeout> | null;
-  legacyCleanupAt: number;
 }
 
 function isRegistrationRequest(value: unknown): value is RegistrationRequest {
@@ -347,39 +342,11 @@ class GitPromptDaemon {
     }
   }
 
-  async cleanupLegacyTriggers(): Promise<void> {
-    const client = this.#client;
-    if (!client) return;
-    try {
-      const watchList = await command(client, ["watch-list"]);
-      const roots = Array.isArray(watchList.roots)
-        ? watchList.roots.filter((root): root is string => typeof root === "string")
-        : [];
-      for (const root of roots) {
-        try {
-          const triggerList = await command(client, ["trigger-list", root]);
-          const triggers = Array.isArray(triggerList.triggers) ? triggerList.triggers : [];
-          for (const trigger of triggers) {
-            const name = trigger && typeof trigger === "object" ? (trigger as Record<string, unknown>).name : undefined;
-            if (typeof name === "string" && LEGACY_TRIGGER_NAMES.has(name)) {
-              await command(client, ["trigger-del", root, name]);
-            }
-          }
-        } catch (error) {
-          this.log(`legacy trigger cleanup failed for ${root}: ${error}`);
-        }
-      }
-    } catch (error) {
-      this.log(`watch-list failed during legacy cleanup: ${error}`);
-    }
-  }
-
   register(request: RegistrationRequest): Promise<void> {
     const top = resolve(request.top);
     const existing = this.#repos.get(top);
     if (existing) {
       existing.cachePath = request.cachePath;
-      void this.#cleanupLegacyTriggersForRepo(existing);
       return Promise.resolve();
     }
     const pending = this.#pendingRegistrations.get(top);
@@ -423,11 +390,9 @@ class GitPromptDaemon {
       running: false,
       queued: false,
       timer: null,
-      legacyCleanupAt: 0,
     };
     this.#repos.set(top, repo);
     await this.#subscribeRepo(repo);
-    void this.#cleanupLegacyTriggersForRepo(repo);
     this.log(`registered ${top} with ${repo.subscriptions.size} subscription(s)`);
     this.#markDirty(repo, true);
   }
@@ -491,25 +456,6 @@ class GitPromptDaemon {
     }
   }
 
-  async #cleanupLegacyTriggersForRepo(repo: RepoState): Promise<void> {
-    const client = this.#client;
-    const now = Date.now();
-    if (!client || now - repo.legacyCleanupAt < 60_000) return;
-    repo.legacyCleanupAt = now;
-
-    const triggers: Array<[string, string]> = [
-      [repo.top, "dot-prompt-git-worktree"],
-      [repo.gitDir, "dot-prompt-git-gitdir"],
-    ];
-    for (const [root, name] of triggers) {
-      try {
-        await command(client, ["trigger-del", root, name]);
-      } catch {
-        // The root or trigger may already have been removed.
-      }
-    }
-  }
-
   #createClient(): void {
     const client = new watchman.Client();
     this.#client = client;
@@ -539,7 +485,6 @@ class GitPromptDaemon {
   }
 
   async #restoreSubscriptions(): Promise<void> {
-    await this.cleanupLegacyTriggers();
     for (const repo of this.#repos.values()) {
       try {
         await this.#subscribeRepo(repo);
@@ -675,7 +620,6 @@ async function main(): Promise<void> {
   const daemon = new GitPromptDaemon(logPath);
   const listener = Deno.listen({ transport: "unix", path: socketPath });
   await Deno.chmod(socketPath, 0o600);
-  void daemon.cleanupLegacyTriggers();
 
   let stopping = false;
   let stopPromise: Promise<void> | null = null;

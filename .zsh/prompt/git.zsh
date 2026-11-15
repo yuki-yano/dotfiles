@@ -1,4 +1,3 @@
-typeset -gA DOT_PROMPT_GIT_INFO
 typeset -g DOT_PROMPT_GIT_BRANCH=""
 typeset -g DOT_PROMPT_GIT_DETACHED=""
 typeset -g DOT_PROMPT_GIT_UPSTREAM=""
@@ -19,8 +18,6 @@ typeset -g DOT_PROMPT_GIT_PENDING=0
 : ${DOT_PROMPT_GIT_DAEMON_CONNECT_RETRIES:=10}
 : ${DOT_PROMPT_GIT_DAEMON_CONNECT_WAIT:=5}
 : ${DOT_PROMPT_GIT_EVENT_SETTLE_WAIT:=35}
-
-typeset -g DOT_PROMPT_GIT_DAEMON_STARTED=0
 
 dot_prompt_json_quote() {
   local value=$1
@@ -48,7 +45,6 @@ dot_prompt_git_daemon_paths() {
   local tmp_root=${TMPDIR:-/tmp}
   tmp_root=${tmp_root%/}
   local runtime_base=${DOT_PROMPT_GITD_RUNTIME_BASE:-${tmp_root}/dot-prompt-gitd-${EUID}}
-  typeset -g DOT_PROMPT_GITD_RUNTIME_DIR=$runtime_base
   typeset -g DOT_PROMPT_GITD_SOCKET_PATH=${DOT_PROMPT_GITD_SOCKET_PATH:-${runtime_base}/daemon.sock}
   typeset -g DOT_PROMPT_GITD_SCRIPT=${DOT_PROMPT_GITD_SCRIPT:-$HOME/dotfiles/bin/dot-prompt-gitd.ts}
 }
@@ -66,9 +62,6 @@ dot_prompt_git_daemon_connect() {
 }
 
 dot_prompt_git_daemon_start() {
-  (( DOT_PROMPT_GIT_DAEMON_STARTED )) && return 0
-  typeset -g DOT_PROMPT_GIT_DAEMON_STARTED=1
-
   command deno run --quiet -A "$DOT_PROMPT_GITD_SCRIPT" >/dev/null 2>&1 &!
 }
 
@@ -85,9 +78,6 @@ dot_prompt_git_daemon_register() {
   if dot_prompt_git_daemon_connect; then
     connected=1
   else
-    # A daemon that was started by this shell may have exited since the last
-    # registration. The singleton lock keeps a restart attempt safe.
-    typeset -g DOT_PROMPT_GIT_DAEMON_STARTED=0
     dot_prompt_git_daemon_start
     zmodload zsh/zselect 2>/dev/null || return 1
     for (( attempt = 0; attempt < DOT_PROMPT_GIT_DAEMON_CONNECT_RETRIES; attempt++ )); do

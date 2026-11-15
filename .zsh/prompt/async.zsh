@@ -9,15 +9,7 @@ typeset -g DOT_PROMPT_GIT_PWD=""
 : ${DOT_PROMPT_GIT_AUTO_REFRESH_INTERVAL:=2}
 
 dot_prompt_async_renice() {
-  setopt localoptions noshwordsplit
-
-  if command -v renice >/dev/null; then
-    command renice +15 -p $$ >/dev/null 2>&1
-  fi
-
-  if command -v ionice >/dev/null; then
-    command ionice -c 3 -p $$ >/dev/null 2>&1
-  fi
+  command renice +15 -p $$ >/dev/null 2>&1
 }
 
 dot_prompt_async_init() {
