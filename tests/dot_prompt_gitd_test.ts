@@ -149,6 +149,33 @@ Deno.test("初回 commit 前も stage 済みと未追跡を集計し、大きな
   }
 });
 
+Deno.test("未追跡ファイルの行数は変わったファイルだけ読み直し、消えたファイルを外す", async () => {
+  const top = await Deno.makeTempDir({ prefix: "dp-gitd-line-cache-" });
+  try {
+    await git(top, "init", "-q");
+    await git(top, "config", "user.email", "prompt-test@example.invalid");
+    await git(top, "config", "user.name", "prompt-test");
+    await Deno.writeTextFile(join(top, "tracked.txt"), "tracked\n");
+    await git(top, "add", "tracked.txt");
+    await git(top, "commit", "-qm", "initial");
+    const oid = await git(top, "rev-parse", "HEAD");
+    await Deno.writeTextFile(join(top, "edited.txt"), "a\nb\n");
+    await Deno.writeTextFile(join(top, "unchanged-unreadable.txt"), "c\n");
+    const untrackedLines = new Map();
+
+    assertEquals(await readGitLineStats(top, oid, { tracked: false, untrackedLines }), { added: 3, deleted: 0 });
+    await Deno.chmod(join(top, "unchanged-unreadable.txt"), 0o000);
+    await Deno.writeTextFile(join(top, "edited.txt"), "a\nb\nc\n");
+    assertEquals(await readGitLineStats(top, oid, { tracked: false, untrackedLines }), { added: 4, deleted: 0 });
+
+    await Deno.remove(join(top, "unchanged-unreadable.txt"));
+    assertEquals(await readGitLineStats(top, oid, { tracked: false, untrackedLines }), { added: 3, deleted: 0 });
+    assertEquals([...untrackedLines.keys()], ["edited.txt"]);
+  } finally {
+    await Deno.remove(top, { recursive: true });
+  }
+});
+
 Deno.test("minimizeWatchPaths keeps external linked-worktree metadata only once", () => {
   assertEquals(
     minimizeWatchPaths([

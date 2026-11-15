@@ -63,6 +63,7 @@ interface RepoState {
   running: boolean;
   queued: boolean;
   timer: ReturnType<typeof setTimeout> | null;
+  untrackedLines: UntrackedLineCache;
 }
 
 function isRegistrationRequest(value: unknown): value is RegistrationRequest {
@@ -166,60 +167,93 @@ async function gitOutput(top: string, args: string[]): Promise<string> {
   return new TextDecoder().decode(result.stdout);
 }
 
-async function countNewFileLines(path: string): Promise<number> {
+export interface UntrackedLineCount {
+  size: number;
+  mtimeMs: number | null;
+  ino: number | null;
+  lines: number;
+}
+
+export type UntrackedLineCache = Map<string, UntrackedLineCount>;
+
+async function countTextLines(path: string): Promise<number> {
+  using file = await Deno.open(path, { read: true });
+  const buffer = new Uint8Array(64 * 1_024);
+  let bytesRead = 0;
+  let lines = 0;
+  let lastByte = -1;
+  while (true) {
+    const count = await file.read(buffer);
+    if (count === null) break;
+    // Match Git's usual binary-content heuristic.
+    const probeLength = Math.min(count, Math.max(0, 8_000 - bytesRead));
+    if (buffer.subarray(0, probeLength).includes(0)) return 0;
+    for (let index = 0; index < count; index++) {
+      if (buffer[index] === 10) lines++;
+    }
+    bytesRead += count;
+    if (count > 0) lastByte = buffer[count - 1];
+  }
+  return lines + (lastByte !== -1 && lastByte !== 10 ? 1 : 0);
+}
+
+async function countUntrackedLines(
+  path: string,
+  previous: UntrackedLineCount | undefined,
+): Promise<UntrackedLineCount | null> {
   try {
     const stat = await Deno.lstat(path);
+    const key = { size: stat.size, mtimeMs: stat.mtime?.getTime() ?? null, ino: stat.ino };
+    if (
+      previous && key.mtimeMs !== null && previous.mtimeMs === key.mtimeMs && previous.size === key.size &&
+      previous.ino === key.ino
+    ) return previous;
     // Git stores the link target itself as one line, never its contents.
-    if (stat.isSymlink) return 1;
-    // Do not descend into nested repositories or read special files.
-    if (!stat.isFile) return 0;
-
-    using file = await Deno.open(path, { read: true });
-    const buffer = new Uint8Array(64 * 1_024);
-    let bytesRead = 0;
-    let lines = 0;
-    let lastByte = -1;
-    while (true) {
-      const count = await file.read(buffer);
-      if (count === null) break;
-      // Match Git's usual binary-content heuristic without starting Git for
-      // every untracked file. Stream text files to keep memory use bounded.
-      const probeLength = Math.min(count, Math.max(0, 8_000 - bytesRead));
-      if (buffer.subarray(0, probeLength).includes(0)) return 0;
-      for (let index = 0; index < count; index++) {
-        if (buffer[index] === 10) lines++;
-      }
-      bytesRead += count;
-      if (count > 0) lastByte = buffer[count - 1];
-    }
-    return lines + (lastByte !== -1 && lastByte !== 10 ? 1 : 0);
+    if (stat.isSymlink) return { ...key, lines: 1 };
+    // Do not descend into nested repositories.
+    if (!stat.isFile) return { ...key, lines: 0 };
+    return { ...key, lines: await countTextLines(path) };
   } catch (error) {
-    // A file can disappear between ls-files and opening it during an edit.
-    if (error instanceof Deno.errors.NotFound) return 0;
+    if (error instanceof Deno.errors.NotFound) return null;
     throw error;
   }
 }
 
-export async function readGitLineStats(top: string, oid: string): Promise<GitLineStats> {
-  // An unborn branch compares against the empty tree, using the repository's
-  // object format. hash-object without -w does not write any objects.
-  const base = oid === "(initial)" ? (await gitOutput(top, ["hash-object", "-t", "tree", "--stdin"])).trim() : oid;
-  const [numstat, untracked] = await Promise.all([
-    gitOutput(top, ["diff", "--numstat", "-z", "--no-ext-diff", "--no-textconv", base, "--"]),
-    gitOutput(top, ["ls-files", "--others", "--exclude-standard", "-z"]),
+export async function readGitLineStats(
+  top: string,
+  oid: string,
+  { tracked = true, untracked = true, untrackedLines = new Map() }: {
+    tracked?: boolean;
+    untracked?: boolean;
+    untrackedLines?: UntrackedLineCache;
+  } = {},
+): Promise<GitLineStats> {
+  const readHeadToWorktreeNumstat = async () => {
+    if (!tracked) return "";
+    // An unborn branch compares against the empty tree, using the repository's
+    // object format. hash-object without -w does not write any objects.
+    const base = oid === "(initial)" ? (await gitOutput(top, ["hash-object", "-t", "tree", "--stdin"])).trim() : oid;
+    return gitOutput(top, ["diff", "--numstat", "-z", "--no-ext-diff", "--no-textconv", base, "--"]);
+  };
+  const [numstat, untrackedOutput] = await Promise.all([
+    readHeadToWorktreeNumstat(),
+    untracked ? gitOutput(top, ["ls-files", "--others", "--exclude-standard", "-z"]) : "",
   ]);
-  // Compare HEAD directly to the working tree so partially staged edits are
-  // not counted twice. Untracked text contributes additions only.
   const stats = parseNumstat(numstat);
-  const paths = untracked.split("\0").filter(Boolean);
+  const paths = untrackedOutput.split("\0").filter(Boolean);
+  const counted: UntrackedLineCache = new Map();
   let next = 0;
   await Promise.all(Array.from({ length: Math.min(4, paths.length) }, async () => {
     while (next < paths.length) {
       const path = paths[next++];
-      const lines = await countNewFileLines(join(top, path));
-      stats.added += lines;
+      const entry = await countUntrackedLines(join(top, path), untrackedLines.get(path));
+      if (!entry) continue;
+      counted.set(path, entry);
+      stats.added += entry.lines;
     }
   }));
+  untrackedLines.clear();
+  for (const [path, entry] of counted) untrackedLines.set(path, entry);
   return stats;
 }
 
@@ -443,6 +477,7 @@ class GitPromptDaemon {
       running: false,
       queued: false,
       timer: null,
+      untrackedLines: new Map(),
     };
     this.#repos.set(top, repo);
     await this.#subscribeRepo(repo);
@@ -617,9 +652,14 @@ class GitPromptDaemon {
       if (!result.success) throw new Error(`git status exited with ${result.code}`);
 
       const status = parsePorcelainV2(new TextDecoder().decode(result.stdout));
-      if (status.staged || status.unstaged || status.untracked || status.unmerged) {
-        Object.assign(status, await readGitLineStats(repo.top, status.oid));
-      }
+      Object.assign(
+        status,
+        await readGitLineStats(repo.top, status.oid, {
+          tracked: status.staged + status.unstaged + status.unmerged > 0,
+          untracked: status.untracked > 0,
+          untrackedLines: repo.untrackedLines,
+        }),
+      );
       const rebasing = await exists(join(repo.gitDir, "rebase-merge")) ||
         await exists(join(repo.gitDir, "rebase-apply"));
       const conflict = await exists(join(repo.gitDir, "MERGE_HEAD"));
