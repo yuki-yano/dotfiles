@@ -65,12 +65,20 @@ why investigators: gpt-6.1-sol
 why synthesizer: gpt-6.1-sol
 reflect tooling: gpt-6.1-sol
 reflect judgment, divergent, synthesizer: gpt-6.1-sol
-arena runners: gpt-6-astra, gpt-6.1-sol, gpt-6.1-terra, gpt-6-luna
+arena runners: gpt-6.1-sol, gpt-6.1-sol, gpt-6.1-sol, gpt-6.1-sol
 arena cross-judge pool: gpt-6-astra, gpt-6.1-sol, gpt-6.1-terra, gpt-6-luna
 swarm workers: gpt-6.1-sol
-architect runners: gpt-6-astra, gpt-6.1-sol, gpt-6.1-terra, gpt-6-luna
-interrogate reviewers: gpt-6-astra, gpt-6.1-sol, gpt-6.1-terra, gpt-6-luna
+architect runners: gpt-6.1-sol, gpt-6.1-sol, gpt-6.1-sol, gpt-6.1-sol
+interrogate reviewers: gpt-6.1-sol, gpt-6.1-sol, gpt-6.1-sol, gpt-6.1-sol
 thermos reviewers: gpt-6.1-sol
 no-comments reviewer: gpt-6.1-sol
 
 default effort: session
+
+pstackのモデル選択は以下に従う。
+
+- この表はCodex用。Claude Codeでは`~/.config/claude/pstack-models.md`の表を使う。
+- 自動で選ぶモデルは、Codexは`gpt-6.1-sol`、Claude Codeは`opus`が基本。別のモデルが入るのは`strongest judgment`の行、`arena cross-judge pool`の行、orchestrateのverifier、show-me-your-workのreviewだけ。
+- orchestrateのverifierとshow-me-your-workのreviewは、skillどおり別モデルファミリーで行い、モデルは`arena cross-judge pool`と同じ規則で選ぶ。
+- Codexの`gpt-6-astra`・`gpt-6.1-terra`・`gpt-6-luna`と、Claude Codeの`fable`・`sonnet`・`haiku`を上記以外で使うのは、ユーザーが依頼の中でモデル名を明示したときだけ。明示された指定は表より優先する。
+- 単純な機械的編集に使うworker modelは`feature, refactoring`の行を使う。slugが拒否されたときのfallbackでも、この制限を守る。
