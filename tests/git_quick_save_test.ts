@@ -112,6 +112,31 @@ Deno.test("rebase が止まっている間や衝突の最中でも、操作の�
   }
 });
 
+Deno.test("保存先の ref が symbolic ref でも hook があっても、ブランチと作業ツリーを変えない", async () => {
+  const { root, main, worktree } = await repoWithLinkedWorktree();
+  try {
+    await git(worktree, "symbolic-ref", snapshotRef, "refs/heads/main");
+    const hooks = join(root, "hooks");
+    await Deno.mkdir(hooks);
+    await Deno.writeTextFile(
+      join(hooks, "reference-transaction"),
+      `#!/bin/sh\ntouch "${join(worktree, "from-hook")}"\n`,
+    );
+    await Deno.chmod(join(hooks, "reference-transaction"), 0o755);
+    await git(main, "config", "core.hooksPath", hooks);
+    await Deno.writeTextFile(join(worktree, "side.txt"), "edited\n");
+    const mainBefore = await git(main, "rev-parse", "refs/heads/main");
+    const before = await repositoryState(worktree);
+
+    assertEquals((await quickSave(worktree)).code, 0);
+    assertEquals(await git(main, "rev-parse", "refs/heads/main"), mainBefore);
+    assertEquals(await repositoryState(worktree), before);
+    assertEquals(await git(worktree, "show", `${snapshotRef}:side.txt`), "edited");
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
 Deno.test("最初の commit がない repo でも記録し、HEAD は作らない", async () => {
   const root = await Deno.makeTempDir({ prefix: "git-quick-save-unborn-" });
   try {

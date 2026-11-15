@@ -30,6 +30,11 @@ log() {
   printf '%s: %s\n' "$label" "$1"
 }
 
+# Hooks could change the working tree or other refs, which a snapshot must not do.
+git_without_hooks() {
+  git -c core.hooksPath=/dev/null "$@"
+}
+
 if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
   log "Not a Git repository."
   exit 1
@@ -44,7 +49,7 @@ else
   rm -f "$temporary_index"
 fi
 
-if ! GIT_INDEX_FILE=$temporary_index git add --all; then
+if ! GIT_INDEX_FILE=$temporary_index git_without_hooks add --all; then
   log "Failed: git add."
   exit 1
 fi
@@ -62,7 +67,8 @@ else
   commit=$(git commit-tree "$tree" -m "$commit_message") || exit 1
 fi
 
-if ! git update-ref --create-reflog -m "$commit_message" "$snapshot_ref" "$commit"; then
+# --no-deref keeps a symbolic snapshot ref from moving the branch it points to.
+if ! git_without_hooks update-ref --no-deref --create-reflog -m "$commit_message" "$snapshot_ref" "$commit"; then
   log "Failed: recording the snapshot in $snapshot_ref."
   exit 1
 fi
