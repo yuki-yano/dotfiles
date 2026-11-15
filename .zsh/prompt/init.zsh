@@ -20,21 +20,15 @@ dot_prompt_precmd() {
   fi
   typeset -g DOT_PROMPT_SUPPRESS_PRECMD_NEWLINE=0
 
-  dot_prompt_async_maybe_reset_for_pwd
+  dot_prompt_git_precmd
   dot_prompt_build_right_base
   dot_prompt_build_git_prompt
   dot_prompt_build_left "$exit_code"
   dot_prompt_apply_render
-  if (( DOT_PROMPT_GIT_FORCE_NEXT_REFRESH )); then
-    typeset -g DOT_PROMPT_GIT_FORCE_NEXT_REFRESH=0
-    dot_prompt_async_tasks force
-  else
-    dot_prompt_async_tasks cached
-  fi
 }
 
 dot_prompt_preexec() {
-  typeset -g DOT_PROMPT_GIT_FORCE_NEXT_REFRESH=1
+  dot_prompt_git_close
 
   case $2 in
     clear|clear\ *|command\ clear|command\ clear\ *|builtin\ clear|builtin\ clear\ *)
@@ -111,7 +105,6 @@ dot_prompt_setup() {
 
   add-zsh-hook precmd dot_prompt_precmd
   add-zsh-hook preexec dot_prompt_preexec
-  add-zsh-hook zshexit dot_prompt_async_shutdown
   add-zle-hook-widget zle-line-finish dot_prompt_zle_line_finish
   add-zle-hook-widget zle-line-init dot_prompt_zle_line_init
   add-zle-hook-widget zle-line-pre-redraw dot_prompt_zle_line_pre_redraw

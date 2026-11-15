@@ -1,6 +1,7 @@
 typeset -g DOT_PROMPT_LEFT=""
 typeset -g DOT_PROMPT_RIGHT_BASE=""
 typeset -g DOT_PROMPT_GIT_PROMPT=""
+typeset -g DOT_PROMPT_GIT_BADGE=""
 typeset -g DOT_PROMPT_LAST_EXIT=0
 typeset -g DOT_PROMPT_HAS_RENDERED=0
 typeset -g DOT_PROMPT_SUPPRESS_PRECMD_NEWLINE=0
@@ -19,10 +20,7 @@ dot_prompt_build_left() {
   dot_prompt_escape "$path_display"
   path_display=$REPLY
 
-  if [[ -n $DOT_PROMPT_GIT_ACTION ]]; then
-    dot_prompt_escape "$DOT_PROMPT_GIT_ACTION"
-    badges+=("%F{1} ${REPLY} %f")
-  fi
+  [[ -n $DOT_PROMPT_GIT_BADGE ]] && badges+=("$DOT_PROMPT_GIT_BADGE")
 
   if [[ -n $VIRTUAL_ENV ]]; then
     dot_prompt_escape "${VIRTUAL_ENV:t}"

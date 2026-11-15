@@ -1,14 +1,16 @@
-import { assertEquals, assertStringIncludes } from "@std/assert";
+import { assert, assertEquals, assertStringIncludes } from "@std/assert";
 import { join } from "node:path";
 import {
   canSkipRefresh,
   detectGitAction,
-  formatCache,
+  formatState,
   GitPromptDaemon,
   minimizeWatchPaths,
+  parseHello,
   parseNumstat,
   parsePorcelainV2,
   readGitLineStats,
+  refreshDelay,
   removePreBootIndexLock,
   type WatchmanClient,
   zshQuote,
@@ -56,17 +58,41 @@ Deno.test("parsePorcelainV2 displays a detached commit using seven characters", 
   assertEquals(status.detached, true);
 });
 
-Deno.test("formatCache produces zsh-readable quoted key-value pairs", () => {
+Deno.test("formatState は固定順の zsh クォート済みのキーと値を出す", () => {
   const status = parsePorcelainV2("# branch.oid abcdef0123456789\n# branch.head feature/it's-safe\n");
-  const cache = formatCache("/tmp/repo with spaces", "/tmp/cache file", status, "Rebasing");
 
   assertEquals(zshQuote("feature/it's-safe"), "'feature/it'\\''s-safe'");
   assertEquals(
-    cache,
-    "pwd '/tmp/repo with spaces' top '/tmp/repo with spaces' cache '/tmp/cache file' " +
-      "branch 'feature/it'\\''s-safe' detached '' upstream '' action 'Rebasing' " +
-      "ahead '0' behind '0' staged '0' unstaged '0' untracked '0' unmerged '0' stash '0' added '0' deleted '0'\n",
+    formatState(status, "Rebasing"),
+    "branch 'feature/it'\\''s-safe' detached '' upstream '' action 'Rebasing' " +
+      "ahead '0' behind '0' staged '0' unstaged '0' untracked '0' unmerged '0' stash '0' added '0' deleted '0'",
   );
+});
+
+Deno.test("parseHello は top だけを持つ絶対パスの JSON を受け付け、旧形式・相対パス・不正な JSON を拒否する", () => {
+  assertEquals(parseHello('{"top":"/repo/with space"}'), "/repo/with space");
+  assertEquals(parseHello('{"top":"/repo/"}'), "/repo");
+  assertEquals(parseHello('{"top":"/repo","cachePath":"/cache"}'), null);
+  assertEquals(parseHello('{"top":"repo"}'), null);
+  assertEquals(parseHello('{"top":""}'), null);
+  assertEquals(parseHello('{"top":1}'), null);
+  assertEquals(parseHello('["/repo"]'), null);
+  assertEquals(parseHello("null"), null);
+  assertEquals(parseHello('{"top":"/repo"'), null);
+  assertEquals(parseHello(""), null);
+});
+
+Deno.test("refreshDelay は shell の接続直後だけ debounce を省く", () => {
+  const now = 10_000;
+  // Inside the window that a connecting shell opens.
+  assertEquals(refreshDelay(now, now, now + 1, false), 0);
+  // The window has passed: the usual debounce.
+  assertEquals(refreshDelay(now, now, now, false), 300);
+  assertEquals(refreshDelay(now, now, 0, false), 300);
+  // A change that has waited long is not delayed past two seconds in total.
+  assertEquals(refreshDelay(now, now - 1_900, 0, false), 100);
+  assertEquals(refreshDelay(now, now - 5_000, 0, false), 0);
+  assertEquals(refreshDelay(now, now, 0, true), 0);
 });
 
 Deno.test("numstat はバイナリを除き、改行・タブを含むパスと rename を集計する", () => {
@@ -401,79 +427,258 @@ async function waitUntil(predicate: () => Promise<boolean>, timeoutMs = 5_000): 
   throw new Error(`condition was not met within ${timeoutMs}ms`);
 }
 
-for (const heldStep of ["temporary write", "rename"] as const) {
-  Deno.test(`忘れて登録し直した repo のキャッシュを、${heldStep}で止まっていた古い refresh が上書きしない`, async () => {
-    const root = await Deno.makeTempDir({ prefix: "dp-gitd-stale-" });
-    const top = join(root, "repo");
-    const cachePath = join(root, "cache", "status");
-    const cacheHas = (text: string) => async () => (await Deno.readTextFile(cachePath).catch(() => "")).includes(text);
-    const client = new FakeWatchmanClient();
-    const daemon = new GitPromptDaemon(join(root, "daemon.log"), () => client);
-    const realWriteTextFile = Deno.writeTextFile;
-    const realRename = Deno.rename;
-    let release = () => {};
-    try {
-      await Deno.mkdir(top);
-      await git(top, "init", "-q", "-b", "main");
-      await git(
-        top,
-        "-c",
-        "user.name=t",
-        "-c",
-        "user.email=t@example.invalid",
-        "commit",
-        "-q",
-        "--allow-empty",
-        "-m",
-        "base",
-      );
-      await daemon.register({ top, cachePath });
-      await waitUntil(cacheHas("branch 'main'"));
+// Tests must fail, not hang, when an expected close or reply never comes.
+async function within<T>(promise: Promise<T>, what: string, timeoutMs = 7_000): Promise<T> {
+  const { promise: timeout, reject } = Promise.withResolvers<never>();
+  const timer = setTimeout(() => reject(new Error(`${what} did not happen within ${timeoutMs}ms`)), timeoutMs);
+  try {
+    return await Promise.race([promise, timeout]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
-      let holding = true;
-      const gate = new Promise<void>((resolvePromise) => release = resolvePromise);
-      let reportHeld = () => {};
-      const held = new Promise<void>((resolvePromise) => reportHeld = resolvePromise);
-      const holdOnce = async (path: string | URL) => {
-        if (!holding || !String(path).endsWith(".tmp")) return;
-        holding = false;
-        reportHeld();
-        await gate;
-      };
-      if (heldStep === "temporary write") {
-        Deno.writeTextFile = (async (...args: Parameters<typeof Deno.writeTextFile>) => {
-          await realWriteTextFile(...args);
-          await holdOnce(args[0]);
-        }) as typeof Deno.writeTextFile;
-      } else {
-        Deno.rename = async (from, to) => {
-          await holdOnce(from);
-          await realRename(from, to);
-        };
+interface AttachedShell extends AsyncDisposable {
+  lines: string[];
+  closed: Promise<void>;
+  latest(): string;
+}
+
+// Connects like a shell does: daemon.serve() owns the accepted side.
+async function attachShell(daemon: GitPromptDaemon, socketDir: string, top: string): Promise<AttachedShell> {
+  const path = join(socketDir, `shell-${crypto.randomUUID().slice(0, 8)}.sock`);
+  const listener = Deno.listen({ transport: "unix", path });
+  const conn = await Deno.connect({ transport: "unix", path });
+  const served = daemon.serve(await listener.accept());
+  listener.close();
+  await conn.write(new TextEncoder().encode(`${JSON.stringify({ top })}\n`));
+  const lines: string[] = [];
+  const closed = (async () => {
+    const buffer = new Uint8Array(4_096);
+    let text = "";
+    while (true) {
+      const count = await conn.read(buffer).catch(() => null);
+      if (count === null) return;
+      text += new TextDecoder().decode(buffer.subarray(0, count));
+      const complete = text.split("\n");
+      text = complete.pop() ?? "";
+      lines.push(...complete);
+    }
+  })();
+  return {
+    lines,
+    closed,
+    latest: () => lines.at(-1) ?? "",
+    async [Symbol.asyncDispose]() {
+      try {
+        conn.close();
+      } catch {
+        // The daemon closed it first.
       }
+      await Promise.all([closed, served]);
+    },
+  };
+}
 
-      await git(top, "checkout", "-qb", "old");
-      const [worktreeSubscription, metadataSubscription] = client.subscriptionNames();
-      client.emit("subscription", { subscription: metadataSubscription, files: ["HEAD"] });
-      if (heldStep === "temporary write") await held;
-      else await Promise.race([held, new Promise((resolvePromise) => setTimeout(resolvePromise, 1_500))]);
+interface DaemonFixture extends AsyncDisposable {
+  root: string;
+  top: string;
+  daemon: GitPromptDaemon;
+  watchman: FakeWatchmanClient;
+  /** Emits a Watchman notification for the work tree or for the Git directory. */
+  notify(kind: "worktree" | "metadata", body: Record<string, unknown>): void;
+  statusCalls(): number;
+  /** Makes the next `git status` finish reading and then wait before answering. */
+  holdNextStatus(): { held(): Promise<void>; release(): void };
+}
 
-      client.emit("subscription", { subscription: worktreeSubscription, canceled: true });
-      await git(top, "checkout", "-qb", "new");
-      await daemon.register({ top, cachePath });
-      await waitUntil(cacheHas("branch 'new'"));
-      release();
-      await waitUntil(() =>
-        Promise.resolve([...Deno.readDirSync(join(root, "cache"))].every((entry) => !entry.name.endsWith(".tmp")))
-      );
-      assertStringIncludes(await Deno.readTextFile(cachePath), "branch 'new'");
-    } finally {
-      release();
-      Deno.writeTextFile = realWriteTextFile;
-      Deno.rename = realRename;
+// A repository on branch main, a daemon with a fake Watchman, and a Git shim that counts and can hold `git status`.
+async function daemonFixture(): Promise<DaemonFixture> {
+  const root = await Deno.realPath(await Deno.makeTempDir({ dir: "/tmp", prefix: "dp-gitd-unit-" }));
+  const top = join(root, "repo");
+  const callLog = join(root, "git-calls.log");
+  const gate = join(root, "gate");
+  const realGit = (await git(root, "--exec-path")) + "/git";
+  await Deno.mkdir(join(root, "bin"));
+  await Deno.writeTextFile(
+    join(root, "bin", "git"),
+    [
+      "#!/bin/sh",
+      `printf '%s\\n' "$*" >> '${callLog}'`,
+      `case " $* " in *" status "*)`,
+      `  if mv '${gate}' '${gate}.held' 2>/dev/null; then`,
+      `    '${realGit}' "$@" > '${gate}.out'; code=$?`,
+      `    while [ -e '${gate}.held' ]; do sleep 0.02; done`,
+      `    cat '${gate}.out'; exit $code`,
+      "  fi;;",
+      "esac",
+      `exec '${realGit}' "$@"`,
+      "",
+    ].join("\n"),
+    { mode: 0o755 },
+  );
+  await Deno.mkdir(top);
+  await git(top, "init", "-q", "-b", "main");
+  await Deno.writeTextFile(join(top, "tracked.txt"), "initial\n");
+  await git(top, "add", "tracked.txt");
+  await git(top, "-c", "user.name=t", "-c", "user.email=t@example.invalid", "commit", "-qm", "base");
+  const originalPath = Deno.env.get("PATH") ?? "";
+  Deno.env.set("PATH", `${join(root, "bin")}:${originalPath}`);
+  const watchman = new FakeWatchmanClient();
+  const daemon = new GitPromptDaemon(join(root, "daemon.log"), () => watchman);
+  const exists = (path: string) => Deno.stat(path).then(() => true, () => false);
+  return {
+    root,
+    top,
+    daemon,
+    watchman,
+    notify(kind, body) {
+      const [worktree, metadata] = watchman.subscriptionNames().slice(-2);
+      watchman.emit("subscription", { subscription: kind === "worktree" ? worktree : metadata, ...body });
+    },
+    statusCalls: () =>
+      Deno.readTextFileSync(callLog).split("\n").filter((line) => line.split(" ").includes("status")).length,
+    holdNextStatus() {
+      Deno.writeTextFileSync(gate, "");
+      return {
+        held: () => waitUntil(() => exists(`${gate}.out`)),
+        release: () => Deno.removeSync(`${gate}.held`),
+      };
+    },
+    async [Symbol.asyncDispose]() {
+      await Deno.remove(`${gate}.held`).catch(() => undefined);
       daemon.shutdown();
+      Deno.env.set("PATH", originalPath);
       await new Promise((resolvePromise) => setTimeout(resolvePromise, 100));
       await Deno.remove(root, { recursive: true });
-    }
-  });
+    },
+  };
 }
+
+const has = (shell: AttachedShell, text: string) => () => Promise.resolve(shell.latest().includes(text));
+const pause = (ms: number) => new Promise((resolvePromise) => setTimeout(resolvePromise, ms));
+
+Deno.test("忘れて登録し直した repo の shell へ、止まっていた古い refresh の状態を送らない", async () => {
+  await using fixture = await daemonFixture();
+  const { top, daemon, root } = fixture;
+  await using before = await attachShell(daemon, root, top);
+  await waitUntil(has(before, "branch 'main'"));
+
+  await git(top, "checkout", "-qb", "old");
+  const hold = fixture.holdNextStatus();
+  fixture.notify("metadata", { files: ["HEAD"] });
+  await hold.held();
+
+  fixture.notify("worktree", { canceled: true });
+  await within(before.closed, "closing the shell of the forgotten repository");
+  await git(top, "checkout", "-qb", "new");
+  await using after = await attachShell(daemon, root, top);
+  await waitUntil(has(after, "branch 'new'"));
+
+  hold.release();
+  await pause(500);
+  assertEquals(after.lines.filter((line) => line.includes("branch 'old'")), []);
+  assertStringIncludes(after.latest(), "branch 'new'");
+});
+
+Deno.test("どの shell もプロンプトにいない repo ではイベントが来ても git を起動せず、shell が戻ったときに1回だけ更新する", async () => {
+  await using fixture = await daemonFixture();
+  const { top, daemon, root } = fixture;
+  {
+    await using shell = await attachShell(daemon, root, top);
+    await waitUntil(has(shell, "unstaged '0'"));
+  }
+  const callsWhileObserved = fixture.statusCalls();
+
+  await Deno.writeTextFile(join(top, "tracked.txt"), "changed\n");
+  fixture.notify("worktree", { files: ["tracked.txt"] });
+  await pause(700);
+  fixture.notify("worktree", { files: ["tracked.txt"] });
+  await pause(700);
+  assertEquals(fixture.statusCalls(), callsWhileObserved);
+
+  await using back = await attachShell(daemon, root, top);
+  await waitUntil(() => Promise.resolve(back.lines.length > 0));
+  // The state from before the change is never shown to the returning shell.
+  assertStringIncludes(back.lines[0], "unstaged '1'");
+  await pause(500);
+  assertEquals(fixture.statusCalls(), callsWhileObserved + 1);
+});
+
+Deno.test("refresh 中に接続した shell にも、完了後の状態を送る", async () => {
+  await using fixture = await daemonFixture();
+  const { top, daemon, root } = fixture;
+  await using first = await attachShell(daemon, root, top);
+  await waitUntil(has(first, "unstaged '0'"));
+
+  await Deno.writeTextFile(join(top, "tracked.txt"), "changed\n");
+  const hold = fixture.holdNextStatus();
+  fixture.notify("worktree", { files: ["tracked.txt"] });
+  await hold.held();
+  await using second = await attachShell(daemon, root, top);
+  await pause(200);
+  assertEquals(second.lines, []);
+
+  hold.release();
+  await waitUntil(has(second, "unstaged '1'"));
+  await waitUntil(has(first, "unstaged '1'"));
+});
+
+Deno.test("購読が cancel された repo と、git が最上位と認めないパスの接続を閉じる", async () => {
+  await using fixture = await daemonFixture();
+  const { top, daemon, root } = fixture;
+  await using shell = await attachShell(daemon, root, top);
+  await waitUntil(has(shell, "branch 'main'"));
+  fixture.notify("worktree", { canceled: true });
+  await within(shell.closed, "closing the shell of the cancelled repository");
+
+  await Deno.mkdir(join(top, "sub", ".git"), { recursive: true });
+  await using inSubdirectory = await attachShell(daemon, root, join(top, "sub"));
+  await within(inSubdirectory.closed, "rejecting a path that is not the top");
+  assertEquals(inSubdirectory.lines, []);
+});
+
+Deno.test("接続直後のイベントは debounce を待たずに更新し、窓を過ぎたイベントには debounce をかける", async () => {
+  await using fixture = await daemonFixture();
+  const { top, daemon, root } = fixture;
+  let generation = 0;
+  const changeAndMeasure = async (shell: AttachedShell) => {
+    const expected = `added '${++generation}'`;
+    await Deno.writeTextFile(join(top, "tracked.txt"), "initial\n" + "more\n".repeat(generation));
+    const start = performance.now();
+    fixture.notify("worktree", { files: ["tracked.txt"] });
+    await waitUntil(has(shell, expected));
+    return performance.now() - start;
+  };
+
+  await using waiting = await attachShell(daemon, root, top);
+  await waitUntil(has(waiting, "unstaged '0'"));
+  await pause(400);
+  const debounced = await changeAndMeasure(waiting);
+  assert(debounced >= 300, `expected the 300 ms debounce, got ${debounced} ms`);
+
+  // The fastest of three tries, so that a busy machine does not fail the test.
+  let fastest = Infinity;
+  for (let attempt = 0; attempt < 3 && fastest >= 300; attempt++) {
+    await pause(400);
+    await using returning = await attachShell(daemon, root, top);
+    await waitUntil(() => Promise.resolve(returning.lines.length > 0));
+    fastest = Math.min(fastest, await changeAndMeasure(returning));
+  }
+  assert(fastest < 300, `expected an update without the debounce, got ${fastest} ms`);
+});
+
+Deno.test("同じ状態の refresh では、同じ接続へ行を送り直さない", async () => {
+  await using fixture = await daemonFixture();
+  const { top, daemon, root } = fixture;
+  await using shell = await attachShell(daemon, root, top);
+  await waitUntil(has(shell, "unstaged '0'"));
+  const calls = fixture.statusCalls();
+
+  const now = new Date();
+  await Deno.utime(join(top, "tracked.txt"), now, now);
+  fixture.notify("worktree", { files: ["tracked.txt"] });
+  await waitUntil(() => Promise.resolve(fixture.statusCalls() > calls));
+  await pause(300);
+  assertEquals(shell.lines.length, 1);
+});

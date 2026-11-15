@@ -1,23 +1,13 @@
-typeset -g DOT_PROMPT_GIT_BRANCH=""
-typeset -g DOT_PROMPT_GIT_DETACHED=""
-typeset -g DOT_PROMPT_GIT_UPSTREAM=""
-typeset -g DOT_PROMPT_GIT_ACTION=""
-typeset -g DOT_PROMPT_GIT_AHEAD=0
-typeset -g DOT_PROMPT_GIT_BEHIND=0
-typeset -g DOT_PROMPT_GIT_UNMERGED=0
-typeset -g DOT_PROMPT_GIT_STAGED=0
-typeset -g DOT_PROMPT_GIT_UNSTAGED=0
-typeset -g DOT_PROMPT_GIT_UNTRACKED=0
-typeset -g DOT_PROMPT_GIT_STASH=0
-typeset -g DOT_PROMPT_GIT_ADDED=0
-typeset -g DOT_PROMPT_GIT_DELETED=0
+typeset -g DOT_PROMPT_GIT_LINE=""
 typeset -g DOT_PROMPT_GIT_TOP=""
-typeset -g DOT_PROMPT_GIT_PENDING=0
+typeset -g DOT_PROMPT_GITD_FD=""
+typeset -g DOT_PROMPT_GITD_BUFFER=""
+typeset -g DOT_PROMPT_GITD_ANSWERED=0
+typeset -g DOT_PROMPT_GITD_RETRY_DELAY=0
+typeset -g DOT_PROMPT_GITD_SPAWNED_AT=0
 
-: ${DOT_PROMPT_GIT_DAEMON_CONNECT_RETRIES:=10}
-: ${DOT_PROMPT_GIT_DAEMON_CONNECT_WAIT:=5}
-: ${DOT_PROMPT_GIT_DAEMON_SEND_ATTEMPTS:=3}
-: ${DOT_PROMPT_GIT_EVENT_SETTLE_WAIT:=35}
+: ${DOT_PROMPT_GITD_ANSWER_TIMEOUT:=2}
+: ${DOT_PROMPT_GITD_RETRY_MAX:=32}
 
 dot_prompt_json_quote() {
   local value=$1
@@ -27,16 +17,6 @@ dot_prompt_json_quote() {
   value=${value//$'\r'/\\r}
   value=${value//$'\t'/\\t}
   REPLY="\"${value}\""
-}
-
-dot_prompt_git_cache_path_for_top() {
-  setopt localoptions noshwordsplit
-
-  local top=$1
-  local cache_root=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/prompt/git-status
-  local cache_key=${top//\//%}
-
-  REPLY="${cache_root}/${cache_key}.status"
 }
 
 dot_prompt_git_daemon_paths() {
@@ -56,201 +36,233 @@ dot_prompt_git_daemon_available() {
   [[ -r $DOT_PROMPT_GITD_SCRIPT ]]
 }
 
-dot_prompt_git_daemon_connect() {
-  zmodload zsh/net/socket 2>/dev/null || return 1
-  zsocket "$DOT_PROMPT_GITD_SOCKET_PATH" 2>/dev/null
-}
-
 dot_prompt_git_daemon_start() {
-  command deno run --quiet -A "$DOT_PROMPT_GITD_SCRIPT" >/dev/null 2>&1 &!
+  # Started from the interactive shell: do not let the daemon hold its terminal.
+  command deno run --quiet -A "$DOT_PROMPT_GITD_SCRIPT" </dev/null >/dev/null 2>&1 &!
 }
 
-dot_prompt_git_daemon_open() {
-  local attempt
+dot_prompt_git_find_top() {
+  local dir=${PWD:A}
 
-  dot_prompt_git_daemon_connect && [[ -n $REPLY ]] && return 0
-  dot_prompt_git_daemon_start
-  zmodload zsh/zselect 2>/dev/null || return 1
-  for (( attempt = 0; attempt < DOT_PROMPT_GIT_DAEMON_CONNECT_RETRIES; attempt++ )); do
-    zselect -t "$DOT_PROMPT_GIT_DAEMON_CONNECT_WAIT" 2>/dev/null || true
-    dot_prompt_git_daemon_connect && [[ -n $REPLY ]] && return 0
+  while [[ ${dir:t} != .git ]]; do
+    if [[ -e $dir/.git ]]; then
+      REPLY=$dir
+      return 0
+    fi
+    [[ $dir == / ]] && break
+    dir=${dir:h}
   done
+  REPLY=""
   return 1
 }
 
-dot_prompt_git_daemon_register() {
+dot_prompt_git_precmd() {
+  dot_prompt_git_find_top
+  if [[ $REPLY != "$DOT_PROMPT_GIT_TOP" ]]; then
+    dot_prompt_git_close
+    typeset -g DOT_PROMPT_GIT_TOP=$REPLY
+    typeset -g DOT_PROMPT_GIT_LINE=""
+  fi
+  [[ -n $DOT_PROMPT_GIT_TOP && -z $DOT_PROMPT_GITD_FD ]] || return 0
+
+  if dot_prompt_git_open; then
+    dot_prompt_git_schedule_retry "$DOT_PROMPT_GITD_ANSWER_TIMEOUT"
+    return 0
+  fi
+  typeset -g DOT_PROMPT_GIT_LINE=""
+  if dot_prompt_git_daemon_available; then
+    dot_prompt_git_spawn_daemon
+    dot_prompt_git_schedule_retry 1
+  fi
+  return 0
+}
+
+dot_prompt_git_open() {
   setopt localoptions noshwordsplit
+  local raw fd=""
 
-  local top=$1
-  local cache_path=$2
-  local top_json cache_json request fd ack attempt
+  zmodload zsh/net/socket zsh/system 2>/dev/null || return 1
+  dot_prompt_git_daemon_paths
+  zsocket "$DOT_PROMPT_GITD_SOCKET_PATH" 2>/dev/null || return 1
+  raw=$REPLY
+  # zsocket cannot set close-on-exec. Without it, a long-lived process started
+  # by a zle widget would hold the connection open after this shell closes it.
+  sysopen -r -w -o cloexec -u fd "/dev/fd/$raw" 2>/dev/null || fd=""
+  exec {raw}>&-
+  [[ -n $fd ]] || return 1
 
-  dot_prompt_git_daemon_available || return 1
-
-  dot_prompt_json_quote "$top"; top_json=$REPLY
-  dot_prompt_json_quote "$cache_path"; cache_json=$REPLY
-  request="{\"top\":${top_json},\"cachePath\":${cache_json}}"
-
-  # Closing before the daemon has accepted the connection drops the request,
-  # so resend until it is acknowledged. Registering twice is harmless.
-  for (( attempt = 0; attempt < DOT_PROMPT_GIT_DAEMON_SEND_ATTEMPTS; attempt++ )); do
-    dot_prompt_git_daemon_open || return 1
-    fd=$REPLY
-    ack=""
-    print -r -u "$fd" -- "$request" 2>/dev/null && IFS= read -r -t 1 -u "$fd" ack 2>/dev/null
+  dot_prompt_json_quote "$DOT_PROMPT_GIT_TOP"
+  if ! dot_prompt_git_write "$fd" "{\"top\":${REPLY}}"; then
     exec {fd}>&-
-    [[ $ack == ok ]] && return 0
-  done
-  return 1
+    return 1
+  fi
+  typeset -g DOT_PROMPT_GITD_FD=$fd
+  typeset -g DOT_PROMPT_GITD_BUFFER=""
+  typeset -g DOT_PROMPT_GITD_ANSWERED=0
+  [[ -o zle ]] && zle -F "$fd" dot_prompt_git_on_readable
+  return 0
 }
 
-dot_prompt_git_status_from_cache() {
-  setopt localoptions noshwordsplit
+dot_prompt_git_write() {
+  setopt localoptions localtraps
+  trap '' PIPE
+  print -r -u "$1" -- "$2" 2>/dev/null
+}
 
-  local cache_path=$1
-  local line signature=""
+dot_prompt_git_close() {
+  dot_prompt_git_cancel_retry
+  [[ -n $DOT_PROMPT_GITD_FD ]] || return 0
+  [[ -o zle ]] && zle -F "$DOT_PROMPT_GITD_FD" 2>/dev/null
+  exec {DOT_PROMPT_GITD_FD}>&-
+  typeset -g DOT_PROMPT_GITD_FD=""
+  typeset -g DOT_PROMPT_GITD_BUFFER=""
+  typeset -g DOT_PROMPT_GITD_ANSWERED=0
+}
+
+# zle -F handler: $1 is the descriptor, $2 is set when it is in an error state.
+dot_prompt_git_on_readable() {
+  dot_prompt_git_receive "$1" "$2" && dot_prompt_git_render
+}
+
+dot_prompt_git_receive() {
+  setopt localoptions noshwordsplit
+  local chunk newest="" closed=0
   local -a items
-  local -A info stat
 
-  [[ -r $cache_path ]] || return 1
-  # Stat before reading so a newer atomic rename never gets tied to older content.
-  # Inode distinguishes multiple cache replacements within the same second.
-  if zmodload zsh/stat 2>/dev/null && zstat -H stat -- "$cache_path" 2>/dev/null; then
-    signature="${stat[mtime]}:${stat[inode]}:${stat[size]}"
+  [[ -n $2 ]] && closed=1
+  while (( ! closed )); do
+    # read would block on a partial line. sysread returns 0 with data, 4 when
+    # nothing more is ready, 5 at end of file.
+    sysread -i "$1" -t 0 chunk
+    case $? in
+      0) DOT_PROMPT_GITD_BUFFER+=$chunk ;;
+      4) break ;;
+      *) closed=1 ;;
+    esac
+  done
+
+  if (( ! closed )) && [[ $DOT_PROMPT_GITD_BUFFER == *$'\n'* ]]; then
+    newest=${${DOT_PROMPT_GITD_BUFFER%$'\n'*}##*$'\n'}
+    DOT_PROMPT_GITD_BUFFER=${DOT_PROMPT_GITD_BUFFER##*$'\n'}
+    items=("${(Q@)${(z)newest}}")
+    (( ${#items} > 0 && ${#items} % 2 == 0 )) || closed=1
   fi
-  IFS= read -r line < "$cache_path" || return 1
-  [[ -n $line ]] || return 1
 
-  items=("${(Q@)${(z)line}}")
-  (( ${#items} > 0 && ${#items} % 2 == 0 )) || return 1
-
-  info=("${items[@]}")
-  info[pwd]=$PWD
-  info[signature]=$signature
-  print -r -- ${(@kvq)info}
+  if (( closed )); then
+    local answered=$DOT_PROMPT_GITD_ANSWERED
+    dot_prompt_git_close
+    (( answered )) && dot_prompt_git_schedule_retry 1
+    newest=""
+  elif [[ -z $newest ]]; then
+    return 1
+  else
+    typeset -g DOT_PROMPT_GITD_ANSWERED=1
+    dot_prompt_git_cancel_retry
+  fi
+  [[ $newest != "$DOT_PROMPT_GIT_LINE" ]] || return 1
+  typeset -g DOT_PROMPT_GIT_LINE=$newest
 }
 
-dot_prompt_git_empty_status() {
-  local -A info
-  info=(pwd "$PWD" top "")
-  print -r -- ${(@kvq)info}
+dot_prompt_git_render() {
+  dot_prompt_build_right_base
+  dot_prompt_build_git_prompt
+  dot_prompt_build_left "$DOT_PROMPT_LAST_EXIT"
+  dot_prompt_apply_render
+  dot_prompt_reset_prompt_full
 }
 
-dot_prompt_git_pending_status() {
-  local -A info
-  info=(pwd "$PWD" top "$1" cache "$2" pending 1)
-  print -r -- ${(@kvq)info}
+dot_prompt_git_schedule_retry() {
+  zmodload zsh/sched 2>/dev/null || return 0
+  dot_prompt_git_cancel_retry
+  typeset -g DOT_PROMPT_GITD_RETRY_DELAY=$1
+  sched +$1 dot_prompt_git_retry
 }
 
-dot_prompt_git_status() {
-  setopt localoptions noshwordsplit
+dot_prompt_git_cancel_retry() {
+  local index=${zsh_scheduled_events[(I)*:dot_prompt_git_retry]}
 
-  local mode=${1:-cached}
-  local cache_path top
+  (( index )) && sched -$index
+  typeset -g DOT_PROMPT_GITD_RETRY_DELAY=0
+}
 
-  if [[ $mode == cache-only ]]; then
-    cache_path=$2
-    [[ -n $cache_path ]] || return 1
-    dot_prompt_git_status_from_cache "$cache_path"
-    return $?
+# Runs from sched, so only while zle waits for input or right before a prompt.
+dot_prompt_git_retry() {
+  local delay=$DOT_PROMPT_GITD_RETRY_DELAY
+
+  typeset -g DOT_PROMPT_GITD_RETRY_DELAY=0
+  [[ -n $DOT_PROMPT_GIT_TOP ]] && (( ! DOT_PROMPT_GITD_ANSWERED )) || return 0
+  dot_prompt_git_close
+  if [[ -n $DOT_PROMPT_GIT_LINE ]]; then
+    typeset -g DOT_PROMPT_GIT_LINE=""
+    dot_prompt_git_render
   fi
+  dot_prompt_git_open
+  (( delay = delay * 2 > DOT_PROMPT_GITD_RETRY_MAX ? DOT_PROMPT_GITD_RETRY_MAX : delay * 2 ))
+  dot_prompt_git_schedule_retry "$delay"
+}
 
-  if ! dot_prompt_git_daemon_available; then
-    # Event-driven updates require the daemon. Keep the prompt quiet on
-    # machines without Deno or Watchman instead of falling back to polling.
-    dot_prompt_git_empty_status
-    return 0
-  fi
-
-  if [[ $mode == known || $mode == known-after-event ]]; then
-    top=$2
-    cache_path=$3
-    if [[ -z $top || -z $cache_path ]]; then
-      dot_prompt_git_empty_status
-      return 0
-    fi
-
-    if ! dot_prompt_git_daemon_register "$top" "$cache_path"; then
-      dot_prompt_git_empty_status
-      return 0
-    fi
-    if [[ $mode == known-after-event ]] && zmodload zsh/zselect 2>/dev/null; then
-      # Give Watchman and the daemon time to settle after the preceding shell
-      # command. This is a zsh builtin wait in the async worker, not a process.
-      zselect -t "$DOT_PROMPT_GIT_EVENT_SETTLE_WAIT" 2>/dev/null || true
-    fi
-    dot_prompt_git_status_from_cache "$cache_path" || dot_prompt_git_pending_status "$top" "$cache_path"
-    return 0
-  fi
-
-  if ! top=$(command git rev-parse --show-toplevel 2>/dev/null); then
-    # Outside a repo, return a sentinel with an empty top. Empty output and
-    # non-zero codes are treated as transient failures, so be explicit here.
-    dot_prompt_git_empty_status
-    return 0
-  fi
-  dot_prompt_git_cache_path_for_top "$top"
-  cache_path=$REPLY
-  if ! dot_prompt_git_daemon_register "$top" "$cache_path"; then
-    dot_prompt_git_empty_status
-    return 0
-  fi
-
-  dot_prompt_git_status_from_cache "$cache_path" || dot_prompt_git_pending_status "$top" "$cache_path"
+# shortcut: one start per shell per 10 seconds; many shells can still start one
+# each at the same moment, and the daemon's pid lock lets a single one survive.
+dot_prompt_git_spawn_daemon() {
+  zmodload zsh/datetime 2>/dev/null || return 0
+  (( EPOCHSECONDS - DOT_PROMPT_GITD_SPAWNED_AT >= 10 )) || return 0
+  typeset -g DOT_PROMPT_GITD_SPAWNED_AT=$EPOCHSECONDS
+  dot_prompt_git_daemon_start
 }
 
 dot_prompt_build_git_prompt() {
+  setopt localoptions noshwordsplit
   local prompt=""
   local has_local_changes=0
+  local -A git
 
-  if (( DOT_PROMPT_GIT_PENDING )); then
-    typeset -g DOT_PROMPT_GIT_PROMPT=""
-    return
+  typeset -g DOT_PROMPT_GIT_PROMPT=""
+  typeset -g DOT_PROMPT_GIT_BADGE=""
+  [[ -n $DOT_PROMPT_GIT_LINE ]] || return 0
+  git=("${(Q@)${(z)DOT_PROMPT_GIT_LINE}}")
+
+  if [[ -n $git[action] ]]; then
+    dot_prompt_escape "$git[action]"
+    typeset -g DOT_PROMPT_GIT_BADGE="%F{1} ${REPLY} %f"
   fi
 
-  if [[ -n $DOT_PROMPT_GIT_BRANCH ]]; then
-    if [[ -n $DOT_PROMPT_GIT_DETACHED ]]; then
-      dot_prompt_escape "$DOT_PROMPT_GIT_BRANCH"
+  if [[ -n $git[branch] ]]; then
+    if [[ -n $git[detached] ]]; then
+      dot_prompt_escape "$git[branch]"
       prompt+="%B%F{6}:%f%F{7}${REPLY}%f%b"
     else
-      dot_prompt_escape "$DOT_PROMPT_GIT_BRANCH"
+      dot_prompt_escape "$git[branch]"
       prompt+="%B%F{7} ${REPLY}%f%b"
     fi
   fi
 
-  if [[ -n $DOT_PROMPT_GIT_UPSTREAM ]]; then
-    dot_prompt_escape "$DOT_PROMPT_GIT_UPSTREAM"
+  if [[ -n $git[upstream] ]]; then
+    dot_prompt_escape "$git[upstream]"
     prompt+="%F{5}->%f%F{6}${REPLY}%f "
   fi
 
-  (( DOT_PROMPT_GIT_BEHIND > 0 )) && prompt+="%B%F{6}↓ ${DOT_PROMPT_GIT_BEHIND}%f%b"
-  (( DOT_PROMPT_GIT_AHEAD > 0 )) && prompt+="%B%F{6}↑ ${DOT_PROMPT_GIT_AHEAD}%f%b"
+  (( ${git[behind]:-0} > 0 )) && prompt+="%B%F{6}↓ ${git[behind]}%f%b"
+  (( ${git[ahead]:-0} > 0 )) && prompt+="%B%F{6}↑ ${git[ahead]}%f%b"
 
-  if [[ -n $DOT_PROMPT_GIT_TOP ]]; then
-    prompt+="|"
-  fi
+  prompt+="|"
 
-  (( DOT_PROMPT_GIT_UNMERGED > 0 )) && prompt+=" %F{1}X:${DOT_PROMPT_GIT_UNMERGED}%f"
-  (( DOT_PROMPT_GIT_STAGED > 0 )) && prompt+=" %F{2}M:${DOT_PROMPT_GIT_STAGED}%f"
-  (( DOT_PROMPT_GIT_UNSTAGED > 0 )) && prompt+=" %F{1}M:${DOT_PROMPT_GIT_UNSTAGED}%f"
-  (( DOT_PROMPT_GIT_UNTRACKED > 0 )) && prompt+=" %F{1}?:${DOT_PROMPT_GIT_UNTRACKED}%f"
-  (( DOT_PROMPT_GIT_STASH > 0 )) && prompt+=" %F{4}Stash:${DOT_PROMPT_GIT_STASH}%f"
+  (( ${git[unmerged]:-0} > 0 )) && prompt+=" %F{1}X:${git[unmerged]}%f"
+  (( ${git[staged]:-0} > 0 )) && prompt+=" %F{2}M:${git[staged]}%f"
+  (( ${git[unstaged]:-0} > 0 )) && prompt+=" %F{1}M:${git[unstaged]}%f"
+  (( ${git[untracked]:-0} > 0 )) && prompt+=" %F{1}?:${git[untracked]}%f"
+  (( ${git[stash]:-0} > 0 )) && prompt+=" %F{4}Stash:${git[stash]}%f"
 
-  if (( DOT_PROMPT_GIT_UNMERGED > 0 || DOT_PROMPT_GIT_STAGED > 0 || DOT_PROMPT_GIT_UNSTAGED > 0 || DOT_PROMPT_GIT_UNTRACKED > 0 )); then
+  if (( ${git[unmerged]:-0} > 0 || ${git[staged]:-0} > 0 || ${git[unstaged]:-0} > 0 || ${git[untracked]:-0} > 0 )); then
     has_local_changes=1
   fi
 
-  if [[ -n $DOT_PROMPT_GIT_TOP ]] && (( ! has_local_changes )); then
+  if (( ! has_local_changes )); then
     prompt+=" %B%F{2}✔%f%b "
   fi
 
-  if (( DOT_PROMPT_GIT_ADDED > 0 || DOT_PROMPT_GIT_DELETED > 0 )); then
-    prompt+=" %F{244}│%f %F{2}+${DOT_PROMPT_GIT_ADDED}%f %F{1}-${DOT_PROMPT_GIT_DELETED}%f"
+  if (( ${git[added]:-0} > 0 || ${git[deleted]:-0} > 0 )); then
+    prompt+=" %F{244}│%f %F{2}+${git[added]:-0}%f %F{1}-${git[deleted]:-0}%f"
   fi
 
-  if [[ -n $prompt ]]; then
-    prompt+=" "
-  fi
-
-  typeset -g DOT_PROMPT_GIT_PROMPT="$prompt"
+  typeset -g DOT_PROMPT_GIT_PROMPT="${prompt} "
 }

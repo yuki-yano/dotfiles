@@ -1,11 +1,17 @@
 #!/usr/bin/env -S deno run -A
 
 import watchmanModule from "fb-watchman";
-import { basename, dirname, isAbsolute, join, relative, resolve } from "node:path";
+import { basename, isAbsolute, join, relative, resolve } from "node:path";
 
 const DEBOUNCE_MS = 300;
 const MAX_DEBOUNCE_MS = 2_000;
 const MAX_CONCURRENT_GIT = 4;
+// A shell connects right after its command ends, and Watchman reports that
+// command's last writes 22-43 ms after they happen (measured). Events inside
+// this window skip the debounce.
+const EXPEDITE_MS = 150;
+const IDLE_FORGET_MS = 60 * 60_000;
+const MAX_HELLO_BYTES = 4_096;
 
 type WatchmanResponse = Record<string, unknown>;
 
@@ -44,9 +50,11 @@ export interface GitStatus extends GitLineStats {
   stash: number;
 }
 
-interface RegistrationRequest {
-  top: string;
-  cachePath: string;
+interface Client {
+  readonly conn: Deno.Conn;
+  readonly top: string;
+  latest: string | null;
+  writing: boolean;
 }
 
 export interface PendingChanges {
@@ -71,7 +79,9 @@ interface RepoState {
   top: string;
   gitDir: string;
   commonDir: string;
-  cachePath: string;
+  line: string | null;
+  expediteUntil: number;
+  idleTimer: ReturnType<typeof setTimeout> | null;
   subscriptions: Set<string>;
   pending: PendingChanges | null;
   pendingSince: number | null;
@@ -97,12 +107,22 @@ export function isInsideNestedWorktree(base: string, name: string, worktrees: st
   );
 }
 
-function isRegistrationRequest(value: unknown): value is RegistrationRequest {
-  if (!value || typeof value !== "object") return false;
-  const request = value as Record<string, unknown>;
-  return typeof request.top === "string" && request.top.length > 0 &&
-    typeof request.cachePath === "string" && request.cachePath.length > 0 &&
-    isAbsolute(request.top) && isAbsolute(request.cachePath);
+export function parseHello(text: string): string | null {
+  let value: unknown;
+  try {
+    value = JSON.parse(text);
+  } catch {
+    return null;
+  }
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const top = (value as Record<string, unknown>).top;
+  if (Object.keys(value).length !== 1 || typeof top !== "string" || !isAbsolute(top)) return null;
+  return resolve(top);
+}
+
+export function refreshDelay(now: number, pendingSince: number, expediteUntil: number, immediate: boolean): number {
+  if (immediate || now < expediteUntil) return 0;
+  return Math.min(DEBOUNCE_MS, Math.max(0, MAX_DEBOUNCE_MS - (now - pendingSince)));
 }
 
 function parseCount(value: string | undefined, prefix = ""): number {
@@ -299,16 +319,8 @@ export function zshQuote(value: string): string {
   return `'${value.replaceAll("'", "'\\''")}'`;
 }
 
-export function formatCache(
-  top: string,
-  cachePath: string,
-  status: GitStatus,
-  action: string,
-): string {
+export function formatState(status: GitStatus, action: string): string {
   const pairs: Array<[string, string | number]> = [
-    ["pwd", top],
-    ["top", top],
-    ["cache", cachePath],
     ["branch", status.branch],
     ["detached", status.detached ? "1" : ""],
     ["upstream", status.upstream],
@@ -323,7 +335,7 @@ export function formatCache(
     ["added", status.added],
     ["deleted", status.deleted],
   ];
-  return `${pairs.flatMap(([key, value]) => [key, zshQuote(String(value))]).join(" ")}\n`;
+  return pairs.flatMap(([key, value]) => [key, zshQuote(String(value))]).join(" ");
 }
 
 type GitActionProbe = (gitDir: string) => Promise<string | null>;
@@ -456,23 +468,6 @@ async function readTextIfExists(path: string): Promise<string | null> {
   }
 }
 
-async function writeCacheIfChanged(
-  path: string,
-  content: string,
-  temporary: string,
-  stillCurrent: () => boolean,
-): Promise<void> {
-  if (await readTextIfExists(path) === content) return;
-  await Deno.mkdir(dirname(path), { recursive: true });
-  await Deno.writeTextFile(temporary, content);
-  if (!stillCurrent()) {
-    await Deno.remove(temporary).catch(() => undefined);
-    return;
-  }
-  // Synchronous so that nothing can forget the repository between the check and the rename.
-  Deno.renameSync(temporary, path);
-}
-
 async function exists(path: string): Promise<boolean> {
   try {
     await Deno.stat(path);
@@ -507,14 +502,14 @@ export function removePreBootIndexLock(gitDir: string, bootTimeMs: number): bool
 export class GitPromptDaemon {
   #client: WatchmanClient | null = null;
   #repos = new Map<string, RepoState>();
-  #pendingRegistrations = new Map<string, Promise<void>>();
+  #pendingRegistrations = new Map<string, Promise<RepoState>>();
+  #clients = new Set<Client>();
   #subscriptionRepos = new Map<string, SubscriptionTarget>();
   #subscriptionSequence = 0;
   #queue: RepoState[] = [];
   #activeGit = 0;
   #reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   #shuttingDown = false;
-  #cacheWriteSequence = 0;
   #logPath: string;
   // osUptime has second precision. Exclude that boundary second so a lock
   // created during this boot is never classified as belonging to an older boot.
@@ -536,17 +531,30 @@ export class GitPromptDaemon {
     }
   }
 
-  register(request: RegistrationRequest): Promise<void> {
-    const top = resolve(request.top);
-    const existing = this.#repos.get(top);
-    if (existing) {
-      existing.cachePath = request.cachePath;
-      return Promise.resolve();
+  async serve(conn: Deno.Conn): Promise<void> {
+    const top = parseHello(await readLine(conn, MAX_HELLO_BYTES).catch(() => null) ?? "");
+    if (top === null || this.#shuttingDown) return closeQuietly(conn);
+    const client: Client = { conn, top, latest: null, writing: false };
+    this.#clients.add(client);
+    try {
+      this.#attach(await this.register(top), client);
+      await conn.read(new Uint8Array(1)).catch(() => null);
+    } catch (error) {
+      this.log(`subscription for ${top} failed: ${error}`);
+    } finally {
+      this.#clients.delete(client);
+      closeQuietly(conn);
+      this.#detach(top);
     }
+  }
+
+  register(top: string): Promise<RepoState> {
+    const existing = this.#repos.get(top);
+    if (existing) return Promise.resolve(existing);
     const pending = this.#pendingRegistrations.get(top);
     if (pending) return pending;
 
-    const registration = this.#registerNew(top, request.cachePath).finally(() => {
+    const registration = this.#registerNew(top).finally(() => {
       this.#pendingRegistrations.delete(top);
     });
     this.#pendingRegistrations.set(top, registration);
@@ -558,13 +566,66 @@ export class GitPromptDaemon {
     if (this.#reconnectTimer !== null) clearTimeout(this.#reconnectTimer);
     for (const repo of this.#repos.values()) {
       if (repo.timer !== null) clearTimeout(repo.timer);
+      if (repo.idleTimer !== null) clearTimeout(repo.idleTimer);
     }
+    // Their pending reads would keep the process alive.
+    for (const client of this.#clients) closeQuietly(client.conn);
     this.#client?.end();
     this.#client = null;
   }
 
-  async #registerNew(top: string, cachePath: string): Promise<void> {
+  #observed(repo: RepoState): boolean {
+    for (const client of this.#clients) if (client.top === repo.top) return true;
+    return false;
+  }
+
+  #attach(repo: RepoState, client: Client): void {
+    if (repo.idleTimer !== null) clearTimeout(repo.idleTimer);
+    repo.idleTimer = null;
+    repo.expediteUntil = Date.now() + EXPEDITE_MS;
+    if (repo.running || repo.queued) return;
+    if (repo.pending !== null) this.#scheduleRefresh(repo, true);
+    else if (repo.line === null) this.#markDirty(repo, UNKNOWN_CHANGES, true);
+    else this.#send(client, repo.line);
+  }
+
+  #detach(top: string): void {
+    const repo = this.#repos.get(top);
+    // After shutdown() a new timer would keep the process alive.
+    if (!repo || this.#shuttingDown || this.#observed(repo)) return;
+    if (repo.timer !== null) clearTimeout(repo.timer);
+    repo.timer = null;
+    repo.idleTimer ??= setTimeout(() => this.#forget(repo), IDLE_FORGET_MS);
+  }
+
+  #publish(repo: RepoState): void {
+    if (repo.line === null || !this.#isCurrent(repo)) return;
+    for (const client of this.#clients) if (client.top === repo.top) this.#send(client, repo.line);
+  }
+
+  #send(client: Client, line: string): void {
+    if (line === client.latest) return;
+    client.latest = line;
+    if (client.writing) return;
+    client.writing = true;
+    void (async () => {
+      try {
+        let sent: string | null = null;
+        while (sent !== client.latest) {
+          sent = client.latest;
+          await writeAll(client.conn, new TextEncoder().encode(`${sent}\n`));
+        }
+      } catch {
+        closeQuietly(client.conn);
+      } finally {
+        client.writing = false;
+      }
+    })();
+  }
+
+  async #registerNew(top: string): Promise<RepoState> {
     const metadata = await this.#resolveGitMetadata(top);
+    if (metadata.top !== top) throw new Error(`${top} is not the top of a work tree (Git reports ${metadata.top})`);
     try {
       if (removePreBootIndexLock(metadata.gitDir, this.#bootTimeMs)) {
         this.log(`removed pre-boot index lock ${join(metadata.gitDir, "index.lock")}`);
@@ -577,7 +638,9 @@ export class GitPromptDaemon {
       top,
       gitDir: metadata.gitDir,
       commonDir: metadata.commonDir,
-      cachePath,
+      line: null,
+      expediteUntil: 0,
+      idleTimer: null,
       subscriptions: new Set(),
       pending: null,
       pendingSince: null,
@@ -596,18 +659,19 @@ export class GitPromptDaemon {
     }
     this.log(`registered ${top} with ${repo.subscriptions.size} subscription(s)`);
     this.#markDirty(repo, UNKNOWN_CHANGES, true);
+    return repo;
   }
 
-  async #resolveGitMetadata(top: string): Promise<{ gitDir: string; commonDir: string }> {
+  async #resolveGitMetadata(top: string): Promise<{ top: string; gitDir: string; commonDir: string }> {
     const result = await new Deno.Command("git", {
-      args: ["-C", top, "rev-parse", "--path-format=absolute", "--git-dir", "--git-common-dir"],
+      args: ["-C", top, "rev-parse", "--path-format=absolute", "--show-toplevel", "--git-dir", "--git-common-dir"],
       stdout: "piped",
       stderr: "null",
     }).output();
     if (!result.success) throw new Error(`git metadata resolution failed for ${top}`);
-    const [gitDir, commonDir] = new TextDecoder().decode(result.stdout).trimEnd().split("\n");
-    if (!gitDir || !commonDir) throw new Error(`git metadata response was incomplete for ${top}`);
-    return { gitDir: resolve(gitDir), commonDir: resolve(commonDir) };
+    const [gitTop, gitDir, commonDir] = new TextDecoder().decode(result.stdout).trimEnd().split("\n");
+    if (!gitTop || !gitDir || !commonDir) throw new Error(`git metadata response was incomplete for ${top}`);
+    return { top: resolve(gitTop), gitDir: resolve(gitDir), commonDir: resolve(commonDir) };
   }
 
   async #subscribeRepo(repo: RepoState): Promise<void> {
@@ -751,9 +815,12 @@ export class GitPromptDaemon {
   }
 
   #forget(repo: RepoState): void {
-    if (this.#isCurrent(repo)) this.#repos.delete(repo.id);
+    const current = this.#isCurrent(repo);
+    if (current) this.#repos.delete(repo.id);
     if (repo.timer !== null) clearTimeout(repo.timer);
     repo.timer = null;
+    if (repo.idleTimer !== null) clearTimeout(repo.idleTimer);
+    repo.idleTimer = null;
     const client = this.#client;
     for (const name of repo.subscriptions) {
       const target = this.#subscriptionRepos.get(name);
@@ -761,6 +828,7 @@ export class GitPromptDaemon {
       if (client && target) void command(client, ["unsubscribe", target.watchRoot, name]).catch(() => undefined);
     }
     repo.subscriptions.clear();
+    if (current) { for (const client of this.#clients) if (client.top === repo.top) closeQuietly(client.conn); }
     this.log(`forgot ${repo.top}`);
   }
 
@@ -781,10 +849,9 @@ export class GitPromptDaemon {
     if (!this.#isCurrent(repo)) return;
     const now = Date.now();
     repo.pendingSince ??= now;
-    if (repo.running || repo.queued) return;
+    if (repo.running || repo.queued || !this.#observed(repo)) return;
     if (repo.timer !== null) clearTimeout(repo.timer);
-    const maxRemaining = Math.max(0, MAX_DEBOUNCE_MS - (now - repo.pendingSince));
-    const delay = immediate ? 0 : Math.min(DEBOUNCE_MS, maxRemaining);
+    const delay = refreshDelay(now, repo.pendingSince, repo.expediteUntil, immediate);
     repo.timer = setTimeout(() => {
       repo.timer = null;
       this.#enqueue(repo);
@@ -812,6 +879,7 @@ export class GitPromptDaemon {
       void this.#refresh(repo, pending).finally(() => {
         this.#activeGit--;
         repo.running = false;
+        this.#publish(repo);
         if (repo.pending !== null) this.#scheduleRefresh(repo, false);
         this.#pumpQueue();
       });
@@ -842,15 +910,7 @@ export class GitPromptDaemon {
           changedPaths: pending.mayHaveMissedWorktreeEvents ? "all" : pending.worktreePaths,
         }),
       );
-      const content = formatCache(repo.top, repo.cachePath, status, await detectGitAction(repo.gitDir));
-      // A refresh that started before the repository was forgotten and
-      // registered again must not overwrite the newer result.
-      await writeCacheIfChanged(
-        repo.cachePath,
-        content,
-        `${repo.cachePath}.${Deno.pid}.${++this.#cacheWriteSequence}.tmp`,
-        () => this.#isCurrent(repo),
-      );
+      repo.line = formatState(status, await detectGitAction(repo.gitDir));
     } catch (error) {
       this.log(`refresh failed for ${repo.top}: ${error}`);
       if (!await exists(repo.top).catch(() => true)) this.#forget(repo);
@@ -858,21 +918,29 @@ export class GitPromptDaemon {
   }
 }
 
-async function readRequest(connection: Deno.Conn): Promise<unknown> {
-  const decoder = new TextDecoder();
-  const buffer = new Uint8Array(4_096);
-  let input = "";
-  while (input.length < 65_536) {
-    const count = await connection.read(buffer);
-    if (count === null) break;
-    input += decoder.decode(buffer.subarray(0, count), { stream: true });
-    const newline = input.indexOf("\n");
-    if (newline >= 0) {
-      input = input.slice(0, newline);
-      break;
-    }
+async function readLine(conn: Deno.Conn, maxBytes: number): Promise<string | null> {
+  const bytes = new Uint8Array(maxBytes);
+  let length = 0;
+  while (length < maxBytes) {
+    const count = await conn.read(bytes.subarray(length));
+    if (count === null) return null;
+    const newline = bytes.subarray(length, length + count).indexOf(10);
+    if (newline >= 0) return new TextDecoder().decode(bytes.subarray(0, length + newline));
+    length += count;
   }
-  return JSON.parse(input);
+  return null;
+}
+
+async function writeAll(conn: Deno.Conn, data: Uint8Array): Promise<void> {
+  for (let written = 0; written < data.length;) written += await conn.write(data.subarray(written));
+}
+
+function closeQuietly(conn: Deno.Conn): void {
+  try {
+    conn.close();
+  } catch {
+    // Already closed.
+  }
 }
 
 async function acquireSingleton(
@@ -948,34 +1016,25 @@ async function main(): Promise<void> {
   Deno.addSignalListener("SIGINT", () => void stop());
 
   let acceptRetryMs = 25;
+  let peerClosedRun = 0;
   try {
     while (!stopping) {
       let connection: Deno.Conn;
       try {
         connection = await listener.accept();
         acceptRetryMs = 25;
+        peerClosedRun = 0;
       } catch (error) {
         if (stopping || error instanceof Deno.errors.BadResource) break;
+        // A shell ran its next command before its connection was accepted.
+        if ((error as { code?: string }).code === "EINVAL" && ++peerClosedRun <= 128) continue;
         daemon.log(`accept failed, retrying in ${acceptRetryMs}ms: ${error}`);
         await new Promise((resolvePromise) => setTimeout(resolvePromise, acceptRetryMs));
         acceptRetryMs = Math.min(acceptRetryMs * 2, 1_000);
         continue;
       }
 
-      void (async () => {
-        try {
-          const request = await readRequest(connection);
-          // Clients wait for this reply before closing. On macOS, Deno fails
-          // accept() with EINVAL when the peer has already closed, which would
-          // drop the request.
-          await connection.write(new TextEncoder().encode("ok\n")).catch(() => undefined);
-          if (isRegistrationRequest(request)) await daemon.register(request);
-        } catch (error) {
-          daemon.log(`invalid registration request: ${error}`);
-        } finally {
-          connection.close();
-        }
-      })();
+      void daemon.serve(connection);
     }
   } finally {
     await stop();
