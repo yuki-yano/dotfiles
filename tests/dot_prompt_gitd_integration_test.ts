@@ -678,6 +678,8 @@ Deno.test({
       await run("git", ["add", "tracked.txt"], repoPath);
       await run("git", ["commit", "-qm", "initial"], repoPath);
       await Deno.writeTextFile(untrackedPath, "abcd\n");
+      const decomposedPath = join(repoPath, "cafe\u0301.txt");
+      await Deno.writeTextFile(decomposedPath, "abcd\n");
 
       daemon = new Deno.Command("deno", {
         args: ["run", "--quiet", "-A", daemonScript],
@@ -694,12 +696,17 @@ Deno.test({
         }
       });
       await register(socketPath, repoPath, cachePath);
-      await waitFor(() => readText(cachePath).includes("added '1' deleted '0'"));
+      await waitFor(() => readText(cachePath).includes("added '2' deleted '0'"));
 
-      const { atime, mtime } = await Deno.stat(untrackedPath);
-      await Deno.writeTextFile(untrackedPath, "a\nb\n\n");
-      await Deno.utime(untrackedPath, atime ?? new Date(), mtime ?? new Date());
-      await waitFor(() => readText(cachePath).includes("added '3' deleted '0'"));
+      const rewriteKeepingStat = async (path: string) => {
+        const { atime, mtime } = await Deno.stat(path);
+        await Deno.writeTextFile(path, "a\nb\n\n");
+        await Deno.utime(path, atime ?? new Date(), mtime ?? new Date());
+      };
+      await rewriteKeepingStat(untrackedPath);
+      await waitFor(() => readText(cachePath).includes("added '4' deleted '0'"));
+      await rewriteKeepingStat(decomposedPath);
+      await waitFor(() => readText(cachePath).includes("added '6' deleted '0'"));
     } finally {
       await daemon?.[Symbol.asyncDispose]();
       await deleteWatchRoots(repoPath, join(repoPath, ".git"));

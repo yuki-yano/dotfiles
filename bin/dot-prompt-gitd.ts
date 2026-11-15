@@ -257,7 +257,7 @@ export async function readGitLineStats(
     tracked?: boolean;
     untracked?: boolean;
     untrackedLines?: UntrackedLineCache;
-    // Paths that changed since the cache was filled; their stat may still match.
+    // NFC paths that changed since the cache was filled; their stat may still match.
     changedPaths?: Set<string> | "all";
   } = {},
 ): Promise<GitLineStats> {
@@ -279,10 +279,11 @@ export async function readGitLineStats(
   await Promise.all(Array.from({ length: Math.min(4, paths.length) }, async () => {
     while (next < paths.length) {
       const path = paths[next++];
-      const previous = changedPaths === "all" || changedPaths.has(path) ? undefined : untrackedLines.get(path);
+      const key = path.normalize("NFC");
+      const previous = changedPaths === "all" || changedPaths.has(key) ? undefined : untrackedLines.get(key);
       const entry = await countUntrackedLines(join(top, path), previous);
       if (!entry) continue;
-      counted.set(path, entry);
+      counted.set(key, entry);
       stats.added += entry.lines;
     }
   }));
@@ -405,8 +406,8 @@ export async function canSkipRefresh(top: string, paths: Set<string>): Promise<b
     .then(() => true, () => false);
   const [{ code }, output, written] = await Promise.all([child.status, stdout, inputWritten]);
   if (!written || code !== 0) return false;
-  const ignored = new Set(new TextDecoder().decode(output).split("\0"));
-  return [...paths].every((path) => ignored.has(path));
+  const ignored = new Set(new TextDecoder().decode(output).split("\0").map((path) => path.normalize("NFC")));
+  return [...paths].every((path) => ignored.has(path.normalize("NFC")));
 }
 
 function command(client: WatchmanClient, args: unknown[]): Promise<WatchmanResponse> {
@@ -663,7 +664,9 @@ class GitPromptDaemon {
       }
       if (names.length > 0) {
         this.#markDirty(repo, {
-          worktreePaths: new Set(names),
+          // macOS keeps names as written (often NFD) while Git with
+          // core.precomposeUnicode reports NFC, so paths are compared in NFC.
+          worktreePaths: new Set(names.map((name) => name.normalize("NFC"))),
           metadataChanged: false,
           mayHaveMissedWorktreeEvents: false,
         }, false);
