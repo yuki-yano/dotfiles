@@ -177,6 +177,45 @@ Deno.test("symlink 経由で repo 内に入っても Git 状態を消さずに k
 
 const watchmanAvailable = await commandSucceeds("watchman", ["--version"]);
 
+Deno.test("pending の応答より先にキャッシュが完成しても、次の確認でキャッシュを読み込む", async () => {
+  const root = await Deno.makeTempDir({ prefix: "dp-pending-race-" });
+  try {
+    const script = [
+      'source "$1"',
+      'source "$2"',
+      'source "$3"',
+      "DOT_PROMPT_GIT_AUTO_REFRESH_INTERVAL=0",
+      'top="$4/repo"',
+      'cache="$4/cache.status"',
+      'pending_output=$(dot_prompt_git_pending_status "$top" "$cache")',
+      "typeset -A ready",
+      'ready=(pwd "$top" top "$top" cache "$cache" branch main)',
+      'print -r -- ${(@kvq)ready} > "$cache"',
+      'dot_prompt_async_callback dot_prompt_git_status 0 "$pending_output" 0 0 0',
+      "dot_prompt_async_cache_changed && print -r -- changed=yes || print -r -- changed=no",
+      'cache_output=$(dot_prompt_git_status cache-only "$cache")',
+      'dot_prompt_async_callback dot_prompt_git_status 0 "$cache_output" 0 0 0',
+      'print -r -- "pending=$DOT_PROMPT_GIT_PENDING prompt=$DOT_PROMPT_GIT_PROMPT"',
+    ].join("; ");
+    const output = await run("/bin/zsh", [
+      "-f",
+      "-c",
+      script,
+      "--",
+      promptBaseScript,
+      gitPromptScript,
+      promptAsyncScript,
+      root,
+    ]);
+    assertEquals(new TextDecoder().decode(output.stderr), "");
+    const stdout = new TextDecoder().decode(output.stdout);
+    assertStringIncludes(stdout, "changed=yes");
+    assertStringIncludes(stdout, "pending=0 prompt=%B%F{7} main");
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
 Deno.test("行数だけの更新を色付きで描画し、差分ゼロとリポジトリ移動で表示を消す", async () => {
   const script = [
     'source "$1"',

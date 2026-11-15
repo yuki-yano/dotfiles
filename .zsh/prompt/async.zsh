@@ -230,13 +230,7 @@ dot_prompt_async_callback() {
           typeset -g DOT_PROMPT_GIT_STASH=${info[stash]:-0}
           typeset -g DOT_PROMPT_GIT_ADDED=${info[added]:-0}
           typeset -g DOT_PROMPT_GIT_DELETED=${info[deleted]:-0}
-          if [[ -n ${info[signature]:-} ]]; then
-            typeset -g DOT_PROMPT_GIT_CACHE_SIGNATURE=$info[signature]
-          elif dot_prompt_async_cache_signature "$DOT_PROMPT_GIT_CACHE_PATH"; then
-            typeset -g DOT_PROMPT_GIT_CACHE_SIGNATURE=$REPLY
-          else
-            typeset -g DOT_PROMPT_GIT_CACHE_SIGNATURE=""
-          fi
+          typeset -g DOT_PROMPT_GIT_CACHE_SIGNATURE=${info[signature]:-}
 
           if [[ -z $info[top] ]]; then
             dot_prompt_async_reset_repo_state
