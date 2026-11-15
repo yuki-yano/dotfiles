@@ -34,12 +34,23 @@ async function snapshotCount(cwd: string): Promise<number> {
 
 // The repository state that a snapshot must never disturb.
 async function repositoryState(cwd: string): Promise<string[]> {
-  const gitDir = await git(cwd, "rev-parse", "--path-format=absolute", "--git-dir");
+  // Reading the state must not run hooks or refresh the index itself.
+  const read = async (...args: string[]) => {
+    const result = await new Deno.Command("git", {
+      args: ["-c", "core.hooksPath=/dev/null", "-c", "core.fsmonitor=false", ...args],
+      cwd,
+      env: { ...identity, GIT_OPTIONAL_LOCKS: "0" },
+      stdout: "piped",
+      stderr: "null",
+    }).output();
+    return result.success ? new TextDecoder().decode(result.stdout).trim() : "";
+  };
+  const gitDir = await read("rev-parse", "--path-format=absolute", "--git-dir");
   return [
-    await git(cwd, "rev-parse", "HEAD"),
-    await git(cwd, "ls-files", "--stage"),
-    await git(cwd, "status", "--porcelain=v2"),
-    await gitSucceeds(cwd, "rev-parse", "--verify", "-q", "ORIG_HEAD") ? await git(cwd, "rev-parse", "ORIG_HEAD") : "",
+    await read("rev-parse", "HEAD"),
+    await read("ls-files", "--stage"),
+    await read("status", "--porcelain=v2"),
+    await read("rev-parse", "--verify", "-q", "ORIG_HEAD"),
     [...Deno.readDirSync(gitDir)].map((entry) => entry.name).filter((name) => name !== "logs").sort().join(","),
   ];
 }
@@ -118,12 +129,12 @@ Deno.test("保存先の ref が symbolic ref でも hook があっても、ブ�
     await git(worktree, "symbolic-ref", snapshotRef, "refs/heads/main");
     const hooks = join(root, "hooks");
     await Deno.mkdir(hooks);
-    await Deno.writeTextFile(
-      join(hooks, "reference-transaction"),
-      `#!/bin/sh\ntouch "${join(worktree, "from-hook")}"\n`,
-    );
-    await Deno.chmod(join(hooks, "reference-transaction"), 0o755);
+    for (const hook of ["reference-transaction", "post-index-change", "fsmonitor"]) {
+      await Deno.writeTextFile(join(hooks, hook), `#!/bin/sh\ntouch "${join(worktree, `from-${hook}`)}"\n`);
+      await Deno.chmod(join(hooks, hook), 0o755);
+    }
     await git(main, "config", "core.hooksPath", hooks);
+    await git(main, "config", "core.fsmonitor", join(hooks, "fsmonitor"));
     await Deno.writeTextFile(join(worktree, "side.txt"), "edited\n");
     const mainBefore = await git(main, "rev-parse", "refs/heads/main");
     const before = await repositoryState(worktree);

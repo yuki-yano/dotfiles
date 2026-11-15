@@ -4,6 +4,8 @@
 # The snapshot is built in a temporary index and recorded in the reflog of
 # refs/worktree/quick-save, so HEAD, the index, ORIG_HEAD and the working tree
 # are never touched, even in the middle of a merge, rebase or cherry-pick.
+# Clean filters from .gitattributes still run, as they do for git add, because
+# they produce the content that the snapshot records.
 
 label=${GIT_QUICK_SAVE_LABEL:-"Git quick save"}
 snapshot_ref=refs/worktree/quick-save
@@ -30,9 +32,10 @@ log() {
   printf '%s: %s\n' "$label" "$1"
 }
 
-# Hooks could change the working tree or other refs, which a snapshot must not do.
+# Hooks and an fsmonitor command could change the working tree or other refs,
+# which a snapshot must not do.
 git_without_hooks() {
-  git -c core.hooksPath=/dev/null "$@"
+  git -c core.hooksPath=/dev/null -c core.fsmonitor=false "$@"
 }
 
 if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
@@ -53,7 +56,7 @@ if ! GIT_INDEX_FILE=$temporary_index git_without_hooks add --all; then
   log "Failed: git add."
   exit 1
 fi
-tree=$(GIT_INDEX_FILE=$temporary_index git write-tree) || {
+tree=$(GIT_INDEX_FILE=$temporary_index git_without_hooks write-tree) || {
   log "Failed: git write-tree."
   exit 1
 }
