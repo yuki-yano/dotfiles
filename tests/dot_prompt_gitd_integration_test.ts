@@ -627,6 +627,12 @@ Deno.test({
       await Deno.writeTextFile(join(repoPath, ".git", "local", "included.conf"), "[status]\n");
       await waitFor(() => gitStatusCount(gitShim.callLog) > refreshesBefore);
 
+      // A submodule named "objects" keeps its refs under modules/objects/.
+      const refreshesBeforeSubmodule = gitStatusCount(gitShim.callLog);
+      await Deno.mkdir(join(repoPath, ".git", "modules", "objects", "reftable"), { recursive: true });
+      await Deno.writeTextFile(join(repoPath, ".git", "modules", "objects", "reftable", "tables.list"), "table\n");
+      await waitFor(() => gitStatusCount(gitShim.callLog) > refreshesBeforeSubmodule);
+
       await Deno.writeTextFile(join(repoPath, "tracked.txt"), "changed\n");
       try {
         await waitFor(() => readText(cachePath).includes("unstaged '1'"));

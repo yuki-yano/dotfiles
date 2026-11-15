@@ -336,14 +336,6 @@ export function minimizeWatchPaths(paths: string[]): string[] {
   return result;
 }
 
-// Ref names may contain an "objects" component, so only object stores are excluded.
-const SUBMODULE_OBJECT_STORE = [
-  "allof",
-  ["match", "modules/**/objects/**", "wholename"],
-  ["not", ["match", "modules/**/refs/**", "wholename"]],
-  ["not", ["match", "modules/**/logs/**", "wholename"]],
-];
-
 const WORKTREE_MARKER = /^worktrees\/[^/]+\/gitdir$/;
 
 export function createWatchExpression(metadataOnly: boolean, ownStateDir?: string): unknown[] {
@@ -356,7 +348,7 @@ export function createWatchExpression(metadataOnly: boolean, ownStateDir?: strin
     "allof",
     ["not", ["type", "d"]],
     ["not", ["name", "index.lock"]],
-    ["not", ["anyof", ["dirname", "objects"], ["dirname", "lfs"], SUBMODULE_OBJECT_STORE]],
+    ["not", ["anyof", ["dirname", "objects"], ["dirname", "lfs"]]],
     ["not", otherWorktreeState],
   ];
 }
