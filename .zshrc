@@ -446,6 +446,7 @@ function git_auto_save() {
   if [[ -f $git_dir ]]; then
     # A linked worktree's .git file points at its own Git directory.
     IFS= read -r line < $git_dir
+    line=${line%$'\r'}
     git_dir=${line#gitdir: }
     [[ $git_dir == /* ]] || git_dir=$REPLY/$git_dir
   fi
@@ -490,7 +491,8 @@ function tmux_auto_rename_hook() {
   # A named session stays named, so stop asking tmux on every cd.
   if [[ -n "$TMUX" ]] && (( ! TMUX_AUTO_RENAME_DONE )); then
     # Get current session name
-    local session_name=$(tmux display-message -p '#S')
+    local session_name
+    session_name=$(tmux display-message -p '#S' 2>/dev/null) || return 0
     [[ $session_name =~ ^[0-9]+$ ]] || TMUX_AUTO_RENAME_DONE=1
 
     # Check if session name is numeric
