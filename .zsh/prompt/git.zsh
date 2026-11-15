@@ -126,32 +126,42 @@ dot_prompt_git_on_readable() {
 
 dot_prompt_git_receive() {
   setopt localoptions noshwordsplit
-  local chunk newest="" closed=0
+  local chunk newest="" closed=0 refused=0 delay
   local -a items
 
-  [[ -n $2 ]] && closed=1
-  while (( ! closed )); do
+  # Read even in an error state: a refusal arrives together with the close.
+  while true; do
     # read would block on a partial line. sysread returns 0 with data, 4 when
     # nothing more is ready, 5 at end of file.
     sysread -i "$1" -t 0 chunk
     case $? in
       0) DOT_PROMPT_GITD_BUFFER+=$chunk ;;
       4) break ;;
-      *) closed=1 ;;
+      *) closed=1; break ;;
     esac
   done
+  [[ -n $2 ]] && closed=1
 
-  if (( ! closed )) && [[ $DOT_PROMPT_GITD_BUFFER == *$'\n'* ]]; then
+  if [[ $DOT_PROMPT_GITD_BUFFER == *$'\n'* ]]; then
     newest=${${DOT_PROMPT_GITD_BUFFER%$'\n'*}##*$'\n'}
     DOT_PROMPT_GITD_BUFFER=${DOT_PROMPT_GITD_BUFFER##*$'\n'}
-    items=("${(Q@)${(z)newest}}")
-    (( ${#items} > 0 && ${#items} % 2 == 0 )) || closed=1
+    if [[ $newest == refused ]]; then
+      refused=1
+    else
+      items=("${(Q@)${(z)newest}}")
+      (( ${#items} > 0 && ${#items} % 2 == 0 )) || closed=1
+    fi
   fi
 
-  if (( closed )); then
-    local answered=$DOT_PROMPT_GITD_ANSWERED
+  if (( refused )); then
+    # The daemon does not serve this top: asking again would be refused again.
     dot_prompt_git_close
-    (( answered )) && dot_prompt_git_schedule_retry 1
+    newest=""
+  elif (( closed )); then
+    # A connection that never answered keeps its backoff instead of restarting at 1s.
+    (( delay = DOT_PROMPT_GITD_RETRY_DELAY > 0 ? DOT_PROMPT_GITD_RETRY_DELAY : 1 ))
+    dot_prompt_git_close
+    dot_prompt_git_schedule_retry $delay
     newest=""
   elif [[ -z $newest ]]; then
     return 1
@@ -203,6 +213,8 @@ dot_prompt_git_retry() {
 
 # shortcut: one start per shell per 10 seconds; many shells can still start one
 # each at the same moment, and the daemon's pid lock lets a single one survive.
+# Upgrade to a lock shared by the shells when those simultaneous starts show up
+# as visible load or as errors.
 dot_prompt_git_spawn_daemon() {
   zmodload zsh/datetime 2>/dev/null || return 0
   (( EPOCHSECONDS - DOT_PROMPT_GITD_SPAWNED_AT >= 10 )) || return 0

@@ -755,7 +755,7 @@ Deno.test("途中までの行で待たされず、まとめて届いた行は最
   }
 });
 
-Deno.test("デーモンが切断するか不正な行を送ると表示を消す。応答のあった接続だけ再接続を予約し、daemon は起動しない", async () => {
+Deno.test("デーモンが切断するか不正な行を送ると表示を消して再接続を予約し、拒否の行のときだけ予約しない。daemon は起動しない", async () => {
   const root = await makeRoot("dp-eof-");
   try {
     await Deno.mkdir(join(root, "repo", ".git"), { recursive: true });
@@ -770,6 +770,10 @@ Deno.test("デーモンが切断するか不正な行を送ると表示を消す
         // What sched runs one second later.
         "dot_prompt_git_retry",
         `${RECEIVE}; ${report}`,
+        `${RECEIVE}; ${report}`,
+        "dot_prompt_git_retry",
+        `${RECEIVE}; ${report}`,
+        "dot_prompt_git_retry",
         `${RECEIVE}; ${report}`,
         "dot_prompt_git_retry",
         `${RECEIVE}; ${report}`,
@@ -789,6 +793,10 @@ Deno.test("デーモンが切断するか不正な行を送ると表示を消す
     const third = await fake.next();
     // The reply of the daemon from before this protocol.
     await third.send("ok\n");
+    (await fake.next()).close();
+    const fifth = await fake.next();
+    await fifth.send("refused\n");
+    fifth.close();
     const result = await client;
 
     assertEquals(result.stderr, "");
@@ -797,9 +805,11 @@ Deno.test("デーモンが切断するか不正な行を送ると表示を消す
     assertEquals(reports[1], "changed=0 fd= line= retry=1 sched=1 spawned=0");
     assertMatch(reports[2], /^changed=0 fd=\d+ line=branch 'again' .* retry=0 sched=0 spawned=0$/);
     assertEquals(reports[3], "changed=0 fd= line= retry=1 sched=1 spawned=0");
-    // A connection that never answered was refused: asking again every second would be refused again.
-    assertEquals(reports[4], "changed=1 fd= line= retry=0 sched=0 spawned=0");
-    assertEquals(fake.hellos.length, 3);
+    // A connection that never answered keeps doubling its interval instead of starting over at one second.
+    assertEquals(reports[4], "changed=1 fd= line= retry=2 sched=1 spawned=0");
+    assertEquals(reports[5], "changed=1 fd= line= retry=4 sched=1 spawned=0");
+    assertEquals(reports[6], "changed=1 fd= line= retry=0 sched=0 spawned=0");
+    assertEquals(fake.hellos.length, 5);
   } finally {
     await Deno.remove(root, { recursive: true });
   }
@@ -983,6 +993,38 @@ Deno.test("対話 shell が、応答しないデーモンの表示を時間切�
   }
 });
 
+Deno.test("対話 shell が、状態行の前に閉じられた接続を Enter なしでつなぎ直し、拒否された接続はつなぎ直さない", async () => {
+  const root = await makeRoot("dp-pty-eof-");
+  const repo = join(root, "repo");
+  try {
+    await Deno.mkdir(join(repo, ".git"), { recursive: true });
+    await using fake = fakeDaemon(root);
+    await using shell = await openPromptShell(root, fake.socketPath);
+    await shell.send(`cd ${repo}\r`);
+
+    (await fake.next()).close();
+    const second = await fake.next();
+    let mark = shell.output().length;
+    await second.send(`${stateLine({ branch: "after-restart" })}\n`);
+    await shell.waitFor("after-restart", mark);
+    assertStringIncludes(await shell.probe(), "sched=0 fd=open prompt=%B%F{7} after-restart");
+
+    await shell.send("true\r");
+    const third = await fake.next();
+    mark = fake.hellos.length;
+    // Sent and closed in one go, as the daemon does: the line must not be lost to the close.
+    await third.send("refused\n");
+    third.close();
+    // Longer than the wait for an answer and the first reconnection intervals.
+    await pause(3_500);
+    assertEquals(await shell.probe(), "sched=0 fd= prompt=");
+    assertEquals(fake.hellos.length, mark);
+    assert(!shell.output().includes("zsh:"), shell.output());
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
 Deno.test({
   name: "デーモンがいなければ最初のプロンプトが起動し、Enter なしで Git 表示が出る",
   ignore: !watchmanAvailable,
@@ -1019,7 +1061,8 @@ Deno.test({
 });
 
 Deno.test({
-  name: "旧形式の登録要求には何も返さずに接続を閉じ、受け付け前に閉じた接続があっても次の shell を待たせない",
+  name:
+    "旧形式の登録要求と git が認めない top を拒否の行で断り、受け付け前に閉じた接続があっても次の shell を待たせない",
   ignore: !watchmanAvailable,
   async fn() {
     const integrationRoot = await makeRoot("dp-gitd-old-");
@@ -1031,8 +1074,24 @@ Deno.test({
 
       const old = await Deno.connect({ transport: "unix", path: daemon.socketPath });
       await old.write(new TextEncoder().encode(`${JSON.stringify({ top: repoPath, cachePath: "/tmp/cache" })}\n`));
-      assertEquals(await old.read(new Uint8Array(16)), null);
+      const reply = new Uint8Array(16);
+      assertEquals(new TextDecoder().decode(reply.subarray(0, await old.read(reply) ?? 0)), "refused\n");
+      assertEquals(await old.read(reply), null);
       old.close();
+
+      // An empty .git passes the shell's top check but Git rejects it.
+      await Deno.mkdir(join(integrationRoot, "broken", ".git"), { recursive: true });
+      const refused = await zshPrompt(
+        [
+          "DOT_PROMPT_GIT_LINE=$1",
+          "dot_prompt_git_precmd",
+          RECEIVE,
+          'print -r -- "fd=$DOT_PROMPT_GITD_FD line=$DOT_PROMPT_GIT_LINE sched=${#zsh_scheduled_events}"',
+        ],
+        [stateLine()],
+        { socketPath: daemon.socketPath, cwd: join(integrationRoot, "broken") },
+      );
+      assertEquals(refused, { stdout: "fd= line= sched=0\n", stderr: "", code: 0 });
 
       for (let index = 0; index < 20; index++) {
         (await Deno.connect({ transport: "unix", path: daemon.socketPath })).close();

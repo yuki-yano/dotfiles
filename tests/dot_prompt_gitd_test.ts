@@ -5,6 +5,7 @@ import {
   detectGitAction,
   formatState,
   GitPromptDaemon,
+  MAX_CONCURRENT_GIT,
   minimizeWatchPaths,
   parseHello,
   parseNumstat,
@@ -487,9 +488,14 @@ interface DaemonFixture extends AsyncDisposable {
   watchman: FakeWatchmanClient;
   /** Emits a Watchman notification for the work tree or for the Git directory. */
   notify(kind: "worktree" | "metadata", body: Record<string, unknown>): void;
+  /** Every Git invocation for a work tree so far, in order, as its arguments after `-C <top>`. */
+  gitCalls(top?: string): string[];
   statusCalls(): number;
-  /** Makes the next `git status` finish reading and then wait before answering. */
-  holdNextStatus(): { held(): Promise<void>; release(): void };
+  /**
+   * Makes the next `git status` finish reading and then wait before answering.
+   * held() resolves with what that status read, once it has been read.
+   */
+  holdNextStatus(): { held(): Promise<string>; release(): void };
 }
 
 // A repository on branch main, a daemon with a fake Watchman, and a Git shim that counts and can hold `git status`.
@@ -506,10 +512,13 @@ async function daemonFixture(): Promise<DaemonFixture> {
       "#!/bin/sh",
       `printf '%s\\n' "$*" >> '${callLog}'`,
       `case " $* " in *" status "*)`,
-      `  if mv '${gate}' '${gate}.held' 2>/dev/null; then`,
-      `    '${realGit}' "$@" > '${gate}.out'; code=$?`,
-      `    while [ -e '${gate}.held' ]; do sleep 0.02; done`,
-      `    cat '${gate}.out'; exit $code`,
+      `  if mv '${gate}' '${gate}'.$$ 2>/dev/null; then`,
+      `    hold=$(cat '${gate}'.$$)`,
+      `    '${realGit}' "$@" > "$hold.out"; code=$?`,
+      // $hold.held appears only after Git has read the state, so held() also waits for the read.
+      `    mv '${gate}'.$$ "$hold.held"`,
+      `    while [ -e "$hold.held" ]; do sleep 0.02; done`,
+      `    cat "$hold.out"; exit $code`,
       "  fi;;",
       "esac",
       `exec '${realGit}' "$@"`,
@@ -527,6 +536,10 @@ async function daemonFixture(): Promise<DaemonFixture> {
   const watchman = new FakeWatchmanClient();
   const daemon = new GitPromptDaemon(join(root, "daemon.log"), () => watchman);
   const exists = (path: string) => Deno.stat(path).then(() => true, () => false);
+  const holds: string[] = [];
+  const gitCalls = (of = top) =>
+    Deno.readTextFileSync(callLog).split("\n").filter((line) => line.startsWith(`-C ${of} `))
+      .map((line) => line.slice(`-C ${of} `.length));
   return {
     root,
     top,
@@ -536,17 +549,22 @@ async function daemonFixture(): Promise<DaemonFixture> {
       const [worktree, metadata] = watchman.subscriptionNames().slice(-2);
       watchman.emit("subscription", { subscription: kind === "worktree" ? worktree : metadata, ...body });
     },
-    statusCalls: () =>
-      Deno.readTextFileSync(callLog).split("\n").filter((line) => line.split(" ").includes("status")).length,
+    gitCalls,
+    statusCalls: () => gitCalls().filter((call) => call.startsWith("status ")).length,
     holdNextStatus() {
-      Deno.writeTextFileSync(gate, "");
+      const hold = `${gate}-${holds.length}`;
+      holds.push(hold);
+      Deno.writeTextFileSync(gate, hold);
       return {
-        held: () => waitUntil(() => exists(`${gate}.out`)),
-        release: () => Deno.removeSync(`${gate}.held`),
+        async held() {
+          await waitUntil(() => exists(`${hold}.held`));
+          return await Deno.readTextFile(`${hold}.out`);
+        },
+        release: () => Deno.removeSync(`${hold}.held`),
       };
     },
     async [Symbol.asyncDispose]() {
-      await Deno.remove(`${gate}.held`).catch(() => undefined);
+      for (const hold of holds) await Deno.remove(`${hold}.held`).catch(() => undefined);
       daemon.shutdown();
       Deno.env.set("PATH", originalPath);
       await new Promise((resolvePromise) => setTimeout(resolvePromise, 100));
@@ -567,7 +585,8 @@ Deno.test("忘れて登録し直した repo の shell へ、止まっていた�
   await git(top, "checkout", "-qb", "old");
   const hold = fixture.holdNextStatus();
   fixture.notify("metadata", { files: ["HEAD"] });
-  await hold.held();
+  // The refresh that is about to be overtaken has already read the old branch.
+  assertStringIncludes(await hold.held(), "# branch.head old\n");
 
   fixture.notify("worktree", { canceled: true });
   await within(before.closed, "closing the shell of the forgotten repository");
@@ -589,13 +608,14 @@ Deno.test("どの shell もプロンプトにいない repo ではイベント�
     await waitUntil(has(shell, "unstaged '0'"));
   }
   const callsWhileObserved = fixture.statusCalls();
+  const gitCallsWhileObserved = fixture.gitCalls();
 
   await Deno.writeTextFile(join(top, "tracked.txt"), "changed\n");
   fixture.notify("worktree", { files: ["tracked.txt"] });
   await pause(700);
   fixture.notify("worktree", { files: ["tracked.txt"] });
   await pause(700);
-  assertEquals(fixture.statusCalls(), callsWhileObserved);
+  assertEquals(fixture.gitCalls(), gitCallsWhileObserved);
 
   await using back = await attachShell(daemon, root, top);
   await waitUntil(() => Promise.resolve(back.lines.length > 0));
@@ -603,6 +623,70 @@ Deno.test("どの shell もプロンプトにいない repo ではイベント�
   assertStringIncludes(back.lines[0], "unstaged '1'");
   await pause(500);
   assertEquals(fixture.statusCalls(), callsWhileObserved + 1);
+});
+
+Deno.test("refresh の順番待ちの間に最後の shell が離れた repo では git を起動せず、shell が戻ったときに1回だけ更新する", async () => {
+  await using fixture = await daemonFixture();
+  const { top, daemon, root } = fixture;
+  // Held refreshes fill every slot, so the next repository has to wait its turn.
+  const holds = [];
+  await using stack = new AsyncDisposableStack();
+  for (let index = 0; index < MAX_CONCURRENT_GIT; index++) {
+    const other = join(root, `other-${index}`);
+    await git(root, "init", "-q", "-b", "main", other);
+    const hold = fixture.holdNextStatus();
+    stack.use(await attachShell(daemon, root, other));
+    await hold.held();
+    holds.push(hold);
+  }
+
+  const registered = ["rev-parse ", "worktree list "];
+  const startsLike = (calls: string[], prefixes: string[]) =>
+    calls.length === prefixes.length && calls.every((call, index) => call.startsWith(prefixes[index]));
+  {
+    await using shell = await attachShell(daemon, root, top);
+    await waitUntil(() => Promise.resolve(startsLike(fixture.gitCalls(), registered)));
+    // Long enough for the first refresh to be queued behind the held ones.
+    await pause(200);
+    assertEquals(shell.lines, []);
+  }
+  for (const hold of holds) hold.release();
+  await pause(700);
+  assert(startsLike(fixture.gitCalls(), registered), `git ran with no shell: ${fixture.gitCalls().join(" | ")}`);
+
+  await using back = await attachShell(daemon, root, top);
+  await waitUntil(has(back, "branch 'main'"));
+  await pause(300);
+  assertEquals(fixture.statusCalls(), 1);
+});
+
+Deno.test("どの shell もプロンプトにいない間に worktree が増減しても git を起動せず、shell が戻ったときに一覧を読み直してから更新する", async () => {
+  await using fixture = await daemonFixture();
+  const { top, daemon, root } = fixture;
+  {
+    await using shell = await attachShell(daemon, root, top);
+    await waitUntil(has(shell, "unstaged '0'"));
+  }
+  const before = fixture.gitCalls().length;
+
+  await Deno.writeTextFile(join(top, "tracked.txt"), "changed\n");
+  fixture.notify("metadata", { files: ["worktrees/added/gitdir"] });
+  fixture.notify("worktree", { files: ["tracked.txt"] });
+  await pause(700);
+  assertEquals(fixture.gitCalls().slice(before), []);
+
+  await using back = await attachShell(daemon, root, top);
+  await waitUntil(has(back, "unstaged '1'"));
+  const after = fixture.gitCalls().slice(before).map((call) => call.split(" ")[0]);
+  assertEquals(after.filter((name) => name === "worktree").length, 1);
+  assert(after.indexOf("worktree") < after.indexOf("status"), `the list was read after the refresh: ${after}`);
+
+  // With a shell at the prompt, the list is read again as soon as it changes.
+  const observed = fixture.gitCalls().length;
+  fixture.notify("metadata", { files: ["worktrees/added/gitdir"] });
+  await waitUntil(() =>
+    Promise.resolve(fixture.gitCalls().slice(observed).some((call) => call.startsWith("worktree ")))
+  );
 });
 
 Deno.test("refresh 中に接続した shell にも、完了後の状態を送る", async () => {
@@ -624,18 +708,24 @@ Deno.test("refresh 中に接続した shell にも、完了後の状態を送る
   await waitUntil(has(first, "unstaged '1'"));
 });
 
-Deno.test("購読が cancel された repo と、git が最上位と認めないパスの接続を閉じる", async () => {
+Deno.test("購読が cancel された repo の接続は何も送らずに閉じ、git が最上位と認めないパスの接続は拒否の行を送ってから閉じる", async () => {
   await using fixture = await daemonFixture();
   const { top, daemon, root } = fixture;
   await using shell = await attachShell(daemon, root, top);
   await waitUntil(has(shell, "branch 'main'"));
   fixture.notify("worktree", { canceled: true });
   await within(shell.closed, "closing the shell of the cancelled repository");
+  // Only the earlier state line: a cancel sends no refusal, so the shell reconnects.
+  assertEquals(shell.lines.length, 1);
 
   await Deno.mkdir(join(top, "sub", ".git"), { recursive: true });
   await using inSubdirectory = await attachShell(daemon, root, join(top, "sub"));
   await within(inSubdirectory.closed, "rejecting a path that is not the top");
-  assertEquals(inSubdirectory.lines, []);
+  assertEquals(inSubdirectory.lines, ["refused"]);
+
+  await using notARepository = await attachShell(daemon, root, root);
+  await within(notARepository.closed, "rejecting a path outside any repository");
+  assertEquals(notARepository.lines, ["refused"]);
 });
 
 Deno.test("接続直後のイベントは debounce を待たずに更新し、窓を過ぎたイベントには debounce をかける", async () => {

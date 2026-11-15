@@ -5,13 +5,18 @@ import { basename, isAbsolute, join, relative, resolve } from "node:path";
 
 const DEBOUNCE_MS = 300;
 const MAX_DEBOUNCE_MS = 2_000;
-const MAX_CONCURRENT_GIT = 4;
+export const MAX_CONCURRENT_GIT = 4;
 // A shell connects right after its command ends, and Watchman reports that
 // command's last writes 22-43 ms after they happen (measured). Events inside
 // this window skip the debounce.
 const EXPEDITE_MS = 150;
 const IDLE_FORGET_MS = 60 * 60_000;
 const MAX_HELLO_BYTES = 4_096;
+// Sent before a close the shell must not retry; any other close means "the
+// daemon went away, connect again".
+const REFUSAL = "refused\n";
+
+class TopRefused extends Error {}
 
 type WatchmanResponse = Record<string, unknown>;
 
@@ -90,6 +95,7 @@ interface RepoState {
   timer: ReturnType<typeof setTimeout> | null;
   untrackedLines: UntrackedLineCache;
   worktreeTops: string[];
+  worktreeTopsStale: boolean;
 }
 
 interface SubscriptionTarget {
@@ -533,14 +539,24 @@ export class GitPromptDaemon {
 
   async serve(conn: Deno.Conn): Promise<void> {
     const top = parseHello(await readLine(conn, MAX_HELLO_BYTES).catch(() => null) ?? "");
-    if (top === null || this.#shuttingDown) return closeQuietly(conn);
+    if (this.#shuttingDown) return closeQuietly(conn);
+    if (top === null) {
+      await refuse(conn);
+      return closeQuietly(conn);
+    }
     const client: Client = { conn, top, latest: null, writing: false };
     this.#clients.add(client);
     try {
-      this.#attach(await this.register(top), client);
+      const repo = await this.register(top);
+      if (repo.worktreeTopsStale) {
+        repo.worktreeTopsStale = false;
+        await this.#reloadNestedWorktrees(repo);
+      }
+      if (this.#isCurrent(repo)) this.#attach(repo, client);
       await conn.read(new Uint8Array(1)).catch(() => null);
     } catch (error) {
       this.log(`subscription for ${top} failed: ${error}`);
+      if (error instanceof TopRefused) await refuse(conn);
     } finally {
       this.#clients.delete(client);
       closeQuietly(conn);
@@ -625,7 +641,9 @@ export class GitPromptDaemon {
 
   async #registerNew(top: string): Promise<RepoState> {
     const metadata = await this.#resolveGitMetadata(top);
-    if (metadata.top !== top) throw new Error(`${top} is not the top of a work tree (Git reports ${metadata.top})`);
+    if (metadata.top !== top) {
+      throw new TopRefused(`${top} is not the top of a work tree (Git reports ${metadata.top})`);
+    }
     try {
       if (removePreBootIndexLock(metadata.gitDir, this.#bootTimeMs)) {
         this.log(`removed pre-boot index lock ${join(metadata.gitDir, "index.lock")}`);
@@ -649,6 +667,7 @@ export class GitPromptDaemon {
       timer: null,
       untrackedLines: new Map(),
       worktreeTops: await listWorktreeTops(top).catch(() => []),
+      worktreeTopsStale: false,
     };
     this.#repos.set(top, repo);
     try {
@@ -668,7 +687,7 @@ export class GitPromptDaemon {
       stdout: "piped",
       stderr: "null",
     }).output();
-    if (!result.success) throw new Error(`git metadata resolution failed for ${top}`);
+    if (!result.success) throw new TopRefused(`git metadata resolution failed for ${top}`);
     const [gitTop, gitDir, commonDir] = new TextDecoder().decode(result.stdout).trimEnd().split("\n");
     if (!gitTop || !gitDir || !commonDir) throw new Error(`git metadata response was incomplete for ${top}`);
     return { top: resolve(gitTop), gitDir: resolve(gitDir), commonDir: resolve(commonDir) };
@@ -764,7 +783,10 @@ export class GitPromptDaemon {
       if (!Array.isArray(response.files) || response.files.length === 0) return;
       const names = response.files.filter((name): name is string => typeof name === "string");
       if (target.metadataOnly) {
-        if (names.some((name) => WORKTREE_MARKER.test(name))) void this.#reloadNestedWorktrees(repo);
+        if (names.some((name) => WORKTREE_MARKER.test(name))) {
+          if (this.#observed(repo)) void this.#reloadNestedWorktrees(repo);
+          else repo.worktreeTopsStale = true;
+        }
         const changesStatus = (name: string) =>
           !WORKTREE_MARKER.test(name) && !isInsideNestedWorktree(target.namesRelativeTo, name, repo.worktreeTops);
         if (names.some(changesStatus)) {
@@ -870,7 +892,8 @@ export class GitPromptDaemon {
       const repo = this.#queue.shift();
       if (!repo) return;
       repo.queued = false;
-      if (!this.#isCurrent(repo)) continue;
+      // Unobserved now: the changes stay pending, and #attach refreshes when a shell returns.
+      if (!this.#isCurrent(repo) || !this.#observed(repo)) continue;
       const pending = repo.pending ?? UNKNOWN_CHANGES;
       repo.running = true;
       repo.pending = null;
@@ -933,6 +956,10 @@ async function readLine(conn: Deno.Conn, maxBytes: number): Promise<string | nul
 
 async function writeAll(conn: Deno.Conn, data: Uint8Array): Promise<void> {
   for (let written = 0; written < data.length;) written += await conn.write(data.subarray(written));
+}
+
+async function refuse(conn: Deno.Conn): Promise<void> {
+  await writeAll(conn, new TextEncoder().encode(REFUSAL)).catch(() => undefined);
 }
 
 function closeQuietly(conn: Deno.Conn): void {
