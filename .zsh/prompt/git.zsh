@@ -17,6 +17,7 @@ typeset -g DOT_PROMPT_GIT_PENDING=0
 
 : ${DOT_PROMPT_GIT_DAEMON_CONNECT_RETRIES:=10}
 : ${DOT_PROMPT_GIT_DAEMON_CONNECT_WAIT:=5}
+: ${DOT_PROMPT_GIT_DAEMON_SEND_ATTEMPTS:=3}
 : ${DOT_PROMPT_GIT_EVENT_SETTLE_WAIT:=35}
 
 dot_prompt_json_quote() {
@@ -65,42 +66,43 @@ dot_prompt_git_daemon_start() {
   command deno run --quiet -A "$DOT_PROMPT_GITD_SCRIPT" >/dev/null 2>&1 &!
 }
 
+dot_prompt_git_daemon_open() {
+  local attempt
+
+  dot_prompt_git_daemon_connect && [[ -n $REPLY ]] && return 0
+  dot_prompt_git_daemon_start
+  zmodload zsh/zselect 2>/dev/null || return 1
+  for (( attempt = 0; attempt < DOT_PROMPT_GIT_DAEMON_CONNECT_RETRIES; attempt++ )); do
+    zselect -t "$DOT_PROMPT_GIT_DAEMON_CONNECT_WAIT" 2>/dev/null || true
+    dot_prompt_git_daemon_connect && [[ -n $REPLY ]] && return 0
+  done
+  return 1
+}
+
 dot_prompt_git_daemon_register() {
   setopt localoptions noshwordsplit
 
   local top=$1
   local cache_path=$2
-  local top_json cache_json request fd attempt
-  local connected=0
+  local top_json cache_json request fd ack attempt
 
   dot_prompt_git_daemon_available || return 1
-
-  if dot_prompt_git_daemon_connect; then
-    connected=1
-  else
-    dot_prompt_git_daemon_start
-    zmodload zsh/zselect 2>/dev/null || return 1
-    for (( attempt = 0; attempt < DOT_PROMPT_GIT_DAEMON_CONNECT_RETRIES; attempt++ )); do
-      zselect -t "$DOT_PROMPT_GIT_DAEMON_CONNECT_WAIT" 2>/dev/null || true
-      if dot_prompt_git_daemon_connect; then
-        connected=1
-        break
-      fi
-    done
-  fi
-
-  (( connected )) || return 1
-  fd=$REPLY
-  [[ -n $fd ]] || return 1
 
   dot_prompt_json_quote "$top"; top_json=$REPLY
   dot_prompt_json_quote "$cache_path"; cache_json=$REPLY
   request="{\"top\":${top_json},\"cachePath\":${cache_json}}"
-  print -r -u "$fd" -- "$request" 2>/dev/null
-  local code=$? ack
-  (( code == 0 )) && IFS= read -r -t 1 -u "$fd" ack 2>/dev/null
-  exec {fd}>&-
-  return $code
+
+  # Closing before the daemon has accepted the connection drops the request,
+  # so resend until it is acknowledged. Registering twice is harmless.
+  for (( attempt = 0; attempt < DOT_PROMPT_GIT_DAEMON_SEND_ATTEMPTS; attempt++ )); do
+    dot_prompt_git_daemon_open || return 1
+    fd=$REPLY
+    ack=""
+    print -r -u "$fd" -- "$request" 2>/dev/null && IFS= read -r -t 1 -u "$fd" ack 2>/dev/null
+    exec {fd}>&-
+    [[ $ack == ok ]] && return 0
+  done
+  return 1
 }
 
 dot_prompt_git_status_from_cache() {

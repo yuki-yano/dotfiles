@@ -116,16 +116,27 @@ Deno.test("デーモンの受け付けが遅れても zsh からの登録要求�
       stdout: "null",
       stderr: "piped",
     }).spawn();
-    await new Promise((resolvePromise) => setTimeout(resolvePromise, 300));
-    const connection = await listener.accept();
-    const buffer = new Uint8Array(4_096);
-    const count = await connection.read(buffer) ?? 0;
-    await connection.write(new TextEncoder().encode("ok\n"));
-    connection.close();
+    // Longer than the client's one-second wait for a reply.
+    await new Promise((resolvePromise) => setTimeout(resolvePromise, 1_300));
+    let received = "";
+    const deadline = Date.now() + 5_000;
+    while (!received && Date.now() < deadline) {
+      const timeout = new Promise<null>((resolvePromise) =>
+        setTimeout(() => resolvePromise(null), deadline - Date.now())
+      );
+      const connection = await Promise.race([listener.accept(), timeout]).catch(() => undefined);
+      if (connection === null) break;
+      if (connection === undefined) continue;
+      const buffer = new Uint8Array(4_096);
+      const count = await connection.read(buffer) ?? 0;
+      received = new TextDecoder().decode(buffer.subarray(0, count));
+      await connection.write(new TextEncoder().encode("ok\n"));
+      connection.close();
+    }
     const result = await client.output();
     assert(result.success);
     assertEquals(new TextDecoder().decode(result.stderr), "");
-    assertStringIncludes(new TextDecoder().decode(buffer.subarray(0, count)), '"top":"/repo"');
+    assertStringIncludes(received, '"top":"/repo"');
   } finally {
     listener.close();
     await Deno.remove(root, { recursive: true });
