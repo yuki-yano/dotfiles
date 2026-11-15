@@ -318,6 +318,16 @@ export function minimizeWatchPaths(paths: string[]): string[] {
   return result;
 }
 
+// Ref names may contain an "objects" component, so only object stores are excluded.
+const SUBMODULE_OBJECT_STORE = [
+  "allof",
+  ["match", "modules/**/objects/**", "wholename"],
+  ["not", ["match", "modules/**/refs/**", "wholename"]],
+  ["not", ["match", "modules/**/logs/**", "wholename"]],
+];
+
+const WORKTREE_MARKER = /^worktrees\/[^/]+\/gitdir$/;
+
 export function createWatchExpression(metadataOnly: boolean, ownStateDir?: string): unknown[] {
   if (!metadataOnly) return ["allof", ["not", ["type", "d"]], ["not", ["dirname", ".git"]]];
   // Other worktrees' private state cannot change this status, but their gitdir
@@ -328,7 +338,7 @@ export function createWatchExpression(metadataOnly: boolean, ownStateDir?: strin
     "allof",
     ["not", ["type", "d"]],
     ["not", ["name", "index.lock"]],
-    ["not", ["match", "**/objects/**", "wholename"]],
+    ["not", ["anyof", ["dirname", "objects"], ["dirname", "lfs"], SUBMODULE_OBJECT_STORE]],
     ["not", otherWorktreeState],
   ];
 }
@@ -587,8 +597,10 @@ class GitPromptDaemon {
       if (!target || !repo) return;
       const names = response.files.filter((name): name is string => typeof name === "string");
       if (target.metadataOnly) {
-        if (names.some((name) => /^worktrees\/[^/]+\/gitdir$/.test(name))) void this.#reloadNestedWorktrees(repo);
-        if (names.some((name) => !isInsideNestedWorktree(target.namesRelativeTo, name, repo.worktreeTops))) {
+        if (names.some((name) => WORKTREE_MARKER.test(name))) void this.#reloadNestedWorktrees(repo);
+        const changesStatus = (name: string) =>
+          !WORKTREE_MARKER.test(name) && !isInsideNestedWorktree(target.namesRelativeTo, name, repo.worktreeTops);
+        if (names.some(changesStatus)) {
           this.#markDirty(repo, "all", false);
         }
         return;

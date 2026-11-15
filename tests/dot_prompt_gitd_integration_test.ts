@@ -606,6 +606,8 @@ Deno.test({
       await Deno.remove(join(repoPath, "ignored", "build.log"));
       await Deno.writeTextFile(join(worktreeBeforeStart, "tracked.txt"), "worktree edit\n");
       await Deno.writeTextFile(join(worktreeAfterStart, "tracked.txt"), "worktree edit\n");
+      const touchedAt = new Date();
+      await Deno.utime(join(repoPath, ".git", "worktrees", "before", "gitdir"), touchedAt, touchedAt);
       await new Promise((resolvePromise) => setTimeout(resolvePromise, 1_500));
       assertEquals(gitStatusCount(gitShim.callLog), refreshesBefore);
       assertStringIncludes(readText(cachePath), "unstaged '0'");
@@ -624,6 +626,13 @@ Deno.test({
 
       await run("git", ["stash", "-q"], repoPath);
       await waitFor(() => readText(cachePath).includes("unstaged '0'") && readText(cachePath).includes("stash '1'"));
+
+      await run("git", ["branch", "objects/topic"], repoPath);
+      await run("git", ["branch", "-q", "--set-upstream-to=objects/topic"], repoPath);
+      await run("git", ["commit", "--allow-empty", "-qm", "ahead"], repoPath);
+      await waitFor(() => readText(cachePath).includes("ahead '1'"));
+      await run("git", ["update-ref", "refs/heads/objects/topic", "HEAD"], repoPath);
+      await waitFor(() => readText(cachePath).includes("ahead '0'"));
     } finally {
       await daemon?.[Symbol.asyncDispose]();
       await deleteWatchRoots(repoPath, join(repoPath, ".git"));
