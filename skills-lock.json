@@ -161,6 +161,13 @@
       "sourceType": "github",
       "skillPath": "skills/wrangler/SKILL.md",
       "computedHash": "182e370d8c26e6bcb896a57a63e6cab006b253b9278cc3515f7b9db2c4d07661"
+    },
+    "yomiyasu": {
+      "source": "nanaism/yomiyasu",
+      "ref": "db78b9bc5e868549b517a037df7a4d1c93edac23",
+      "sourceType": "github",
+      "skillPath": "skills/yomiyasu/SKILL.md",
+      "computedHash": "713c7534b4d2d81048d604e2729e5e7306a78da9f5831377b4904a5c7694507a"
     }
   }
 }
