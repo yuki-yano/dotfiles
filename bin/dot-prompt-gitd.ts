@@ -49,6 +49,8 @@ interface RegistrationRequest {
   cachePath: string;
 }
 
+type PendingChanges = Set<string> | "all";
+
 interface RepoState {
   id: string;
   top: string;
@@ -56,8 +58,8 @@ interface RepoState {
   commonDir: string;
   cachePath: string;
   subscriptions: Set<string>;
-  dirty: boolean;
-  dirtySince: number | null;
+  pending: PendingChanges | null;
+  pendingSince: number | null;
   running: boolean;
   queued: boolean;
   timer: ReturnType<typeof setTimeout> | null;
@@ -268,9 +270,44 @@ export function minimizeWatchPaths(paths: string[]): string[] {
   return result;
 }
 
-export function createWatchExpression(metadataOnly: boolean): unknown[] {
-  const indexLock = metadataOnly ? ["name", "index.lock"] : ["name", ".git/index.lock", "wholename"];
-  return ["allof", ["not", ["type", "d"]], ["not", indexLock]];
+const GIT_STATE_DIRS = ["refs", "logs", "info", "reftable", "modules", "rebase-merge", "rebase-apply", "sequencer"];
+
+export function createWatchExpression(metadataOnly: boolean, ownStateDir?: string): unknown[] {
+  if (!metadataOnly) return ["allof", ["not", ["type", "d"]], ["not", ["name", ".git/index.lock", "wholename"]]];
+  const stateDirs = ownStateDir ? [...GIT_STATE_DIRS, ownStateDir] : GIT_STATE_DIRS;
+  return [
+    "allof",
+    ["not", ["type", "d"]],
+    ["not", ["name", "index.lock"]],
+    ["not", ["match", "modules/**/objects/**", "wholename"]],
+    ["anyof", ["dirname", "", ["depth", "eq", 0]], ...stateDirs.map((dir) => ["dirname", dir])],
+  ];
+}
+
+export function mergePendingChanges(current: PendingChanges | null, change: PendingChanges): PendingChanges {
+  if (current === "all" || change === "all") return "all";
+  return current ? new Set([...current, ...change]) : new Set(change);
+}
+
+export async function pathsAllIgnored(top: string, paths: Set<string>): Promise<boolean> {
+  if (paths.size === 0) return false;
+  const child = new Deno.Command("git", {
+    args: ["-C", top, "check-ignore", "--stdin", "-z"],
+    env: { GIT_OPTIONAL_LOCKS: "0" },
+    stdin: "piped",
+    stdout: "piped",
+    stderr: "null",
+  }).spawn();
+  const stdout = new Response(child.stdout).arrayBuffer();
+  const writer = child.stdin.getWriter();
+  await writer.write(new TextEncoder().encode([...paths].map((path) => `${path}\0`).join("")));
+  await writer.close();
+  const [{ code }, output] = await Promise.all([child.status, stdout]);
+  // 1 means nothing matched. Other failures (for example a path inside a
+  // submodule) must fall back to a refresh.
+  if (code !== 0) return false;
+  const ignored = new Set(new TextDecoder().decode(output).split("\0"));
+  return [...paths].every((path) => ignored.has(path));
 }
 
 function command(client: WatchmanClient, args: unknown[]): Promise<WatchmanResponse> {
@@ -333,7 +370,7 @@ class GitPromptDaemon {
   #client: WatchmanClient | null = null;
   #repos = new Map<string, RepoState>();
   #pendingRegistrations = new Map<string, Promise<void>>();
-  #subscriptionRepos = new Map<string, string>();
+  #subscriptionRepos = new Map<string, { repoId: string; metadataOnly: boolean }>();
   #subscriptionSequence = 0;
   #queue: RepoState[] = [];
   #activeGit = 0;
@@ -401,8 +438,8 @@ class GitPromptDaemon {
       commonDir: metadata.commonDir,
       cachePath,
       subscriptions: new Set(),
-      dirty: false,
-      dirtySince: null,
+      pending: null,
+      pendingSince: null,
       running: false,
       queued: false,
       timer: null,
@@ -410,7 +447,7 @@ class GitPromptDaemon {
     this.#repos.set(top, repo);
     await this.#subscribeRepo(repo);
     this.log(`registered ${top} with ${repo.subscriptions.size} subscription(s)`);
-    this.#markDirty(repo, true);
+    this.#markDirty(repo, "all", true);
   }
 
   async #resolveGitMetadata(top: string): Promise<{ gitDir: string; commonDir: string }> {
@@ -452,12 +489,15 @@ class GitPromptDaemon {
       targets.add(targetKey);
 
       const name = `dot-prompt-gitd-${Deno.pid}-${++this.#subscriptionSequence}`;
+      const ownStateDir = target.metadataOnly && target.path !== repo.gitDir && pathContains(target.path, repo.gitDir)
+        ? relative(target.path, repo.gitDir)
+        : undefined;
       const options: Record<string, unknown> = {
         // Watchman synchronization cookies live under .git on macOS. Their
         // create/remove cycle changes the parent directory mtime; directories
         // themselves cannot affect Git status, so do not feed those events
         // back into another status refresh.
-        expression: createWatchExpression(target.metadataOnly),
+        expression: createWatchExpression(target.metadataOnly, ownStateDir),
         fields: ["name"],
         // Status uses GIT_OPTIONAL_LOCKS=0 and can be read while index.lock
         // exists. Keep events flowing even if a Git process left its lock behind;
@@ -468,7 +508,7 @@ class GitPromptDaemon {
       if (relativeRoot) options.relative_root = relativeRoot;
       await command(client, ["subscribe", watchRoot, name, options]);
       repo.subscriptions.add(name);
-      this.#subscriptionRepos.set(name, repo.id);
+      this.#subscriptionRepos.set(name, { repoId: repo.id, metadataOnly: target.metadataOnly });
     }
   }
 
@@ -478,9 +518,19 @@ class GitPromptDaemon {
     client.on("subscription", (response) => {
       if (!Array.isArray(response.files) || response.files.length === 0) return;
       const subscription = typeof response.subscription === "string" ? response.subscription : "";
-      const repoId = this.#subscriptionRepos.get(subscription);
-      const repo = repoId ? this.#repos.get(repoId) : undefined;
-      if (repo) this.#markDirty(repo, false);
+      const target = this.#subscriptionRepos.get(subscription);
+      const repo = target ? this.#repos.get(target.repoId) : undefined;
+      if (!target || !repo) return;
+      if (target.metadataOnly) {
+        this.#markDirty(repo, "all", false);
+        return;
+      }
+      // The metadata subscription already reports the .git entries that the
+      // worktree watch sees shallowly.
+      const paths = response.files.filter((name): name is string =>
+        typeof name === "string" && !name.startsWith(".git/")
+      );
+      if (paths.length > 0) this.#markDirty(repo, new Set(paths), false);
     });
     client.on("error", (error) => {
       if (error) this.log(`Watchman client error: ${error}`);
@@ -504,20 +554,24 @@ class GitPromptDaemon {
     for (const repo of this.#repos.values()) {
       try {
         await this.#subscribeRepo(repo);
-        this.#markDirty(repo, true);
+        this.#markDirty(repo, "all", true);
       } catch (error) {
         this.log(`subscription restore failed for ${repo.top}: ${error}`);
       }
     }
   }
 
-  #markDirty(repo: RepoState, immediate: boolean): void {
+  #markDirty(repo: RepoState, change: PendingChanges, immediate: boolean): void {
+    repo.pending = mergePendingChanges(repo.pending, change);
+    this.#scheduleRefresh(repo, immediate);
+  }
+
+  #scheduleRefresh(repo: RepoState, immediate: boolean): void {
     const now = Date.now();
-    repo.dirty = true;
-    repo.dirtySince ??= now;
+    repo.pendingSince ??= now;
     if (repo.running || repo.queued) return;
     if (repo.timer !== null) clearTimeout(repo.timer);
-    const maxRemaining = Math.max(0, MAX_DEBOUNCE_MS - (now - repo.dirtySince));
+    const maxRemaining = Math.max(0, MAX_DEBOUNCE_MS - (now - repo.pendingSince));
     const delay = immediate ? 0 : Math.min(DEBOUNCE_MS, maxRemaining);
     repo.timer = setTimeout(() => {
       repo.timer = null;
@@ -536,22 +590,24 @@ class GitPromptDaemon {
     while (this.#activeGit < MAX_CONCURRENT_GIT && this.#queue.length > 0) {
       const repo = this.#queue.shift();
       if (!repo) return;
+      const pending = repo.pending ?? "all";
       repo.queued = false;
       repo.running = true;
-      repo.dirty = false;
-      repo.dirtySince = null;
+      repo.pending = null;
+      repo.pendingSince = null;
       this.#activeGit++;
-      void this.#refresh(repo).finally(() => {
+      void this.#refresh(repo, pending).finally(() => {
         this.#activeGit--;
         repo.running = false;
-        if (repo.dirty) this.#markDirty(repo, false);
+        if (repo.pending !== null) this.#scheduleRefresh(repo, false);
         this.#pumpQueue();
       });
     }
   }
 
-  async #refresh(repo: RepoState): Promise<void> {
+  async #refresh(repo: RepoState, pending: PendingChanges): Promise<void> {
     try {
+      if (pending !== "all" && await pathsAllIgnored(repo.top, pending)) return;
       const result = await new Deno.Command("git", {
         args: ["-C", repo.top, "status", "--show-stash", "--branch", "--porcelain=v2", "--untracked-files=normal"],
         env: { GIT_OPTIONAL_LOCKS: "0" },

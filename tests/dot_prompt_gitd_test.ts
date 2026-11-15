@@ -1,11 +1,11 @@
 import { assertEquals } from "@std/assert";
 import { join } from "node:path";
 import {
-  createWatchExpression,
   formatCache,
   minimizeWatchPaths,
   parseNumstat,
   parsePorcelainV2,
+  pathsAllIgnored,
   readGitLineStats,
   removePreBootIndexLock,
   zshQuote,
@@ -161,17 +161,25 @@ Deno.test("minimizeWatchPaths keeps external linked-worktree metadata only once"
   );
 });
 
-Deno.test("createWatchExpression ignores directory and index lock noise", () => {
-  assertEquals(createWatchExpression(false), [
-    "allof",
-    ["not", ["type", "d"]],
-    ["not", ["name", ".git/index.lock", "wholename"]],
-  ]);
-  assertEquals(createWatchExpression(true), [
-    "allof",
-    ["not", ["type", "d"]],
-    ["not", ["name", "index.lock"]],
-  ]);
+Deno.test("pathsAllIgnored は全パスが ignore 対象のときだけ true を返す", async () => {
+  const repo = await Deno.makeTempDir({ prefix: "dp-gitd-ignore-" });
+  try {
+    await git(repo, "init", "-q");
+    await Deno.writeTextFile(join(repo, ".gitignore"), "ignored/\n*.log\n");
+    await Deno.mkdir(join(repo, "ignored"));
+    await Deno.writeTextFile(join(repo, "ignored", "forced.txt"), "tracked\n");
+    await git(repo, "add", ".gitignore");
+    await git(repo, "add", "-f", "ignored/forced.txt");
+
+    assertEquals(await pathsAllIgnored(repo, new Set(["ignored/a.txt", "debug.log"])), true);
+    assertEquals(await pathsAllIgnored(repo, new Set(["ignored/deleted-before-check.txt"])), true);
+    assertEquals(await pathsAllIgnored(repo, new Set(["ignored/a.txt", "tracked.txt"])), false);
+    assertEquals(await pathsAllIgnored(repo, new Set(["ignored/forced.txt"])), false);
+    assertEquals(await pathsAllIgnored(repo, new Set(["../outside.txt"])), false);
+    assertEquals(await pathsAllIgnored(repo, new Set()), false);
+  } finally {
+    await Deno.remove(repo, { recursive: true });
+  }
 });
 
 Deno.test("前回起動時の index.lock だけを除去し、index の内容を保持する", async () => {

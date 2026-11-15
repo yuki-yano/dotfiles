@@ -481,6 +481,80 @@ Deno.test({
 });
 
 Deno.test({
+  name: "ignore 対象と .git 内に置いた worktree の変更では git status を起動しない",
+  ignore: !watchmanAvailable,
+  async fn() {
+    const integrationRoot = await Deno.makeTempDir({ dir: "/tmp", prefix: "dp-gitd-noise-" });
+    const repoPath = join(integrationRoot, "repo");
+    const nestedWorktree = join(repoPath, ".git", "wt", "feature");
+    const runtimePath = join(integrationRoot, "runtime");
+    const socketPath = join(runtimePath, "daemon.sock");
+    const logPath = join(runtimePath, "daemon.log");
+    const cachePath = join(integrationRoot, "cache", "status");
+    let daemon: Deno.ChildProcess | null = null;
+
+    try {
+      await run("git", ["init", "-q", repoPath]);
+      await run("git", ["config", "user.email", "prompt-test@example.invalid"], repoPath);
+      await run("git", ["config", "user.name", "prompt-test"], repoPath);
+      await Deno.writeTextFile(join(repoPath, ".gitignore"), "ignored/\n");
+      await Deno.writeTextFile(join(repoPath, "tracked.txt"), "initial\n");
+      await run("git", ["add", ".gitignore", "tracked.txt"], repoPath);
+      await run("git", ["commit", "-qm", "initial"], repoPath);
+      await run("git", ["worktree", "add", "-q", nestedWorktree, "-b", "feature"], repoPath);
+      await Deno.mkdir(join(repoPath, "ignored"));
+      const gitShim = await createGitShim(integrationRoot);
+
+      daemon = new Deno.Command("deno", {
+        args: ["run", "--quiet", "-A", daemonScript],
+        cwd: repositoryRoot,
+        env: {
+          PATH: `${gitShim.binPath}:${Deno.env.get("PATH") ?? ""}`,
+          DOT_PROMPT_GITD_RUNTIME_BASE: runtimePath,
+          DOT_PROMPT_GITD_SOCKET_PATH: socketPath,
+        },
+        stdout: "null",
+        stderr: "null",
+      }).spawn();
+
+      await waitFor(() => {
+        try {
+          return Deno.statSync(socketPath).isSocket === true;
+        } catch {
+          return false;
+        }
+      });
+      await register(socketPath, repoPath, cachePath);
+      await waitFor(() => readText(cachePath).includes("unstaged '0'"));
+      await new Promise((resolvePromise) => setTimeout(resolvePromise, 700));
+
+      const refreshesBefore = gitStatusCount(gitShim.callLog);
+      await Deno.writeTextFile(join(repoPath, "ignored", "build.log"), "noise\n");
+      await Deno.remove(join(repoPath, "ignored", "build.log"));
+      await Deno.writeTextFile(join(nestedWorktree, "tracked.txt"), "worktree edit\n");
+      await new Promise((resolvePromise) => setTimeout(resolvePromise, 1_500));
+      assertEquals(gitStatusCount(gitShim.callLog), refreshesBefore);
+      assertStringIncludes(readText(cachePath), "unstaged '0'");
+
+      await Deno.writeTextFile(join(repoPath, "tracked.txt"), "changed\n");
+      try {
+        await waitFor(() => readText(cachePath).includes("unstaged '1'"));
+      } catch (error) {
+        throw new Error(`${error}\ndaemon log:\n${readText(logPath)}\ncache:\n${readText(cachePath)}`);
+      }
+      assert(gitStatusCount(gitShim.callLog) > refreshesBefore);
+
+      await run("git", ["stash", "-q"], repoPath);
+      await waitFor(() => readText(cachePath).includes("unstaged '0'") && readText(cachePath).includes("stash '1'"));
+    } finally {
+      await daemon?.[Symbol.asyncDispose]();
+      await deleteWatchRoots(repoPath, join(repoPath, ".git"));
+      await Deno.remove(integrationRoot, { recursive: true });
+    }
+  },
+});
+
+Deno.test({
   name: "Git refs の変更を検知し、push 後に ahead をゼロへ戻す",
   ignore: !watchmanAvailable,
   async fn() {
