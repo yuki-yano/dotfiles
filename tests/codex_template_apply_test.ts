@@ -1,5 +1,5 @@
 import { test } from "bun:test";
-import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { lstat, mkdir, mkdtemp, readFile, readlink, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { assertEquals, assertRejects, assertStringIncludes } from "./assertions.ts";
 import { dirname, join } from "node:path";
@@ -37,7 +37,7 @@ test("codex template expands home paths while preserving sources and unmanaged c
   const existingConfig = `personal = "~/keep"\n${START_MARKER}\n# managed by dotfiles\n${END_MARKER}\n`;
   const copyFiles = [
     {
-      path: "AGENTS.md",
+      path: "notes.md",
       source: "# @nvim.on_save ignored\nRead `~/notes` and ~/.codex/config.toml.\n",
       expected: `Read \`${home}/notes\` and ${home}/.codex/config.toml.\n`,
     },
@@ -63,7 +63,7 @@ test("codex template expands home paths while preserving sources and unmanaged c
       await writeFile(join(outputDir, file.path), "existing\n");
     }
 
-    const options = { templateDir, outputDir, copyTargets: ["AGENTS.md", "agents", "hooks.json"] };
+    const options = { templateDir, outputDir, copyTargets: ["notes.md", "agents", "hooks.json"], linkTargets: [] };
 
     assertEquals(await applyCodexTemplate({ ...options, dryRun: true }), true);
     assertEquals(await readFile(join(outputDir, "config.toml"), "utf8"), existingConfig);
@@ -121,7 +121,7 @@ async function createManagedSettingsFixture(templateBody: string, managedBody: s
     "enabled = true",
     "",
   ].join("\n");
-  const copyFiles = ["AGENTS.md", "agents/explorer.toml", "hooks.json"];
+  const copyFiles = ["notes.md", "agents/explorer.toml", "hooks.json"];
   await mkdir(join(templateDir, "agents"), { recursive: true });
   await mkdir(join(outputDir, "agents"), { recursive: true });
   await writeFile(join(templateDir, "config.toml"), templateBody);
@@ -135,7 +135,7 @@ async function createManagedSettingsFixture(templateBody: string, managedBody: s
     configPath,
     existingConfig,
     copyFiles,
-    options: { templateDir, outputDir, copyTargets: ["AGENTS.md", "agents", "hooks.json"] },
+    options: { templateDir, outputDir, copyTargets: ["notes.md", "agents", "hooks.json"], linkTargets: [] },
   };
 }
 
@@ -175,6 +175,57 @@ test("codex template rejects unsupported directory entries before writing any ou
       "unsupported entry type",
     );
     await assertManagedSettingsFixtureUnchanged(fixture);
+  } finally {
+    await rm(fixture.root, { recursive: true });
+  }
+});
+
+test("codex template links files to the template and replaces identical copies", async () => {
+  const fixture = await createManagedSettingsFixture('model = "new-model"', "");
+  const { templateDir, outputDir } = fixture.options;
+  const options = { ...fixture.options, linkTargets: ["AGENTS.md", "pstack-models.md"] };
+  try {
+    for (const name of options.linkTargets) {
+      await writeFile(join(templateDir, name), `${name} contents\n`);
+    }
+    await writeFile(join(outputDir, "AGENTS.md"), "AGENTS.md contents\n");
+
+    assertEquals(await applyCodexTemplate({ ...options, dryRun: true }), true);
+    assertEquals((await lstat(join(outputDir, "AGENTS.md"))).isSymbolicLink(), false);
+    assertEquals(await Bun.file(join(outputDir, "pstack-models.md")).exists(), false);
+
+    assertEquals(await applyCodexTemplate(options), true);
+    for (const name of options.linkTargets) {
+      assertEquals(await readlink(join(outputDir, name)), join(templateDir, name));
+      assertEquals(await readFile(join(outputDir, name), "utf8"), `${name} contents\n`);
+    }
+    assertEquals(await applyCodexTemplate(options), false);
+    assertEquals(await applyCodexTemplate({ ...options, dryRun: true }), false);
+  } finally {
+    await rm(fixture.root, { recursive: true });
+  }
+});
+
+test("codex template keeps a modified file at a link path until an overwrite is requested", async () => {
+  const fixture = await createManagedSettingsFixture('model = "new-model"', "");
+  const options = { ...fixture.options, linkTargets: ["AGENTS.md"] };
+  const templatePath = join(options.templateDir, "AGENTS.md");
+  const outputPath = join(options.outputDir, "AGENTS.md");
+  try {
+    await writeFile(templatePath, "template instructions\n");
+    await writeFile(outputPath, "edited in place\n");
+    for (const dryRun of [true, false]) {
+      await assertRejects(
+        () => applyCodexTemplate({ ...options, dryRun }),
+        CodexTemplateApplyError,
+        "should link to the template has different content",
+      );
+      await assertManagedSettingsFixtureUnchanged(fixture);
+      assertEquals(await readFile(outputPath, "utf8"), "edited in place\n");
+    }
+
+    assertEquals(await applyCodexTemplate({ ...options, overwriteManaged: true }), true);
+    assertEquals(await readlink(outputPath), templatePath);
   } finally {
     await rm(fixture.root, { recursive: true });
   }
@@ -434,9 +485,9 @@ async function createChatgptTemplateFixture() {
   await writeFile(infoPath, appInfoPlist(version));
   await writeFile(servicePath(version), "export {};\n");
   await writeFile(join(templateDir, "config.toml"), configTemplate);
-  await writeFile(join(templateDir, "AGENTS.md"), "new instructions\n");
+  await writeFile(join(templateDir, "notes.md"), "new instructions\n");
   await writeFile(join(outputDir, "config.toml"), existingConfig);
-  await writeFile(join(outputDir, "AGENTS.md"), "existing instructions\n");
+  await writeFile(join(outputDir, "notes.md"), "existing instructions\n");
   return {
     root,
     infoPath,
@@ -444,7 +495,7 @@ async function createChatgptTemplateFixture() {
     version,
     configTemplate,
     existingConfig,
-    options: { templateDir, outputDir, chatgptAppPath },
+    options: { templateDir, outputDir, chatgptAppPath, copyTargets: ["notes.md"], linkTargets: [] },
   };
 }
 
@@ -457,7 +508,7 @@ test.skipIf(process.platform !== "darwin")(
     try {
       assertEquals(await applyCodexTemplate({ ...options, dryRun: true }), true);
       assertEquals(await readFile(configPath, "utf8"), existingConfig);
-      assertEquals(await readFile(join(options.outputDir, "AGENTS.md"), "utf8"), "existing instructions\n");
+      assertEquals(await readFile(join(options.outputDir, "notes.md"), "utf8"), "existing instructions\n");
 
       assertEquals(await applyCodexTemplate(options), true);
       const expectedConfig = (appVersion: string) =>
@@ -469,7 +520,7 @@ test.skipIf(process.platform !== "darwin")(
           "",
         ].join("\n");
       assertEquals(await readFile(configPath, "utf8"), expectedConfig(version));
-      assertEquals(await readFile(join(options.outputDir, "AGENTS.md"), "utf8"), "new instructions\n");
+      assertEquals(await readFile(join(options.outputDir, "notes.md"), "utf8"), "new instructions\n");
       assertEquals(await readFile(join(options.templateDir, "config.toml"), "utf8"), configTemplate);
       assertEquals(await applyCodexTemplate(options), false);
 
@@ -569,7 +620,7 @@ for (const failureCase of chatgptFailureCases) {
             fixture.existingConfig,
           );
           assertEquals(
-            await readFile(join(fixture.options.outputDir, "AGENTS.md"), "utf8"),
+            await readFile(join(fixture.options.outputDir, "notes.md"), "utf8"),
             "existing instructions\n",
           );
           assertEquals(await readFile(templatePath, "utf8"), configTemplate);

@@ -1,5 +1,3 @@
-# @nvim.on_save bun run codex:template --apply
-
 ## 前提
 
 日本語で思考して日本語で回答する

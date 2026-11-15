@@ -34,7 +34,6 @@ const COPILOT_DIR = `${HOME}/.copilot`;
 const AGENTS_SKILLS_DIR = `${HOME}/.agents/skills`;
 const CLAUDE_SKILLS_DIR = `${CLAUDE_DIR}/skills`;
 const COPILOT_SKILLS_DIR = `${COPILOT_DIR}/skills`;
-const CODEX_TEMPLATE_COPY_TARGETS = ["AGENTS.md", "agents", "hooks.json"];
 type CodexPluginId = "superpowers" | "ponytail" | "pstack";
 
 type CodexPluginDefinition = {
@@ -628,7 +627,6 @@ async function ensurePstackAutomaticRouting(configDir: string): Promise<void> {
 }
 
 async function ensureCodexPlugins(): Promise<void> {
-  await ensurePstackAutomaticRouting(process.env.CODEX_HOME || `${HOME}/.codex`);
   for (const definition of CODEX_PLUGIN_DEFINITIONS) {
     await ensureCodexMarketplace(definition);
     await ensureCodexPlugin(definition);
@@ -802,7 +800,6 @@ const tasks: Record<string, () => Promise<void> | void> = {
     const changed = await applyCodexTemplate({
       dryRun,
       overwriteManaged: OVERWRITE_MANAGED,
-      copyTargets: CODEX_TEMPLATE_COPY_TARGETS,
     });
 
     if (dryRun) {
@@ -950,7 +947,7 @@ const tasks: Record<string, () => Promise<void> | void> = {
     console.log("    --dry-run                     - Show what would be done without making changes");
     console.log("    --apply                       - Execute codex:template write (default is dry-run)");
     console.log(
-      "    --overwrite-managed           - Replace existing managed Codex settings after reviewing the diff",
+      "    --overwrite-managed           - Replace existing managed Codex settings and modified linked files after review",
     );
   },
 };

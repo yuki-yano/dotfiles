@@ -1,5 +1,5 @@
-import { dirname, join } from "node:path";
-import { mkdir, readdir, readFile, rename, stat, writeFile } from "node:fs/promises";
+import { dirname, join, resolve } from "node:path";
+import { lstat, mkdir, readdir, readFile, readlink, rename, stat, symlink, writeFile } from "node:fs/promises";
 import type { Stats } from "node:fs";
 import { createTwoFilesPatch } from "diff";
 
@@ -17,6 +17,7 @@ export type ApplyCodexTemplateOptions = {
   dryRun?: boolean;
   overwriteManaged?: boolean;
   copyTargets?: string[];
+  linkTargets?: string[];
   chatgptAppPath?: string;
 };
 
@@ -492,12 +493,102 @@ async function prepareCopyTarget(
   );
 }
 
+type PreparedLink = {
+  outputPath: string;
+  target: string;
+  changed: boolean;
+};
+
+async function prepareLinkTarget(
+  templateDir: string,
+  outputDir: string,
+  linkTarget: string,
+  overwriteManaged = false,
+): Promise<PreparedLink> {
+  const target = resolve(templateDir, linkTarget);
+  const outputPath = join(outputDir, linkTarget);
+
+  let templateStat: Stats;
+  try {
+    templateStat = await stat(target);
+  } catch (error) {
+    if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+      throw new CodexTemplateApplyError(
+        "Template link target was not found.",
+        [
+          `Missing target: ${target}`,
+          "Create the file under .config/codex-template.",
+        ],
+      );
+    }
+    throw error;
+  }
+  if (!templateStat.isFile()) {
+    throw new CodexTemplateApplyError("Template link target must be a regular file.", [`Target: ${target}`]);
+  }
+
+  let outputStat: Stats;
+  try {
+    outputStat = await lstat(outputPath);
+  } catch (error) {
+    if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+      return { outputPath, target, changed: true };
+    }
+    throw error;
+  }
+  if (outputStat.isSymbolicLink()) {
+    return { outputPath, target, changed: await readlink(outputPath) !== target };
+  }
+  if (!outputStat.isFile()) {
+    throw new CodexTemplateApplyError(
+      "Codex link path must be a regular file or a symlink.",
+      [`Path: ${outputPath}`, "Move it aside, then rerun the apply command."],
+    );
+  }
+  if (await readFile(outputPath, "utf8") !== await readFile(target, "utf8")) {
+    if (!overwriteManaged) {
+      throw new CodexTemplateApplyError(
+        "A Codex file that should link to the template has different content. No files were written.",
+        [
+          `File: ${outputPath}`,
+          `Template: ${target}`,
+          "Merge the edits you want to keep into the template file.",
+          "Then rerun the apply command with --overwrite-managed to replace the file with the link.",
+        ],
+      );
+    }
+    console.log(`Modified file will be replaced by a link (--overwrite-managed): ${outputPath}`);
+  }
+  return { outputPath, target, changed: true };
+}
+
+async function linkIfNeeded(link: PreparedLink, dryRun = false): Promise<boolean> {
+  if (!link.changed) {
+    console.log(`No changes: ${link.outputPath}`);
+    return false;
+  }
+
+  if (dryRun) {
+    console.log(`[DRY RUN] Would link ${link.outputPath} -> ${link.target}`);
+    return true;
+  }
+
+  const directory = dirname(link.outputPath);
+  const temporaryPath = join(directory, `.tmp-${crypto.randomUUID()}`);
+  await mkdir(directory, { recursive: true });
+  await symlink(link.target, temporaryPath);
+  await rename(temporaryPath, link.outputPath);
+  console.log(`Linked ${link.outputPath} -> ${link.target}`);
+  return true;
+}
+
 export async function applyCodexTemplate(options: ApplyCodexTemplateOptions = {}): Promise<boolean> {
   const startMarker = options.startMarker ?? START_MARKER;
   const endMarker = options.endMarker ?? END_MARKER;
   const templateDir = options.templateDir ?? `${process.cwd()}/.config/codex-template`;
   const outputDir = options.outputDir ?? join(resolveHome(), ".codex");
-  const copyTargets = [...new Set(options.copyTargets ?? ["AGENTS.md"])];
+  const copyTargets = [...new Set(options.copyTargets ?? ["agents", "hooks.json"])];
+  const linkTargets = [...new Set(options.linkTargets ?? ["AGENTS.md", "pstack-models.md"])];
 
   const configTemplatePath = join(templateDir, "config.toml");
   const configOutputPath = join(outputDir, "config.toml");
@@ -541,11 +632,19 @@ export async function applyCodexTemplate(options: ApplyCodexTemplateOptions = {}
   for (const copyTarget of copyTargets) {
     copyFiles.push(...await prepareCopyTarget(templateDir, outputDir, copyTarget));
   }
+  const links: PreparedLink[] = [];
+  for (const linkTarget of linkTargets) {
+    links.push(await prepareLinkTarget(templateDir, outputDir, linkTarget, options.overwriteManaged));
+  }
 
   let changed = await updateFileIfNeeded(configOutputPath, mergedConfig, options.dryRun, currentConfig);
   for (const file of copyFiles) {
     const copiedChanged = await updateFileIfNeeded(file.outputPath, file.content, options.dryRun);
     changed = changed || copiedChanged;
+  }
+  for (const link of links) {
+    const linkChanged = await linkIfNeeded(link, options.dryRun);
+    changed = changed || linkChanged;
   }
 
   return changed;

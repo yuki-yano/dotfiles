@@ -92,8 +92,8 @@ if (bin === "claude" || bin === "codex") {
     ]));
     else console.log("superpowers@openai-curated installed, enabled\\nponytail@ponytail installed, enabled" + (pstack ? "\\npstack@pstack-claude installed, enabled" : ""));
   }
-  if (args.includes("pstack@pstack-claude") || args.includes("michael-denyer/pstack-claude")) {
-    const profile = bin === "claude" ? process.env.CLAUDE_CONFIG_DIR || join(process.env.HOME, ".claude") : process.env.CODEX_HOME || join(process.env.HOME, ".codex");
+  if (bin === "claude" && (args.includes("pstack@pstack-claude") || args.includes("michael-denyer/pstack-claude"))) {
+    const profile = process.env.CLAUDE_CONFIG_DIR || join(process.env.HOME, ".claude");
     if (!/^session hook: on$/m.test(readFileSync(join(profile, "pstack-models.md"), "utf8"))) throw new Error("pstack routing must be automatic before installation");
   }
 }
@@ -130,60 +130,73 @@ async function calls(log: string): Promise<Call[]> {
   return (await readFile(log, "utf8")).trim().split("\n").filter(Boolean).map((line) => JSON.parse(line));
 }
 
-for (const client of ["claude", "codex"]) {
-  for (const customProfile of [false, true]) {
-    test(`${client} plugins configure automatic pstack routing in ${customProfile ? "an overridden" : "the default"} profile`, async () => {
-      await withMockTools(async (dir, log) => {
-        const profile = join(dir, customProfile ? "custom profile" : `.${client}`);
-        const filename = join(profile, "pstack-models.md");
-        const env = {
-          ...process.env,
-          HOME: dir,
-          PATH: `${dir}:${process.env.PATH}`,
-          MOCK_LOG: log,
-          CLAUDE_CONFIG_DIR: client === "claude" && customProfile ? profile : "",
-          CODEX_HOME: client === "codex" && customProfile ? profile : "",
-        };
-        async function run(dryRun = false, installed = false): Promise<string> {
-          const child = Bun.spawn([process.execPath, join(root, "tasks.ts"), `agent:${client}-plugins`, ...(dryRun ? ["--dry-run"] : [])], {
-            cwd: root,
-            env: { ...env, MOCK_PSTACK_INSTALLED: installed ? "1" : "0" },
-            stdout: "pipe",
-            stderr: "pipe",
-          });
-          const [code, output, error] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()]);
-          expect(error).toBe("");
-          expect(code).toBe(0);
-          return output;
-        }
+for (const customProfile of [false, true]) {
+  test(`claude plugins configure automatic pstack routing in ${customProfile ? "an overridden" : "the default"} profile`, async () => {
+    await withMockTools(async (dir, log) => {
+      const profile = join(dir, customProfile ? "custom profile" : ".claude");
+      const filename = join(profile, "pstack-models.md");
+      const env = {
+        ...process.env,
+        HOME: dir,
+        PATH: `${dir}:${process.env.PATH}`,
+        MOCK_LOG: log,
+        CLAUDE_CONFIG_DIR: customProfile ? profile : "",
+      };
+      async function run(dryRun = false, installed = false): Promise<string> {
+        const child = Bun.spawn([process.execPath, join(root, "tasks.ts"), "agent:claude-plugins", ...(dryRun ? ["--dry-run"] : [])], {
+          cwd: root,
+          env: { ...env, MOCK_PSTACK_INSTALLED: installed ? "1" : "0" },
+          stdout: "pipe",
+          stderr: "pipe",
+        });
+        const [code, output, error] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()]);
+        expect(error).toBe("");
+        expect(code).toBe(0);
+        return output;
+      }
 
-        expect(await run(true)).toContain(`would set session hook: on in ${filename}`);
-        expect(await Bun.file(filename).exists()).toBe(false);
-        expect((await calls(log)).every(({ args }) => args.includes("list"))).toBe(true);
-        await run();
-        expect(await readFile(filename, "utf8")).toBe("session hook: on\n");
-        expect((await calls(log)).some(({ args }) => args.at(-1) === "pstack@pstack-claude" && args.includes(client === "claude" ? "install" : "add"))).toBe(true);
+      expect(await run(true)).toContain(`would set session hook: on in ${filename}`);
+      expect(await Bun.file(filename).exists()).toBe(false);
+      expect((await calls(log)).every(({ args }) => args.includes("list"))).toBe(true);
+      await run();
+      expect(await readFile(filename, "utf8")).toBe("session hook: on\n");
+      expect((await calls(log)).some(({ args }) => args.at(-1) === "pstack@pstack-claude" && args.includes("install"))).toBe(true);
 
-        const existing = "# Local models\r\nfeature, refactoring: kept-model @xhigh\r\nsession hook: off\r\ndefault effort: high";
-        await writeFile(filename, existing);
-        await run(true, true);
-        expect(await readFile(filename, "utf8")).toBe(existing);
-        await run(false, true);
-        expect(await readFile(filename, "utf8")).toBe(existing.replace("session hook: off", "session hook: on"));
-        await utimes(filename, new Date(0), new Date(0));
-        const before = await stat(filename);
-        await run(false, true);
-        expect((await stat(filename)).mtimeMs).toBe(before.mtimeMs);
+      const existing = "# Local models\r\nfeature, refactoring: kept-model @xhigh\r\nsession hook: off\r\ndefault effort: high";
+      await writeFile(filename, existing);
+      await run(true, true);
+      expect(await readFile(filename, "utf8")).toBe(existing);
+      await run(false, true);
+      expect(await readFile(filename, "utf8")).toBe(existing.replace("session hook: off", "session hook: on"));
+      await utimes(filename, new Date(0), new Date(0));
+      const before = await stat(filename);
+      await run(false, true);
+      expect((await stat(filename)).mtimeMs).toBe(before.mtimeMs);
 
-        const modelsOnly = "bug-fix: kept-model\ndefault effort: medium";
-        await writeFile(filename, modelsOnly);
-        await run(false, true);
-        expect(await readFile(filename, "utf8")).toBe(`${modelsOnly}\nsession hook: on\n`);
-        if (customProfile) expect(await Bun.file(join(dir, `.${client}`, "pstack-models.md")).exists()).toBe(false);
-      });
+      const modelsOnly = "bug-fix: kept-model\ndefault effort: medium";
+      await writeFile(filename, modelsOnly);
+      await run(false, true);
+      expect(await readFile(filename, "utf8")).toBe(`${modelsOnly}\nsession hook: on\n`);
+      if (customProfile) expect(await Bun.file(join(dir, ".claude", "pstack-models.md")).exists()).toBe(false);
     });
-  }
+  });
 }
+
+test("codex plugins install pstack without writing a pstack sheet", async () => {
+  await withMockTools(async (dir, log) => {
+    const child = Bun.spawn([process.execPath, join(root, "tasks.ts"), "agent:codex-plugins"], {
+      cwd: root,
+      env: { ...process.env, HOME: dir, PATH: `${dir}:${process.env.PATH}`, MOCK_LOG: log, CODEX_HOME: "" },
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    const [code, error] = await Promise.all([child.exited, new Response(child.stderr).text()]);
+    expect(error).toBe("");
+    expect(code).toBe(0);
+    expect((await calls(log)).some(({ bin, args }) => bin === "codex" && args.at(-1) === "pstack@pstack-claude")).toBe(true);
+    expect(await Bun.file(join(dir, ".codex", "pstack-models.md")).exists()).toBe(false);
+  });
+});
 
 test("tasks reject invalid arguments before starting a command", async () => {
   await withMockTools(async (dir, log) => {
