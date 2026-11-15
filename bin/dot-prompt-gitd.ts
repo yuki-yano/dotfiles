@@ -818,6 +818,10 @@ async function main(): Promise<void> {
       void (async () => {
         try {
           const request = await readRequest(connection);
+          // Clients wait for this reply before closing. On macOS, Deno fails
+          // accept() with EINVAL when the peer has already closed, which would
+          // drop the request.
+          await connection.write(new TextEncoder().encode("ok\n")).catch(() => undefined);
           if (isRegistrationRequest(request)) await daemon.register(request);
         } catch (error) {
           daemon.log(`invalid registration request: ${error}`);

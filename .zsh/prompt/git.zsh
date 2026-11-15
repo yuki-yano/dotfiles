@@ -97,7 +97,8 @@ dot_prompt_git_daemon_register() {
   dot_prompt_json_quote "$cache_path"; cache_json=$REPLY
   request="{\"top\":${top_json},\"cachePath\":${cache_json}}"
   print -r -u "$fd" -- "$request" 2>/dev/null
-  local code=$?
+  local code=$? ack
+  (( code == 0 )) && IFS= read -r -t 1 -u "$fd" ack 2>/dev/null
   exec {fd}>&-
   return $code
 }

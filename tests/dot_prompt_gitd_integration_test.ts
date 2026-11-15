@@ -62,6 +62,7 @@ function gitStatusCount(callLog: string): number {
 async function register(socketPath: string, top: string, cachePath: string): Promise<void> {
   const connection = await Deno.connect({ transport: "unix", path: socketPath });
   await connection.write(new TextEncoder().encode(`${JSON.stringify({ top, cachePath })}\n`));
+  await connection.read(new Uint8Array(16));
   connection.close();
 }
 
@@ -102,6 +103,33 @@ Deno.test("Deno が PATH にない場合は Git 表示を無音で空にする",
   assert(output.success);
   assertEquals(new TextDecoder().decode(output.stderr), "");
   assertStringIncludes(new TextDecoder().decode(output.stdout), "top ''");
+});
+
+Deno.test("デーモンの受け付けが遅れても zsh からの登録要求を失わない", async () => {
+  const root = await Deno.makeTempDir({ dir: "/tmp", prefix: "dp-gitd-accept-" });
+  const socketPath = join(root, "daemon.sock");
+  const listener = Deno.listen({ transport: "unix", path: socketPath });
+  try {
+    const client = new Deno.Command("/bin/zsh", {
+      args: ["-f", "-c", 'source "$1"; dot_prompt_git_daemon_register /repo /cache', "--", gitPromptScript],
+      env: { DOT_PROMPT_GITD_SOCKET_PATH: socketPath, DOT_PROMPT_GITD_SCRIPT: daemonScript },
+      stdout: "null",
+      stderr: "piped",
+    }).spawn();
+    await new Promise((resolvePromise) => setTimeout(resolvePromise, 300));
+    const connection = await listener.accept();
+    const buffer = new Uint8Array(4_096);
+    const count = await connection.read(buffer) ?? 0;
+    await connection.write(new TextEncoder().encode("ok\n"));
+    connection.close();
+    const result = await client.output();
+    assert(result.success);
+    assertEquals(new TextDecoder().decode(result.stderr), "");
+    assertStringIncludes(new TextDecoder().decode(buffer.subarray(0, count)), '"top":"/repo"');
+  } finally {
+    listener.close();
+    await Deno.remove(root, { recursive: true });
+  }
 });
 
 Deno.test("初回キャッシュ待ちを保持し、キャッシュ読込後に Git 表示へ切り替える", async () => {
