@@ -439,17 +439,20 @@ bindkey '^x^e' edit-command-line
 # Git auto-save {{{2
 add-zsh-hook preexec git_auto_save
 
+# Runs before every command, so it finds the repository without starting git.
 function git_auto_save() {
-  # Get git root directory
-  local git_root
-  git_root=$(git rev-parse --show-toplevel 2>/dev/null)
-
-  if [[ -n "$git_root" ]] \
-    && [[ -f "$git_root/.git/auto-save" ]] \
-    && [[ $(find "$git_root/.git/auto-save" -mmin -$((60)) | wc -l) -eq 0 ]]; then
-    touch "$git_root/.git/auto-save" &&
-      GIT_QUICK_SAVE_LABEL="Git auto save" git-quick-save
+  (( $+functions[dot_prompt_git_find_top] )) && dot_prompt_git_find_top || return 0
+  local git_dir=$REPLY/.git line
+  if [[ -f $git_dir ]]; then
+    # A linked worktree's .git file points at its own Git directory.
+    IFS= read -r line < $git_dir
+    git_dir=${line#gitdir: }
+    [[ $git_dir == /* ]] || git_dir=$REPLY/$git_dir
   fi
+  local marker=$git_dir/auto-save
+  local -a saved_within_hour=( ${marker}(N.mm-60) )
+  [[ -f $marker ]] && (( ! $#saved_within_hour )) || return 0
+  touch "$marker" && GIT_QUICK_SAVE_LABEL="Git auto save" git-quick-save
 }
 
 # Git reflog selector {{{2
@@ -482,17 +485,21 @@ bindkey '^gr' fzf-git-reflog-widget
 bindkey '^g^r' fzf-git-reflog-widget
 
 # tmux session naming {{{2
+typeset -g TMUX_AUTO_RENAME_DONE=0
 function tmux_auto_rename_hook() {
-  if [[ -n "$TMUX" ]]; then
+  # A named session stays named, so stop asking tmux on every cd.
+  if [[ -n "$TMUX" ]] && (( ! TMUX_AUTO_RENAME_DONE )); then
     # Get current session name
     local session_name=$(tmux display-message -p '#S')
+    [[ $session_name =~ ^[0-9]+$ ]] || TMUX_AUTO_RENAME_DONE=1
 
     # Check if session name is numeric
     if [[ $session_name =~ ^[0-9]+$ ]]; then
       # Check if we're in a git repository
+      local git_root
       if git_root=$(git rev-parse --show-toplevel 2>/dev/null); then
         # Extract repository name from path
-        local repository=$(basename "$git_root")
+        local repository=${git_root:t}
 
         # Match vt's session_name_for_path sanitization.
         local new_session_name=${repository//[^A-Za-z0-9_.-]/_}
@@ -529,8 +536,8 @@ function __susp_jobs_update_rprompt() {
   if (( ${#ids} )); then
     local i
     for i in ${ids}; do
-      txt=${jobtexts[$i]}
-      shown+="${i}:${${txt%% *}:-${txt}}"
+      txt=${${jobtexts[$i]%% *}:-${jobtexts[$i]}}
+      shown+="${i}:${txt//\%/%%}"
       (( ${#shown} >= SUSP_JOBS_MAX )) && break
     done
     local rest=$(( ${#ids} - ${#shown} ))
@@ -564,7 +571,7 @@ function dot-buffer-stack-push() {
   local preview
 
   (( cmd_str_len > 10 )) && cmd_str_len=10
-  preview="[${buffer_value[1,${cmd_str_len}]}]"
+  preview="[${${buffer_value[1,${cmd_str_len}]}//\%/%%}]"
 
   buffer_stack_value_arr=("$buffer_value" ${buffer_stack_value_arr[@]})
   buffer_stack_arr=("$preview" ${buffer_stack_arr[@]})
