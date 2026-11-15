@@ -525,7 +525,8 @@ Deno.test({
   async fn() {
     const integrationRoot = await Deno.makeTempDir({ dir: "/tmp", prefix: "dp-gitd-noise-" });
     const repoPath = join(integrationRoot, "repo");
-    const nestedWorktree = join(repoPath, ".git", "wt", "feature");
+    const worktreeBeforeStart = join(repoPath, ".git", "wt", "before");
+    const worktreeAfterStart = join(repoPath, ".git", "wt", "after");
     const runtimePath = join(integrationRoot, "runtime");
     const socketPath = join(runtimePath, "daemon.sock");
     const logPath = join(runtimePath, "daemon.log");
@@ -540,7 +541,7 @@ Deno.test({
       await Deno.writeTextFile(join(repoPath, "tracked.txt"), "initial\n");
       await run("git", ["add", ".gitignore", "tracked.txt"], repoPath);
       await run("git", ["commit", "-qm", "initial"], repoPath);
-      await run("git", ["worktree", "add", "-q", nestedWorktree, "-b", "feature"], repoPath);
+      await run("git", ["worktree", "add", "-q", worktreeBeforeStart, "-b", "before"], repoPath);
       await Deno.mkdir(join(repoPath, "ignored"));
       const gitShim = await createGitShim(integrationRoot);
 
@@ -564,16 +565,26 @@ Deno.test({
         }
       });
       await register(socketPath, repoPath, cachePath);
-      await waitFor(() => readText(cachePath).includes("unstaged '0'"));
-      await new Promise((resolvePromise) => setTimeout(resolvePromise, 700));
+      try {
+        await waitFor(() => readText(cachePath).includes("unstaged '0'"));
+      } catch (error) {
+        throw new Error(`${error}\ndaemon log:\n${readText(logPath)}\ngit calls:\n${readText(gitShim.callLog)}`);
+      }
+      await run("git", ["worktree", "add", "-q", worktreeAfterStart, "-b", "after"], repoPath);
+      await new Promise((resolvePromise) => setTimeout(resolvePromise, 1_500));
 
       const refreshesBefore = gitStatusCount(gitShim.callLog);
       await Deno.writeTextFile(join(repoPath, "ignored", "build.log"), "noise\n");
       await Deno.remove(join(repoPath, "ignored", "build.log"));
-      await Deno.writeTextFile(join(nestedWorktree, "tracked.txt"), "worktree edit\n");
+      await Deno.writeTextFile(join(worktreeBeforeStart, "tracked.txt"), "worktree edit\n");
+      await Deno.writeTextFile(join(worktreeAfterStart, "tracked.txt"), "worktree edit\n");
       await new Promise((resolvePromise) => setTimeout(resolvePromise, 1_500));
       assertEquals(gitStatusCount(gitShim.callLog), refreshesBefore);
       assertStringIncludes(readText(cachePath), "unstaged '0'");
+
+      await Deno.mkdir(join(repoPath, ".git", "local"));
+      await Deno.writeTextFile(join(repoPath, ".git", "local", "included.conf"), "[status]\n");
+      await waitFor(() => gitStatusCount(gitShim.callLog) > refreshesBefore);
 
       await Deno.writeTextFile(join(repoPath, "tracked.txt"), "changed\n");
       try {

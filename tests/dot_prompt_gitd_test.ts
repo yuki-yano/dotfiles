@@ -1,11 +1,11 @@
 import { assertEquals } from "@std/assert";
 import { join } from "node:path";
 import {
+  canSkipRefresh,
   formatCache,
   minimizeWatchPaths,
   parseNumstat,
   parsePorcelainV2,
-  pathsAllIgnored,
   readGitLineStats,
   removePreBootIndexLock,
   zshQuote,
@@ -188,22 +188,27 @@ Deno.test("minimizeWatchPaths keeps external linked-worktree metadata only once"
   );
 });
 
-Deno.test("pathsAllIgnored は全パスが ignore 対象のときだけ true を返す", async () => {
+Deno.test("canSkipRefresh は全パスが ignore 対象で、ignore 規則のファイルを含まないときだけ true を返す", async () => {
   const repo = await Deno.makeTempDir({ prefix: "dp-gitd-ignore-" });
   try {
     await git(repo, "init", "-q");
     await Deno.writeTextFile(join(repo, ".gitignore"), "ignored/\n*.log\n");
     await Deno.mkdir(join(repo, "ignored"));
     await Deno.writeTextFile(join(repo, "ignored", "forced.txt"), "tracked\n");
+    await Deno.writeTextFile(join(repo, "ignored", ".gitignore"), "!keep.log\n");
     await git(repo, "add", ".gitignore");
     await git(repo, "add", "-f", "ignored/forced.txt");
 
-    assertEquals(await pathsAllIgnored(repo, new Set(["ignored/a.txt", "debug.log"])), true);
-    assertEquals(await pathsAllIgnored(repo, new Set(["ignored/deleted-before-check.txt"])), true);
-    assertEquals(await pathsAllIgnored(repo, new Set(["ignored/a.txt", "tracked.txt"])), false);
-    assertEquals(await pathsAllIgnored(repo, new Set(["ignored/forced.txt"])), false);
-    assertEquals(await pathsAllIgnored(repo, new Set(["../outside.txt"])), false);
-    assertEquals(await pathsAllIgnored(repo, new Set()), false);
+    assertEquals(await canSkipRefresh(repo, new Set(["ignored/a.txt", "debug.log"])), true);
+    assertEquals(await canSkipRefresh(repo, new Set(["ignored/deleted-before-check.txt"])), true);
+    assertEquals(await canSkipRefresh(repo, new Set(["ignored/a.txt", "tracked.txt"])), false);
+    assertEquals(await canSkipRefresh(repo, new Set(["ignored/forced.txt"])), false);
+    assertEquals(await canSkipRefresh(repo, new Set(["ignored/.gitignore"])), false);
+    assertEquals(await canSkipRefresh(repo, new Set(["../outside.txt"])), false);
+    assertEquals(await canSkipRefresh(repo, new Set()), false);
+
+    const manyIgnored = Array.from({ length: 100_000 }, (_, index) => `ignored/file-${index}.txt`);
+    assertEquals(await canSkipRefresh(repo, new Set(["../outside.txt", ...manyIgnored])), false);
   } finally {
     await Deno.remove(repo, { recursive: true });
   }

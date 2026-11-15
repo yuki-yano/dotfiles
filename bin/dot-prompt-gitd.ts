@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run -A
 
 import watchmanModule from "fb-watchman";
-import { dirname, isAbsolute, join, relative, resolve } from "node:path";
+import { basename, dirname, isAbsolute, join, relative, resolve } from "node:path";
 
 const DEBOUNCE_MS = 300;
 const MAX_DEBOUNCE_MS = 2_000;
@@ -64,6 +64,20 @@ interface RepoState {
   queued: boolean;
   timer: ReturnType<typeof setTimeout> | null;
   untrackedLines: UntrackedLineCache;
+  worktreeTops: string[];
+}
+
+interface SubscriptionTarget {
+  repoId: string;
+  metadataOnly: boolean;
+  namesRelativeTo: string;
+}
+
+export function isInsideNestedWorktree(base: string, name: string, worktrees: string[]): boolean {
+  const path = join(base, name);
+  return worktrees.some((worktree) =>
+    worktree !== base && pathContains(base, worktree) && pathContains(worktree, path)
+  );
 }
 
 function isRegistrationRequest(value: unknown): value is RegistrationRequest {
@@ -304,18 +318,26 @@ export function minimizeWatchPaths(paths: string[]): string[] {
   return result;
 }
 
-const GIT_STATE_DIRS = ["refs", "logs", "info", "reftable", "modules", "rebase-merge", "rebase-apply", "sequencer"];
-
 export function createWatchExpression(metadataOnly: boolean, ownStateDir?: string): unknown[] {
-  if (!metadataOnly) return ["allof", ["not", ["type", "d"]], ["not", ["name", ".git/index.lock", "wholename"]]];
-  const stateDirs = ownStateDir ? [...GIT_STATE_DIRS, ownStateDir] : GIT_STATE_DIRS;
+  if (!metadataOnly) return ["allof", ["not", ["type", "d"]], ["not", ["dirname", ".git"]]];
+  // Other worktrees' private state cannot change this status, but their gitdir
+  // files mark worktrees being added or removed.
+  const otherWorktreeState: unknown[] = ["allof", ["dirname", "worktrees"], ["not", ["name", "gitdir"]]];
+  if (ownStateDir) otherWorktreeState.push(["not", ["dirname", ownStateDir]]);
   return [
     "allof",
     ["not", ["type", "d"]],
     ["not", ["name", "index.lock"]],
-    ["not", ["match", "modules/**/objects/**", "wholename"]],
-    ["anyof", ["dirname", "", ["depth", "eq", 0]], ...stateDirs.map((dir) => ["dirname", dir])],
+    ["not", ["match", "**/objects/**", "wholename"]],
+    ["not", otherWorktreeState],
   ];
+}
+
+export async function listWorktreeTops(top: string): Promise<string[]> {
+  const output = await gitOutput(top, ["worktree", "list", "--porcelain", "-z"]);
+  const tops = output.split("\0").filter((field) => field.startsWith("worktree ")).map((field) => field.slice(9));
+  const resolved = await Promise.all(tops.map((path) => Deno.realPath(path).catch(() => null)));
+  return resolved.filter((path) => path !== null);
 }
 
 export function mergePendingChanges(current: PendingChanges | null, change: PendingChanges): PendingChanges {
@@ -323,8 +345,11 @@ export function mergePendingChanges(current: PendingChanges | null, change: Pend
   return current ? new Set([...current, ...change]) : new Set(change);
 }
 
-export async function pathsAllIgnored(top: string, paths: Set<string>): Promise<boolean> {
-  if (paths.size === 0) return false;
+// These files change how other paths are classified, even when they are ignored themselves.
+const GIT_RULE_FILES = new Set([".gitignore", ".gitattributes", ".gitmodules"]);
+
+export async function canSkipRefresh(top: string, paths: Set<string>): Promise<boolean> {
+  if (paths.size === 0 || [...paths].some((path) => GIT_RULE_FILES.has(basename(path)))) return false;
   const child = new Deno.Command("git", {
     args: ["-C", top, "check-ignore", "--stdin", "-z"],
     env: { GIT_OPTIONAL_LOCKS: "0" },
@@ -334,12 +359,11 @@ export async function pathsAllIgnored(top: string, paths: Set<string>): Promise<
   }).spawn();
   const stdout = new Response(child.stdout).arrayBuffer();
   const writer = child.stdin.getWriter();
-  await writer.write(new TextEncoder().encode([...paths].map((path) => `${path}\0`).join("")));
-  await writer.close();
-  const [{ code }, output] = await Promise.all([child.status, stdout]);
-  // 1 means nothing matched. Other failures (for example a path inside a
-  // submodule) must fall back to a refresh.
-  if (code !== 0) return false;
+  const inputWritten = writer.write(new TextEncoder().encode([...paths].map((path) => `${path}\0`).join("")))
+    .then(() => writer.close())
+    .then(() => true, () => false);
+  const [{ code }, output, written] = await Promise.all([child.status, stdout, inputWritten]);
+  if (!written || code !== 0) return false;
   const ignored = new Set(new TextDecoder().decode(output).split("\0"));
   return [...paths].every((path) => ignored.has(path));
 }
@@ -404,7 +428,7 @@ class GitPromptDaemon {
   #client: WatchmanClient | null = null;
   #repos = new Map<string, RepoState>();
   #pendingRegistrations = new Map<string, Promise<void>>();
-  #subscriptionRepos = new Map<string, { repoId: string; metadataOnly: boolean }>();
+  #subscriptionRepos = new Map<string, SubscriptionTarget>();
   #subscriptionSequence = 0;
   #queue: RepoState[] = [];
   #activeGit = 0;
@@ -478,6 +502,7 @@ class GitPromptDaemon {
       queued: false,
       timer: null,
       untrackedLines: new Map(),
+      worktreeTops: await listWorktreeTops(top).catch(() => []),
     };
     this.#repos.set(top, repo);
     await this.#subscribeRepo(repo);
@@ -543,7 +568,11 @@ class GitPromptDaemon {
       if (relativeRoot) options.relative_root = relativeRoot;
       await command(client, ["subscribe", watchRoot, name, options]);
       repo.subscriptions.add(name);
-      this.#subscriptionRepos.set(name, { repoId: repo.id, metadataOnly: target.metadataOnly });
+      this.#subscriptionRepos.set(name, {
+        repoId: repo.id,
+        metadataOnly: target.metadataOnly,
+        namesRelativeTo: relativeRoot ? join(watchRoot, relativeRoot) : watchRoot,
+      });
     }
   }
 
@@ -556,16 +585,15 @@ class GitPromptDaemon {
       const target = this.#subscriptionRepos.get(subscription);
       const repo = target ? this.#repos.get(target.repoId) : undefined;
       if (!target || !repo) return;
+      const names = response.files.filter((name): name is string => typeof name === "string");
       if (target.metadataOnly) {
-        this.#markDirty(repo, "all", false);
+        if (names.some((name) => /^worktrees\/[^/]+\/gitdir$/.test(name))) void this.#reloadNestedWorktrees(repo);
+        if (names.some((name) => !isInsideNestedWorktree(target.namesRelativeTo, name, repo.worktreeTops))) {
+          this.#markDirty(repo, "all", false);
+        }
         return;
       }
-      // The metadata subscription already reports the .git entries that the
-      // worktree watch sees shallowly.
-      const paths = response.files.filter((name): name is string =>
-        typeof name === "string" && !name.startsWith(".git/")
-      );
-      if (paths.length > 0) this.#markDirty(repo, new Set(paths), false);
+      if (names.length > 0) this.#markDirty(repo, new Set(names), false);
     });
     client.on("error", (error) => {
       if (error) this.log(`Watchman client error: ${error}`);
@@ -593,6 +621,14 @@ class GitPromptDaemon {
       } catch (error) {
         this.log(`subscription restore failed for ${repo.top}: ${error}`);
       }
+    }
+  }
+
+  async #reloadNestedWorktrees(repo: RepoState): Promise<void> {
+    try {
+      repo.worktreeTops = await listWorktreeTops(repo.top);
+    } catch (error) {
+      this.log(`worktree list failed for ${repo.top}: ${error}`);
     }
   }
 
@@ -642,7 +678,7 @@ class GitPromptDaemon {
 
   async #refresh(repo: RepoState, pending: PendingChanges): Promise<void> {
     try {
-      if (pending !== "all" && await pathsAllIgnored(repo.top, pending)) return;
+      if (pending !== "all" && await canSkipRefresh(repo.top, pending).catch(() => false)) return;
       const result = await new Deno.Command("git", {
         args: ["-C", repo.top, "status", "--show-stash", "--branch", "--porcelain=v2", "--untracked-files=normal"],
         env: { GIT_OPTIONAL_LOCKS: "0" },
