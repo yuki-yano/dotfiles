@@ -566,15 +566,12 @@ return {
       end, { silent = true })
       vim.keymap.set('i', '<C-w>', function()
         local ok, status = pcall(vim.fn['vinsert#status'])
-        if not ok then
-          return '<C-w>'
-        end
-
-        if status.active then
+        if ok and status.active then
           vim.cmd('VinsertCancel')
           return ''
         end
-        return '<C-w>'
+        -- jaword.nvim は IME 環境でだけ読み込むので、それ以外では組み込みの <C-w> を使う
+        return ime.is_ime() and require('jaword').ctrl_w() or '<C-w>'
       end, { expr = true, silent = true })
 
       vim.keymap.set('i', '<C-e>', function()
@@ -606,6 +603,24 @@ return {
     end,
     config = function()
       require('denops-lazy').load('vinsert.vim')
+    end,
+  },
+  {
+    'yuki-yano/jaword.nvim',
+    dev = true,
+    cond = function()
+      return ime.is_ime()
+    end,
+    lazy = false,
+    build = 'nvim -l build.lua',
+    -- insert の <C-w> は vinsert.vim の <C-w> から require('jaword').ctrl_w() を呼ぶ
+    config = function()
+      vim.keymap.set({ 'n', 'x', 'o' }, 'w', '<Plug>(jaword-w)')
+      vim.keymap.set({ 'n', 'x', 'o' }, 'b', '<Plug>(jaword-b)')
+      vim.keymap.set({ 'n', 'x', 'o' }, 'e', '<Plug>(jaword-e)')
+      vim.keymap.set({ 'n', 'x', 'o' }, 'ge', '<Plug>(jaword-ge)')
+      vim.keymap.set({ 'x', 'o' }, 'iw', '<Plug>(jaword-iw)')
+      vim.keymap.set({ 'x', 'o' }, 'aw', '<Plug>(jaword-aw)')
     end,
   },
   {
