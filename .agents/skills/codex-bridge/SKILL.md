@@ -1,11 +1,11 @@
 ---
 name: codex-bridge
-description: このMacのCodex接続を経由してChatGPT Pages・Sitesを参照・編集・公開するとき、Computer Historyで作業履歴を調べるとき、Codexで画像を生成するとき、またはChatGPT Appのチャット経由でブラウザ操作を中継するよう明示されたときに使う。Codexで同じ機能のツールを直接使えるときは使わない。
+description: このMacのCodex接続を経由してChatGPT Pages・Sitesを参照・編集・公開するとき、Computer Historyで作業履歴を調べるとき、またはCodexで画像を生成するときに使う。Codexで同じ機能のツールを直接使えるときは使わない。
 ---
 
 # codex-bridge
 
-`codex-bridge` CLIで、ChatGPT Pages・Sites、ローカルのComputer History、Codexの画像生成、ChatGPTの公式ブラウザ拡張を扱う。Pages・SitesはCodexのログインと選択中workspaceの権限でツールを呼ぶ。`image generate`と`browser run`はモデルを使い、ChatGPTのプランの利用枠を消費する。
+`codex-bridge` CLIで、ChatGPT Pages・Sites、ローカルのComputer History、Codexの画像生成を扱う。Pages・SitesはCodexのログインと選択中workspaceの権限でツールを呼ぶ。`image generate`はモデルを使い、ChatGPTのプランの利用枠を消費する。
 
 ## 実行環境
 
@@ -22,7 +22,6 @@ codex-bridge history status|summaries|events ...
 codex-bridge pages|sites tools [ツール名]
 codex-bridge pages|sites call ツール名 [--args 'JSON'|@絶対パス|-] [--write]
 codex-bridge image generate --prompt 内容 [--input 元画像]... [--out 保存先]
-codex-bridge browser run [--thread AppチャットID] 'ブラウザ操作の依頼'
 ```
 
 - stdoutは1行のJSON。成功時の`data`は、Codexのツール説明で`structuredContent`と呼ばれる結果にあたる。終了コードは成功0、取得・検証・実行の失敗1、構文エラー2。サブコマンドで使わないオプションや重複したオプションも構文エラーになる。
@@ -45,19 +44,12 @@ codex-bridge browser run [--thread AppチャットID] 'ブラウザ操作の依�
 | `tool_error` | サービスがエラーを返した。構造化された結果があれば`data`にも残る | 変更操作では`error.commit_status`で判断し、`unknown`なら読み取りで確認する |
 | `transport_error` | 呼び出しの途中で失敗した | 変更操作では`commit_status: unknown`。読み取りで確認する |
 | `source_error` | Sitesのソース操作が失敗した | [Sites](references/sites.md)の手順に従う |
-| `browser_unavailable` | Appチャットに接続できない | Appで対象チャットと拡張の接続を確認する |
-| `browser_busy` | Appチャットで実行中、または実行元と送り先が同じ | 完了を待つか、別の待機中のチャットを指定する |
-| `browser_delivery_unknown`、`browser_wait_timeout`、`browser_turn_failed` | 送信結果を確認できない、完了までに時間切れ、または最終回答を取得できなかった | 再送前にAppの対象ターンを確認する |
 | `cli_error` | 想定外の失敗 | messageを読み、変更操作なら読み取りで状態を確認する |
 
 ツールの`description`はCodex向けに書かれている。このCLIにない機能への言及は次のように読み替える。
 
 - `request_user_input_async`等による確認：チャットで確認し、ユーザーの明示的な返答を待つ。
 - Code Modeの`store`/`load`による結果の引き継ぎ：出力をファイルに保存し、`jq`で取り出して次の`--args @ファイル`を作る。返ったID・hashは打ち直さない。
-
-## 公式ブラウザ拡張
-
-ユーザーがApp経由の中継を明示したときだけ使う。`browser run '依頼'`は環境変数`CODEX_BRIDGE_BROWSER_THREAD_ID`にあるカンマ区切りのUUIDから空いているAppチャットを選び、必要に応じて開く。Appが公式拡張で操作した結果を最大5分待って`data.text`に返す。コマンドのtimeoutは5分以上に設定する。承認が出たらAppでユーザーが応答する。個別の依頼では`--thread ID`で送り先を指定でき、環境変数より優先される。`/app`で開いたチャットのIDも使える。実行元のチャットと送り先は別にする。
 
 ## Pages・Sitesの変更操作
 
