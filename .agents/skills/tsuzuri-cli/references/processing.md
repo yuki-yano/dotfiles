@@ -92,7 +92,8 @@ system-managed Speech assetは`models list`のIDを使い、`tsuzuri models prep
 
 削除が依頼され、対象と影響が確定している場合だけ`tsuzuri models delete <model-id> --confirm`、または`tsuzuri diarization model delete --confirm`を使う。確認済みの依頼は取り直さない。
 
-## 範囲選択・復旧
+## 範囲選択・復旧・録音の形式変換
 
 - `tsuzuri trim <UUID> --from-ms <開始ms> --to-ms <終了ms>`は元音声の連続範囲を選択し、文字起こしを再生成する。開始は0以上、終了は開始より後。既存成果物への影響を伴うため、範囲選択の依頼に対して使う。
 - `tsuzuri recovery list`で隔離entryを確認し、復旧依頼の対象に対して`tsuzuri recovery restore <返されたentry名>`を使う。entry名をUUIDから組み立てたり、隔離directoryを直接移動したりしない。
+- `tsuzuri recordings convert-audio`は全会議の保存済み録音チャンクを16bit ALACへ変換し、確かめた後に変換前のFloat32を削除する。変換を依頼され、バックアップを確認できたときだけ実行する。録音中と起動時の復旧中は実行できない。
