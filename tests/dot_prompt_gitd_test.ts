@@ -11,6 +11,7 @@ import {
   parseNumstat,
   parsePorcelainV2,
   readGitLineStats,
+  readGitStatus,
   refreshDelay,
   removePreBootIndexLock,
   type WatchmanClient,
@@ -26,11 +27,13 @@ Deno.test("parsePorcelainV2 preserves the existing prompt counters", () => {
     "# stash 4",
     "1 M. N... 100644 100644 100644 a b tracked.ts",
     "1 .M N... 100644 100644 100644 a b modified.ts",
-    "2 MM N... 100644 100644 100644 a b R100 renamed.ts\toriginal.ts",
+    "2 MM N... 100644 100644 100644 a b R100 renamed.ts",
+    // The rename's original path, a file whose name looks like an untracked record.
+    "? renamed-from.ts",
     "u UU N... 100644 100644 100644 100644 a b c conflicted.ts",
     "? untracked.ts",
     "",
-  ].join("\n"));
+  ].join("\0"));
 
   assertEquals(status, {
     oid: "0123456789abcdef",
@@ -41,7 +44,7 @@ Deno.test("parsePorcelainV2 preserves the existing prompt counters", () => {
     behind: 2,
     staged: 2,
     unstaged: 2,
-    untracked: 1,
+    untrackedPaths: ["untracked.ts"],
     unmerged: 1,
     stash: 4,
     added: 0,
@@ -53,14 +56,14 @@ Deno.test("parsePorcelainV2 displays a detached commit using seven characters", 
   const status = parsePorcelainV2([
     "# branch.oid abcdef0123456789",
     "# branch.head (detached)",
-  ].join("\n"));
+  ].join("\0"));
 
   assertEquals(status.branch, "abcdef0");
   assertEquals(status.detached, true);
 });
 
 Deno.test("formatState は固定順の zsh クォート済みのキーと値を出す", () => {
-  const status = parsePorcelainV2("# branch.oid abcdef0123456789\n# branch.head feature/it's-safe\n");
+  const status = parsePorcelainV2("# branch.oid abcdef0123456789\0# branch.head feature/it's-safe\0");
 
   assertEquals(zshQuote("feature/it's-safe"), "'feature/it'\\''s-safe'");
   assertEquals(
@@ -152,11 +155,20 @@ Deno.test("HEAD からの変更と未追跡ファイルの全行を合算し、�
     await Deno.symlink("missing.txt", join(top, "broken-link.txt"));
     const indexBefore = await Deno.readFile(join(top, ".git", "index"));
 
-    assertEquals(await readGitLineStats(top, oid), { added: 9, deleted: 3 });
+    const { untrackedPaths } = await readGitStatus(top);
+    assertEquals(untrackedPaths.toSorted(), [
+      "broken-link.txt",
+      "empty.txt",
+      "link.txt",
+      "untracked dir/crlf.txt",
+      "untracked dir/new\nwith\ttabs.txt",
+      "untracked.bin",
+    ]);
+    assertEquals(await readGitLineStats(top, oid, { untrackedPaths }), { added: 9, deleted: 3 });
     assertEquals(await Deno.readFile(join(top, ".git", "index")), indexBefore);
     // Returning the worktree to HEAD cancels its staged edit in the net total.
     await Deno.writeTextFile(join(top, "partial.txt"), "original\n");
-    assertEquals(await readGitLineStats(top, oid), { added: 7, deleted: 2 });
+    assertEquals(await readGitLineStats(top, oid, { untrackedPaths }), { added: 7, deleted: 2 });
   } finally {
     await Deno.remove(top, { recursive: true });
   }
@@ -172,7 +184,8 @@ Deno.test("初回 commit 前も stage 済みと未追跡を集計し、大きな
       await Deno.writeTextFile(join(top, "staged.txt"), "first\nsecond");
       await Deno.writeTextFile(join(top, "large.txt"), "a\n".repeat(40_000) + "last");
       await Deno.writeFile(join(top, "binary"), new Uint8Array([10, 0, 10]));
-      assertEquals(await readGitLineStats(top, "(initial)"), { added: 40_003, deleted: 0 });
+      const { untrackedPaths } = await readGitStatus(top);
+      assertEquals(await readGitLineStats(top, "(initial)", { untrackedPaths }), { added: 40_003, deleted: 0 });
     } finally {
       await Deno.remove(top, { recursive: true });
     }
@@ -192,12 +205,21 @@ Deno.test("未追跡ファイルの行数は変わったファイルだけ読み
     await Deno.writeTextFile(join(top, "edited.txt"), "a\nb\n");
     await Deno.writeTextFile(join(top, "unchanged-unreadable.txt"), "c\n");
     const untrackedLines = new Map();
+    const { untrackedPaths } = await readGitStatus(top);
 
-    assertEquals(await readGitLineStats(top, oid, { tracked: false, untrackedLines }), { added: 3, deleted: 0 });
+    assertEquals(await readGitLineStats(top, oid, { tracked: false, untrackedPaths, untrackedLines }), {
+      added: 3,
+      deleted: 0,
+    });
     await Deno.chmod(join(top, "unchanged-unreadable.txt"), 0o000);
     await Deno.writeTextFile(join(top, "edited.txt"), "a\nb\nc\n");
     assertEquals(
-      await readGitLineStats(top, oid, { tracked: false, untrackedLines, changedPaths: new Set(["edited.txt"]) }),
+      await readGitLineStats(top, oid, {
+        tracked: false,
+        untrackedPaths,
+        untrackedLines,
+        changedPaths: new Set(["edited.txt"]),
+      }),
       { added: 4, deleted: 0 },
     );
 
@@ -205,6 +227,7 @@ Deno.test("未追跡ファイルの行数は変わったファイルだけ読み
     assertEquals(
       await readGitLineStats(top, oid, {
         tracked: false,
+        untrackedPaths: (await readGitStatus(top)).untrackedPaths,
         untrackedLines,
         changedPaths: new Set(["unchanged-unreadable.txt"]),
       }),
@@ -589,7 +612,7 @@ Deno.test("忘れて登録し直した repo の shell へ、止まっていた�
   const hold = fixture.holdNext("status");
   fixture.notify("metadata", { files: ["HEAD"] });
   // The refresh that is about to be overtaken has already read the old branch.
-  assertStringIncludes(await hold.held(), "# branch.head old\n");
+  assertStringIncludes(await hold.held(), "# branch.head old\0");
 
   fixture.notify("worktree", { canceled: true });
   await within(before.closed, "closing the shell of the forgotten repository");

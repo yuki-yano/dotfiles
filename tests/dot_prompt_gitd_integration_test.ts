@@ -113,7 +113,7 @@ function stateLine(fields: Partial<GitStatus> = {}, action = ""): string {
     behind: 0,
     staged: 0,
     unstaged: 0,
-    untracked: 0,
+    untrackedPaths: [],
     unmerged: 0,
     stash: 0,
     added: 0,

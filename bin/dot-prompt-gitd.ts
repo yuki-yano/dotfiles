@@ -50,7 +50,7 @@ export interface GitStatus extends GitLineStats {
   behind: number;
   staged: number;
   unstaged: number;
-  untracked: number;
+  untrackedPaths: string[];
   unmerged: number;
   stash: number;
 }
@@ -147,14 +147,16 @@ export function parsePorcelainV2(output: string): GitStatus {
     behind: 0,
     staged: 0,
     unstaged: 0,
-    untracked: 0,
+    untrackedPaths: [],
     unmerged: 0,
     stash: 0,
     added: 0,
     deleted: 0,
   };
 
-  for (const line of output.split("\n")) {
+  const records = output.split("\0");
+  for (let index = 0; index < records.length; index++) {
+    const line = records[index];
     if (line.startsWith("# branch.oid ")) {
       status.oid = line.slice("# branch.oid ".length);
       continue;
@@ -180,7 +182,7 @@ export function parsePorcelainV2(output: string): GitStatus {
       continue;
     }
     if (line.startsWith("? ")) {
-      status.untracked++;
+      status.untrackedPaths.push(line.slice("? ".length));
       continue;
     }
     if (line.startsWith("u ")) {
@@ -191,11 +193,21 @@ export function parsePorcelainV2(output: string): GitStatus {
       const xy = line.split(" ", 3)[1] ?? "..";
       if (xy[0] !== ".") status.staged++;
       if (xy[1] !== ".") status.unstaged++;
+      // A rename or copy carries its original path in the next record.
+      if (line.startsWith("2 ")) index++;
     }
   }
 
   if (status.detached) status.branch = status.oid.slice(0, 7);
   return status;
+}
+
+// -uall lists each untracked file, so the count matches `git status` and the
+// line counter reads the same list instead of walking the tree again.
+export async function readGitStatus(top: string): Promise<GitStatus> {
+  return parsePorcelainV2(
+    await gitOutput(top, ["status", "--show-stash", "--branch", "--porcelain=v2", "-z", "--untracked-files=all"]),
+  );
 }
 
 export function parseNumstat(output: string): GitLineStats {
@@ -279,9 +291,10 @@ async function countUntrackedLines(
 export async function readGitLineStats(
   top: string,
   oid: string,
-  { tracked = true, untracked = true, untrackedLines = new Map(), changedPaths = "all" }: {
+  { tracked = true, untrackedPaths = [], untrackedLines = new Map(), changedPaths = "all" }: {
     tracked?: boolean;
-    untracked?: boolean;
+    // From readGitStatus, relative to top.
+    untrackedPaths?: string[];
     untrackedLines?: UntrackedLineCache;
     // Paths that changed since the cache was filled; their stat may still match.
     changedPaths?: Set<string> | "all";
@@ -294,28 +307,30 @@ export async function readGitLineStats(
     const base = oid === "(initial)" ? (await gitOutput(top, ["hash-object", "-t", "tree", "--stdin"])).trim() : oid;
     return gitOutput(top, ["diff", "--numstat", "-z", "--no-ext-diff", "--no-textconv", base, "--"]);
   };
-  const [numstat, untrackedOutput] = await Promise.all([
-    readHeadToWorktreeNumstat(),
-    untracked ? gitOutput(top, ["ls-files", "--others", "--exclude-standard", "-z"]) : "",
-  ]);
-  const stats = parseNumstat(numstat);
-  const paths = untrackedOutput.split("\0").filter(Boolean);
   // macOS keeps names as written (often NFD) while Git with core.precomposeUnicode
   // reports NFC, so cache keys and reported paths are compared in NFC.
   const changedKeys = changedPaths === "all" ? "all" : new Set([...changedPaths].map((path) => path.normalize("NFC")));
   const counted: UntrackedLineCache = new Map();
+  let untrackedAdded = 0;
   let next = 0;
-  await Promise.all(Array.from({ length: Math.min(4, paths.length) }, async () => {
-    while (next < paths.length) {
-      const path = paths[next++];
+  const countUntracked = Array.from({ length: Math.min(4, untrackedPaths.length) }, async () => {
+    while (next < untrackedPaths.length) {
+      const path = untrackedPaths[next++];
       const key = path.normalize("NFC");
       const previous = changedKeys === "all" || changedKeys.has(key) ? undefined : untrackedLines.get(key);
       const entry = await countUntrackedLines(join(top, path), previous);
       if (!entry) continue;
       counted.set(key, entry);
-      stats.added += entry.lines;
+      untrackedAdded += entry.lines;
     }
-  }));
+  });
+  const numstat = readHeadToWorktreeNumstat();
+  // Wait for every read, so a failed diff does not free its refresh slot while files are still being read.
+  for (const result of await Promise.allSettled([numstat, ...countUntracked])) {
+    if (result.status === "rejected") throw result.reason;
+  }
+  const stats = parseNumstat(await numstat);
+  stats.added += untrackedAdded;
   untrackedLines.clear();
   for (const [path, entry] of counted) untrackedLines.set(path, entry);
   return stats;
@@ -335,7 +350,7 @@ export function formatState(status: GitStatus, action: string): string {
     ["behind", status.behind],
     ["staged", status.staged],
     ["unstaged", status.unstaged],
-    ["untracked", status.untracked],
+    ["untracked", status.untrackedPaths.length],
     ["unmerged", status.unmerged],
     ["stash", status.stash],
     ["added", status.added],
@@ -921,20 +936,12 @@ export class GitPromptDaemon {
         !pending.metadataChanged && !pending.mayHaveMissedWorktreeEvents &&
         await canSkipRefresh(repo.top, pending.worktreePaths).catch(() => false)
       ) return;
-      const result = await new Deno.Command("git", {
-        args: ["-C", repo.top, "status", "--show-stash", "--branch", "--porcelain=v2", "--untracked-files=normal"],
-        env: { GIT_OPTIONAL_LOCKS: "0" },
-        stdout: "piped",
-        stderr: "null",
-      }).output();
-      if (!result.success) throw new Error(`git status exited with ${result.code}`);
-
-      const status = parsePorcelainV2(new TextDecoder().decode(result.stdout));
+      const status = await readGitStatus(repo.top);
       Object.assign(
         status,
         await readGitLineStats(repo.top, status.oid, {
           tracked: status.staged + status.unstaged + status.unmerged > 0,
-          untracked: status.untracked > 0,
+          untrackedPaths: status.untrackedPaths,
           untrackedLines: repo.untrackedLines,
           changedPaths: pending.mayHaveMissedWorktreeEvents ? "all" : pending.worktreePaths,
         }),
