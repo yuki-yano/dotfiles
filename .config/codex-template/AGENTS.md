@@ -51,32 +51,32 @@
 
 pstackの役割別モデルは、各skillの既定値より以下を優先する。`inherit-parent` / `auto` は`model`を省略し、パネル内の各要素は1体と数える。`@<level>`で役割ごとの推論レベルを指定できる。`default effort: session` はpstackのCodex用platform mappingに従い、各ターンの親の推論レベルを取得する。取得できない場合は、dispatch前に明示的なレベルを確認する。
 
-feature, refactoring: gpt-6.1-sol
-bug-fix: gpt-6.1-sol
-perf-issue: gpt-6.1-sol
-hillclimb: gpt-6.1-sol
-judgment and prose: gpt-6.1-sol
-strongest judgment: gpt-6-astra
-how explorer: gpt-6.1-sol
-how explainer: gpt-6.1-sol
-why investigators: gpt-6.1-sol
-why synthesizer: gpt-6.1-sol
-reflect tooling: gpt-6.1-sol
-reflect judgment, divergent, synthesizer: gpt-6.1-sol
-arena runners: gpt-6.1-sol, gpt-6.1-sol, gpt-6.1-sol, gpt-6.1-sol
-arena cross-judge pool: gpt-6-astra, gpt-6.1-sol, gpt-6.1-terra, gpt-6-luna
-swarm workers: gpt-6.1-sol
-architect runners: gpt-6.1-sol, gpt-6.1-sol, gpt-6.1-sol, gpt-6.1-sol
-interrogate reviewers: gpt-6.1-sol, gpt-6.1-sol, gpt-6.1-sol, gpt-6.1-sol
-thermos reviewers: gpt-6.1-sol
-no-comments reviewer: gpt-6.1-sol
+feature, refactoring: gpt-6.2-sol
+bug-fix: gpt-6.2-sol
+perf-issue: gpt-6.2-sol
+hillclimb: gpt-6.2-sol
+judgment and prose: gpt-6.2-sol
+strongest judgment: gpt-6.2-astra
+how explorer: gpt-6.2-sol
+how explainer: gpt-6.2-sol
+why investigators: gpt-6.2-sol
+why synthesizer: gpt-6.2-sol
+reflect tooling: gpt-6.2-sol
+reflect judgment, divergent, synthesizer: gpt-6.2-sol
+arena runners: gpt-6.2-sol, gpt-6.2-sol, gpt-6.2-sol, gpt-6.2-sol
+arena cross-judge pool: gpt-6.2-astra, gpt-6.2-sol, gpt-6.1-terra, gpt-6-luna
+swarm workers: gpt-6.2-sol
+architect runners: gpt-6.2-sol, gpt-6.2-sol, gpt-6.2-sol, gpt-6.2-sol
+interrogate reviewers: gpt-6.2-sol, gpt-6.2-sol, gpt-6.2-sol, gpt-6.2-sol
+thermos reviewers: gpt-6.2-sol
+no-comments reviewer: gpt-6.2-sol
 
 default effort: session
 
 pstackのモデル選択は以下に従う。
 
 - この表はCodex用。Claude Codeでは`~/.config/claude/pstack-models.md`の表を使う。
-- 自動で選ぶモデルは、Codexは`gpt-6.1-sol`、Claude Codeは`opus`が基本。別のモデルが入るのは`strongest judgment`の行、`arena cross-judge pool`の行、orchestrateのverifier、show-me-your-workのreviewだけ。
+- 自動で選ぶモデルは、Codexは`gpt-6.2-sol`、Claude Codeは`opus`が基本。別のモデルが入るのは`strongest judgment`の行、`arena cross-judge pool`の行、orchestrateのverifier、show-me-your-workのreviewだけ。
 - orchestrateのverifierとshow-me-your-workのreviewは、skillどおり別モデルファミリーで行い、モデルは`arena cross-judge pool`と同じ規則で選ぶ。
-- Codexの`gpt-6-astra`・`gpt-6.1-terra`・`gpt-6-luna`と、Claude Codeの`fable`・`sonnet`・`haiku`を上記以外で使うのは、ユーザーが依頼の中でモデル名を明示したときだけ。明示された指定は表より優先する。
+- Codexの`gpt-6.2-astra`・`gpt-6.1-terra`・`gpt-6-luna`と、Claude Codeの`fable`・`sonnet`・`haiku`を上記以外で使うのは、ユーザーが依頼の中でモデル名を明示したときだけ。明示された指定は表より優先する。
 - 単純な機械的編集に使うworker modelは`feature, refactoring`の行を使う。slugが拒否されたときのfallbackでも、この制限を守る。

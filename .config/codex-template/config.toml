@@ -1,5 +1,5 @@
 # @nvim.on_save bun run codex:template --apply
-model = "gpt-6.1-sol"
+model = "gpt-6.2-sol"
 # model_context_window = 400000
 # model_auto_compact_token_limit = 360000
 model_reasoning_effort = "xhigh"
@@ -66,7 +66,7 @@ reasoning_effort_override = true
 generate_memories = true
 use_memories = true
 extract_model = "gpt-6-luna"
-consolidation_model = "gpt-6.1-sol"
+consolidation_model = "gpt-6.2-sol"
 
 [tui]
 status_line = ["model-with-reasoning", "git-branch", "context-remaining", "context-window-size", "fast-mode", "weekly-limit", "five-hour-limit"]
